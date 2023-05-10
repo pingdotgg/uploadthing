@@ -3,9 +3,10 @@ import type {
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
+  AnyRuntime,
 } from "./types";
 
-export function createBuilder<TRuntime extends "app" | "pages" = "app">(
+export function createBuilder<TRuntime extends AnyRuntime = "web">(
   initDef: Partial<UploadBuilderDef<TRuntime>> = {}
 ): UploadBuilder<{
   _metadata: UnsetMarker;
@@ -14,6 +15,7 @@ export function createBuilder<TRuntime extends "app" | "pages" = "app">(
   const _def: UploadBuilderDef<TRuntime> = {
     fileTypes: ["image"],
     maxSize: "1MB",
+    // @ts-expect-error - huh?
     middleware: async () => ({}),
     ...initDef,
   };

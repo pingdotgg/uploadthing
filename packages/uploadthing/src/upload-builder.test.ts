@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-types */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { genUploader } from "../client";
 import type { FileRouter } from "./types";
 import { createBuilder } from "./upload-builder";
 import { expect, it, expectTypeOf } from "vitest";
+import { NextRequest } from "next/server";
 
 const badReqMock = {
   headers: {
@@ -51,6 +54,25 @@ it("uses defaults for not-chained", async () => {
   const metadata = await uploadable._def.middleware(badReqMock);
   expect(metadata).toEqual({});
   expectTypeOf(metadata).toMatchTypeOf<{}>();
+});
+
+it("passes `Request` by default", async () => {
+  const f = createBuilder();
+
+  f.middleware(async (req) => {
+    expectTypeOf(req).toMatchTypeOf<Request>();
+
+    return {};
+  });
+});
+
+it("passes `NextRequest` for /app", async () => {
+  const f = createBuilder<"app">();
+
+  f.middleware(async (req) => {
+    expectTypeOf(req).toMatchTypeOf<NextRequest>();
+    return { nextUrl: req.nextUrl };
+  });
 });
 
 it("passes `res` for /pages", async () => {
