@@ -1,0 +1,6 @@
+{
+  "callbackUrl": "localhost:3000/api/uploadthing",
+  "files": ["IMG_123.jpg"],
+  "fileType": ["image"],
+  "fileTypes": ["image"]
+}

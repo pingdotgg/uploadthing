@@ -1,0 +1,55 @@
+{
+  "name": "uploadthing",
+  "version": "2.0.5",
+  "license": "MIT",
+  "exports": {
+    "./package.json": "./package.json",
+    "./client": {
+      "import": "./dist/client.mjs",
+      "types": "./dist/client.d.ts"
+    },
+    "./server": {
+      "import": "./dist/server.mjs",
+      "types": "./dist/server.d.ts"
+    },
+    "./next": {
+      "import": "./dist/next.mjs",
+      "types": "./dist/next.d.ts"
+    },
+    "./next-legacy": {
+      "import": "./dist/next-legacy.mjs",
+      "types": "./dist/next-legacy.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint *.ts* --max-warnings 0",
+    "build": "tsup",
+    "prebuild": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "18.16.0",
+    "@uploadthing/eslint-config": "0.1.0",
+    "eslint": "^8.40.0",
+    "next": "13.4.1",
+    "tsup": "6.7.0",
+    "typescript": "5.1.0-beta",
+    "vitest": "^0.30.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

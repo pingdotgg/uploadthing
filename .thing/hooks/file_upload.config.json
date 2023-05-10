@@ -1,0 +1,7 @@
+{
+  "url": "http://localhost:3020/api/s3webhook",
+  "headers": {
+    "Content-Type": "application/json",
+    "x-ping-signature": "43c0d8fc0eb544caf6d95bb7ca4d83fa96d8b32615029ee5e8f349e10b5ba5c0f0e1079f8b35a4a0b55b93b7a6810f072d925f0de573251a027a21fb97c541b9"
+  }
+}
