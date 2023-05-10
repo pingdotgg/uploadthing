@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/pingdotgg/uploadthing/assets/6751787/9ea74e84-a8cd-45e8-b177-59f766b5f8d5">
-  <img src="https://github.com/pingdotgg/uploadthing/assets/6751787/9e0d7e9d-001b-45ed-8af4-cba6e5140fbf" width="480" height="80" alt="Logo for UploadThing">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/pingdotgg/uploadthing/main/assets/uploadthing-logo-dark-background.svg">
+  <img src="https://github.com/pingdotgg/uploadthing/blob/main/assets/uploadthing-logo-light-background.svg" width="480" height="80" alt="Logo for UploadThing">
 </picture>
 </p>
 
