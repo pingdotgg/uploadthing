@@ -28,7 +28,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
 
   return (
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
-      <label className="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center">
+      <label className="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer">
         <input
           className="ut-hidden"
           type="file"
