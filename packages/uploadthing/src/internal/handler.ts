@@ -80,7 +80,7 @@ const conditionalDevServer = async (fileKey: string) => {
 
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
-  const file = withExponentialBackoff(async () => {
+  const fileData = await withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
     const json = await res.json();
 
@@ -122,12 +122,12 @@ const conditionalDevServer = async (fileKey: string) => {
     return file;
   });
 
-  if (file === null) {
+  if (fileData === null) {
     console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
     throw new Error("File took too long to upload");
   }
 
-  return file;
+  return fileData;
 };
 
 const GET_DEFAULT_URL = () => {
