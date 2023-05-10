@@ -28,7 +28,6 @@ export const useUploadThing = <T extends string>({
   const [isUploading, setUploading] = useState(false);
 
   const permittedFileInfo = useEndpointMetadata(endpoint);
-  console.log("permitted file info", permittedFileInfo);
 
   const startUpload = useEvent(async (files: File[]) => {
     setUploading(true);
