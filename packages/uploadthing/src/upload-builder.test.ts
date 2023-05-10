@@ -16,15 +16,6 @@ const badReqMock = {
   },
 } as unknown as Request;
 
-const badNextReqMock = {
-  headers: {
-    get(key: string) {
-      if (key === "header1") return "woohoo";
-      return null;
-    },
-  },
-} as unknown as NextRequest;
-
 it("typeerrors for invalid input", async () => {
   const f = createBuilder();
 
