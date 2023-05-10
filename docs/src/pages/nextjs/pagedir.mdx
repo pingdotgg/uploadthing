@@ -31,17 +31,12 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
 
-<Callout>
-  For your types to be accurate, pass a generic `"pages"` flag to the
-  `createFilething` function as shown below.
-</Callout>
-
 ```ts copy
 /** server/uploadthing.ts */
-import { createFilething, type FileRouter } from "uploadthing/server";
-const f = createFilething<"pages">(); // <-- set this flag
+import { createFilething, type FileRouter } from "uploadthing/next-legacy";
+const f = createFilething();
 
-const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
+const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -52,7 +47,7 @@ export const ourFileRouter = {
     .maxSize("1GB")
     .middleware(async (req, res) => {
       // This code runs on your server before upload
-      const user = await auth(req);
+      const user = await auth(req, res);
 
       // If you throw, the user will not be able to upload
       if (!user) throw new Error("Unauthorized");
@@ -78,7 +73,7 @@ export type OurFileRouter = typeof ourFileRouter;
 
 ```ts copy
 /** pages/api/uploadthing.ts */
-import { createNextPageApiHandler } from "uploadthing/server";
+import { createNextPageApiHandler } from "uploadthing/next-legacy";
 import { ourFileRouter } from "~/server/uploadthing";
 
 const handler = createNextPageApiHandler({
