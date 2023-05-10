@@ -122,12 +122,10 @@ const conditionalDevServer = async (fileKey: string) => {
     return file;
   });
 
-  if (fileData === null) {
-    console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
-    throw new Error("File took too long to upload");
-  }
+  if (fileData !== null) return fileData;
 
-  return fileData;
+  console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
+  throw new Error("File took too long to upload");
 };
 
 const GET_DEFAULT_URL = () => {
