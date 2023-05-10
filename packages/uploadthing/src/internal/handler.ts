@@ -55,8 +55,10 @@ const conditionalDevServer = async (fileKey: string) => {
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
   let tries = 0;
+  const maxTries = 20;
+  let delay = 500; // * Starting delay in ms, probably it can be better
 
-  while (tries < 20) {
+  while (tries < maxTries) {
     const res = await fetch(queryUrl);
     const json = await res.json();
 
@@ -86,6 +88,7 @@ const conditionalDevServer = async (fileKey: string) => {
           "uploadthing-hook": "callback",
         },
       });
+
       if (isValidResponse(response)) {
         console.log("[UT] Successfully simulated callback for file", fileKey);
       } else {
@@ -94,13 +97,19 @@ const conditionalDevServer = async (fileKey: string) => {
           fileKey
         );
       }
+
       return file;
     }
 
     tries++;
 
-    // TODO: Exponential backoff
-    await new Promise((r) => setTimeout(r, 1000));
+    // Exponential backoff
+    delay = delay * 2;
+
+    console.log(
+      `[UT] Retry attempt ${tries}, waiting for ${delay}ms before next attempt`
+    );
+    await new Promise((r) => setTimeout(r, delay));
   }
 
   console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
