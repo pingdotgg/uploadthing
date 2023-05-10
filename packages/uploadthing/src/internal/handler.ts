@@ -52,24 +52,27 @@ const isValidResponse = (response: Response) => {
 const withExponentialBackoff = async <T>(
     doTheThing: () => Promise<T | null>,
     MAXIMUM_BACKOFF_MS = 64 * 1000,
-): Promise<T> => {
+    MAX_RETRIES = 20,
+): Promise<T | null> => {
   let tries = 0;
   let backoffMs = 500;
   let backoffFuzzMs = 0;
 
   let result = null;
-  while (true) {
+  while (tries <= MAX_RETRIES) {
     result = await doTheThing();
-    if (result != null) return result;
+    if (result !== null) return result;
 
     tries += 1;
     backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
     backoffFuzzMs = Math.floor(Math.random() * 500);
 
-    console.error(`Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(backoffMs / 1000)} seconds...`)
+    console.error(`[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(backoffMs / 1000)} seconds...`)
 
     await new Promise(r => setTimeout(r, backoffMs + backoffFuzzMs));
   }
+
+  return null;
 }
 
 const conditionalDevServer = async (fileKey: string) => {
@@ -77,7 +80,7 @@ const conditionalDevServer = async (fileKey: string) => {
 
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
-  withExponentialBackoff(async () => {
+  const file = withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
     const json = await res.json();
 
@@ -118,6 +121,13 @@ const conditionalDevServer = async (fileKey: string) => {
     }
     return file;
   });
+
+  if (file === null) {
+    console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
+    throw new Error("File took too long to upload");
+  }
+
+  return file;
 };
 
 const GET_DEFAULT_URL = () => {
