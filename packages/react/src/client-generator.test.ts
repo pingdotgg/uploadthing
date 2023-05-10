@@ -1,4 +1,4 @@
-import { createFilething } from "uploadthing/server";
+import { createUploadthing } from "uploadthing/server";
 import { it } from "vitest";
 
 import { generateReactHelpers } from "./useUploadThing";
@@ -13,7 +13,7 @@ const badReqMock = {
 } as unknown as Request;
 
 it("typeerrors for invalid input", async () => {
-  const f = createFilething();
+  const f = createUploadthing();
 
   const exampleRoute = f
     .middleware(() => ({ foo: "bar" }))

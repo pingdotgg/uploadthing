@@ -33,8 +33,8 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 
 ```ts copy
 /** server/uploadthing.ts */
-import { createFilething, type FileRouter } from "uploadthing/next-legacy";
-const f = createFilething();
+import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+const f = createUploadthing();
 
 const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: "fakeId" }); // Fake auth function
 

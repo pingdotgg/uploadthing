@@ -1,6 +1,6 @@
-import { createFilething, type FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from "uploadthing/next";
 
-const f = createFilething();
+const f = createUploadthing();
 
 export const uploadRouter = {
   withMdwr: f

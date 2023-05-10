@@ -16,8 +16,8 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 
 ```ts copy
 /** app/api/uploadthing/core.ts */
-import { createFilething, type FileRouter } from "uploadthing/next";
-const f = createFilething();
+import { createUploadthing, type FileRouter } from "uploadthing/next";
+const f = createUploadthing();
 
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 

@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth";
-import { createFilething, type FileRouter } from "uploadthing/next-legacy";
+import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 import { options } from "~/pages/api/auth/[...nextauth]";
 
-const f = createFilething();
+const f = createUploadthing();
 
 export const uploadRouter = {
   withMdwr: f
