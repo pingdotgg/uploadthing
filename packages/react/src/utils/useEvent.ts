@@ -1,3 +1,4 @@
+// Ripped from https://github.com/scottrippey/react-use-event-hook
 import React from "react";
 
 type AnyFunction = (...args: any[]) => any;
