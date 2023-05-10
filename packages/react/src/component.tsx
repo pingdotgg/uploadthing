@@ -43,11 +43,13 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           {isUploading ? <Spinner /> : `Choose File`}
         </span>
       </label>
-      {fileTypes && (
-        <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-          {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
-        </p>
-      )}
+      <div className="ut-h-[1.25rem]">
+        {fileTypes && (
+          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -135,11 +137,13 @@ export const UploadDropzone = <
           </label>
           <p className="ut-pl-1">{`or drag and drop`}</p>
         </div>
-        {fileTypes && (
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
-          </p>
-        )}
+        <div className="ut-h-[1.25rem]">
+          {fileTypes && (
+            <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+              {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+            </p>
+          )}
+        </div>
         {files.length > 0 && (
           <div className="ut-mt-4 ut-flex ut-items-center ut-justify-center">
             <button
