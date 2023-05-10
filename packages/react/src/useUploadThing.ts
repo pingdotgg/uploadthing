@@ -2,9 +2,22 @@ import { useCallback, useState } from "react";
 import type { FileRouter } from "uploadthing/server";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 
-import { useEvent } from "./useEvent";
+import { useEvent } from "./utils/useEvent";
+import useFetch from "./utils/useFetch";
 
-// TODO: Handle file size and allowed types somehow. Probably through fetching from endpoint?
+type EndpointMetadata = {
+  slug: string;
+  maxSize: string;
+  fileTypes: string[];
+}[];
+const useEndpointMetadata = (endpoint: string) => {
+  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+
+  // TODO: Log on errors in dev
+
+  return data?.find((x) => x.slug === endpoint);
+};
+
 export const useUploadThing = <T extends string>({
   endpoint,
   onClientUploadComplete,
@@ -13,6 +26,9 @@ export const useUploadThing = <T extends string>({
   onClientUploadComplete?: () => void;
 }) => {
   const [isUploading, setUploading] = useState(false);
+
+  const permittedFileInfo = useEndpointMetadata(endpoint);
+  console.log("permitted file info", permittedFileInfo);
 
   const startUpload = useEvent(async (files: File[]) => {
     setUploading(true);
@@ -24,6 +40,7 @@ export const useUploadThing = <T extends string>({
   return {
     startUpload,
     isUploading,
+    permittedFileInfo,
   } as const;
 };
 
