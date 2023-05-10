@@ -1,3 +1,4 @@
+// Ripped from https://usehooks-ts.com/react-hook/use-fetch
 import { useEffect, useReducer, useRef } from "react";
 
 interface State<T> {
