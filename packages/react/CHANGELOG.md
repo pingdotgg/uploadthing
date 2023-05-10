@@ -1,5 +1,16 @@
 # @uploadthing/react
 
+## 3.0.0
+
+### Major Changes
+
+- [#1](https://github.com/pingdotgg/uploadthing/pull/1) [`6352f40`](https://github.com/pingdotgg/uploadthing/commit/6352f4057fc5a37a25d3561dcef06e0ba14b4af4) Thanks [@t3dotgg](https://github.com/t3dotgg)! - Overhaul packages, introduce UploadButton component
+
+### Patch Changes
+
+- Updated dependencies [[`6352f40`](https://github.com/pingdotgg/uploadthing/commit/6352f4057fc5a37a25d3561dcef06e0ba14b4af4), [`2479873`](https://github.com/pingdotgg/uploadthing/commit/247987335a5c0ec4d43568f31897377e3656fce2)]:
+  - uploadthing@3.0.0
+
 ## 2.0.5
 
 ### Patch Changes
