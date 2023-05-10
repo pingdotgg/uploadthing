@@ -16,3 +16,6 @@ This repository contains the packages, docs and examples for uploadthing
 [Docs](https://docs.uploadthing.com)
 
 [Roadmap](https://t3-tools.notion.site/776334c06d814dd08d450975bb983085?v=a04ee69d18a047859717b279df504a6b)
+
+
+[Report an Issue](https://github.com/pingdotgg/uploadthing/issues/new)
