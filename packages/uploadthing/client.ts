@@ -23,8 +23,6 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
       }),
     }
   ).then((res) => res.json());
-  console.log("we got s3 things made I think", s3ConnectionRes);
-
   if (!s3ConnectionRes) throw "no url received";
 
   const fileUploadPromises = s3ConnectionRes.map(async (presigned: any) => {
