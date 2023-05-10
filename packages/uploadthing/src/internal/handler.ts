@@ -49,62 +49,75 @@ const isValidResponse = (response: Response) => {
   return true;
 };
 
+const withExponentialBackoff = async <T>(
+    doTheThing: () => Promise<T | null>,
+    MAXIMUM_BACKOFF_MS = 64 * 1000,
+): Promise<T> => {
+  let tries = 0;
+  let backoffMs = 500;
+  let backoffFuzzMs = 0;
+
+  let result = null;
+  while (true) {
+    result = await doTheThing();
+    if (result != null) return result;
+
+    tries += 1;
+    backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
+    backoffFuzzMs = Math.floor(Math.random() * 500);
+
+    console.error(`Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(backoffMs / 1000)} seconds...`)
+
+    await new Promise(r => setTimeout(r, backoffMs + backoffFuzzMs));
+  }
+}
+
 const conditionalDevServer = async (fileKey: string) => {
   if (process.env.NODE_ENV !== "development") return;
 
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
-  let tries = 0;
-
-  while (tries < 20) {
+  withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
     const json = await res.json();
 
     const file = json.fileData;
 
-    if (json.status === "done") {
-      let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-      if (!callbackUrl.startsWith("http"))
-        callbackUrl = "http://" + callbackUrl;
+    if (json.status !== "done") return null;
 
-      console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+    let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
+    if (!callbackUrl.startsWith("http"))
+      callbackUrl = "http://" + callbackUrl;
 
-      // TODO: Check that we "actually hit our endpoint" and throw a loud error if we didn't
-      const response = await fetch(callbackUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}"),
-          file: {
-            url: `https://uploadthing.com/f/${encodeURIComponent(
-              fileKey ?? ""
-            )}`,
-            name: file.fileName,
-          },
-        }),
-        headers: {
-          "uploadthing-hook": "callback",
+    console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+
+    // TODO: Check that we "actually hit our endpoint" and throw a loud error if we didn't
+    const response = await fetch(callbackUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        status: "uploaded",
+        metadata: JSON.parse(file.metadata ?? "{}"),
+        file: {
+          url: `https://uploadthing.com/f/${encodeURIComponent(
+            fileKey ?? ""
+          )}`,
+          name: file.fileName,
         },
-      });
-      if (isValidResponse(response)) {
-        console.log("[UT] Successfully simulated callback for file", fileKey);
-      } else {
-        console.error(
-          "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-          fileKey
-        );
-      }
-      return file;
+      }),
+      headers: {
+        "uploadthing-hook": "callback",
+      },
+    });
+    if (isValidResponse(response)) {
+      console.log("[UT] Successfully simulated callback for file", fileKey);
+    } else {
+      console.error(
+        "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
+        fileKey
+      );
     }
-
-    tries++;
-
-    // TODO: Exponential backoff
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-
-  console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
-  throw new Error("File took too long to upload");
+    return file;
+  });
 };
 
 const GET_DEFAULT_URL = () => {
