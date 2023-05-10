@@ -56,12 +56,11 @@ it("uses defaults for not-chained", async () => {
   expectTypeOf(metadata).toMatchTypeOf<{}>();
 });
 
-it("passes `res` for /pages", async () => {
-  const f = createBuilder<"pages">();
+it("passes `Request` by default", async () => {
+  const f = createBuilder();
 
-  f.middleware(async (req, res) => {
-    expectTypeOf(req).toMatchTypeOf<NextApiRequest>();
-    expectTypeOf(res).toMatchTypeOf<NextApiResponse>();
+  f.middleware(async (req) => {
+    expectTypeOf(req).toMatchTypeOf<Request>();
 
     return {};
   });
@@ -73,6 +72,17 @@ it("passes `NextRequest` for /app", async () => {
   f.middleware(async (req) => {
     expectTypeOf(req).toMatchTypeOf<NextRequest>();
     return { nextUrl: req.nextUrl };
+  });
+});
+
+it("passes `res` for /pages", async () => {
+  const f = createBuilder<"pages">();
+
+  f.middleware(async (req, res) => {
+    expectTypeOf(req).toMatchTypeOf<NextApiRequest>();
+    expectTypeOf(res).toMatchTypeOf<NextApiResponse>();
+
+    return {};
   });
 });
 
