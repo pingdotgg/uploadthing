@@ -18,25 +18,37 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
 }) {
-  const { startUpload, isUploading } = useUploadThing<string>({
-    endpoint: props.endpoint as string,
-    onClientUploadComplete: props.onClientUploadComplete,
-  });
+  const { startUpload, isUploading, permittedFileInfo } =
+    useUploadThing<string>({
+      endpoint: props.endpoint as string,
+      onClientUploadComplete: props.onClientUploadComplete,
+    });
 
-  //TODO: Get file restrictions from server
+  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+
   return (
-    <label className="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center">
-      <input
-        className="ut-hidden"
-        type="file"
-        onChange={(e) => {
-          e.target.files && startUpload(Array.from(e.target.files));
-        }}
-      />
-      <span className="ut-px-3 ut-py-2 ut-text-white">
-        {isUploading ? <Spinner /> : `Choose File`}
-      </span>
-    </label>
+    <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
+      <label className="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center">
+        <input
+          className="ut-hidden"
+          type="file"
+          accept={
+            fileTypes ? generateMimeTypes(fileTypes).join(",") : undefined
+          }
+          onChange={(e) => {
+            e.target.files && startUpload(Array.from(e.target.files));
+          }}
+        />
+        <span className="ut-px-3 ut-py-2 ut-text-white">
+          {isUploading ? <Spinner /> : `Choose File`}
+        </span>
+      </label>
+      {fileTypes && (
+        <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -60,27 +72,37 @@ const classNames = (...classes: string[]) => {
   return classes.filter(Boolean).join(" ");
 };
 
+const generateMimeTypes = (fileTypes: string[]) => {
+  return fileTypes.map((type) => `${type}/*`);
+};
+
+const generateReactDropzoneAccept = (fileTypes: string[]) => {
+  const mimeTypes = generateMimeTypes(fileTypes);
+  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
+};
+
 export const UploadDropzone = <
   TRouter extends void | FileRouter = void
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
 }) => {
-  const { startUpload, isUploading } = useUploadThing<string>({
-    endpoint: props.endpoint as string,
-    onClientUploadComplete: props.onClientUploadComplete,
-  });
+  const { startUpload, isUploading, permittedFileInfo } =
+    useUploadThing<string>({
+      endpoint: props.endpoint as string,
+      onClientUploadComplete: props.onClientUploadComplete,
+    });
 
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     setFiles(acceptedFiles);
   }, []);
 
-  //TODO: Get file restrictions from server
-  const restrictions = null;
+  const { maxSize, fileTypes } = permittedFileInfo ?? {};
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    accept: fileTypes ? generateReactDropzoneAccept(fileTypes) : undefined,
   });
 
   return (
@@ -113,9 +135,9 @@ export const UploadDropzone = <
           </label>
           <p className="ut-pl-1">{`or drag and drop`}</p>
         </div>
-        {restrictions && (
+        {fileTypes && (
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`PNG, JPG, GIF up to 10MB`}
+            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
           </p>
         )}
         {files.length > 0 && (
