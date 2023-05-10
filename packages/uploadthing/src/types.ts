@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
 
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {
@@ -11,7 +12,7 @@ type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 export type MaybePromise<TType> = TType | Promise<TType>;
 
 // Package
-export type AnyRuntime = "app" | "pages";
+export type AnyRuntime = "app" | "pages" | "web";
 export interface AnyParams {
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _runtime: any;
@@ -39,7 +40,10 @@ type ResolverOptions<TParams extends AnyParams> = {
 export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> = (
   req: Request
 ) => MaybePromise<TOutput>;
-export type ReqResMiddlewareFn<TOutput extends Record<string, unknown>> = (
+export type NextReqMiddlewareFn<TOutput extends Record<string, unknown>> = (
+  req: NextRequest
+) => MaybePromise<TOutput>;
+export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> = (
   req: NextApiRequest,
   res: NextApiResponse
 ) => MaybePromise<TOutput>;
@@ -47,9 +51,11 @@ export type ReqResMiddlewareFn<TOutput extends Record<string, unknown>> = (
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
   TRuntime extends string
-> = TRuntime extends "app"
+> = TRuntime extends "web"
   ? ReqMiddlewareFn<TOutput>
-  : ReqResMiddlewareFn<TOutput>;
+  : TRuntime extends "app"
+  ? NextReqMiddlewareFn<TOutput>
+  : NextApiMiddlewareFn<TOutput>;
 
 type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>

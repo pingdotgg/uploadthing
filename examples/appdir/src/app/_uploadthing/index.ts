@@ -1,4 +1,4 @@
-import { createFilething, type FileRouter } from "uploadthing/server";
+import { createFilething, type FileRouter } from "uploadthing/next";
 
 const f = createFilething();
 

@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
+/* eslint-disable @typescript-eslint/ban-types */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { genUploader } from "../client";
 import type { FileRouter } from "./types";
 import { createBuilder } from "./upload-builder";
 import { expect, it, expectTypeOf } from "vitest";
+import { NextRequest } from "next/server";
 
 const badReqMock = {
   headers: {
@@ -12,6 +15,15 @@ const badReqMock = {
     },
   },
 } as unknown as Request;
+
+const badNextReqMock = {
+  headers: {
+    get(key: string) {
+      if (key === "header1") return "woohoo";
+      return null;
+    },
+  },
+} as unknown as NextRequest;
 
 it("typeerrors for invalid input", async () => {
   const f = createBuilder();
@@ -61,6 +73,15 @@ it("passes `res` for /pages", async () => {
     expectTypeOf(res).toMatchTypeOf<NextApiResponse>();
 
     return {};
+  });
+});
+
+it("passes `NextRequest` for /app", async () => {
+  const f = createBuilder<"app">();
+
+  f.middleware(async (req) => {
+    expectTypeOf(req).toMatchTypeOf<NextRequest>();
+    return { nextUrl: req.nextUrl };
   });
 });
 

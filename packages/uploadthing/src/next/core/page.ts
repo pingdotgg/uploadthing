@@ -2,6 +2,7 @@ import { RouterWithConfig, buildRequestHandler } from "../../internal/handler";
 import type { FileRouter } from "../../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const UPLOADTHING_VERSION = require("../../../package.json").version;
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
