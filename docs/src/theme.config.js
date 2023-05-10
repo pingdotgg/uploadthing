@@ -100,7 +100,7 @@ export const Logo = () => {
  */
 const config = {
   chat: {
-    link: "https://t3.gg/discord",
+    link: "https://discord.gg/UCXkw6xj2K",
   },
   darkMode: false,
   editLink: {
