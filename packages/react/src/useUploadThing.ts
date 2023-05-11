@@ -8,6 +8,7 @@ import useFetch from "./utils/useFetch";
 type EndpointMetadata = {
   slug: string;
   maxSize: string;
+  maxFiles?: number;
   fileTypes: string[];
 }[];
 const useEndpointMetadata = (endpoint: string) => {

@@ -24,7 +24,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       onClientUploadComplete: props.onClientUploadComplete,
     });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { maxSize, fileTypes, maxFiles } = permittedFileInfo ?? {};
 
   return (
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
@@ -36,7 +36,10 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
             fileTypes ? generateMimeTypes(fileTypes).join(",") : undefined
           }
           onChange={(e) => {
-            e.target.files && startUpload(Array.from(e.target.files));
+            if (e.target.files) {
+              const asArray = Array.from(e.target.files);
+              startUpload(maxFiles ? asArray.slice(0, maxFiles) : asArray);
+            }
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
@@ -46,7 +49,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}{" "}
+            {maxFiles && `${maxSize ? "& " : ""}up to ${maxFiles} files`}
           </p>
         )}
       </div>
@@ -100,11 +104,12 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
   }, []);
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { maxSize, fileTypes, maxFiles } = permittedFileInfo ?? {};
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: fileTypes ? generateReactDropzoneAccept(fileTypes) : undefined,
+    maxFiles,
   });
 
   return (
@@ -140,7 +145,8 @@ export const UploadDropzone = <
         <div className="ut-h-[1.25rem]">
           {fileTypes && (
             <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-              {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+              {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}{" "}
+              {maxFiles && `${maxSize ? "& " : ""}up to ${maxFiles} files`}
             </p>
           )}
         </div>

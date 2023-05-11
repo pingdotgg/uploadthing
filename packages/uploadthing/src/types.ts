@@ -72,12 +72,15 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _runtime: TParams["_runtime"];
   }>;
 
+  maxFiles: (max: number) => UploadBuilder<TParams>;
+
   onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
 }
 
 export type UploadBuilderDef<TRuntime extends AnyRuntime> = {
   fileTypes: AllowedFiles[];
   maxSize: FileSize;
+  maxFiles?: number;
   middleware: MiddlewareFn<{}, TRuntime>;
 };
 

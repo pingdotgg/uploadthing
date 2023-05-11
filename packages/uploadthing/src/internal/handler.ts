@@ -50,9 +50,9 @@ const isValidResponse = (response: Response) => {
 };
 
 const withExponentialBackoff = async <T>(
-    doTheThing: () => Promise<T | null>,
-    MAXIMUM_BACKOFF_MS = 64 * 1000,
-    MAX_RETRIES = 20,
+  doTheThing: () => Promise<T | null>,
+  MAXIMUM_BACKOFF_MS = 64 * 1000,
+  MAX_RETRIES = 20
 ): Promise<T | null> => {
   let tries = 0;
   let backoffMs = 500;
@@ -67,13 +67,17 @@ const withExponentialBackoff = async <T>(
     backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
     backoffFuzzMs = Math.floor(Math.random() * 500);
 
-    console.error(`[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(backoffMs / 1000)} seconds...`)
+    console.error(
+      `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
+        backoffMs / 1000
+      )} seconds...`
+    );
 
-    await new Promise(r => setTimeout(r, backoffMs + backoffFuzzMs));
+    await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
   }
 
   return null;
-}
+};
 
 const conditionalDevServer = async (fileKey: string) => {
   if (process.env.NODE_ENV !== "development") return;
@@ -89,8 +93,7 @@ const conditionalDevServer = async (fileKey: string) => {
     if (json.status !== "done") return null;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-    if (!callbackUrl.startsWith("http"))
-      callbackUrl = "http://" + callbackUrl;
+    if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
 
     console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
@@ -101,9 +104,7 @@ const conditionalDevServer = async (fileKey: string) => {
         status: "uploaded",
         metadata: JSON.parse(file.metadata ?? "{}"),
         file: {
-          url: `https://uploadthing.com/f/${encodeURIComponent(
-            fileKey ?? ""
-          )}`,
+          url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
           name: file.fileName,
         },
       }),
@@ -207,7 +208,9 @@ export const buildRequestHandler = <
         {
           method: "POST",
           body: JSON.stringify({
-            files: files,
+            files: uploadable._def.maxFiles
+              ? files.slice(0, uploadable._def.maxFiles)
+              : files,
             fileTypes: uploadable._def.fileTypes,
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
@@ -268,6 +271,7 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
       return {
         slug: k as keyof TRouter,
         maxSize: route._def.maxSize,
+        maxFiles: route._def.maxFiles,
         fileTypes: route._def.fileTypes,
       };
     });
