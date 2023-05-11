@@ -175,7 +175,7 @@ export const buildRequestHandler = <
 
     if (uploadthingHook && uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
-      uploadable.resolver({
+      await uploadable.resolver({
         file: reqBody.file,
         metadata: reqBody.metadata,
       });
