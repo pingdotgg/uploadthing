@@ -11,7 +11,6 @@ type Cache<T> = { [url: string]: T };
 export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
   const cache: Cache<any> = {};
   const [res] = createResource(async () => {
-    global;
     if (!url)
       return {
         type: "error",
