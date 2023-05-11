@@ -1,24 +1,5 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started With `/pages`
-
-<Callout type="warning">
-  If you're using the `/pages` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG:
-
-```ts
-// next.config.js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  experimental: {
-    esmExternals: false, // THIS IS THE FLAG THAT MATTERS
-  },
-};
-
-module.exports = nextConfig;
-```
-
-</Callout>
-
 ## Set Up A FileRouter
 
 <Steps>
@@ -32,11 +13,11 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 - `onUploadComplete` callback for when uploads are completed
 
 ```ts copy
-/** server/uploadthing.ts */
-import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+/** src/api/uploadthing/core.ts */
+import { createUploadthing, type FileRouter } from "uploadthing";
 const f = createUploadthing();
 
-const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: "fakeId" }); // Fake auth function
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -45,9 +26,9 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .fileTypes(["image", "video"])
     .maxSize("1GB")
-    .middleware(async (req, res) => {
+    .middleware(async (req) => {
       // This code runs on your server before upload
-      const user = await auth(req, res);
+      const user = await auth(req);
 
       // If you throw, the user will not be able to upload
       if (!user) throw new Error("Unauthorized");
@@ -70,42 +51,46 @@ export type OurFileRouter = typeof ourFileRouter;
 
 <Callout type="warning">
   Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
-  from `pages/api/uploadthing` on your application.
+  from `/api/uploadthing` on your application.
 </Callout>
 
 ```ts copy
-/** pages/api/uploadthing.ts */
-import { createNextPageApiHandler } from "uploadthing/next-legacy";
-import { ourFileRouter } from "~/server/uploadthing";
+/** src/api/uploadthing/route.ts */
+import { ourFileRouter } from "./core";
+import { createServerHandler } from "uploadthing/server";
 
-const handler = createNextPageApiHandler({
+export const { GET, POST } = createServerHandler({
   router: ourFileRouter,
 });
-
-export default handler;
 ```
 
 ### Use the FileRouter in your app
 
-The `@uploadthing/react` package includes an "UploadButton" component that you can simply drop into your app, and start uploading files immediately.
+The `@uploadthing/solid` package includes an "Uploader" component that you can simply drop into your app, and start uploading files immediately.
 
 ```tsx copy
-import { UploadButton } from "@uploadthing/react";
+// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
+import "@uploadthing/solid/styles.css";
+import { type VoidComponent } from "solid-js";
+import type { OurFileRouter } from "./api/uploadthing/core";
+import { Uploader } from "@uploadthing/solid";
 
-import type { OurFileRouter } from "~/server/uploadthing";
-
-export default function Home() {
+const Home: VoidComponent = () => {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UploadButton<OurFileRouter>
+    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+      <Uploader<OurFileRouter>
         endpoint="imageUploader"
+        // needed when server side rendering
+        url="http://localhost:3000"
         onClientUploadComplete={() => {
           alert("Upload Completed");
         }}
       />
     </main>
   );
-}
+};
+
+export default Home;
 ```
 
 </Steps>

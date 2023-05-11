@@ -78,3 +78,16 @@ export const genUploader = <
 > => {
   return DANGEROUS__uploadFiles;
 };
+
+export const classNames = (...classes: string[]) => {
+  return classes.filter(Boolean).join(" ");
+};
+
+export const generateMimeTypes = (fileTypes: string[]) => {
+  return fileTypes.map((type) => `${type}/*`);
+};
+
+export const generateClientDropzoneAccept = (fileTypes: string[]) => {
+  const mimeTypes = generateMimeTypes(fileTypes);
+  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
+};

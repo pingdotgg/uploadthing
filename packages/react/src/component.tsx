@@ -2,6 +2,11 @@ import type { FileRouter } from "uploadthing/server";
 import { FullFile, useUploadThing } from "./useUploadThing";
 import { useCallback, useState } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
+import {
+  classNames,
+  generateClientDropzoneAccept,
+  generateMimeTypes,
+} from "uploadthing/client";
 
 type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
   ? "YOU FORGOT TO PASS THE GENERIC"
@@ -70,19 +75,6 @@ const Spinner = () => {
   );
 };
 
-const classNames = (...classes: string[]) => {
-  return classes.filter(Boolean).join(" ");
-};
-
-const generateMimeTypes = (fileTypes: string[]) => {
-  return fileTypes.map((type) => `${type}/*`);
-};
-
-const generateReactDropzoneAccept = (fileTypes: string[]) => {
-  const mimeTypes = generateMimeTypes(fileTypes);
-  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
-};
-
 export const UploadDropzone = <
   TRouter extends void | FileRouter = void
 >(props: {
@@ -104,7 +96,7 @@ export const UploadDropzone = <
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: fileTypes ? generateReactDropzoneAccept(fileTypes) : undefined,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
   });
 
   return (
@@ -167,5 +159,28 @@ export const UploadDropzone = <
         )}
       </div>
     </div>
+  );
+};
+
+export const Uploader = <TRouter extends void | FileRouter = void>(props: {
+  endpoint: EndpointHelper<TRouter>;
+  onClientUploadComplete?: () => void;
+  url?: string;
+}) => {
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span className="text-4xl font-bold text-center">
+          {`Upload a file using a button:`}
+        </span>
+        <UploadButton<TRouter> {...props} />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span className="text-4xl font-bold text-center">
+          {`...or using a dropzone:`}
+        </span>
+        <UploadDropzone<TRouter> {...props} />
+      </div>
+    </>
   );
 };
