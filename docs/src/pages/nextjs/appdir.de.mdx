@@ -38,9 +38,11 @@ export const ourFileRouter = {
       // Was hier zurückgegeben wird, ist bei `onUploadComplete` als `metadata` zugänglich.
       return { userId: user.id };
     })
-    .onUploadComplete(async ({ metadata }) => {
+    .onUploadComplete(async ({ metadata, file }) => {
       // Dieser Code wird nach dem Hochladen AUF DEINEM SERVER ausgeführt.
       console.log("Hochladen abgeschlossen für userId:", metadata.userId);
+      
+      console.log("Datei-URL", file.url);
     }),
 } satisfies FileRouter;
 
