@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 3.0.1
+
+### Patch Changes
+
+- [`e08cfdf`](https://github.com/pingdotgg/uploadthing/commit/e08cfdf0e26797025a7e6baa598b0c11957ce587) Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fixed pages/ permissions, await promises we forgot to await, exponential backoff in dev server
+
+- Updated dependencies [[`e08cfdf`](https://github.com/pingdotgg/uploadthing/commit/e08cfdf0e26797025a7e6baa598b0c11957ce587)]:
+  - uploadthing@3.0.1
+
 ## 3.0.0
 
 ### Major Changes
