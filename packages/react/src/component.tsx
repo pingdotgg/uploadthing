@@ -158,7 +158,7 @@ export const UploadDropzone = <
                 e.preventDefault();
                 e.stopPropagation();
 
-                startUpload(files);
+                startUpload(maxFiles ? files.slice(0, maxFiles) : files);
               }}
             >
               <span className="ut-px-3 ut-py-2 ut-text-white">
