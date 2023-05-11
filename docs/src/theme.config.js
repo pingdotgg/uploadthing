@@ -102,7 +102,7 @@ const config = {
   chat: {
     link: "https://discord.gg/UCXkw6xj2K",
   },
-  darkMode: false,
+  darkMode: true,
   editLink: {
     component: () => null,
   },
@@ -113,7 +113,7 @@ const config = {
   head: Head,
   logo: Logo,
   nextThemes: {
-    forcedTheme: "light",
+    defaultTheme: "system",
   },
   primaryHue: 348,
   useNextSeoProps() {
