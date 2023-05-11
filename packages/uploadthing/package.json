@@ -11,7 +11,7 @@
     "./server": {
       "import": "./dist/server.mjs",
       "types": "./dist/server.d.ts",
-      "node": "./dist/server.mjs"
+      "default": "./dist/server.mjs"
     },
     "./next": {
       "import": "./dist/next.mjs",
