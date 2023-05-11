@@ -1,5 +1,6 @@
 import { useConfig } from "nextra-theme-docs";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 const hackedCss = `
 body {
@@ -85,7 +86,7 @@ const Head = () => {
 export const Logo = () => {
   return (
     <h1 className="flex flex-row items-baseline text-2xl font-bold">
-      <span className="tracking-tight hover:cursor-pointer">
+     <span className="tracking-tight hover:cursor-pointer">
         {`upload`}
         <span className="text-red-600">{`thing`}</span>
         <span className="ml-1 font-semibold">docs</span>
@@ -93,6 +94,30 @@ export const Logo = () => {
     </h1>
   );
 };
+
+// this codeblock is a temporary hacky solution until the nextra team replies to my issue regarding Search i18n, see https://github.com/shuding/nextra/pull/721
+const SearchPlaceholderLocalisation = {en: "Search documentation...", de: "Suchen..."}
+const TocTitleLocalisation = {en: "On This Page", de: "Auf dieser Seite"}
+export function Localisation({param}) {
+  const [locale, setLocale] = useState("en");
+
+  useEffect(() => {
+    if (window.location.pathname.includes("/de/") || window.location.pathname === "/de") setLocale("de");
+  }, [])
+
+  useEffect(() => {
+    const searchInputs = document.querySelectorAll('input[type=search]');
+    searchInputs.forEach((element) => element.setAttribute("placeholder", SearchPlaceholderLocalisation[locale]));
+  }, [locale])
+
+  return (
+    <>
+      {param[locale]}
+    </>
+  );
+};
+
+
 
 /* eslint sort-keys: error */
 /**
@@ -116,6 +141,11 @@ const config = {
     forcedTheme: "light",
   },
   primaryHue: 348,
+  i18n: [
+    { locale: 'en', text: 'English' },
+    { locale: 'de', text: 'Deutsch' },
+  ],
+  toc: {title: <Localisation param={TocTitleLocalisation} />},
   useNextSeoProps() {
     return {
       additionalLinkTags: [

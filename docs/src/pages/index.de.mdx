@@ -1,0 +1,32 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Erste Schritte
+
+Diese Dokumentation geht davon aus, dass du Next.js verwendest - Dokumentationen für andere Frameworks folgen
+bald!
+
+## Einrichtung
+
+<Steps>
+
+### Package installieren:
+
+```bash copy
+npm install uploadthing @uploadthing/react react-dropzone
+```
+
+### Umgebungsvariablen hinzufügen
+
+```bash copy
+UPLOADTHING_SECRET=... # Ein Secret Key für deine App (beginnt mit sk_live_)
+```
+
+<Callout type="warning">
+  Wenn du noch keinen Uploadthing-Secret-Key hast, [melde dich an](/create-account) und erstelle einen
+  im [Dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+</Steps>
+
+## Einrichtung in deiner Next.js-App
+
+Mit dem [App Router](/nextjs/appdir) oder [Pages Router (standard)](/nextjs/pagedir) fortfahren.

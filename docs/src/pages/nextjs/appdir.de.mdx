@@ -1,0 +1,95 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Erste Schritte mit `/app`
+
+## Einen FileRouter einrichten
+
+<Steps>
+### Erstellung deines ersten FileRouters
+
+Alle auf uploadthing hochgeladenen Dateien sind mit einem FileRoute verbunden. Eine FileRoute ist ähnlich wie ein Endpoint, es hat:
+
+- Erlaubte types ["image", "video", etc]
+- Maximale Dateigröße
+- (Optional) `middleware` zur Authentifizierung und Kennzeichnung von Requests
+- `onUploadComplete` Callback wenn das Hochladen abgeschlossen ist
+
+```ts copy
+/** app/api/uploadthing/core.ts */
+import { createUploadthing, type FileRouter } from "uploadthing/next";
+const f = createUploadthing();
+
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake Auth-Funktion
+
+// FileRouter für deine App, kann mehrere FileRoutes enthalten
+export const ourFileRouter = {
+  // Definiere so viele FileRoutes wie du möchtest, jede mit einem eindeutigen routeSlug
+  imageUploader: f
+    // Berechtigungen und Dateitypen für diese FileRoute festlegen
+    .fileTypes(["image", "video"])
+    .maxSize("1GB")
+    .middleware(async (req) => {
+      // Dieser Code wird vor dem Hochladen auf deinem Server ausgeführt
+      const user = await auth(req);
+
+      // In diesem Fall kann der Benutzer nichts hochladen
+      if (!user) throw new Error("Unauthorized");
+
+      // Was hier zurückgegeben wird, ist bei `onUploadComplete` als `metadata` zugänglich.
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata }) => {
+      // Dieser Code wird nach dem Hochladen AUF DEINEM SERVER ausgeführt.
+      console.log("Hochladen abgeschlossen für userId:", metadata.userId);
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof ourFileRouter;
+```
+
+### Erstellung einer Next.js API-Route mit dem FileRouter
+
+<Callout type="warning">
+  Hinweis: Dies ist die EINZIGE DATEI, bei der der Pfad eine Rolle spielt. Du musst diese API
+  von `/api/uploadthing` in deiner App bedienen.
+</Callout>
+
+```ts copy
+/** app/api/uploadthing/route.ts */
+import { ourFileRouter } from "./core";
+import { createNextRouteHandler } from "uploadthing/next";
+
+// Export-Routes für den Next App Router
+export const { GET, POST } = createNextRouteHandler({
+  router: ourFileRouter,
+});
+```
+
+### Verwende den FileRouter in deiner Anwendung
+
+Die `@uploadthing/react`-Package enthält einen "UploadButton"-Component, den du einfach in deiner App einfügen kannst, um sofort mit dem Hochladen von Dateien zu beginnen.
+
+```ts copy
+"use client";
+
+// Du musst unsere Styles importieren, damit der Button richtig aussieht. Am besten im root /layout.tsx importieren, aber hier ist das auch in Ordnung
+import "@uploadthing/react/styles.css";
+
+import { UploadButton } from "@uploadthing/react";
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export default function Home() {
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <UploadButton<OurFileRouter>
+        endpoint="imageUploader"
+        onClientUploadComplete={() => {
+          alert("Hochladen abgeschlossen");
+        }}
+      />
+    </main>
+  );
+}
+```
+
+</Steps>
