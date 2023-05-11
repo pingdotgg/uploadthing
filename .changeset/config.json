@@ -9,5 +9,10 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@example/appdir", "@example/pagedir", "docs"]
+  "ignore": [
+    "@example/appdir",
+    "@example/pagedir",
+    "@example/solidstart",
+    "docs"
+  ]
 }
