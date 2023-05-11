@@ -21,9 +21,11 @@ const useEndpointMetadata = (endpoint: string) => {
 export const useUploadThing = <T extends string>({
   endpoint,
   onClientUploadComplete,
+  onUploadError,
 }: {
   endpoint: T;
   onClientUploadComplete?: () => void;
+  onUploadError?: (e: Error) => void;
 }) => {
   const [isUploading, setUploading] = useState(false);
 
@@ -31,10 +33,16 @@ export const useUploadThing = <T extends string>({
 
   const startUpload = useEvent(async (files: File[]) => {
     setUploading(true);
-    const resp = await DANGEROUS__uploadFiles(files, endpoint);
-    setUploading(false);
-    onClientUploadComplete?.();
-    return resp;
+    try {
+      const resp = await DANGEROUS__uploadFiles(files, endpoint);
+      setUploading(false);
+      onClientUploadComplete?.();
+      return resp;
+    } catch (e) {
+      setUploading(false);
+      onUploadError?.(e as Error);
+      return;
+    }
   });
   return {
     startUpload,
