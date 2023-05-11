@@ -11,6 +11,7 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 
 - Permitted types ["image", "video", etc]
 - Max file size
+- Max number of files
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
 
@@ -28,6 +29,7 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .fileTypes(["image", "video"])
     .maxSize("1GB")
+    .maxFiles(10) // only allow maximum of 10 files to be passed in a single request
     .middleware(async (req) => {
       // This code runs on your server before upload
       const user = await auth(req);
