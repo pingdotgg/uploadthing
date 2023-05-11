@@ -10,7 +10,8 @@
     },
     "./server": {
       "import": "./dist/server.mjs",
-      "types": "./dist/server.d.ts"
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.mjs"
     },
     "./next": {
       "import": "./dist/next.mjs",
