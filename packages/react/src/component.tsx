@@ -17,6 +17,7 @@ type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
+  multiple?: boolean;
 }) {
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
@@ -32,9 +33,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         <input
           className="ut-hidden"
           type="file"
-          accept={
-            fileTypes ? generateMimeTypes(fileTypes).join(",") : undefined
-          }
+          multiple={props.multiple ?? true}
+          accept={generateMimeTypes(fileTypes ?? []).join(", ")}
           onChange={(e) => {
             e.target.files && startUpload(Array.from(e.target.files));
           }}
