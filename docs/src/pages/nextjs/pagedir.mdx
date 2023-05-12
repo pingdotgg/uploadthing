@@ -1,9 +1,9 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started With `/pages`
+# Getting Started With `pages/`
 
 <Callout type="warning">
-  If you're using the `/pages` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG:
+  If you're using the `pages/` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG:
 
 ```ts
 // next.config.js
@@ -93,6 +93,9 @@ The `@uploadthing/react` package includes an "UploadButton" component that you c
 import { UploadButton } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing";
+  
+// You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
+import "@uploadthing/react/styles.css";
 
 export default function Home() {
   return (
@@ -101,6 +104,10 @@ export default function Home() {
         endpoint="imageUploader"
         onClientUploadComplete={() => {
           alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
         }}
       />
     </main>
