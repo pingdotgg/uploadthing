@@ -72,7 +72,13 @@ const withExponentialBackoff = async <T>(
         backoffMs / 1000
       )} seconds...`
     );
-
+    if (tries > 3) {
+      console.error(
+        `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
+          backoffMs / 1000
+        )} seconds...`
+      );
+    }
     await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
   }
 
@@ -270,7 +276,7 @@ export const buildRequestHandler = <
       console.error("[UT] middleware failed to run");
       console.error(e);
 
-      return { status: 400 };
+      return { status: 400, message: (e as Error).message };
     }
   };
 };

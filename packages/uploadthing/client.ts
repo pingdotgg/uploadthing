@@ -22,15 +22,28 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
         files: files.map((f) => f.name),
       }),
     }
-  ).then((res) => res.json());
-  if (!s3ConnectionRes) throw "no url received";
+  ).then((res) => {
+    // check for 200 response
+    if (!res.ok) throw new Error("Failed to get presigned URLs");
+
+    // attempt to parse response
+    try {
+      return res.json();
+    } catch (e) {
+      // response is not JSON
+      console.error(e);
+      throw new Error(`Failed to parse response as JSON. Got: ${res.body}`);
+    }
+  });
+
+  if (!s3ConnectionRes) throw "No url received. How did you get here?";
 
   const fileUploadPromises = s3ConnectionRes.map(async (presigned: any) => {
     const file = files.find((f) => f.name === presigned.name);
 
     if (!file) {
       console.error("No file found for presigned URL", presigned);
-      throw new Error("file not found");
+      throw new Error("No file found for presigned URL");
     }
     const { url, fields } = presigned.presignedUrl;
     const formData = new FormData();
