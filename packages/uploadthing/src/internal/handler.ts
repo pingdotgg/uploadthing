@@ -67,11 +67,13 @@ const withExponentialBackoff = async <T>(
     backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
     backoffFuzzMs = Math.floor(Math.random() * 500);
 
-    console.error(
-      `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-        backoffMs / 1000
-      )} seconds...`
-    );
+    if (tries > 3) {
+      console.error(
+        `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
+          backoffMs / 1000
+        )} seconds...`
+      );
+    }
 
     await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
   }
