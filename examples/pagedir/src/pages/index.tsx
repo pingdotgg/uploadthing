@@ -1,5 +1,5 @@
 import { Inter } from "next/font/google";
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton, UploadDropzone } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing/router";
 
@@ -8,14 +8,37 @@ const inter = Inter({ subsets: ["latin"] });
 export default function Home() {
   return (
     <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${inter.className}`}
+      className={`flex min-h-screen flex-col items-center justify-center gap-16 p-24 ${inter.className}`}
     >
-      <UploadButton<OurFileRouter>
-        endpoint="withoutMdwr"
-        onClientUploadComplete={() => {
-          alert("Upload Completed");
-        }}
-      />
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span className="text-4xl font-bold text-center">
+          {`Upload a file using a button:`}
+        </span>
+
+        <UploadButton<OurFileRouter>
+          endpoint="withoutMdwr"
+          onClientUploadComplete={() => {
+            alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
+          }}
+        />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span className="text-4xl font-bold text-center">
+          {`...or using a dropzone:`}
+        </span>
+        <UploadDropzone<OurFileRouter>
+          endpoint="withoutMdwr"
+          onClientUploadComplete={() => {
+            alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
+          }}
+        />
+      </div>
     </main>
   );
 }
