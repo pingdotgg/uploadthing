@@ -47,7 +47,7 @@ export const ourFileRouter = {
 export type OurFileRouter = typeof ourFileRouter;
 ```
 
-### Create a Next.js API route using the FileRouter
+### Create an API route using the FileRouter
 
 <Callout type="warning">
   Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
@@ -57,9 +57,9 @@ export type OurFileRouter = typeof ourFileRouter;
 ```ts copy
 /** src/api/uploadthing/route.ts */
 import { ourFileRouter } from "./core";
-import { createServerHandler } from "uploadthing/server";
+import { createNextRouteHandler } from "uploadthing/next";
 
-export const { GET, POST } = createServerHandler({
+export const { GET, POST } = createNextRouteHandler({
   router: ourFileRouter,
 });
 ```
@@ -84,6 +84,10 @@ const Home: VoidComponent = () => {
         url="http://localhost:3000"
         onClientUploadComplete={() => {
           alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
         }}
       />
     </main>

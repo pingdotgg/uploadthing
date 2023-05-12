@@ -13,7 +13,8 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "app">(opts);
 
-  const POST = async (req: Request) => {
+  const POST = async (_req: Request | { request: Request }) => {
+    const req = _req instanceof Request ? _req : _req.request;
     const params = new URL(req.url).searchParams;
     const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
