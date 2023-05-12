@@ -46,7 +46,7 @@ export const ourFileRouter = {
     // Set permissions and file types for this FileRoute
     .fileTypes(["image", "video"])
     .maxSize("1GB")
-    .maxFiles(10) // only allow maximum of 10 files to be passed in a single request
+    .fileCount(2, "max") // only allow maximum of 2 files to be passed in a single request
     .middleware(async (req, res) => {
       // This code runs on your server before upload
       const user = await auth(req, res);

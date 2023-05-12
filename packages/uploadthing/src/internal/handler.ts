@@ -202,20 +202,35 @@ export const buildRequestHandler = <
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
         throw new Error("Need file array");
 
+      if (uploadable._def.minFiles && files.length < uploadable._def.minFiles)
+        throw new Error(`Need at least ${uploadable._def.minFiles} files`);
+
+      if (uploadable._def.maxFiles && files.length > uploadable._def.maxFiles)
+        throw new Error(
+          `Can't have more than ${uploadable._def.maxFiles} files`
+        );
+
+      if (
+        uploadable._def.exactFiles &&
+        files.length !== uploadable._def.exactFiles
+      )
+        throw new Error(`Need exactly ${uploadable._def.exactFiles} files`);
+
       // TODO: Make this a function
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
         {
           method: "POST",
           body: JSON.stringify({
-            files: uploadable._def.maxFiles
-              ? files.slice(0, uploadable._def.maxFiles)
-              : files,
+            files,
             fileTypes: uploadable._def.fileTypes,
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
             callbackSlug: slug,
             maxFileSize: fileSizeToBytes(uploadable._def.maxSize ?? "16MB"),
+            maxFiles: uploadable._def.maxFiles,
+            minFiles: uploadable._def.minFiles,
+            exactFiles: uploadable._def.exactFiles,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -272,6 +287,8 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
         slug: k as keyof TRouter,
         maxSize: route._def.maxSize,
         maxFiles: route._def.maxFiles,
+        minFiles: route._def.minFiles,
+        exactFiles: route._def.exactFiles,
         fileTypes: route._def.fileTypes,
       };
     });

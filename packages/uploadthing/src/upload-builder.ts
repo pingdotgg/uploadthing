@@ -34,10 +34,10 @@ export function createBuilder<TRuntime extends AnyRuntime = "web">(
         maxSize: size,
       });
     },
-    maxFiles(max) {
+    fileCount(count, type) {
       return createBuilder({
         ..._def,
-        maxFiles: max,
+        [`${type}Files`]: count,
       });
     },
     middleware(resolver) {

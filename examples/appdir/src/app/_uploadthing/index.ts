@@ -5,7 +5,7 @@ const f = createUploadthing();
 export const uploadRouter = {
   withMdwr: f
     .fileTypes(["image"])
-    .maxFiles(2)
+    .fileCount(2, "max")
     .maxSize("16MB")
     .middleware(async (req) => {
       const h = req.headers.get("someProperty");
@@ -31,7 +31,7 @@ export const uploadRouter = {
 
   withoutMdwr: f
     .maxSize("64MB")
-    .maxFiles(2)
+    .fileCount(2, "max")
     .fileTypes(["image"])
     .middleware(async () => {
       return { testMetadata: "lol" };
