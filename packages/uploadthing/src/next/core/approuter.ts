@@ -34,7 +34,7 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
       });
     }
 
-    return new Response("Error", {
+    return new Response(response.message ?? "Unable to upload file.", {
       status: response.status,
       headers: {
         "x-uploadthing-version": UPLOADTHING_VERSION,
