@@ -20,20 +20,28 @@ export const useUploadThing = <T extends string>({
   endpoint,
   onClientUploadComplete,
   url,
+  onUploadError,
 }: {
   endpoint: T;
   onClientUploadComplete?: () => void;
+  onUploadError?: (e: Error) => void;
   url?: string;
 }) => {
   const [isUploading, setUploading] = createSignal(false);
   const permittedFileInfo = createEndpointMetadata(endpoint, url);
 
   const startUpload = async (files: File[]) => {
-    setUploading(true);
-    const resp = await DANGEROUS__uploadFiles(files, endpoint);
-    setUploading(false);
-    onClientUploadComplete?.();
-    return resp;
+    try {
+      setUploading(true);
+      const resp = await DANGEROUS__uploadFiles(files, endpoint);
+      setUploading(false);
+      onClientUploadComplete?.();
+      return resp;
+    } catch (e) {
+      setUploading(false);
+      onUploadError?.(e as Error);
+      return;
+    }
   };
 
   return {

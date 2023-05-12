@@ -23,6 +23,7 @@ export type EndpointHelper<TRouter extends void | FileRouter> =
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
+  onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
 }) {
@@ -31,6 +32,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
     useUploadThing<string>({
       endpoint: props.endpoint as string,
       onClientUploadComplete: props.onClientUploadComplete,
+      onUploadError: props.onUploadError,
       url: props.url,
     });
 
@@ -74,6 +76,7 @@ export const UploadDropzone = <
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
+  onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
 }) => {
@@ -82,6 +85,7 @@ export const UploadDropzone = <
     useUploadThing<string>({
       endpoint: props.endpoint as string,
       onClientUploadComplete: props.onClientUploadComplete,
+      onUploadError: props.onUploadError,
       url: props.url,
     });
 
@@ -168,13 +172,18 @@ export const UploadDropzone = <
 export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
+  onUploadError?: (error: Error) => void;
   url?: string;
+  uploadedThing?: ReturnType<typeof useUploadThing>;
 }) => {
-  const uploadedThing = useUploadThing<string>({
-    endpoint: props.endpoint as string,
-    onClientUploadComplete: props.onClientUploadComplete,
-    url: props.url,
-  });
+  const uploadedThing =
+    props.uploadedThing ??
+    useUploadThing<string>({
+      endpoint: props.endpoint as string,
+      onClientUploadComplete: props.onClientUploadComplete,
+      url: props.url,
+      onUploadError: props.onUploadError,
+    });
   return (
     <>
       <div class="flex flex-col items-center justify-center gap-4">
