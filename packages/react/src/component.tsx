@@ -1,7 +1,9 @@
-import type { FileRouter } from "uploadthing/server";
-import { FullFile, useUploadThing } from "./useUploadThing";
 import { useCallback, useState } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
+import { useUploadThing } from "./useUploadThing";
+
+import type { FileRouter } from "uploadthing/server";
+import type { DANGEROUS__uploadFiles } from "uploadthing/client";
 
 type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
   ? "YOU FORGOT TO PASS THE GENERIC"
@@ -16,7 +18,9 @@ type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
  */
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
   onUploadError?: (error: Error) => void;
 }) {
   const { startUpload, isUploading, permittedFileInfo } =
@@ -89,7 +93,9 @@ export const UploadDropzone = <
   TRouter extends void | FileRouter = void
 >(props: {
   endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
   onUploadError?: (error: Error) => void;
 }) => {
   const { startUpload, isUploading, permittedFileInfo } =
