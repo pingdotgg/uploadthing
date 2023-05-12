@@ -16,7 +16,9 @@ export default function Home() {
 
         <UploadButton<OurFileRouter>
           endpoint="withoutMdwr"
-          onClientUploadComplete={() => {
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            console.log("Files: ", res);
             alert("Upload Completed");
           }}
           onUploadError={(error: Error) => {
@@ -30,7 +32,9 @@ export default function Home() {
         </span>
         <UploadDropzone<OurFileRouter>
           endpoint="withoutMdwr"
-          onClientUploadComplete={() => {
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            console.log("Files: ", res);
             alert("Upload Completed");
           }}
           onUploadError={(error: Error) => {
