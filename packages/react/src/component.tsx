@@ -22,11 +22,13 @@ type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
+  onUploadError?: (error: Error) => void;
 }) {
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
       endpoint: props.endpoint as string,
       onClientUploadComplete: props.onClientUploadComplete,
+      onUploadError: props.onUploadError,
     });
 
   const { maxSize, fileTypes } = permittedFileInfo ?? {};
@@ -80,11 +82,13 @@ export const UploadDropzone = <
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: () => void;
+  onUploadError?: (error: Error) => void;
 }) => {
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
       endpoint: props.endpoint as string,
       onClientUploadComplete: props.onClientUploadComplete,
+      onUploadError: props.onUploadError,
     });
 
   const [files, setFiles] = useState<File[]>([]);
