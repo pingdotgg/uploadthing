@@ -13,10 +13,14 @@ export default function Home() {
         <span className="text-4xl font-bold text-center">
           {`Upload a file using a button:`}
         </span>
+
         <UploadButton<OurFileRouter>
           endpoint="withoutMdwr"
           onClientUploadComplete={() => {
             alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
           }}
         />
       </div>
@@ -28,6 +32,9 @@ export default function Home() {
           endpoint="withoutMdwr"
           onClientUploadComplete={() => {
             alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
           }}
         />
       </div>

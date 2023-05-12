@@ -1,4 +1,4 @@
 {
-  "appdir": "App Router (/app)",
-  "pagedir": "Page Router (/pages)"
+  "appdir": "App Router (app/)",
+  "pagedir": "Page Router (pages/)"
 }

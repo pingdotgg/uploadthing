@@ -1,6 +1,6 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started With `/app`
+# Getting Started With `app/`
 
 ## Set Up A FileRouter
 
@@ -87,6 +87,10 @@ export default function Home() {
         endpoint="imageUploader"
         onClientUploadComplete={() => {
           alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
         }}
       />
     </main>
