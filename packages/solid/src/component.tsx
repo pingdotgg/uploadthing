@@ -56,7 +56,11 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           }}
         />
         <span class="ut-px-3 ut-py-2 ut-text-white">
-          {uploadedThing.isUploading() ? <Spinner /> : `Choose File`}
+          {uploadedThing.isUploading() ? (
+            <Spinner />
+          ) : (
+            `Choose File${props.multiple ? `(s)` : ``}`
+          )}
         </span>
       </label>
       <div class="ut-h-[1.25rem]">
