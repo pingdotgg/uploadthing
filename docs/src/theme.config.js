@@ -40,6 +40,21 @@ body {
   color: rgb(220 38 38 / var(--tw-text-opacity));
 }
 
+.dashboard-button {
+--tw-bg-opacity: 1;
+background-color: rgb(225 29 72/var(--tw-bg-opacity));
+padding: 0.4rem .75rem .4rem .75rem;
+border-radius: 0.375rem;
+color: white;
+font-weight: 600;
+font-size: .875rem;
+}
+
+.dashboard-button:hover {
+--tw-bg-opacity: .8;
+background-color: rgb(225 29 72/var(--tw-bg-opacity));
+}
+
 .hover\:cursor-pointer:hover {
   cursor: pointer;
 }
@@ -101,6 +116,10 @@ export const Logo = () => {
 const config = {
   chat: {
     link: "https://discord.gg/UCXkw6xj2K",
+  },
+  project: {
+    link: 'https://uploadthing.com/dashboard',
+    icon: <button className="dashboard-button">Dashboard</button>
   },
   darkMode: true,
   editLink: {
