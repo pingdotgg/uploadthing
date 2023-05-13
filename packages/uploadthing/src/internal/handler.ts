@@ -277,7 +277,7 @@ export const buildRequestHandler = <
       console.error("[UT] middleware failed to run");
       console.error(e);
 
-      return { status: 400, message: (e as Error).message };
+      return { status: 400, message: (e as Error).toString() };
     }
   };
 };

@@ -105,7 +105,9 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <UploadButton<OurFileRouter>
         endpoint="imageUploader"
-        onClientUploadComplete={() => {
+        onClientUploadComplete={(res) => {
+          // Do something with the response
+          console.log("Files: ", res);
           alert("Upload Completed");
         }}
         onUploadError={(error: Error) => {
