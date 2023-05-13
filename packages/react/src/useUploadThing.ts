@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import type { FileRouter } from "uploadthing/server";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 
@@ -21,9 +21,13 @@ const useEndpointMetadata = (endpoint: string) => {
 export const useUploadThing = <T extends string>({
   endpoint,
   onClientUploadComplete,
+  onUploadError,
 }: {
   endpoint: T;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
+  onUploadError?: (e: Error) => void;
 }) => {
   const [isUploading, setUploading] = useState(false);
 
@@ -31,10 +35,16 @@ export const useUploadThing = <T extends string>({
 
   const startUpload = useEvent(async (files: File[]) => {
     setUploading(true);
-    const resp = await DANGEROUS__uploadFiles(files, endpoint);
-    setUploading(false);
-    onClientUploadComplete?.();
-    return resp;
+    try {
+      const res = await DANGEROUS__uploadFiles(files, endpoint);
+      setUploading(false);
+      onClientUploadComplete?.(res);
+      return res;
+    } catch (e) {
+      setUploading(false);
+      onUploadError?.(e as Error);
+      return;
+    }
   });
   return {
     startUpload,
