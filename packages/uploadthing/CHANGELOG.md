@@ -1,5 +1,13 @@
 # uploadthing
 
+## 3.0.2
+
+### Patch Changes
+
+- [#51](https://github.com/pingdotgg/uploadthing/pull/51) [`9e68b5a`](https://github.com/pingdotgg/uploadthing/commit/9e68b5a12f9747113ccd8cc930e04bcf38cbe79c) Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fixed types and returns for onComplete functions and promises
+
+- [#57](https://github.com/pingdotgg/uploadthing/pull/57) [`336d361`](https://github.com/pingdotgg/uploadthing/commit/336d361763a870240f9703522e244d1e3dfe8861) Thanks [@markflorkowski](https://github.com/markflorkowski)! - [chore] better client errors
+
 ## 3.0.1
 
 ### Patch Changes

@@ -85,7 +85,7 @@ const Head = () => {
 export const Logo = () => {
   return (
     <h1 className="flex flex-row items-baseline text-2xl font-bold">
-      <span className="tracking-tight hover:cursor-pointer">
+      <span className="dark:text-white tracking-tight hover:cursor-pointer">
         {`upload`}
         <span className="text-red-600">{`thing`}</span>
         <span className="ml-1 font-semibold">docs</span>
@@ -102,7 +102,7 @@ const config = {
   chat: {
     link: "https://discord.gg/UCXkw6xj2K",
   },
-  darkMode: false,
+  darkMode: true,
   editLink: {
     component: () => null,
   },
@@ -113,7 +113,7 @@ const config = {
   head: Head,
   logo: Logo,
   nextThemes: {
-    forcedTheme: "light",
+    defaultTheme: "light",
   },
   primaryHue: 348,
   useNextSeoProps() {

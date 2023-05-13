@@ -51,6 +51,6 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     if (response.status === 200) {
       return res.json(response.body);
     }
-    return res.send("Error");
+    return res.send(response.message ?? "Unable to upload file.");
   };
 };

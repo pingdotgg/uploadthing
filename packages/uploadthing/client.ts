@@ -79,7 +79,9 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     };
   });
 
-  return Promise.all(fileUploadPromises);
+  return Promise.all(fileUploadPromises) as Promise<
+    { fileUrl: string; fileKey: string }[]
+  >;
 };
 
 export type UploadFileType<T extends string> = typeof DANGEROUS__uploadFiles<T>;
