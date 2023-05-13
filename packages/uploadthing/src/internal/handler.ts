@@ -1,4 +1,4 @@
-import type { AnyRuntime, FileRouter, FileSize, SizeUnit } from "../types";
+import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const UPLOADTHING_VERSION = require("../../package.json").version;
