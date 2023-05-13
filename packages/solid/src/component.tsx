@@ -29,6 +29,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
+  multiple?: boolean;
 }) {
   const uploadedThing =
     props.uploadedThing ??
@@ -45,13 +46,10 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         <input
           class="ut-hidden"
           type="file"
-          accept={
-            uploadedThing.permittedFileInfo()?.fileTypes
-              ? generateMimeTypes(
-                  uploadedThing.permittedFileInfo()?.fileTypes as any
-                ).join(",")
-              : undefined
-          }
+          multiple={props.multiple}
+          accept={generateMimeTypes(
+            uploadedThing.permittedFileInfo()?.fileTypes ?? []
+          ).join(", ")}
           onChange={(e) => {
             e.target.files &&
               uploadedThing.startUpload(Array.from(e.target.files));
@@ -182,6 +180,7 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
+  buttonMultiple?: boolean;
 }) => {
   const uploadedThing =
     props.uploadedThing ??
@@ -197,13 +196,17 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
         <span class="text-4xl font-bold text-center">
           {`Upload a file using a button:`}
         </span>
-        <UploadButton<TRouter> uploadedThing={uploadedThing} {...props} />
+        <UploadButton<TRouter>
+          {...props}
+          multiple={props.buttonMultiple}
+          uploadedThing={uploadedThing}
+        />
       </div>
       <div class="flex flex-col items-center justify-center gap-4">
         <span class="text-4xl font-bold text-center">
           {`...or using a dropzone:`}
         </span>
-        <UploadDropzone<TRouter> uploadedThing={uploadedThing} {...props} />
+        <UploadDropzone<TRouter> {...props} uploadedThing={uploadedThing} />
       </div>
     </>
   );
