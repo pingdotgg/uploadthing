@@ -3,11 +3,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 const UPLOADTHING_VERSION = require("../../package.json").version;
 
-type SizeUnit = "B" | "KB" | "MB" | "GB";
+const UNITS = ["B", "KB", "MB", "GB"] as const;
+type SizeUnit = (typeof UNITS)[number];
 
-function fileSizeToBytes(size: string): number | Error {
-  const regex = /^(\d+)(\.\d+)?\s*(B|KB|MB|GB)$/i;
-  const match = size.match(regex);
+export const fileSizeToBytes = (input: string) => {
+  const regex = new RegExp(`^(\\d+)(\\.\\d+)?\\s*(${UNITS.join("|")})$`, "i");
+  const match = input.match(regex);
 
   if (!match) {
     return new Error("Invalid file size format");
@@ -15,20 +16,13 @@ function fileSizeToBytes(size: string): number | Error {
 
   const sizeValue = parseFloat(match[1]);
   const sizeUnit = match[3].toUpperCase() as SizeUnit;
-  const conversionFactors = {
-    B: 1,
-    KB: 1024,
-    MB: 1024 * 1024,
-    GB: 1024 * 1024 * 1024,
-  };
 
-  if (!(sizeUnit in conversionFactors)) {
-    return new Error(`Invalid file size unit: ${sizeUnit}`);
+  if (!UNITS.includes(sizeUnit)) {
+    throw new Error("Invalid file size unit");
   }
-
-  return sizeValue * conversionFactors[sizeUnit];
-}
-
+  const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
+  return Math.floor(bytes);
+};
 
 const generateUploadThingURL = (path: `/${string}`) => {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
