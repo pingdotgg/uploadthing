@@ -40,20 +40,6 @@ body {
   color: rgb(220 38 38 / var(--tw-text-opacity));
 }
 
-.dashboard-button {
---tw-bg-opacity: 1;
-background-color: rgb(225 29 72/var(--tw-bg-opacity));
-padding: 0.4rem .75rem .4rem .75rem;
-border-radius: 0.375rem;
-color: white;
-font-weight: 600;
-font-size: .875rem;
-}
-
-.dashboard-button:hover {
---tw-bg-opacity: .8;
-background-color: rgb(225 29 72/var(--tw-bg-opacity));
-}
 
 .hover\:cursor-pointer:hover {
   cursor: pointer;
@@ -109,6 +95,7 @@ export const Logo = () => {
   );
 };
 
+
 /* eslint sort-keys: error */
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -133,8 +120,7 @@ const config = {
   },
   primaryHue: 348,
   project: {
-    icon: <div className="dashboard-button">Dashboard</div>,
-    link: 'https://uploadthing.com/dashboard',
+    link: "https://github.com/pingdotgg/uploadthing",
   },
   useNextSeoProps() {
     return {

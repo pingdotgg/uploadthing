@@ -25,5 +25,8 @@
     "nextra-theme-docs": {
       "injected": true
     }
+  },
+  "devDependencies": {
+    "eslint": "^8.40.0"
   }
 }
