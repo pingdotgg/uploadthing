@@ -10,9 +10,11 @@ const Home: VoidComponent = () => {
         endpoint="imageUploader"
         // needed when server side rendering
         url="http://localhost:3000"
-        onClientUploadComplete={() => {
+        onClientUploadComplete={(res) => {
+          console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
         }}
+        buttonMultiple
       />
     </main>
   );

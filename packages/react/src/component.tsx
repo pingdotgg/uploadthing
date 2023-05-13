@@ -51,7 +51,11 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? <Spinner /> : `Choose File${ props.multiple ? `(s)` : `` }`}
+          {isUploading ? (
+            <Spinner />
+          ) : (
+            `Choose File${props.multiple ? `(s)` : ``}`
+          )}
         </span>
       </label>
       <div className="ut-h-[1.25rem]">
@@ -76,7 +80,7 @@ const Spinner = () => {
       <path
         fill="currentColor"
         d="M256 32C256 14.33 270.3 0 288 0C429.4 0 544 114.6 544 256C544 302.6 531.5 346.4 509.7 384C500.9 399.3 481.3 404.6 465.1 395.7C450.7 386.9 445.5 367.3 454.3 351.1C470.6 323.8 480 291 480 255.1C480 149.1 394 63.1 288 63.1C270.3 63.1 256 49.67 256 31.1V32z"
-      ></path>
+      />
     </svg>
   );
 };
