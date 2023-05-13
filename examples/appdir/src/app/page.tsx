@@ -24,6 +24,7 @@ export default function Home() {
           onUploadError={(error: Error) => {
             alert(`ERROR! ${error.message}`);
           }}
+          multiple
         />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">

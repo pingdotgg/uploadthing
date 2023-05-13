@@ -41,6 +41,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           className="ut-hidden"
           type="file"
           multiple={props.multiple}
+          max={maxFiles}
           accept={generateMimeTypes(fileTypes ?? []).join(", ")}
           onChange={(e) => {
             if (e.target.files) {
@@ -50,7 +51,11 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? <Spinner /> : `Choose File${ props.multiple ? `(s)` : `` }`}
+          {isUploading ? (
+            <Spinner />
+          ) : (
+            `Choose File${props.multiple ? `(s)` : ``}`
+          )}
         </span>
       </label>
       <div className="ut-h-[1.25rem]">
