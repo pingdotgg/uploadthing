@@ -23,7 +23,9 @@ export const useUploadThing = <T extends string>({
   onUploadError,
 }: {
   endpoint: T;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
   onUploadError?: (e: Error) => void;
   url?: string;
 }) => {
@@ -31,12 +33,12 @@ export const useUploadThing = <T extends string>({
   const permittedFileInfo = createEndpointMetadata(endpoint, url);
 
   const startUpload = async (files: File[]) => {
+    setUploading(true);
     try {
-      setUploading(true);
-      const resp = await DANGEROUS__uploadFiles(files, endpoint);
+      const res = await DANGEROUS__uploadFiles(files, endpoint);
       setUploading(false);
-      onClientUploadComplete?.();
-      return resp;
+      onClientUploadComplete?.(res);
+      return res;
     } catch (e) {
       setUploading(false);
       onUploadError?.(e as Error);

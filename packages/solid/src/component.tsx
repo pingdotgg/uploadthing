@@ -9,6 +9,7 @@ import {
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
+import type { DANGEROUS__uploadFiles } from "uploadthing/client";
 
 export type EndpointHelper<TRouter extends void | FileRouter> =
   void extends TRouter ? "YOU FORGOT TO PASS THE GENERIC" : keyof TRouter;
@@ -22,7 +23,9 @@ export type EndpointHelper<TRouter extends void | FileRouter> =
  */
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
@@ -75,7 +78,9 @@ export const UploadDropzone = <
   TRouter extends void | FileRouter = void
 >(props: {
   endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
@@ -171,7 +176,9 @@ export const UploadDropzone = <
 
 export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: () => void;
+  onClientUploadComplete?: (
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+  ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
   uploadedThing?: ReturnType<typeof useUploadThing>;
