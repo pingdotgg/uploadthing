@@ -113,7 +113,7 @@ const config = {
   head: Head,
   logo: Logo,
   nextThemes: {
-    defaultTheme: "system",
+    defaultTheme: "light",
   },
   primaryHue: 348,
   useNextSeoProps() {
