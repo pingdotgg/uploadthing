@@ -117,10 +117,7 @@ const config = {
   chat: {
     link: "https://discord.gg/UCXkw6xj2K",
   },
-  project: {
-    icon: <div className="dashboard-button">Dashboard</div>
-    link: 'https://uploadthing.com/dashboard',
-  },
+
   darkMode: true,
   editLink: {
     component: () => null,
@@ -135,6 +132,10 @@ const config = {
     defaultTheme: "light",
   },
   primaryHue: 348,
+  project: {
+    icon: <div className="dashboard-button">Dashboard</div>,
+    link: 'https://uploadthing.com/dashboard',
+  },
   useNextSeoProps() {
     return {
       additionalLinkTags: [
