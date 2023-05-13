@@ -83,16 +83,16 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "solid-js": "^1.5.3",
-    "tsup": "^6.7.0",
-    "tsup-preset-solid": "0.1.8",
-    "typescript": "^4.8.2",
-    "solidjs-dropzone": "^1.0.0",
-    "uploadthing": "workspace:*",
-    "autoprefixer": "10.4.14",
-    "tailwindcss": "^3.3.2",
     "@tailwindcss/forms": "^0.5.3",
-    "postcss": "8.4.22"
+    "autoprefixer": "10.4.14",
+    "postcss": "8.4.22",
+    "solid-js": "^1.7.3",
+    "solidjs-dropzone": "^1.0.0",
+    "tailwindcss": "^3.3.2",
+    "tsup": "6.7.0",
+    "tsup-preset-solid": "0.1.8",
+    "typescript": "5.1.0-beta",
+    "uploadthing": "3.0.2"
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
