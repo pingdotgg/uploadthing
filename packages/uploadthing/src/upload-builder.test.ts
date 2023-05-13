@@ -91,7 +91,7 @@ it("smoke", async () => {
 
   const uploadable = f
     .fileTypes(["image", "video"])
-    .maxSize("1GB")
+    .limits("max 2 files of 1GB each")
     .middleware(async (req) => {
       const header1 = req.headers.get("header1");
 
@@ -119,7 +119,7 @@ it("genuploader", async () => {
   const f = createBuilder();
   const uploadable = f
     .fileTypes(["image", "video"])
-    .maxSize("1GB")
+    .limits("max 2 files of 1GB each")
     .onUploadComplete(({ file, metadata }) => {});
 
   const router = { uploadable } satisfies FileRouter;
