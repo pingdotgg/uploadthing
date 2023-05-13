@@ -22,8 +22,8 @@ it("typeerrors for invalid input", async () => {
   // @ts-expect-error - invalid file type
   f.fileTypes(["png"]);
 
-  // @ts-expect-error - invalid size format
-  f.maxSize("1gb");
+  // @ts-expect-error - invalid size format - should be 1GB
+  f.limits("max 2 files of 1gb each");
 
   // @ts-expect-error - should return an object
   f.middleware(async () => {

@@ -16,7 +16,6 @@ export function createBuilder<TRuntime extends AnyRuntime = "web">(
   const _def: UploadBuilderDef<TRuntime> = {
     fileTypes: ["image"],
     maxSize: "1MB",
-    maxFiles: undefined,
     // @ts-expect-error - huh?
     middleware: async () => ({}),
     ...initDef,
@@ -30,7 +29,7 @@ export function createBuilder<TRuntime extends AnyRuntime = "web">(
       });
     },
     limits(limit) {
-      const [limitKind, limitNum, size, sizeKind] = limit.split(
+      const [limitKind, limitNum, , , size, sizeKind] = limit.split(
         " "
       ) as LimitBuilderRes;
       return createBuilder({

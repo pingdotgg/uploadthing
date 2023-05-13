@@ -73,6 +73,8 @@ type LimitBuilder<
 export type LimitBuilderRes = [
   K: LimitKind,
   C: number,
+  _files: "files",
+  _of: "of",
   S: FileSize,
   SK: SizeKind
 ];
