@@ -234,9 +234,9 @@ export const buildRequestHandler = <
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
             callbackSlug: slug,
             maxFileSize: fileSizeToBytes(uploadable._def.maxSize ?? "16MB"),
-            maxFiles: uploadable._def.maxFiles,
-            minFiles: uploadable._def.minFiles,
-            exactFiles: uploadable._def.exactFiles,
+            // maxFiles: uploadable._def.maxFiles,
+            // minFiles: uploadable._def.minFiles,
+            // exactFiles: uploadable._def.exactFiles,
           }),
           headers: {
             "Content-Type": "application/json",

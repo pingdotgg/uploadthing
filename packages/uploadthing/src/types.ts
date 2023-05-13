@@ -61,9 +61,24 @@ type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>
 ) => MaybePromise<void>;
 
+type LimitKind = "max" | "min" | "exact";
+type SizeKind = "each" | "total";
+type LimitBuilder<
+  K extends LimitKind,
+  C extends number,
+  S extends FileSize,
+  SK extends SizeKind
+> = `${K} ${C} files of ${S} ${SK}`;
+
+export type LimitBuilderRes = [
+  K: LimitKind,
+  C: number,
+  S: FileSize,
+  SK: SizeKind
+];
+
 export interface UploadBuilder<TParams extends AnyParams> {
   fileTypes: (types: AllowedFiles[]) => UploadBuilder<TParams>;
-  maxSize: (size: FileSize) => UploadBuilder<TParams>;
 
   middleware: <TOutput extends Record<string, unknown>>(
     fn: MiddlewareFn<TOutput, TParams["_runtime"]>
@@ -72,9 +87,13 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _runtime: TParams["_runtime"];
   }>;
 
-  fileCount: (
-    count: number,
-    type: "max" | "exact" | "min"
+  limits: <
+    K extends LimitKind,
+    C extends number,
+    S extends FileSize,
+    SK extends SizeKind
+  >(
+    limit: LimitBuilder<K, C, S, SK>
   ) => UploadBuilder<TParams>;
 
   onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
@@ -86,6 +105,7 @@ export type UploadBuilderDef<TRuntime extends AnyRuntime> = {
   maxFiles?: number;
   exactFiles?: number;
   minFiles?: number;
+  maxFileSizeKind?: SizeKind;
   middleware: MiddlewareFn<{}, TRuntime>;
 };
 

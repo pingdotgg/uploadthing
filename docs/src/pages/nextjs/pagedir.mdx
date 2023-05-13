@@ -45,8 +45,9 @@ export const ourFileRouter = {
   imageUploader: f
     // Set permissions and file types for this FileRoute
     .fileTypes(["image", "video"])
-    .maxSize("1GB")
-    .fileCount(2, "max") // only allow maximum of 2 files to be passed in a single request
+    // only allow maximum of 2 files to be passed in a single request,
+    // each file must be less than 1GB
+    .limits("max 2 files of 1GB each")
     .middleware(async (req, res) => {
       // This code runs on your server before upload
       const user = await auth(req, res);
@@ -95,7 +96,7 @@ The `@uploadthing/react` package includes an "UploadButton" component that you c
 import { UploadButton } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing";
-  
+
 // You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
 import "@uploadthing/react/styles.css";
 

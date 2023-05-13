@@ -4,6 +4,7 @@ import type {
   UploadBuilderDef,
   Uploader,
   AnyRuntime,
+  LimitBuilderRes,
 } from "./types";
 
 export function createBuilder<TRuntime extends AnyRuntime = "web">(
@@ -28,16 +29,15 @@ export function createBuilder<TRuntime extends AnyRuntime = "web">(
         fileTypes: types,
       });
     },
-    maxSize(size) {
+    limits(limit) {
+      const [limitKind, limitNum, size, sizeKind] = limit.split(
+        " "
+      ) as LimitBuilderRes;
       return createBuilder({
         ..._def,
+        [`${limitKind}Files`]: limitNum,
         maxSize: size,
-      });
-    },
-    fileCount(count, type) {
-      return createBuilder({
-        ..._def,
-        [`${type}Files`]: count,
+        maxFileSizeKind: sizeKind,
       });
     },
     middleware(resolver) {
