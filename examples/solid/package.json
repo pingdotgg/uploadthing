@@ -8,31 +8,31 @@
   },
   "type": "module",
   "devDependencies": {
-    "@types/node": "^18.14.0",
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
-    "autoprefixer": "^10.4.13",
-    "eslint": "^8.34.0",
+    "@types/node": "18.16.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.2",
+    "@typescript-eslint/parser": "^5.59.2",
+    "autoprefixer": "10.4.14",
+    "eslint": "^8.40.0",
     "eslint-plugin-solid": "^0.9.4",
-    "postcss": "^8.4.21",
+    "postcss": "8.4.22",
     "solid-start-node": "^0.2.26",
-    "tailwindcss": "^3.2.7",
-    "typescript": "^4.9.5",
+    "tailwindcss": "^3.3.2",
+    "typescript": "5.1.0-beta",
     "vite": "^4.1.2"
   },
   "dependencies": {
     "@solidjs/meta": "^0.28.2",
     "@solidjs/router": "^0.8.2",
     "@soorria/solid-dropzone": "^0.0.5",
+    "@uploadthing/solid": "1.0.0",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
     "solid-js": "^1.7.3",
     "solid-start": "^0.2.26",
-    "solidjs-dropzone": "1.0.0",
+    "solidjs-dropzone": "^1.0.0",
     "undici": "5.20.0",
-    "uploadthing": "workspace:*",
-    "@uploadthing/solid": "workspace:*",
-    "zod": "^3.20.6"
+    "uploadthing": "3.0.2",
+    "zod": "^3.21.4"
   },
   "engines": {
     "node": ">=16"
