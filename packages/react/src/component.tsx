@@ -13,11 +13,13 @@ type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
  * @example
  * <UploadButton<OurFileRouter>
  *   endpoint="someEndpoint"
- *   onUploadComplete={(url) => console.log(url)}
+ *   onUploadComplete={(res) => console.log(res)}
+ *   onUploadError={(err) => console.log(err)}
  * />
  */
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
+  multiple?: boolean;
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
   ) => void;
@@ -38,15 +40,14 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         <input
           className="ut-hidden"
           type="file"
-          accept={
-            fileTypes ? generateMimeTypes(fileTypes).join(",") : undefined
-          }
+          multiple={props.multiple}
+          accept={generateMimeTypes(fileTypes ?? []).join(", ")}
           onChange={(e) => {
             e.target.files && startUpload(Array.from(e.target.files));
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? <Spinner /> : `Choose File`}
+          {isUploading ? <Spinner /> : `Choose File${ props.multiple ? `(s)` : `` }`}
         </span>
       </label>
       <div className="ut-h-[1.25rem]">
