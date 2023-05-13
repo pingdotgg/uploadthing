@@ -118,8 +118,8 @@ const config = {
     link: "https://discord.gg/UCXkw6xj2K",
   },
   project: {
-    link: 'https://uploadthing.com/dashboard',
     icon: <div className="dashboard-button">Dashboard</div>
+    link: 'https://uploadthing.com/dashboard',
   },
   darkMode: true,
   editLink: {
