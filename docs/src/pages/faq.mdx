@@ -10,7 +10,7 @@ import "@uploadthing/react/styles.css";
 
 This error is our catch-all if we were unable to query the `/api/uploadthing` endpoint. Almost every time we've seen someone who has this issue, it's because their `middleware.ts` is configured incorrectly.
 
-Make sure that `/api/uploadthing` is PUBLICLY EXPOSED through your middleware. It serves as both a validation endpoint from client AND a webhook for the `onUploadComplete` calls.
+Make sure that `/api/uploadthing` is NOT blocked through your middleware. It serves as both a validation endpoint from client AND a webhook for the `onUploadComplete` calls.
 
 ### I'm getting the error `Named export 'useDropzone' not found`
 
