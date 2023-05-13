@@ -116,6 +116,9 @@ const config = {
     defaultTheme: "light",
   },
   primaryHue: 348,
+  project: {
+    link: "https://github.com/pingdotgg/uploadthing",
+  },
   useNextSeoProps() {
     return {
       additionalLinkTags: [
