@@ -119,7 +119,7 @@ const config = {
   },
   project: {
     link: 'https://uploadthing.com/dashboard',
-    icon: <button className="dashboard-button">Dashboard</button>
+    icon: <div className="dashboard-button">Dashboard</div>
   },
   darkMode: true,
   editLink: {
