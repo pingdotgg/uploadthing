@@ -99,6 +99,7 @@ const conditionalDevServer = async (fileKey: string) => {
         metadata: JSON.parse(file.metadata ?? "{}"),
         file: {
           url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
+          key: fileKey ?? "",
           name: file.fileName,
         },
       }),
