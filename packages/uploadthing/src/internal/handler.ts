@@ -1,36 +1,28 @@
-import type { AnyRuntime, FileRouter, FileSize, SizeUnit } from "../types";
+import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const UPLOADTHING_VERSION = require("../../package.json").version;
 
-export function fileSizeToBytes(size: FileSize): number {
-  const sizeUnit = size.slice(-2) as SizeUnit;
-  const sizeValue = parseInt(size.slice(0, -2), 10);
-  let bytes: number;
+const UNITS = ["B", "KB", "MB", "GB"] as const;
+type SizeUnit = (typeof UNITS)[number];
 
-  switch (sizeUnit) {
-    case "B":
-      bytes = sizeValue;
-      break;
-    case "KB":
-      bytes = sizeValue * 1024;
-      break;
-    case "MB":
-      bytes = sizeValue * 1024 * 1024;
-      break;
-    case "GB":
-      bytes = sizeValue * 1024 * 1024 * 1024;
-      break;
-    default:
-      if (size.slice(-1) === "B") {
-        bytes = parseInt(size.slice(0, -1), 10);
-        break;
-      }
-      throw new Error(`Invalid file size unit: ${sizeUnit}`);
+export const fileSizeToBytes = (input: string) => {
+  const regex = new RegExp(`^(\\d+)(\\.\\d+)?\\s*(${UNITS.join("|")})$`, "i");
+  const match = input.match(regex);
+
+  if (!match) {
+    return new Error("Invalid file size format");
   }
 
-  return bytes;
-}
+  const sizeValue = parseFloat(match[1]);
+  const sizeUnit = match[3].toUpperCase() as SizeUnit;
+
+  if (!UNITS.includes(sizeUnit)) {
+    throw new Error("Invalid file size unit");
+  }
+  const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
+  return Math.floor(bytes);
+};
 
 const generateUploadThingURL = (path: `/${string}`) => {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
@@ -50,9 +42,9 @@ const isValidResponse = (response: Response) => {
 };
 
 const withExponentialBackoff = async <T>(
-    doTheThing: () => Promise<T | null>,
-    MAXIMUM_BACKOFF_MS = 64 * 1000,
-    MAX_RETRIES = 20,
+  doTheThing: () => Promise<T | null>,
+  MAXIMUM_BACKOFF_MS = 64 * 1000,
+  MAX_RETRIES = 20
 ): Promise<T | null> => {
   let tries = 0;
   let backoffMs = 500;
@@ -67,13 +59,19 @@ const withExponentialBackoff = async <T>(
     backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
     backoffFuzzMs = Math.floor(Math.random() * 500);
 
-    console.error(`[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(backoffMs / 1000)} seconds...`)
+    if (tries > 3) {
+      console.error(
+        `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
+          backoffMs / 1000
+        )} seconds...`
+      );
+    }
 
-    await new Promise(r => setTimeout(r, backoffMs + backoffFuzzMs));
+    await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
   }
 
   return null;
-}
+};
 
 const conditionalDevServer = async (fileKey: string) => {
   if (process.env.NODE_ENV !== "development") return;
@@ -89,8 +87,7 @@ const conditionalDevServer = async (fileKey: string) => {
     if (json.status !== "done") return null;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-    if (!callbackUrl.startsWith("http"))
-      callbackUrl = "http://" + callbackUrl;
+    if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
 
     console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
@@ -101,9 +98,8 @@ const conditionalDevServer = async (fileKey: string) => {
         status: "uploaded",
         metadata: JSON.parse(file.metadata ?? "{}"),
         file: {
-          url: `https://uploadthing.com/f/${encodeURIComponent(
-            fileKey ?? ""
-          )}`,
+          url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
+          key: fileKey ?? "",
           name: file.fileName,
         },
       }),
@@ -175,7 +171,7 @@ export const buildRequestHandler = <
 
     if (uploadthingHook && uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
-      uploadable.resolver({
+      await uploadable.resolver({
         file: reqBody.file,
         metadata: reqBody.metadata,
       });
@@ -252,7 +248,7 @@ export const buildRequestHandler = <
       console.error("[UT] middleware failed to run");
       console.error(e);
 
-      return { status: 400 };
+      return { status: 400, message: (e as Error).toString() };
     }
   };
 };

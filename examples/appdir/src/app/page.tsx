@@ -13,10 +13,16 @@ export default function Home() {
         <span className="text-4xl font-bold text-center">
           {`Upload a file using a button:`}
         </span>
+
         <UploadButton<OurFileRouter>
           endpoint="withoutMdwr"
-          onClientUploadComplete={() => {
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            console.log("Files: ", res);
             alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
           }}
         />
       </div>
@@ -26,8 +32,13 @@ export default function Home() {
         </span>
         <UploadDropzone<OurFileRouter>
           endpoint="withoutMdwr"
-          onClientUploadComplete={() => {
+          onClientUploadComplete={(res) => {
+            // Do something with the response
+            console.log("Files: ", res);
             alert("Upload Completed");
+          }}
+          onUploadError={(error: Error) => {
+            alert(`ERROR! ${error.message}`);
           }}
         />
       </div>

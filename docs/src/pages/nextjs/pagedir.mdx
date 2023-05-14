@@ -1,9 +1,9 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started With `/pages`
+# Getting Started With `pages/`
 
 <Callout type="warning">
-  If you're using the `/pages` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG:
+  If you're using the `pages/` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG:
 
 ```ts
 // next.config.js
@@ -55,9 +55,11 @@ export const ourFileRouter = {
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
-    .onUploadComplete(async ({ metadata }) => {
+    .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
       console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
     }),
 } satisfies FileRouter;
 
@@ -90,15 +92,24 @@ The `@uploadthing/react` package includes an "UploadButton" component that you c
 ```ts copy
 import { UploadButton } from "@uploadthing/react";
 
-import type { OurFileRouter } from "~/server/uploadthing/router";
+import type { OurFileRouter } from "~/server/uploadthing";
+
+// You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
+import "@uploadthing/react/styles.css";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <UploadButton<OurFileRouter>
-        endpoint="withoutMdwr"
-        onClientUploadComplete={() => {
+        endpoint="imageUploader"
+        onClientUploadComplete={(res) => {
+          // Do something with the response
+          console.log("Files: ", res);
           alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
         }}
       />
     </main>

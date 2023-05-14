@@ -1,6 +1,6 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started With `/app`
+# Getting Started With `app/`
 
 ## Set Up A FileRouter
 
@@ -38,9 +38,11 @@ export const ourFileRouter = {
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
-    .onUploadComplete(async ({ metadata }) => {
+    .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
       console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
     }),
 } satisfies FileRouter;
 
@@ -60,7 +62,7 @@ import { ourFileRouter } from "./core";
 import { createNextRouteHandler } from "uploadthing/next";
 
 // Export routes for Next App Router
-export const { POST } = createNextRouteHandler({
+export const { GET, POST } = createNextRouteHandler({
   router: ourFileRouter,
 });
 ```
@@ -72,16 +74,25 @@ The `@uploadthing/react` package includes an "UploadButton" component that you c
 ```ts copy
 "use client";
 
+// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
+import "@uploadthing/react/styles.css";
+
 import { UploadButton } from "@uploadthing/react";
-import type { OurFileRouter } from "./_uploadthing";
+import { OurFileRouter } from "./api/uploadthing/core";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <UploadButton<OurFileRouter>
-        endpoint="withoutMdwr"
-        onClientUploadComplete={() => {
+        endpoint="imageUploader"
+        onClientUploadComplete={(res) => {
+          // Do something with the response
+          console.log("Files: ", res);
           alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
         }}
       />
     </main>

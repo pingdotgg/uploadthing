@@ -1,4 +1,8 @@
-import { RouterWithConfig, buildRequestHandler } from "../../internal/handler";
+import {
+  RouterWithConfig,
+  buildPermissionsInfoHandler,
+  buildRequestHandler,
+} from "../../internal/handler";
 import type { FileRouter } from "../../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -10,7 +14,16 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
 
+  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
+
   return async (req: NextApiRequest, res: NextApiResponse) => {
+    // Return valid endpoints
+    if (req.method === "GET") {
+      const perms = getBuildPerms();
+      res.status(200).json(perms);
+      return;
+    }
+
     // Get inputs from query and params
     const params = req.query;
     const uploadthingHook = req.headers["uploadthing-hook"];
@@ -38,6 +51,6 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     if (response.status === 200) {
       return res.json(response.body);
     }
-    return res.send("Error");
+    return res.send(response.message ?? "Unable to upload file.");
   };
 };
