@@ -69,7 +69,7 @@ type LimitBuilder<
   C extends number,
   S extends FileSize,
   SK extends SizeKind
-> = `${K} ${C} files of ${S} ${SK}`;
+> = `${K} ${C} ${C extends 1 ? "files" | "file" : "files"} of ${S} ${SK}`;
 
 export type LimitBuilderRes = [
   K: LimitKind,

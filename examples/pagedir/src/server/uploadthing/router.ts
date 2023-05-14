@@ -7,7 +7,7 @@ const f = createUploadthing();
 export const uploadRouter = {
   withMdwr: f
     .fileTypes(["image"])
-    .maxSize("16MB")
+    .limits("min 1 file of 16MB each")
     .middleware(async (req, res) => {
       const auth = await getServerSession(req, res, options);
 
