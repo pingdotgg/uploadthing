@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build --filter=./packages/*",
+    "clean": "turbo run clean && git clean -xdf node_modules",
     "dev": "turbo run dev",
     "lint": "turbo run lint --filter=./packages/* && manypkg check",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

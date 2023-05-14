@@ -15,6 +15,9 @@
     "dev": {
       "cache": false
     },
+    "clean": {
+      "cache": false
+    },
     "typecheck": {
       "dependsOn": ["^build"]
     },
