@@ -40,6 +40,7 @@ body {
   color: rgb(220 38 38 / var(--tw-text-opacity));
 }
 
+
 .hover\:cursor-pointer:hover {
   cursor: pointer;
 }
@@ -94,6 +95,7 @@ export const Logo = () => {
   );
 };
 
+
 /* eslint sort-keys: error */
 /**
  * @type {import('nextra-theme-docs').DocsThemeConfig}
@@ -102,6 +104,7 @@ const config = {
   chat: {
     link: "https://discord.gg/UCXkw6xj2K",
   },
+
   darkMode: true,
   editLink: {
     component: () => null,
