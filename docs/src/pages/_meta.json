@@ -1,5 +1,16 @@
 {
   "index": "Introduction",
   "create-account": "Creating An Account",
-  "nextjs": "Next.js Setup"
+  "nextjs": "Next.js Setup",
+  "faq": {
+    "title": "Frequently Asked Questions (FAQ)",
+    "theme": { "toc": false }
+  },
+
+  "project-link": {
+    "title": "Dashboard ↗",
+    "type": "page",
+    "href": "https://uploadthing.com/dashboard",
+    "newWindow": true
+  }
 }

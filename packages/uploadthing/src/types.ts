@@ -20,6 +20,7 @@ export interface AnyParams {
 
 type UploadedFile = {
   name: string;
+  key: string;
   url: string;
 };
 
