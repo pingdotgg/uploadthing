@@ -55,11 +55,11 @@ export type OurFileRouter = typeof ourFileRouter;
 </Callout>
 
 ```ts copy
-/** src/api/uploadthing/route.ts */
+/** src/api/uploadthing/index.ts */
+import { createServerHandler } from "@uploadthing/solid";
 import { ourFileRouter } from "./core";
-import { createNextRouteHandler } from "uploadthing/next";
 
-export const { GET, POST } = createNextRouteHandler({
+export const { GET, POST } = createServerHandler({
   router: ourFileRouter,
 });
 ```
@@ -82,8 +82,8 @@ const Home: VoidComponent = () => {
         endpoint="imageUploader"
         // needed when server side rendering
         url="http://localhost:3000"
-        onClientUploadComplete={() => {
-          alert("Upload Completed");
+        onClientUploadComplete={(res) => {
+          alert("Upload Completed", res);
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
