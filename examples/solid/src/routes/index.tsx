@@ -9,7 +9,7 @@ const Home: VoidComponent = () => {
       <Uploader<OurFileRouter>
         endpoint="imageUploader"
         // needed when server side rendering
-        url="http://localhost:3000"
+        url="http://localhost:9898"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");

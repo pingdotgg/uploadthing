@@ -1,8 +1,8 @@
 {
   "name": "@example/solidstart",
   "scripts": {
-    "dev": "solid-start dev --port 3000",
-    "start": "solid-start start --port 3000",
+    "dev": "solid-start dev --port 9898",
+    "start": "solid-start start --port 9898",
     "build": "solid-start build",
     "lint": "eslint --fix \"**/*.{ts,tsx,js,jsx}\""
   },
