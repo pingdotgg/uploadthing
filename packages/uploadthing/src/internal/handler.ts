@@ -1,36 +1,28 @@
-import type { AnyRuntime, FileRouter, FileSize, SizeUnit } from "../types";
+import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 const UPLOADTHING_VERSION = require("../../package.json").version;
 
-export function fileSizeToBytes(size: FileSize): number {
-  const sizeUnit = size.slice(-2) as SizeUnit;
-  const sizeValue = parseInt(size.slice(0, -2), 10);
-  let bytes: number;
+const UNITS = ["B", "KB", "MB", "GB"] as const;
+type SizeUnit = (typeof UNITS)[number];
 
-  switch (sizeUnit) {
-    case "B":
-      bytes = sizeValue;
-      break;
-    case "KB":
-      bytes = sizeValue * 1024;
-      break;
-    case "MB":
-      bytes = sizeValue * 1024 * 1024;
-      break;
-    case "GB":
-      bytes = sizeValue * 1024 * 1024 * 1024;
-      break;
-    default:
-      if (size.slice(-1) === "B") {
-        bytes = parseInt(size.slice(0, -1), 10);
-        break;
-      }
-      throw new Error(`Invalid file size unit: ${sizeUnit}`);
+export const fileSizeToBytes = (input: string) => {
+  const regex = new RegExp(`^(\\d+)(\\.\\d+)?\\s*(${UNITS.join("|")})$`, "i");
+  const match = input.match(regex);
+
+  if (!match) {
+    return new Error("Invalid file size format");
   }
 
-  return bytes;
-}
+  const sizeValue = parseFloat(match[1]);
+  const sizeUnit = match[3].toUpperCase() as SizeUnit;
+
+  if (!UNITS.includes(sizeUnit)) {
+    throw new Error("Invalid file size unit");
+  }
+  const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
+  return Math.floor(bytes);
+};
 
 const generateUploadThingURL = (path: `/${string}`) => {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
@@ -107,6 +99,7 @@ const conditionalDevServer = async (fileKey: string) => {
         metadata: JSON.parse(file.metadata ?? "{}"),
         file: {
           url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
+          key: fileKey ?? "",
           name: file.fileName,
         },
       }),
