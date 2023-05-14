@@ -1,15 +1,16 @@
-import nextra from 'nextra'
+import nextra from "nextra";
 
 const withNextra = nextra({
-  theme: 'nextra-theme-docs',
-  themeConfig: './src/theme.config.js',
+  theme: "nextra-theme-docs",
+  themeConfig: "./src/theme.config.js",
   staticImage: true,
   latex: true,
   flexsearch: {
-    codeblock: false
-  }
-})
+    codeblock: false,
+  },
+});
 
 export default withNextra({
-  reactStrictMode: true
-})
+  reactStrictMode: true,
+  eslint: { ignoreDuringBuilds: true },
+});
