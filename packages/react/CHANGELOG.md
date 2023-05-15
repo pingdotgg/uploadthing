@@ -1,5 +1,16 @@
 # @uploadthing/react
 
+## 3.0.3
+
+### Patch Changes
+
+- [#41](https://github.com/pingdotgg/uploadthing/pull/41) [`225b6a4`](https://github.com/pingdotgg/uploadthing/commit/225b6a40d7a84ba6ea8c47faab77246b5b671ba8) Thanks [@OrJDev](https://github.com/OrJDev)! - feat: SolidJS adapter
+
+- [#48](https://github.com/pingdotgg/uploadthing/pull/48) [`c28b698`](https://github.com/pingdotgg/uploadthing/commit/c28b698e2489383b127aa3097c832326e27bb5df) Thanks [@OrJDev](https://github.com/OrJDev)! - fix(uploadButton): accept mimeTypes join & allow multiple files to be passed
+
+- Updated dependencies [[`225b6a4`](https://github.com/pingdotgg/uploadthing/commit/225b6a40d7a84ba6ea8c47faab77246b5b671ba8), [`7244b84`](https://github.com/pingdotgg/uploadthing/commit/7244b8479b612f00360069c05aacf450b2b65696)]:
+  - uploadthing@3.0.3
+
 ## 3.0.2
 
 ### Patch Changes
