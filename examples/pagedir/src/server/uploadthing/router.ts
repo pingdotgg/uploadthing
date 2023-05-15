@@ -21,13 +21,16 @@ export const uploadRouter = {
     .onUploadComplete(({ metadata, file }) => {
       console.log("uploaded with the following metadata:", metadata);
 
-      console.log(metadata.userEmail + " successfully uploaded file:", file);
+      console.log(
+        `${metadata.userEmail ?? ""} successfully uploaded file:`,
+        file
+      );
       file;
       // ^?
     }),
 
   withoutMdwr: f
-    .middleware(async () => {
+    .middleware(() => {
       return { testMetadata: "lol" };
     })
     .onUploadComplete(({ metadata, file }) => {
