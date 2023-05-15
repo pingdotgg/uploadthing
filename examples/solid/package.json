@@ -25,7 +25,7 @@
     "@solidjs/meta": "^0.28.2",
     "@solidjs/router": "^0.8.2",
     "@soorria/solid-dropzone": "^0.0.5",
-    "@uploadthing/solid": "1.0.1",
+    "@uploadthing/solid": "3.0.3",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
     "solid-js": "^1.7.3",
