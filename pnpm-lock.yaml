@@ -94,7 +94,7 @@ importers:
         specifier: ^4.28.0
         version: 4.28.0(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -115,7 +115,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -155,7 +155,7 @@ importers:
         specifier: ^4.28.0
         version: 4.28.0(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -179,7 +179,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -225,7 +225,7 @@ importers:
         specifier: ^0.0.5
         version: 0.0.5(solid-js@1.7.5)
       '@uploadthing/solid':
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -246,7 +246,7 @@ importers:
         specifier: 5.20.0
         version: 5.20.0
       uploadthing:
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -328,7 +328,7 @@ importers:
         specifier: 5.1.0-beta
         version: 5.1.0-beta
       uploadthing:
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -367,7 +367,7 @@ importers:
         specifier: 5.1.0-beta
         version: 5.1.0-beta
       uploadthing:
-        specifier: 3.0.3
+        specifier: 3.0.4
         version: link:../uploadthing
 
   packages/uploadthing:
@@ -3287,7 +3287,7 @@ packages:
   /axios@0.25.0(debug@4.3.4):
     resolution: {integrity: sha512-cD8FOb0tRH3uuEe6+evtAbgJtfxr7ly3fQjYcMcuPlgkwVS9xboaVIpcDV+cYQe+yGykgwZCs1pzjntcGa6l5g==}
     dependencies:
-      follow-redirects: 1.15.2(debug@4.3.4)
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
 
@@ -4732,18 +4732,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: true
-
-  /follow-redirects@1.15.2(debug@4.3.4):
-    resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
-    engines: {node: '>=4.0'}
-    peerDependencies:
-      debug: '*'
-    peerDependenciesMeta:
-      debug:
-        optional: true
-    dependencies:
-      debug: 4.3.4
 
   /for-each@0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
