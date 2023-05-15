@@ -6,7 +6,7 @@ export const uploadRouter = {
   withMdwr: f
     .fileTypes(["image"])
     .maxSize("16MB")
-    .middleware(async (req) => {
+    .middleware((req) => {
       const h = req.headers.get("someProperty");
 
       if (!h) throw new Error("someProperty is required");
@@ -31,7 +31,7 @@ export const uploadRouter = {
   withoutMdwr: f
     .maxSize("64MB")
     .fileTypes(["image"])
-    .middleware(async () => {
+    .middleware(() => {
       return { testMetadata: "lol" };
     })
     .onUploadComplete(({ metadata, file }) => {

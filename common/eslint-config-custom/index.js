@@ -1,4 +1,5 @@
-module.exports = {
+/** @type {import("eslint").Linter.Config} */
+const config = {
   extends: [
     "next",
     "turbo",
@@ -6,6 +7,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint", "react", "react-hooks"],
@@ -15,11 +17,12 @@ module.exports = {
     "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/restrict-template-expressions": "off",
+
+    // restricts so you can't use {} as type. me no likey
+    "@typescript-eslint/ban-types": "off",
   },
   parserOptions: {
-    babelOptions: {
-      presets: [require.resolve("next/babel")],
-    },
     ecmaFeatures: {
       jsx: true,
     },
@@ -29,4 +32,13 @@ module.exports = {
       version: "detect",
     },
   },
+  ignorePatterns: [
+    "**/*.config.js",
+    "**/*.config.cjs",
+    ".eslintrc.cjs",
+    "common/**",
+  ],
+  reportUnusedDisableDirectives: true,
 };
+
+module.exports = config;

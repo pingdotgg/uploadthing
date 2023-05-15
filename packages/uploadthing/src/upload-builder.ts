@@ -16,7 +16,7 @@ export function createBuilder<TRuntime extends AnyRuntime = "web">(
     fileTypes: ["image"],
     maxSize: "1MB",
     // @ts-expect-error - huh?
-    middleware: async () => ({}),
+    middleware: () => ({}),
     ...initDef,
   };
 
