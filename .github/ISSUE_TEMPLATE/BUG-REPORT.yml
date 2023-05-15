@@ -1,0 +1,59 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["unconfirmed_bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Tell us what happened!
+      placeholder: "Please provide a clear and concise description of what happened."
+    validations:
+      required: true
+  - type: textarea
+    id: what-did-you-expect-to-happen
+    attributes:
+      label: What did you expect to happen?
+      description: Please describe what you expected to happen.
+      placeholder: "Please provide a clear and concise description of what you expected to happen."
+    validations:
+      required: true
+  - type: textarea
+    id: version
+    attributes:
+      label: Version
+      description: What version are you using?
+      placeholder: "Please provide the version number of the software or platform you are using."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Reproduction Steps
+      description: How can we reproduce the issue?
+      placeholder: "Please provide step-by-step instructions on how to reproduce the issue."
+  - type: textarea
+    id: reproduction-repo
+    attributes:
+      label: Reproduction Repository
+      description: Do you have a repository that reproduces the issue?
+      placeholder: "Please provide a link to a repository that reproduces the issue."
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: bash
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/pingdotgg/uploadthing/blob/main/.github/ISSUE_TEMPLATE/code-of-conduct.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
