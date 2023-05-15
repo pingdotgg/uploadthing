@@ -1,5 +1,6 @@
 {
   "name": "@example/solidstart",
+  "private": true,
   "scripts": {
     "dev": "solid-start dev --port 9898",
     "start": "solid-start start --port 9898",
