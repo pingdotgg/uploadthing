@@ -1,8 +1,8 @@
 {
   "name": "@uploadthing/solid",
   "author": "OrJDev",
-  "license": "ISC",
-  "version": "1.0.1",
+  "license": "MIT",
+  "version": "3.0.3",
   "type": "module",
   "exports": {
     ".": {
