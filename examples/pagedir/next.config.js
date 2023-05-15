@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@uploadthing/react"],
+  eslint: { ignoreDuringBuilds: true },
 };
 
 module.exports = nextConfig;

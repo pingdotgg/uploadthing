@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { FileRouter } from "./server";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
@@ -36,7 +39,8 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     }
   });
 
-  if (!s3ConnectionRes) throw "No url received. How did you get here?";
+  if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes))
+    throw "No url received. How did you get here?";
 
   const fileUploadPromises = s3ConnectionRes.map(async (presigned: any) => {
     const file = files.find((f) => f.name === presigned.name);
