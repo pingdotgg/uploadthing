@@ -1,0 +1,108 @@
+{
+  "name": "@uploadthing/solid",
+  "author": "OrJDev",
+  "license": "ISC",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "worker": {
+        "solid": "./dist/server.jsx",
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/server.js"
+        },
+        "require": "./dist/server.cjs"
+      },
+      "browser": {
+        "solid": {
+          "development": "./dist/dev.jsx",
+          "import": "./dist/index.jsx"
+        },
+        "development": {
+          "import": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/dev.js"
+          },
+          "require": "./dist/dev.cjs"
+        },
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/index.js"
+        },
+        "require": "./dist/index.cjs"
+      },
+      "deno": {
+        "solid": "./dist/server.jsx",
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/server.js"
+        },
+        "require": "./dist/server.cjs"
+      },
+      "node": {
+        "solid": "./dist/server.jsx",
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/server.js"
+        },
+        "require": "./dist/server.cjs"
+      },
+      "solid": {
+        "development": "./dist/dev.jsx",
+        "import": "./dist/index.jsx"
+      },
+      "development": {
+        "import": {
+          "types": "./dist/index.d.ts",
+          "default": "./dist/dev.js"
+        },
+        "require": "./dist/dev.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/index.css"
+  },
+  "main": "./dist/server.cjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "browser": {
+    "./dist/server.js": "./dist/index.js",
+    "./dist/server.cjs": "./dist/index.cjs"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && tsup --config ./tsup.config.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "autoprefixer": "10.4.14",
+    "postcss": "8.4.22",
+    "solid-js": "^1.7.3",
+    "solidjs-dropzone": "^1.0.0",
+    "tailwindcss": "^3.3.2",
+    "tsup": "6.7.0",
+    "tsup-preset-solid": "0.1.8",
+    "typescript": "5.1.0-beta",
+    "uploadthing": "3.0.2"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.5.3",
+    "solidjs-dropzone": "^1.0.0",
+    "uploadthing": "3.0.2"
+  },
+  "keywords": [
+    "SolidJS",
+    "Uploadthing"
+  ],
+  "typesVersions": {},
+  "module": "./dist/server.js"
+}

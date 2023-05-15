@@ -1,0 +1,96 @@
+### Use the FileRouter in your app
+
+#### Uploader
+
+The `@uploadthing/solid` package includes an "Uploader" component that you can simply drop into your app, and start uploading files immediately.
+
+```tsx copy
+// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
+import "@uploadthing/solid/styles.css";
+import { type VoidComponent } from "solid-js";
+import type { OurFileRouter } from "./api/uploadthing/core";
+import { Uploader } from "@uploadthing/solid";
+
+const Home: VoidComponent = () => {
+  return (
+    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+      <Uploader<OurFileRouter>
+        endpoint="imageUploader"
+        // needed when server side rendering
+        url="http://localhost:3000"
+        onClientUploadComplete={() => {
+          alert("Upload Completed");
+        }}
+      />
+    </main>
+  );
+};
+
+export default Home;
+```
+
+#### UploadButton
+
+This is a SolidJS dropzone component that will be used to upload files when clicking on it.
+
+```tsx copy
+// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
+import "@uploadthing/solid/styles.css";
+import { type VoidComponent } from "solid-js";
+import type { OurFileRouter } from "./api/uploadthing/core";
+import { UploadButton } from "@uploadthing/solid";
+
+const Home: VoidComponent = () => {
+  return (
+    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+      <UploadButton<OurFileRouter>
+        endpoint="imageUploader"
+        // needed when server side rendering
+        url="http://localhost:3000"
+        onClientUploadComplete={() => {
+          alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
+        }}
+      />
+    </main>
+  );
+};
+
+export default Home;
+```
+
+#### UploadDropzone
+
+This is a SolidJS dropzone component that you can use to upload files, you can drag files into it.
+
+```tsx copy
+// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
+import "@uploadthing/solid/styles.css";
+import { type VoidComponent } from "solid-js";
+import type { OurFileRouter } from "./api/uploadthing/core";
+import { UploadDropzone } from "@uploadthing/solid";
+
+const Home: VoidComponent = () => {
+  return (
+    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+      <UploadDropzone<OurFileRouter>
+        endpoint="imageUploader"
+        // needed when server side rendering
+        url="http://localhost:3000"
+        onClientUploadComplete={() => {
+          alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
+        }}
+      />
+    </main>
+  );
+};
+
+export default Home;
+```
