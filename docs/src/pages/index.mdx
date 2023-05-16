@@ -13,10 +13,25 @@ import { Callout, Steps } from "nextra-theme-docs";
 
 If you are using React:
 
-```bash copy
-npm install uploadthing @uploadthing/react react-dropzone
+import { Tab, Tabs } from "nextra-theme-docs";
 
-```
+<Tabs items={["npm", "yarn", "pnpm"]}>
+  <Tab>
+    ```bash copy 
+    npm install uploadthing @uploadthing/react react-dropzone 
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    yarn add uploadthing @uploadthing/react react-dropzone 
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    pnpm install uploadthing @uploadthing/react react-dropzone 
+    ```
+  </Tab>
+</Tabs>
 
 ### Add env variables
 
@@ -37,4 +52,3 @@ Continue setting up with either the [App Router](/nextjs/appdir) or [Pages Route
 ## Set up in your SolidStart application
 
 Continue setting up with the [SolidStart guide](/solid)
-
