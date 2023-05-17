@@ -8,9 +8,28 @@ import { Callout, Steps } from "nextra-theme-docs";
 
 ### Install the packages
 
-```bash copy
-npm install uploadthing @uploadthing/react-native expo-image-picker expo-document-picker
-```
+import { Tab, Tabs } from "nextra-theme-docs";
+
+<Tabs items={["npm", "yarn", "pnpm"]}>
+  <Tab>
+    {/* <!-- prettier-ignore --> */}
+    ```bash copy
+    npm install uploadthing @uploadthing/react-native expo-image-picker expo-document-picker
+    ```
+  </Tab>
+  <Tab>
+    {/* <!-- prettier-ignore --> */}
+    ```bash copy
+    yarn add uploadthing @uploadthing/react-native expo-image-picker expo-document-picker
+    ```
+  </Tab>
+  <Tab>
+    {/* <!-- prettier-ignore --> */}
+    ```bash copy
+    pnpm add uploadthing @uploadthing/react-native expo-image-picker expo-document-picker
+    ```
+  </Tab>
+</Tabs>
 
 ### Add env variables
 
