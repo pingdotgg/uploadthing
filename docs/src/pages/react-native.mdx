@@ -84,6 +84,50 @@ const Index = () => {
 export default Index;
 ```
 
+#### Props
+
+##### `endpoint`
+
+Type: `string`
+
+The `endpoint` prop configures what endpoint to upload the input to. It is recommended that when using `ImageUploader`, the endpoint allows images and/or videos.
+
+##### `multiple`
+
+Type: `boolean`
+
+This boolean configures whether the image picker has the ability to select multiple images/videos.
+
+##### `allowEditing`
+
+Type: `boolean`
+
+The `allowEditing` prop configures whether the user can edit the image/video prior to uploading. This is enabled by default on IPads to fix a bug on IPad Pro when working with image pickers.
+
+##### `showPreview`
+
+Type: `boolean`
+
+Whether or not to show a preview of the image uploaded. You cannot show a preview for videos or when `multiple` is enabled.
+
+##### `onClientUploadComplete`
+
+Type: `Function`
+
+The `onClientUploadComplete` callback is fired once the client receives information on the completion of the upload.
+
+##### `onUploadError`
+
+Type: `Function`
+
+The `onUploadError` callback is fired whenever there is an error in the uploading process.
+
+##### `url`
+
+Type: `String`
+
+The `url` prop configures the API route that you hosted for UploadThing.
+
 ### DocumentUploader
 
 ```tsx copy
@@ -115,3 +159,35 @@ const Index = () => {
 
 export default Index;
 ```
+
+#### Props
+
+##### `endpoint`
+
+Type: `string`
+
+The `endpoint` prop configures what endpoint to upload the input to.
+
+##### `multiple`
+
+Type: `boolean`
+
+This boolean configures whether the image picker has the ability to select multiple documents.
+
+##### `onClientUploadComplete`
+
+Type: `Function`
+
+The `onClientUploadComplete` callback is fired once the client receives information on the completion of the upload.
+
+##### `onUploadError`
+
+Type: `Function`
+
+The `onUploadError` callback is fired whenever there is an error in the uploading process.
+
+##### `url`
+
+Type: `String`
+
+The `url` prop configures the API route that you hosted for UploadThing.
