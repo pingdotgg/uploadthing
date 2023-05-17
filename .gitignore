@@ -36,5 +36,5 @@ yarn-error.log*
 dist
 .solid
 
-# TypeScript
-tsconfig.tsbuildinfo
+# typescript
+*.tsbuildinfo
