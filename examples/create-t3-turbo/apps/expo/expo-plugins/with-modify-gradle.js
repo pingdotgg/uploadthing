@@ -16,7 +16,7 @@ const defineConfig = (config) => {
           `buildscript {
     ext.getPackageJsonVersion = { packageName ->
         new File(['node', '--print', "JSON.parse(require('fs').readFileSync(require.resolve('\${packageName}/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
-    }`,
+    }`
         );
       }
 
@@ -24,7 +24,7 @@ const defineConfig = (config) => {
         config.modResults.contents = config.modResults.contents.replace(
           "ext {",
           `ext {
-        reactNativeVersion = "\${ext.getPackageJsonVersion('react-native')}"`,
+        reactNativeVersion = "\${ext.getPackageJsonVersion('react-native')}"`
         );
       }
 
@@ -32,12 +32,12 @@ const defineConfig = (config) => {
         config.modResults.contents = config.modResults.contents.replace(
           "ext {",
           `ext {
-        expoPackageVersion = "\${ext.getPackageJsonVersion('expo')}"`,
+        expoPackageVersion = "\${ext.getPackageJsonVersion('expo')}"`
         );
       }
 
       return config;
-    },
+    }
   );
 };
 

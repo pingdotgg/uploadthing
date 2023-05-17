@@ -356,10 +356,6 @@ importers:
         version: 7.0.1
 
   packages/react-native:
-    dependencies:
-      react:
-        specifier: ^17.0.2 || ^18.0.0
-        version: 18.2.0
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -385,6 +381,9 @@ importers:
       expo-image-picker:
         specifier: ^14.1.1
         version: 14.1.1(expo@48.0.16)
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
       react-native:
         specifier: 0.71.3
         version: 0.71.3(@babel/core@7.21.3)(@babel/preset-env@7.21.5)(react@18.2.0)
