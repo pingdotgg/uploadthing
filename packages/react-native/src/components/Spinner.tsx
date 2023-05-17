@@ -1,7 +1,15 @@
 import { useEffect, useRef } from "react";
-import { Animated, Easing, View } from "react-native";
+import {
+  Animated,
+  Easing,
+  type StyleProp,
+  View,
+  type ViewProps,
+} from "react-native";
 
-export const Spinner = () => {
+export const Spinner = (
+  { style }: { style?: ViewProps["style"] } = { style: {} }
+) => {
   const spinAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -39,16 +47,21 @@ export const Spinner = () => {
       }}
     >
       <View
-        style={{
-          width: 20,
-          height: 20,
-          borderWidth: 2,
-          borderColor: "white",
-          borderRadius: 10,
-          borderStyle: "solid",
-          borderTopColor: "transparent",
-        }}
+        style={[
+          {
+            width: 20,
+            height: 20,
+            borderWidth: 2,
+            borderColor: "white",
+            borderRadius: 10,
+            borderStyle: "solid",
+            borderTopColor: "transparent",
+          },
+          style,
+        ]}
       />
     </Animated.View>
   );
 };
+
+Spinner.displayName = "Spinner";

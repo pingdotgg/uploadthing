@@ -2,7 +2,13 @@ import { type FileRouter } from "uploadthing/server";
 import { useUploadThing } from "../useUploadThing";
 import { type DANGEROUS__uploadFiles } from "uploadthing/client";
 import * as DocumentPicker from "expo-document-picker";
-import { TouchableOpacity, View, Text } from "react-native";
+import {
+  TouchableOpacity,
+  View,
+  Text,
+  type TextProps,
+  type ViewProps,
+} from "react-native";
 import { useEffect } from "react";
 import { Spinner } from "./Spinner";
 
@@ -31,6 +37,34 @@ function generateMimeTypes(fileTypes: string[]) {
   return allowedMimeTypes;
 }
 
+type DocumentUploaderTheme = {
+  /**
+   * Styling for the container of the uploader component
+   */
+  containerStyle?: ViewProps["style"];
+  /**
+   * Styling for the constraints text at the bottom of the uploader component
+   */
+  constraintsTextStyle?: TextProps["style"];
+  /**
+   * Styling for the upload button
+   * Can be different for loading, idle, and all = both states
+   */
+  uploadButtonStyle?: {
+    loading: ViewProps["style"];
+    all: ViewProps["style"];
+    idle: ViewProps["style"];
+  };
+  /**
+   * Styling for the text inside the upload button
+   */
+  uploadButtonTextStyle?: TextProps["style"];
+  /**
+   * Styling for the spinner inside the upload button
+   */
+  spinnerStyle?: ViewProps["style"];
+};
+
 /**
  * @example
  * <DocumentUploader<OurFileRouter>
@@ -51,6 +85,7 @@ export function DocumentUploader<
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
+  theme?: DocumentUploaderTheme;
 }) {
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
@@ -95,43 +130,61 @@ export function DocumentUploader<
   }
 
   return (
-    <View>
+    <View style={props.theme?.containerStyle}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => {
           void upload();
         }}
-        style={{
-          backgroundColor: "blue",
-          width: "100%",
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "nowrap",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 8,
-          borderRadius: 8,
-          columnGap: 4,
-        }}
+        style={[
+          {
+            backgroundColor: "blue",
+            width: "100%",
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "nowrap",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 8,
+            borderRadius: 8,
+            columnGap: 4,
+          },
+          props.theme?.uploadButtonStyle?.all || {},
+          isUploading
+            ? props.theme?.uploadButtonStyle?.loading || {}
+            : props.theme?.uploadButtonStyle?.idle || {},
+        ]}
       >
         {isUploading ? (
           <>
-            <Spinner />
-            <Text style={{ color: "white" }}> Uploading</Text>
+            <Spinner style={props.theme?.spinnerStyle} />
+            <Text
+              style={[{ color: "white" }, props.theme?.uploadButtonTextStyle]}
+            >
+              {" "}
+              Uploading
+            </Text>
           </>
         ) : (
-          <Text style={{ color: "white" }}>Upload</Text>
+          <Text
+            style={[{ color: "white" }, props.theme?.uploadButtonTextStyle]}
+          >
+            Upload
+          </Text>
         )}
       </TouchableOpacity>
       {fileTypes ? (
         <Text
-          style={{
-            fontSize: 12,
-            marginTop: 8,
-            width: "100%",
-            textAlign: "center",
-            color: "white",
-          }}
+          style={[
+            {
+              fontSize: 12,
+              marginTop: 8,
+              width: "100%",
+              textAlign: "center",
+              color: "white",
+            },
+            props.theme?.constraintsTextStyle,
+          ]}
         >
           {`${fileTypes
             .map(

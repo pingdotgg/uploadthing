@@ -2,7 +2,16 @@ import { type FileRouter } from "uploadthing/server";
 import { useUploadThing } from "../useUploadThing";
 import { type DANGEROUS__uploadFiles } from "uploadthing/client";
 import { useEffect, useState } from "react";
-import { View, Text, Image, Platform, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  Platform,
+  TouchableOpacity,
+  type ViewProps,
+  type ImageProps,
+  type TextProps,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { MediaTypeOptions } from "expo-image-picker";
 import { Spinner } from "./Spinner";
@@ -13,6 +22,51 @@ export type EndpointHelper<TRouter extends void | FileRouter> =
     : keyof TRouter extends string
     ? keyof TRouter
     : string;
+
+type ImageUploaderTheme = {
+  /**
+   * Styling for the container of the uploader component
+   */
+  containerStyle?: ViewProps["style"];
+  /**
+   * Styling for the container of the image preview
+   * Can be different for loading, idle, and all = both states
+   */
+  previewStyle?: {
+    loading: ViewProps["style"];
+    all: ViewProps["style"];
+    idle: ViewProps["style"];
+  };
+  /**
+   * Styling for the image of the preview
+   */
+  previewImageStyle?: ImageProps["style"];
+  /**
+   * Styling for the text of the preview shown when there is no image
+   */
+  previewTextStyle?: TextProps["style"];
+  /**
+   * Styling for the upload button
+   * Can be different for loading, idle, and all = both states
+   */
+  uploadButtonStyle?: {
+    loading: ViewProps["style"];
+    all: ViewProps["style"];
+    idle: ViewProps["style"];
+  };
+  /**
+   * Styling for the text inside the upload button
+   */
+  uploadButtonTextStyle?: TextProps["style"];
+  /**
+   * Styling for the spinner inside the upload button and the preview
+   */
+  spinnerStyle?: ViewProps["style"];
+  /**
+   * Styling for the constraints text at the bottom of the uploader component
+   */
+  constraintsTextStyle?: TextProps["style"];
+};
 
 /**
  * @example
@@ -34,6 +88,7 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
+  theme?: ImageUploaderTheme;
 }) {
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
@@ -108,7 +163,8 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
       if (!response.canceled) {
         void startUpload(
           response.assets.map((asset) => {
-            const fileName = asset.fileName || asset.uri.split("/").pop()!;
+            const fileName =
+              asset.fileName || (asset.uri.split("/").pop() as string);
 
             return {
               uri: asset.uri,
@@ -133,32 +189,41 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
   };
 
   return (
-    <View>
+    <View style={props.theme?.containerStyle || {}}>
       {props.showPreview && !props.multiple ? (
         <View
-          style={{
-            width: "100%",
-            height: "100%",
-            borderColor: "white",
-            borderRadius: 8,
-            borderWidth: 2,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+          style={[
+            {
+              width: "100%",
+              height: 250,
+              borderColor: "white",
+              borderRadius: 8,
+              borderWidth: 2,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            },
+            props.theme?.previewStyle?.all || {},
+            isUploading
+              ? props.theme?.previewStyle?.loading || {}
+              : props.theme?.previewStyle?.idle || {},
+          ]}
         >
           {isUploading ? (
-            <Spinner />
+            <Spinner style={props.theme?.spinnerStyle || {}} />
           ) : uploadedUri ? (
             <Image
               source={{
                 uri: uploadedUri,
               }}
               alt={"Selected file"}
-              style={{ width: 200, height: 200 }}
+              style={[
+                { width: 200, height: 200 },
+                props.theme?.previewImageStyle || {},
+              ]}
             />
           ) : fileTypes ? (
-            <Text style={{ color: "white" }}>
+            <Text style={[{ color: "white" }, props.theme?.previewTextStyle]}>
               Choose{" "}
               {fileTypes
                 ?.filter(
@@ -167,7 +232,9 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
                 .join(" or ")}
             </Text>
           ) : (
-            <Text style={{ color: "white" }}>Nothing selected</Text>
+            <Text style={[{ color: "white" }, props.theme?.previewTextStyle]}>
+              Nothing selected
+            </Text>
           )}
         </View>
       ) : null}
@@ -176,38 +243,56 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
         onPress={() => {
           void upload();
         }}
-        style={{
-          backgroundColor: "blue",
-          width: "100%",
-          marginTop: 12,
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "nowrap",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 8,
-          borderRadius: 8,
-          columnGap: 4,
-        }}
+        style={[
+          {
+            backgroundColor: "blue",
+            width: "100%",
+            marginTop: 12,
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "nowrap",
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 8,
+            borderRadius: 8,
+            columnGap: 4,
+          },
+          props.theme?.uploadButtonStyle?.all || {},
+          isUploading
+            ? props.theme?.uploadButtonStyle?.loading || {}
+            : props.theme?.uploadButtonStyle?.idle || {},
+        ]}
       >
         {isUploading ? (
           <>
-            <Spinner />
-            <Text style={{ color: "white" }}> Uploading</Text>
+            <Spinner style={props.theme?.spinnerStyle || {}} />
+            <Text
+              style={[{ color: "white" }, props.theme?.uploadButtonTextStyle]}
+            >
+              {" "}
+              Uploading
+            </Text>
           </>
         ) : (
-          <Text style={{ color: "white" }}>Upload</Text>
+          <Text
+            style={[{ color: "white" }, props.theme?.uploadButtonTextStyle]}
+          >
+            Upload
+          </Text>
         )}
       </TouchableOpacity>
       {fileTypes ? (
         <Text
-          style={{
-            fontSize: 12,
-            marginTop: 8,
-            width: "100%",
-            textAlign: "center",
-            color: "white",
-          }}
+          style={[
+            {
+              fontSize: 12,
+              marginTop: 8,
+              width: "100%",
+              textAlign: "center",
+              color: "white",
+            },
+            props.theme?.constraintsTextStyle,
+          ]}
         >
           {`${fileTypes
             .map(
