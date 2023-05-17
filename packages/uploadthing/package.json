@@ -6,7 +6,8 @@
     "./package.json": "./package.json",
     "./client": {
       "import": "./dist/client.mjs",
-      "types": "./dist/client.d.ts"
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.mjs"
     },
     "./server": {
       "import": "./dist/server.mjs",
@@ -15,12 +16,21 @@
     },
     "./next": {
       "import": "./dist/next.mjs",
-      "types": "./dist/next.d.ts"
+      "types": "./dist/next.d.ts",
+      "default": "./dist/next.mjs"
     },
     "./next-legacy": {
       "import": "./dist/next-legacy.mjs",
-      "types": "./dist/next-legacy.d.ts"
+      "types": "./dist/next-legacy.d.ts",
+      "default": "./dist/next-legacy.mjs"
     }
+  },
+  "browser": {
+    "./package.json": "./package.json",
+    "./client": "./dist/client.mjs",
+    "./server": "./dist/server.mjs",
+    "./next": "./dist/next.mjs",
+    "./next-legacy": "./dist/next-legacy.mjs"
   },
   "files": [
     "dist"

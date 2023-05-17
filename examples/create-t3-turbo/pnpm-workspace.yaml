@@ -1,0 +1,4 @@
+packages:
+  - apps/expo
+  - apps/nextjs
+  - packages/config/*

@@ -1,0 +1,12 @@
+{
+  "name": "@uploadthing/shared",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Shared code for UploadThing",
+  "devDependencies": {
+    "@types/react": "18.2.0",
+    "react": "18.2.0",
+    "tsup": "6.7.0",
+    "typescript": "5.1.0-beta"
+  }
+}

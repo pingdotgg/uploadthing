@@ -8,9 +8,20 @@ node_modules
 # testing
 coverage
 
+# database
+**/prisma/db.sqlite
+**/prisma/db.sqlite-journal
+
 # next.js
 .next/
 out/
+next-env.d.ts
+
+# expo
+.expo/
+dist/
+
+# production
 build
 
 # misc
@@ -25,16 +36,13 @@ yarn-error.log*
 
 # local env files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
 
 # turbo
 .turbo
-
-dist
-.solid
-
-# TypeScript
-tsconfig.tsbuildinfo

@@ -2,21 +2,8 @@ import { useState } from "react";
 import type { FileRouter } from "uploadthing/server";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 
-import { useEvent } from "./utils/useEvent";
-import useFetch from "./utils/useFetch";
-
-type EndpointMetadata = {
-  slug: string;
-  maxSize: string;
-  fileTypes: string[];
-}[];
-const useEndpointMetadata = (endpoint: string) => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
-
-  // TODO: Log on errors in dev
-
-  return data?.find((x) => x.slug === endpoint);
-};
+import { useEvent } from "@uploadthing/shared/useEvent";
+import { useEndpointMetadata } from "@uploadthing/shared/useEndpointMetadata";
 
 export const useUploadThing = <T extends string>({
   endpoint,
