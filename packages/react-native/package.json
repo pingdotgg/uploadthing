@@ -55,5 +55,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "directory": "packages/react-native",
+    "url": "github:pingdotgg/uploadthing"
   }
 }

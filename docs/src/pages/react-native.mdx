@@ -1,0 +1,98 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Getting Started
+
+## Package Setup
+
+<Steps>
+
+### Install the packages
+
+```bash copy
+npm install uploadthing @uploadthing/react-native expo-image-picker expo-document-picker
+```
+
+### Add env variables
+
+```bash copy
+UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+```
+
+<Callout type="warning">
+  If you don't already have a uploadthing secret key, [sign up](/create-account) and create one from
+  the [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+</Steps>
+
+## Set Up A FileRouter
+
+When using Uploadthing with React Native, we assume that you already setup an API route by following one of the Next.js or Solid Start guides to do so.
+
+## Using the FileRouter
+
+The `@uploadthing/react-native` package contains two components `ImageUploader` and `DocumentUploader`. For an example of using React Native
+
+### ImageUploader
+
+```tsx copy
+import { type OurFileRouter } from "@acme/nextjs/src/app/api/uploadthing/core";
+import { ImageUploader } from "@uploadthing/react-native";
+import React from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { getBaseUrl } from "~/utils/api";
+
+const Index = () => {
+  return (
+    <SafeAreaView className="bg-[#1F104A]">
+      <View className="h-full w-full p-4">
+        <ImageUploader<OurFileRouter>
+          endpoint="imageUploader"
+          onClientUploadComplete={(res) => {
+            console.log(res);
+          }}
+          showPreview={true}
+          onUploadError={(err) => {
+            console.error(err);
+          }}
+          url={`${getBaseUrl()}/api/uploadthing`}
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default Index;
+```
+
+### DocumentUploader
+
+```tsx copy
+import { type OurFileRouter } from "@acme/nextjs/src/app/api/uploadthing/core";
+import { DocumentUploader } from "@uploadthing/react-native";
+import React from "react";
+import { View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { getBaseUrl } from "~/utils/api";
+
+const Index = () => {
+  return (
+    <SafeAreaView className="bg-[#1F104A]">
+      <View className="h-full w-full p-4">
+        <DocumentUploader<OurFileRouter>
+          endpoint="blobUploader"
+          onClientUploadComplete={(res) => {
+            console.log(res);
+          }}
+          onUploadError={(err) => {
+            console.error(err);
+          }}
+          url={`${getBaseUrl()}/api/uploadthing`}
+        />
+      </View>
+    </SafeAreaView>
+  );
+};
+
+export default Index;
+```

@@ -1,14 +1,12 @@
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack, useRouter } from "expo-router";
-import { DocumentUploader, ImageUploader } from "@uploadthing/react-native";
 import { type OurFileRouter } from "@acme/nextjs/src/app/api/uploadthing/core";
+import { DocumentUploader, ImageUploader } from "@uploadthing/react-native";
+import { Stack } from "expo-router";
+import React from "react";
+import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { getBaseUrl } from "~/utils/api";
 
 const Index = () => {
-  const router = useRouter();
-
   return (
     <SafeAreaView className="bg-[#1F104A]">
       {/* Changes page title visible on the header */}

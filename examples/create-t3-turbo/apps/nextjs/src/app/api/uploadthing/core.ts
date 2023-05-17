@@ -1,4 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+
 const f = createUploadthing();
 
 // FileRouter for your app, can contain multiple FileRoutes
@@ -12,9 +13,12 @@ export const ourFileRouter = {
       // This code RUNS ON YOUR SERVER after upload
       console.log("[SERVER] Image upload complete: file url", file.url);
     }),
-  blobUploader: f.fileTypes(["blob"]).maxSize("1GB").onUploadComplete(({ file }) => {
-    console.log("[SERVER] Blob upload complete: file url", file.url);
-  }),
+  blobUploader: f
+    .fileTypes(["blob", "audio", "image", "video"])
+    .maxSize("1GB")
+    .onUploadComplete(({ file }) => {
+      console.log("[SERVER] Blob upload complete: file url", file.url);
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
