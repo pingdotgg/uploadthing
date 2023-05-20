@@ -1,4 +1,5 @@
 {
   "appdir": "App Router (app/)",
-  "pagedir": "Page Router (pages/)"
+  "pagedir": "Page Router (pages/)",
+  "customuploadbutton" : "Custom Upload Button"
 }

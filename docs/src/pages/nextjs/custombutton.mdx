@@ -1,0 +1,93 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Getting Started with `CustomUploadButton`
+
+<Callout type="warning">
+You must have the uploading system setup before u can create `CustomUploadButton`
+refer : ` https://docs.uploadthing.com/nextjs/pagedir ` or ` https://docs.uploadthing.com/nextjs/pagedir ` for appDir
+</Callout>
+## Setup Custom Button 
+
+<Steps>
+- This is code / an example code to create `CustomUploadButton`
+- You need to create an advance varient & stylings(Details are given in each steps)
+
+```ts copy 
+/** In Your File (Any File) with the setup of PageDir / AppDir */
+/** refer : ` https://docs.uploadthing.com/nextjs/pagedir ` for PageDir or ` https://docs.uploadthing.com/nextjs/pagedir ` for appDir */
+
+    import React, { useState } from 'react';
+import { genUploader } from 'uploadthing/client'; // Import the genUploader
+
+// Creating an Interface to store the Images in an array 
+interface ConfirmProps {
+  onClick: (files: File[]) => void; //Creating OnClick Event
+}
+//Creating an Custom Button to upload files
+const Confirm_button: React.FC<ConfirmProps> = ({ onClick }) => {
+  const handleConfirmClick = () => {
+    onClick([]); // Passing the Uploaded Files
+  };
+  return (//Custom Button
+  <button style={{ backgroundColor: 'green', color: 'white' }} onClick={handleConfirmClick}>Confirm</button>);
+};
+const CustomButton: React.FC = () => {
+  const [customClicked, setCustomClicked] = useState(false);//Using UseState
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);//Using UseState
+  //Handleing the Confirm Click event ( To check if Confirm  was clicked / not)[if Clicked :: Upload else Stay]
+  const ConfirmClickHandler = async (files: File[]) => {
+    console.log('Confirm clicked with files:', files); // Checking by console log
+    const uploadFiles = async () => {  // Upload Files logic
+      try {
+        const uploadEndpoint = 'imageUploader'; // Replace with the desired endpoint which are available 
+        const upload = genUploader(); // Using the genUploader from the package [uploading/client]
+        await upload(files, uploadEndpoint).then(()=> setUploadedFiles([])) // 🟢 Finally Upload file
+        console.log('Uploaded files && Cleared'); // Log Informaation
+        
+      } catch (error) { //Check Error
+        console.error('Upload error:', error); // 🔴 Log Error
+      }
+    };
+   await uploadFiles() //Exc
+  };
+
+
+// This button will look for to execute the events related to uploading the files before confirm & store it in the Array for temporaryly
+  const FileUploadingButton = () => { 
+    setCustomClicked(true);//Changing the state to true []
+    const input = document.createElement('input'); //Input Event
+    input.type = 'file'; // input type
+    input.multiple = true; // Multiple input true or false
+    input.addEventListener('change', (event: any) => {
+      const files = Array.from(event.target.files) as File[];
+      setUploadedFiles(files); // Storeing the uploaded files in state
+    });
+    input.click(); // End
+  };
+
+//This return state is gonna return when there is an upload 
+  return (
+    <div>
+      <button style={{ backgroundColor: 'pink', color: 'white' }}onClick={FileUploadingButton}>Custom Upload Button</button>
+      {customClicked && (
+        <div style={{flexDirection: 'row', display: 'flex',gap:'20px'}}>
+          {uploadedFiles.map((file, index) => (
+            <img style={{width : '100px'}} key={index} src={URL.createObjectURL(file)} alt={`Uploaded File ${index}`} />//Preview the images
+          ))}
+        </div>
+      )}
+      <Confirm_button onClick={() => ConfirmClickHandler(uploadedFiles)} />
+    </div>
+  );
+};
+
+export default function Home() {//Home : for index rest your own file's Name / Function
+  return <CustomButton />;
+}
+
+
+
+```
+
+
+</Steps>
