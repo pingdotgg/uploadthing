@@ -1,1 +1,1 @@
-export { generateReactHelpers } from "./src/useUploadThing";
+export { generateReactHelpers, useUploadThing } from "./src/useUploadThing";
