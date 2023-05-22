@@ -6,6 +6,14 @@ If your components appear unstyled, you likely forgot to import our CSS file fro
 import "@uploadthing/react/styles.css";
 ```
 
+### Some of my other components look weird now... what's up with that?
+
+You may need to check the order of imports. Making sure that the uploadthing component styles are imported before others usually does the trick
+```tsx
+import "@uploadthing/react/styles.css";
+import '../styles/globals.css'
+```
+
 ### When I upload files, I get the error `Failed to simulate callback for file. Is your webhook configured correctly?`
 
 This error is our catch-all if we were unable to query the `/api/uploadthing` endpoint. Almost every time we've seen someone who has this issue, it's because their `middleware.ts` is configured incorrectly.
