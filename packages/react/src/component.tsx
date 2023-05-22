@@ -61,7 +61,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+            {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
+            {maxSize && `up to ${maxSize}`}
           </p>
         )}
       </div>
@@ -146,7 +147,8 @@ export const UploadDropzone = <
         <div className="ut-h-[1.25rem]">
           {fileTypes && (
             <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-              {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+              {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
+              {maxSize && `up to ${maxSize}`}
             </p>
           )}
         </div>
