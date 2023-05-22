@@ -12,9 +12,9 @@
     "vercel-build": "yarn workspace nextra run build && yarn workspace nextra-theme-docs run build && yarn build"
   },
   "dependencies": {
-    "next": "13.4.1",
-    "nextra": "^2.5.0",
-    "nextra-theme-docs": "^2.5.0",
+    "next": "13.4.3",
+    "nextra": "^2.6.0",
+    "nextra-theme-docs": "^2.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   }
