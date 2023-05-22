@@ -3,7 +3,7 @@ import { Callout, Steps } from "nextra-theme-docs";
 # Getting Started With `pages/`
 
 <Callout type="warning">
-  If you're using the `pages/` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG:
+  If you're using the `pages/` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG to prevent esm/cjs errors from our peer dep `react-dropzone`:
 
 ```ts
 // next.config.js
@@ -70,7 +70,8 @@ export type OurFileRouter = typeof ourFileRouter;
 
 <Callout type="warning">
   Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
-  from `pages/api/uploadthing` on your application.
+  from `/api/uploadthing` as it is called via webhook to trigger
+  `onUploadComplete`.
 </Callout>
 
 ```ts copy
