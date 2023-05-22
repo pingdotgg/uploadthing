@@ -47,7 +47,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           multiple={props.multiple}
           accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
-            e.target.files && startUpload(Array.from(e.target.files));
+            if (!e.target.files) return;
+            void startUpload(Array.from(e.target.files));
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
@@ -159,8 +160,9 @@ export const UploadDropzone = <
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (!files) return;
 
-                startUpload(files);
+                void startUpload(files);
               }}
             >
               <span className="ut-px-3 ut-py-2 ut-text-white">
