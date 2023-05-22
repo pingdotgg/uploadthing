@@ -22,6 +22,7 @@ type UploadedFile = {
   name: string;
   key: string;
   url: string;
+  size: number;
 };
 
 type AllowedFiles = "image" | "video" | "audio" | "blob";
