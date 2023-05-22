@@ -53,8 +53,15 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     const formData = new FormData();
 
     // Give content type to blobs because S3 is dumb
-    formData.append("Content-Type", file.type);
-    console.log("FILE TYPE", file.type);
+    // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
+    if (presigned.fileType === file.type.split("/")[0]) {
+      formData.append("Content-Type", file.type);
+      console.log("FILE TYPE", file.type);
+    } else if (presigned.fileType === "blob") {
+      formData.append("Content-Type", "application/octet-stream");
+      console.log("COERCING FILE TYPE TO BLOB");
+      console.log("FILE TYPE", "application/octet-stream");
+    }
 
     // Dump all values from response (+ the file itself) into form for S3 upload
     Object.entries({ ...fields, file: file }).forEach(([key, value]) => {
@@ -103,10 +110,20 @@ export const classNames = (...classes: string[]) => {
 };
 
 export const generateMimeTypes = (fileTypes: string[]) => {
-  return fileTypes.map((type) => `${type}/*`);
+  const accepted = fileTypes.map((type) =>
+    type !== "blob" ? `${type}/*` : "blob"
+  );
+
+  if (accepted.includes("blob")) {
+    return undefined;
+  }
+  return accepted;
 };
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
+
+  if (!mimeTypes) return undefined;
+
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
