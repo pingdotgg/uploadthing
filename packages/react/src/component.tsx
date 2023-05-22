@@ -45,7 +45,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           className="ut-hidden"
           type="file"
           multiple={props.multiple}
-          accept={generateMimeTypes(fileTypes ?? []).join(", ")}
+          accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             e.target.files && startUpload(Array.from(e.target.files));
           }}

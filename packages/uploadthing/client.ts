@@ -110,12 +110,20 @@ export const classNames = (...classes: string[]) => {
 };
 
 export const generateMimeTypes = (fileTypes: string[]) => {
-  return fileTypes.map((type) =>
-    type !== "blob" ? `${type}/*` : "application/octet-stream"
+  const accepted = fileTypes.map((type) =>
+    type !== "blob" ? `${type}/*` : "blob"
   );
+
+  if (accepted.includes("blob")) {
+    return undefined;
+  }
+  return accepted;
 };
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
+
+  if (!mimeTypes) return undefined;
+
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
