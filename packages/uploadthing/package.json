@@ -46,7 +46,7 @@
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.1.0",
     "eslint": "^8.40.0",
-    "next": "13.4.1",
+    "next": "13.4.3",
     "tsup": "6.7.0",
     "typescript": "5.1.0-beta",
     "vitest": "^0.30.1"
