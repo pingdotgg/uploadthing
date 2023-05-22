@@ -53,7 +53,8 @@ export type OurFileRouter = typeof ourFileRouter;
 
 <Callout type="warning">
   Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
-  from `/api/uploadthing` on your application.
+  from `/api/uploadthing` as it is called via webhook to trigger
+  `onUploadComplete`.
 </Callout>
 
 ```ts copy

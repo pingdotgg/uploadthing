@@ -8,9 +8,25 @@ import { Callout, Steps } from "nextra-theme-docs";
 
 ### Install the packages
 
-```bash copy
-npm install uploadthing @uploadthing/solid solidjs-dropzone
-```
+import { Tab, Tabs } from "nextra-theme-docs";
+
+<Tabs items={["npm", "yarn", "pnpm"]}>
+  <Tab>
+    ```bash copy 
+    npm install uploadthing @uploadthing/solid solidjs-dropzone
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    yarn add uploadthing @uploadthing/solid solidjs-dropzone
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    pnpm install uploadthing @uploadthing/solid solidjs-dropzone
+    ```
+  </Tab>
+</Tabs>
 
 ### Add env variables
 
