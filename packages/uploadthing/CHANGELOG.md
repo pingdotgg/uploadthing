@@ -1,5 +1,13 @@
 # uploadthing
 
+## 3.0.5
+
+### Patch Changes
+
+- [#89](https://github.com/pingdotgg/uploadthing/pull/89) [`18d086f`](https://github.com/pingdotgg/uploadthing/commit/18d086f55eb5bdc1348116957f04a771eb6dfd9b) Thanks [@markflorkowski](https://github.com/markflorkowski)! - [fix] Blob upload support -- all filetypes that are not image/video/audio now supported via "blob" type. Components now actually work with blob endpoints
+
+- [#85](https://github.com/pingdotgg/uploadthing/pull/85) [`693c21e`](https://github.com/pingdotgg/uploadthing/commit/693c21e0c98a2dd5a6361733c77dba2ab1a39122) Thanks [@markflorkowski](https://github.com/markflorkowski)! - [types] Update types for onUploadComplete to include size
+
 ## 3.0.4
 
 ## 3.0.3
