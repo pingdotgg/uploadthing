@@ -1,6 +1,5 @@
 packages:
   - "packages/*"
   - "examples/*"
-  - "!examples/create-t3-turbo"
   - "common/*"
   - "docs"
