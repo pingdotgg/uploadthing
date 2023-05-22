@@ -17,13 +17,5 @@
     "nextra-theme-docs": "^2.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
-  },
-  "dependenciesMeta": {
-    "nextra": {
-      "injected": true
-    },
-    "nextra-theme-docs": {
-      "injected": true
-    }
   }
 }
