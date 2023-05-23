@@ -49,10 +49,10 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           multiple={props.multiple}
           accept={generateMimeTypes(
             uploadedThing.permittedFileInfo()?.fileTypes ?? []
-          ).join(", ")}
+          )?.join(", ")}
           onChange={(e) => {
-            e.target.files &&
-              uploadedThing.startUpload(Array.from(e.target.files));
+            if (!e.target.files) return;
+            void uploadedThing.startUpload(Array.from(e.target.files));
           }}
         />
         <span class="ut-px-3 ut-py-2 ut-text-white">
@@ -105,7 +105,7 @@ export const UploadDropzone = <
     onDrop,
     accept: uploadedThing.permittedFileInfo()?.fileTypes
       ? generateClientDropzoneAccept(
-          uploadedThing.permittedFileInfo()?.fileTypes as any
+          uploadedThing.permittedFileInfo()?.fileTypes ?? []
         )
       : undefined,
     useFsAccessApi: true,
@@ -158,7 +158,7 @@ export const UploadDropzone = <
                 e.preventDefault();
                 e.stopPropagation();
 
-                uploadedThing.startUpload(files());
+                void uploadedThing.startUpload(files());
               }}
             >
               <span class="ut-px-3 ut-py-2 ut-text-white">

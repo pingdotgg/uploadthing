@@ -45,9 +45,10 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           className="ut-hidden"
           type="file"
           multiple={props.multiple}
-          accept={generateMimeTypes(fileTypes ?? []).join(", ")}
+          accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
-            e.target.files && startUpload(Array.from(e.target.files));
+            if (!e.target.files) return;
+            void startUpload(Array.from(e.target.files));
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
@@ -61,7 +62,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+            {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
+            {maxSize && `up to ${maxSize}`}
           </p>
         )}
       </div>
@@ -146,7 +148,8 @@ export const UploadDropzone = <
         <div className="ut-h-[1.25rem]">
           {fileTypes && (
             <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-              {`${fileTypes.join(", ")}`} {maxSize && `up to ${maxSize}`}
+              {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
+              {maxSize && `up to ${maxSize}`}
             </p>
           )}
         </div>
@@ -157,8 +160,9 @@ export const UploadDropzone = <
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (!files) return;
 
-                startUpload(files);
+                void startUpload(files);
               }}
             >
               <span className="ut-px-3 ut-py-2 ut-text-white">
