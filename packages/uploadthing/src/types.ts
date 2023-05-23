@@ -27,6 +27,15 @@ type UploadedFile = {
 
 type AllowedFiles = "image" | "video" | "audio" | "blob";
 
+type RouteConfig = {
+  maxSize: number;
+  limit: number;
+};
+
+type NestedConfig = Partial<Record<AllowedFiles, RouteConfig>>;
+
+export type FileRouterInputConfig = AllowedFiles[] | NestedConfig;
+
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type FileSize = `${PowOf2}${SizeUnit}`;
@@ -64,9 +73,6 @@ type ResolverFn<TParams extends AnyParams> = (
 ) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
-  fileTypes: (types: AllowedFiles[]) => UploadBuilder<TParams>;
-  maxSize: (size: FileSize) => UploadBuilder<TParams>;
-
   middleware: <TOutput extends Record<string, unknown>>(
     fn: MiddlewareFn<TOutput, TParams["_runtime"]>
   ) => UploadBuilder<{
