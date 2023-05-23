@@ -1,7 +1,8 @@
 import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const UPLOADTHING_VERSION = require("../../package.json").version;
+export const UPLOADTHING_VERSION = require("../../package.json")
+  .version as string;
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -24,7 +25,7 @@ export const fileSizeToBytes = (input: string) => {
   return Math.floor(bytes);
 };
 
-const generateUploadThingURL = (path: `/${string}`) => {
+export const generateUploadThingURL = (path: `/${string}`) => {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
   return `${host}${path}`;
 };
