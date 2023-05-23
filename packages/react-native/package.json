@@ -2,7 +2,7 @@
   "name": "@uploadthing/react-native",
   "author": "Yash Singh",
   "license": "MIT",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -37,7 +37,7 @@
     "expo-image-picker": "*",
     "react": "^17.0.2 || ^18.0.0",
     "react-native": "*",
-    "uploadthing": "3.0.4"
+    "uploadthing": "3.0.5"
   },
   "devDependencies": {
     "@types/node": "18.16.0",
@@ -52,7 +52,7 @@
     "react-native": "0.71.3",
     "tsup": "6.7.0",
     "typescript": "5.1.0-beta",
-    "uploadthing": "3.0.4"
+    "uploadthing": "3.0.5"
   },
   "publishConfig": {
     "access": "public"
