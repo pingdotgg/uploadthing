@@ -389,8 +389,8 @@ importers:
         specifier: 5.1.0-beta
         version: 5.1.0-beta
       uploadthing:
-        specifier: 3.0.4
-        version: 3.0.4
+        specifier: 3.0.5
+        version: link:../uploadthing
 
   packages/solid:
     devDependencies:
@@ -12700,10 +12700,6 @@ packages:
       browserslist: 4.21.5
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@3.0.4:
-    resolution: {integrity: sha512-tb8Pc5Xvj6c8/v8MbHNpJh4ora9S+DH8J9u+HlDBaIo0d4/AwUPyvvrcL7qi6gkW9NFTokloO3PnjjjY7+1lEQ==}
-    dev: true
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
