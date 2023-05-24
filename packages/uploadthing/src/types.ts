@@ -25,7 +25,7 @@ type UploadedFile = {
   size: number;
 };
 
-type AllowedFiles = "image" | "video" | "audio" | "blob";
+export type AllowedFileType = "image" | "video" | "audio" | "blob";
 
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${number}${SizeUnit}`;
@@ -35,9 +35,11 @@ type RouteConfig = {
   maxFileCount?: number;
 };
 
-type NestedConfig = Partial<Record<AllowedFiles, RouteConfig>>;
+export type NestedFileRouterConfig = Partial<
+  Record<AllowedFileType, RouteConfig>
+>;
 
-export type FileRouterInputConfig = AllowedFiles[] | NestedConfig;
+export type FileRouterInputConfig = AllowedFileType[] | NestedFileRouterConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<

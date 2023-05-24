@@ -1,5 +1,6 @@
 import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { convertRouteArrayToRecord } from "../utils";
 
 const UPLOADTHING_VERSION = require("../../package.json").version;
 
@@ -197,6 +198,12 @@ export const buildRequestHandler = <
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
         throw new Error("Need file array");
 
+      console.log(
+        "config info",
+        UPLOADTHING_VERSION,
+        uploadable._def.routerConfig
+      );
+
       // TODO: Make this a function
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
@@ -204,11 +211,10 @@ export const buildRequestHandler = <
           method: "POST",
           body: JSON.stringify({
             files: files,
-            fileTypes: uploadable._def.fileTypes,
+            routeConfig: uploadable._def.routerConfig,
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
             callbackSlug: slug,
-            maxFileSize: fileSizeToBytes(uploadable._def.maxSize ?? "16MB"),
           }),
           headers: {
             "Content-Type": "application/json",
@@ -261,10 +267,10 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
 
     const permissions = Object.keys(r).map((k) => {
       const route = r[k];
+      const config = convertRouteArrayToRecord(route._def.routerConfig);
       return {
         slug: k as keyof TRouter,
-        maxSize: route._def.maxSize,
-        fileTypes: route._def.fileTypes,
+        config,
       };
     });
 

@@ -13,6 +13,13 @@ type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
   ? "YOU FORGOT TO PASS THE GENERIC"
   : keyof TRouter;
 
+const generatePermittedFileString = (fileTypes: string[], maxSize?: string) => {
+  if (!fileTypes.length) return "";
+  let str = `${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`;
+  if (maxSize) str += ` up to ${maxSize}`;
+  return str;
+};
+
 /**
  * @example
  * <UploadButton<OurFileRouter>
@@ -36,7 +43,15 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       onUploadError: props.onUploadError,
     });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo.config)
+    : [];
+
+  const maxSize = permittedFileInfo?.config
+    ? Object.values(permittedFileInfo.config).map((v) => v.maxFileSize)
+    : [];
+
+  // TODO: Generate better string for end, maybe helper func?
 
   return (
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
@@ -62,8 +77,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
-            {maxSize && `up to ${maxSize}`}
+            {generatePermittedFileString(fileTypes, maxSize[0])}
           </p>
         )}
       </div>
