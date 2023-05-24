@@ -3,9 +3,12 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 const f = createUploadthing();
 
 export const uploadRouter = {
-  withMdwr: f
-    .fileTypes(["image"])
-    .maxSize("16MB")
+  withMdwr: f({
+    image: {
+      maxFileCount: 1,
+      maxFileSize: "1MB",
+    },
+  })
     .middleware((req) => {
       const h = req.headers.get("someProperty");
 
@@ -28,9 +31,7 @@ export const uploadRouter = {
       // ^?
     }),
 
-  withoutMdwr: f
-    .maxSize("64MB")
-    .fileTypes(["image"])
+  withoutMdwr: f(["image"])
     .middleware(() => {
       return { testMetadata: "lol" };
     })

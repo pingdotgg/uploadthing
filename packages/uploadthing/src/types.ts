@@ -27,18 +27,17 @@ type UploadedFile = {
 
 type AllowedFiles = "image" | "video" | "audio" | "blob";
 
+export type SizeUnit = "B" | "KB" | "MB" | "GB";
+export type FileSize = `${number}${SizeUnit}`;
+
 type RouteConfig = {
-  maxSize: number;
-  limit: number;
+  maxFileSize?: FileSize;
+  maxFileCount?: number;
 };
 
 type NestedConfig = Partial<Record<AllowedFiles, RouteConfig>>;
 
 export type FileRouterInputConfig = AllowedFiles[] | NestedConfig;
-
-export type SizeUnit = "B" | "KB" | "MB" | "GB";
-type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
-export type FileSize = `${PowOf2}${SizeUnit}`;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
@@ -84,8 +83,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 }
 
 export type UploadBuilderDef<TRuntime extends AnyRuntime> = {
-  fileTypes: AllowedFiles[];
-  maxSize: FileSize;
+  routerConfig: FileRouterInputConfig;
   middleware: MiddlewareFn<{}, TRuntime>;
 };
 

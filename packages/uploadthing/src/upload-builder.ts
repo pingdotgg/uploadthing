@@ -14,18 +14,25 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   _runtime: TRuntime;
 }> {
   const _def: UploadBuilderDef<TRuntime> = {
-    fileTypes: ["image"],
-    maxSize: "1MB",
-    // @ts-expect-error - huh?
+    // Default router config
+    routerConfig: {
+      image: {
+        maxFileSize: "4MB",
+      },
+    },
+
+    // @ts-expect-error - Ignore the temp middleware
     middleware: () => ({}),
+
+    // Overload with properties passed in
     ...initDef,
   };
 
   return {
-    middleware(resolver) {
+    middleware(userMiddleware) {
       return internalCreateBuilder({
         ..._def,
-        middleware: resolver,
+        middleware: userMiddleware,
       }) as UploadBuilder<{ _metadata: any; _runtime: TRuntime }>;
     },
     onUploadComplete(resolver) {
@@ -48,27 +55,6 @@ export function createBuilder<
   TRuntime extends AnyRuntime = "web"
 >(): InOut<TRuntime> {
   return (input: FileRouterInputConfig) => {
-    const _def: UploadBuilderDef<TRuntime> = {
-      fileTypes: ["image"],
-      maxSize: "1MB",
-      // @ts-expect-error - huh?
-      middleware: () => ({}),
-      ...input,
-    };
-
-    return {
-      middleware(resolver) {
-        return internalCreateBuilder({
-          ..._def,
-          middleware: resolver,
-        }) as UploadBuilder<{ _metadata: any; _runtime: TRuntime }>;
-      },
-      onUploadComplete(resolver) {
-        return {
-          _def,
-          resolver,
-        } as Uploader<{ _metadata: any; _runtime: TRuntime }>;
-      },
-    };
+    return internalCreateBuilder<TRuntime>({ routerConfig: input });
   };
 }
