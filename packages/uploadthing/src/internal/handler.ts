@@ -1,8 +1,9 @@
 import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { convertRouteArrayToRecord } from "../utils";
+import { fillInputRouteConfig } from "../utils";
 
-const UPLOADTHING_VERSION = require("../../package.json").version;
+// eslint-disable-next-line
+const UPLOADTHING_VERSION = require("../../package.json").version as string;
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -79,6 +80,7 @@ const conditionalDevServer = async (fileKey: string) => {
 
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const fileData = await withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
     const json = await res.json();
@@ -165,6 +167,7 @@ export const buildRequestHandler = <
       return { status: 404 };
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const reqBody =
       "body" in req && typeof req.body === "string"
         ? JSON.parse(req.body)
@@ -173,7 +176,9 @@ export const buildRequestHandler = <
     if (uploadthingHook && uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       await uploadable.resolver({
+        // eslint-disable-next-line
         file: reqBody.file,
+        // eslint-disable-next-line
         metadata: reqBody.metadata,
       });
 
@@ -188,6 +193,7 @@ export const buildRequestHandler = <
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { files } = reqBody;
       // @ts-expect-error TODO: Fix this
       const metadata = await uploadable._def.middleware(req as Request, res);
@@ -205,7 +211,10 @@ export const buildRequestHandler = <
           method: "POST",
           body: JSON.stringify({
             files: files,
-            routeConfig: uploadable._def.routerConfig,
+
+            // FILL THE ROUTE CONFIG so the server only has one happy path
+            routeConfig: fillInputRouteConfig(uploadable._def.routerConfig),
+
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
             callbackSlug: slug,
@@ -213,7 +222,7 @@ export const buildRequestHandler = <
           headers: {
             "Content-Type": "application/json",
             "x-uploadthing-api-key": upSecret ?? "",
-            "x-uploadthing-version": UPLOADTHING_VERSION.toString(),
+            "x-uploadthing-version": UPLOADTHING_VERSION,
           },
         }
       );
@@ -221,6 +230,7 @@ export const buildRequestHandler = <
       if (!uploadthingApiResponse.ok) {
         console.error("[UT] unable to get presigned urls");
         try {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           const error = await uploadthingApiResponse.json();
           console.error(error);
         } catch (e) {
@@ -239,7 +249,7 @@ export const buildRequestHandler = <
 
       if (process.env.NODE_ENV === "development") {
         parsedResponse.forEach((file) => {
-          conditionalDevServer(file.key);
+          void conditionalDevServer(file.key);
         });
       }
 
@@ -261,7 +271,7 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
 
     const permissions = Object.keys(r).map((k) => {
       const route = r[k];
-      const config = convertRouteArrayToRecord(route._def.routerConfig);
+      const config = fillInputRouteConfig(route._def.routerConfig);
       return {
         slug: k as keyof TRouter,
         config,
