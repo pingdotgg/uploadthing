@@ -27,8 +27,9 @@ type UploadedFile = {
 
 export type AllowedFileType = "image" | "video" | "audio" | "blob";
 
+type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
-export type FileSize = `${number}${SizeUnit}`;
+export type FileSize = `${PowOf2}${SizeUnit}`;
 
 type RouteConfig = {
   maxFileSize?: FileSize;

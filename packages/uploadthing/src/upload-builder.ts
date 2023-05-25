@@ -35,10 +35,10 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
         middleware: userMiddleware,
       }) as UploadBuilder<{ _metadata: any; _runtime: TRuntime }>;
     },
-    onUploadComplete(resolver) {
+    onUploadComplete(userUploadComplete) {
       return {
         _def,
-        resolver,
+        resolver: userUploadComplete,
       } as Uploader<{ _metadata: any; _runtime: TRuntime }>;
     },
   };

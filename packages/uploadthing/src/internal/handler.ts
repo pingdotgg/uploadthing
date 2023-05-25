@@ -198,12 +198,6 @@ export const buildRequestHandler = <
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
         throw new Error("Need file array");
 
-      console.log(
-        "config info",
-        UPLOADTHING_VERSION,
-        uploadable._def.routerConfig
-      );
-
       // TODO: Make this a function
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
@@ -219,7 +213,7 @@ export const buildRequestHandler = <
           headers: {
             "Content-Type": "application/json",
             "x-uploadthing-api-key": upSecret ?? "",
-            "x-uploadthing-version": UPLOADTHING_VERSION,
+            "x-uploadthing-version": UPLOADTHING_VERSION.toString(),
           },
         }
       );
