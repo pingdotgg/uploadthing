@@ -1,4 +1,4 @@
-import type { AnyRuntime, FileRouter, FileSize } from "../types";
+import type { AnyRuntime, FileRouter, NestedFileRouterConfig } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { fillInputRouteConfig } from "../utils";
 
@@ -24,6 +24,15 @@ export const fileSizeToBytes = (input: string) => {
   }
   const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
   return Math.floor(bytes);
+};
+
+const fileCountLimitHit = (
+  files: string[],
+  routeConfig: NestedFileRouterConfig
+) => {
+  // TODO: Implement this
+
+  return false;
 };
 
 const generateUploadThingURL = (path: `/${string}`) => {
@@ -193,18 +202,22 @@ export const buildRequestHandler = <
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const { files } = reqBody;
+      const { files } = reqBody as { files: string[] };
       // @ts-expect-error TODO: Fix this
       const metadata = await uploadable._def.middleware(req as Request, res);
-
-      // Once that passes, persist in DB
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
         throw new Error("Need file array");
 
-      // TODO: Make this a function
+      // FILL THE ROUTE CONFIG so the server only has one happy path
+      const parsedConfig = fillInputRouteConfig(uploadable._def.routerConfig);
+
+      // TODO: CHECK FILE LIMITS HERE
+      const limitHit = fileCountLimitHit(files, parsedConfig);
+
+      if (limitHit) throw new Error("Too many files");
+
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
         {
@@ -212,8 +225,7 @@ export const buildRequestHandler = <
           body: JSON.stringify({
             files: files,
 
-            // FILL THE ROUTE CONFIG so the server only has one happy path
-            routeConfig: fillInputRouteConfig(uploadable._def.routerConfig),
+            routeConfig: parsedConfig,
 
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
@@ -239,8 +251,7 @@ export const buildRequestHandler = <
         throw new Error("ending upload");
       }
 
-      // This is when we send the response back to our form so it can submit the files
-
+      // This is when we send the response back to the user's form so they can submit the files
       const parsedResponse = (await uploadthingApiResponse.json()) as {
         presignedUrl: { url: string; fields: Record<string, string> }; // ripped type from S3 package
         name: string;
