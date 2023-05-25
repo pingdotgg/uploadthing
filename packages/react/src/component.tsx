@@ -6,7 +6,7 @@ import {
   generateMimeTypes,
 } from "uploadthing/client";
 import { useUploadThing } from "./useUploadThing";
-import type { FileRouter } from "uploadthing/server";
+import type { FileRouter, NestedFileRouterConfig } from "uploadthing/server";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
 
 type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
@@ -18,6 +18,14 @@ const generatePermittedFileString = (fileTypes: string[], maxSize?: string) => {
   let str = `${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`;
   if (maxSize) str += ` up to ${maxSize}`;
   return str;
+};
+
+const generatePermittedFileTypes = (config?: NestedFileRouterConfig) => {
+  const fileTypes = config ? Object.keys(config) : [];
+
+  const maxSize = config ? Object.values(config).map((v) => v.maxFileSize) : [];
+
+  return { fileTypes, maxSize };
 };
 
 /**
@@ -43,13 +51,9 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       onUploadError: props.onUploadError,
     });
 
-  const fileTypes = permittedFileInfo?.config
-    ? Object.keys(permittedFileInfo.config)
-    : [];
-
-  const maxSize = permittedFileInfo?.config
-    ? Object.values(permittedFileInfo.config).map((v) => v.maxFileSize)
-    : [];
+  const { fileTypes, maxSize } = generatePermittedFileTypes(
+    permittedFileInfo?.config
+  );
 
   // TODO: Generate better string for end, maybe helper func?
 
@@ -122,7 +126,9 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
   }, []);
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { fileTypes, maxSize } = generatePermittedFileTypes(
+    permittedFileInfo?.config
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

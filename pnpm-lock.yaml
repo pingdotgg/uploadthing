@@ -89,7 +89,7 @@ importers:
         specifier: ^4.28.0
         version: 4.28.0(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 4.0.0
+        specifier: 3.0.5
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -110,7 +110,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 4.0.0
+        specifier: 3.0.5
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -151,7 +151,7 @@ importers:
         version: 4.28.0(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
         specifier: 3.0.5
-        version: 3.0.5(react-dropzone@14.2.3)(react@18.2.0)(uploadthing@3.0.5)
+        version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.22)
@@ -175,7 +175,7 @@ importers:
         version: 3.3.2
       uploadthing:
         specifier: 3.0.5
-        version: 3.0.5
+        version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -242,7 +242,7 @@ importers:
         version: 5.20.0
       uploadthing:
         specifier: 3.0.5
-        version: 3.0.5
+        version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -324,7 +324,7 @@ importers:
         version: 5.1.0-beta
       uploadthing:
         specifier: 3.0.5
-        version: 3.0.5
+        version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -363,7 +363,7 @@ importers:
         version: 5.1.0-beta
       uploadthing:
         specifier: 3.0.5
-        version: 3.0.5
+        version: link:../uploadthing
 
   packages/uploadthing:
     devDependencies:
@@ -3041,18 +3041,6 @@ packages:
     dependencies:
       '@typescript-eslint/types': 5.59.2
       eslint-visitor-keys: 3.4.1
-
-  /@uploadthing/react@3.0.5(react-dropzone@14.2.3)(react@18.2.0)(uploadthing@3.0.5):
-    resolution: {integrity: sha512-bJCUSVIjPzDsH10eWw6SdSrfEXWo8P1d1TzcPuIOq7X70f/YzQt9QPhaW/Uxy+zC0XrfP35kpRquKryjjikyEg==}
-    peerDependencies:
-      react: ^17.0.2 || ^18.0.0
-      react-dropzone: ^14.2.3
-      uploadthing: 3.0.5
-    dependencies:
-      react: 18.2.0
-      react-dropzone: 14.2.3(react@18.2.0)
-      uploadthing: 3.0.5
-    dev: false
 
   /@vitest/expect@0.30.1:
     resolution: {integrity: sha512-c3kbEtN8XXJSeN81iDGq29bUzSjQhjES2WR3aColsS4lPGbivwLtas4DNUe0jD9gg/FYGIteqOenfU95EFituw==}
@@ -7279,6 +7267,7 @@ packages:
       file-selector: 0.6.0
       prop-types: 15.8.1
       react: 18.2.0
+    dev: true
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -8670,9 +8659,6 @@ packages:
       browserslist: 4.21.5
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@3.0.5:
-    resolution: {integrity: sha512-/AHyRKp6nnI0DLbjBeKf/JYqQNW6qIYVVBiVyDQewlJk+NtP5R7ux8aPGNrgdZOonXWrM3pDYaY7+FtplQ7sPA==}
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}

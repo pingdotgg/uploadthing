@@ -15,9 +15,11 @@ const badReqMock = {
 it("typeerrors for invalid input", async () => {
   const f = createUploadthing();
 
-  const exampleRoute = f
+  const exampleRoute = f(["image"])
     .middleware(() => ({ foo: "bar" }))
-    .onUploadComplete(({ metadata }) => {});
+    .onUploadComplete(({ metadata }) => {
+      console.log(metadata);
+    });
 
   const router = { exampleRoute };
 

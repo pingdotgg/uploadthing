@@ -5,9 +5,7 @@ import { options } from "~/pages/api/auth/[...nextauth]";
 const f = createUploadthing();
 
 export const uploadRouter = {
-  withMdwr: f
-    .fileTypes(["image"])
-    .maxSize("16MB")
+  withMdwr: f(["image"])
     .middleware(async (req, res) => {
       const auth = await getServerSession(req, res, options);
 
@@ -29,7 +27,7 @@ export const uploadRouter = {
       // ^?
     }),
 
-  withoutMdwr: f
+  withoutMdwr: f(["image"])
     .middleware(() => {
       return { testMetadata: "lol" };
     })
