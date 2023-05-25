@@ -156,15 +156,16 @@ export const buildRequestHandler = <
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
+    const { uploadthingHook, slug, req, res, actionType } = input;
+
+    if (!slug) throw new Error("we need a slug");
 
     if (!preferredOrEnvSecret) {
       throw new Error(
-        "Please set your preferred secret in the router's config or set UPLOADTHING_SECRET in your env file"
+        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
       );
     }
 
-    const { uploadthingHook, slug, req, res, actionType } = input;
-    if (!slug) throw new Error("we need a slug");
     const uploadable = router[slug];
 
     if (!uploadable) {
