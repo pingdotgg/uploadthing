@@ -1,6 +1,6 @@
 import type { AnyRuntime, FileRouter, NestedFileRouterConfig } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { fillInputRouteConfig } from "../utils";
+import { fillInputRouteConfig as parseAndExpandInputConfig } from "../utils";
 
 // eslint-disable-next-line
 const UPLOADTHING_VERSION = require("../../package.json").version as string;
@@ -211,7 +211,9 @@ export const buildRequestHandler = <
         throw new Error("Need file array");
 
       // FILL THE ROUTE CONFIG so the server only has one happy path
-      const parsedConfig = fillInputRouteConfig(uploadable._def.routerConfig);
+      const parsedConfig = parseAndExpandInputConfig(
+        uploadable._def.routerConfig
+      );
 
       // TODO: CHECK FILE LIMITS HERE
       const limitHit = fileCountLimitHit(files, parsedConfig);
@@ -282,7 +284,7 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
 
     const permissions = Object.keys(r).map((k) => {
       const route = r[k];
-      const config = fillInputRouteConfig(route._def.routerConfig);
+      const config = parseAndExpandInputConfig(route._def.routerConfig);
       return {
         slug: k as keyof TRouter,
         config,
