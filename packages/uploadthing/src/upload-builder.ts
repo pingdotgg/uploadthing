@@ -1,13 +1,13 @@
 import type {
+  AnyRuntime,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-  AnyRuntime,
 } from "./types";
 
 export function createBuilder<TRuntime extends AnyRuntime = "web">(
-  initDef: Partial<UploadBuilderDef<TRuntime>> = {}
+  initDef: Partial<UploadBuilderDef<TRuntime>> = {},
 ): UploadBuilder<{
   _metadata: UnsetMarker;
   _runtime: TRuntime;

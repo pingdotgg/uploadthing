@@ -47,12 +47,12 @@ type MiddlewareFnArgs<TRuntime> = TRuntime extends "web"
 
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
-  TRuntime extends string
+  TRuntime extends string,
 > = MiddlewareFnArgs<TRuntime>["res"] extends never
   ? (req: MiddlewareFnArgs<TRuntime>["req"]) => MaybePromise<TOutput>
   : (
       req: MiddlewareFnArgs<TRuntime>["req"],
-      res: MiddlewareFnArgs<TRuntime>["res"]
+      res: MiddlewareFnArgs<TRuntime>["res"],
     ) => MaybePromise<TOutput>;
 
 export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> =
@@ -63,7 +63,7 @@ export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> =
   MiddlewareFn<TOutput, "pages">;
 
 type ResolverFn<TParams extends AnyParams> = (
-  opts: ResolverOptions<TParams>
+  opts: ResolverOptions<TParams>,
 ) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
@@ -71,7 +71,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
   maxSize: (size: FileSize) => UploadBuilder<TParams>;
 
   middleware: <TOutput extends Record<string, unknown>>(
-    fn: MiddlewareFn<TOutput, TParams["_runtime"]>
+    fn: MiddlewareFn<TOutput, TParams["_runtime"]>,
   ) => UploadBuilder<{
     _metadata: TOutput;
     _runtime: TParams["_runtime"];

@@ -1,7 +1,7 @@
 import {
-  RouterWithConfig,
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  RouterWithConfig,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
 
@@ -9,7 +9,7 @@ import type { FileRouter } from "../../types";
 const UPLOADTHING_VERSION = require("../../../package.json").version as string;
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "app">(opts);
 

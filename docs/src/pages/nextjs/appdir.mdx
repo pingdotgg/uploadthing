@@ -17,6 +17,7 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 ```ts copy
 /** app/api/uploadthing/core.ts */
 import { createUploadthing, type FileRouter } from "uploadthing/next";
+
 const f = createUploadthing();
 
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
@@ -59,8 +60,9 @@ export type OurFileRouter = typeof ourFileRouter;
 
 ```ts copy
 /** app/api/uploadthing/route.ts */
-import { ourFileRouter } from "./core";
 import { createNextRouteHandler } from "uploadthing/next";
+
+import { ourFileRouter } from "./core";
 
 // Export routes for Next App Router
 export const { GET, POST } = createNextRouteHandler({
@@ -79,6 +81,7 @@ The `@uploadthing/react` package includes an "UploadButton" component that you c
 import "@uploadthing/react/styles.css";
 
 import { UploadButton } from "@uploadthing/react";
+
 import { OurFileRouter } from "./api/uploadthing/core";
 
 export default function Home() {

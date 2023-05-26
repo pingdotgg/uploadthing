@@ -1,4 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/server";
+
 const f = createUploadthing();
 
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function

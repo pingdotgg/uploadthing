@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { FileRouter } from "uploadthing/server";
+
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -25,7 +26,7 @@ export const useUploadThing = <T extends string>({
 }: {
   endpoint: T;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (e: Error) => void;
 }) => {

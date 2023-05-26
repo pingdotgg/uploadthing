@@ -1,7 +1,9 @@
 import "../styles.css";
+
+import { createNextRouteHandler } from "uploadthing/next";
+
 export * from "./useUploadThing";
 export * from "./component";
-import { createNextRouteHandler } from "uploadthing/next";
 
 export const createServerHandler = (
   ...args: Parameters<typeof createNextRouteHandler>

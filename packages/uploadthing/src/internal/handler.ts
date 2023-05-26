@@ -1,5 +1,6 @@
-import type { AnyRuntime, FileRouter, FileSize } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
+
+import type { AnyRuntime, FileRouter, FileSize } from "../types";
 
 const UPLOADTHING_VERSION = require("../../package.json").version;
 
@@ -44,7 +45,7 @@ const isValidResponse = (response: Response) => {
 const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | null>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
-  MAX_RETRIES = 20
+  MAX_RETRIES = 20,
 ): Promise<T | null> => {
   let tries = 0;
   let backoffMs = 500;
@@ -62,8 +63,8 @@ const withExponentialBackoff = async <T>(
     if (tries > 3) {
       console.error(
         `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-          backoffMs / 1000
-        )} seconds...`
+          backoffMs / 1000,
+        )} seconds...`,
       );
     }
 
@@ -112,7 +113,7 @@ const conditionalDevServer = async (fileKey: string) => {
     } else {
       console.error(
         "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-        fileKey
+        fileKey,
       );
     }
     return file;
@@ -142,9 +143,9 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,
-  TRuntime extends AnyRuntime
+  TRuntime extends AnyRuntime,
 >(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
     uploadthingHook?: string;
@@ -162,7 +163,7 @@ export const buildRequestHandler = <
 
     if (!preferredOrEnvSecret) {
       throw new Error(
-        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
+        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
       );
     }
 
@@ -223,7 +224,7 @@ export const buildRequestHandler = <
             "x-uploadthing-api-key": preferredOrEnvSecret,
             "x-uploadthing-version": UPLOADTHING_VERSION,
           },
-        }
+        },
       );
 
       if (!uploadthingApiResponse.ok) {
@@ -262,7 +263,7 @@ export const buildRequestHandler = <
 };
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   return () => {
     const r = opts.router;

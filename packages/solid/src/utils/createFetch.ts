@@ -1,4 +1,4 @@
-import { Resource, createResource } from "solid-js";
+import { createResource, Resource } from "solid-js";
 
 interface State<T> {
   data?: T;

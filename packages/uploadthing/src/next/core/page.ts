@@ -1,16 +1,17 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import {
-  RouterWithConfig,
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  RouterWithConfig,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access
 const UPLOADTHING_VERSION = require("../../../package.json").version as string;
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
 

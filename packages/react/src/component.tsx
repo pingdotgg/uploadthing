@@ -1,13 +1,15 @@
 import { useCallback, useState } from "react";
 import { FileWithPath, useDropzone } from "react-dropzone";
+
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
-import { useUploadThing } from "./useUploadThing";
-import type { FileRouter } from "uploadthing/server";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+
+import { useUploadThing } from "./useUploadThing";
 
 type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
   ? "YOU FORGOT TO PASS THE GENERIC"
@@ -25,7 +27,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   multiple?: boolean;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
 }) {
@@ -88,11 +90,11 @@ const Spinner = () => {
 };
 
 export const UploadDropzone = <
-  TRouter extends void | FileRouter = void
+  TRouter extends void | FileRouter = void,
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
 }) => {
@@ -119,7 +121,7 @@ export const UploadDropzone = <
     <div
       className={classNames(
         "ut-mt-2 ut-flex ut-justify-center ut-rounded-lg ut-border ut-border-dashed ut-border-gray-900/25 ut-px-6 ut-py-10",
-        isDragActive ? "ut-bg-blue-600/10" : ""
+        isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
       <div className="text-center" {...getRootProps()}>
@@ -188,13 +190,13 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-4xl font-bold text-center">
+        <span className="text-center text-4xl font-bold">
           {`Upload a file using a button:`}
         </span>
         <UploadButton<TRouter> {...props} />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-4xl font-bold text-center">
+        <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
         <UploadDropzone<TRouter> {...props} />

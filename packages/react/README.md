@@ -9,6 +9,7 @@ Learn more: [docs.uploadthing.com](https://docs.uploadthing.com)
 ```tsx
 // Name is temp
 import { UploadButton } from "@uploadthing/react";
+
 import type { FileRouter } from "./someUploadRouter";
 
 export const SomePage = () => {
@@ -33,7 +34,8 @@ export const SomePage = () => {
 
 ```tsx
 // Name is temp
-import { UploadProvider, UploadZone, UploadFileView } from "@uploadthing/react";
+import { UploadFileView, UploadProvider, UploadZone } from "@uploadthing/react";
+
 import type { FileRouter } from "./someUploadRouter";
 
 export const SomePage = () => {

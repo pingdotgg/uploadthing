@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
+import { expect, expectTypeOf, it } from "vitest";
+
 import { genUploader } from "../client";
 import type { FileRouter } from "./types";
 import { createBuilder } from "./upload-builder";
-import { expect, it, expectTypeOf } from "vitest";
-import { NextRequest } from "next/server";
 
 const badReqMock = {
   headers: {
