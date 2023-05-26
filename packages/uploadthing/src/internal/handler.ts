@@ -154,10 +154,18 @@ export const buildRequestHandler = <
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
     const { router, config } = opts;
-    const upSecret = config?.uploadthingId ?? process.env.UPLOADTHING_SECRET;
-
+    const preferredOrEnvSecret =
+      config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
     const { uploadthingHook, slug, req, res, actionType } = input;
+
     if (!slug) throw new Error("we need a slug");
+
+    if (!preferredOrEnvSecret) {
+      throw new Error(
+        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
+      );
+    }
+
     const uploadable = router[slug];
 
     if (!uploadable) {
@@ -212,7 +220,7 @@ export const buildRequestHandler = <
           }),
           headers: {
             "Content-Type": "application/json",
-            "x-uploadthing-api-key": upSecret ?? "",
+            "x-uploadthing-api-key": preferredOrEnvSecret,
             "x-uploadthing-version": UPLOADTHING_VERSION,
           },
         }
