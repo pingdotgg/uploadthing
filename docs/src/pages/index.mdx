@@ -39,7 +39,14 @@ import { Tab, Tabs } from "nextra-theme-docs";
 
 ```bash copy
 UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+UPLOADTHING_URL=https://yourapp.com # The URL to your app
 ```
+
+<Callout type="info">
+  If you're deploying through Vercel, you can omit the `UPLOADTHING_URL`
+  variable and we'll use the URL provided by Vercel by default. In development,
+  we'll use `http://localhost:3000` by default unless you specify otherwise.
+</Callout>
 
 <Callout type="warning">
   If you don't already have a uploadthing secret key, [sign up](/create-account) and create one from
