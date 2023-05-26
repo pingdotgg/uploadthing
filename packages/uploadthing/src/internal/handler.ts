@@ -1,8 +1,7 @@
-import type { AnyRuntime, FileRouter, FileSize } from "../types";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-export const UPLOADTHING_VERSION = require("../../package.json")
-  .version as string;
+import { UPLOADTHING_VERSION } from "../constants";
+import type { AnyRuntime, FileRouter, UploadedFile } from "../types";
+import type { NextApiResponse } from "next";
+import type { FileData } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -81,11 +80,13 @@ const conditionalDevServer = async (fileKey: string) => {
 
   const fileData = await withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
-    const json = await res.json();
-
-    const file = json.fileData;
+    const json = (await res.json()) as
+      | { status: "done"; fileData: FileData }
+      | { status: "something else" };
 
     if (json.status !== "done") return null;
+
+    const file = json.fileData;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
     if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
@@ -97,7 +98,7 @@ const conditionalDevServer = async (fileKey: string) => {
       method: "POST",
       body: JSON.stringify({
         status: "uploaded",
-        metadata: JSON.parse(file.metadata ?? "{}"),
+        metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
         file: {
           url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
           key: fileKey ?? "",
@@ -126,8 +127,20 @@ const conditionalDevServer = async (fileKey: string) => {
 };
 
 const GET_DEFAULT_URL = () => {
+  /**
+   * Use VERCEL_URL as the default callbackUrl if it's set
+   * they don't set the protocol, so we need to add it
+   * User can override this with the UPLOADTHING_URL env var,
+   * if they do, they should include the protocol
+   *
+   * The pathname must be /api/uploadthing
+   * since we call that via webhook, so the user
+   * should not override that. Just the protocol and host
+   */
   const vcurl = process.env.VERCEL_URL;
   if (vcurl) return `https://${vcurl}/api/uploadthing`; // SSR should use vercel url
+  const uturl = process.env.UPLOADTHING_URL;
+  if (uturl) return `${uturl}/api/uploadthing`;
 
   return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
 };
@@ -151,24 +164,32 @@ export const buildRequestHandler = <
     uploadthingHook?: string;
     slug?: string;
     actionType?: string;
-    req: TRuntime extends "pages" ? NextApiRequest : Partial<Request>;
+    req: Partial<Request> & { json: Request["json"] };
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
     const { router, config } = opts;
-    const upSecret = config?.uploadthingId ?? process.env.UPLOADTHING_SECRET;
-
+    const preferredOrEnvSecret =
+      config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
     const { uploadthingHook, slug, req, res, actionType } = input;
-    if (!slug) throw new Error("we need a slug");
-    const uploadable = router[slug];
 
+    if (!slug) throw new Error("we need a slug");
+
+    if (!preferredOrEnvSecret) {
+      throw new Error(
+        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
+      );
+    }
+
+    const uploadable = router[slug];
     if (!uploadable) {
       return { status: 404 };
     }
 
-    const reqBody =
-      "body" in req && typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : await (req as Request).json();
+    const reqBody = (await req.json()) as {
+      file: UploadedFile;
+      files: unknown;
+      metadata: Record<string, unknown>;
+    };
 
     if (uploadthingHook && uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
@@ -190,7 +211,7 @@ export const buildRequestHandler = <
     try {
       const { files } = reqBody;
       // @ts-expect-error TODO: Fix this
-      const metadata = await uploadable._def.middleware(req as Request, res);
+      const metadata = await uploadable._def.middleware(req, res);
 
       // Once that passes, persist in DB
 
@@ -213,7 +234,7 @@ export const buildRequestHandler = <
           }),
           headers: {
             "Content-Type": "application/json",
-            "x-uploadthing-api-key": upSecret ?? "",
+            "x-uploadthing-api-key": preferredOrEnvSecret,
             "x-uploadthing-version": UPLOADTHING_VERSION,
           },
         }
@@ -222,7 +243,7 @@ export const buildRequestHandler = <
       if (!uploadthingApiResponse.ok) {
         console.error("[UT] unable to get presigned urls");
         try {
-          const error = await uploadthingApiResponse.json();
+          const error = (await uploadthingApiResponse.json()) as unknown;
           console.error(error);
         } catch (e) {
           console.error("[UT] unable to parse response");
@@ -239,9 +260,9 @@ export const buildRequestHandler = <
       }[];
 
       if (process.env.NODE_ENV === "development") {
-        parsedResponse.forEach((file) => {
-          conditionalDevServer(file.key);
-        });
+        for (const file of parsedResponse) {
+          await conditionalDevServer(file.key);
+        }
       }
 
       return { body: parsedResponse, status: 200 };
