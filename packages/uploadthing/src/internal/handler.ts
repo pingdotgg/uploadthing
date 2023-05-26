@@ -1,6 +1,14 @@
-import type { AnyRuntime, FileRouter, NestedFileRouterConfig } from "../types";
+import type {
+  AllowedFileType,
+  AnyRuntime,
+  FileRouter,
+  NestedFileRouterConfig,
+} from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
-import { fillInputRouteConfig as parseAndExpandInputConfig } from "../utils";
+import {
+  getTypeFromFileName,
+  fillInputRouteConfig as parseAndExpandInputConfig,
+} from "../utils";
 
 // eslint-disable-next-line
 const UPLOADTHING_VERSION = require("../../package.json").version as string;
@@ -32,7 +40,33 @@ const fileCountLimitHit = (
 ) => {
   // TODO: Implement this
 
-  return false;
+  const counts = {
+    image: 0,
+    video: 0,
+    audio: 0,
+    blob: 0,
+  };
+
+  files.forEach((file) => {
+    const type = getTypeFromFileName(
+      file,
+      Object.keys(routeConfig) as AllowedFileType[]
+    );
+    counts[type] += 1;
+  });
+
+  return Object.keys(counts).some((key) => {
+    const count = counts[key as AllowedFileType];
+    if (count === 0) return false;
+
+    const limit = routeConfig[key as AllowedFileType]?.maxFileCount;
+    if (!limit) {
+      console.error(routeConfig, key);
+      throw new Error("invalid config during file count");
+    }
+
+    return count > limit;
+  });
 };
 
 const generateUploadThingURL = (path: `/${string}`) => {

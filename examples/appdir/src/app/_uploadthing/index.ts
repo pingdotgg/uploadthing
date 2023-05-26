@@ -5,7 +5,7 @@ const f = createUploadthing();
 export const uploadRouter = {
   withMdwr: f({
     image: {
-      maxFileCount: 1,
+      maxFileCount: 2,
       maxFileSize: "1MB",
     },
   })
@@ -31,7 +31,12 @@ export const uploadRouter = {
       // ^?
     }),
 
-  withoutMdwr: f(["image"])
+  withoutMdwr: f({
+    image: {
+      maxFileCount: 2,
+      maxFileSize: "16MB",
+    },
+  })
     .middleware(() => {
       return { testMetadata: "lol" };
     })

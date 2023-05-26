@@ -25,7 +25,11 @@ const generatePermittedFileTypes = (config?: NestedFileRouterConfig) => {
 
   const maxSize = config ? Object.values(config).map((v) => v.maxFileSize) : [];
 
-  return { fileTypes, maxSize };
+  const maxFileCount = config
+    ? Object.values(config).map((v) => v.maxFileCount)
+    : [];
+
+  return { fileTypes, maxSize, maxFileCount };
 };
 
 /**
@@ -38,7 +42,6 @@ const generatePermittedFileTypes = (config?: NestedFileRouterConfig) => {
  */
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
-  multiple?: boolean;
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
   ) => void;
@@ -51,9 +54,11 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       onUploadError: props.onUploadError,
     });
 
-  const { fileTypes, maxSize } = generatePermittedFileTypes(
+  const { fileTypes, maxSize, maxFileCount } = generatePermittedFileTypes(
     permittedFileInfo?.config
   );
+
+  const multiple = maxFileCount.some((v) => v && v > 1);
 
   // TODO: Generate better string for end, maybe helper func?
 
@@ -63,7 +68,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         <input
           className="ut-hidden"
           type="file"
-          multiple={props.multiple}
+          multiple={multiple}
           accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
@@ -71,11 +76,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? (
-            <Spinner />
-          ) : (
-            `Choose File${props.multiple ? `(s)` : ``}`
-          )}
+          {isUploading ? <Spinner /> : `Choose File${multiple ? `(s)` : ``}`}
         </span>
       </label>
       <div className="ut-h-[1.25rem]">

@@ -110,7 +110,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 3.0.5
+        specifier: 4.0.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -175,7 +175,7 @@ importers:
         version: 3.3.2
       uploadthing:
         specifier: 3.0.5
-        version: link:../../packages/uploadthing
+        version: 3.0.5
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -242,7 +242,7 @@ importers:
         version: 5.20.0
       uploadthing:
         specifier: 3.0.5
-        version: link:../../packages/uploadthing
+        version: 3.0.5
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -324,7 +324,7 @@ importers:
         version: 5.1.0-beta
       uploadthing:
         specifier: 3.0.5
-        version: link:../uploadthing
+        version: 3.0.5
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -363,10 +363,17 @@ importers:
         version: 5.1.0-beta
       uploadthing:
         specifier: 3.0.5
-        version: link:../uploadthing
+        version: 3.0.5
 
   packages/uploadthing:
+    dependencies:
+      mime-types:
+        specifier: ^2.1.35
+        version: 2.1.35
     devDependencies:
+      '@types/mime-types':
+        specifier: 2.1.1
+        version: 2.1.1
       '@types/node':
         specifier: 18.16.0
         version: 18.16.0
@@ -2861,6 +2868,10 @@ packages:
   /@types/mdx@2.0.4:
     resolution: {integrity: sha512-qCYrNdpKwN6YO6FVnx+ulfqifKlE3lQGsNhvDaW9Oxzyob/cRLBJWow8GHBBD4NxQ7BVvtsATgLsX0vZAWmtrg==}
     dev: false
+
+  /@types/mime-types@2.1.1:
+    resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
+    dev: true
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
@@ -8659,6 +8670,9 @@ packages:
       browserslist: 4.21.5
       escalade: 3.1.1
       picocolors: 1.0.0
+
+  /uploadthing@3.0.5:
+    resolution: {integrity: sha512-/AHyRKp6nnI0DLbjBeKf/JYqQNW6qIYVVBiVyDQewlJk+NtP5R7ux8aPGNrgdZOonXWrM3pDYaY7+FtplQ7sPA==}
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}

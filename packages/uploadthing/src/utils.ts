@@ -47,7 +47,7 @@ export const fillInputRouteConfig = (
   const newConfig: NestedFileRouterConfig = {};
   (Object.keys(routeConfig) as AllowedFileType[]).forEach((key) => {
     const value = routeConfig[key];
-    if (!value) throw new Error("Invalid config");
+    if (!value) throw new Error("Invalid config during fill");
 
     const defaultValues = {
       maxFileSize: getDefaultSizeForType(key),
@@ -58,4 +58,31 @@ export const fillInputRouteConfig = (
   }, {} as NestedFileRouterConfig);
 
   return newConfig;
+};
+
+import { lookup } from "mime-types";
+
+export const getTypeFromFileName = (
+  fileName: string,
+  allowedTypes: AllowedFileType[]
+) => {
+  const mimeType = lookup(fileName);
+  if (!mimeType) {
+    throw new Error(
+      `Could not determine type for ${fileName}, presigned URL generation failed`
+    );
+  }
+
+  const type = mimeType.split("/")[0] as AllowedFileType;
+
+  if (!allowedTypes.includes(type)) {
+    // Blob is a catch-all for any file type not explicitly supported
+    if (allowedTypes.includes("blob")) {
+      return "blob";
+    } else {
+      throw new Error(`File type ${type} not allowed for ${fileName}`);
+    }
+  }
+
+  return type;
 };
