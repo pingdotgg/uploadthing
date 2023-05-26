@@ -39,14 +39,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> =
-  MiddlewareFn<TOutput, "web">;
-export type NextReqMiddlewareFn<TOutput extends Record<string, unknown>> =
-  MiddlewareFn<TOutput, "app">;
-export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> =
-  MiddlewareFn<TOutput, "pages">;
-
-type Args<TRuntime> = TRuntime extends "web"
+type MiddlewareFnArgs<TRuntime> = TRuntime extends "web"
   ? { req: Request; res: never }
   : TRuntime extends "app"
   ? { req: NextRequest; res: never }
@@ -55,10 +48,19 @@ type Args<TRuntime> = TRuntime extends "web"
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
   TRuntime extends string
-> = (
-  req: Args<TRuntime>["req"],
-  res: Args<TRuntime>["res"]
-) => MaybePromise<TOutput>;
+> = MiddlewareFnArgs<TRuntime>["res"] extends never
+  ? (req: MiddlewareFnArgs<TRuntime>["req"]) => MaybePromise<TOutput>
+  : (
+      req: MiddlewareFnArgs<TRuntime>["req"],
+      res: MiddlewareFnArgs<TRuntime>["res"]
+    ) => MaybePromise<TOutput>;
+
+export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> =
+  MiddlewareFn<TOutput, "web">;
+export type NextReqMiddlewareFn<TOutput extends Record<string, unknown>> =
+  MiddlewareFn<TOutput, "app">;
+export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> =
+  MiddlewareFn<TOutput, "pages">;
 
 type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>
