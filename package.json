@@ -22,8 +22,8 @@
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.1.0",
     "dotenv": "latest",
-    "prettier": "latest",
-    "turbo": "^1.9.3",
+    "prettier": "^2.8.8",
+    "turbo": "^1.9.9",
     "typescript": "5.1.0-beta"
   },
   "packageManager": "pnpm@7.27.0"
