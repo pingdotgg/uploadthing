@@ -1,3 +1,4 @@
+import { UPLOADTHING_VERSION } from "../../constants";
 import {
   RouterWithConfig,
   buildPermissionsInfoHandler,
@@ -5,9 +6,6 @@ import {
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access
-const UPLOADTHING_VERSION = require("../../../package.json").version as string;
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>
