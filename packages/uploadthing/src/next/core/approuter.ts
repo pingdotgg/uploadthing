@@ -1,12 +1,10 @@
+import { UPLOADTHING_VERSION } from "../../constants";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
   RouterWithConfig,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access
-const UPLOADTHING_VERSION = require("../../../package.json").version as string;
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
