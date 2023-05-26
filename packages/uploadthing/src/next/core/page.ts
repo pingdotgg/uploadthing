@@ -38,11 +38,19 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     if (uploadthingHook && typeof uploadthingHook !== "string")
       return res.status(400).send("`uploadthingHook` must not be an array");
 
+    const standardRequest = {
+      ...req,
+      json: () => Promise.resolve(req.body),
+      headers: {
+        get: (key: string) => req.headers[key],
+      } as Headers,
+    };
+
     const response = await requestHandler({
       uploadthingHook,
       slug,
       actionType,
-      req,
+      req: standardRequest,
       res,
     });
 

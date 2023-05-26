@@ -18,7 +18,7 @@ export interface AnyParams {
   _runtime: any;
 }
 
-type UploadedFile = {
+export type UploadedFile = {
   name: string;
   key: string;
   url: string;

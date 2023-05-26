@@ -1,7 +1,7 @@
-import type { AnyRuntime, FileRouter, FileSize } from "../types";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-const UPLOADTHING_VERSION = require("../../package.json").version;
+import { UPLOADTHING_VERSION } from "../constants";
+import type { AnyRuntime, FileRouter, UploadedFile } from "../types";
+import type { NextApiResponse } from "next";
+import type { FileData } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -80,11 +80,13 @@ const conditionalDevServer = async (fileKey: string) => {
 
   const fileData = await withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
-    const json = await res.json();
-
-    const file = json.fileData;
+    const json = (await res.json()) as
+      | { status: "done"; fileData: FileData }
+      | { status: "something else" };
 
     if (json.status !== "done") return null;
+
+    const file = json.fileData;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
     if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
@@ -96,7 +98,7 @@ const conditionalDevServer = async (fileKey: string) => {
       method: "POST",
       body: JSON.stringify({
         status: "uploaded",
-        metadata: JSON.parse(file.metadata ?? "{}"),
+        metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
         file: {
           url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
           key: fileKey ?? "",
@@ -150,7 +152,7 @@ export const buildRequestHandler = <
     uploadthingHook?: string;
     slug?: string;
     actionType?: string;
-    req: TRuntime extends "pages" ? NextApiRequest : Partial<Request>;
+    req: Partial<Request> & { json: Request["json"] };
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
     const { router, config } = opts;
@@ -167,15 +169,15 @@ export const buildRequestHandler = <
     }
 
     const uploadable = router[slug];
-
     if (!uploadable) {
       return { status: 404 };
     }
 
-    const reqBody =
-      "body" in req && typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : await (req as Request).json();
+    const reqBody = (await req.json()) as {
+      file: UploadedFile;
+      files: unknown;
+      metadata: Record<string, unknown>;
+    };
 
     if (uploadthingHook && uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
@@ -229,7 +231,7 @@ export const buildRequestHandler = <
       if (!uploadthingApiResponse.ok) {
         console.error("[UT] unable to get presigned urls");
         try {
-          const error = await uploadthingApiResponse.json();
+          const error = (await uploadthingApiResponse.json()) as unknown;
           console.error(error);
         } catch (e) {
           console.error("[UT] unable to parse response");
@@ -246,9 +248,9 @@ export const buildRequestHandler = <
       }[];
 
       if (process.env.NODE_ENV === "development") {
-        parsedResponse.forEach((file) => {
-          conditionalDevServer(file.key);
-        });
+        for (const file of parsedResponse) {
+          await conditionalDevServer(file.key);
+        }
       }
 
       return { body: parsedResponse, status: 200 };
