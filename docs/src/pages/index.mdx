@@ -37,15 +37,16 @@ import { Tab, Tabs } from "nextra-theme-docs";
 
 ### Add env variables
 
-```bash copy
+```bash
 UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
-UPLOADTHING_URL=https://yourapp.com # The URL to your app
 ```
 
 <Callout type="info">
-  If you're deploying through Vercel, you can omit the `UPLOADTHING_URL`
-  variable and we'll use the URL provided by Vercel by default. In development,
-  we'll use `http://localhost:3000` by default unless you specify otherwise.
+  If you're not deploying through Vercel, you also need to add a
+  `UPLOADTHING_URL` environment variable that points to your app, e.g.
+  `https://myapp.com`. This variable can also be used to override the default
+  URL in development which is `http://localhost:3000` unless specified
+  otherwise.
 </Callout>
 
 <Callout type="warning">
