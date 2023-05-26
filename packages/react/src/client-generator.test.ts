@@ -12,7 +12,7 @@ const badReqMock = {
   },
 } as unknown as Request;
 
-it("typeerrors for invalid input", async () => {
+it("typeerrors for invalid input", () => {
   const f = createUploadthing();
 
   const exampleRoute = f(["image"])
