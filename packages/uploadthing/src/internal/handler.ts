@@ -2,7 +2,7 @@ import type {
   AllowedFileType,
   AnyRuntime,
   FileRouter,
-  NestedFileRouterConfig,
+  ExpandedRouteConfig,
 } from "../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 import {
@@ -36,7 +36,7 @@ export const fileSizeToBytes = (input: string) => {
 
 const fileCountLimitHit = (
   files: string[],
-  routeConfig: NestedFileRouterConfig
+  routeConfig: ExpandedRouteConfig
 ) => {
   // TODO: Implement this
 

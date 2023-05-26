@@ -32,15 +32,17 @@ export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
 type RouteConfig = {
-  maxFileSize?: FileSize;
-  maxFileCount?: number;
+  maxFileSize: FileSize;
+  maxFileCount: number;
 };
 
-export type NestedFileRouterConfig = Partial<
-  Record<AllowedFileType, RouteConfig>
+export type ExpandedRouteConfig = Partial<Record<AllowedFileType, RouteConfig>>;
+
+type PartialRouteConfig = Partial<
+  Record<AllowedFileType, Partial<RouteConfig>>
 >;
 
-export type FileRouterInputConfig = AllowedFileType[] | NestedFileRouterConfig;
+export type FileRouterInputConfig = AllowedFileType[] | PartialRouteConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<

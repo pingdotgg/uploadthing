@@ -1,7 +1,7 @@
 import {
   FileRouterInputConfig,
   AllowedFileType,
-  NestedFileRouterConfig,
+  ExpandedRouteConfig,
   FileSize,
 } from "./types";
 
@@ -30,7 +30,7 @@ const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
  */
 export const fillInputRouteConfig = (
   routeConfig: FileRouterInputConfig
-): NestedFileRouterConfig => {
+): ExpandedRouteConfig => {
   // If array, apply defaults
   if (isRouteArray(routeConfig)) {
     return routeConfig.reduce((acc, fileType) => {
@@ -40,11 +40,11 @@ export const fillInputRouteConfig = (
         maxFileCount: 1,
       };
       return acc;
-    }, {} as NestedFileRouterConfig);
+    }, {} as ExpandedRouteConfig);
   }
 
   // Backfill defaults onto config
-  const newConfig: NestedFileRouterConfig = {};
+  const newConfig: ExpandedRouteConfig = {};
   (Object.keys(routeConfig) as AllowedFileType[]).forEach((key) => {
     const value = routeConfig[key];
     if (!value) throw new Error("Invalid config during fill");
@@ -55,7 +55,7 @@ export const fillInputRouteConfig = (
     };
 
     newConfig[key] = { ...defaultValues, ...value };
-  }, {} as NestedFileRouterConfig);
+  }, {} as ExpandedRouteConfig);
 
   return newConfig;
 };

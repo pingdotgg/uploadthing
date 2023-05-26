@@ -3,6 +3,20 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 const f = createUploadthing();
 
 export const uploadRouter = {
+  videoAndImage: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(() => ({}))
+    .onUploadComplete((data) => {
+      console.log("upload completed", data);
+    }),
+
   withMdwr: f({
     image: {
       maxFileCount: 2,
