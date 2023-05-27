@@ -1,5 +1,7 @@
 ## createUploadthing
 
+{/* TODO: Finish this part */}
+
 ```tsx
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
@@ -19,8 +21,8 @@ The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST A
 ```ts
 import { utapi } from "uploadthing/server";
 
-await deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
-await deleteFiles([
+await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+await utapi.deleteFiles([
   "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
   "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
 ]);
@@ -29,3 +31,23 @@ await deleteFiles([
 | Arguments | Type                 | Required | Description                                |
 | :-------- | :------------------- | :------- | :----------------------------------------- |
 | input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to delete |
+
+### `getFileUrls`
+
+`getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to access them.
+
+```ts
+import { utapi } from "uploadthing/server";
+
+const oneUrl = await utapi.getFileUrls(
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"
+);
+const multipleUrls = await utapi.getFileUrls[
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
+```
+
+| Arguments | Type                 | Required | Description                                      |
+| :-------- | :------------------- | :------- | :----------------------------------------------- |
+| input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to get URLs for |
