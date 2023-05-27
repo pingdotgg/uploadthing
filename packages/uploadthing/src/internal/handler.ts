@@ -67,7 +67,7 @@ const fileCountLimitHit = (
   });
 };
 
-const generateUploadThingURL = (path: `/${string}`) => {
+export const generateUploadThingURL = (path: `/${string}`) => {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
   return `${host}${path}`;
 };
