@@ -38,8 +38,6 @@ const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig
 ) => {
-  // TODO: Implement this
-
   const counts = {
     image: 0,
     video: 0,
@@ -138,7 +136,6 @@ const conditionalDevServer = async (fileKey: string) => {
 
     console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
-    // TODO: Check that we "actually hit our endpoint" and throw a loud error if we didn't
     const response = await fetch(callbackUrl, {
       method: "POST",
       body: JSON.stringify({
@@ -268,7 +265,6 @@ export const buildRequestHandler = <
         uploadable._def.routerConfig
       );
 
-      // TODO: CHECK FILE LIMITS HERE
       const limitHit = fileCountLimitHit(files, parsedConfig);
 
       if (limitHit) throw new Error("Too many files");
