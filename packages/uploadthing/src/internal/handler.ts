@@ -38,7 +38,7 @@ const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig
 ) => {
-  const counts = {
+  const counts: Record<AllowedFileType, number> = {
     image: 0,
     video: 0,
     audio: 0,
