@@ -1,0 +1,130 @@
+## UploadButton
+
+{/* TODO: add a picture */}
+
+```tsx
+import { UploadButton } from "@uploadthing/react";
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export const OurUploadButton = () => (
+  <UploadButton<OurFileRouter>
+    endpoint="imageUploader"
+    onClientUploadComplete={(res) => {
+      // Do something with the response
+      console.log("Files: ", res);
+      alert("Upload Completed");
+    }}
+    onUploadError={(error: Error) => {
+      // Do something with the error.
+      alert(`ERROR! ${error.message}`);
+    }}
+  />
+);
+```
+
+### Configuration
+
+| Prop                   | Type     | Required | Description                                                                       |
+| :--------------------- | :------- | :------- | --------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes      | The type from the FileRouter you defined in your backend                          |
+| endpoint               | string   | Yes      | The name of the [route](./server#FileRouter) you want this button to upload to    |
+| onClientUploadComplete | function | No       | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
+| onUploadError          | function | No       | callback function when upload fails                                               |
+
+## UploadDropzone
+
+```tsx
+import { UploadButton } from "@uploadthing/react";
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export const OurUploadButton = () => (
+  <UploadDropzone<OurFileRouter>
+    endpoint="withoutMdwr"
+    onClientUploadComplete={(res) => {
+      // Do something with the response
+      console.log("Files: ", res);
+      alert("Upload Completed");
+    }}
+    onUploadError={(error: Error) => {
+      alert(`ERROR! ${error.message}`);
+    }}
+  />
+);
+```
+
+### Configuration
+
+| Prop                   | Type     | Required | Description                                                                       |
+| :--------------------- | :------- | :------- | --------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes      | The type from the FileRouter you defined in your backend                          |
+| endpoint               | string   | Yes      | The name of the [route](./server#FileRouter) you want this button to upload to    |
+| onClientUploadComplete | function | No       | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
+| onUploadError          | function | No       | callback function when upload fails                                               |
+
+## generateReactHelpers
+
+The `generateReactHelpers` function is used to generate the useUploadThing hook and the uploadFiles functions you use to interact with UploadThing in custom components. It takes your File Router as a generic
+
+```tsx
+import { generateReactHelpers } from "@uploadthing/react";
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { useUploadThing, uploadFiles } =
+  generateReactHelpers<OurFileRouter>();
+```
+
+## useUploadThing
+
+This hook is a wrapper around [react-dropzone's](https://react-dropzone.js.org/) `useDropzone`. When you are ready to upload the files that have been "dropped", use the `startUpload` function
+
+```tsx
+// Note: this is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
+import { useUploadThing } from "~/utils/uploadthing";
+
+export function MultiUploader() {
+  const { getRootProps, getInputProps, isDragActive, files, startUpload } =
+    useUploadThing("imageUploader");
+
+  return (
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
+      <div>
+        {files.length > 0 && (
+          <button onClick={() => startUpload()}>
+            Upload {files.length} files
+          </button>
+        )}
+      </div>
+      Drop files here!
+    </div>
+  );
+}
+```
+
+## uploadFiles
+
+```tsx
+// Note: this is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
+import { uploadFiles } from "~/utils/uploadthing";
+
+const uploadSomeFiles = async () => {
+  const files = [
+    new File(["foo"], "foo.txt", {
+      type: "text/plain",
+    }),
+  ];
+
+  const res = await uploadFiles(files, "imageUploader");
+};
+```
+
+### Configuration
+
+```tsx
+uploadFiles(files: File[], endpoint: string)
+```
+
+| Arguments | Type   | Required | Description                                                        |
+| :-------- | :----- | :------- | ------------------------------------------------------------------ |
+| files     | File[] | Yes      | The files you intend to upload                                     |
+| endpoint  | string | Yes      | The name of the [route](./server#FileRouter) you want to upload to |
