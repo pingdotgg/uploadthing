@@ -1,7 +1,5 @@
-import {
-  UPLOADTHING_VERSION,
-  generateUploadThingURL,
-} from "./internal/handler";
+import { UPLOADTHING_VERSION } from "./constants";
+import { generateUploadThingURL } from "./internal/handler";
 
 const UT_SECRET = process.env.UPLOADTHING_SECRET;
 
