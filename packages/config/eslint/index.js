@@ -53,6 +53,9 @@ const config = {
     "**/*.config.cjs",
     ".eslintrc.cjs",
     "packages/config/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/.solid/**",
   ],
   reportUnusedDisableDirectives: true,
 };
