@@ -25,7 +25,7 @@ export const OurUploadButton = () => (
 ### Configuration
 
 | Prop                   | Type     | Required | Description                                                                       |
-| :--------------------- | :------- | :------- | --------------------------------------------------------------------------------- |
+| :--------------------- | :------- | :------- | :-------------------------------------------------------------------------------- |
 | `<FileRouter>`         | generic  | Yes      | The type from the FileRouter you defined in your backend                          |
 | endpoint               | string   | Yes      | The name of the [route](./server#FileRouter) you want this button to upload to    |
 | onClientUploadComplete | function | No       | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
@@ -55,7 +55,7 @@ export const OurUploadButton = () => (
 ### Configuration
 
 | Prop                   | Type     | Required | Description                                                                       |
-| :--------------------- | :------- | :------- | --------------------------------------------------------------------------------- |
+| :--------------------- | :------- | :------- | :-------------------------------------------------------------------------------- |
 | `<FileRouter>`         | generic  | Yes      | The type from the FileRouter you defined in your backend                          |
 | endpoint               | string   | Yes      | The name of the [route](./server#FileRouter) you want this button to upload to    |
 | onClientUploadComplete | function | No       | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
@@ -125,6 +125,6 @@ uploadFiles(files: File[], endpoint: string)
 ```
 
 | Arguments | Type   | Required | Description                                                        |
-| :-------- | :----- | :------- | ------------------------------------------------------------------ |
+| :-------- | :----- | :------- | :----------------------------------------------------------------- |
 | files     | File[] | Yes      | The files you intend to upload                                     |
 | endpoint  | string | Yes      | The name of the [route](./server#FileRouter) you want to upload to |
