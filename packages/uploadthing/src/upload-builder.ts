@@ -21,7 +21,6 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
       },
     },
 
-    // @ts-expect-error - Ignore the temp middleware
     middleware: () => ({}),
 
     // Overload with properties passed in

@@ -52,6 +52,7 @@
     "eslint": "^8.40.0",
     "next": "13.4.3",
     "tsup": "6.7.0",
+    "type-fest": "^3.11.0",
     "typescript": "5.1.0-beta",
     "vitest": "^0.30.1"
   },

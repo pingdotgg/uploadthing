@@ -389,6 +389,9 @@ importers:
       tsup:
         specifier: 6.7.0
         version: 6.7.0(postcss@8.4.22)(typescript@5.1.0-beta)
+      type-fest:
+        specifier: ^3.11.0
+        version: 3.11.0
       typescript:
         specifier: 5.1.0-beta
         version: 5.1.0-beta
@@ -8505,6 +8508,11 @@ packages:
       typescript: '>=4.7.0'
     dependencies:
       typescript: 5.1.0-beta
+    dev: true
+
+  /type-fest@3.11.0:
+    resolution: {integrity: sha512-JaPw5U9ixP0XcpUbQoVSbxSDcK/K4nww20C3kjm9yE6cDRRhptU28AH60VWf9ltXmCrIfIbtt9J+2OUk2Uqiaw==}
+    engines: {node: '>=14.16'}
     dev: true
 
   /typed-array-length@1.0.4:

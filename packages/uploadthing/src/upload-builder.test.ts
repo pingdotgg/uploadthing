@@ -57,7 +57,7 @@ it("uses defaults for not-chained", async () => {
   expectTypeOf(metadata).toMatchTypeOf<{}>();
 });
 
-it("passes `Request` by default", async () => {
+it("passes `Request` by default", () => {
   const f = createBuilder();
 
   f(["image"]).middleware(async (req) => {
@@ -67,7 +67,22 @@ it("passes `Request` by default", async () => {
   });
 });
 
-it("passes `NextRequest` for /app", async () => {
+it("allows async middleware", () => {
+  const f = createBuilder();
+
+  // eslint-disable-next-line @typescript-eslint/require-await
+  f(["image"])
+    .middleware(async (req) => {
+      expectTypeOf(req).toMatchTypeOf<Request>();
+
+      return { foo: "bar" } as const;
+    })
+    .onUploadComplete((opts) => {
+      expectTypeOf(opts.metadata).toMatchTypeOf<{ foo: "bar" }>();
+    });
+});
+
+it("passes `NextRequest` for /app", () => {
   const f = createBuilder<"app">();
 
   f(["image"]).middleware(async (req) => {
@@ -76,7 +91,7 @@ it("passes `NextRequest` for /app", async () => {
   });
 });
 
-it("passes `res` for /pages", async () => {
+it("passes `res` for /pages", () => {
   const f = createBuilder<"pages">();
 
   f(["image"]).middleware(async (req, res) => {
