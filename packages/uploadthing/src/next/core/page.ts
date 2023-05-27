@@ -38,7 +38,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
 
     const standardRequest = {
       ...req,
-      json: () => Promise.resolve(req.body),
+      json: () => Promise.resolve(JSON.parse(req.body)),
       headers: {
         get: (key: string) => req.headers[key],
       } as Headers,
