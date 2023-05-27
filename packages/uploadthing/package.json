@@ -33,7 +33,7 @@
     }
   },
   "scripts": {
-    "lint": "eslint *.ts* --max-warnings 0",
+    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0 --ignore-pattern dist/",
     "build": "tsup",
     "prebuild": "tsup",
     "clean": "git clean -xdf dist node_modules",

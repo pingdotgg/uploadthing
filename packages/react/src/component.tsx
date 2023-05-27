@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
-import { FileWithPath, useDropzone } from "react-dropzone";
+import type { FileWithPath } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
 
 import {
   classNames,

@@ -1,4 +1,5 @@
-import { createResource, Resource } from "solid-js";
+import type { Resource } from "solid-js";
+import { createResource } from "solid-js";
 
 interface State<T> {
   data?: T;
@@ -9,7 +10,7 @@ interface State<T> {
 type Cache<T> = { [url: string]: T };
 
 export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
-  const cache: Cache<any> = {};
+  const cache: Cache<T> = {};
   const [res] = createResource(async () => {
     if (!url)
       return {

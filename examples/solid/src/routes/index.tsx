@@ -1,4 +1,4 @@
-import { type VoidComponent } from "solid-js";
+import type { VoidComponent } from "solid-js";
 
 import { Uploader } from "@uploadthing/solid";
 

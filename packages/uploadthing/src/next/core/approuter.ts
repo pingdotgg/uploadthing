@@ -1,8 +1,8 @@
 import { UPLOADTHING_VERSION } from "../../constants";
+import type { RouterWithConfig } from "../../internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
-  RouterWithConfig,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
 

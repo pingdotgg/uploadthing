@@ -12,6 +12,8 @@ const config = {
     "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss",
   ],
+  // Last version that doesn't squash type and value imports
+  importOrderTypeScriptVersion: "4.4.0",
   importOrder: [
     "^(react/(.*)$)|^(react$)",
     "^(next/(.*)$)|^(next$)",

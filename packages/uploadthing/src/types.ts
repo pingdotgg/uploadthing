@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {

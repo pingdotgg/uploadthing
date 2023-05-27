@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { expect, expectTypeOf, it } from "vitest";
 
 import { genUploader } from "../client";

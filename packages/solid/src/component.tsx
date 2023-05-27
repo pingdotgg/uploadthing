@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react/no-unknown-property */
 import { createSignal } from "solid-js";
-import { createDropzone, OnDropHandler } from "solidjs-dropzone";
+import type { OnDropHandler } from "solidjs-dropzone";
+import { createDropzone } from "solidjs-dropzone";
 
 import {
   classNames,
