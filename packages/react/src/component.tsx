@@ -32,14 +32,12 @@ const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
 
   const allowedTypes = Object.keys(config) as (keyof ExpandedRouteConfig)[];
 
-  const formattedTypes = allowedTypes.map((f) =>
-    f === "blob" ? "files" : `${f}s`
-  );
+  const formattedTypes = allowedTypes.map((f) => (f === "blob" ? "file" : f));
 
   // Format multi-type uploader label as "Supports videos, images and files";
   if (formattedTypes.length > 1) {
     const lastType = formattedTypes.pop();
-    return `${formattedTypes.join(", ")} and ${lastType}`;
+    return `${formattedTypes.join("s, ")} and ${lastType}s`;
   }
 
   // Single type uploader label
@@ -50,9 +48,9 @@ const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
   const { maxFileSize, maxFileCount } = config[key]!;
 
   if (maxFileCount && maxFileCount > 1) {
-    return `${formattedKey} up to ${maxFileSize}, max ${maxFileCount}`;
+    return `${formattedKey}s up to ${maxFileSize}, max ${maxFileCount}`;
   } else {
-    return `${formattedKey.slice(0, -1)} (${maxFileSize})`;
+    return `${formattedKey} (${maxFileSize})`;
   }
 };
 
