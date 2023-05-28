@@ -1,48 +1,59 @@
 import type {
   AnyRuntime,
+  FileRouterInputConfig,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
 } from "./types";
 
-export function createBuilder<TRuntime extends AnyRuntime = "web">(
+function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   initDef: Partial<UploadBuilderDef<TRuntime>> = {},
 ): UploadBuilder<{
   _metadata: UnsetMarker;
   _runtime: TRuntime;
 }> {
   const _def: UploadBuilderDef<TRuntime> = {
-    fileTypes: ["image"],
-    maxSize: "1MB",
+    // Default router config
+    routerConfig: {
+      image: {
+        maxFileSize: "4MB",
+      },
+    },
+
     middleware: () => ({}),
+
+    // Overload with properties passed in
     ...initDef,
   };
 
   return {
-    fileTypes(types) {
-      return createBuilder({
+    middleware(userMiddleware) {
+      return internalCreateBuilder({
         ..._def,
-        fileTypes: types,
-      });
-    },
-    maxSize(size) {
-      return createBuilder({
-        ..._def,
-        maxSize: size,
-      });
-    },
-    middleware(resolver) {
-      return createBuilder({
-        ..._def,
-        middleware: resolver,
+        middleware: userMiddleware,
       }) as UploadBuilder<{ _metadata: any; _runtime: TRuntime }>;
     },
-    onUploadComplete(resolver) {
+    onUploadComplete(userUploadComplete) {
       return {
         _def,
-        resolver,
+        resolver: userUploadComplete,
       } as Uploader<{ _metadata: any; _runtime: TRuntime }>;
     },
+  };
+}
+
+type InOut<TRuntime extends AnyRuntime = "web"> = (
+  input: FileRouterInputConfig,
+) => UploadBuilder<{
+  _metadata: UnsetMarker;
+  _runtime: TRuntime;
+}>;
+
+export function createBuilder<
+  TRuntime extends AnyRuntime = "web",
+>(): InOut<TRuntime> {
+  return (input: FileRouterInputConfig) => {
+    return internalCreateBuilder<TRuntime>({ routerConfig: input });
   };
 }

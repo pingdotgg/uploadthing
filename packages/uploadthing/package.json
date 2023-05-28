@@ -42,7 +42,11 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "mime-types": "^2.1.35"
+  },
   "devDependencies": {
+    "@types/mime-types": "2.1.1",
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.1.0",
     "@uploadthing/tsconfig": "0.1.0",
