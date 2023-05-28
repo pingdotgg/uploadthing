@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 
-import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+import { createUploadthing } from "uploadthing/next-legacy";
+import type { FileRouter } from "uploadthing/next-legacy";
 
 import { options } from "~/pages/api/auth/[...nextauth]";
 
