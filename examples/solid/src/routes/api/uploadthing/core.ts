@@ -8,31 +8,25 @@ const auth = (req: Request) => Promise.resolve({ id: "fakeId" }); // Fake auth f
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  withMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "1MB",
-    },
-  })
+  imageUploader: f
+    // Set permissions and file types for this FileRoute
+    .fileTypes(["image", "video"])
+    .maxSize("1GB")
     .middleware(async (req) => {
-      const h = req.headers.get("someProperty");
-      const authed = await auth(req);
+      // This code runs on your server before upload
+      const user = await auth(req);
 
-      return {
-        someProperty: h,
-        userId: authed.id,
-      };
+      // If you throw, the user will not be able to upload
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
     })
     .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      metadata.someProperty;
-      //       ^?
-      metadata.userId;
-      //       ^?
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
 
-      console.log("files successfully uploaded:", file);
-      file;
-      // ^?
+      console.log("file url", file.url);
     }),
 } satisfies FileRouter;
 
