@@ -1,4 +1,3 @@
 import "./styles.css";
 
-export { UploadButton } from "./src/component";
-export { UploadDropzone } from "./src/component";
+export { UploadButton, Uploader, UploadDropzone } from "./src/components";

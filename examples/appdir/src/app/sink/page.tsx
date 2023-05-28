@@ -14,6 +14,8 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex gap-4">
           <UploadButton<OurFileRouter>
+            size="lg"
+            className="hover:bg-sky-300"
             endpoint="withoutMdwr"
             onClientUploadComplete={(res) => {
               console.log("Files: ", res);

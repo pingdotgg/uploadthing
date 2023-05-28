@@ -60,5 +60,8 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "tailwind-merge": "^1.12.0"
   }
 }
