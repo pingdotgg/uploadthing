@@ -8,11 +8,7 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.workingDirectories": [
     "docs",
-    "examples/appdir",
-    "examples/pagedir",
-    "examples/solid",
-    "packages/react",
-    "packages/solid",
-    "packages/uploadthing"
+    { "pattern": "./packages/**" },
+    { "pattern": "./examples/**" }
   ]
 }
