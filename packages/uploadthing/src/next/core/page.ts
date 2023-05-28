@@ -46,7 +46,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       headers: {
         get: (key: string) => req.headers[key],
       } as Headers,
-    };
+    } as NextApiRequest & RequestBase;
 
     const response = await requestHandler({
       uploadthingHook,

@@ -132,8 +132,8 @@ export const buildRequestHandler = <
     uploadthingHook?: string;
     slug?: string;
     actionType?: string;
-    req: Partial<Request> & { json: Request["json"] };
-    res?: TRuntime extends "pages" ? NextApiResponse : undefined;
+    req: RequestAdapter<TRuntime>;
+    res?: ResponseAdapter<TRuntime>;
   }) => {
     const { router, config } = opts;
     const preferredOrEnvSecret =
@@ -155,7 +155,7 @@ export const buildRequestHandler = <
 
     const reqBody = (await req.json()) as {
       file: UploadedFile;
-      files: unknown;
+      files: string[];
       metadata: Record<string, unknown>;
       input?: Json;
     };

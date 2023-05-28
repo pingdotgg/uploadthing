@@ -1,3 +1,5 @@
+import { NextRequest } from "next/server";
+
 import { UPLOADTHING_VERSION } from "../../constants";
 import type { RouterWithConfig } from "../../internal/handler";
 import {
@@ -11,7 +13,7 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "app">(opts);
 
-  const POST = async (req: Request) => {
+  const POST = async (req: NextRequest) => {
     const params = new URL(req.url).searchParams;
     const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
