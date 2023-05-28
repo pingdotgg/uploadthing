@@ -49,7 +49,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       <label
         className={twMerge(
           "flex cursor-pointer items-center justify-center rounded-md",
-          "bg-blue-600 hover:bg-blue-700 focus:bg-blue-700",
+          "bg-blue-600 text-white hover:bg-blue-700 focus:bg-blue-700",
           size === "sm" && "h-9 w-32 text-sm",
           size === "md" && "h-10 w-36",
           size === "lg" && "h-12 w-44 text-lg",
@@ -66,7 +66,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
             void startUpload(Array.from(e.target.files));
           }}
         />
-        <span className="px-3 py-2 text-white">
+        <span className="px-3 py-2">
           {isUploading ? <Spinner /> : `Choose File${multiple ? `(s)` : ``}`}
         </span>
       </label>
