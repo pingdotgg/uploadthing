@@ -25,14 +25,14 @@
     "@solidjs/meta": "^0.28.2",
     "@solidjs/router": "^0.8.2",
     "@soorria/solid-dropzone": "^0.0.5",
-    "@uploadthing/solid": "4.0.0",
+    "@uploadthing/solid": "3.0.5",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
     "solid-js": "^1.7.3",
     "solid-start": "^0.2.26",
     "solidjs-dropzone": "^1.0.0",
     "undici": "5.20.0",
-    "uploadthing": "4.0.0",
+    "uploadthing": "3.0.5",
     "zod": "^3.21.4"
   },
   "engines": {

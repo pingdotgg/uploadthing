@@ -1,12 +1,5 @@
 # @uploadthing/solid
 
-## 4.0.0
-
-### Patch Changes
-
-- Updated dependencies [[`16157de`](https://github.com/pingdotgg/uploadthing/commit/16157de54198d0838007efb4f6a37a4cd8720bab), [`91fb166`](https://github.com/pingdotgg/uploadthing/commit/91fb1660ba9a3dd2eb92df16b5bb1d3373b77662), [`b073c96`](https://github.com/pingdotgg/uploadthing/commit/b073c96120edccf9c9dd8f6db78611f43b841d20)]:
-  - uploadthing@4.0.0
-
 ## 3.0.5
 
 ### Patch Changes

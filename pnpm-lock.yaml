@@ -193,7 +193,7 @@ importers:
         specifier: ^0.0.5
         version: 0.0.5(solid-js@1.7.5)
       '@uploadthing/solid':
-        specifier: 4.0.0
+        specifier: 3.0.5
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -214,8 +214,8 @@ importers:
         specifier: 5.20.0
         version: 5.20.0
       uploadthing:
-        specifier: 4.0.0
-        version: link:../../packages/uploadthing
+        specifier: 3.0.5
+        version: 3.0.5
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -386,8 +386,8 @@ importers:
         specifier: 5.1.0-beta
         version: 5.1.0-beta
       uploadthing:
-        specifier: 4.0.0
-        version: link:../uploadthing
+        specifier: 3.0.5
+        version: 3.0.5
 
   packages/uploadthing:
     dependencies:
@@ -9030,6 +9030,9 @@ packages:
       browserslist: 4.21.5
       escalade: 3.1.1
       picocolors: 1.0.0
+
+  /uploadthing@3.0.5:
+    resolution: {integrity: sha512-/AHyRKp6nnI0DLbjBeKf/JYqQNW6qIYVVBiVyDQewlJk+NtP5R7ux8aPGNrgdZOonXWrM3pDYaY7+FtplQ7sPA==}
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
