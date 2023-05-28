@@ -34,6 +34,7 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 ```ts copy
 /** server/uploadthing.ts */
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+
 const f = createUploadthing();
 
 const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: "fakeId" }); // Fake auth function
@@ -75,6 +76,7 @@ export type OurFileRouter = typeof ourFileRouter;
 ```ts copy
 /** pages/api/uploadthing.ts */
 import { createNextPageApiHandler } from "uploadthing/next-legacy";
+
 import { ourFileRouter } from "~/server/uploadthing";
 
 const handler = createNextPageApiHandler({
@@ -92,7 +94,6 @@ The `@uploadthing/react` package includes an "UploadButton" component that you c
 import { UploadButton } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing";
-
 // You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
 import "@uploadthing/react/styles.css";
 

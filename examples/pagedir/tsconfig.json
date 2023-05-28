@@ -1,7 +1,5 @@
 {
   "extends": "@uploadthing/tsconfig/nextjs.json",
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
     "baseUrl": ".",
@@ -9,5 +7,5 @@
       "~/*": ["./src/*"]
     }
   },
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"]
 }

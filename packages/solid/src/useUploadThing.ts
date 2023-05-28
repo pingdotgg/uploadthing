@@ -1,6 +1,8 @@
-import type { FileRouter } from "uploadthing/server";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import { createSignal } from "solid-js";
+
+import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+
 import { createFetch } from "./utils/createFetch";
 
 type EndpointMetadata = {
@@ -11,7 +13,7 @@ type EndpointMetadata = {
 
 const createEndpointMetadata = (endpoint: string, url?: string) => {
   const dataGetter = createFetch<EndpointMetadata>(
-    `${url ?? ""}/api/uploadthing`
+    `${url ?? ""}/api/uploadthing`,
   );
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
@@ -24,7 +26,7 @@ export const useUploadThing = <T extends string>({
 }: {
   endpoint: T;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (e: Error) => void;
   url?: string;

@@ -1,14 +1,14 @@
 import type {
+  AnyRuntime,
+  FileRouterInputConfig,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-  AnyRuntime,
-  FileRouterInputConfig,
 } from "./types";
 
 function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
-  initDef: Partial<UploadBuilderDef<TRuntime>> = {}
+  initDef: Partial<UploadBuilderDef<TRuntime>> = {},
 ): UploadBuilder<{
   _metadata: UnsetMarker;
   _runtime: TRuntime;
@@ -44,14 +44,14 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
 }
 
 type InOut<TRuntime extends AnyRuntime = "web"> = (
-  input: FileRouterInputConfig
+  input: FileRouterInputConfig,
 ) => UploadBuilder<{
   _metadata: UnsetMarker;
   _runtime: TRuntime;
 }>;
 
 export function createBuilder<
-  TRuntime extends AnyRuntime = "web"
+  TRuntime extends AnyRuntime = "web",
 >(): InOut<TRuntime> {
   return (input: FileRouterInputConfig) => {
     return internalCreateBuilder<TRuntime>({ routerConfig: input });

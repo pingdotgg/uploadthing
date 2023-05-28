@@ -1,15 +1,17 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable react/no-unknown-property */
-import type { FileRouter } from "uploadthing/server";
-import { useUploadThing } from "./useUploadThing";
 import { createSignal } from "solid-js";
-import { OnDropHandler, createDropzone } from "solidjs-dropzone";
+import type { OnDropHandler } from "solidjs-dropzone";
+import { createDropzone } from "solidjs-dropzone";
+
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+
+import { useUploadThing } from "./useUploadThing";
 
 export type EndpointHelper<TRouter extends void | FileRouter> =
   void extends TRouter ? "YOU FORGOT TO PASS THE GENERIC" : keyof TRouter;
@@ -24,7 +26,7 @@ export type EndpointHelper<TRouter extends void | FileRouter> =
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
@@ -48,7 +50,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           type="file"
           multiple={props.multiple}
           accept={generateMimeTypes(
-            uploadedThing.permittedFileInfo()?.fileTypes ?? []
+            uploadedThing.permittedFileInfo()?.fileTypes ?? [],
           )?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
@@ -77,11 +79,11 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
 }
 
 export const UploadDropzone = <
-  TRouter extends void | FileRouter = void
+  TRouter extends void | FileRouter = void,
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
@@ -105,7 +107,7 @@ export const UploadDropzone = <
     onDrop,
     accept: uploadedThing.permittedFileInfo()?.fileTypes
       ? generateClientDropzoneAccept(
-          uploadedThing.permittedFileInfo()?.fileTypes ?? []
+          uploadedThing.permittedFileInfo()?.fileTypes ?? [],
         )
       : undefined,
     useFsAccessApi: true,
@@ -115,7 +117,7 @@ export const UploadDropzone = <
     <div
       class={classNames(
         "ut-mt-2 ut-flex ut-justify-center ut-rounded-lg ut-border ut-border-dashed ut-border-gray-900/25 ut-px-6 ut-py-10",
-        isDragActive ? "ut-bg-blue-600/10" : ""
+        isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
       <div class="text-center" {...getRootProps()}>
@@ -179,7 +181,7 @@ export const UploadDropzone = <
 export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
@@ -197,7 +199,7 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   return (
     <>
       <div class="flex flex-col items-center justify-center gap-4">
-        <span class="text-4xl font-bold text-center">
+        <span class="text-center text-4xl font-bold">
           {`Upload a file using a button:`}
         </span>
         <UploadButton<TRouter>
@@ -207,7 +209,7 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
         />
       </div>
       <div class="flex flex-col items-center justify-center gap-4">
-        <span class="text-4xl font-bold text-center">
+        <span class="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
         <UploadDropzone<TRouter> {...props} uploadedThing={uploadedThing} />

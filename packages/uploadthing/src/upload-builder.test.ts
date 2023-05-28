@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextRequest } from "next/server";
+import { expect, expectTypeOf, it } from "vitest";
+
 import { genUploader } from "../client";
 import type { FileRouter } from "./types";
 import { createBuilder } from "./upload-builder";
-import { expect, it, expectTypeOf } from "vitest";
-import { NextRequest } from "next/server";
 
 const badReqMock = {
   headers: {
@@ -60,7 +61,7 @@ it("uses defaults for not-chained", async () => {
 it("passes `Request` by default", () => {
   const f = createBuilder();
 
-  f(["image"]).middleware(async (req) => {
+  f(["image"]).middleware((req) => {
     expectTypeOf(req).toMatchTypeOf<Request>();
 
     return {};
@@ -70,9 +71,8 @@ it("passes `Request` by default", () => {
 it("allows async middleware", () => {
   const f = createBuilder();
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   f(["image"])
-    .middleware(async (req) => {
+    .middleware((req) => {
       expectTypeOf(req).toMatchTypeOf<Request>();
 
       return { foo: "bar" } as const;
@@ -85,7 +85,7 @@ it("allows async middleware", () => {
 it("passes `NextRequest` for /app", () => {
   const f = createBuilder<"app">();
 
-  f(["image"]).middleware(async (req) => {
+  f(["image"]).middleware((req) => {
     expectTypeOf(req).toMatchTypeOf<NextRequest>();
     return { nextUrl: req.nextUrl };
   });
@@ -94,7 +94,7 @@ it("passes `NextRequest` for /app", () => {
 it("passes `res` for /pages", () => {
   const f = createBuilder<"pages">();
 
-  f(["image"]).middleware(async (req, res) => {
+  f(["image"]).middleware((req, res) => {
     expectTypeOf(req).toMatchTypeOf<NextApiRequest>();
     expectTypeOf(res).toMatchTypeOf<NextApiResponse>();
 
@@ -106,7 +106,7 @@ it("smoke", async () => {
   const f = createBuilder();
 
   const uploadable = f(["image", "video"])
-    .middleware(async (req) => {
+    .middleware((req) => {
       const header1 = req.headers.get("header1");
 
       return { header1, userId: "123" as const };
@@ -131,7 +131,7 @@ it("smoke", async () => {
 it("genuploader", async () => {
   const f = createBuilder();
   const uploadable = f(["image", "video"]).onUploadComplete(
-    ({ file, metadata }) => {}
+    ({ file, metadata }) => {},
   );
 
   const router = { uploadable } satisfies FileRouter;

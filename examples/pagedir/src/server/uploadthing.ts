@@ -1,5 +1,8 @@
 import { getServerSession } from "next-auth";
-import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+
+import { createUploadthing } from "uploadthing/next-legacy";
+import type { FileRouter } from "uploadthing/next-legacy";
+
 import { options } from "~/pages/api/auth/[...nextauth]";
 
 const f = createUploadthing();
@@ -21,7 +24,7 @@ export const uploadRouter = {
 
       console.log(
         `${metadata.userEmail ?? ""} successfully uploaded file:`,
-        file
+        file,
       );
       file;
       // ^?

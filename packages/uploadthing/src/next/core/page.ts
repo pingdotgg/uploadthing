@@ -1,14 +1,15 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import { UPLOADTHING_VERSION } from "../../constants";
+import type { RouterWithConfig } from "../../internal/handler";
 import {
-  RouterWithConfig,
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
 

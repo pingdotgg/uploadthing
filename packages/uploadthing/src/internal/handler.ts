@@ -1,3 +1,5 @@
+import type { NextApiResponse } from "next";
+
 import { UPLOADTHING_VERSION } from "../constants";
 import type {
   AllowedFileType,
@@ -6,12 +8,11 @@ import type {
   FileRouter,
   UploadedFile,
 } from "../types";
-import type { NextApiResponse } from "next";
-import type { FileData } from "./types";
 import {
   getTypeFromFileName,
   fillInputRouteConfig as parseAndExpandInputConfig,
 } from "../utils";
+import type { FileData } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -36,7 +37,7 @@ export const fileSizeToBytes = (input: string) => {
 
 const fileCountLimitHit = (
   files: string[],
-  routeConfig: ExpandedRouteConfig
+  routeConfig: ExpandedRouteConfig,
 ) => {
   const counts: Record<AllowedFileType, number> = {
     image: 0,
@@ -48,7 +49,7 @@ const fileCountLimitHit = (
   files.forEach((file) => {
     const type = getTypeFromFileName(
       file,
-      Object.keys(routeConfig) as AllowedFileType[]
+      Object.keys(routeConfig) as AllowedFileType[],
     );
     counts[type] += 1;
   });
@@ -87,7 +88,7 @@ const isValidResponse = (response: Response) => {
 const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | null>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
-  MAX_RETRIES = 20
+  MAX_RETRIES = 20,
 ): Promise<T | null> => {
   let tries = 0;
   let backoffMs = 500;
@@ -105,8 +106,8 @@ const withExponentialBackoff = async <T>(
     if (tries > 3) {
       console.error(
         `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-          backoffMs / 1000
-        )} seconds...`
+          backoffMs / 1000,
+        )} seconds...`,
       );
     }
 
@@ -156,7 +157,7 @@ const conditionalDevServer = async (fileKey: string) => {
     } else {
       console.error(
         "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-        fileKey
+        fileKey,
       );
     }
     return file;
@@ -198,9 +199,9 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,
-  TRuntime extends AnyRuntime
+  TRuntime extends AnyRuntime,
 >(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
     uploadthingHook?: string;
@@ -218,7 +219,7 @@ export const buildRequestHandler = <
 
     if (!preferredOrEnvSecret) {
       throw new Error(
-        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
+        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
       );
     }
 
@@ -262,7 +263,7 @@ export const buildRequestHandler = <
 
       // FILL THE ROUTE CONFIG so the server only has one happy path
       const parsedConfig = parseAndExpandInputConfig(
-        uploadable._def.routerConfig
+        uploadable._def.routerConfig,
       );
 
       const limitHit = fileCountLimitHit(files, parsedConfig);
@@ -287,7 +288,7 @@ export const buildRequestHandler = <
             "x-uploadthing-api-key": preferredOrEnvSecret,
             "x-uploadthing-version": UPLOADTHING_VERSION,
           },
-        }
+        },
       );
 
       if (!uploadthingApiResponse.ok) {
@@ -325,7 +326,7 @@ export const buildRequestHandler = <
 };
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   return () => {
     const r = opts.router;

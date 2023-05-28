@@ -7,9 +7,8 @@
   "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.workingDirectories": [
-    "examples/appdir",
-    "examples/pagedir",
-    "packages/uploadthing",
-    "docs"
+    "docs",
+    { "pattern": "./packages/**" },
+    { "pattern": "./examples/**" }
   ]
 }

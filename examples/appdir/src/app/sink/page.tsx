@@ -1,8 +1,10 @@
 "use client";
 
 import { Inter } from "next/font/google";
+
 import { UploadButton, UploadDropzone } from "@uploadthing/react";
-import type { OurFileRouter } from "../_uploadthing";
+
+import type { OurFileRouter } from "~/server/uploadthing";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -35,7 +37,7 @@ export default function Home() {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-4xl font-bold text-center">
+        <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
         <UploadDropzone<OurFileRouter>

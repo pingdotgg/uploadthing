@@ -1,13 +1,13 @@
 import { UPLOADTHING_VERSION } from "../../constants";
+import type { RouterWithConfig } from "../../internal/handler";
 import {
-  RouterWithConfig,
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "app">(opts);
 

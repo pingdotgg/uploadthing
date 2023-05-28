@@ -14,7 +14,7 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
   endpoint: T,
   config?: {
     url?: string;
-  }
+  },
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
@@ -24,7 +24,7 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
       body: JSON.stringify({
         files: files.map((f) => f.name),
       }),
-    }
+    },
   ).then((res) => {
     // check for 200 response
     if (!res.ok) throw new Error("Failed to get presigned URLs");
@@ -98,7 +98,7 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
 export type UploadFileType<T extends string> = typeof DANGEROUS__uploadFiles<T>;
 
 export const genUploader = <
-  TRouter extends FileRouter
+  TRouter extends FileRouter,
 >(): typeof DANGEROUS__uploadFiles<
   keyof TRouter extends string ? keyof TRouter : string
 > => {
@@ -111,7 +111,7 @@ export const classNames = (...classes: string[]) => {
 
 export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) =>
-    type !== "blob" ? `${type}/*` : "blob"
+    type !== "blob" ? `${type}/*` : "blob",
   );
 
   if (accepted.includes("blob")) {

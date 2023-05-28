@@ -59,6 +59,7 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 ```ts copy
 /** src/api/uploadthing/core.ts */
 import { createUploadthing, type FileRouter } from "uploadthing";
+
 const f = createUploadthing();
 
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
@@ -101,6 +102,7 @@ export type OurFileRouter = typeof ourFileRouter;
 ```ts copy
 /** src/api/uploadthing/index.ts */
 import { createServerHandler } from "@uploadthing/solid";
+
 import { ourFileRouter } from "./core";
 
 export const { GET, POST } = createServerHandler({
@@ -115,9 +117,12 @@ The `@uploadthing/solid` package includes an "Uploader" component that you can s
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/solid/styles.css";
+
 import { type VoidComponent } from "solid-js";
-import type { OurFileRouter } from "./api/uploadthing/core";
+
 import { Uploader } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "./api/uploadthing/core";
 
 const Home: VoidComponent = () => {
   return (
@@ -152,9 +157,12 @@ The `@uploadthing/solid` package includes an "Uploader" component that you can s
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/solid/styles.css";
+
 import { type VoidComponent } from "solid-js";
-import type { OurFileRouter } from "./api/uploadthing/core";
+
 import { Uploader } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "./api/uploadthing/core";
 
 const Home: VoidComponent = () => {
   return (
@@ -181,9 +189,12 @@ This is a SolidJS dropzone component that will be used to upload files when clic
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/solid/styles.css";
+
 import { type VoidComponent } from "solid-js";
-import type { OurFileRouter } from "./api/uploadthing/core";
+
 import { UploadButton } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "./api/uploadthing/core";
 
 const Home: VoidComponent = () => {
   return (
@@ -214,9 +225,12 @@ This is a SolidJS dropzone component that you can use to upload files, you can d
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/solid/styles.css";
+
 import { type VoidComponent } from "solid-js";
-import type { OurFileRouter } from "./api/uploadthing/core";
+
 import { UploadDropzone } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "./api/uploadthing/core";
 
 const Home: VoidComponent = () => {
   return (

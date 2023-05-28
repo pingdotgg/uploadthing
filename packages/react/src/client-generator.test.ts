@@ -1,5 +1,6 @@
-import { createUploadthing } from "uploadthing/server";
 import { it } from "vitest";
+
+import { createUploadthing } from "uploadthing/server";
 
 import { generateReactHelpers } from "./useUploadThing";
 

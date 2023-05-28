@@ -1,12 +1,14 @@
-import {
-  FileRouterInputConfig,
+import { lookup } from "mime-types";
+
+import type {
   AllowedFileType,
   ExpandedRouteConfig,
+  FileRouterInputConfig,
   FileSize,
 } from "./types";
 
 function isRouteArray(
-  routeConfig: FileRouterInputConfig
+  routeConfig: FileRouterInputConfig,
 ): routeConfig is AllowedFileType[] {
   return Array.isArray(routeConfig);
 }
@@ -29,7 +31,7 @@ const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
  * ```
  */
 export const fillInputRouteConfig = (
-  routeConfig: FileRouterInputConfig
+  routeConfig: FileRouterInputConfig,
 ): ExpandedRouteConfig => {
   // If array, apply defaults
   if (isRouteArray(routeConfig)) {
@@ -60,16 +62,14 @@ export const fillInputRouteConfig = (
   return newConfig;
 };
 
-import { lookup } from "mime-types";
-
 export const getTypeFromFileName = (
   fileName: string,
-  allowedTypes: AllowedFileType[]
+  allowedTypes: AllowedFileType[],
 ) => {
   const mimeType = lookup(fileName);
   if (!mimeType) {
     throw new Error(
-      `Could not determine type for ${fileName}, presigned URL generation failed`
+      `Could not determine type for ${fileName}, presigned URL generation failed`,
     );
   }
 
