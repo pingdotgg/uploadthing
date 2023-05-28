@@ -41,6 +41,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
 
     const standardRequest = {
       ...req,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       json: () => Promise.resolve(JSON.parse(req.body)),
       headers: {
         get: (key: string) => req.headers[key],
