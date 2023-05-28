@@ -1,7 +1,17 @@
 import { UPLOADTHING_VERSION } from "../constants";
-import type { AnyRuntime, FileRouter, UploadedFile } from "../types";
+import type {
+  AllowedFileType,
+  AnyRuntime,
+  ExpandedRouteConfig,
+  FileRouter,
+  UploadedFile,
+} from "../types";
 import type { NextApiResponse } from "next";
 import type { FileData } from "./types";
+import {
+  getTypeFromFileName,
+  fillInputRouteConfig as parseAndExpandInputConfig,
+} from "../utils";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -22,6 +32,39 @@ export const fileSizeToBytes = (input: string) => {
   }
   const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
   return Math.floor(bytes);
+};
+
+const fileCountLimitHit = (
+  files: string[],
+  routeConfig: ExpandedRouteConfig
+) => {
+  const counts: Record<AllowedFileType, number> = {
+    image: 0,
+    video: 0,
+    audio: 0,
+    blob: 0,
+  };
+
+  files.forEach((file) => {
+    const type = getTypeFromFileName(
+      file,
+      Object.keys(routeConfig) as AllowedFileType[]
+    );
+    counts[type] += 1;
+  });
+
+  return Object.keys(counts).some((key) => {
+    const count = counts[key as AllowedFileType];
+    if (count === 0) return false;
+
+    const limit = routeConfig[key as AllowedFileType]?.maxFileCount;
+    if (!limit) {
+      console.error(routeConfig, key);
+      throw new Error("invalid config during file count");
+    }
+
+    return count > limit;
+  });
 };
 
 export const generateUploadThingURL = (path: `/${string}`) => {
@@ -93,7 +136,6 @@ const conditionalDevServer = async (fileKey: string) => {
 
     console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
-    // TODO: Check that we "actually hit our endpoint" and throw a loud error if we didn't
     const response = await fetch(callbackUrl, {
       method: "POST",
       body: JSON.stringify({
@@ -195,6 +237,7 @@ export const buildRequestHandler = <
       // This is when we receive the webhook from uploadthing
       await uploadable.resolver({
         file: reqBody.file,
+
         metadata: reqBody.metadata,
       });
 
@@ -209,28 +252,35 @@ export const buildRequestHandler = <
     }
 
     try {
-      const { files } = reqBody;
+      const { files } = reqBody as { files: string[] };
       // @ts-expect-error TODO: Fix this
       const metadata = await uploadable._def.middleware(req, res);
-
-      // Once that passes, persist in DB
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
         throw new Error("Need file array");
 
-      // TODO: Make this a function
+      // FILL THE ROUTE CONFIG so the server only has one happy path
+      const parsedConfig = parseAndExpandInputConfig(
+        uploadable._def.routerConfig
+      );
+
+      const limitHit = fileCountLimitHit(files, parsedConfig);
+
+      if (limitHit) throw new Error("Too many files");
+
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
         {
           method: "POST",
           body: JSON.stringify({
             files: files,
-            fileTypes: uploadable._def.fileTypes,
+
+            routeConfig: parsedConfig,
+
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
             callbackSlug: slug,
-            maxFileSize: fileSizeToBytes(uploadable._def.maxSize ?? "16MB"),
           }),
           headers: {
             "Content-Type": "application/json",
@@ -251,8 +301,7 @@ export const buildRequestHandler = <
         throw new Error("ending upload");
       }
 
-      // This is when we send the response back to our form so it can submit the files
-
+      // This is when we send the response back to the user's form so they can submit the files
       const parsedResponse = (await uploadthingApiResponse.json()) as {
         presignedUrl: { url: string; fields: Record<string, string> }; // ripped type from S3 package
         name: string;
@@ -261,7 +310,7 @@ export const buildRequestHandler = <
 
       if (process.env.NODE_ENV === "development") {
         for (const file of parsedResponse) {
-          await conditionalDevServer(file.key);
+          void conditionalDevServer(file.key);
         }
       }
 
@@ -283,10 +332,10 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
 
     const permissions = Object.keys(r).map((k) => {
       const route = r[k];
+      const config = parseAndExpandInputConfig(route._def.routerConfig);
       return {
         slug: k as keyof TRouter,
-        maxSize: route._def.maxSize,
-        fileTypes: route._def.fileTypes,
+        config,
       };
     });
 

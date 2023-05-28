@@ -25,11 +25,24 @@ export type UploadedFile = {
   size: number;
 };
 
-type AllowedFiles = "image" | "video" | "audio" | "blob";
+export type AllowedFileType = "image" | "video" | "audio" | "blob";
 
-export type SizeUnit = "B" | "KB" | "MB" | "GB";
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
+export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
+
+type RouteConfig = {
+  maxFileSize: FileSize;
+  maxFileCount: number;
+};
+
+export type ExpandedRouteConfig = Partial<Record<AllowedFileType, RouteConfig>>;
+
+type PartialRouteConfig = Partial<
+  Record<AllowedFileType, Partial<RouteConfig>>
+>;
+
+export type FileRouterInputConfig = AllowedFileType[] | PartialRouteConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
@@ -67,9 +80,6 @@ type ResolverFn<TParams extends AnyParams> = (
 ) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
-  fileTypes: (types: AllowedFiles[]) => UploadBuilder<TParams>;
-  maxSize: (size: FileSize) => UploadBuilder<TParams>;
-
   middleware: <TOutput extends Record<string, unknown>>(
     fn: MiddlewareFn<TOutput, TParams["_runtime"]>
   ) => UploadBuilder<{
@@ -81,8 +91,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 }
 
 export type UploadBuilderDef<TRuntime extends AnyRuntime> = {
-  fileTypes: AllowedFiles[];
-  maxSize: FileSize;
+  routerConfig: FileRouterInputConfig;
   middleware: MiddlewareFn<{}, TRuntime>;
 };
 

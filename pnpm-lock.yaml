@@ -366,7 +366,14 @@ importers:
         version: link:../uploadthing
 
   packages/uploadthing:
+    dependencies:
+      mime-types:
+        specifier: ^2.1.35
+        version: 2.1.35
     devDependencies:
+      '@types/mime-types':
+        specifier: 2.1.1
+        version: 2.1.1
       '@types/node':
         specifier: 18.16.0
         version: 18.16.0
@@ -2864,6 +2871,10 @@ packages:
   /@types/mdx@2.0.4:
     resolution: {integrity: sha512-qCYrNdpKwN6YO6FVnx+ulfqifKlE3lQGsNhvDaW9Oxzyob/cRLBJWow8GHBBD4NxQ7BVvtsATgLsX0vZAWmtrg==}
     dev: false
+
+  /@types/mime-types@2.1.1:
+    resolution: {integrity: sha512-vXOTGVSLR2jMw440moWTC7H19iUyLtP3Z1YTj7cSsubOICinjMxFeb/V57v9QdyyPGbbWolUFSSmSiRSn94tFw==}
+    dev: true
 
   /@types/minimist@1.2.2:
     resolution: {integrity: sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==}
