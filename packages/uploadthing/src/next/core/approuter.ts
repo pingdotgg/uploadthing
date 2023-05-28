@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 import { UPLOADTHING_VERSION } from "../../constants";
 import type { RouterWithConfig } from "../../internal/handler";
