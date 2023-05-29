@@ -155,7 +155,7 @@ export const buildRequestHandler = <
 
     const reqBody = (await req.json()) as {
       file: UploadedFile;
-      files: string[];
+      files: unknown;
       metadata: Record<string, unknown>;
       input?: Json;
     };
