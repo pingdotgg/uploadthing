@@ -1,5 +1,5 @@
-import { useConfig } from "nextra-theme-docs";
 import { useRouter } from "next/router";
+import { useConfig } from "nextra-theme-docs";
 
 const hackedCss = `
 body {
@@ -86,7 +86,7 @@ const Head = () => {
 export const Logo = () => {
   return (
     <h1 className="flex flex-row items-baseline text-2xl font-bold">
-      <span className="dark:text-white tracking-tight hover:cursor-pointer">
+      <span className="tracking-tight hover:cursor-pointer dark:text-white">
         {`upload`}
         <span className="text-red-600">{`thing`}</span>
         <span className="ml-1 font-semibold">docs</span>
@@ -94,7 +94,6 @@ export const Logo = () => {
     </h1>
   );
 };
-
 
 /* eslint sort-keys: error */
 /**

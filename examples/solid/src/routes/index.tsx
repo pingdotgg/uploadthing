@@ -1,6 +1,9 @@
-import { type VoidComponent } from "solid-js";
-import type { OurFileRouter } from "./api/uploadthing/core";
+import type { VoidComponent } from "solid-js";
+
 import { Uploader } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "./api/uploadthing/core";
+
 import "@uploadthing/solid/styles.css";
 
 const Home: VoidComponent = () => {

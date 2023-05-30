@@ -1,5 +1,19 @@
 # uploadthing
 
+## 4.0.0
+
+### Major Changes
+
+- [#94](https://github.com/pingdotgg/uploadthing/pull/94) [`91fb166`](https://github.com/pingdotgg/uploadthing/commit/91fb1660ba9a3dd2eb92df16b5bb1d3373b77662) Thanks [@t3dotgg](https://github.com/t3dotgg)! - Overhauled file router syntax
+
+### Minor Changes
+
+- [#93](https://github.com/pingdotgg/uploadthing/pull/93) [`16157de`](https://github.com/pingdotgg/uploadthing/commit/16157de54198d0838007efb4f6a37a4cd8720bab) Thanks [@markflorkowski](https://github.com/markflorkowski)! - [feat] API Helpers -- deleteFiles() and getFileUrls()
+
+### Patch Changes
+
+- [#97](https://github.com/pingdotgg/uploadthing/pull/97) [`b073c96`](https://github.com/pingdotgg/uploadthing/commit/b073c96120edccf9c9dd8f6db78611f43b841d20) Thanks [@ayatofrench](https://github.com/ayatofrench)! - [Fix] Update to buildRequestHandler secret
+
 ## 3.0.5
 
 ### Patch Changes

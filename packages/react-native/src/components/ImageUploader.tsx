@@ -1,19 +1,17 @@
-import { type FileRouter } from "uploadthing/server";
-import { useUploadThing } from "../useUploadThing";
-import { type DANGEROUS__uploadFiles } from "uploadthing/client";
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  Image,
-  Platform,
-  TouchableOpacity,
-  type ViewProps,
-  type ImageProps,
-  type TextProps,
-} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { MediaTypeOptions } from "expo-image-picker";
+import { Image, Platform, Text, TouchableOpacity, View } from "react-native";
+import type { ImageProps, TextProps, ViewProps } from "react-native";
+
+import {
+  allowedContentTextLabelGenerator,
+  generatePermittedFileTypes,
+} from "@uploadthing/shared/format";
+import type { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+
+import { useUploadThing } from "../useUploadThing";
 import { Spinner } from "./Spinner";
 
 export type EndpointHelper<TRouter extends void | FileRouter> =
@@ -84,7 +82,7 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
   onClientUploadComplete?: (
     res?: Awaited<
       ReturnType<typeof DANGEROUS__uploadFiles<EndpointHelper<TRouter>>>
-    >
+    >,
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
@@ -98,7 +96,9 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
       url: props.url,
     });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config,
+  );
 
   useEffect(() => {
     if (fileTypes) {
@@ -107,20 +107,28 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
       if (!imageFound && !videoFound) {
         console.warn(
           "[UT] Using image picker without permission for image or video types",
-          fileTypes
+          fileTypes,
         );
       } else if (
         fileTypes.filter(
-          (fileType) => fileType !== "image" && fileType !== "video"
+          (fileType) => fileType !== "image" && fileType !== "video",
         ).length > 0
       ) {
         console.warn(
           "[UT] Using image picker on route with permission for non-image or non-video types",
-          fileTypes
+          fileTypes,
         );
       }
     }
   }, [fileTypes]);
+
+  useEffect(() => {
+    if (props.multiple && !multiple) {
+      console.warn(
+        "[UT] Multiple asset upload allowed on client-side, but disabled on backend",
+      );
+    }
+  }, [props.multiple, multiple]);
 
   useEffect(() => {
     if (props.showPreview && props.multiple) {
@@ -135,7 +143,7 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
       props.allowEditing === false
     ) {
       console.warn(
-        "[UT] Image picker requires editing on IPad to prevent bugs"
+        "[UT] Image picker requires editing on IPad to prevent bugs",
       );
     }
   }, [props.allowEditing]);
@@ -171,7 +179,7 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
               type: `${asset.type}/${fileName.split(".").pop()}`,
               name: fileName,
             };
-          })
+          }),
         ).then((uploadedResponse) => {
           if (
             !props.multiple &&
@@ -227,7 +235,7 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
               Choose{" "}
               {fileTypes
                 ?.filter(
-                  (fileType) => fileType === "image" || fileType === "video"
+                  (fileType) => fileType === "image" || fileType === "video",
                 )
                 .join(" or ")}
             </Text>
@@ -281,28 +289,22 @@ export function ImageUploader<TRouter extends void | FileRouter = void>(props: {
           </Text>
         )}
       </TouchableOpacity>
-      {fileTypes ? (
-        <Text
-          style={[
-            {
-              fontSize: 12,
-              marginTop: 8,
-              width: "100%",
-              textAlign: "center",
-              color: "white",
-            },
-            props.theme?.constraintsTextStyle,
-          ]}
-        >
-          {`${fileTypes
-            .map(
-              (fileType) =>
-                `${fileType[0].toLocaleUpperCase()}${fileType.slice(1)}s`
-            )
-            .join(", ")}`}
-          {maxSize && ` up to ${maxSize}`}
-        </Text>
-      ) : null}
+      <Text
+        style={[
+          {
+            fontSize: 12,
+            marginTop: 8,
+            width: "100%",
+            textAlign: "center",
+            color: "white",
+          },
+          props.theme?.constraintsTextStyle,
+        ]}
+      >
+        {fileTypes
+          ? allowedContentTextLabelGenerator(permittedFileInfo?.config)
+          : ""}
+      </Text>
     </View>
   );
 }

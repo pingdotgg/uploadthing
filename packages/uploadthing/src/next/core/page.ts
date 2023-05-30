@@ -1,16 +1,15 @@
+import type { NextApiRequest, NextApiResponse } from "next";
+
+import { UPLOADTHING_VERSION } from "../../constants";
+import type { RouterWithConfig } from "../../internal/handler";
 import {
-  RouterWithConfig,
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "../../internal/handler";
 import type { FileRouter } from "../../types";
-import type { NextApiRequest, NextApiResponse } from "next";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-member-access
-const UPLOADTHING_VERSION = require("../../../package.json").version as string;
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
 
@@ -37,12 +36,23 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       return res.status(400).send("`actionType` must not be an array");
     if (uploadthingHook && typeof uploadthingHook !== "string")
       return res.status(400).send("`uploadthingHook` must not be an array");
+    if (typeof req.body !== "string")
+      return res.status(400).send("Request body must be a JSON string");
+
+    const standardRequest = {
+      ...req,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      json: () => Promise.resolve(JSON.parse(req.body)),
+      headers: {
+        get: (key: string) => req.headers[key],
+      } as Headers,
+    };
 
     const response = await requestHandler({
       uploadthingHook,
       slug,
       actionType,
-      req,
+      req: standardRequest,
       res,
     });
 

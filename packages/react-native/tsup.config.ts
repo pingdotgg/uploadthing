@@ -1,11 +1,10 @@
 import { defineConfig } from "tsup";
 
+import { config } from "@uploadthing/tsup-config";
+
 export default defineConfig((opts) => ({
+  ...config,
   entry: ["./index.ts", "./hooks.ts"],
-  splitting: false,
-  sourcemap: true,
   clean: !opts.watch,
-  dts: true,
-  format: ["esm"],
   noExternal: ["@uploadthing/shared"],
 }));

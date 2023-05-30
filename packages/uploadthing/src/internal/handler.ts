@@ -1,7 +1,18 @@
-import type { AnyRuntime, FileRouter, FileSize } from "../types";
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiResponse } from "next";
 
-const UPLOADTHING_VERSION = require("../../package.json").version;
+import { UPLOADTHING_VERSION } from "../constants";
+import type {
+  AllowedFileType,
+  AnyRuntime,
+  ExpandedRouteConfig,
+  FileRouter,
+  UploadedFile,
+} from "../types";
+import {
+  getTypeFromFileName,
+  fillInputRouteConfig as parseAndExpandInputConfig,
+} from "../utils";
+import type { FileData } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -24,7 +35,40 @@ export const fileSizeToBytes = (input: string) => {
   return Math.floor(bytes);
 };
 
-const generateUploadThingURL = (path: `/${string}`) => {
+const fileCountLimitHit = (
+  files: string[],
+  routeConfig: ExpandedRouteConfig,
+) => {
+  const counts: Record<AllowedFileType, number> = {
+    image: 0,
+    video: 0,
+    audio: 0,
+    blob: 0,
+  };
+
+  files.forEach((file) => {
+    const type = getTypeFromFileName(
+      file,
+      Object.keys(routeConfig) as AllowedFileType[],
+    );
+    counts[type] += 1;
+  });
+
+  return Object.keys(counts).some((key) => {
+    const count = counts[key as AllowedFileType];
+    if (count === 0) return false;
+
+    const limit = routeConfig[key as AllowedFileType]?.maxFileCount;
+    if (!limit) {
+      console.error(routeConfig, key);
+      throw new Error("invalid config during file count");
+    }
+
+    return count > limit;
+  });
+};
+
+export const generateUploadThingURL = (path: `/${string}`) => {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
   return `${host}${path}`;
 };
@@ -44,7 +88,7 @@ const isValidResponse = (response: Response) => {
 const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | null>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
-  MAX_RETRIES = 20
+  MAX_RETRIES = 20,
 ): Promise<T | null> => {
   let tries = 0;
   let backoffMs = 500;
@@ -62,8 +106,8 @@ const withExponentialBackoff = async <T>(
     if (tries > 3) {
       console.error(
         `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-          backoffMs / 1000
-        )} seconds...`
+          backoffMs / 1000,
+        )} seconds...`,
       );
     }
 
@@ -80,23 +124,24 @@ const conditionalDevServer = async (fileKey: string) => {
 
   const fileData = await withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
-    const json = await res.json();
-
-    const file = json.fileData;
+    const json = (await res.json()) as
+      | { status: "done"; fileData: FileData }
+      | { status: "something else" };
 
     if (json.status !== "done") return null;
+
+    const file = json.fileData;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
     if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
 
     console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
-    // TODO: Check that we "actually hit our endpoint" and throw a loud error if we didn't
     const response = await fetch(callbackUrl, {
       method: "POST",
       body: JSON.stringify({
         status: "uploaded",
-        metadata: JSON.parse(file.metadata ?? "{}"),
+        metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
         file: {
           url: `https://uploadthing.com/f/${encodeURIComponent(fileKey ?? "")}`,
           key: fileKey ?? "",
@@ -112,7 +157,7 @@ const conditionalDevServer = async (fileKey: string) => {
     } else {
       console.error(
         "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-        fileKey
+        fileKey,
       );
     }
     return file;
@@ -125,8 +170,20 @@ const conditionalDevServer = async (fileKey: string) => {
 };
 
 const GET_DEFAULT_URL = () => {
+  /**
+   * Use VERCEL_URL as the default callbackUrl if it's set
+   * they don't set the protocol, so we need to add it
+   * User can override this with the UPLOADTHING_URL env var,
+   * if they do, they should include the protocol
+   *
+   * The pathname must be /api/uploadthing
+   * since we call that via webhook, so the user
+   * should not override that. Just the protocol and host
+   */
   const vcurl = process.env.VERCEL_URL;
   if (vcurl) return `https://${vcurl}/api/uploadthing`; // SSR should use vercel url
+  const uturl = process.env.UPLOADTHING_URL;
+  if (uturl) return `${uturl}/api/uploadthing`;
 
   return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
 };
@@ -142,15 +199,15 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,
-  TRuntime extends AnyRuntime
+  TRuntime extends AnyRuntime,
 >(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
     uploadthingHook?: string;
     slug?: string;
     actionType?: string;
-    req: TRuntime extends "pages" ? NextApiRequest : Partial<Request>;
+    req: Partial<Request> & { json: Request["json"] };
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
     const { router, config } = opts;
@@ -162,25 +219,26 @@ export const buildRequestHandler = <
 
     if (!preferredOrEnvSecret) {
       throw new Error(
-        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
+        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
       );
     }
 
     const uploadable = router[slug];
-
     if (!uploadable) {
       return { status: 404 };
     }
 
-    const reqBody =
-      "body" in req && typeof req.body === "string"
-        ? JSON.parse(req.body)
-        : await (req as Request).json();
+    const reqBody = (await req.json()) as {
+      file: UploadedFile;
+      files: unknown;
+      metadata: Record<string, unknown>;
+    };
 
     if (uploadthingHook && uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       await uploadable.resolver({
         file: reqBody.file,
+
         metadata: reqBody.metadata,
       });
 
@@ -195,41 +253,48 @@ export const buildRequestHandler = <
     }
 
     try {
-      const { files } = reqBody;
+      const { files } = reqBody as { files: string[] };
       // @ts-expect-error TODO: Fix this
-      const metadata = await uploadable._def.middleware(req as Request, res);
-
-      // Once that passes, persist in DB
+      const metadata = await uploadable._def.middleware(req, res);
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
         throw new Error("Need file array");
 
-      // TODO: Make this a function
+      // FILL THE ROUTE CONFIG so the server only has one happy path
+      const parsedConfig = parseAndExpandInputConfig(
+        uploadable._def.routerConfig,
+      );
+
+      const limitHit = fileCountLimitHit(files, parsedConfig);
+
+      if (limitHit) throw new Error("Too many files");
+
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
         {
           method: "POST",
           body: JSON.stringify({
             files: files,
-            fileTypes: uploadable._def.fileTypes,
+
+            routeConfig: parsedConfig,
+
             metadata,
             callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
             callbackSlug: slug,
-            maxFileSize: fileSizeToBytes(uploadable._def.maxSize ?? "16MB"),
           }),
           headers: {
             "Content-Type": "application/json",
             "x-uploadthing-api-key": preferredOrEnvSecret,
             "x-uploadthing-version": UPLOADTHING_VERSION,
           },
-        }
+        },
       );
 
       if (!uploadthingApiResponse.ok) {
         console.error("[UT] unable to get presigned urls");
         try {
-          const error = await uploadthingApiResponse.json();
+          const error = (await uploadthingApiResponse.json()) as unknown;
           console.error(error);
         } catch (e) {
           console.error("[UT] unable to parse response");
@@ -237,8 +302,7 @@ export const buildRequestHandler = <
         throw new Error("ending upload");
       }
 
-      // This is when we send the response back to our form so it can submit the files
-
+      // This is when we send the response back to the user's form so they can submit the files
       const parsedResponse = (await uploadthingApiResponse.json()) as {
         presignedUrl: { url: string; fields: Record<string, string> }; // ripped type from S3 package
         name: string;
@@ -246,9 +310,9 @@ export const buildRequestHandler = <
       }[];
 
       if (process.env.NODE_ENV === "development") {
-        parsedResponse.forEach((file) => {
-          conditionalDevServer(file.key);
-        });
+        for (const file of parsedResponse) {
+          void conditionalDevServer(file.key);
+        }
       }
 
       return { body: parsedResponse, status: 200 };
@@ -262,17 +326,17 @@ export const buildRequestHandler = <
 };
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>
+  opts: RouterWithConfig<TRouter>,
 ) => {
   return () => {
     const r = opts.router;
 
     const permissions = Object.keys(r).map((k) => {
       const route = r[k];
+      const config = parseAndExpandInputConfig(route._def.routerConfig);
       return {
         slug: k as keyof TRouter,
-        maxSize: route._def.maxSize,
-        fileTypes: route._def.fileTypes,
+        config,
       };
     });
 

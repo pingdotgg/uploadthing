@@ -4,39 +4,58 @@ const config = {
     "next",
     "turbo",
     "prettier",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "react", "react-hooks"],
+  plugins: ["@typescript-eslint", "import"],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "turbo/no-undeclared-env-vars": "off",
-    "react/react-in-jsx-scope": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
-
     // restricts so you can't use {} as type. me no likey
     "@typescript-eslint/ban-types": "off",
+    // type imports should be imported as types
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        prefer: "type-imports",
+        fixStyle: "separate-type-imports",
+        disallowTypeAnnotations: false,
+      },
+    ],
+    "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
   },
+  overrides: [
+    {
+      files: ["packages/react/**", "examples/appdir/**", "examples/pagedir/**"],
+      plugins: ["react", "react-hooks"],
+      extends: ["plugin:react/recommended", "plugin:react-hooks/recommended"],
+      rules: {
+        "react/react-in-jsx-scope": "off",
+      },
+      settings: {
+        react: {
+          version: "detect",
+        },
+      },
+    },
+  ],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
-    },
-  },
-  settings: {
-    react: {
-      version: "detect",
     },
   },
   ignorePatterns: [
     "**/*.config.js",
     "**/*.config.cjs",
     ".eslintrc.cjs",
-    "common/**",
+    "packages/config/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/.solid/**",
   ],
   reportUnusedDisableDirectives: true,
 };

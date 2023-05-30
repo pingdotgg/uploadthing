@@ -1,13 +1,14 @@
 import { getServerSession } from "next-auth";
-import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+
+import { createUploadthing } from "uploadthing/next-legacy";
+import type { FileRouter } from "uploadthing/next-legacy";
+
 import { options } from "~/pages/api/auth/[...nextauth]";
 
 const f = createUploadthing();
 
 export const uploadRouter = {
-  withMdwr: f
-    .fileTypes(["image"])
-    .maxSize("16MB")
+  withMdwr: f(["image"])
     .middleware(async (req, res) => {
       const auth = await getServerSession(req, res, options);
 
@@ -23,13 +24,13 @@ export const uploadRouter = {
 
       console.log(
         `${metadata.userEmail ?? ""} successfully uploaded file:`,
-        file
+        file,
       );
       file;
       // ^?
     }),
 
-  withoutMdwr: f
+  withoutMdwr: f(["image"])
     .middleware(() => {
       return { testMetadata: "lol" };
     })

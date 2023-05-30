@@ -20,11 +20,11 @@ const useInsertionEffect =
  * - Properties or state accessed within the callback will always be "current"
  */
 export function useEvent<TCallback extends AnyFunction>(
-  callback: TCallback
+  callback: TCallback,
 ): TCallback {
   // Keep track of the latest callback:
   const latestRef = React.useRef<TCallback>(
-    useEvent_shouldNotBeInvokedBeforeMount as any
+    useEvent_shouldNotBeInvokedBeforeMount as any,
   );
   useInsertionEffect(() => {
     latestRef.current = callback;
@@ -48,6 +48,6 @@ export function useEvent<TCallback extends AnyFunction>(
  */
 function useEvent_shouldNotBeInvokedBeforeMount() {
   throw new Error(
-    "INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted."
+    "INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted.",
   );
 }

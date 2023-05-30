@@ -6,8 +6,9 @@
     "build": "turbo run build",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev": "turbo run dev",
-    "lint": "turbo run lint --filter=./packages/* && manypkg check",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "turbo run lint",
+    "lint fixme after solid package is updated": "turbo run lint && manypkg check",
+    "format": "prettier --write . --ignore-path .gitignore",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck"
@@ -18,13 +19,15 @@
   "dependencies": {
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.0.0",
     "@manypkg/cli": "^0.20.0",
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.1.0",
     "dotenv": "latest",
-    "prettier": "latest",
-    "turbo": "^1.9.3",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "turbo": "^1.9.9",
     "typescript": "5.1.0-beta"
   },
-  "packageManager": "pnpm@7.27.0"
+  "packageManager": "pnpm@8.5.1"
 }

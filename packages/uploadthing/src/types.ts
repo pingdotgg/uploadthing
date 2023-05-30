@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {
@@ -18,18 +18,31 @@ export interface AnyParams {
   _runtime: any;
 }
 
-type UploadedFile = {
+export type UploadedFile = {
   name: string;
   key: string;
   url: string;
   size: number;
 };
 
-type AllowedFiles = "image" | "video" | "audio" | "blob";
+export type AllowedFileType = "image" | "video" | "audio" | "blob";
 
-export type SizeUnit = "B" | "KB" | "MB" | "GB";
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
+export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
+
+type RouteConfig = {
+  maxFileSize: FileSize;
+  maxFileCount: number;
+};
+
+export type ExpandedRouteConfig = Partial<Record<AllowedFileType, RouteConfig>>;
+
+type PartialRouteConfig = Partial<
+  Record<AllowedFileType, Partial<RouteConfig>>
+>;
+
+export type FileRouterInputConfig = AllowedFileType[] | PartialRouteConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
@@ -39,36 +52,36 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> = (
-  req: Request
-) => MaybePromise<TOutput>;
-export type NextReqMiddlewareFn<TOutput extends Record<string, unknown>> = (
-  req: NextRequest
-) => MaybePromise<TOutput>;
-export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> = (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => MaybePromise<TOutput>;
+type MiddlewareFnArgs<TRuntime> = TRuntime extends "web"
+  ? { req: Request; res: never }
+  : TRuntime extends "app"
+  ? { req: NextRequest; res: never }
+  : { req: NextApiRequest; res: NextApiResponse };
 
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
-  TRuntime extends string
-> = TRuntime extends "web"
-  ? ReqMiddlewareFn<TOutput>
-  : TRuntime extends "app"
-  ? NextReqMiddlewareFn<TOutput>
-  : NextApiMiddlewareFn<TOutput>;
+  TRuntime extends string,
+> = MiddlewareFnArgs<TRuntime>["res"] extends never
+  ? (req: MiddlewareFnArgs<TRuntime>["req"]) => MaybePromise<TOutput>
+  : (
+      req: MiddlewareFnArgs<TRuntime>["req"],
+      res: MiddlewareFnArgs<TRuntime>["res"],
+    ) => MaybePromise<TOutput>;
+
+export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> =
+  MiddlewareFn<TOutput, "web">;
+export type NextReqMiddlewareFn<TOutput extends Record<string, unknown>> =
+  MiddlewareFn<TOutput, "app">;
+export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> =
+  MiddlewareFn<TOutput, "pages">;
 
 type ResolverFn<TParams extends AnyParams> = (
-  opts: ResolverOptions<TParams>
+  opts: ResolverOptions<TParams>,
 ) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
-  fileTypes: (types: AllowedFiles[]) => UploadBuilder<TParams>;
-  maxSize: (size: FileSize) => UploadBuilder<TParams>;
-
   middleware: <TOutput extends Record<string, unknown>>(
-    fn: MiddlewareFn<TOutput, TParams["_runtime"]>
+    fn: MiddlewareFn<TOutput, TParams["_runtime"]>,
   ) => UploadBuilder<{
     _metadata: TOutput;
     _runtime: TParams["_runtime"];
@@ -78,8 +91,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 }
 
 export type UploadBuilderDef<TRuntime extends AnyRuntime> = {
-  fileTypes: AllowedFiles[];
-  maxSize: FileSize;
+  routerConfig: FileRouterInputConfig;
   middleware: MiddlewareFn<{}, TRuntime>;
 };
 

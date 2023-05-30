@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-/* eslint-disable @typescript-eslint/ban-types */
+
 import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextRequest } from "next/server";
+import { expect, expectTypeOf, it } from "vitest";
+
 import { genUploader } from "../client";
 import type { FileRouter } from "./types";
 import { createBuilder } from "./upload-builder";
-import { expect, it, expectTypeOf } from "vitest";
-import { NextRequest } from "next/server";
 
 const badReqMock = {
   headers: {
@@ -16,69 +17,84 @@ const badReqMock = {
   },
 } as unknown as Request;
 
-it("typeerrors for invalid input", async () => {
+it("typeerrors for invalid input", () => {
   const f = createBuilder();
 
   // @ts-expect-error - invalid file type
-  f.fileTypes(["png"]);
+  f(["png"]);
 
   // @ts-expect-error - invalid size format
-  f.maxSize("1gb");
+  f({ image: { maxFileSize: "1gb" } });
 
   // @ts-expect-error - should return an object
-  f.middleware(async () => {
+  f(["image"]).middleware(() => {
     return null;
   });
 
   // @ts-expect-error - res does not exist (`pages` flag not set)
-  f.middleware(async (req, res) => {
+  f(["image"]).middleware((req, res) => {
     return {};
   });
 
-  f.middleware(() => ({ foo: "bar" })).onUploadComplete(({ metadata }) => {
-    // @ts-expect-error - bar does not exist
-    metadata.bar;
-    // @ts-expect-error - bar does not exist on foo
-    metadata.foo.bar;
-  });
+  f(["image"])
+    .middleware(() => ({ foo: "bar" }))
+    .onUploadComplete(({ metadata }) => {
+      // @ts-expect-error - bar does not exist
+      metadata.bar;
+      // @ts-expect-error - bar does not exist on foo
+      metadata.foo.bar;
+    });
 });
 
 it("uses defaults for not-chained", async () => {
   const f = createBuilder();
 
-  const uploadable = f.onUploadComplete(() => {});
+  const uploadable = f(["image"]).onUploadComplete(() => {});
 
-  expect(uploadable._def.fileTypes).toEqual(["image"]);
-  expect(uploadable._def.maxSize).toEqual("1MB");
+  expect(uploadable._def.routerConfig).toEqual(["image"]);
 
   const metadata = await uploadable._def.middleware(badReqMock);
   expect(metadata).toEqual({});
   expectTypeOf(metadata).toMatchTypeOf<{}>();
 });
 
-it("passes `Request` by default", async () => {
+it("passes `Request` by default", () => {
   const f = createBuilder();
 
-  f.middleware(async (req) => {
+  f(["image"]).middleware((req) => {
     expectTypeOf(req).toMatchTypeOf<Request>();
 
     return {};
   });
 });
 
-it("passes `NextRequest` for /app", async () => {
+it("allows async middleware", () => {
+  const f = createBuilder();
+
+  f(["image"])
+    .middleware((req) => {
+      expectTypeOf(req).toMatchTypeOf<Request>();
+
+      return { foo: "bar" } as const;
+    })
+    .onUploadComplete((opts) => {
+      expectTypeOf(opts.metadata).toMatchTypeOf<{ foo: "bar" }>();
+    });
+});
+
+it("passes `NextRequest` for /app", () => {
   const f = createBuilder<"app">();
 
-  f.middleware(async (req) => {
+  f(["image"]).middleware((req) => {
     expectTypeOf(req).toMatchTypeOf<NextRequest>();
     return { nextUrl: req.nextUrl };
   });
 });
 
-it("passes `res` for /pages", async () => {
+it("passes `res` for /pages", () => {
   const f = createBuilder<"pages">();
 
-  f.middleware(async (req, res) => {
+  f(["image"]).middleware((req, res) => {
     expectTypeOf(req).toMatchTypeOf<NextApiRequest>();
     expectTypeOf(res).toMatchTypeOf<NextApiResponse>();
 
@@ -89,10 +105,8 @@ it("passes `res` for /pages", async () => {
 it("smoke", async () => {
   const f = createBuilder();
 
-  const uploadable = f
-    .fileTypes(["image", "video"])
-    .maxSize("1GB")
-    .middleware(async (req) => {
+  const uploadable = f(["image", "video"])
+    .middleware((req) => {
       const header1 = req.headers.get("header1");
 
       return { header1, userId: "123" as const };
@@ -108,8 +122,7 @@ it("smoke", async () => {
       }>();
     });
 
-  expect(uploadable._def.fileTypes).toEqual(["image", "video"]);
-  expect(uploadable._def.maxSize).toEqual("1GB");
+  expect(uploadable._def.routerConfig).toEqual(["image", "video"]);
 
   const metadata = await uploadable._def.middleware(badReqMock);
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
@@ -117,10 +130,9 @@ it("smoke", async () => {
 
 it("genuploader", async () => {
   const f = createBuilder();
-  const uploadable = f
-    .fileTypes(["image", "video"])
-    .maxSize("1GB")
-    .onUploadComplete(({ file, metadata }) => {});
+  const uploadable = f(["image", "video"]).onUploadComplete(
+    ({ file, metadata }) => {},
+  );
 
   const router = { uploadable } satisfies FileRouter;
 

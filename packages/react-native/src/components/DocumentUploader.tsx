@@ -1,15 +1,16 @@
-import { type FileRouter } from "uploadthing/server";
-import { useUploadThing } from "../useUploadThing";
-import { type DANGEROUS__uploadFiles } from "uploadthing/client";
-import * as DocumentPicker from "expo-document-picker";
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  type TextProps,
-  type ViewProps,
-} from "react-native";
 import { useEffect } from "react";
+import * as DocumentPicker from "expo-document-picker";
+import { Text, TouchableOpacity, View } from "react-native";
+import type { TextProps, ViewProps } from "react-native";
+
+import {
+  allowedContentTextLabelGenerator,
+  generatePermittedFileTypes,
+} from "@uploadthing/shared/format";
+import type { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+
+import { useUploadThing } from "../useUploadThing";
 import { Spinner } from "./Spinner";
 
 export type EndpointHelper<TRouter extends void | FileRouter> =
@@ -74,14 +75,14 @@ type DocumentUploaderTheme = {
  * />
  */
 export function DocumentUploader<
-  TRouter extends void | FileRouter = void
+  TRouter extends void | FileRouter = void,
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   multiple?: boolean;
   onClientUploadComplete?: (
     res?: Awaited<
       ReturnType<typeof DANGEROUS__uploadFiles<EndpointHelper<TRouter>>>
-    >
+    >,
   ) => void;
   onUploadError?: (error: Error) => void;
   url?: string;
@@ -95,22 +96,32 @@ export function DocumentUploader<
       url: props.url,
     });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { multiple, fileTypes } = generatePermittedFileTypes(
+    permittedFileInfo?.config,
+  );
 
   useEffect(() => {
     if (fileTypes) {
       if (
         fileTypes.filter(
-          (fileType) => fileType === "image" || fileType === "video"
+          (fileType) => fileType === "image" || fileType === "video",
         ).length === fileTypes.length &&
         fileTypes.length > 0
       ) {
         console.warn(
-          "[UT] Using document uploader on a route which only allows images/videos"
+          "[UT] Using document uploader on a route which only allows images/videos",
         );
       }
     }
   }, [fileTypes]);
+
+  useEffect(() => {
+    if (props.multiple && !multiple) {
+      console.warn(
+        "[UT] Multiple asset upload allowed on client-side, but disabled on backend",
+      );
+    }
+  }, [props.multiple, multiple]);
 
   async function upload() {
     const response = await DocumentPicker.getDocumentAsync({
@@ -186,13 +197,7 @@ export function DocumentUploader<
             props.theme?.constraintsTextStyle,
           ]}
         >
-          {`${fileTypes
-            .map(
-              (fileType) =>
-                `${fileType[0].toLocaleUpperCase()}${fileType.slice(1)}s`
-            )
-            .join(", ")}`}
-          {maxSize && ` up to ${maxSize}`}
+          {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
         </Text>
       ) : null}
     </View>

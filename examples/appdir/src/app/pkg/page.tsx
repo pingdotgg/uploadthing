@@ -1,5 +1,6 @@
 import { UploadButton } from "@uploadthing/react";
-import { OurFileRouter } from "../_uploadthing";
+
+import type { OurFileRouter } from "~/server/uploadthing";
 
 export default function Home() {
   return (

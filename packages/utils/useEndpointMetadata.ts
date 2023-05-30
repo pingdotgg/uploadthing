@@ -1,14 +1,14 @@
 import useFetch from "./useFetch";
+import type { ExpandedRouteConfig } from "uploadthing/server";
 
 export type EndpointMetadata = {
   slug: string;
-  maxSize: string;
-  fileTypes: string[];
+  config: ExpandedRouteConfig;
 }[];
 
 export const useEndpointMetadata = (
   endpoint: string,
-  url: string = "/api/uploadthing"
+  url = "/api/uploadthing"
 ) => {
   const { data } = useFetch<EndpointMetadata>(url);
 

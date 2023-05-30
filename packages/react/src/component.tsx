@@ -1,13 +1,20 @@
 import { useCallback, useState } from "react";
-import { FileWithPath, useDropzone } from "react-dropzone";
+import type { FileWithPath } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
+
+import {
+  allowedContentTextLabelGenerator,
+  generatePermittedFileTypes,
+} from "@uploadthing/shared/format";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
-import { useUploadThing } from "./useUploadThing";
-import type { FileRouter } from "uploadthing/server";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+
+import { useUploadThing } from "./useUploadThing";
 
 type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
   ? "YOU FORGOT TO PASS THE GENERIC"
@@ -23,9 +30,8 @@ type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
  */
 export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   endpoint: EndpointHelper<TRouter>;
-  multiple?: boolean;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
 }) {
@@ -36,7 +42,9 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       onUploadError: props.onUploadError,
     });
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config,
+  );
 
   return (
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
@@ -44,7 +52,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         <input
           className="ut-hidden"
           type="file"
-          multiple={props.multiple}
+          multiple={multiple}
           accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
@@ -52,18 +60,13 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           }}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? (
-            <Spinner />
-          ) : (
-            `Choose File${props.multiple ? `(s)` : ``}`
-          )}
+          {isUploading ? <Spinner /> : `Choose File${multiple ? `(s)` : ``}`}
         </span>
       </label>
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
-            {maxSize && `up to ${maxSize}`}
+            {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
       </div>
@@ -88,11 +91,11 @@ const Spinner = () => {
 };
 
 export const UploadDropzone = <
-  TRouter extends void | FileRouter = void
+  TRouter extends void | FileRouter = void,
 >(props: {
   endpoint: EndpointHelper<TRouter>;
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>
+    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
 }) => {
@@ -108,7 +111,7 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
   }, []);
 
-  const { maxSize, fileTypes } = permittedFileInfo ?? {};
+  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -119,7 +122,7 @@ export const UploadDropzone = <
     <div
       className={classNames(
         "ut-mt-2 ut-flex ut-justify-center ut-rounded-lg ut-border ut-border-dashed ut-border-gray-900/25 ut-px-6 ut-py-10",
-        isDragActive ? "ut-bg-blue-600/10" : ""
+        isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
       <div className="text-center" {...getRootProps()}>
@@ -146,12 +149,9 @@ export const UploadDropzone = <
           <p className="ut-pl-1">{`or drag and drop`}</p>
         </div>
         <div className="ut-h-[1.25rem]">
-          {fileTypes && (
-            <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
-              {`${fileTypes.includes("blob") ? "File" : fileTypes.join(", ")}`}{" "}
-              {maxSize && `up to ${maxSize}`}
-            </p>
-          )}
+          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+            {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+          </p>
         </div>
         {files.length > 0 && (
           <div className="ut-mt-4 ut-flex ut-items-center ut-justify-center">
@@ -188,13 +188,13 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   return (
     <>
       <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-4xl font-bold text-center">
+        <span className="text-center text-4xl font-bold">
           {`Upload a file using a button:`}
         </span>
         <UploadButton<TRouter> {...props} />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-4xl font-bold text-center">
+        <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
         <UploadDropzone<TRouter> {...props} />
