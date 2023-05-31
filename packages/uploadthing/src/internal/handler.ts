@@ -9,8 +9,10 @@ import type {
   UploadedFile,
 } from "../types";
 import {
+  generateUploadThingURL,
   getTypeFromFileName,
   fillInputRouteConfig as parseAndExpandInputConfig,
+  pollForFileData,
 } from "../utils";
 import type { FileData } from "./types";
 
@@ -43,6 +45,8 @@ const fileCountLimitHit = (
     image: 0,
     video: 0,
     audio: 0,
+    text: 0,
+    pdf: 0,
     blob: 0,
   };
 
@@ -68,11 +72,6 @@ const fileCountLimitHit = (
   });
 };
 
-export const generateUploadThingURL = (path: `/${string}`) => {
-  const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
-  return `${host}${path}`;
-};
-
 if (process.env.NODE_ENV !== "development") {
   console.log("[UT] UploadThing dev server is now running!");
 }
@@ -85,51 +84,12 @@ const isValidResponse = (response: Response) => {
   return true;
 };
 
-const withExponentialBackoff = async <T>(
-  doTheThing: () => Promise<T | null>,
-  MAXIMUM_BACKOFF_MS = 64 * 1000,
-  MAX_RETRIES = 20,
-): Promise<T | null> => {
-  let tries = 0;
-  let backoffMs = 500;
-  let backoffFuzzMs = 0;
 
-  let result = null;
-  while (tries <= MAX_RETRIES) {
-    result = await doTheThing();
-    if (result !== null) return result;
-
-    tries += 1;
-    backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
-    backoffFuzzMs = Math.floor(Math.random() * 500);
-
-    if (tries > 3) {
-      console.error(
-        `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-          backoffMs / 1000,
-        )} seconds...`,
-      );
-    }
-
-    await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
-  }
-
-  return null;
-};
 
 const conditionalDevServer = async (fileKey: string) => {
   if (process.env.NODE_ENV !== "development") return;
 
-  const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
-
-  const fileData = await withExponentialBackoff(async () => {
-    const res = await fetch(queryUrl);
-    const json = (await res.json()) as
-      | { status: "done"; fileData: FileData }
-      | { status: "something else" };
-
-    if (json.status !== "done") return null;
-
+  const fileData = await pollForFileData(fileKey, async (json: {fileData: FileData})=> {
     const file = json.fileData;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;

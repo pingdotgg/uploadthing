@@ -35,11 +35,11 @@ export const OurUploadButton = () => (
 ## UploadDropzone
 
 ```tsx
-import { UploadButton } from "@uploadthing/react";
+import { UploadDropzone } from "@uploadthing/react";
 
 import { OurFileRouter } from "./api/uploadthing/core";
 
-export const OurUploadButton = () => (
+export const OurUploadDropzone = () => (
   <UploadDropzone<OurFileRouter>
     endpoint="withoutMdwr"
     onClientUploadComplete={(res) => {
@@ -78,22 +78,39 @@ export const { useUploadThing, uploadFiles } =
 
 ## useUploadThing
 
-This hook is a wrapper around [react-dropzone's](https://react-dropzone.js.org/) `useDropzone`. When you are ready to upload the files that have been "dropped", use the `startUpload` function
+This hook provides a function to start uploading, an `isUploading` state, and the `permittedFileInfo` which gives information about what file types, sizes and counts are allowed by the endpoint. See example below for a simple dropzone using `react-dropzone` and the `useUploadThing` hook. For a more complete example, take a look at [our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
 
 ```tsx
-// Note: this is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
+// Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
 import { useUploadThing } from "~/utils/uploadthing";
+import { useDropzone } from "react-dropzone";
+
+import type { FileWithPath } from "react-dropzone";
 
 export function MultiUploader() {
-  const { getRootProps, getInputProps, isDragActive, files, startUpload } =
-    useUploadThing("imageUploader");
+  const [files, setFiles] = useState<File[]>([]);
+  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
+    setFiles(acceptedFiles);
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+      onDrop,
+      accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    });
+  
+  const { startUpload } =
+    useUploadThing<string>({
+      endpoint: "myUploadEndpoint", // replace this with an actual endpoint name
+      onClientUploadComplete: () => { alert("uploaded successfully!"); },
+      onUploadError: () => { alert("error occurred while uploading"); },
+    });
 
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
       <div>
         {files.length > 0 && (
-          <button onClick={() => startUpload()}>
+          <button onClick={() => startUpload(files)}>
             Upload {files.length} files
           </button>
         )}

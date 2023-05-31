@@ -1,28 +1,146 @@
-import { Callout } from "nextra-theme-docs";
-
-<Callout type="warning">
-  This page is a Work In Progress, forgive us for the brevity
-</Callout>
+import { Callout, Tab, Tabs } from "nextra-theme-docs";
 
 ## createUploadthing
 
-{/* TODO: Finish this part */}
+The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
+FROM THE RIGHT PLACE
 
-```tsx
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS"]}>
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/next";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+    ```
+
+  </Tab>
+</Tabs>
+
+## File Routes
+
+File Routes are the routes you create with the helped instantiated by
+`createUploadthing`. Think of them as the "endpoints" for what your users can
+upload. The keys in the object are the names of your endpoints.
+
+```ts
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
-export const uploadRouter = { ... };
+export const ourFileRouter = {
+  // Example "profile picture upload" route - these can be named whatever you want!
+  profilePicture: f(["image"])
+    .middleware((req) => auth(req))
+    .onUploadComplete((data) => console.log("file", data)),
+
+  // This route takes an attached image OR video
+  messageAttachment: f(["image", "video"])
+    .middleware((req) => auth(req))
+    .onUploadComplete((data) => console.log("file", data)),
+
+  // Takes ONE image up to 2MB
+  strictImageAttachment: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
+    .middleware((req) => auth(req))
+    .onUploadComplete((data) => console.log("file", data)),
+
+  // Takes a 4 2mb images and/or 1 200mb video
+  mediaPost: f({
+    image: { maxFileSize: "2MB", maxFileCount: 4 },
+    video: { maxFileSize: "200MB", maxFileCount: 1 },
+  })
+    .middleware((req) => auth(req))
+    .onUploadComplete((data) => console.log("file", data)),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof ourFileRouter;
 ```
+
+### Input
+
+```ts
+// Your file types can be any of the following
+type ValidFileTypes = "image" | "video" | "audio" | "blob";
+
+// The input to your f() function can be an array of file types OR an object of them w/ config
+type FileRouterInput =
+  | ValidFileTypes[]
+  | {
+      [key: ValidFileTypes]: {
+        maxFileSize?: string;
+        maxFileCount?: number;
+      };
+    };
+```
+
+### Defaults
+
+All routes default to a max file count of 1. The file size defaults are below
+
+| File Type | Default Max Size |
+| :-------- | :--------------- |
+| image     | 4MB              |
+| video     | 16MB             |
+| audio     | 8MB              |
+| blob      | 8MB              |
+
+### `middleware`
+
+This is the function where you authorize a user to do an upload. You can also
+tag the upload with metadata here. Example using Clerk:
+
+```ts
+import { currentUser } from "@clerk/nextjs";
+
+f(["image"])
+  .middleware(async (req, res) => {
+    const user = await currentUser();
+
+    // Throw if user isn't signed in
+    if (!user)
+      throw new Error("You must be logged in to upload a profile picture");
+
+    // Return userId to be used in onUploadComplete
+    return { userId: user.id };
+  })
+  .onUploadComplete(async ({ metadata }) => {
+    console.log("Uploaded by user", metadata.userId);
+  });
+```
+
+### `onUploadComplete`
+
+This is the function you use to do something with the uploaded file, such as
+persisting it to your database. Whatever you returned in the middleware will be
+accessible here
 
 ## `utapi`
 
-The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST API but better
+The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
+API but better
 
 ### `deleteFiles`
 
-`deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from the server.
+`deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
+the server.
 
 ```ts
 import { utapi } from "uploadthing/server";
@@ -40,7 +158,8 @@ await utapi.deleteFiles([
 
 ### `getFileUrls`
 
-`getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to access them.
+`getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to
+access them.
 
 ```ts
 import { utapi } from "uploadthing/server";

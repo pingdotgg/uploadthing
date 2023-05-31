@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { FileRouter } from "./server";
+import { pollForFileData } from "./src/utils";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
@@ -56,11 +57,8 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
     if (presigned.fileType === file.type.split("/")[0]) {
       formData.append("Content-Type", file.type);
-      console.log("FILE TYPE", file.type);
     } else if (presigned.fileType === "blob") {
       formData.append("Content-Type", "application/octet-stream");
-      console.log("COERCING FILE TYPE TO BLOB");
-      console.log("FILE TYPE", "application/octet-stream");
     }
 
     // Dump all values from response (+ the file itself) into form for S3 upload
@@ -82,7 +80,8 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     const genUrl =
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
 
-    console.log("URL for uploaded image", genUrl);
+    // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
+    await pollForFileData(presigned.key)
 
     return {
       fileKey: presigned.key,
@@ -111,7 +110,11 @@ export const classNames = (...classes: string[]) => {
 
 export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) =>
-    type !== "blob" ? `${type}/*` : "blob",
+    {
+      if (type === "blob") return  "blob"
+      if (type === "pdf") return "application/pdf"
+      else return `${type}/*`
+    }
   );
 
   if (accepted.includes("blob")) {
@@ -127,3 +130,5 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+export { pollForFileData as DANGEROUS__pollForFileData } from "./src/utils"

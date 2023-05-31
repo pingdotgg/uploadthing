@@ -25,6 +25,7 @@ const config = {
     "^~/(.*)$",
     "^[./]",
   ],
+  proseWrap: "always", // printWidth line breaks in md/mdx
 };
 
 module.exports = config;
