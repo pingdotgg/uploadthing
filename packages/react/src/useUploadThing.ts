@@ -17,17 +17,26 @@ type EndpointMetadata = {
   slug: string;
   config: ExpandedRouteConfig;
 }[];
-const useEndpointMetadata = (endpoint: string) => {
-  // let { data } = useFetch<EndpointMetadata>("/api/uploadthing");
-  const promiseRef = useRef<Promise<EndpointMetadata>>();
-
+const useEndpointMetadataRSC = (endpoint: string) => {
   // Trigger suspense
-  const data2 = use((promiseRef.current ??= fetchEndpointData(endpoint)));
+  const promiseRef = useRef<Promise<EndpointMetadata>>();
+  const data = use((promiseRef.current ??= fetchEndpointData(endpoint)));
 
   // TODO: Log on errors in dev
 
-  return data2?.find((x) => x.slug === endpoint);
+  return data?.find((x) => x.slug === endpoint);
 };
+
+const useEndpointMetadataStd = (endpoint: string) => {
+  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+
+  // TODO: Log on errors in dev
+
+  return data?.find((x) => x.slug === endpoint);
+};
+
+const useEndpointMetadata =
+  typeof use === "function" ? useEndpointMetadataRSC : useEndpointMetadataStd;
 
 export const useUploadThing = <T extends string>({
   endpoint,
