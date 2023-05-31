@@ -6,7 +6,7 @@ import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
 
-const fetchEndpointData = async (endpoint: string) => {
+const fetchEndpointData = async () => {
   const url = getUtUrl();
   const res = await fetch(url);
   const data = (await res.json()) as any[];
@@ -20,7 +20,7 @@ type EndpointMetadata = {
 const useEndpointMetadataRSC = (endpoint: string) => {
   // Trigger suspense
   const promiseRef = useRef<Promise<EndpointMetadata>>();
-  const data = use((promiseRef.current ??= fetchEndpointData(endpoint)));
+  const data = use((promiseRef.current ??= fetchEndpointData()));
 
   // TODO: Log on errors in dev
 
