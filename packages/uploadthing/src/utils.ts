@@ -19,6 +19,8 @@ const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
   if (fileType === "video") return "16MB";
   if (fileType === "audio") return "8MB";
   if (fileType === "blob") return "8MB";
+  if (fileType === "pdf") return "4MB";
+  if (fileType === "text") return "64KB";
 
   return "4MB";
 };

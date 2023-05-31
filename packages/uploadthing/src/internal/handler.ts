@@ -45,6 +45,8 @@ const fileCountLimitHit = (
     image: 0,
     video: 0,
     audio: 0,
+    text: 0,
+    pdf: 0,
     blob: 0,
   };
 
