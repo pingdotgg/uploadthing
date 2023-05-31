@@ -111,7 +111,11 @@ export const classNames = (...classes: string[]) => {
 
 export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) =>
-    type !== "blob" ? `${type}/*` : "blob",
+    {
+      if (type === "blob") return  "blob"
+      if (type === "pdf") return "application/pdf"
+      else return `${type}/*`
+    }
   );
 
   if (accepted.includes("blob")) {
