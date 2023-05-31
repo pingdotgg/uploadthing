@@ -87,7 +87,7 @@ const isValidResponse = (response: Response) => {
 const conditionalDevServer = async (fileKey: string) => {
   if (process.env.NODE_ENV !== "development") return;
 
-  const fileData = await pollForFileData(fileKey, async (json: any)=> {
+  const fileData = await pollForFileData(fileKey, async (json: {fileData: FileData})=> {
     const file = json.fileData;
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;

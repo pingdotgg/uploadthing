@@ -125,7 +125,7 @@ const withExponentialBackoff = async <T>(
   return null;
 };
 
-export const pollForFileData = async (fileKey:string, callback?: (json: any)=>void) => {
+export const pollForFileData = async (fileKey:string, callback?: (json: any)=>Promise<any>) => {
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
   return withExponentialBackoff(async () => {
@@ -136,6 +136,6 @@ export const pollForFileData = async (fileKey:string, callback?: (json: any)=>vo
 
     if (json.status !== "done") return null;
 
-    callback?.(json);
+    await callback?.(json);
   });
 }
