@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { FileRouter } from "./server";
+import { pollForFileData } from "./src/utils";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
@@ -79,6 +80,9 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     const genUrl =
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
 
+    // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
+    await pollForFileData(presigned.key)
+
     return {
       fileKey: presigned.key,
       fileUrl: genUrl,
@@ -122,3 +126,5 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+export { pollForFileData as DANGEROUS__pollForFileData } from "./src/utils"
