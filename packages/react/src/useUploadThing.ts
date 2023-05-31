@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { use, useRef, useState } from "react";
 
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getUtUrl } from "uploadthing/client";
 import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
+
+const fetchEndpointData = async (endpoint: string) => {
+  const url = getUtUrl();
+  const res = await fetch(url);
+  const data = (await res.json()) as any[];
+  return data as EndpointMetadata;
+};
 
 type EndpointMetadata = {
   slug: string;
   config: ExpandedRouteConfig;
 }[];
 const useEndpointMetadata = (endpoint: string) => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+  // let { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+  const promiseRef = useRef<Promise<EndpointMetadata>>();
+
+  // Trigger suspense
+  const data2 = use((promiseRef.current ??= fetchEndpointData(endpoint)));
 
   // TODO: Log on errors in dev
 
-  return data?.find((x) => x.slug === endpoint);
+  return data2?.find((x) => x.slug === endpoint);
 };
 
 export const useUploadThing = <T extends string>({

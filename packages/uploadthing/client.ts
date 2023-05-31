@@ -81,7 +81,7 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData(presigned.key)
+    await pollForFileData(presigned.key);
 
     return {
       fileKey: presigned.key,
@@ -109,13 +109,11 @@ export const classNames = (...classes: string[]) => {
 };
 
 export const generateMimeTypes = (fileTypes: string[]) => {
-  const accepted = fileTypes.map((type) =>
-    {
-      if (type === "blob") return  "blob"
-      if (type === "pdf") return "application/pdf"
-      else return `${type}/*`
-    }
-  );
+  const accepted = fileTypes.map((type) => {
+    if (type === "blob") return "blob";
+    if (type === "pdf") return "application/pdf";
+    else return `${type}/*`;
+  });
 
   if (accepted.includes("blob")) {
     return undefined;
@@ -131,4 +129,7 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
-export { pollForFileData as DANGEROUS__pollForFileData } from "./src/utils"
+export {
+  pollForFileData as DANGEROUS__pollForFileData,
+  GET_DEFAULT_URL as getUtUrl,
+} from "./src/utils";
