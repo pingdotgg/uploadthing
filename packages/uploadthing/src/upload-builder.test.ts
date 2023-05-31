@@ -32,7 +32,7 @@ it("typeerrors for invalid input", () => {
   });
 
   // @ts-expect-error - res does not exist (`pages` flag not set)
-  f(["image"]).middleware((req, res) => {
+  f(["image"]).middleware((_req, _res) => {
     return {};
   });
 
@@ -130,9 +130,7 @@ it("smoke", async () => {
 
 it("genuploader", async () => {
   const f = createBuilder();
-  const uploadable = f(["image", "video"]).onUploadComplete(
-    ({ file, metadata }) => {},
-  );
+  const uploadable = f(["image", "video"]).onUploadComplete(() => {});
 
   const router = { uploadable } satisfies FileRouter;
 
