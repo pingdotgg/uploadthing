@@ -56,11 +56,8 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
     if (presigned.fileType === file.type.split("/")[0]) {
       formData.append("Content-Type", file.type);
-      console.log("FILE TYPE", file.type);
     } else if (presigned.fileType === "blob") {
       formData.append("Content-Type", "application/octet-stream");
-      console.log("COERCING FILE TYPE TO BLOB");
-      console.log("FILE TYPE", "application/octet-stream");
     }
 
     // Dump all values from response (+ the file itself) into form for S3 upload
@@ -81,8 +78,6 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl =
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
-
-    console.log("URL for uploaded image", genUrl);
 
     return {
       fileKey: presigned.key,
