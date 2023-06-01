@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  mime-types@2.1.35:
-    hash: yl3qtqpkwxsokn4blq4o6zbc7q
-    path: patches/mime-types@2.1.35.patch
-
 importers:
 
   .:
@@ -399,10 +394,6 @@ importers:
         version: 3.0.5
 
   packages/uploadthing:
-    dependencies:
-      mime-types:
-        specifier: ^2.1.35
-        version: 2.1.35(patch_hash=yl3qtqpkwxsokn4blq4o6zbc7q)
     devDependencies:
       '@types/mime-types':
         specifier: 2.1.1
@@ -3340,7 +3331,7 @@ packages:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
     engines: {node: '>= 0.6'}
     dependencies:
-      mime-types: 2.1.35(patch_hash=yl3qtqpkwxsokn4blq4o6zbc7q)
+      mime-types: 2.1.35
       negotiator: 0.6.3
 
   /acorn-jsx@5.3.2(acorn@8.8.2):
@@ -4987,7 +4978,7 @@ packages:
     dependencies:
       asynckit: 0.4.0
       combined-stream: 1.0.8
-      mime-types: 2.1.35(patch_hash=yl3qtqpkwxsokn4blq4o6zbc7q)
+      mime-types: 2.1.35
     dev: true
 
   /fraction.js@4.2.0:
@@ -6633,12 +6624,11 @@ packages:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
 
-  /mime-types@2.1.35(patch_hash=yl3qtqpkwxsokn4blq4o6zbc7q):
+  /mime-types@2.1.35:
     resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
     engines: {node: '>= 0.6'}
     dependencies:
       mime-db: 1.52.0
-    patched: true
 
   /mimic-fn@2.1.0:
     resolution: {integrity: sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==}

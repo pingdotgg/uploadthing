@@ -1,12 +1,11 @@
-import { lookup } from "mime-types";
-
+import type { FileData } from "./internal/types";
+import { lookup } from "./mime-types";
 import type {
   AllowedFileType,
   ExpandedRouteConfig,
   FileRouterInputConfig,
   FileSize,
 } from "./types";
-import type { FileData } from './internal/types';
 
 function isRouteArray(
   routeConfig: FileRouterInputConfig,
@@ -127,7 +126,10 @@ const withExponentialBackoff = async <T>(
   return null;
 };
 
-export const pollForFileData = async (fileKey:string, callback?: (json: any)=>Promise<any>) => {
+export const pollForFileData = async (
+  fileKey: string,
+  callback?: (json: any) => Promise<any>,
+) => {
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
   return withExponentialBackoff(async () => {
@@ -140,4 +142,4 @@ export const pollForFileData = async (fileKey:string, callback?: (json: any)=>Pr
 
     await callback?.(json);
   });
-}
+};

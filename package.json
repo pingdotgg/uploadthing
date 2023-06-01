@@ -29,10 +29,5 @@
     "turbo": "^1.9.9",
     "typescript": "5.1.0-beta"
   },
-  "packageManager": "pnpm@8.6.0",
-  "pnpm": {
-    "patchedDependencies": {
-      "mime-types@2.1.35": "patches/mime-types@2.1.35.patch"
-    }
-  }
+  "packageManager": "pnpm@8.6.0"
 }
