@@ -8,6 +8,8 @@
  * Vendored version of mime-types that can run on the edge due to not using path.extname
  *
  * Also ported it to TypeScript cause it was easier than playing around with custom d.ts file
+ *
+ * Removed all the stuff we didn't use
  */
 
 /*!
