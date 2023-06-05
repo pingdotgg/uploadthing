@@ -1,4 +1,4 @@
-import { use, useRef, useState } from "react";
+import * as React from "react";
 
 import { DANGEROUS__uploadFiles, getUtUrl } from "uploadthing/client";
 import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
@@ -19,8 +19,8 @@ type EndpointMetadata = {
 }[];
 const useEndpointMetadataRSC = (endpoint: string) => {
   // Trigger suspense
-  const promiseRef = useRef<Promise<EndpointMetadata>>();
-  const data = use((promiseRef.current ??= fetchEndpointData()));
+  const promiseRef = React.useRef<Promise<EndpointMetadata>>();
+  const data = React.use((promiseRef.current ??= fetchEndpointData()));
 
   // TODO: Log on errors in dev
 
@@ -36,7 +36,9 @@ const useEndpointMetadataStd = (endpoint: string) => {
 };
 
 const useEndpointMetadata =
-  typeof use === "function" ? useEndpointMetadataRSC : useEndpointMetadataStd;
+  typeof React.use === "function"
+    ? useEndpointMetadataRSC
+    : useEndpointMetadataStd;
 
 export const useUploadThing = <T extends string>({
   endpoint,
@@ -49,7 +51,7 @@ export const useUploadThing = <T extends string>({
   ) => void;
   onUploadError?: (e: Error) => void;
 }) => {
-  const [isUploading, setUploading] = useState(false);
+  const [isUploading, setUploading] = React.useState(false);
 
   const permittedFileInfo = useEndpointMetadata(endpoint);
 
