@@ -1,12 +1,12 @@
 import { lookup } from "mime-types";
 
+import type { FileData } from "./internal/types";
 import type {
   AllowedFileType,
   ExpandedRouteConfig,
   FileRouterInputConfig,
   FileSize,
 } from "./types";
-import type { FileData } from './internal/types';
 
 function isRouteArray(
   routeConfig: FileRouterInputConfig,
@@ -127,7 +127,10 @@ const withExponentialBackoff = async <T>(
   return null;
 };
 
-export const pollForFileData = async (fileKey:string, callback?: (json: any)=>Promise<any>) => {
+export const pollForFileData = async (
+  fileKey: string,
+  callback?: (json: any) => Promise<any>,
+) => {
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
   return withExponentialBackoff(async () => {
@@ -140,4 +143,23 @@ export const pollForFileData = async (fileKey:string, callback?: (json: any)=>Pr
 
     await callback?.(json);
   });
-}
+};
+
+export const GET_DEFAULT_URL = () => {
+  /**
+   * Use VERCEL_URL as the default callbackUrl if it's set
+   * they don't set the protocol, so we need to add it
+   * User can override this with the UPLOADTHING_URL env var,
+   * if they do, they should include the protocol
+   *
+   * The pathname must be /api/uploadthing
+   * since we call that via webhook, so the user
+   * should not override that. Just the protocol and host
+   */
+  const vcurl = process.env.VERCEL_URL;
+  if (vcurl) return `https://${vcurl}/api/uploadthing`; // SSR should use vercel url
+  const uturl = process.env.UPLOADTHING_URL;
+  if (uturl) return `${uturl}/api/uploadthing`;
+
+  return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
+};
