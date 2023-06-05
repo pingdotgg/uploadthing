@@ -11,10 +11,15 @@
     "debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "dependencies": {
+    "docs": "link:",
     "next": "13.4.4",
     "nextra": "^2.6.0",
     "nextra-theme-docs": "^2.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0"
   }
 }
