@@ -65,10 +65,12 @@ export const OurUploadDropzone = () => (
 
 ## generateReactHelpers
 
-The `generateReactHelpers` function is used to generate the useUploadThing hook and the uploadFiles functions you use to interact with UploadThing in custom components. It takes your File Router as a generic
+The `generateReactHelpers` function is used to generate the useUploadThing hook
+and the uploadFiles functions you use to interact with UploadThing in custom
+components. It takes your File Router as a generic
 
 ```tsx
-import { generateReactHelpers } from "@uploadthing/react";
+import { generateReactHelpers } from "@uploadthing/react/hooks";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
@@ -78,14 +80,19 @@ export const { useUploadThing, uploadFiles } =
 
 ## useUploadThing
 
-This hook provides a function to start uploading, an `isUploading` state, and the `permittedFileInfo` which gives information about what file types, sizes and counts are allowed by the endpoint. See example below for a simple dropzone using `react-dropzone` and the `useUploadThing` hook. For a more complete example, take a look at [our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
+This hook provides a function to start uploading, an `isUploading` state, and
+the `permittedFileInfo` which gives information about what file types, sizes and
+counts are allowed by the endpoint. See example below for a simple dropzone
+using `react-dropzone` and the `useUploadThing` hook. For a more complete
+example, take a look at
+[our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
 
 ```tsx
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import { useUploadThing } from "~/utils/uploadthing";
 import { useDropzone } from "react-dropzone";
-
 import type { FileWithPath } from "react-dropzone";
+
+import { useUploadThing } from "~/utils/uploadthing";
 
 export function MultiUploader() {
   const [files, setFiles] = useState<File[]>([]);
@@ -94,16 +101,19 @@ export function MultiUploader() {
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
-      onDrop,
-      accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    });
-  
-  const { startUpload } =
-    useUploadThing<string>({
-      endpoint: "myUploadEndpoint", // replace this with an actual endpoint name
-      onClientUploadComplete: () => { alert("uploaded successfully!"); },
-      onUploadError: () => { alert("error occurred while uploading"); },
-    });
+    onDrop,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+  });
+
+  const { startUpload } = useUploadThing<string>({
+    endpoint: "myUploadEndpoint", // replace this with an actual endpoint name
+    onClientUploadComplete: () => {
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+  });
 
   return (
     <div {...getRootProps()}>
