@@ -13,7 +13,10 @@ const config = {
     "@next/next/no-html-link-for-pages": "off",
     "turbo/no-undeclared-env-vars": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+    ],
     "@typescript-eslint/restrict-template-expressions": "off",
     // restricts so you can't use {} as type. me no likey
     "@typescript-eslint/ban-types": "off",
