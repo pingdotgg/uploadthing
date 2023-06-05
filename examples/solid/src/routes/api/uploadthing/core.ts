@@ -3,7 +3,7 @@ import type { FileRouter } from "uploadthing/server";
 
 const f = createUploadthing();
 
-const auth = (req: Request) => Promise.resolve({ id: "fakeId" }); // Fake auth function
+const auth = (_req: Request) => Promise.resolve({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
