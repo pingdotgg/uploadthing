@@ -22,8 +22,8 @@
  * Module dependencies.
  * @private
  */
-import { mimeDB } from "./db";
-import type { MimeObject, MimeType } from "./db";
+import { mimeTypes as mimeDB } from "./db";
+import type { MimeType } from "./db";
 
 function extname(path: string) {
   const index = path.lastIndexOf(".");
@@ -72,7 +72,7 @@ function populateMaps(
   const preference = ["nginx", "apache", undefined, "iana"];
 
   Object.keys(mimeDB).forEach(function forEachMimeType(type) {
-    const mime = mimeDB[type as MimeType] as unknown as MimeObject;
+    const mime = mimeDB[type as MimeType];
     const exts = mime.extensions;
 
     if (!exts || !exts.length) {
@@ -88,8 +88,7 @@ function populateMaps(
 
       if (types[extension]) {
         const from = preference.indexOf(
-          (mimeDB[types[extension] as MimeType] as unknown as MimeObject)
-            .source,
+          mimeDB[types[extension] as MimeType].source,
         );
         const to = preference.indexOf(mime.source);
 
