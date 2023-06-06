@@ -11,7 +11,6 @@
     "debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "dependencies": {
-    "docs": "link:",
     "next": "13.4.4",
     "nextra": "^2.6.0",
     "nextra-theme-docs": "^2.6.0",
