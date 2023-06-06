@@ -1,7 +1,7 @@
-import type { ComponentProps, ReactElement } from "react";
-import { useCallback, useRef } from "react";
-import { Button, CopyToClipboard } from "nextra/components";
-import { WordWrapIcon } from "nextra/icons";
+import {Button, CopyToClipboard} from "nextra/components";
+import {WordWrapIcon} from "nextra/icons";
+import type {ComponentProps, ReactElement} from "react";
+import {useCallback, useRef} from "react";
 
 function cn(...classes: Array<string | boolean | undefined>) {
   return classes.filter(Boolean).join(" ");
