@@ -19,9 +19,11 @@
       "cache": false
     },
     "typecheck": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["build"]
     },
-    "test": {},
+    "test": {
+      "dependsOn": ["build"]
+    },
     "test:watch": {
       "cache": false
     }
