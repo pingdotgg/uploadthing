@@ -4116,6 +4116,8 @@ export const mimeDB = {
 
 export type MimeType = keyof typeof mimeDB;
 
+export const mimeTypes = Object.keys(mimeDB) as MimeType[];
+
 type MimeValues = (typeof mimeDB)[MimeType];
 
 export type FileExtension = MimeValues["extensions"][number];
