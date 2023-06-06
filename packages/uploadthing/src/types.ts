@@ -25,7 +25,13 @@ export type UploadedFile = {
   size: number;
 };
 
-export type AllowedFileType = "image" | "video" | "audio" | "text" | "pdf" | "blob";
+export type AllowedFileType =
+  | "image"
+  | "video"
+  | "audio"
+  | "text"
+  | "pdf"
+  | "blob";
 
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";

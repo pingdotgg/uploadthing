@@ -1,8 +1,9 @@
-import {Button, CopyToClipboard} from "nextra/components";
-import {WordWrapIcon} from "nextra/icons";
-import type {ComponentProps, ReactElement} from "react";
-import {useCallback, useRef} from "react";
-import {Javascript, Json, Typescript} from "./icons";
+import type { ComponentProps, ReactElement } from "react";
+import { useCallback, useRef } from "react";
+import { Button, CopyToClipboard } from "nextra/components";
+import { WordWrapIcon } from "nextra/icons";
+
+import { Javascript, Json, Typescript } from "./icons";
 
 function cn(...classes: Array<string | boolean | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -36,8 +37,8 @@ export const Pre = ({
     jsx: Javascript,
     ts: Typescript,
     tsx: Typescript,
-    json: Json
-  }[language]
+    json: Json,
+  }[language];
 
   return (
     <div className="nextra-code-block nx-relative nx-mt-6 first:nx-mt-0">
@@ -45,7 +46,7 @@ export const Pre = ({
         <>
           <div className="nx-absolute nx-flex nx-justify-between nx-items-center nx-top-0 nx-z-[1] nx-w-full nx-truncate nx-rounded-t-xl nx-bg-primary-700/5 nx-py-2 nx-px-4 nx-text-xs nx-text-gray-700 dark:nx-bg-primary-300/10 dark:nx-text-gray-200">
             <div className="nx-flex nx-w-full nx-items-center nx-gap-2">
-              {Icon && <Icon/>}
+              {Icon && <Icon />}
               <div>{filename}</div>
             </div>
             {hasCopyCode && (
