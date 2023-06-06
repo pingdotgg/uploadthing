@@ -7,7 +7,8 @@ import { Callout, Steps } from "nextra-theme-docs";
 <Steps>
 ### Creating your first FileRoute
 
-All files uploaded to uploadthing are associated with a FileRoute. Think of a FileRoute similar to an endpoint, it has:
+All files uploaded to uploadthing are associated with a FileRoute. Think of a
+FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
 - Max file size
@@ -15,7 +16,6 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 - `onUploadComplete` callback for when uploads are completed
 
 ```ts copy filename="app/api/uploadthing/core.ts"
-/** app/api/uploadthing/core.ts */
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
@@ -69,7 +69,8 @@ export const { GET, POST } = createNextRouteHandler({
 
 ### Use the FileRouter in your app
 
-The `@uploadthing/react` package includes an "UploadButton" component that you can simply drop into your app, and start uploading files immediately.
+The `@uploadthing/react` package includes an "UploadButton" component that you
+can simply drop into your app, and start uploading files immediately.
 
 ```tsx copy
 "use client";
