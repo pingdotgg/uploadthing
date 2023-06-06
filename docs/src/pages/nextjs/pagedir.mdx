@@ -5,7 +5,7 @@ import { Callout, Steps } from "nextra-theme-docs";
 <Callout type="warning">
   If you're using the `pages/` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG to prevent esm/cjs errors from our peer dep `react-dropzone`:
 
-```ts filename="next.config.js"
+```js filename="next.config.js"
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
