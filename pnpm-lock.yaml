@@ -382,10 +382,6 @@ importers:
         version: 7.0.1
 
   packages/shared:
-    dependencies:
-      '@uploadthing/mime-types':
-        specifier: 1.0.0
-        version: link:../mime-types
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -393,6 +389,9 @@ importers:
       '@uploadthing/eslint-config':
         specifier: 0.1.0
         version: link:../config/eslint
+      '@uploadthing/mime-types':
+        specifier: 1.0.0
+        version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
