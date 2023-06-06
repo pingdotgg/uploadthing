@@ -18,6 +18,7 @@ export const Pre = ({
 }: ComponentProps<"pre"> & {
   filename?: string;
   hasCopyCode?: boolean;
+  "data-language"?: string;
 }): ReactElement => {
   const preRef = useRef<HTMLPreElement | null>(null);
 
@@ -31,7 +32,7 @@ export const Pre = ({
     }
   }, []);
 
-  const language = props["data-language" as keyof typeof props] as string;
+  const language = props["data-language"] ?? "";
   const Icon = {
     js: Javascript,
     jsx: Javascript,
