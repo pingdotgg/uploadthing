@@ -55,7 +55,10 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
 
     // Give content type to blobs because S3 is dumb
     // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
-    if (presigned.fileType === file.type.split("/")[0]) {
+    if (
+      presigned.fileType === file.type.split("/")[0] ||
+      presigned.fileType === file.type
+    ) {
       formData.append("Content-Type", file.type);
     } else if (presigned.fileType === "blob") {
       formData.append("Content-Type", "application/octet-stream");
