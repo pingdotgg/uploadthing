@@ -1,8 +1,9 @@
 import type { NextApiResponse } from "next";
 
+import type { AllowedFileType } from "@uploadthing/shared/file-types";
+
 import { UPLOADTHING_VERSION } from "../constants";
 import type {
-  AllowedFileType,
   AnyRuntime,
   ExpandedRouteConfig,
   FileRouter,

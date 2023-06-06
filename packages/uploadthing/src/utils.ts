@@ -1,8 +1,8 @@
-import { lookup } from "./mime-types";
+import { lookup } from "@uploadthing/mime-types";
+import type { AllowedFileType } from "@uploadthing/shared/file-types";
 
 import type { FileData } from "./internal/types";
 import type {
-  AllowedFileType,
   ExpandedRouteConfig,
   FileRouterInputConfig,
   FileSize,

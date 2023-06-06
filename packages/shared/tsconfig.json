@@ -1,0 +1,4 @@
+{
+  "extends": "@uploadthing/tsconfig/base.json",
+  "include": ["**/*.ts", "../mime-types/db.ts"]
+}

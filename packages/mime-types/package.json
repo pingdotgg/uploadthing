@@ -1,0 +1,45 @@
+{
+  "name": "@uploadthing/mime-types",
+  "version": "1.0.0",
+  "license": "MIT",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./db": {
+      "import": "./dist/db.mjs",
+      "types": "./dist/db.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
+    "build": "tsup",
+    "prebuild": "tsup",
+    "clean": "git clean -xdf dist node_modules",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@uploadthing/eslint-config": "0.1.0",
+    "@uploadthing/tsconfig": "0.1.0",
+    "@uploadthing/tsup-config": "0.1.0",
+    "eslint": "^8.42.0",
+    "tsup": "6.7.0",
+    "typescript": "5.1.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

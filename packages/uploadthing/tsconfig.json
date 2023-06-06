@@ -16,6 +16,11 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src/**/*", "*.ts"],
+  "include": [
+    "src/**/*",
+    "*.ts",
+    "../shared/mime-types",
+    "../mime-types/db.ts"
+  ],
   "exclude": ["node_modules"]
 }
