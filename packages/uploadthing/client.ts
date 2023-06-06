@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { pollForFileData } from "@uploadthing/shared/utils";
+
 import type { FileRouter } from "./server";
-import { pollForFileData } from "./src/utils";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
@@ -132,4 +133,4 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 export {
   pollForFileData as DANGEROUS__pollForFileData,
   GET_DEFAULT_URL as getUtUrl,
-} from "./src/utils";
+} from "@uploadthing/shared/utils";

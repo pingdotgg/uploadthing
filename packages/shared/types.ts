@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
-import type { AllowedFileType } from "@uploadthing/shared/file-types";
+import type { AllowedFileType } from "./file-types";
 
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {

@@ -4,8 +4,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 import { expect, expectTypeOf, it } from "vitest";
 
+import type { FileRouter } from "@uploadthing/shared/types";
+
 import { genUploader } from "../client";
-import type { FileRouter } from "./types";
 import { createBuilder } from "./upload-builder";
 
 const badReqMock = {

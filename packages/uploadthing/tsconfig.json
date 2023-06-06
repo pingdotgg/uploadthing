@@ -20,7 +20,8 @@
     "src/**/*",
     "*.ts",
     "../shared/mime-types",
-    "../mime-types/db.ts"
+    "../mime-types/db.ts",
+    "../shared/types.ts"
   ],
   "exclude": ["node_modules"]
 }

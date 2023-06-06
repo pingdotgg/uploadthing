@@ -1,7 +1,7 @@
 import { lookup } from "@uploadthing/mime-types";
-import type { AllowedFileType } from "@uploadthing/shared/file-types";
 
-import type { FileData } from "./internal/types";
+import type { FileData } from "../uploadthing/src/internal/types";
+import type { AllowedFileType } from "./file-types";
 import type {
   ExpandedRouteConfig,
   FileRouterInputConfig,
@@ -14,7 +14,7 @@ function isRouteArray(
   return Array.isArray(routeConfig);
 }
 
-const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
+export const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
   if (fileType === "image") return "4MB";
   if (fileType === "video") return "16MB";
   if (fileType === "audio") return "8MB";
@@ -95,7 +95,7 @@ export const generateUploadThingURL = (path: `/${string}`) => {
   return `${host}${path}`;
 };
 
-const withExponentialBackoff = async <T>(
+export const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | null>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
   MAX_RETRIES = 20,

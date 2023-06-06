@@ -1,21 +1,21 @@
 import type { NextApiResponse } from "next";
 
 import type { AllowedFileType } from "@uploadthing/shared/file-types";
-
-import { UPLOADTHING_VERSION } from "../constants";
 import type {
   AnyRuntime,
   ExpandedRouteConfig,
   FileRouter,
   UploadedFile,
-} from "../types";
+} from "@uploadthing/shared/types";
 import {
   generateUploadThingURL,
   GET_DEFAULT_URL,
   getTypeFromFileName,
   fillInputRouteConfig as parseAndExpandInputConfig,
   pollForFileData,
-} from "../utils";
+} from "@uploadthing/shared/utils";
+
+import { UPLOADTHING_VERSION } from "../constants";
 import type { FileData } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
