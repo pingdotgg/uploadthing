@@ -4613,6 +4613,6 @@ type TypedMimeTypes = Record<
   }
 >;
 
-const mimeTypes: TypedMimeTypes = mimeTypesInternal;
+export const mimeTypes: TypedMimeTypes = mimeTypesInternal;
 
 export type MimeValue = (typeof mimeTypes)[MimeType];
