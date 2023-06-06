@@ -1,6 +1,6 @@
-import { lookup } from "./mime-types";
-
 import type { FileData } from "./internal/types";
+import { lookup } from "./mime-types";
+import type { MimeType } from "./mime-types/db";
 import type {
   AllowedFileType,
   ExpandedRouteConfig,
@@ -10,11 +10,13 @@ import type {
 
 function isRouteArray(
   routeConfig: FileRouterInputConfig,
-): routeConfig is AllowedFileType[] {
+): routeConfig is (AllowedFileType | MimeType)[] {
   return Array.isArray(routeConfig);
 }
 
-const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
+const getDefaultSizeForType = (
+  fileType: AllowedFileType | MimeType,
+): FileSize => {
   if (fileType === "image") return "4MB";
   if (fileType === "video") return "16MB";
   if (fileType === "audio") return "8MB";
@@ -50,30 +52,39 @@ export const fillInputRouteConfig = (
 
   // Backfill defaults onto config
   const newConfig: ExpandedRouteConfig = {};
-  (Object.keys(routeConfig) as AllowedFileType[]).forEach((key) => {
-    const value = routeConfig[key];
-    if (!value) throw new Error("Invalid config during fill");
+  (Object.keys(routeConfig) as (AllowedFileType | MimeType)[]).forEach(
+    (key) => {
+      const value = routeConfig[key];
+      if (!value) throw new Error("Invalid config during fill");
 
-    const defaultValues = {
-      maxFileSize: getDefaultSizeForType(key),
-      maxFileCount: 1,
-    };
+      const defaultValues = {
+        maxFileSize: getDefaultSizeForType(key),
+        maxFileCount: 1,
+      };
 
-    newConfig[key] = { ...defaultValues, ...value };
-  }, {} as ExpandedRouteConfig);
+      newConfig[key] = { ...defaultValues, ...value };
+    },
+    {} as ExpandedRouteConfig,
+  );
 
   return newConfig;
 };
 
 export const getTypeFromFileName = (
   fileName: string,
-  allowedTypes: AllowedFileType[],
+  allowedTypes: (AllowedFileType | MimeType)[],
 ) => {
   const mimeType = lookup(fileName);
   if (!mimeType) {
     throw new Error(
       `Could not determine type for ${fileName}, presigned URL generation failed`,
     );
+  }
+
+  if (allowedTypes.some((type) => type.includes("/"))) {
+    if (allowedTypes.includes(mimeType as MimeType)) {
+      return mimeType;
+    }
   }
 
   const type = mimeType.split("/")[0] as AllowedFileType;

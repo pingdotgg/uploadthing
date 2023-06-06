@@ -1,6 +1,7 @@
 import type { NextApiResponse } from "next";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import type { MimeType } from "../mime-types/db";
 import type {
   AllowedFileType,
   AnyRuntime,
@@ -42,28 +43,26 @@ const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: Record<AllowedFileType, number> = {
-    image: 0,
-    video: 0,
-    audio: 0,
-    text: 0,
-    pdf: 0,
-    blob: 0,
-  };
+  const counts: { [k: string]: number } = {};
 
   files.forEach((file) => {
     const type = getTypeFromFileName(
       file,
-      Object.keys(routeConfig) as AllowedFileType[],
-    );
-    counts[type] += 1;
+      Object.keys(routeConfig) as (AllowedFileType | MimeType)[],
+    ) as AllowedFileType | MimeType;
+
+    if (!counts[type]) {
+      counts[type] = 1;
+    } else {
+      counts[type] += 1;
+    }
   });
 
   return Object.keys(counts).some((key) => {
-    const count = counts[key as AllowedFileType];
+    const count = counts[key as AllowedFileType | MimeType];
     if (count === 0) return false;
 
-    const limit = routeConfig[key as AllowedFileType]?.maxFileCount;
+    const limit = routeConfig[key as AllowedFileType | MimeType]?.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
       throw new Error("invalid config during file count");
