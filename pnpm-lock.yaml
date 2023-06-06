@@ -390,7 +390,7 @@ importers:
         specifier: 0.1.0
         version: link:../config/eslint
       '@uploadthing/mime-types':
-        specifier: 1.0.0
+        specifier: 0.1.0
         version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 0.1.0
@@ -453,7 +453,7 @@ importers:
         specifier: 0.1.0
         version: link:../config/eslint
       '@uploadthing/mime-types':
-        specifier: 1.0.0
+        specifier: 0.1.0
         version: link:../mime-types
       '@uploadthing/shared':
         specifier: 4.1.0

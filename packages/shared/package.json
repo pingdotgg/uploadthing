@@ -31,7 +31,7 @@
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.1.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/mime-types": "1.0.0",
+    "@uploadthing/mime-types": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.42.0",
     "zod": "^3.21.4",
@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "zod": "^3.21.4",
-    "@uploadthing/mime-types": "1.0.0"
+    "@uploadthing/mime-types": "0.1.0"
   },
   "peerDependenciesMeta": {
     "@uploadthing/mime-types": {
