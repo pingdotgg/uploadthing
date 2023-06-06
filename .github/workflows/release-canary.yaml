@@ -52,6 +52,7 @@ jobs:
           pnpm build --filter @uploadthing/react --filter uploadthing
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           pnpm publish packages/uploadthing --access public --tag canary --no-git-checks
+          pnpm publish packages/shared --access public --tag canary --no-git-checks
           pnpm publish packages/react --access public --tag canary --no-git-checks
 
       - name: Create a new comment notifying of the new canary version
