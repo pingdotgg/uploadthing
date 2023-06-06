@@ -23,7 +23,7 @@
  * @private
  */
 import { mimeDB } from "./db";
-import type { FileExtension, MimeObject, MimeType } from "./db";
+import type { MimeObject, MimeType } from "./db";
 
 function extname(path: string) {
   const index = path.lastIndexOf(".");
