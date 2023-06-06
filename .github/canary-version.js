@@ -4,6 +4,7 @@ import fs from "fs";
 const pkgJsonPaths = [
   "packages/uploadthing/package.json",
   "packages/shared/package.json",
+  "packages/mime-types/package.json",
   "packages/react/package.json",
 ];
 try {
