@@ -1,4 +1,5 @@
-import { use, useRef, useState } from "react";
+// Don't destructure the import of `use` as it might not exist
+import React, { useRef, useState } from "react";
 
 import { DANGEROUS__uploadFiles, getUtUrl } from "uploadthing/client";
 import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
@@ -20,7 +21,7 @@ type EndpointMetadata = {
 const useEndpointMetadataRSC = (endpoint: string) => {
   // Trigger suspense
   const promiseRef = useRef<Promise<EndpointMetadata>>();
-  const data = use((promiseRef.current ??= fetchEndpointData()));
+  const data = React.use((promiseRef.current ??= fetchEndpointData()));
 
   // TODO: Log on errors in dev
 
@@ -36,7 +37,9 @@ const useEndpointMetadataStd = (endpoint: string) => {
 };
 
 const useEndpointMetadata =
-  typeof use === "function" ? useEndpointMetadataRSC : useEndpointMetadataStd;
+  typeof React.use === "function"
+    ? useEndpointMetadataRSC
+    : useEndpointMetadataStd;
 
 export const useUploadThing = <T extends string>({
   endpoint,

@@ -30,7 +30,9 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
 
-```ts copy filename="server/uploadthing.ts"
+```ts copy
+/** server/uploadthing.ts */
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 
 const f = createUploadthing();
