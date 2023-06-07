@@ -7,6 +7,7 @@ import type {
   AnyRuntime,
   ExpandedRouteConfig,
   FileRouter,
+  FileRouterInputKey,
   UploadedFile,
 } from "../types";
 import {
@@ -48,8 +49,8 @@ const fileCountLimitHit = (
   files.forEach((file) => {
     const type = getTypeFromFileName(
       file,
-      Object.keys(routeConfig) as (AllowedFileType | MimeType)[],
-    ) as AllowedFileType | MimeType;
+      Object.keys(routeConfig) as FileRouterInputKey[],
+    ) as FileRouterInputKey;
 
     if (!counts[type]) {
       counts[type] = 1;
@@ -59,10 +60,10 @@ const fileCountLimitHit = (
   });
 
   return Object.keys(counts).some((key) => {
-    const count = counts[key as AllowedFileType | MimeType];
+    const count = counts[key as FileRouterInputKey];
     if (count === 0) return false;
 
-    const limit = routeConfig[key as AllowedFileType | MimeType]?.maxFileCount;
+    const limit = routeConfig[key as FileRouterInputKey]?.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
       throw new Error("invalid config during file count");

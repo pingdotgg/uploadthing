@@ -5,18 +5,17 @@ import type {
   AllowedFileType,
   ExpandedRouteConfig,
   FileRouterInputConfig,
+  FileRouterInputKey,
   FileSize,
 } from "./types";
 
 function isRouteArray(
   routeConfig: FileRouterInputConfig,
-): routeConfig is (AllowedFileType | MimeType)[] {
+): routeConfig is FileRouterInputKey[] {
   return Array.isArray(routeConfig);
 }
 
-const getDefaultSizeForType = (
-  fileType: AllowedFileType | MimeType,
-): FileSize => {
+const getDefaultSizeForType = (fileType: FileRouterInputKey): FileSize => {
   if (fileType === "image") return "4MB";
   if (fileType === "video") return "16MB";
   if (fileType === "audio") return "8MB";
@@ -52,27 +51,24 @@ export const fillInputRouteConfig = (
 
   // Backfill defaults onto config
   const newConfig: ExpandedRouteConfig = {};
-  (Object.keys(routeConfig) as (AllowedFileType | MimeType)[]).forEach(
-    (key) => {
-      const value = routeConfig[key];
-      if (!value) throw new Error("Invalid config during fill");
+  (Object.keys(routeConfig) as FileRouterInputKey[]).forEach((key) => {
+    const value = routeConfig[key];
+    if (!value) throw new Error("Invalid config during fill");
 
-      const defaultValues = {
-        maxFileSize: getDefaultSizeForType(key),
-        maxFileCount: 1,
-      };
+    const defaultValues = {
+      maxFileSize: getDefaultSizeForType(key),
+      maxFileCount: 1,
+    };
 
-      newConfig[key] = { ...defaultValues, ...value };
-    },
-    {} as ExpandedRouteConfig,
-  );
+    newConfig[key] = { ...defaultValues, ...value };
+  }, {} as ExpandedRouteConfig);
 
   return newConfig;
 };
 
 export const getTypeFromFileName = (
   fileName: string,
-  allowedTypes: (AllowedFileType | MimeType)[],
+  allowedTypes: FileRouterInputKey[],
 ) => {
   const mimeType = lookup(fileName);
   if (!mimeType) {

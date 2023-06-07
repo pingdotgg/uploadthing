@@ -44,17 +44,17 @@ type RouteConfig = {
   maxFileCount: number;
 };
 
+export type FileRouterInputKey = AllowedFileType | MimeType;
+
 export type ExpandedRouteConfig = Partial<
-  Record<AllowedFileType | MimeType, RouteConfig>
+  Record<FileRouterInputKey, RouteConfig>
 >;
 
 type PartialRouteConfig = Partial<
-  Record<AllowedFileType | MimeType, Partial<RouteConfig>>
+  Record<FileRouterInputKey, Partial<RouteConfig>>
 >;
 
-export type FileRouterInputConfig =
-  | (AllowedFileType | MimeType)[]
-  | PartialRouteConfig;
+export type FileRouterInputConfig = FileRouterInputKey[] | PartialRouteConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
