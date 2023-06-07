@@ -33,6 +33,7 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 
 ```ts copy
 /** server/uploadthing.ts */
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 
 const f = createUploadthing();
