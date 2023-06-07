@@ -1,9 +1,7 @@
 import type { NextApiResponse } from "next";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { MimeType } from "../mime-types/db";
 import type {
-  AllowedFileType,
   AnyRuntime,
   ExpandedRouteConfig,
   FileRouter,
