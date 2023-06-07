@@ -1,6 +1,8 @@
-import type { FileData } from "./internal/types";
 import { lookup } from "./mime-types";
+
+import type { FileData } from "./internal/types";
 import type { MimeType } from "./mime-types/db";
+
 import type {
   AllowedFileType,
   ExpandedRouteConfig,
