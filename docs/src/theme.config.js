@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { useConfig } from "nextra-theme-docs";
 
+import { Pre } from "./components/Pre";
+
 const hackedCss = `
 body {
   overscroll-behavior: auto none;
@@ -112,6 +114,9 @@ const config = {
     content: () => null,
   },
   footer: { component: () => null },
+  components: {
+    pre: Pre,
+  },
   head: Head,
   logo: Logo,
   nextThemes: {

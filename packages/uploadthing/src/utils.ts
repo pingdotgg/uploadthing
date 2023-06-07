@@ -1,6 +1,5 @@
-import { lookup } from "./mime-types";
-
 import type { FileData } from "./internal/types";
+import { lookup } from "./mime-types";
 import type {
   AllowedFileType,
   ExpandedRouteConfig,
