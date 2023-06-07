@@ -145,7 +145,10 @@ export const UploadDropzone = <
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
       endpoint: props.endpoint as string,
-      onClientUploadComplete: props.onClientUploadComplete,
+      onClientUploadComplete: () => {
+        if (props.onClientUploadComplete) props.onClientUploadComplete();
+        setFiles([]);
+      },
       onUploadError: props.onUploadError,
     });
 
