@@ -47,7 +47,7 @@ export const uploadRouter = {
     }),
 
   withoutMdwr: f({
-    "application/json": {
+    image: {
       maxFileCount: 2,
       maxFileSize: "16MB",
     },

@@ -81,12 +81,14 @@ export const getTypeFromFileName = (
     );
   }
 
+  // If the user has specified a specific mime type, use that
   if (allowedTypes.some((type) => type.includes("/"))) {
     if (allowedTypes.includes(mimeType as MimeType)) {
       return mimeType;
     }
   }
 
+  // Otherwise, we have a "magic" type eg. "image" or "video"
   const type = mimeType.split("/")[0] as AllowedFileType;
 
   if (!allowedTypes.includes(type)) {
