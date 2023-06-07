@@ -65,14 +65,14 @@ export function lookup(path: string): string | false {
  */
 
 function populateMaps(
-  extensions: Record<string, unknown>,
-  types: Record<string, string>,
+  extensions: Record<MimeType, unknown>,
+  types: Record<string, MimeType>,
 ) {
   // source preference (least -> most)
   const preference = ["nginx", "apache", undefined, "iana"];
 
-  Object.keys(mimeDB).forEach(function forEachMimeType(type) {
-    const mime = mimeDB[type as MimeType];
+  (Object.keys(mimeDB) as MimeType[]).forEach((type) => {
+    const mime = mimeDB[type];
     const exts = mime.extensions;
 
     if (!exts || !exts.length) {
@@ -87,9 +87,7 @@ function populateMaps(
       const extension = exts[i];
 
       if (types[extension]) {
-        const from = preference.indexOf(
-          mimeDB[types[extension] as MimeType].source,
-        );
+        const from = preference.indexOf(mimeDB[types[extension]].source);
         const to = preference.indexOf(mime.source);
 
         if (
