@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
-import type { AllowedFileType } from "./file-types";
+import type { MimeType } from "@uploadthing/mime-types/db";
 
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {
@@ -10,6 +10,19 @@ export const unsetMarker = "unsetMarker" as "unsetMarker" & {
 export type UnsetMarker = typeof unsetMarker;
 
 type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
+
+/** Synced up with types from infra */
+export interface FileData {
+  id: string;
+  createdAt: string;
+
+  fileKey: string | null;
+  fileName: string;
+  metadata: string | null;
+
+  callbackUrl: string;
+  callbackSlug: string;
+}
 
 export type MaybePromise<TType> = TType | Promise<TType>;
 
@@ -27,6 +40,14 @@ export type UploadedFile = {
   size: number;
 };
 
+export type AllowedFileType =
+  | "image"
+  | "video"
+  | "audio"
+  | "text"
+  | "pdf"
+  | "blob";
+
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
@@ -36,13 +57,17 @@ type RouteConfig = {
   maxFileCount: number;
 };
 
-export type ExpandedRouteConfig = Partial<Record<AllowedFileType, RouteConfig>>;
+export type FileRouterInputKey = AllowedFileType | MimeType;
 
-type PartialRouteConfig = Partial<
-  Record<AllowedFileType, Partial<RouteConfig>>
+export type ExpandedRouteConfig = Partial<
+  Record<FileRouterInputKey, RouteConfig>
 >;
 
-export type FileRouterInputConfig = AllowedFileType[] | PartialRouteConfig;
+type PartialRouteConfig = Partial<
+  Record<FileRouterInputKey, Partial<RouteConfig>>
+>;
+
+export type FileRouterInputConfig = FileRouterInputKey[] | PartialRouteConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<

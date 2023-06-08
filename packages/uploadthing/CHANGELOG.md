@@ -1,5 +1,19 @@
 # uploadthing
 
+## 4.1.1
+
+### Patch Changes
+
+- [#142](https://github.com/pingdotgg/uploadthing/pull/142)
+  [`552351b`](https://github.com/pingdotgg/uploadthing/commit/552351b57cce407f5743d55d44a85c6dad7a27f8)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - [fix] Make PDF
+  uploads work.
+
+- [#135](https://github.com/pingdotgg/uploadthing/pull/135)
+  [`8a23937`](https://github.com/pingdotgg/uploadthing/commit/8a23937ff6c1ac50301d9d120dd902c4fff454de)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - [feat] Allow
+  use of mime-types in file router config
+
 ## 4.1.0
 
 ### Minor Changes

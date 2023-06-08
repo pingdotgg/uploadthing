@@ -1,10 +1,11 @@
 import type { NextApiResponse } from "next";
 
-import type { AllowedFileType } from "@uploadthing/shared/file-types";
 import type {
   AnyRuntime,
   ExpandedRouteConfig,
+  FileData,
   FileRouter,
+  FileRouterInputKey,
   UploadedFile,
 } from "@uploadthing/shared/types";
 import {
@@ -16,7 +17,6 @@ import {
 } from "@uploadthing/shared/utils";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { FileData } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];
@@ -43,28 +43,26 @@ const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: Record<AllowedFileType, number> = {
-    image: 0,
-    video: 0,
-    audio: 0,
-    text: 0,
-    pdf: 0,
-    blob: 0,
-  };
+  const counts: { [k: string]: number } = {};
 
   files.forEach((file) => {
     const type = getTypeFromFileName(
       file,
-      Object.keys(routeConfig) as AllowedFileType[],
-    );
-    counts[type] += 1;
+      Object.keys(routeConfig) as FileRouterInputKey[],
+    ) as FileRouterInputKey;
+
+    if (!counts[type]) {
+      counts[type] = 1;
+    } else {
+      counts[type] += 1;
+    }
   });
 
   return Object.keys(counts).some((key) => {
-    const count = counts[key as AllowedFileType];
+    const count = counts[key as FileRouterInputKey];
     if (count === 0) return false;
 
-    const limit = routeConfig[key as AllowedFileType]?.maxFileCount;
+    const limit = routeConfig[key as FileRouterInputKey]?.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
       throw new Error("invalid config during file count");
@@ -74,7 +72,7 @@ const fileCountLimitHit = (
   });
 };
 
-if (process.env.NODE_ENV !== "development") {
+if (process.env.NODE_ENV === "development") {
   console.log("[UT] UploadThing dev server is now running!");
 }
 

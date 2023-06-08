@@ -1,6 +1,6 @@
 import * as z from "zod";
 
-import { mimeDB } from "@uploadthing/mime-types";
+import { mimeTypes } from "@uploadthing/mime-types/db";
 
 export const ALLOWED_FILE_TYPES = [
   "image",
@@ -20,7 +20,7 @@ export function zodEnumFromObjKeys<K extends string>(
   return z.enum([firstKey, ...otherKeys]);
 }
 
-export const MimeTypeZod = zodEnumFromObjKeys(mimeDB);
+export const MimeTypeZod = zodEnumFromObjKeys(mimeTypes);
 
 export const InternalFileTypeValidator = z.enum(ALLOWED_FILE_TYPES);
 export const InternalMimeTypeValidator = MimeTypeZod;

@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 /**
  * Vendored version of mime-types that can run on the edge due to not using path.extname
  *
@@ -21,18 +17,16 @@
  * Module dependencies.
  * @private
  */
-import { mimeDB, mimeTypes } from "./db";
+import { mimeTypes as mimeDB } from "./db";
 import type { FileExtension, MimeType } from "./db";
-
-export type * from "./db";
 
 function extname(path: string) {
   const index = path.lastIndexOf(".");
   return index < 0 ? "" : path.substring(index);
 }
 
-export const extensions = Object.create(null);
-export const types: Record<FileExtension, string> = Object.create(null);
+export const extensions = {} as Record<MimeType, FileExtension[]>;
+export const types = {} as Record<FileExtension, MimeType>;
 
 // Populate the extensions/types maps
 populateMaps(extensions, types);
@@ -51,13 +45,13 @@ export function lookup(path: string): string | false {
   // get the extension ("ext" or ".ext" or full path)
   const extension = extname("x." + path)
     .toLowerCase()
-    .substring(1);
+    .substring(1) as FileExtension;
 
   if (!extension) {
     return false;
   }
 
-  return types[extension as FileExtension] || false;
+  return types[extension] || false;
 }
 
 /**
@@ -66,13 +60,13 @@ export function lookup(path: string): string | false {
  */
 
 function populateMaps(
-  extensions: Record<string, unknown>,
-  types: Record<FileExtension, string>,
+  extensions: Record<MimeType, FileExtension[]>,
+  types: Record<FileExtension, MimeType>,
 ) {
   // source preference (least -> most)
   const preference = ["nginx", "apache", undefined, "iana"];
 
-  mimeTypes.forEach(function forEachMimeType(type) {
+  (Object.keys(mimeDB) as MimeType[]).forEach((type) => {
     const mime = mimeDB[type];
     const exts = mime.extensions;
 
@@ -88,14 +82,8 @@ function populateMaps(
       const extension = exts[i];
 
       if (types[extension]) {
-        const from = preference.indexOf(
-          // @ts-expect-error - whatever
-          mimeDB[types[extension] as MimeType].source,
-        );
-        const to = preference.indexOf(
-          // @ts-expect-error - whatever
-          mime.source,
-        );
+        const from = preference.indexOf(mimeDB[types[extension]].source);
+        const to = preference.indexOf(mime.source);
 
         if (
           types[extension] !== "application/octet-stream" &&

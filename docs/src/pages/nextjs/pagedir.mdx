@@ -5,8 +5,7 @@ import { Callout, Steps } from "nextra-theme-docs";
 <Callout type="warning">
   If you're using the `pages/` directory in Next still, you HAVE TO DISABLE THE `esmExternals` FLAG to prevent esm/cjs errors from our peer dep `react-dropzone`:
 
-```ts
-// next.config.js
+```js filename="next.config.js"
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -33,6 +32,7 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 
 ```ts copy
 /** server/uploadthing.ts */
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 
 const f = createUploadthing();
@@ -73,8 +73,7 @@ export type OurFileRouter = typeof ourFileRouter;
   `onUploadComplete`.
 </Callout>
 
-```ts copy
-/** pages/api/uploadthing.ts */
+```ts copy filename="pages/api/uploadthing.ts"
 import { createNextPageApiHandler } from "uploadthing/next-legacy";
 
 import { ourFileRouter } from "~/server/uploadthing";
