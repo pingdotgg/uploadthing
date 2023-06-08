@@ -2,10 +2,10 @@ import type { NextApiResponse } from "next";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import type {
-  AllowedFileType,
   AnyRuntime,
   ExpandedRouteConfig,
   FileRouter,
+  FileRouterInputKey,
   UploadedFile,
 } from "../types";
 import {
@@ -42,28 +42,26 @@ const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: Record<AllowedFileType, number> = {
-    image: 0,
-    video: 0,
-    audio: 0,
-    text: 0,
-    pdf: 0,
-    blob: 0,
-  };
+  const counts: { [k: string]: number } = {};
 
   files.forEach((file) => {
     const type = getTypeFromFileName(
       file,
-      Object.keys(routeConfig) as AllowedFileType[],
-    );
-    counts[type] += 1;
+      Object.keys(routeConfig) as FileRouterInputKey[],
+    ) as FileRouterInputKey;
+
+    if (!counts[type]) {
+      counts[type] = 1;
+    } else {
+      counts[type] += 1;
+    }
   });
 
   return Object.keys(counts).some((key) => {
-    const count = counts[key as AllowedFileType];
+    const count = counts[key as FileRouterInputKey];
     if (count === 0) return false;
 
-    const limit = routeConfig[key as AllowedFileType]?.maxFileCount;
+    const limit = routeConfig[key as FileRouterInputKey]?.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
       throw new Error("invalid config during file count");

@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
+import type { MimeType } from "./mime-types/db";
+
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
@@ -42,13 +44,17 @@ type RouteConfig = {
   maxFileCount: number;
 };
 
-export type ExpandedRouteConfig = Partial<Record<AllowedFileType, RouteConfig>>;
+export type FileRouterInputKey = AllowedFileType | MimeType;
 
-type PartialRouteConfig = Partial<
-  Record<AllowedFileType, Partial<RouteConfig>>
+export type ExpandedRouteConfig = Partial<
+  Record<FileRouterInputKey, RouteConfig>
 >;
 
-export type FileRouterInputConfig = AllowedFileType[] | PartialRouteConfig;
+type PartialRouteConfig = Partial<
+  Record<FileRouterInputKey, Partial<RouteConfig>>
+>;
+
+export type FileRouterInputConfig = FileRouterInputKey[] | PartialRouteConfig;
 
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<

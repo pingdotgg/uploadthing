@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-var-requires */
 
 /**
  * Vendored version of mime-types that can run on the edge due to not using path.extname
@@ -23,8 +22,9 @@
  * Module dependencies.
  * @private
  */
+import { mimeTypes as mimeDB } from "./db";
+import type { MimeType } from "./db";
 
-const db = require("./db.json");
 function extname(path: string) {
   const index = path.lastIndexOf(".");
   return index < 0 ? "" : path.substring(index);
@@ -65,14 +65,14 @@ export function lookup(path: string): string | false {
  */
 
 function populateMaps(
-  extensions: Record<string, unknown>,
-  types: Record<string, string>,
+  extensions: Record<MimeType, unknown>,
+  types: Record<string, MimeType>,
 ) {
   // source preference (least -> most)
   const preference = ["nginx", "apache", undefined, "iana"];
 
-  Object.keys(db).forEach(function forEachMimeType(type) {
-    const mime = db[type];
+  (Object.keys(mimeDB) as MimeType[]).forEach((type) => {
+    const mime = mimeDB[type];
     const exts = mime.extensions;
 
     if (!exts || !exts.length) {
@@ -87,7 +87,7 @@ function populateMaps(
       const extension = exts[i];
 
       if (types[extension]) {
-        const from = preference.indexOf(db[types[extension]].source);
+        const from = preference.indexOf(mimeDB[types[extension]].source);
         const to = preference.indexOf(mime.source);
 
         if (

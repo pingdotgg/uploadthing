@@ -35,7 +35,10 @@ const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
 
   const allowedTypes = Object.keys(config) as (keyof ExpandedRouteConfig)[];
 
-  const formattedTypes = allowedTypes.map((f) => (f === "blob" ? "file" : f));
+  const formattedTypes = allowedTypes.map((f) => {
+    if (f.includes("/")) return `${f.split("/")[1].toUpperCase()} file`;
+    return f === "blob" ? "file" : f;
+  });
 
   // Format multi-type uploader label as "Supports videos, images and files";
   if (formattedTypes.length > 1) {

@@ -1,19 +1,23 @@
-import type { FileData } from "./internal/types";
 import { lookup } from "./mime-types";
+
+import type { FileData } from "./internal/types";
+import type { MimeType } from "./mime-types/db";
+
 import type {
   AllowedFileType,
   ExpandedRouteConfig,
   FileRouterInputConfig,
+  FileRouterInputKey,
   FileSize,
 } from "./types";
 
 function isRouteArray(
   routeConfig: FileRouterInputConfig,
-): routeConfig is AllowedFileType[] {
+): routeConfig is FileRouterInputKey[] {
   return Array.isArray(routeConfig);
 }
 
-const getDefaultSizeForType = (fileType: AllowedFileType): FileSize => {
+const getDefaultSizeForType = (fileType: FileRouterInputKey): FileSize => {
   if (fileType === "image") return "4MB";
   if (fileType === "video") return "16MB";
   if (fileType === "audio") return "8MB";
@@ -49,7 +53,7 @@ export const fillInputRouteConfig = (
 
   // Backfill defaults onto config
   const newConfig: ExpandedRouteConfig = {};
-  (Object.keys(routeConfig) as AllowedFileType[]).forEach((key) => {
+  (Object.keys(routeConfig) as FileRouterInputKey[]).forEach((key) => {
     const value = routeConfig[key];
     if (!value) throw new Error("Invalid config during fill");
 
@@ -66,7 +70,7 @@ export const fillInputRouteConfig = (
 
 export const getTypeFromFileName = (
   fileName: string,
-  allowedTypes: AllowedFileType[],
+  allowedTypes: FileRouterInputKey[],
 ) => {
   const mimeType = lookup(fileName);
   if (!mimeType) {
@@ -75,7 +79,14 @@ export const getTypeFromFileName = (
     );
   }
 
-  // convert mime type to a one of our internal "allowed file types"
+  // If the user has specified a specific mime type, use that
+  if (allowedTypes.some((type) => type.includes("/"))) {
+    if (allowedTypes.includes(mimeType as MimeType)) {
+      return mimeType;
+    }
+  }
+
+  // Otherwise, we have a "magic" type eg. "image" or "video"
   const type = (
     mimeType.toLowerCase() === "application/pdf"
       ? "pdf"
