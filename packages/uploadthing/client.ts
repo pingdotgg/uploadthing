@@ -62,6 +62,8 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
       formData.append("Content-Type", file.type);
     } else if (presigned.fileType === "blob") {
       formData.append("Content-Type", "application/octet-stream");
+    } else if (presigned.fileType === "pdf") {
+      formData.append("Content-Type", "application/pdf");
     }
 
     // Dump all values from response (+ the file itself) into form for S3 upload

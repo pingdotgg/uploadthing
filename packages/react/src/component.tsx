@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
@@ -81,10 +81,18 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   ) => void;
   onUploadError?: (error: Error) => void;
 }) {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
       endpoint: props.endpoint as string,
-      onClientUploadComplete: props.onClientUploadComplete,
+      onClientUploadComplete: (res) => {
+        if(fileInputRef.current){
+          fileInputRef.current.value = ""
+        }
+        if (props.onClientUploadComplete) {
+          props.onClientUploadComplete(res);
+        }
+      },
       onUploadError: props.onUploadError,
     });
 
@@ -98,6 +106,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         <input
           className="ut-hidden"
           type="file"
+          ref={fileInputRef}
           multiple={multiple}
           accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
@@ -145,17 +154,22 @@ export const UploadDropzone = <
   ) => void;
   onUploadError?: (error: Error) => void;
 }) => {
-  const { startUpload, isUploading, permittedFileInfo } =
-    useUploadThing<string>({
-      endpoint: props.endpoint as string,
-      onClientUploadComplete: props.onClientUploadComplete,
-      onUploadError: props.onUploadError,
-    });
-
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     setFiles(acceptedFiles);
   }, []);
+
+  const { startUpload, isUploading, permittedFileInfo } =
+    useUploadThing<string>({
+      endpoint: props.endpoint as string,
+      onClientUploadComplete: (res) => {
+        setFiles([]);
+        if (props.onClientUploadComplete) {
+          props.onClientUploadComplete(res);
+        }
+      },
+      onUploadError: props.onUploadError,
+    });
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
