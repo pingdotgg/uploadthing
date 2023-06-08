@@ -75,6 +75,7 @@ export const getTypeFromFileName = (
     );
   }
 
+  // convert mime type to a one of our internal "allowed file types"
   const type = (
     mimeType.toLowerCase() === "application/pdf"
       ? "pdf"
