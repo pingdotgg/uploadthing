@@ -6,7 +6,7 @@
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.mjs"
     }
   },
   "files": [
@@ -28,13 +28,11 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.1.0",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/mime-types": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.42.0",
-    "next": "13.4.4",
     "zod": "^3.21.4",
     "tsup": "6.7.0",
     "typescript": "5.1.3"
