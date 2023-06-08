@@ -2,8 +2,8 @@ import type { NextApiResponse } from "next";
 
 import {
   generateUploadThingURL,
-  GET_DEFAULT_URL,
   getTypeFromFileName,
+  getUploadthingUrl,
   fillInputRouteConfig as parseAndExpandInputConfig,
   pollForFileData,
 } from "@uploadthing/shared";
@@ -225,7 +225,7 @@ export const buildRequestHandler = <
             routeConfig: parsedConfig,
 
             metadata,
-            callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
+            callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
             callbackSlug: slug,
           }),
           headers: {

@@ -33,6 +33,9 @@
     "typecheck": "tsc --noEmit",
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
+  "dependencies": {
+    "@uploadthing/shared": "4.1.0"
+  },
   "peerDependencies": {
     "react": "^17.0.2 || ^18.0.0",
     "react-dropzone": "^14.2.3",

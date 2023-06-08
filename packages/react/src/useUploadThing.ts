@@ -1,14 +1,15 @@
 // Don't destructure the import of `use` as it might not exist
 import React, { useRef, useState } from "react";
 
-import { DANGEROUS__uploadFiles, getUtUrl } from "uploadthing/client";
+import { getUploadthingUrl } from "@uploadthing/shared";
+import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
 
 const fetchEndpointData = async () => {
-  const url = getUtUrl();
+  const url = getUploadthingUrl();
   const res = await fetch(url);
   const data = (await res.json()) as any[];
   return data as EndpointMetadata;

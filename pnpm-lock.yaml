@@ -332,6 +332,10 @@ importers:
         version: 5.1.3
 
   packages/react:
+    dependencies:
+      '@uploadthing/shared':
+        specifier: 4.1.0
+        version: link:../shared
     devDependencies:
       '@tailwindcss/forms':
         specifier: ^0.5.3

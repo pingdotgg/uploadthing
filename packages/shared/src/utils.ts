@@ -159,7 +159,7 @@ export async function pollForFileData(
   });
 }
 
-export function GET_DEFAULT_URL() {
+export function getUploadthingUrl() {
   /**
    * Use VERCEL_URL as the default callbackUrl if it's set
    * they don't set the protocol, so we need to add it
