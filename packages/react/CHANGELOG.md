@@ -1,5 +1,20 @@
 # @uploadthing/react
 
+## 4.1.1
+
+### Patch Changes
+
+- [#141](https://github.com/pingdotgg/uploadthing/pull/141)
+  [`5458a09`](https://github.com/pingdotgg/uploadthing/commit/5458a095cfe32e9d2db7b10a7e98669e3e746bc2)
+  Thanks [@GentikSolm](https://github.com/GentikSolm)! -
+  fix(react-UploadDropzone): clear files onClientUploadComplete for dropzone and
+  upload button
+
+- [#134](https://github.com/pingdotgg/uploadthing/pull/134)
+  [`66d3eff`](https://github.com/pingdotgg/uploadthing/commit/66d3eff789338ff613cca359b2f2aecd8be9d720)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: use some
+  bundler hacks to support lower versions of React
+
 ## 4.1.0
 
 ### Patch Changes
