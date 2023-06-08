@@ -334,7 +334,7 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/shared':
-        specifier: 4.1.0
+        specifier: 4.1.1
         version: link:../shared
     devDependencies:
       '@tailwindcss/forms':
@@ -458,7 +458,7 @@ importers:
         specifier: 0.1.0
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: 4.1.0
+        specifier: 4.1.1
         version: link:../shared
     devDependencies:
       '@uploadthing/eslint-config':
