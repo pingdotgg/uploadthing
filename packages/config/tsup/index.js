@@ -4,6 +4,7 @@ const { execSync } = require("child_process");
 const config = {
   splitting: false,
   sourcemap: true,
+  dts: true,
   format: ["esm"],
   ignoreWatch: [
     "**/.turbo",
