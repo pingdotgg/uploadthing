@@ -35,7 +35,6 @@
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
     "build": "tsup",
-    "prebuild": "tsup",
     "clean": "git clean -xdf dist node_modules",
     "dev": "tsup --watch",
     "test": "vitest run",

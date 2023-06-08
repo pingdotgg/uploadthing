@@ -5,12 +5,12 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
     },
     "./db": {
-      "import": "./dist/db.mjs",
-      "types": "./dist/db.d.ts"
+      "types": "./dist/db.d.ts",
+      "import": "./dist/db.mjs"
     }
   },
   "files": [
@@ -26,7 +26,6 @@
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
     "build": "tsup",
-    "prebuild": "tsup",
     "clean": "git clean -xdf dist node_modules",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit"
