@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { pollForFileData } from "@uploadthing/shared";
 
-import { FileRouter } from "./src/internal/types";
+import type { FileRouter } from "./src/internal/types";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;

@@ -4,7 +4,7 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "../../internal/handler";
-import { FileRouter } from "../../internal/types";
+import type { FileRouter } from "../../internal/types";
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

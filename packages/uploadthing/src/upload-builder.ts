@@ -1,6 +1,6 @@
 import type { FileRouterInputConfig } from "@uploadthing/shared";
 
-import {
+import type {
   AnyRuntime,
   UnsetMarker,
   UploadBuilder,

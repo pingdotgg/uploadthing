@@ -1,5 +1,5 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import { NextRequest } from "next/server";
+import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextRequest } from "next/server";
 
 import type { FileRouterInputConfig, UploadedFile } from "@uploadthing/shared";
 

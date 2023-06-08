@@ -47,4 +47,4 @@ jobs:
         run: pnpm install
 
       - name: Build, lint, test, and typecheck
-        run: pnpm build lint test typecheck
+        run: pnpm turbo build lint test typecheck

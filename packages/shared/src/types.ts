@@ -1,6 +1,6 @@
-import { MimeType } from "@uploadthing/mime-types/db";
+import type { MimeType } from "@uploadthing/mime-types/db";
 
-import { AllowedFileType } from "./file-types";
+import type { AllowedFileType } from "./file-types";
 
 /** This matches the return type from the infra */
 export interface FileData {
