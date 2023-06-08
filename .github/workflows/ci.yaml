@@ -46,11 +46,5 @@ jobs:
       - name: Install deps (with cache)
         run: pnpm install
 
-      - name: Typecheck
-        run: pnpm typecheck
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Test
-        run: pnpm test
+      - name: Build, lint, test, and typecheck
+        run: pnpm build lint test typecheck
