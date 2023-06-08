@@ -7,8 +7,7 @@
     "clean": "git clean -xdf .next node_modules",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "lint": "next lint"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.29.12",
