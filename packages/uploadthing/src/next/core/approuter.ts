@@ -1,11 +1,10 @@
-import type { FileRouter } from "@uploadthing/shared";
-
 import { UPLOADTHING_VERSION } from "../../constants";
 import type { RouterWithConfig } from "../../internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "../../internal/handler";
+import { FileRouter } from "../../internal/types";
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

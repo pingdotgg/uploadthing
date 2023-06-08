@@ -2,13 +2,14 @@ import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
+import { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 import { useUploadThing } from "./useUploadThing";
 
@@ -81,13 +82,13 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   ) => void;
   onUploadError?: (error: Error) => void;
 }) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
       endpoint: props.endpoint as string,
       onClientUploadComplete: (res) => {
-        if(fileInputRef.current){
-          fileInputRef.current.value = ""
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
         }
         if (props.onClientUploadComplete) {
           props.onClientUploadComplete(res);

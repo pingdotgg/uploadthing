@@ -8,15 +8,14 @@ import {
   pollForFileData,
 } from "@uploadthing/shared";
 import type {
-  AnyRuntime,
   ExpandedRouteConfig,
   FileData,
-  FileRouter,
   FileRouterInputKey,
   UploadedFile,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { AnyRuntime, FileRouter } from "./types";
 
 const UNITS = ["B", "KB", "MB", "GB"] as const;
 type SizeUnit = (typeof UNITS)[number];

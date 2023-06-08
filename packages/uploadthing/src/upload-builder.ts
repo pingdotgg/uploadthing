@@ -1,11 +1,12 @@
-import type {
+import type { FileRouterInputConfig } from "@uploadthing/shared";
+
+import {
   AnyRuntime,
-  FileRouterInputConfig,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-} from "@uploadthing/shared";
+} from "./internal/types";
 
 function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   initDef: Partial<UploadBuilderDef<TRuntime>> = {},
