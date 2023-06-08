@@ -1,5 +1,12 @@
 import type { NextApiResponse } from "next";
 
+import {
+  generateUploadThingURL,
+  GET_DEFAULT_URL,
+  getTypeFromFileName,
+  fillInputRouteConfig as parseAndExpandInputConfig,
+  pollForFileData,
+} from "@uploadthing/shared";
 import type {
   AnyRuntime,
   ExpandedRouteConfig,
@@ -7,14 +14,7 @@ import type {
   FileRouter,
   FileRouterInputKey,
   UploadedFile,
-} from "@uploadthing/shared/types";
-import {
-  generateUploadThingURL,
-  GET_DEFAULT_URL,
-  getTypeFromFileName,
-  fillInputRouteConfig as parseAndExpandInputConfig,
-  pollForFileData,
-} from "@uploadthing/shared/utils";
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 

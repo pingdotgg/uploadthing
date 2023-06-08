@@ -4,17 +4,9 @@
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
-    "./file-types": {
-      "import": "./dist/mime-types.mjs",
-      "types": "./dist/mime-types.d.ts"
-    },
-    "./types": {
-      "import": "./dist/types.mjs",
-      "types": "./dist/types.d.ts"
-    },
-    "./utils": {
-      "import": "./dist/utils.mjs",
-      "types": "./dist/utils.d.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [

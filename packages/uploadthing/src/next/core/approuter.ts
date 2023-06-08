@@ -1,4 +1,4 @@
-import type { FileRouter } from "@uploadthing/shared/types";
+import type { FileRouter } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../../constants";
 import type { RouterWithConfig } from "../../internal/handler";

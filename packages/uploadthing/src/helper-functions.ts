@@ -1,4 +1,4 @@
-import { generateUploadThingURL } from "@uploadthing/shared/utils";
+import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 

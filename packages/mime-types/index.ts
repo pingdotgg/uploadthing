@@ -37,7 +37,7 @@ populateMaps(extensions, types);
  * @param {string} path
  * @return {boolean|string}
  */
-export function lookup(path: string): string | false {
+export function lookup(path: string) {
   if (!path || typeof path !== "string") {
     return false;
   }

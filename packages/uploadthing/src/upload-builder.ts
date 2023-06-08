@@ -5,7 +5,7 @@ import type {
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-} from "@uploadthing/shared/types";
+} from "@uploadthing/shared";
 
 function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   initDef: Partial<UploadBuilderDef<TRuntime>> = {},

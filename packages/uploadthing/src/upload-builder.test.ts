@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 import { expect, expectTypeOf, it } from "vitest";
 
-import type { FileRouter } from "@uploadthing/shared/types";
+import type { FileRouter } from "@uploadthing/shared";
 
 import { genUploader } from "../client";
 import { createBuilder } from "./upload-builder";

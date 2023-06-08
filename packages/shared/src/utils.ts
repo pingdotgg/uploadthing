@@ -1,5 +1,4 @@
 import { lookup } from "@uploadthing/mime-types";
-import type { MimeType } from "@uploadthing/mime-types/db";
 
 import type { AllowedFileType } from "./file-types";
 import type {
@@ -10,15 +9,13 @@ import type {
   FileSize,
 } from "./types";
 
-function isRouteArray(
+export function isRouteArray(
   routeConfig: FileRouterInputConfig,
 ): routeConfig is FileRouterInputKey[] {
   return Array.isArray(routeConfig);
 }
 
-export const getDefaultSizeForType = (
-  fileType: FileRouterInputKey,
-): FileSize => {
+export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
   if (fileType === "image") return "4MB";
   if (fileType === "video") return "16MB";
   if (fileType === "audio") return "8MB";
@@ -27,7 +24,7 @@ export const getDefaultSizeForType = (
   if (fileType === "text") return "64KB";
 
   return "4MB";
-};
+}
 
 /**
  * This function takes in the user's input and "upscales" it to a full config
@@ -37,24 +34,25 @@ export const getDefaultSizeForType = (
  * ["image"] => { image: { maxFileSize: "4MB", limit: 1 } }
  * ```
  */
-export const fillInputRouteConfig = (
+export function fillInputRouteConfig(
   routeConfig: FileRouterInputConfig,
-): ExpandedRouteConfig => {
+): ExpandedRouteConfig {
   // If array, apply defaults
   if (isRouteArray(routeConfig)) {
-    return routeConfig.reduce((acc, fileType) => {
+    return routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
       acc[fileType] = {
         // Apply defaults
         maxFileSize: getDefaultSizeForType(fileType),
         maxFileCount: 1,
       };
       return acc;
-    }, {} as ExpandedRouteConfig);
+    }, {});
   }
 
   // Backfill defaults onto config
   const newConfig: ExpandedRouteConfig = {};
-  (Object.keys(routeConfig) as FileRouterInputKey[]).forEach((key) => {
+  const inputKeys = Object.keys(routeConfig) as FileRouterInputKey[];
+  inputKeys.forEach((key) => {
     const value = routeConfig[key];
     if (!value) throw new Error("Invalid config during fill");
 
@@ -67,12 +65,12 @@ export const fillInputRouteConfig = (
   }, {} as ExpandedRouteConfig);
 
   return newConfig;
-};
+}
 
-export const getTypeFromFileName = (
+export function getTypeFromFileName(
   fileName: string,
   allowedTypes: FileRouterInputKey[],
-) => {
+) {
   const mimeType = lookup(fileName);
   if (!mimeType) {
     throw new Error(
@@ -82,7 +80,7 @@ export const getTypeFromFileName = (
 
   // If the user has specified a specific mime type, use that
   if (allowedTypes.some((type) => type.includes("/"))) {
-    if (allowedTypes.includes(mimeType as MimeType)) {
+    if (allowedTypes.includes(mimeType)) {
       return mimeType;
     }
   }
@@ -104,12 +102,12 @@ export const getTypeFromFileName = (
   }
 
   return type;
-};
+}
 
-export const generateUploadThingURL = (path: `/${string}`) => {
+export function generateUploadThingURL(path: `/${string}`) {
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
   return `${host}${path}`;
-};
+}
 
 export const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | null>,
@@ -143,10 +141,10 @@ export const withExponentialBackoff = async <T>(
   return null;
 };
 
-export const pollForFileData = async (
+export async function pollForFileData(
   fileKey: string,
   callback?: (json: any) => Promise<any>,
-) => {
+) {
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
   return withExponentialBackoff(async () => {
@@ -159,9 +157,9 @@ export const pollForFileData = async (
 
     await callback?.(json);
   });
-};
+}
 
-export const GET_DEFAULT_URL = () => {
+export function GET_DEFAULT_URL() {
   /**
    * Use VERCEL_URL as the default callbackUrl if it's set
    * they don't set the protocol, so we need to add it
@@ -178,4 +176,4 @@ export const GET_DEFAULT_URL = () => {
   if (uturl) return `${uturl}/api/uploadthing`;
 
   return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
-};
+}
