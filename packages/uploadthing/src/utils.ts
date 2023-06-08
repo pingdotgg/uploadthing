@@ -75,7 +75,12 @@ export const getTypeFromFileName = (
     );
   }
 
-  const type = mimeType.split("/")[0] as AllowedFileType;
+  // convert mime type to a one of our internal "allowed file types"
+  const type = (
+    mimeType.toLowerCase() === "application/pdf"
+      ? "pdf"
+      : mimeType.split("/")[0]
+  ) as AllowedFileType;
 
   if (!allowedTypes.includes(type)) {
     // Blob is a catch-all for any file type not explicitly supported
