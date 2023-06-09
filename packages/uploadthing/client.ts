@@ -134,7 +134,4 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
-export {
-  pollForFileData as DANGEROUS__pollForFileData,
-  GET_DEFAULT_URL as getUtUrl,
-} from "./src/utils";
+export { pollForFileData as DANGEROUS__pollForFileData } from "./src/utils";
