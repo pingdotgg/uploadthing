@@ -176,5 +176,8 @@ export const GET_DEFAULT_URL = () => {
   const uturl = process.env.UPLOADTHING_URL;
   if (uturl) return `${uturl}/api/uploadthing`;
 
+  // Client should use /api/uploadthing
+  if (typeof window !== "undefined") return "/api/uploadthing"; 
+
   return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
 };
