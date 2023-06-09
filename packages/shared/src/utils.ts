@@ -177,3 +177,26 @@ export function getUploadthingUrl() {
 
   return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
 }
+
+export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
+export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
+export const fileSizeToBytes = (input: string) => {
+  const regex = new RegExp(
+    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
+    "i",
+  );
+  const match = input.match(regex);
+
+  if (!match) {
+    return new Error("Invalid file size format");
+  }
+
+  const sizeValue = parseFloat(match[1]);
+  const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
+
+  if (!FILESIZE_UNITS.includes(sizeUnit)) {
+    throw new Error("Invalid file size unit");
+  }
+  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
+  return Math.floor(bytes);
+};

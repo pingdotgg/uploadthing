@@ -13,7 +13,7 @@ export const ALLOWED_FILE_TYPES = [
 
 export type AllowedFileType = (typeof ALLOWED_FILE_TYPES)[number];
 
-export function zodEnumFromObjKeys<K extends string>(
+function zodEnumFromObjKeys<K extends string>(
   obj: Record<K, any>,
 ): z.ZodEnum<[K, ...K[]]> {
   const [firstKey, ...otherKeys] = Object.keys(obj) as K[];

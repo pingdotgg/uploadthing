@@ -17,27 +17,6 @@ import type {
 import { UPLOADTHING_VERSION } from "../constants";
 import type { AnyRuntime, FileRouter } from "./types";
 
-const UNITS = ["B", "KB", "MB", "GB"] as const;
-type SizeUnit = (typeof UNITS)[number];
-
-export const fileSizeToBytes = (input: string) => {
-  const regex = new RegExp(`^(\\d+)(\\.\\d+)?\\s*(${UNITS.join("|")})$`, "i");
-  const match = input.match(regex);
-
-  if (!match) {
-    return new Error("Invalid file size format");
-  }
-
-  const sizeValue = parseFloat(match[1]);
-  const sizeUnit = match[3].toUpperCase() as SizeUnit;
-
-  if (!UNITS.includes(sizeUnit)) {
-    throw new Error("Invalid file size unit");
-  }
-  const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
-  return Math.floor(bytes);
-};
-
 const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig,
