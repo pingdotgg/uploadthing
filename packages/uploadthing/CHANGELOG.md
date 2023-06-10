@@ -1,5 +1,19 @@
 # uploadthing
 
+## 4.1.2
+
+### Patch Changes
+
+- [#145](https://github.com/pingdotgg/uploadthing/pull/145)
+  [`8e04d97`](https://github.com/pingdotgg/uploadthing/commit/8e04d9782b194feea74fd6abc2312bd105ae0f5d)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - [fix] Correct
+  logic for dev server running message
+
+- [#149](https://github.com/pingdotgg/uploadthing/pull/149)
+  [`c58b19e`](https://github.com/pingdotgg/uploadthing/commit/c58b19e0367598ec05d928e9526b8092f5a86c46)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - [fix] don't
+  prefetch component data on server
+
 ## 4.1.1
 
 ### Patch Changes
