@@ -187,7 +187,9 @@ export const UploadDropzone = <
       onUploadError: props.onUploadError,
     });
 
-  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config,
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
