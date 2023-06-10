@@ -2,7 +2,7 @@
   "name": "@uploadthing/solid",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "3.0.5",
+  "version": "3.0.6",
   "type": "module",
   "exports": {
     ".": {
@@ -93,12 +93,12 @@
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "5.1.3",
-    "uploadthing": "4.1.1"
+    "uploadthing": "4.1.2"
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
     "solidjs-dropzone": "^1.0.0",
-    "uploadthing": "4.1.1"
+    "uploadthing": "4.1.2"
   },
   "keywords": [
     "SolidJS",
