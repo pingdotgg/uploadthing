@@ -1,3 +1,4 @@
+import { get } from "http";
 import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
@@ -81,13 +82,13 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   ) => void;
   onUploadError?: (error: Error) => void;
 }) {
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<string>({
       endpoint: props.endpoint as string,
       onClientUploadComplete: (res) => {
-        if(fileInputRef.current){
-          fileInputRef.current.value = ""
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
         }
         if (props.onClientUploadComplete) {
           props.onClientUploadComplete(res);
@@ -100,9 +101,23 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
     permittedFileInfo?.config,
   );
 
+  const ready = fileTypes.length > 0;
+
+  const getUploadButtonText = (fileTypes: string[]) => {
+    if (!(fileTypes.length > 0)) return "Loading...";
+    return `Choose File${multiple ? `(s)` : ``}`;
+  };
+
   return (
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
-      <label className="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer">
+      <label
+        className={classNames(
+          " ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
+          !ready
+            ? "ut-opacity-50 ut-bg-gray-600 ut-cursor-not-allowed"
+            : "ut-bg-blue-600",
+        )}
+      >
         <input
           className="ut-hidden"
           type="file"
@@ -113,9 +128,10 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
             if (!e.target.files) return;
             void startUpload(Array.from(e.target.files));
           }}
+          disabled={!ready}
         />
         <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? <Spinner /> : `Choose File${multiple ? `(s)` : ``}`}
+          {isUploading ? <Spinner /> : getUploadButtonText(fileTypes)}
         </span>
       </label>
       <div className="ut-h-[1.25rem]">
@@ -171,12 +187,21 @@ export const UploadDropzone = <
       onUploadError: props.onUploadError,
     });
 
-  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config,
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
   });
+
+  const ready = fileTypes.length > 0;
+
+  const getUploadButtonText = (fileTypes: string[]) => {
+    if (!(fileTypes.length > 0)) return "Loading...";
+    return `Choose File${multiple ? `(s)` : ``}`;
+  };
 
   return (
     <div
@@ -201,12 +226,20 @@ export const UploadDropzone = <
         <div className="ut-mt-4 ut-flex ut-text-sm ut-leading-6 ut-text-gray-600">
           <label
             htmlFor="file-upload"
-            className="ut-relative ut-cursor-pointer ut-font-semibold ut-text-blue-600 focus-within:ut-outline-none focus-within:ut-ring-2 focus-within:ut-ring-blue-600 focus-within:ut-ring-offset-2 hover:ut-text-blue-500"
+            className={classNames(
+              "ut-relative ut-cursor-pointer ut-font-semibold  focus-within:ut-outline-none focus-within:ut-ring-2 focus-within:ut-ring-blue-600 focus-within:ut-ring-offset-2 hover:ut-text-blue-500",
+              ready ? "ut-text-blue-600" : "ut-text-gray-500",
+            )}
           >
-            {`Choose files`}
-            <input className="ut-sr-only" {...getInputProps()} />
+            <span className="ut-w-64 ut-flex ut-items-center ut-justify-center">
+              {ready ? `Choose files or drag and drop` : `Loading...`}
+            </span>
+            <input
+              className="ut-sr-only"
+              {...getInputProps()}
+              disabled={!ready}
+            />
           </label>
-          <p className="ut-pl-1">{`or drag and drop`}</p>
         </div>
         <div className="ut-h-[1.25rem]">
           <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
