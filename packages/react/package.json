@@ -25,7 +25,7 @@
     }
   },
   "scripts": {
-    "lint": "eslint *.ts* --max-warnings 0",
+    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
     "clean": "git clean -xdf dist node_modules",
     "build": "tsup",
     "test": "vitest run",

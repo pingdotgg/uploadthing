@@ -4,15 +4,6 @@ import { createUploadthing } from "uploadthing/server";
 
 import { generateReactHelpers } from "./useUploadThing";
 
-const badReqMock = {
-  headers: {
-    get(key: string) {
-      if (key === "header1") return "woohoo";
-      return null;
-    },
-  },
-} as unknown as Request;
-
 it("typeerrors for invalid input", () => {
   const f = createUploadthing();
 
