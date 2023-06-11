@@ -2,6 +2,7 @@
 import React from "react";
 
 type AnyFunction = (...args: any[]) => any;
+const noop = () => void 0;
 
 /**
  * Suppress the warning when using useLayoutEffect with SSR. (https://reactjs.org/link/uselayouteffect-ssr)
@@ -11,9 +12,7 @@ const useInsertionEffect =
   typeof window !== "undefined"
     ? // useInsertionEffect is available in React 18+
       React.useInsertionEffect || React.useLayoutEffect
-    : () => {
-        /** void */
-      };
+    : noop;
 
 /**
  * Similar to useCallback, with a few subtle differences:
