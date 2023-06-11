@@ -280,16 +280,18 @@ const Spinner = () => {
   );
 };
 
-export function generateSolidComponents<TRouter extends FileRouter>() {
+export function generateSolidComponents<TRouter extends FileRouter>(
+  url?: string,
+) {
   return {
     UploadButton: (props: ComponentProps<typeof UploadButton<TRouter>>) => {
-      return <UploadButton {...props} />;
+      return <UploadButton {...props} url={props.url ?? url} />;
     },
     UploadDropzone: (props: ComponentProps<typeof UploadDropzone<TRouter>>) => {
-      return <UploadDropzone {...props} />;
+      return <UploadDropzone {...props} url={props.url ?? url} />;
     },
     Uploader: (props: ComponentProps<typeof Uploader<TRouter>>) => {
-      return <Uploader {...props} />;
+      return <Uploader {...props} url={props.url ?? url} />;
     },
   };
 }
