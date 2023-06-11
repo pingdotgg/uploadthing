@@ -1,10 +1,10 @@
 ---
-"@uploadthing/tsup-config": minor
-"uploadthing": minor
-"@uploadthing/mime-types": minor
-"@uploadthing/shared": minor
-"@uploadthing/react": minor
-"@uploadthing/solid": minor
+"@uploadthing/tsup-config": patch
+"uploadthing": patch
+"@uploadthing/mime-types": patch
+"@uploadthing/shared": patch
+"@uploadthing/react": patch
+"@uploadthing/solid": patch
 ---
 
 internal refactoring to use a shared package for shared types and utilities as

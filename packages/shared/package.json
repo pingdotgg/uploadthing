@@ -38,7 +38,7 @@
   },
   "peerDependencies": {
     "zod": "^3.21.4",
-    "@uploadthing/mime-types": "0.1.0"
+    "@uploadthing/mime-types": "^0.1.0"
   },
   "peerDependenciesMeta": {
     "@uploadthing/mime-types": {
