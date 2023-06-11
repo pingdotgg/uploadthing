@@ -2,7 +2,7 @@
   "name": "@uploadthing/solid",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "3.0.6",
+  "version": "4.1.2",
   "type": "module",
   "exports": {
     ".": {
@@ -84,7 +84,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/shared": "^4.1.2"
+    "@uploadthing/shared": "4.1.2"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",

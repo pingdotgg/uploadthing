@@ -201,7 +201,7 @@ importers:
         specifier: ^0.8.2
         version: 0.8.2(solid-js@1.7.6)
       '@uploadthing/solid':
-        specifier: 3.0.6
+        specifier: 4.1.2
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -419,7 +419,7 @@ importers:
   packages/solid:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^4.1.2
+        specifier: 4.1.2
         version: link:../shared
     devDependencies:
       '@tailwindcss/forms':
