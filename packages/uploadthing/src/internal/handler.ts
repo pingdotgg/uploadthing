@@ -71,7 +71,7 @@ const fileCountLimitHit = (
   });
 };
 
-if (process.env.NODE_ENV === "development" && typeof window === "undefined") {
+if (process.env.NODE_ENV === "development") {
   console.log("[UT] UploadThing dev server is now running!");
 }
 
