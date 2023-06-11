@@ -15,7 +15,7 @@ import type {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { AnyRuntime, FileRouter } from "./types";
+import type { AnyRuntime, FileRouter, Json } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -155,6 +155,7 @@ export const buildRequestHandler = <
       file: UploadedFile;
       files: unknown;
       metadata: Record<string, unknown>;
+      input?: Json;
     };
 
     if (uploadthingHook && uploadthingHook === "callback") {
@@ -176,9 +177,9 @@ export const buildRequestHandler = <
     }
 
     try {
-      const { files } = reqBody as { files: string[] };
+      const { files, input } = reqBody as { files: string[]; input: Json };
       // @ts-expect-error TODO: Fix this
-      const metadata = await uploadable._def.middleware(req, res);
+      const metadata = await uploadable._def.middleware({ req, res, input });
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))

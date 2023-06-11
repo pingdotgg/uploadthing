@@ -11,20 +11,25 @@ const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
 };
 
-export const DANGEROUS__uploadFiles = async <T extends string>(
+export const DANGEROUS__uploadFiles = async <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   files: File[],
-  endpoint: T,
+  endpoint: TEndpoint,
+  input?: TRouter[TEndpoint]["_def"]["_input"],
   config?: {
     url?: string;
   },
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
-    createRequestPermsUrl({ url: config?.url, slug: endpoint }),
+    createRequestPermsUrl({ url: config?.url, slug: String(endpoint) }),
     {
       method: "POST",
       body: JSON.stringify({
         files: files.map((f) => f.name),
+        input,
       }),
     },
   ).then((res) => {
@@ -100,13 +105,15 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
   >;
 };
 
-export type UploadFileType<T extends string> = typeof DANGEROUS__uploadFiles<T>;
+export type UploadFileType<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>;
 
 export const genUploader = <
   TRouter extends FileRouter,
->(): typeof DANGEROUS__uploadFiles<
-  keyof TRouter extends string ? keyof TRouter : string
-> => {
+  TEndpoint extends keyof TRouter,
+>(): typeof DANGEROUS__uploadFiles<TRouter, TEndpoint> => {
   return DANGEROUS__uploadFiles;
 };
 

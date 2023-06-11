@@ -75,27 +75,33 @@ const allowedContentTextLabelGenerator = (
  *   onUploadError={(err) => console.log(err)}
  * />
  */
-export function UploadButton<TRouter extends void | FileRouter = void>(props: {
-  endpoint: EndpointHelper<TRouter>;
+export function UploadButton<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter = EndpointHelper<TRouter>,
+>(props: {
+  endpoint: TEndpoint;
+  input: TRouter[TEndpoint]["_def"]["_input"];
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { startUpload, isUploading, permittedFileInfo } =
-    useUploadThing<string>({
-      endpoint: props.endpoint as string,
-      onClientUploadComplete: (res) => {
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        if (props.onClientUploadComplete) {
-          props.onClientUploadComplete(res);
-        }
-      },
-      onUploadError: props.onUploadError,
-    });
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing<
+    TRouter,
+    TEndpoint
+  >({
+    endpoint: props.endpoint,
+    onClientUploadComplete: (res) => {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      if (props.onClientUploadComplete) {
+        props.onClientUploadComplete(res);
+      }
+    },
+    onUploadError: props.onUploadError,
+  });
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
     permittedFileInfo?.config,
@@ -126,7 +132,7 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
-            void startUpload(Array.from(e.target.files));
+            void startUpload(Array.from(e.target.files), props.input);
           }}
           disabled={!ready}
         />
@@ -162,9 +168,11 @@ const Spinner = () => {
 };
 
 export const UploadDropzone = <
-  TRouter extends void | FileRouter = void,
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter = EndpointHelper<TRouter>,
 >(props: {
-  endpoint: EndpointHelper<TRouter>;
+  endpoint: TEndpoint;
+  input: TRouter[TEndpoint]["_def"]["_input"];
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
@@ -175,17 +183,19 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
   }, []);
 
-  const { startUpload, isUploading, permittedFileInfo } =
-    useUploadThing<string>({
-      endpoint: props.endpoint as string,
-      onClientUploadComplete: (res) => {
-        setFiles([]);
-        if (props.onClientUploadComplete) {
-          props.onClientUploadComplete(res);
-        }
-      },
-      onUploadError: props.onUploadError,
-    });
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing<
+    TRouter,
+    TEndpoint
+  >({
+    endpoint: props.endpoint,
+    onClientUploadComplete: (res) => {
+      setFiles([]);
+      if (props.onClientUploadComplete) {
+        props.onClientUploadComplete(res);
+      }
+    },
+    onUploadError: props.onUploadError,
+  });
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
@@ -248,7 +258,7 @@ export const UploadDropzone = <
                 e.stopPropagation();
                 if (!files) return;
 
-                void startUpload(files);
+                void startUpload(files, props.input);
               }}
             >
               <span className="ut-px-3 ut-py-2 ut-text-white">
@@ -266,8 +276,12 @@ export const UploadDropzone = <
   );
 };
 
-export const Uploader = <TRouter extends void | FileRouter = void>(props: {
-  endpoint: EndpointHelper<TRouter>;
+export const Uploader = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter = EndpointHelper<TRouter>,
+>(props: {
+  endpoint: TEndpoint;
+  input: TRouter[TEndpoint]["_def"]["_input"];
   onClientUploadComplete?: () => void;
   url?: string;
 }) => {
@@ -277,12 +291,14 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
         <span className="text-center text-4xl font-bold">
           {`Upload a file using a button:`}
         </span>
+        {/* @ts-expect-error - whatever */}
         <UploadButton<TRouter> {...props} />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
         <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
+        {/* @ts-expect-error - whatever */}
         <UploadDropzone<TRouter> {...props} />
       </div>
     </>
