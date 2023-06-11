@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import type { OnDropHandler } from "solidjs-dropzone";
 import { createDropzone } from "solidjs-dropzone";
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
   classNames,
   generateClientDropzoneAccept,
@@ -13,8 +14,55 @@ import type { FileRouter } from "uploadthing/server";
 
 import { useUploadThing } from "./useUploadThing";
 
-export type EndpointHelper<TRouter extends void | FileRouter> =
-  void extends TRouter ? "YOU FORGOT TO PASS THE GENERIC" : keyof TRouter;
+type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
+  ? "YOU FORGOT TO PASS THE GENERIC"
+  : keyof TRouter;
+
+const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
+  const fileTypes = config ? Object.keys(config) : [];
+
+  const maxFileCount = config
+    ? Object.values(config).map((v) => v.maxFileCount)
+    : [];
+
+  return { fileTypes, multiple: maxFileCount.some((v) => v && v > 1) };
+};
+const capitalizeStart = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
+  if (!config) return "";
+
+  const allowedTypes = Object.keys(config) as (keyof ExpandedRouteConfig)[];
+
+  const formattedTypes = allowedTypes.map((f) => (f === "blob" ? "file" : f));
+
+  // Format multi-type uploader label as "Supports videos, images and files";
+  if (formattedTypes.length > 1) {
+    const lastType = formattedTypes.pop();
+    return `${formattedTypes.join("s, ")} and ${lastType}s`;
+  }
+
+  // Single type uploader label
+  const key = allowedTypes[0];
+  const formattedKey = formattedTypes[0];
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const { maxFileSize, maxFileCount } = config[key]!;
+
+  if (maxFileCount && maxFileCount > 1) {
+    return `${formattedKey}s up to ${maxFileSize}, max ${maxFileCount}`;
+  } else {
+    return `${formattedKey} (${maxFileSize})`;
+  }
+};
+
+const allowedContentTextLabelGenerator = (
+  config?: ExpandedRouteConfig,
+): string => {
+  return capitalizeStart(INTERNAL_doFormatting(config));
+};
 
 /**
  * @example
@@ -42,23 +90,24 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       url: props.url,
     });
 
+  const fileInfo = () =>
+    generatePermittedFileTypes(uploadedThing.permittedFileInfo()?.config);
+
   return (
     <div class="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
       <label class="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer">
         <input
           class="ut-hidden"
           type="file"
-          multiple={props.multiple}
-          accept={generateMimeTypes(
-            uploadedThing.permittedFileInfo()?.fileTypes ?? [],
-          )?.join(", ")}
+          multiple={fileInfo().multiple}
+          accept={generateMimeTypes(fileInfo().fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
             void uploadedThing.startUpload(Array.from(e.target.files));
           }}
         />
         <span class="ut-px-3 ut-py-2 ut-text-white">
-          {uploadedThing.isUploading() ? (
+          {uploadedThing?.isUploading() ? (
             <Spinner />
           ) : (
             `Choose File${props.multiple ? `(s)` : ``}`
@@ -66,13 +115,13 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         </span>
       </label>
       <div class="ut-h-[1.25rem]">
-        {uploadedThing.permittedFileInfo()?.fileTypes && (
+        {fileInfo().fileTypes ? (
           <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
-            {`${uploadedThing.permittedFileInfo()?.fileTypes.join(", ")}`}{" "}
-            {uploadedThing.permittedFileInfo()?.maxSize &&
-              `up to ${uploadedThing.permittedFileInfo()?.maxSize}`}
+            {allowedContentTextLabelGenerator(
+              uploadedThing.permittedFileInfo()?.config,
+            )}
           </p>
-        )}
+        ) : null}
       </div>
     </div>
   );
@@ -102,14 +151,16 @@ export const UploadDropzone = <
   const onDrop: OnDropHandler = (acceptedFiles) => {
     setFiles(acceptedFiles);
   };
+  const uploadInfo = () =>
+    generatePermittedFileTypes(uploadedThing.permittedFileInfo()?.config);
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
-    accept: uploadedThing.permittedFileInfo()?.fileTypes
-      ? generateClientDropzoneAccept(
-          uploadedThing.permittedFileInfo()?.fileTypes ?? [],
-        )
-      : undefined,
+    get accept() {
+      return uploadInfo().fileTypes
+        ? generateClientDropzoneAccept(uploadInfo()?.fileTypes ?? [])
+        : undefined;
+    },
     useFsAccessApi: true,
   });
 
@@ -131,7 +182,7 @@ export const UploadDropzone = <
             fill-rule="evenodd"
             d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
             clip-rule="evenodd"
-          />
+          ></path>
         </svg>
         <div class="ut-mt-4 ut-flex ut-text-sm ut-leading-6 ut-text-gray-600">
           <label
@@ -144,21 +195,20 @@ export const UploadDropzone = <
           <p class="ut-pl-1">{`or drag and drop`}</p>
         </div>
         <div class="ut-h-[1.25rem]">
-          {uploadedThing.permittedFileInfo()?.fileTypes && (
-            <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
-              {`${uploadedThing.permittedFileInfo()?.fileTypes.join(", ")}`}{" "}
-              {uploadedThing.permittedFileInfo()?.maxSize &&
-                `up to ${uploadedThing.permittedFileInfo()?.maxSize}`}
-            </p>
-          )}
+          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+            {allowedContentTextLabelGenerator(
+              uploadedThing.permittedFileInfo()?.config,
+            )}
+          </p>
         </div>
-        {files().length > 0 && (
+        {files.length > 0 && (
           <div class="ut-mt-4 ut-flex ut-items-center ut-justify-center">
             <button
               class="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (!files()) return;
 
                 void uploadedThing.startUpload(files());
               }}
@@ -202,11 +252,7 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
         <span class="text-center text-4xl font-bold">
           {`Upload a file using a button:`}
         </span>
-        <UploadButton<TRouter>
-          {...props}
-          multiple={props.buttonMultiple}
-          uploadedThing={uploadedThing}
-        />
+        <UploadButton<TRouter> {...props} uploadedThing={uploadedThing} />
       </div>
       <div class="flex flex-col items-center justify-center gap-4">
         <span class="text-center text-4xl font-bold">

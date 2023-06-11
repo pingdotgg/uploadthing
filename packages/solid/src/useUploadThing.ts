@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 
@@ -7,8 +8,7 @@ import { createFetch } from "./utils/createFetch";
 
 type EndpointMetadata = {
   slug: string;
-  maxSize: string;
-  fileTypes: string[];
+  config: ExpandedRouteConfig;
 }[];
 
 const createEndpointMetadata = (endpoint: string, url?: string) => {
