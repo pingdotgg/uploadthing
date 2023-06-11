@@ -1,4 +1,3 @@
-import { get } from "http";
 import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
@@ -187,9 +186,7 @@ export const UploadDropzone = <
       onUploadError: props.onUploadError,
     });
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
-  );
+  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -197,11 +194,6 @@ export const UploadDropzone = <
   });
 
   const ready = fileTypes.length > 0;
-
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (!(fileTypes.length > 0)) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
 
   return (
     <div
@@ -295,3 +287,21 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
     </>
   );
 };
+
+export function generateReactComponents<TRouter extends FileRouter>() {
+  return {
+    UploadButton: (
+      props: React.ComponentProps<typeof UploadButton<TRouter>>,
+    ) => {
+      return <UploadButton {...props} />;
+    },
+    UploadDropzone: (
+      props: React.ComponentProps<typeof UploadDropzone<TRouter>>,
+    ) => {
+      return <UploadDropzone {...props} />;
+    },
+    Uploader: (props: React.ComponentProps<typeof Uploader<TRouter>>) => {
+      return <Uploader {...props} />;
+    },
+  };
+}
