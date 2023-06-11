@@ -42,8 +42,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/shared": "^4.1.2",
-    "@uploadthing/mime-types": "^0.1.0"
+    "@uploadthing/mime-types": "^0.1.0",
+    "@uploadthing/shared": "^4.1.2"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.1.0",
