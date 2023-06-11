@@ -1,7 +1,9 @@
 import type { FileRouterInputConfig } from "@uploadthing/shared";
 
 import type {
+  AnyParams,
   AnyRuntime,
+  Parser,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
@@ -9,18 +11,21 @@ import type {
 } from "./internal/types";
 
 function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
-  initDef: Partial<UploadBuilderDef<TRuntime>> = {},
+  initDef: Partial<UploadBuilderDef<any>> = {},
 ): UploadBuilder<{
+  _input: UnsetMarker;
   _metadata: UnsetMarker;
   _runtime: TRuntime;
 }> {
-  const _def: UploadBuilderDef<TRuntime> = {
+  const _def: UploadBuilderDef<AnyParams> = {
     // Default router config
     routerConfig: {
       image: {
         maxFileSize: "4MB",
       },
     },
+
+    input: {} as Parser,
 
     middleware: () => ({}),
 
@@ -29,17 +34,23 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   };
 
   return {
+    input(userParser) {
+      return internalCreateBuilder({
+        ..._def,
+        input: userParser,
+      });
+    },
     middleware(userMiddleware) {
       return internalCreateBuilder({
         ..._def,
         middleware: userMiddleware,
-      }) as UploadBuilder<{ _metadata: any; _runtime: TRuntime }>;
+      }) as UploadBuilder<any>;
     },
     onUploadComplete(userUploadComplete) {
       return {
         _def,
         resolver: userUploadComplete,
-      } as Uploader<{ _metadata: any; _runtime: TRuntime }>;
+      } as Uploader<any>;
     },
   };
 }
@@ -47,6 +58,7 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
 type InOut<TRuntime extends AnyRuntime = "web"> = (
   input: FileRouterInputConfig,
 ) => UploadBuilder<{
+  _input: UnsetMarker;
   _metadata: UnsetMarker;
   _runtime: TRuntime;
 }>;
