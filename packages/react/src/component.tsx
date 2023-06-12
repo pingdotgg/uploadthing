@@ -9,7 +9,11 @@ import {
   generateMimeTypes,
 } from "uploadthing/client";
 import type { UploadFileType } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+import type {
+  ErrorMessage,
+  FileRouter,
+  inferEndpointInput,
+} from "uploadthing/server";
 
 import { useUploadThing } from "./useUploadThing";
 
@@ -87,21 +91,27 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
  * />
  */
 export function UploadButton<TRouter extends FileRouter>(
-  props: UploadthingComponentProps<TRouter>,
+  props: FileRouter extends TRouter
+    ? ErrorMessage<"You forgot to pass the generic">
+    : UploadthingComponentProps<TRouter>,
 ) {
+  // Cast back to UploadthingComponentProps<TRouter> to get the correct type
+  // since the ErrorMessage messes it up otherwise
+  const $props = props as UploadthingComponentProps<TRouter>;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<TRouter>({
-      endpoint: props.endpoint,
+      endpoint: $props.endpoint,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
-        if (props.onClientUploadComplete) {
-          props.onClientUploadComplete(res);
+        if ($props.onClientUploadComplete) {
+          $props.onClientUploadComplete(res);
         }
       },
-      onUploadError: props.onUploadError,
+      onUploadError: $props.onUploadError,
     });
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
@@ -133,7 +143,7 @@ export function UploadButton<TRouter extends FileRouter>(
           accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
-            const input = "input" in props ? props.input : undefined;
+            const input = "input" in $props ? $props.input : undefined;
             void startUpload(Array.from(e.target.files), input);
           }}
           disabled={!ready}
@@ -153,25 +163,15 @@ export function UploadButton<TRouter extends FileRouter>(
   );
 }
 
-const Spinner = () => {
-  return (
-    <svg
-      className="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 576 512"
-    >
-      <path
-        fill="currentColor"
-        d="M256 32C256 14.33 270.3 0 288 0C429.4 0 544 114.6 544 256C544 302.6 531.5 346.4 509.7 384C500.9 399.3 481.3 404.6 465.1 395.7C450.7 386.9 445.5 367.3 454.3 351.1C470.6 323.8 480 291 480 255.1C480 149.1 394 63.1 288 63.1C270.3 63.1 256 49.67 256 31.1V32z"
-      />
-    </svg>
-  );
-};
+export function UploadDropzone<TRouter extends FileRouter>(
+  props: FileRouter extends TRouter
+    ? ErrorMessage<"You forgot to pass the generic">
+    : UploadthingComponentProps<TRouter>,
+) {
+  // Cast back to UploadthingComponentProps<TRouter> to get the correct type
+  // since the ErrorMessage messes it up otherwise
+  const $props = props as UploadthingComponentProps<TRouter>;
 
-export const UploadDropzone = <TRouter extends FileRouter>(
-  props: UploadthingComponentProps<TRouter>,
-) => {
   const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
     setFiles(acceptedFiles);
@@ -179,14 +179,14 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 
   const { startUpload, isUploading, permittedFileInfo } =
     useUploadThing<TRouter>({
-      endpoint: props.endpoint,
+      endpoint: $props.endpoint,
       onClientUploadComplete: (res) => {
         setFiles([]);
-        if (props.onClientUploadComplete) {
-          props.onClientUploadComplete(res);
+        if ($props.onClientUploadComplete) {
+          $props.onClientUploadComplete(res);
         }
       },
-      onUploadError: props.onUploadError,
+      onUploadError: $props.onUploadError,
     });
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
@@ -250,7 +250,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
                 e.stopPropagation();
                 if (!files) return;
 
-                const input = "input" in props ? props.input : undefined;
+                const input = "input" in $props ? $props.input : undefined;
                 void startUpload(files, input);
               }}
             >
@@ -267,4 +267,20 @@ export const UploadDropzone = <TRouter extends FileRouter>(
       </div>
     </div>
   );
-};
+}
+
+function Spinner() {
+  return (
+    <svg
+      className="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 576 512"
+    >
+      <path
+        fill="currentColor"
+        d="M256 32C256 14.33 270.3 0 288 0C429.4 0 544 114.6 544 256C544 302.6 531.5 346.4 509.7 384C500.9 399.3 481.3 404.6 465.1 395.7C450.7 386.9 445.5 367.3 454.3 351.1C470.6 323.8 480 291 480 255.1C480 149.1 394 63.1 288 63.1C270.3 63.1 256 49.67 256 31.1V32z"
+      />
+    </svg>
+  );
+}
