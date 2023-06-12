@@ -138,28 +138,36 @@ export const { GET, POST } = createServerHandler({
 });
 ```
 
+### Creating The UploadThing Client
+
+```ts copy filename="src/utils/uploadthing.ts"
+import { generateComponents } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+const url = `http://localhost:${process.env.PORT ?? 3000}`;
+
+export const { UploadButton, UploadDropzone, Uploader } =
+  generateComponents<OurFileRouter>(url);
+```
+
 ### Use the FileRouter in your app
 
 The `@uploadthing/solid` package includes an "Uploader" component that you can
 simply drop into your app, and start uploading files immediately.
 
-```tsx copy
+```tsx copy filename="src/routes/index.tsx"
 import type { VoidComponent } from "solid-js";
 
-import { Uploader } from "@uploadthing/solid";
-
+import { Uploader } from "~/utils/uploadthing";
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/solid/styles.css";
-
-import type { OurFileRouter } from "~/server/uploadthing";
 
 const Home: VoidComponent = () => {
   return (
     <main class="flex min-h-screen flex-col items-center justify-center gap-16 p-24">
-      <Uploader<OurFileRouter>
+      <Uploader
         endpoint="withoutMdwr"
-        // needed when server side rendering
-        url="http://localhost:9898"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
