@@ -67,6 +67,17 @@ export const { GET, POST } = createNextRouteHandler({
 });
 ```
 
+### Creating The UploadThing Components
+
+```ts copy filename="src/utils/uploadthing.ts"
+import { generateComponents } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const { UploadButton, UploadDropzone, Uploader } =
+  generateComponents<OurFileRouter>();
+```
+
 ### Use the FileRouter in your app
 
 The `@uploadthing/react` package includes an "UploadButton" component that you
@@ -78,14 +89,12 @@ can simply drop into your app, and start uploading files immediately.
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
 import "@uploadthing/react/styles.css";
 
-import { UploadButton } from "@uploadthing/react";
-
-import { OurFileRouter } from "./api/uploadthing/core";
+import { UploadButton } from "~/utils/uploadthing";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UploadButton<OurFileRouter>
+      <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response
