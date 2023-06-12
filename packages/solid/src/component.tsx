@@ -280,9 +280,7 @@ const Spinner = () => {
   );
 };
 
-export function generateSolidComponents<TRouter extends FileRouter>(
-  url?: string,
-) {
+export function generateComponents<TRouter extends FileRouter>(url?: string) {
   return {
     UploadButton: (props: ComponentProps<typeof UploadButton<TRouter>>) => {
       return <UploadButton {...props} url={props.url ?? url} />;

@@ -288,7 +288,7 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
   );
 };
 
-export function generateReactComponents<TRouter extends FileRouter>() {
+export function generateComponents<TRouter extends FileRouter>() {
   return {
     UploadButton: (
       props: React.ComponentProps<typeof UploadButton<TRouter>>,
