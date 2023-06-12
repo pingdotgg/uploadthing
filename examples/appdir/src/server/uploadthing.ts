@@ -24,6 +24,7 @@ export const uploadRouter = {
     .input(
       z.object({
         foo: z.string(),
+        now: z.date(),
       }),
     )
     .middleware((opts) => {

@@ -85,8 +85,8 @@ export interface UploadBuilder<TParams extends AnyParams> {
 }
 
 export type UploadBuilderDef<TParams extends AnyParams> = {
-  input: Parser;
   routerConfig: FileRouterInputConfig;
+  inputParser: Parser;
   middleware: MiddlewareFn<{}, TParams>;
 };
 

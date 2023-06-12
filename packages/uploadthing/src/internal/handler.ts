@@ -177,9 +177,27 @@ export const buildRequestHandler = <
     }
 
     try {
-      const { files, input } = reqBody as { files: string[]; input: Json };
-      // @ts-expect-error TODO: Fix this
-      const metadata = await uploadable._def.middleware({ req, res, input });
+      const { files, input: userInput } = reqBody as {
+        files: string[];
+        input: Json;
+      };
+
+      // validate the input
+      let parsedInput: Json = {};
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        parsedInput = uploadable._def.inputParser.parse(userInput);
+      } catch (error) {
+        console.error(error);
+        return { status: 400, mesage: "Invalid input" };
+      }
+
+      const metadata = await uploadable._def.middleware({
+        // @ts-expect-error TODO: Fix this
+        req,
+        res,
+        input: parsedInput,
+      });
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))

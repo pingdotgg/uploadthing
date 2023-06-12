@@ -11,19 +11,20 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
-      <div>
+      <div className="flex flex-col">
         <label htmlFor="foo">Send some data along with the files</label>
         <input
           id="foo"
+          className="rounded-md border-2 border-gray-400 p-2"
           value={userInput}
           onChange={(e) => setUserInput(e.currentTarget.value)}
         />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex gap-4">
-          <UploadButton<OurFileRouter>
+          <UploadButton<OurFileRouter, "withInput">
             endpoint="withInput"
-            input={{ foo: userInput }}
+            input={{ foo: 56 }}
             onClientUploadComplete={(res) => {
               console.log("Files: ", res);
               alert("Upload Completed");
@@ -33,7 +34,7 @@ export default function Home() {
             }}
           />
 
-          <UploadButton<OurFileRouter>
+          <UploadButton<OurFileRouter, "videoAndImage">
             endpoint="videoAndImage"
             onClientUploadComplete={(res) => {
               console.log("Files: ", res);
@@ -49,7 +50,7 @@ export default function Home() {
         <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
-        <UploadDropzone<OurFileRouter>
+        <UploadDropzone<OurFileRouter, "withoutMdwr">
           endpoint="withoutMdwr"
           onClientUploadComplete={(res) => {
             // Do something with the response

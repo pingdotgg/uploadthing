@@ -25,7 +25,7 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
       },
     },
 
-    input: {} as Parser,
+    inputParser: {} as Parser,
 
     middleware: () => ({}),
 
@@ -37,7 +37,7 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
     input(userParser) {
       return internalCreateBuilder({
         ..._def,
-        input: userParser,
+        inputParser: userParser,
       });
     },
     middleware(userMiddleware) {
