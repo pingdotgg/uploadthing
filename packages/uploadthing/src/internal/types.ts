@@ -100,9 +100,7 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   Uploader<TParams>
 >;
 
-export type inferEndpointInput<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = TRouter[TEndpoint]["_def"]["_input"] extends UnsetMarker
-  ? undefined
-  : TRouter[TEndpoint]["_def"]["_input"];
+export type inferEndpointInput<TUploader extends Uploader<any>> =
+  TUploader["_def"]["_input"] extends UnsetMarker
+    ? undefined
+    : TUploader["_def"]["_input"];

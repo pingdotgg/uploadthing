@@ -14,7 +14,7 @@ const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
-    input?: inferEndpointInput<TRouter, TEndpoint>;
+    input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
   };

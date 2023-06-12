@@ -20,14 +20,20 @@ const useEndpointMetadata = (endpoint: string) => {
 export type UseUploadthingProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
-    // @internal - used to get the input type in startUpload
-    $input?: inferEndpointInput<TRouter, TEndpoint>;
 
     onClientUploadComplete?: (
       res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
     ) => void;
     onUploadError?: (e: Error) => void;
-  };
+  } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
+    ? {
+        // @internal - used to get the input type in startUpload
+        $input?: never;
+      }
+    : {
+        // @internal - used to get the input type in startUpload
+        $input?: inferEndpointInput<TRouter[TEndpoint]>;
+      });
 }[keyof TRouter];
 
 export const useUploadThing = <TRouter extends FileRouter>(
@@ -37,25 +43,29 @@ export const useUploadThing = <TRouter extends FileRouter>(
 
   const permittedFileInfo = useEndpointMetadata(opts.endpoint as string);
 
-  const startUpload = useEvent(
-    async (files: File[], input: typeof opts.$input) => {
-      setUploading(true);
-      try {
-        const res = await DANGEROUS__uploadFiles({
-          files,
-          endpoint: opts.endpoint as string,
-          input,
-        });
-        setUploading(false);
-        opts.onClientUploadComplete?.(res);
-        return res;
-      } catch (e) {
-        setUploading(false);
-        opts.onUploadError?.(e as Error);
-        return;
-      }
-    },
-  );
+  type Params = never extends (typeof opts)["$input"]
+    ? [files: File[], input: (typeof opts)["$input"]]
+    : [files: File[]];
+  const startUpload = useEvent(async (...args: Params) => {
+    const files = args[0];
+    const input = args[1];
+
+    setUploading(true);
+    try {
+      const res = await DANGEROUS__uploadFiles({
+        files,
+        endpoint: opts.endpoint as string,
+        input,
+      });
+      setUploading(false);
+      opts.onClientUploadComplete?.(res);
+      return res;
+    } catch (e) {
+      setUploading(false);
+      opts.onUploadError?.(e as Error);
+      return;
+    }
+  });
   return {
     startUpload,
     isUploading,
