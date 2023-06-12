@@ -6,12 +6,12 @@
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
     },
     "./hooks": {
-      "import": "./dist/hooks.mjs",
-      "types": "./dist/hooks.d.ts"
+      "types": "./dist/hooks.d.ts",
+      "import": "./dist/hooks.mjs"
     }
   },
   "files": [
@@ -25,13 +25,16 @@
     }
   },
   "scripts": {
-    "lint": "eslint *.ts* --max-warnings 0",
+    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
     "clean": "git clean -xdf dist node_modules",
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
+  },
+  "dependencies": {
+    "@uploadthing/shared": "^4.1.2"
   },
   "peerDependencies": {
     "react": "^17.0.2 || ^18.0.0",

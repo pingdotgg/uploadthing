@@ -14,7 +14,7 @@ const config = {
     "**/.git",
   ],
   async onSuccess() {
-    // emit sourcemap to enable jump to definition
+    // emit dts and sourcemaps to enable jump to definition
     execSync("pnpm tsc --project tsconfig.sourcemap.json");
   },
 };

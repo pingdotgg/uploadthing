@@ -24,7 +24,7 @@
   "dependencies": {
     "@solidjs/meta": "^0.28.5",
     "@solidjs/router": "^0.8.2",
-    "@uploadthing/solid": "3.0.6",
+    "@uploadthing/solid": "4.1.2",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
     "solid-js": "^1.7.6",

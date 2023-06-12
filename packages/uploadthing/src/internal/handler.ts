@@ -1,42 +1,21 @@
 import type { NextApiResponse } from "next";
 
-import { UPLOADTHING_VERSION } from "../constants";
-import type {
-  AnyRuntime,
-  ExpandedRouteConfig,
-  FileRouter,
-  FileRouterInputKey,
-  UploadedFile,
-} from "../types";
 import {
   generateUploadThingURL,
-  GET_DEFAULT_URL,
   getTypeFromFileName,
+  getUploadthingUrl,
   fillInputRouteConfig as parseAndExpandInputConfig,
   pollForFileData,
-} from "../utils";
-import type { FileData } from "./types";
+} from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  FileData,
+  FileRouterInputKey,
+  UploadedFile,
+} from "@uploadthing/shared";
 
-const UNITS = ["B", "KB", "MB", "GB"] as const;
-type SizeUnit = (typeof UNITS)[number];
-
-export const fileSizeToBytes = (input: string) => {
-  const regex = new RegExp(`^(\\d+)(\\.\\d+)?\\s*(${UNITS.join("|")})$`, "i");
-  const match = input.match(regex);
-
-  if (!match) {
-    return new Error("Invalid file size format");
-  }
-
-  const sizeValue = parseFloat(match[1]);
-  const sizeUnit = match[3].toUpperCase() as SizeUnit;
-
-  if (!UNITS.includes(sizeUnit)) {
-    throw new Error("Invalid file size unit");
-  }
-  const bytes = sizeValue * Math.pow(1024, UNITS.indexOf(sizeUnit));
-  return Math.floor(bytes);
-};
+import { UPLOADTHING_VERSION } from "../constants";
+import type { AnyRuntime, FileRouter } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -224,7 +203,7 @@ export const buildRequestHandler = <
             routeConfig: parsedConfig,
 
             metadata,
-            callbackUrl: config?.callbackUrl ?? GET_DEFAULT_URL(),
+            callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
             callbackSlug: slug,
           }),
           headers: {

@@ -1,15 +1,15 @@
-import { get } from "http";
 import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 import { useUploadThing } from "./useUploadThing";
 
@@ -187,9 +187,7 @@ export const UploadDropzone = <
       onUploadError: props.onUploadError,
     });
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
-  );
+  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -197,11 +195,6 @@ export const UploadDropzone = <
   });
 
   const ready = fileTypes.length > 0;
-
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (!(fileTypes.length > 0)) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
 
   return (
     <div

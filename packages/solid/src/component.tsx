@@ -3,13 +3,14 @@ import { createSignal } from "solid-js";
 import type { OnDropHandler } from "solidjs-dropzone";
 import { createDropzone } from "solidjs-dropzone";
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
 import type { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 import { useUploadThing } from "./useUploadThing";
 

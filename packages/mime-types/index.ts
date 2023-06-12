@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 /**
  * Vendored version of mime-types that can run on the edge due to not using path.extname
  *
@@ -23,15 +18,15 @@
  * @private
  */
 import { mimeTypes as mimeDB } from "./db";
-import type { MimeType } from "./db";
+import type { FileExtension, MimeType } from "./db";
 
 function extname(path: string) {
   const index = path.lastIndexOf(".");
   return index < 0 ? "" : path.substring(index);
 }
 
-export const extensions = Object.create(null);
-export const types = Object.create(null);
+export const extensions = {} as Record<MimeType, FileExtension[]>;
+export const types = {} as Record<FileExtension, MimeType>;
 
 // Populate the extensions/types maps
 populateMaps(extensions, types);
@@ -42,7 +37,7 @@ populateMaps(extensions, types);
  * @param {string} path
  * @return {boolean|string}
  */
-export function lookup(path: string): string | false {
+export function lookup(path: string) {
   if (!path || typeof path !== "string") {
     return false;
   }
@@ -50,7 +45,7 @@ export function lookup(path: string): string | false {
   // get the extension ("ext" or ".ext" or full path)
   const extension = extname("x." + path)
     .toLowerCase()
-    .substring(1);
+    .substring(1) as FileExtension;
 
   if (!extension) {
     return false;
@@ -65,8 +60,8 @@ export function lookup(path: string): string | false {
  */
 
 function populateMaps(
-  extensions: Record<MimeType, unknown>,
-  types: Record<string, MimeType>,
+  extensions: Record<MimeType, FileExtension[]>,
+  types: Record<FileExtension, MimeType>,
 ) {
   // source preference (least -> most)
   const preference = ["nginx", "apache", undefined, "iana"];
@@ -93,7 +88,8 @@ function populateMaps(
         if (
           types[extension] !== "application/octet-stream" &&
           (from > to ||
-            (from === to && types[extension].substr(0, 12) === "application/"))
+            (from === to &&
+              types[extension].substring(0, 12) === "application/"))
         ) {
           // skip the remapping
           continue;

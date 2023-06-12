@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 
 env:
   DATABASE_URL: "https://fake.com"
@@ -42,11 +46,8 @@ jobs:
       - name: Install deps (with cache)
         run: pnpm install
 
-      - name: Typecheck
-        run: pnpm typecheck
+      - name: Build, lint, test, and typecheck
+        run: pnpm turbo build lint test typecheck
 
-      - name: Lint
-        run: pnpm lint
-
-      - name: Test
-        run: pnpm test
+      - name: Check workspaces
+        run: pnpm manypkg check

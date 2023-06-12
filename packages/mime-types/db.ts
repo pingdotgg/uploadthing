@@ -4602,17 +4602,20 @@ const mimeTypesInternal = {
   },
 } as const;
 
+export type FileExtension =
+  (typeof mimeTypesInternal)[keyof typeof mimeTypesInternal]["extensions"][number];
+
 export type MimeType = keyof typeof mimeTypesInternal;
 
 type TypedMimeTypes = Record<
   MimeType,
   {
     source: string;
-    extensions: readonly string[];
+    extensions: FileExtension[];
     compressible: boolean | null;
   }
 >;
 
-export const mimeTypes: TypedMimeTypes = mimeTypesInternal;
+export const mimeTypes = mimeTypesInternal as unknown as TypedMimeTypes;
 
 export type MimeValue = (typeof mimeTypes)[MimeType];

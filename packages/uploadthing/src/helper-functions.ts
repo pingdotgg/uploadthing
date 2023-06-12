@@ -1,5 +1,6 @@
+import { generateUploadThingURL } from "@uploadthing/shared";
+
 import { UPLOADTHING_VERSION } from "./constants";
-import { generateUploadThingURL } from "./utils";
 
 const UT_SECRET = process.env.UPLOADTHING_SECRET;
 

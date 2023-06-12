@@ -1,7 +1,8 @@
 import { createSignal } from "solid-js";
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
 

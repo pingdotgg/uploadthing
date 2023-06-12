@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { FileRouter } from "./server";
-import { pollForFileData } from "./src/utils";
+import { pollForFileData } from "@uploadthing/shared";
+
+import type { FileRouter } from "./src/internal/types";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
@@ -133,5 +134,3 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
-
-export { pollForFileData as DANGEROUS__pollForFileData } from "./src/utils";

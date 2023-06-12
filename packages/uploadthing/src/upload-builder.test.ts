@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 import { expect, expectTypeOf, it } from "vitest";
 
 import { genUploader } from "../client";
-import type { FileRouter } from "./types";
+import type { FileRouter } from "./internal/types";
 import { createBuilder } from "./upload-builder";
 
 const badReqMock = {

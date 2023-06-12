@@ -1,7 +1,8 @@
 import { useState } from "react";
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { ExpandedRouteConfig, FileRouter } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";

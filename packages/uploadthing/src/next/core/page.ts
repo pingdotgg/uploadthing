@@ -6,7 +6,7 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "../../internal/handler";
-import type { FileRouter } from "../../types";
+import type { FileRouter } from "../../internal/types";
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

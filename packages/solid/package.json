@@ -2,7 +2,7 @@
   "name": "@uploadthing/solid",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "3.0.6",
+  "version": "4.1.2",
   "type": "module",
   "exports": {
     ".": {
@@ -82,6 +82,9 @@
     "build": "rm -rf dist && tsup --config ./tsup.config.js",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uploadthing/shared": "^4.1.2"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.3",
