@@ -185,8 +185,7 @@ export const buildRequestHandler = <
       // validate the input
       let parsedInput: Json = {};
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        parsedInput = uploadable._def.inputParser.parse(userInput);
+        parsedInput = await uploadable._def.inputParser.parse(userInput);
       } catch (error) {
         console.error(error);
         return { status: 400, mesage: "Invalid input" };

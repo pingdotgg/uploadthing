@@ -33,7 +33,7 @@ export type ParserZodEsque<TInput, TParsedInput extends Json> = {
 };
 
 // In case we add support for more parsers later
-export type Parser = ParserZodEsque<any, any>;
+export type JsonParser = ParserZodEsque<Json, Json>;
 
 // Package
 export type AnyRuntime = "app" | "pages" | "web";
@@ -62,7 +62,7 @@ type ResolverFn<TParams extends AnyParams> = (
 export type ErrorMessage<TError extends string> = TError;
 
 export interface UploadBuilder<TParams extends AnyParams> {
-  input: <TParser extends Parser>(
+  input: <TParser extends JsonParser>(
     parser: TParams["_input"] extends UnsetMarker
       ? TParser
       : ErrorMessage<"input is already set">,
@@ -86,7 +86,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
-  inputParser: Parser;
+  inputParser: JsonParser;
   middleware: MiddlewareFn<{}, TParams>;
 };
 

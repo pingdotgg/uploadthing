@@ -5,8 +5,8 @@ import type { NextRequest } from "next/server";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-// import { genUploader } from "../client";
-import type { UnsetMarker } from "./internal/types";
+import { genUploader } from "../client";
+import type { FileRouter, UnsetMarker } from "./internal/types";
 import { createBuilder } from "./upload-builder";
 
 const badReqMock = {
@@ -50,6 +50,20 @@ it("typeerrors for invalid input", () => {
     .input(z.object({ foo: z.string() }))
     // @ts-expect-error - cannot set multiple inputs
     .input(z.object({ bar: z.string() }))
+    .middleware(() => {
+      return {};
+    });
+
+  f(["image"])
+    // @ts-expect-error - date is not allowed
+    .input(z.object({ foo: z.date() }))
+    .middleware(() => {
+      return {};
+    });
+
+  f(["image"])
+    // @ts-expect-error - set is not allowed
+    .input(z.object({ foo: z.set() }))
     .middleware(() => {
       return {};
     });
@@ -166,18 +180,18 @@ it("smoke", async () => {
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
 });
 
-// it("genuploader", async () => {
-//   const f = createBuilder();
-//   const uploadable = f(["image", "video"]).onUploadComplete(() => {});
+it("genuploader", async () => {
+  const f = createBuilder();
+  const uploadable = f(["image", "video"]).onUploadComplete(() => {});
 
-//   const router = { uploadable } satisfies FileRouter;
+  const router = { uploadable } satisfies FileRouter;
 
-//   const uploader = genUploader<typeof router>();
+  const uploader = genUploader<typeof router>();
 
-//   try {
-//     // @ts-expect-error - Argument of type '"random"' is not assignable to parameter of type '"uploadable"'
-//     await uploader([], "random");
-//   } catch (e) {
-//     // expected this to error since we're not in a real env so it can't fetch
-//   }
-// });
+  try {
+    // @ts-expect-error - Argument of type '"random"' is not assignable to parameter of type '"uploadable"'
+    await uploader([], "random");
+  } catch (e) {
+    // expected this to error since we're not in a real env so it can't fetch
+  }
+});

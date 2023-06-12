@@ -3,7 +3,7 @@ import type { FileRouterInputConfig } from "@uploadthing/shared";
 import type {
   AnyParams,
   AnyRuntime,
-  Parser,
+  JsonParser,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
@@ -25,7 +25,7 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
       },
     },
 
-    inputParser: {} as Parser,
+    inputParser: {} as JsonParser,
 
     middleware: () => ({}),
 
@@ -38,7 +38,7 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
       return internalCreateBuilder({
         ..._def,
         inputParser: userParser,
-      });
+      }) as UploadBuilder<any>;
     },
     middleware(userMiddleware) {
       return internalCreateBuilder({
