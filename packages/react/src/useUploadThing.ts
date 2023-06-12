@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter } from "uploadthing/server";
+import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -17,29 +17,35 @@ const useEndpointMetadata = (endpoint: string) => {
   return data?.find((x) => x.slug === endpoint);
 };
 
-export const useUploadThing = <
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->(opts: {
-  endpoint: TEndpoint;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
-  onUploadError?: (e: Error) => void;
-}) => {
+export type UseUploadthingProps<TRouter extends FileRouter> = {
+  [TEndpoint in keyof TRouter]: {
+    endpoint: TEndpoint;
+    // @internal - used to get the input type in startUpload
+    $input?: inferEndpointInput<TRouter, TEndpoint>;
+
+    onClientUploadComplete?: (
+      res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
+    ) => void;
+    onUploadError?: (e: Error) => void;
+  };
+}[keyof TRouter];
+
+export const useUploadThing = <TRouter extends FileRouter>(
+  opts: UseUploadthingProps<TRouter>,
+) => {
   const [isUploading, setUploading] = useState(false);
 
   const permittedFileInfo = useEndpointMetadata(opts.endpoint as string);
 
   const startUpload = useEvent(
-    async (files: File[], input: TRouter[TEndpoint]["_def"]["_input"]) => {
+    async (files: File[], input: typeof opts.$input) => {
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles(
+        const res = await DANGEROUS__uploadFiles({
           files,
-          opts.endpoint as string,
+          endpoint: opts.endpoint as string,
           input,
-        );
+        });
         setUploading(false);
         opts.onClientUploadComplete?.(res);
         return res;
@@ -57,13 +63,10 @@ export const useUploadThing = <
   } as const;
 };
 
-export const generateReactHelpers = <
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->() => {
+export const generateReactHelpers = <TRouter extends FileRouter>() => {
   return {
-    useUploadThing: useUploadThing<TRouter, TEndpoint>,
-    uploadFiles: DANGEROUS__uploadFiles<TRouter, TEndpoint>,
+    useUploadThing: useUploadThing<TRouter>,
+    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
   } as const;
 };
 

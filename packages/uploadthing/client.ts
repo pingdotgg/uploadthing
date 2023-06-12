@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { pollForFileData } from "@uploadthing/shared";
 
-import type { FileRouter } from "./src/internal/types";
+import type { FileRouter, inferEndpointInput } from "./src/internal/types";
 
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
@@ -11,25 +11,32 @@ const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
 };
 
-export const DANGEROUS__uploadFiles = async <
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->(
-  files: File[],
-  endpoint: TEndpoint,
-  input?: TRouter[TEndpoint]["_def"]["_input"],
+type UploadFilesOptions<TRouter extends FileRouter> = {
+  [TEndpoint in keyof TRouter]: {
+    endpoint: TEndpoint;
+    input?: inferEndpointInput<TRouter, TEndpoint>;
+
+    files: File[];
+  };
+}[keyof TRouter];
+
+export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
+  opts: UploadFilesOptions<TRouter>,
   config?: {
     url?: string;
   },
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
-    createRequestPermsUrl({ url: config?.url, slug: String(endpoint) }),
+    createRequestPermsUrl({
+      url: config?.url,
+      slug: String(opts.endpoint),
+    }),
     {
       method: "POST",
       body: JSON.stringify({
-        files: files.map((f) => f.name),
-        input,
+        files: opts.files.map((f) => f.name),
+        input: opts.input,
       }),
     },
   ).then((res) => {
@@ -50,7 +57,7 @@ export const DANGEROUS__uploadFiles = async <
     throw "No url received. How did you get here?";
 
   const fileUploadPromises = s3ConnectionRes.map(async (presigned: any) => {
-    const file = files.find((f) => f.name === presigned.name);
+    const file = opts.files.find((f) => f.name === presigned.name);
 
     if (!file) {
       console.error("No file found for presigned URL", presigned);
@@ -105,15 +112,12 @@ export const DANGEROUS__uploadFiles = async <
   >;
 };
 
-export type UploadFileType<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>;
+export type UploadFileType<TRouter extends FileRouter> =
+  typeof DANGEROUS__uploadFiles<TRouter>;
 
 export const genUploader = <
   TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->(): typeof DANGEROUS__uploadFiles<TRouter, TEndpoint> => {
+>(): typeof DANGEROUS__uploadFiles<TRouter> => {
   return DANGEROUS__uploadFiles;
 };
 

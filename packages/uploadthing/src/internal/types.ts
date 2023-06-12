@@ -59,7 +59,7 @@ type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>,
 ) => MaybePromise<void>;
 
-type ErrorMessage<TError extends string> = TError;
+export type ErrorMessage<TError extends string> = TError;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends Parser>(
@@ -99,3 +99,10 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   string,
   Uploader<TParams>
 >;
+
+export type inferEndpointInput<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = TRouter[TEndpoint]["_def"]["_input"] extends UnsetMarker
+  ? undefined
+  : TRouter[TEndpoint]["_def"]["_input"];

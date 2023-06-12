@@ -7,7 +7,7 @@ import { UploadButton, UploadDropzone } from "@uploadthing/react";
 import type { OurFileRouter } from "~/server/uploadthing";
 
 export default function Home() {
-  const [userInput, setUserInput] = useState<string>("");
+  const [userInput, setUserInput] = useState("");
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
@@ -22,9 +22,9 @@ export default function Home() {
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex gap-4">
-          <UploadButton<OurFileRouter, "withInput">
+          <UploadButton<OurFileRouter>
             endpoint="withInput"
-            input={{ foo: 56 }}
+            input={{ foo: "woohoo" }}
             onClientUploadComplete={(res) => {
               console.log("Files: ", res);
               alert("Upload Completed");
@@ -34,7 +34,7 @@ export default function Home() {
             }}
           />
 
-          <UploadButton<OurFileRouter, "videoAndImage">
+          <UploadButton<OurFileRouter>
             endpoint="videoAndImage"
             onClientUploadComplete={(res) => {
               console.log("Files: ", res);
@@ -50,7 +50,7 @@ export default function Home() {
         <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
-        <UploadDropzone<OurFileRouter, "withoutMdwr">
+        <UploadDropzone<OurFileRouter>
           endpoint="withoutMdwr"
           onClientUploadComplete={(res) => {
             // Do something with the response

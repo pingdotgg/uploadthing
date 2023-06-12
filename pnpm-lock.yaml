@@ -388,6 +388,9 @@ importers:
       wait-on:
         specifier: ^7.0.1
         version: 7.0.1
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
 
   packages/shared:
     devDependencies:
