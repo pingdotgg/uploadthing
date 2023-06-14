@@ -38,7 +38,8 @@ const router = {
 };
 
 const { useUploadThing } = generateReactHelpers<typeof router>();
-const files = [new File([""], "foo.txt")];
+// `new File` doesn't work in test env without custom config. This will do for now.
+const files = [new Blob([""], { type: "image/png" }) as File];
 
 it("typeerrors for invalid input", () => {
   ignoreErrors(() => {
