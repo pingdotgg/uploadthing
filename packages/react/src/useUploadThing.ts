@@ -17,38 +17,26 @@ const useEndpointMetadata = (endpoint: string) => {
   return data?.find((x) => x.slug === endpoint);
 };
 
-export type UseUploadthingProps<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
+export type UseUploadthingProps = {
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (e: Error) => void;
-} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-  ? {
-      // @internal - used to get the input type in startUpload
-      $input?: never;
-    }
-  : {
-      // @internal - used to get the input type in startUpload
-      $input?: inferEndpointInput<TRouter[TEndpoint]>;
-    });
+};
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, typeof endpoint>,
+    opts?: UseUploadthingProps,
   ) => {
     const [isUploading, setUploading] = useState(false);
 
     const permittedFileInfo = useEndpointMetadata(endpoint as string);
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
-
     type FuncInput = undefined extends InferredInput
-      ? [File[]]
-      : [File[], InferredInput];
+      ? [files: File[], input?: undefined]
+      : [files: File[], input: InferredInput];
 
     const startUpload = useEvent(async (...args: FuncInput) => {
       const [files, input] = args;

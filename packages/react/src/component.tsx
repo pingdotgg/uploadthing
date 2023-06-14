@@ -15,7 +15,7 @@ import type {
   inferEndpointInput,
 } from "uploadthing/server";
 
-import { useUploadThing } from "./useUploadThing";
+import { INTERNAL_uploadthingHookGen } from "./useUploadThing";
 
 const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
   const fileTypes = config ? Object.keys(config) : [];
@@ -99,10 +99,12 @@ export function UploadButton<TRouter extends FileRouter>(
   // since the ErrorMessage messes it up otherwise
   const $props = props as UploadthingComponentProps<TRouter>;
 
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { startUpload, isUploading, permittedFileInfo } =
-    useUploadThing<TRouter>({
-      endpoint: $props.endpoint,
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+    $props.endpoint,
+    {
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -112,7 +114,8 @@ export function UploadButton<TRouter extends FileRouter>(
         }
       },
       onUploadError: $props.onUploadError,
-    });
+    },
+  );
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
     permittedFileInfo?.config,
@@ -144,7 +147,8 @@ export function UploadButton<TRouter extends FileRouter>(
           onChange={(e) => {
             if (!e.target.files) return;
             const input = "input" in $props ? $props.input : undefined;
-            void startUpload(Array.from(e.target.files), input);
+            const files = Array.from(e.target.files);
+            void startUpload(files, input);
           }}
           disabled={!ready}
         />
@@ -177,9 +181,10 @@ export function UploadDropzone<TRouter extends FileRouter>(
     setFiles(acceptedFiles);
   }, []);
 
-  const { startUpload, isUploading, permittedFileInfo } =
-    useUploadThing<TRouter>({
-      endpoint: $props.endpoint,
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+    $props.endpoint,
+    {
       onClientUploadComplete: (res) => {
         setFiles([]);
         if ($props.onClientUploadComplete) {
@@ -187,7 +192,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
         }
       },
       onUploadError: $props.onUploadError,
-    });
+    },
+  );
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 

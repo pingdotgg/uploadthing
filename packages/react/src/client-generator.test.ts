@@ -72,10 +72,12 @@ it("infers the input correctly", () => {
   ignoreErrors(() => {
     const { startUpload } = useUploadThing("exampleRoute");
 
-    // @ts-expect-error - array should only be 1 element long
+    // we must allow undefined here to avoid weird types in other places
+    // but it should be optional
     type _Input = Parameters<typeof startUpload>[1];
-
+    expectTypeOf<_Input>().toEqualTypeOf<undefined>();
     void startUpload(files);
+    void startUpload(files, undefined);
   });
 
   ignoreErrors(() => {
