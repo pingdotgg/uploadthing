@@ -23,7 +23,8 @@ module.exports = nextConfig;
 <Steps>
 ### Creating your first FileRoute
 
-All files uploaded to uploadthing are associated with a FileRoute. Think of a FileRoute similar to an endpoint, it has:
+All files uploaded to uploadthing are associated with a FileRoute. Think of a
+FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
 - Max file size
@@ -32,7 +33,8 @@ All files uploaded to uploadthing are associated with a FileRoute. Think of a Fi
 
 ```ts copy
 /** server/uploadthing.ts */
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from "next";
+
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 
 const f = createUploadthing();
@@ -44,7 +46,7 @@ export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({ image: { maxFileSize: "4MB" } })
     // Set permissions and file types for this FileRoute
-    .middleware(async (req, res) => {
+    .middleware(async ({ req, res }) => {
       // This code runs on your server before upload
       const user = await auth(req, res);
 
@@ -87,7 +89,8 @@ export default handler;
 
 ### Use the FileRouter in your app
 
-The `@uploadthing/react` package includes an "UploadButton" component that you can simply drop into your app, and start uploading files immediately.
+The `@uploadthing/react` package includes an "UploadButton" component that you
+can simply drop into your app, and start uploading files immediately.
 
 ```tsx copy
 import { UploadButton } from "@uploadthing/react";
