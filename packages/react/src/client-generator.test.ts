@@ -24,14 +24,14 @@ const router = {
 
   withFooInput: f(["image"])
     .input(z.object({ foo: z.string() }))
-    .middleware(() => ({ foo: "bar" }))
+    .middleware((opts) => ({ number: opts.input.foo.length }))
     .onUploadComplete(({ metadata }) => {
       console.log(metadata);
     }),
 
   withBarInput: f(["image"])
     .input(z.object({ bar: z.number() }))
-    .middleware(() => ({ foo: "bar" }))
+    .middleware((opts) => ({ square: opts.input.bar * opts.input.bar }))
     .onUploadComplete(({ metadata }) => {
       console.log(metadata);
     }),
