@@ -48,14 +48,14 @@ it("typeerrors for invalid input", () => {
 
   ignoreErrors(() => {
     // Type should be good here since this is the route name
-    const { startUpload } = useUploadThing({ endpoint: "exampleRoute" });
+    const { startUpload } = useUploadThing("exampleRoute");
 
     // @ts-expect-error - there is no input on this endpoint
     void startUpload(files, { foo: "bar" });
   });
 
   ignoreErrors(() => {
-    const { startUpload } = useUploadThing({ endpoint: "withFooInput" });
+    const { startUpload } = useUploadThing("withFooInput");
 
     // @ts-expect-error - input should be required
     void startUpload(files);
@@ -70,21 +70,21 @@ it("typeerrors for invalid input", () => {
 
 it("infers the input correctly", () => {
   ignoreErrors(() => {
-    const { startUpload } = useUploadThing({ endpoint: "exampleRoute" });
+    const { startUpload } = useUploadThing("exampleRoute");
     type Input = Parameters<typeof startUpload>[1];
     expectTypeOf<Input>().toEqualTypeOf<undefined>();
     void startUpload(files);
   });
 
   ignoreErrors(() => {
-    const { startUpload } = useUploadThing({ endpoint: "withFooInput" });
+    const { startUpload } = useUploadThing("withFooInput");
     type Input = Parameters<typeof startUpload>[1];
     expectTypeOf<Input>().toEqualTypeOf<{ foo: string }>();
     void startUpload(files, { foo: "bar" });
   });
 
   ignoreErrors(() => {
-    const { startUpload } = useUploadThing({ endpoint: "withBarInput" });
+    const { startUpload } = useUploadThing("withBarInput");
     type Input = Parameters<typeof startUpload>[1];
     expectTypeOf<Input>().toEqualTypeOf<{ bar: number }>();
     void startUpload(files, { bar: 1 });
