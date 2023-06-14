@@ -98,7 +98,6 @@ export function UploadButton<TRouter extends FileRouter>(
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
   const $props = props as UploadthingComponentProps<TRouter>;
-
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);

@@ -9,14 +9,14 @@ import {
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
-import type { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter } from "uploadthing/server";
+import type { UploadFileType } from "uploadthing/client";
+import type {
+  ErrorMessage,
+  FileRouter,
+  inferEndpointInput,
+} from "uploadthing/server";
 
-import { useUploadThing } from "./useUploadThing";
-
-type EndpointHelper<TRouter extends void | FileRouter> = void extends TRouter
-  ? "YOU FORGOT TO PASS THE GENERIC"
-  : keyof TRouter;
+import { INTERNAL_uploadthingHookGen } from "./useUploadThing";
 
 const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
   const fileTypes = config ? Object.keys(config) : [];
@@ -64,6 +64,26 @@ const allowedContentTextLabelGenerator = (
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
+export type UploadthingComponentProps<TRouter extends FileRouter> = {
+  [TEndpoint in keyof TRouter]: {
+    endpoint: TEndpoint;
+
+    onClientUploadComplete?: (
+      res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
+    ) => void;
+    onUploadError?: (error: Error) => void;
+    url?: string;
+    uploadedThing?: ReturnType<
+      ReturnType<typeof INTERNAL_uploadthingHookGen<TRouter>>
+    >;
+    multiple?: boolean;
+  } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
+    ? {}
+    : {
+        input: inferEndpointInput<TRouter[TEndpoint]>;
+      });
+}[keyof TRouter];
+
 /**
  * @example
  * <UploadButton<OurFileRouter>
@@ -71,23 +91,19 @@ const allowedContentTextLabelGenerator = (
  *   onUploadComplete={(url) => console.log(url)}
  * />
  */
-export function UploadButton<TRouter extends void | FileRouter = void>(props: {
-  endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
-  onUploadError?: (error: Error) => void;
-  url?: string;
-  uploadedThing?: ReturnType<typeof useUploadThing>;
-  multiple?: boolean;
-}) {
+export function UploadButton<TRouter extends FileRouter>(
+  props: FileRouter extends TRouter
+    ? ErrorMessage<"You forgot to pass the generic">
+    : UploadthingComponentProps<TRouter>,
+) {
+  const $props = props as UploadthingComponentProps<TRouter>;
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
   const uploadedThing =
-    props.uploadedThing ??
-    useUploadThing<string>({
-      endpoint: props.endpoint as string,
-      onClientUploadComplete: props.onClientUploadComplete,
-      onUploadError: props.onUploadError,
-      url: props.url,
+    $props.uploadedThing ??
+    useUploadThing($props.endpoint, {
+      onClientUploadComplete: $props.onClientUploadComplete,
+      onUploadError: $props.onUploadError,
+      url: $props.url,
     });
 
   const fileInfo = () =>
@@ -103,14 +119,16 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           accept={generateMimeTypes(fileInfo().fileTypes ?? [])?.join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
-            void uploadedThing.startUpload(Array.from(e.target.files));
+            const input = "input" in $props ? $props.input : undefined;
+            const files = Array.from(e.target.files);
+            void uploadedThing.startUpload(files, input);
           }}
         />
         <span class="ut-px-3 ut-py-2 ut-text-white">
           {uploadedThing?.isUploading() ? (
             <Spinner />
           ) : (
-            `Choose File${props.multiple ? `(s)` : ``}`
+            `Choose File${$props.multiple ? `(s)` : ``}`
           )}
         </span>
       </label>
@@ -127,24 +145,19 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   );
 }
 
-export const UploadDropzone = <
-  TRouter extends void | FileRouter = void,
->(props: {
-  endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
-  onUploadError?: (error: Error) => void;
-  url?: string;
-  uploadedThing?: ReturnType<typeof useUploadThing>;
-}) => {
+export const UploadDropzone = <TRouter extends FileRouter>(
+  props: FileRouter extends TRouter
+    ? ErrorMessage<"You forgot to pass the generic">
+    : UploadthingComponentProps<TRouter>,
+) => {
+  const $props = props as UploadthingComponentProps<TRouter>;
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
   const uploadedThing =
-    props.uploadedThing ??
-    useUploadThing<string>({
-      endpoint: props.endpoint as string,
-      onClientUploadComplete: props.onClientUploadComplete,
-      onUploadError: props.onUploadError,
-      url: props.url,
+    $props.uploadedThing ??
+    useUploadThing($props.endpoint, {
+      onClientUploadComplete: $props.onClientUploadComplete,
+      onUploadError: $props.onUploadError,
+      url: $props.url,
     });
 
   const [files, setFiles] = createSignal<File[]>([]);
@@ -210,7 +223,8 @@ export const UploadDropzone = <
                 e.stopPropagation();
                 if (!files()) return;
 
-                void uploadedThing.startUpload(files());
+                const input = "input" in $props ? $props.input : undefined;
+                void uploadedThing.startUpload(files(), input);
               }}
             >
               <span class="ut-px-3 ut-py-2 ut-text-white">
@@ -228,23 +242,20 @@ export const UploadDropzone = <
   );
 };
 
-export const Uploader = <TRouter extends void | FileRouter = void>(props: {
-  endpoint: EndpointHelper<TRouter>;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
-  onUploadError?: (error: Error) => void;
-  url?: string;
-  uploadedThing?: ReturnType<typeof useUploadThing>;
-  buttonMultiple?: boolean;
-}) => {
+export const Uploader = <TRouter extends FileRouter>(
+  props: FileRouter extends TRouter
+    ? ErrorMessage<"You forgot to pass the generic">
+    : UploadthingComponentProps<TRouter>,
+) => {
+  const $props = props as UploadthingComponentProps<TRouter>;
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+
   const uploadedThing =
-    props.uploadedThing ??
-    useUploadThing<string>({
-      endpoint: props.endpoint as string,
-      onClientUploadComplete: props.onClientUploadComplete,
-      url: props.url,
-      onUploadError: props.onUploadError,
+    $props.uploadedThing ??
+    useUploadThing<string>($props.endpoint as string, {
+      onClientUploadComplete: $props.onClientUploadComplete,
+      url: $props.url,
+      onUploadError: $props.onUploadError,
     });
   return (
     <>
@@ -252,19 +263,21 @@ export const Uploader = <TRouter extends void | FileRouter = void>(props: {
         <span class="text-center text-4xl font-bold">
           {`Upload a file using a button:`}
         </span>
-        <UploadButton<TRouter> {...props} uploadedThing={uploadedThing} />
+        {/* @ts-expect-error - we know this is valid from the check above */}
+        <UploadButton<TRouter> {...$props} uploadedThing={uploadedThing} />
       </div>
       <div class="flex flex-col items-center justify-center gap-4">
         <span class="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
-        <UploadDropzone<TRouter> {...props} uploadedThing={uploadedThing} />
+        {/* @ts-expect-error - we know this is valid from the check above */}
+        <UploadDropzone<TRouter> {...$props} uploadedThing={uploadedThing} />
       </div>
     </>
   );
 };
 
-const Spinner = () => {
+function Spinner() {
   return (
     <svg
       class="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
@@ -278,4 +291,4 @@ const Spinner = () => {
       ></path>
     </svg>
   );
-};
+}
