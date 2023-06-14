@@ -71,8 +71,10 @@ it("typeerrors for invalid input", () => {
 it("infers the input correctly", () => {
   ignoreErrors(() => {
     const { startUpload } = useUploadThing("exampleRoute");
-    type Input = Parameters<typeof startUpload>[1];
-    expectTypeOf<Input>().toEqualTypeOf<undefined>();
+
+    // @ts-expect-error - array should only be 1 element long
+    type _Input = Parameters<typeof startUpload>[1];
+
     void startUpload(files);
   });
 
