@@ -274,6 +274,31 @@ export function UploadDropzone<TRouter extends FileRouter>(
   );
 }
 
+export function Uploader<TRouter extends FileRouter>(
+  props: FileRouter extends TRouter
+    ? ErrorMessage<"You forgot to pass the generic">
+    : UploadthingComponentProps<TRouter>,
+) {
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span className="text-center text-4xl font-bold">
+          {`Upload a file using a button:`}
+        </span>
+        {/* @ts-expect-error - this is validated above */}
+        <UploadButton<TRouter> {...props} />
+      </div>
+      <div className="flex flex-col items-center justify-center gap-4">
+        <span className="text-center text-4xl font-bold">
+          {`...or using a dropzone:`}
+        </span>
+        {/* @ts-expect-error - this is validated above */}
+        <UploadDropzone<TRouter> {...props} />
+      </div>
+    </>
+  );
+}
+
 function Spinner() {
   return (
     <svg
