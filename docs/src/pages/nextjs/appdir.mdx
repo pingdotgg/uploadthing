@@ -67,7 +67,12 @@ export const { GET, POST } = createNextRouteHandler({
 });
 ```
 
-### Creating The UploadThing Components
+### Creating The UploadThing Components (optional)
+
+Generating components let's you pass your generic `FileRouter` once and then
+have typesafe components everywhere, instead of having to pass the generic
+everytime you mount a component, but you can also import the components
+individually from `@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";

@@ -1,6 +1,7 @@
 ---
-"@uploadthing/react": patch
-"@uploadthing/solid": patch
+"@uploadthing/react": minor
+"@uploadthing/solid": minor
 ---
 
-feat: generateSolidComponents & generateReactComponents functions
+feat: `generateComponents` functions for solid and react allows to pass the
+generic `FileRouter` once instead of for everytime the component is used
