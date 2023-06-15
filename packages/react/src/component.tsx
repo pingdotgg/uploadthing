@@ -317,17 +317,8 @@ function Spinner() {
 
 export function generateComponents<TRouter extends FileRouter>() {
   return {
-    UploadButton: (props: UploadthingComponentProps<TRouter>) => {
-      // @ts-expect-error - this is validated above
-      return <UploadButton<TRouter> {...props} />;
-    },
-    UploadDropzone: (props: UploadthingComponentProps<TRouter>) => {
-      // @ts-expect-error - this is validated above
-      return <UploadDropzone<TRouter> {...props} />;
-    },
-    Uploader: (props: UploadthingComponentProps<TRouter>) => {
-      // @ts-expect-error - this is validated above
-      return <Uploader<TRouter> {...props} />;
-    },
+    UploadButton: UploadButton<TRouter>,
+    UploadDropzone: UploadDropzone<TRouter>,
+    Uploader: Uploader<TRouter>,
   };
 }
