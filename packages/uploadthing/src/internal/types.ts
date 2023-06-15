@@ -3,14 +3,21 @@ import type { NextRequest } from "next/server";
 
 import type { FileRouterInputConfig, UploadedFile } from "@uploadthing/shared";
 
+import type { JsonParser } from "../parser";
+
+//
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
 };
 export type UnsetMarker = typeof unsetMarker;
 
-type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
+export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 
+export type MaybePromise<TType> = TType | Promise<TType>;
+
+//
+// Package
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
     TParams["_metadata"] extends UnsetMarker ? undefined : TParams["_metadata"]
@@ -19,23 +26,6 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type MaybePromise<TType> = TType | Promise<TType>;
-
-export type JsonValue = string | number | boolean;
-export type Json = { [key: string]: JsonValue | Json };
-
-// Don't want to use Zod cause it's an optional dependency
-export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;
-export type ParserZodEsque<TInput, TParsedInput extends Json> = {
-  _input: TInput;
-  _output: TParsedInput; // if using .transform etc
-  parse: ParseFn<TParsedInput>;
-};
-
-// In case we add support for more parsers later
-export type JsonParser = ParserZodEsque<Json, Json>;
-
-// Package
 export type AnyRuntime = "app" | "pages" | "web";
 export interface AnyParams {
   _input: any;

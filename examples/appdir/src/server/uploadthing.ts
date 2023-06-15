@@ -23,7 +23,7 @@ export const uploadRouter = {
   withInput: f(["image"])
     .input(
       z.object({
-        foo: z.string(),
+        foo: z.string().min(5),
       }),
     )
     .middleware((opts) => {

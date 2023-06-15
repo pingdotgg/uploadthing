@@ -15,7 +15,9 @@ import type {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { AnyRuntime, FileRouter, Json } from "./types";
+import type { Json } from "../parser";
+import { getParseFn } from "../parser";
+import type { AnyRuntime, FileRouter } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -185,15 +187,16 @@ export const buildRequestHandler = <
       // validate the input
       let parsedInput: Json = {};
       try {
-        parsedInput = await uploadable._def.inputParser.parse(userInput);
+        const inputParser = uploadable._def.inputParser;
+        parsedInput = await getParseFn(inputParser)(userInput);
       } catch (error) {
         console.error(error);
         return { status: 400, mesage: "Invalid input" };
       }
 
       const metadata = await uploadable._def.middleware({
-        // @ts-expect-error TODO: Fix this
-        req,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        req: req as any,
         res,
         input: parsedInput,
       });

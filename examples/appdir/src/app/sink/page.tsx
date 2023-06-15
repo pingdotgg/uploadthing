@@ -22,7 +22,7 @@ export default function Home() {
         <div className="flex gap-4">
           <UploadButton
             endpoint="withInput"
-            input={{ foo: "woohoo" }}
+            input={{ foo: userInput }}
             onClientUploadComplete={(res) => {
               console.log("Files: ", res);
               alert("Upload Completed");
