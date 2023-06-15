@@ -1,8 +1,6 @@
 import { Inter } from "next/font/google";
 
-import { UploadButton, UploadDropzone } from "@uploadthing/react";
-
-import type { OurFileRouter } from "~/server/uploadthing";
+import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +14,7 @@ export default function Home() {
           {`Upload a file using a button:`}
         </span>
 
-        <UploadButton<OurFileRouter>
+        <UploadButton
           endpoint="withoutMdwr"
           onClientUploadComplete={(res) => {
             // Do something with the response
@@ -32,7 +30,7 @@ export default function Home() {
         <span className="text-center text-4xl font-bold">
           {`...or using a dropzone:`}
         </span>
-        <UploadDropzone<OurFileRouter>
+        <UploadDropzone
           endpoint="withoutMdwr"
           onClientUploadComplete={(res) => {
             // Do something with the response
