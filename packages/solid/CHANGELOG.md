@@ -1,5 +1,20 @@
 # @uploadthing/solid
 
+## 4.1.3
+
+### Patch Changes
+
+- [#136](https://github.com/pingdotgg/uploadthing/pull/136)
+  [`23a9e19`](https://github.com/pingdotgg/uploadthing/commit/23a9e19702a51dec2ace869f47211f883d888d74)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - internal
+  refactoring to use a new shared package
+
+- Updated dependencies
+  [[`23a9e19`](https://github.com/pingdotgg/uploadthing/commit/23a9e19702a51dec2ace869f47211f883d888d74),
+  [`23a9e19`](https://github.com/pingdotgg/uploadthing/commit/23a9e19702a51dec2ace869f47211f883d888d74)]:
+  - @uploadthing/shared@5.0.0
+  - uploadthing@4.1.3
+
 ## 3.0.6
 
 ### Patch Changes

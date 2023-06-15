@@ -87,22 +87,36 @@ const handler = createNextPageApiHandler({
 export default handler;
 ```
 
+### Creating The UploadThing Components (optional)
+
+Generating components let's you pass your generic `FileRouter` once and then
+have typesafe components everywhere, instead of having to pass the generic
+everytime you mount a component, but you can also import the components
+individually from `@uploadthing/react`.
+
+```ts copy filename="src/utils/uploadthing.ts"
+import { generateComponents } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const { UploadButton, UploadDropzone, Uploader } =
+  generateComponents<OurFileRouter>();
+```
+
 ### Use the FileRouter in your app
 
 The `@uploadthing/react` package includes an "UploadButton" component that you
 can simply drop into your app, and start uploading files immediately.
 
 ```tsx copy
-import { UploadButton } from "@uploadthing/react";
-
-import type { OurFileRouter } from "~/server/uploadthing";
+import { UploadButton } from "~/utils/uploadthing";
 // You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
 import "@uploadthing/react/styles.css";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UploadButton<OurFileRouter>
+      <UploadButton
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response

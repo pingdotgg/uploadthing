@@ -73,7 +73,7 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -94,7 +94,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -134,7 +134,7 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -158,7 +158,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -201,7 +201,7 @@ importers:
         specifier: ^0.8.2
         version: 0.8.2(solid-js@1.7.6)
       '@uploadthing/solid':
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -222,7 +222,7 @@ importers:
         specifier: 5.20.0
         version: 5.20.0
       uploadthing:
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -331,7 +331,7 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^4.1.2
+        specifier: ^5.0.0
         version: link:../shared
     devDependencies:
       '@tailwindcss/forms':
@@ -380,7 +380,7 @@ importers:
         specifier: 5.1.3
         version: 5.1.3
       uploadthing:
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -398,7 +398,7 @@ importers:
         specifier: 0.1.0
         version: link:../config/eslint
       '@uploadthing/mime-types':
-        specifier: 0.1.0
+        specifier: 0.2.0
         version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 0.1.0
@@ -422,7 +422,7 @@ importers:
   packages/solid:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^4.1.2
+        specifier: ^5.0.0
         version: link:../shared
     devDependencies:
       '@tailwindcss/forms':
@@ -453,16 +453,16 @@ importers:
         specifier: 5.1.3
         version: 5.1.3
       uploadthing:
-        specifier: 4.1.2
+        specifier: 4.1.3
         version: link:../uploadthing
 
   packages/uploadthing:
     dependencies:
       '@uploadthing/mime-types':
-        specifier: ^0.1.0
+        specifier: ^0.2.0
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: ^4.1.2
+        specifier: ^5.0.0
         version: link:../shared
     devDependencies:
       '@uploadthing/eslint-config':
