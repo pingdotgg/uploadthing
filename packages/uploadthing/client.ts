@@ -5,6 +5,33 @@ import { pollForFileData } from "@uploadthing/shared";
 
 import type { FileRouter } from "./src/internal/types";
 
+function fetchWithProgress(
+  url: string,
+  opts: {
+    headers?: Headers;
+    method?: string;
+    body?: string | FormData;
+  } = {},
+  onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
+) {
+  return new Promise<XMLHttpRequest>((res, rej) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(opts.method || "get", url);
+    opts.headers &&
+      Object.keys(opts.headers).forEach(
+        (h) =>
+          opts.headers && xhr.setRequestHeader(h, opts.headers.get(h) ?? ""),
+      );
+    xhr.onload = (e) => {
+      res(e.target as XMLHttpRequest);
+    };
+
+    xhr.onerror = rej;
+    if (xhr.upload && onProgress) xhr.upload.onprogress = onProgress;
+    xhr.send(opts.body);
+  });
+}
+
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
 
@@ -73,15 +100,20 @@ export const DANGEROUS__uploadFiles = async <T extends string>(
     });
 
     // Do S3 upload
-    const upload = await fetch(url, {
-      method: "POST",
-      body: formData,
-      headers: new Headers({
-        Accept: "application/xml",
-      }),
-    });
+    const upload = await fetchWithProgress(
+      url,
+      {
+        method: "POST",
+        body: formData,
+        headers: new Headers({
+          Accept: "application/xml",
+        }),
+      },
+      (p) => console.log({name: file.name, progress: p.loaded / p.total}),
+    );
 
-    if (!upload.ok) throw new Error("Upload failed.");
+    if (upload.status > 299 || upload.status < 200)
+      throw new Error("Upload failed.");
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl =
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
