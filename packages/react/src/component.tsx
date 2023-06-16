@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
@@ -81,6 +82,70 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (error: Error) => void;
+  appearance?: {
+    container?: {
+      classes?: {
+        display?: string;
+        flexDirection?: string;
+        gap?: string;
+        alignItems?: string;
+        justifyContent?: string;
+        className?: string;
+      };
+      inlineStyle?: CSSProperties;
+    };
+    button?: {
+      default?: {
+        className?: string;
+        rounded?: string;
+        width?: string;
+        height?: string;
+        display?: string;
+        alignItems?: string;
+        justifyContent?: string;
+        cursor?: string;
+      };
+      ready?: {
+        className?: string;
+        bg?: string;
+      };
+      notReady?: {
+        className?: string;
+        opacity?: string;
+        bg?: string;
+        cursor?: string;
+      };
+      inlineStyle?: CSSProperties | ((ready: boolean) => CSSProperties | undefined);
+    };
+    loader?: JSX.Element;
+    buttonContent?: {
+      classes?: {
+        className?: string;
+        px?: string;
+        py?: string;
+        textColor?: string;
+      };
+      inlineStyle?: CSSProperties;
+    };
+    fileTypes?: {
+      container?: {
+        classes?: {
+          className?: string;
+          height?: string;
+        };
+        inlineStyle?: CSSProperties;
+      };
+      items?: {
+        classes?: {
+          className?: string;
+          textSize?: string;
+          lineHeight?: string;
+          textColor?: string;
+        };
+        inlineStyle?: CSSProperties;
+      };
+    }
+  }
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { startUpload, isUploading, permittedFileInfo } =
@@ -109,14 +174,46 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
   };
 
   return (
-    <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
+    <div
+      className={classNames(
+        props.appearance?.container?.classes?.display || "ut-flex",
+        props.appearance?.container?.classes?.flexDirection || "ut-flex-col",
+        props.appearance?.container?.classes?.gap || "ut-gap-1",
+        props.appearance?.container?.classes?.alignItems || "ut-items-center",
+        props.appearance?.container?.classes?.justifyContent || "ut-justify-center",
+        props.appearance?.container?.classes?.className || "",
+      )}
+      style={props.appearance?.container?.inlineStyle}
+    >
       <label
         className={classNames(
-          " ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
+          classNames(
+            props.appearance?.button?.default?.rounded || "ut-rounded-md",
+            props.appearance?.button?.default?.width || "ut-w-36",
+            props.appearance?.button?.default?.height || "ut-h-10",
+            props.appearance?.button?.default?.display || "ut-flex",
+            props.appearance?.button?.default?.alignItems || "ut-items-center",
+            props.appearance?.button?.default?.justifyContent || "ut-justify-center",
+            props.appearance?.button?.default?.cursor || "ut-cursor-pointer",
+            props.appearance?.button?.default?.className || "",
+          ),
           !ready
-            ? "ut-opacity-50 ut-bg-gray-600 ut-cursor-not-allowed"
-            : "ut-bg-blue-600",
+            ? classNames(
+              props.appearance?.button?.notReady?.opacity || "ut-opacity-50",
+              props.appearance?.button?.notReady?.bg || "ut-bg-gray-600",
+              props.appearance?.button?.notReady?.cursor || "ut-cursor-not-allowed",
+              props.appearance?.button?.notReady?.className || ""
+            )
+            : classNames(
+              props.appearance?.button?.ready?.bg || "ut-bg-blue-600",
+              props.appearance?.button?.ready?.className || ""
+            ),
         )}
+        style={
+          typeof props.appearance?.button?.inlineStyle === "function"
+            ? props.appearance?.button?.inlineStyle(ready)
+            : props.appearance?.button?.inlineStyle
+        }
       >
         <input
           className="ut-hidden"
@@ -130,13 +227,45 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           }}
           disabled={!ready}
         />
-        <span className="ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? <Spinner /> : getUploadButtonText(fileTypes)}
+        <span
+          className={
+            classNames(
+              props.appearance?.buttonContent?.classes?.px || "ut-px-3",
+              props.appearance?.buttonContent?.classes?.py || "ut-py-2",
+              props.appearance?.buttonContent?.classes?.textColor || "ut-text-white",
+              props.appearance?.buttonContent?.classes?.className || ""
+            )
+          }
+          style={props.appearance?.buttonContent?.inlineStyle}
+        >
+          {
+            isUploading
+              ? (props.appearance?.loader || <Spinner />)
+              : getUploadButtonText(fileTypes)
+          }
         </span>
       </label>
-      <div className="ut-h-[1.25rem]">
+      <div
+        className={
+          classNames(
+            props.appearance?.fileTypes?.container?.classes?.height || "ut-h-[1.25rem]",
+            props.appearance?.fileTypes?.container?.classes?.className || ""
+          )
+        }
+        style={props.appearance?.fileTypes?.container?.inlineStyle}
+      >
         {fileTypes && (
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p
+            className={
+              classNames(
+                props.appearance?.fileTypes?.items?.classes?.textSize || "ut-text-xs",
+                props.appearance?.fileTypes?.items?.classes?.lineHeight || "ut-leading-5",
+                props.appearance?.fileTypes?.items?.classes?.textColor || "ut-text-gray-600",
+                props.appearance?.fileTypes?.items?.classes?.className || ""
+              )
+            }
+            style={props.appearance?.fileTypes?.items?.inlineStyle}
+          >
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
