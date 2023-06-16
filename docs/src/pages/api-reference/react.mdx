@@ -25,12 +25,13 @@ export const OurUploadButton = () => (
 
 ### Configuration
 
-| Prop                   | Type     | Required | Description                                                                       |
-| :--------------------- | :------- | :------- | :-------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic  | Yes      | The type from the FileRouter you defined in your backend                          |
-| endpoint               | string   | Yes      | The name of the [route](./server#FileRouter) you want this button to upload to    |
-| onClientUploadComplete | function | No       | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
-| onUploadError          | function | No       | callback function when upload fails                                               |
+| Prop                   | Type     | Required                | Description                                                                         |
+| :--------------------- | :------- | :---------------------- | :---------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes                     | The type from the FileRouter you defined in your backend                            |
+| endpoint               | string   | Yes                     | The name of the [route](./server#FileRouter) you want this button to upload to      |
+| input                  | string   | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
+| onClientUploadComplete | function | No                      | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
+| onUploadError          | function | No                      | callback function when upload fails                                                 |
 
 ## UploadDropzone
 
@@ -56,12 +57,13 @@ export const OurUploadDropzone = () => (
 
 ### Configuration
 
-| Prop                   | Type     | Required | Description                                                                       |
-| :--------------------- | :------- | :------- | :-------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic  | Yes      | The type from the FileRouter you defined in your backend                          |
-| endpoint               | string   | Yes      | The name of the [route](./server#FileRouter) you want this button to upload to    |
-| onClientUploadComplete | function | No       | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
-| onUploadError          | function | No       | callback function when upload fails                                               |
+| Prop                   | Type     | Required                | Description                                                                         |
+| :--------------------- | :------- | :---------------------- | :---------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes                     | The type from the FileRouter you defined in your backend                            |
+| endpoint               | string   | Yes                     | The name of the [route](./server#FileRouter) you want this button to upload to      |
+| input                  | string   | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
+| onClientUploadComplete | function | No                      | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
+| onUploadError          | function | No                      | callback function when upload fails                                                 |
 
 ## generateReactHelpers
 
@@ -105,8 +107,7 @@ export function MultiUploader() {
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
   });
 
-  const { startUpload } = useUploadThing<string>({
-    endpoint: "myUploadEndpoint", // replace this with an actual endpoint name
+  const { startUpload } = useUploadThing("myUploadEndpoint", {
     onClientUploadComplete: () => {
       alert("uploaded successfully!");
     },
@@ -144,17 +145,26 @@ const uploadSomeFiles = async () => {
     }),
   ];
 
-  const res = await uploadFiles(files, "imageUploader");
+  const res = await uploadFiles({
+    files,
+    endpoint: "imageUploader",
+    input: {}, // will be typesafe to match the input set for `imageUploader` in your FileRouter
+  });
 };
 ```
 
 ### Configuration
 
 ```tsx
-uploadFiles(files: File[], endpoint: string)
+uploadFiles(opts: {
+  files: File[],
+  endpoint: string,
+  input?: {} // will be typesafe to match the input set for `endpoint` in your FileRouter
+})
 ```
 
-| Arguments | Type   | Required | Description                                                        |
-| :-------- | :----- | :------- | :----------------------------------------------------------------- |
-| files     | File[] | Yes      | The files you intend to upload                                     |
-| endpoint  | string | Yes      | The name of the [route](./server#FileRouter) you want to upload to |
+| Arguments | Type   | Required                | Description                                                                         |
+| :-------- | :----- | :---------------------- | :---------------------------------------------------------------------------------- |
+| files     | File[] | Yes                     | The files you intend to upload                                                      |
+| endpoint  | string | Yes                     | The name of the [route](./server#FileRouter) you want to upload to                  |
+| input     | string | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |

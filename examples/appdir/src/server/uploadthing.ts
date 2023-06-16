@@ -1,3 +1,5 @@
+import * as z from "zod";
+
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
 
@@ -18,13 +20,27 @@ export const uploadRouter = {
       console.log("upload completed", data);
     }),
 
+  withInput: f(["image"])
+    .input(
+      z.object({
+        foo: z.string().min(5),
+      }),
+    )
+    .middleware((opts) => {
+      console.log("input", opts.input);
+      return {};
+    })
+    .onUploadComplete((data) => {
+      console.log("upload completed", data);
+    }),
+
   withMdwr: f({
     image: {
       maxFileCount: 2,
       maxFileSize: "1MB",
     },
   })
-    .middleware((req) => {
+    .middleware(({ req }) => {
       const h = req.headers.get("someProperty");
 
       if (!h) throw new Error("someProperty is required");

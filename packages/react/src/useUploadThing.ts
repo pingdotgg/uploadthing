@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter } from "uploadthing/server";
+import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -17,47 +17,59 @@ const useEndpointMetadata = (endpoint: string) => {
   return data?.find((x) => x.slug === endpoint);
 };
 
-export const useUploadThing = <T extends string>({
-  endpoint,
-  onClientUploadComplete,
-  onUploadError,
-}: {
-  endpoint: T;
+export type UseUploadthingProps = {
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (e: Error) => void;
-}) => {
-  const [isUploading, setUploading] = useState(false);
+};
 
-  const permittedFileInfo = useEndpointMetadata(endpoint);
+export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
+  const useUploadThing = <TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts?: UseUploadthingProps,
+  ) => {
+    const [isUploading, setUploading] = useState(false);
 
-  const startUpload = useEvent(async (files: File[]) => {
-    setUploading(true);
-    try {
-      const res = await DANGEROUS__uploadFiles(files, endpoint);
-      setUploading(false);
-      onClientUploadComplete?.(res);
-      return res;
-    } catch (e) {
-      setUploading(false);
-      onUploadError?.(e as Error);
-      return;
-    }
-  });
-  return {
-    startUpload,
-    isUploading,
-    permittedFileInfo,
-  } as const;
+    const permittedFileInfo = useEndpointMetadata(endpoint as string);
+
+    type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+    type FuncInput = undefined extends InferredInput
+      ? [files: File[], input?: undefined]
+      : [files: File[], input: InferredInput];
+
+    const startUpload = useEvent(async (...args: FuncInput) => {
+      const [files, input] = args;
+      setUploading(true);
+      try {
+        const res = await DANGEROUS__uploadFiles({
+          files,
+          endpoint: endpoint as string,
+          input,
+        });
+        setUploading(false);
+        opts?.onClientUploadComplete?.(res);
+        return res;
+      } catch (e) {
+        setUploading(false);
+        opts?.onUploadError?.(e as Error);
+        return;
+      }
+    });
+    return {
+      startUpload,
+      isUploading,
+      permittedFileInfo,
+    } as const;
+  };
+
+  return useUploadThing;
 };
 
 export const generateReactHelpers = <TRouter extends FileRouter>() => {
-  type TRouterKey = keyof TRouter extends string ? keyof TRouter : string;
-
   return {
-    useUploadThing: useUploadThing<TRouterKey>,
-    uploadFiles: DANGEROUS__uploadFiles<TRouterKey>,
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
+    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
   } as const;
 };
 

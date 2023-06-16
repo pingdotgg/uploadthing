@@ -9,7 +9,7 @@ const f = createUploadthing();
 
 export const uploadRouter = {
   withMdwr: f(["image"])
-    .middleware(async (req, res) => {
+    .middleware(async ({ req, res }) => {
       const auth = await getServerSession(req, res, options);
 
       console.log("auth:", auth);
