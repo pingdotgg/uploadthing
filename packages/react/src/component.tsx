@@ -115,7 +115,9 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         bg?: string;
         cursor?: string;
       };
-      inlineStyle?: CSSProperties | ((ready: boolean) => CSSProperties | undefined);
+      inlineStyle?:
+        | CSSProperties
+        | ((ready: boolean) => CSSProperties | undefined);
     };
     loader?: JSX.Element;
     buttonContent?: {
@@ -144,8 +146,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         };
         inlineStyle?: CSSProperties;
       };
-    }
-  }
+    };
+  };
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { startUpload, isUploading, permittedFileInfo } =
@@ -180,7 +182,8 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
         props.appearance?.container?.classes?.flexDirection || "ut-flex-col",
         props.appearance?.container?.classes?.gap || "ut-gap-1",
         props.appearance?.container?.classes?.alignItems || "ut-items-center",
-        props.appearance?.container?.classes?.justifyContent || "ut-justify-center",
+        props.appearance?.container?.classes?.justifyContent ||
+          "ut-justify-center",
         props.appearance?.container?.classes?.className || "",
       )}
       style={props.appearance?.container?.inlineStyle}
@@ -193,21 +196,23 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
             props.appearance?.button?.default?.height || "ut-h-10",
             props.appearance?.button?.default?.display || "ut-flex",
             props.appearance?.button?.default?.alignItems || "ut-items-center",
-            props.appearance?.button?.default?.justifyContent || "ut-justify-center",
+            props.appearance?.button?.default?.justifyContent ||
+              "ut-justify-center",
             props.appearance?.button?.default?.cursor || "ut-cursor-pointer",
             props.appearance?.button?.default?.className || "",
           ),
           !ready
             ? classNames(
-              props.appearance?.button?.notReady?.opacity || "ut-opacity-50",
-              props.appearance?.button?.notReady?.bg || "ut-bg-gray-600",
-              props.appearance?.button?.notReady?.cursor || "ut-cursor-not-allowed",
-              props.appearance?.button?.notReady?.className || ""
-            )
+                props.appearance?.button?.notReady?.opacity || "ut-opacity-50",
+                props.appearance?.button?.notReady?.bg || "ut-bg-gray-600",
+                props.appearance?.button?.notReady?.cursor ||
+                  "ut-cursor-not-allowed",
+                props.appearance?.button?.notReady?.className || "",
+              )
             : classNames(
-              props.appearance?.button?.ready?.bg || "ut-bg-blue-600",
-              props.appearance?.button?.ready?.className || ""
-            ),
+                props.appearance?.button?.ready?.bg || "ut-bg-blue-600",
+                props.appearance?.button?.ready?.className || "",
+              ),
         )}
         style={
           typeof props.appearance?.button?.inlineStyle === "function"
@@ -228,42 +233,39 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
           disabled={!ready}
         />
         <span
-          className={
-            classNames(
-              props.appearance?.buttonContent?.classes?.px || "ut-px-3",
-              props.appearance?.buttonContent?.classes?.py || "ut-py-2",
-              props.appearance?.buttonContent?.classes?.textColor || "ut-text-white",
-              props.appearance?.buttonContent?.classes?.className || ""
-            )
-          }
+          className={classNames(
+            props.appearance?.buttonContent?.classes?.px || "ut-px-3",
+            props.appearance?.buttonContent?.classes?.py || "ut-py-2",
+            props.appearance?.buttonContent?.classes?.textColor ||
+              "ut-text-white",
+            props.appearance?.buttonContent?.classes?.className || "",
+          )}
           style={props.appearance?.buttonContent?.inlineStyle}
         >
-          {
-            isUploading
-              ? (props.appearance?.loader || <Spinner />)
-              : getUploadButtonText(fileTypes)
-          }
+          {isUploading
+            ? props.appearance?.loader || <Spinner />
+            : getUploadButtonText(fileTypes)}
         </span>
       </label>
       <div
-        className={
-          classNames(
-            props.appearance?.fileTypes?.container?.classes?.height || "ut-h-[1.25rem]",
-            props.appearance?.fileTypes?.container?.classes?.className || ""
-          )
-        }
+        className={classNames(
+          props.appearance?.fileTypes?.container?.classes?.height ||
+            "ut-h-[1.25rem]",
+          props.appearance?.fileTypes?.container?.classes?.className || "",
+        )}
         style={props.appearance?.fileTypes?.container?.inlineStyle}
       >
         {fileTypes && (
           <p
-            className={
-              classNames(
-                props.appearance?.fileTypes?.items?.classes?.textSize || "ut-text-xs",
-                props.appearance?.fileTypes?.items?.classes?.lineHeight || "ut-leading-5",
-                props.appearance?.fileTypes?.items?.classes?.textColor || "ut-text-gray-600",
-                props.appearance?.fileTypes?.items?.classes?.className || ""
-              )
-            }
+            className={classNames(
+              props.appearance?.fileTypes?.items?.classes?.textSize ||
+                "ut-text-xs",
+              props.appearance?.fileTypes?.items?.classes?.lineHeight ||
+                "ut-leading-5",
+              props.appearance?.fileTypes?.items?.classes?.textColor ||
+                "ut-text-gray-600",
+              props.appearance?.fileTypes?.items?.classes?.className || "",
+            )}
             style={props.appearance?.fileTypes?.items?.inlineStyle}
           >
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
