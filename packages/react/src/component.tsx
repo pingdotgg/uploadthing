@@ -129,23 +129,21 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       };
       inlineStyle?: CSSProperties;
     };
-    fileTypes?: {
-      container?: {
-        classes?: {
-          className?: string;
-          height?: string;
-        };
-        inlineStyle?: CSSProperties;
+    fileTypesContainer?: {
+      classes?: {
+        className?: string;
+        height?: string;
       };
-      items?: {
-        classes?: {
-          className?: string;
-          textSize?: string;
-          lineHeight?: string;
-          textColor?: string;
-        };
-        inlineStyle?: CSSProperties;
+      inlineStyle?: CSSProperties;
+    };
+    fileTypesItems?: {
+      classes?: {
+        className?: string;
+        textSize?: string;
+        lineHeight?: string;
+        textColor?: string;
       };
+      inlineStyle?: CSSProperties;
     };
   };
 }) {
@@ -249,24 +247,24 @@ export function UploadButton<TRouter extends void | FileRouter = void>(props: {
       </label>
       <div
         className={classNames(
-          props.appearance?.fileTypes?.container?.classes?.height ||
+          props.appearance?.fileTypesContainer?.classes?.height ||
             "ut-h-[1.25rem]",
-          props.appearance?.fileTypes?.container?.classes?.className || "",
+          props.appearance?.fileTypesContainer?.classes?.className || "",
         )}
-        style={props.appearance?.fileTypes?.container?.inlineStyle}
+        style={props.appearance?.fileTypesContainer?.inlineStyle}
       >
         {fileTypes && (
           <p
             className={classNames(
-              props.appearance?.fileTypes?.items?.classes?.textSize ||
+              props.appearance?.fileTypesItems?.classes?.textSize ||
                 "ut-text-xs",
-              props.appearance?.fileTypes?.items?.classes?.lineHeight ||
+              props.appearance?.fileTypesItems?.classes?.lineHeight ||
                 "ut-leading-5",
-              props.appearance?.fileTypes?.items?.classes?.textColor ||
+              props.appearance?.fileTypesItems?.classes?.textColor ||
                 "ut-text-gray-600",
-              props.appearance?.fileTypes?.items?.classes?.className || "",
+              props.appearance?.fileTypesItems?.classes?.className || "",
             )}
-            style={props.appearance?.fileTypes?.items?.inlineStyle}
+            style={props.appearance?.fileTypesItems?.inlineStyle}
           >
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
