@@ -15,6 +15,8 @@ import type {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import type { Json } from "../parser";
+import { getParseFn } from "../parser";
 import type { AnyRuntime, FileRouter } from "./types";
 
 const fileCountLimitHit = (
@@ -155,6 +157,7 @@ export const buildRequestHandler = <
       file: UploadedFile;
       files: unknown;
       metadata: Record<string, unknown>;
+      input?: Json;
     };
 
     if (uploadthingHook && uploadthingHook === "callback") {
@@ -176,9 +179,27 @@ export const buildRequestHandler = <
     }
 
     try {
-      const { files } = reqBody as { files: string[] };
-      // @ts-expect-error TODO: Fix this
-      const metadata = await uploadable._def.middleware(req, res);
+      const { files, input: userInput } = reqBody as {
+        files: string[];
+        input: Json;
+      };
+
+      // validate the input
+      let parsedInput: Json = {};
+      try {
+        const inputParser = uploadable._def.inputParser;
+        parsedInput = await getParseFn(inputParser)(userInput);
+      } catch (error) {
+        console.error(error);
+        return { status: 400, mesage: "Invalid input" };
+      }
+
+      const metadata = await uploadable._def.middleware({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        req: req as any,
+        res,
+        input: parsedInput,
+      });
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))

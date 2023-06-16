@@ -388,6 +388,9 @@ importers:
       wait-on:
         specifier: ^7.0.1
         version: 7.0.1
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
 
   packages/shared:
     devDependencies:
@@ -489,6 +492,9 @@ importers:
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
 
 packages:
 

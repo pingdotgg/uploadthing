@@ -3,14 +3,21 @@ import type { NextRequest } from "next/server";
 
 import type { FileRouterInputConfig, UploadedFile } from "@uploadthing/shared";
 
+import type { JsonParser } from "../parser";
+
+//
 // Utils
 export const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
 };
 export type UnsetMarker = typeof unsetMarker;
 
-type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
+export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 
+export type MaybePromise<TType> = TType | Promise<TType>;
+
+//
+// Package
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
     TParams["_metadata"] extends UnsetMarker ? undefined : TParams["_metadata"]
@@ -19,46 +26,47 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type MaybePromise<TType> = TType | Promise<TType>;
-
-// Package
 export type AnyRuntime = "app" | "pages" | "web";
 export interface AnyParams {
+  _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _runtime: any;
 }
 
-type MiddlewareFnArgs<TRuntime> = TRuntime extends "web"
-  ? { req: Request; res: never }
-  : TRuntime extends "app"
-  ? { req: NextRequest; res: never }
-  : { req: NextApiRequest; res: NextApiResponse };
+type MiddlewareFnArgs<TParams extends AnyParams> =
+  TParams["_runtime"] extends "web"
+    ? { req: Request; res?: never; input: TParams["_input"] }
+    : TParams["_runtime"] extends "app"
+    ? { req: NextRequest; res?: never; input: TParams["_input"] }
+    : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
 
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
-  TRuntime extends string,
-> = MiddlewareFnArgs<TRuntime>["res"] extends never
-  ? (req: MiddlewareFnArgs<TRuntime>["req"]) => MaybePromise<TOutput>
-  : (
-      req: MiddlewareFnArgs<TRuntime>["req"],
-      res: MiddlewareFnArgs<TRuntime>["res"],
-    ) => MaybePromise<TOutput>;
-
-export type ReqMiddlewareFn<TOutput extends Record<string, unknown>> =
-  MiddlewareFn<TOutput, "web">;
-export type NextReqMiddlewareFn<TOutput extends Record<string, unknown>> =
-  MiddlewareFn<TOutput, "app">;
-export type NextApiMiddlewareFn<TOutput extends Record<string, unknown>> =
-  MiddlewareFn<TOutput, "pages">;
+  TParams extends AnyParams,
+> = (opts: MiddlewareFnArgs<TParams>) => MaybePromise<TOutput>;
 
 type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>,
 ) => MaybePromise<void>;
 
+export type ErrorMessage<TError extends string> = TError;
+
 export interface UploadBuilder<TParams extends AnyParams> {
-  middleware: <TOutput extends Record<string, unknown>>(
-    fn: MiddlewareFn<TOutput, TParams["_runtime"]>,
+  input: <TParser extends JsonParser>(
+    parser: TParams["_input"] extends UnsetMarker
+      ? TParser
+      : ErrorMessage<"input is already set">,
   ) => UploadBuilder<{
+    _input: TParser["_output"];
+    _metadata: TParams["_metadata"];
+    _runtime: TParams["_runtime"];
+  }>;
+  middleware: <TOutput extends Record<string, unknown>>(
+    fn: TParams["_metadata"] extends UnsetMarker
+      ? MiddlewareFn<TOutput, TParams>
+      : ErrorMessage<"middleware is already set">,
+  ) => UploadBuilder<{
+    _input: TParams["_input"];
     _metadata: TOutput;
     _runtime: TParams["_runtime"];
   }>;
@@ -66,13 +74,14 @@ export interface UploadBuilder<TParams extends AnyParams> {
   onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
 }
 
-export type UploadBuilderDef<TRuntime extends AnyRuntime> = {
+export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
-  middleware: MiddlewareFn<{}, TRuntime>;
+  inputParser: JsonParser;
+  middleware: MiddlewareFn<{}, TParams>;
 };
 
 export interface Uploader<TParams extends AnyParams> {
-  _def: TParams & UploadBuilderDef<TParams["_runtime"]>;
+  _def: TParams & UploadBuilderDef<TParams>;
   resolver: ResolverFn<TParams>;
 }
 
@@ -80,3 +89,8 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   string,
   Uploader<TParams>
 >;
+
+export type inferEndpointInput<TUploader extends Uploader<any>> =
+  TUploader["_def"]["_input"] extends UnsetMarker
+    ? undefined
+    : TUploader["_def"]["_input"];

@@ -49,17 +49,17 @@ const f = createUploadthing();
 export const ourFileRouter = {
   // Example "profile picture upload" route - these can be named whatever you want!
   profilePicture: f(["image"])
-    .middleware((req) => auth(req))
+    .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
   // This route takes an attached image OR video
   messageAttachment: f(["image", "video"])
-    .middleware((req) => auth(req))
+    .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
   // Takes ONE image up to 2MB
   strictImageAttachment: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
-    .middleware((req) => auth(req))
+    .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
   // Takes a 4 2mb images and/or 1 256mb video
@@ -67,7 +67,7 @@ export const ourFileRouter = {
     image: { maxFileSize: "2MB", maxFileCount: 4 },
     video: { maxFileSize: "256MB", maxFileCount: 1 },
   })
-    .middleware((req) => auth(req))
+    .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 } satisfies FileRouter;
 
@@ -102,6 +102,18 @@ All routes default to a max file count of 1. The file size defaults are below
 | audio     | 8MB              |
 | blob      | 8MB              |
 
+### `input`
+
+You can pass a `zod` schema to validate user input from the client. This data
+comes from the client when the upload starts. If validation here fails, an error
+will be thrown and none of your `middleware` n'or `onUploadComplete` functions
+will be executed.
+
+The input is validated on **your** server and only leaves your server if you
+pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
+the input in the middleware without returning it, the Uploadthing server won't
+have any knowledge of it.
+
 ### `middleware`
 
 This is the function where you authorize a user to do an upload. You can also
@@ -111,7 +123,7 @@ tag the upload with metadata here. Example using Clerk:
 import { currentUser } from "@clerk/nextjs";
 
 f(["image"])
-  .middleware(async (req, res) => {
+  .middleware(async ({ req, res }) => {
     const user = await currentUser();
 
     // Throw if user isn't signed in
@@ -165,7 +177,7 @@ access them.
 import { utapi } from "uploadthing/server";
 
 const oneUrl = await utapi.getFileUrls(
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
 );
 const multipleUrls = await utapi.getFileUrls([
   "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
