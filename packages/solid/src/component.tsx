@@ -135,7 +135,7 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div class="ut-h-[1.25rem]">
         {fileInfo().fileTypes ? (
-          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p class="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(
               uploadedThing.permittedFileInfo()?.config,
             )}
@@ -185,7 +185,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
         isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
-      <div class="text-center" {...getRootProps()}>
+      <div class="ut-text-center" {...getRootProps()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -209,7 +209,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
           <p class="ut-pl-1">{`or drag and drop`}</p>
         </div>
         <div class="ut-h-[1.25rem]">
-          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p class="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(
               uploadedThing.permittedFileInfo()?.config,
             )}
@@ -260,15 +260,15 @@ export const Uploader = <TRouter extends FileRouter>(
     });
   return (
     <>
-      <div class="flex flex-col items-center justify-center gap-4">
-        <span class="text-center text-4xl font-bold">
+      <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span class="ut-text-center ut-text-4xl ut-font-bold">
           {`Upload a file using a button:`}
         </span>
         {/* @ts-expect-error - we know this is valid from the check above */}
         <UploadButton<TRouter> {...$props} uploadedThing={uploadedThing} />
       </div>
-      <div class="flex flex-col items-center justify-center gap-4">
-        <span class="text-center text-4xl font-bold">
+      <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span class="ut-text-center ut-text-4xl ut-font-bold">
           {`...or using a dropzone:`}
         </span>
         {/* @ts-expect-error - we know this is valid from the check above */}

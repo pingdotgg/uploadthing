@@ -157,7 +157,7 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p className="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
@@ -210,7 +210,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
         isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
-      <div className="text-center" {...getRootProps()}>
+      <div className="ut-text-center" {...getRootProps()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
@@ -242,7 +242,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
           </label>
         </div>
         <div className="ut-h-[1.25rem]">
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p className="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         </div>
@@ -281,15 +281,15 @@ export function Uploader<TRouter extends FileRouter>(
 ) {
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-center text-4xl font-bold">
+      <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span className="ut-text-center ut-text-4xl ut-font-bold">
           {`Upload a file using a button:`}
         </span>
         {/* @ts-expect-error - this is validated above */}
         <UploadButton<TRouter> {...props} />
       </div>
-      <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-center text-4xl font-bold">
+      <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span className="ut-text-center ut-text-4xl ut-font-bold">
           {`...or using a dropzone:`}
         </span>
         {/* @ts-expect-error - this is validated above */}
