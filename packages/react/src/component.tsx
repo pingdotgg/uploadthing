@@ -1,14 +1,14 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { UploadFileType } from "uploadthing/client";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
-import type { UploadFileType } from "uploadthing/client";
 import type {
   ErrorMessage,
   FileRouter,
@@ -82,6 +82,20 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
       });
 }[keyof TRouter];
 
+const progressHeights: { [key: number]: string } = {
+  0: "after:ut-w-0",
+  10: "after:ut-w-[10%]",
+  20: "after:ut-w-[20%]",
+  30: "after:ut-w-[30%]",
+  40: "after:ut-w-[40%]",
+  50: "after:ut-w-[50%]",
+  60: "after:ut-w-[60%]",
+  70: "after:ut-w-[70%]",
+  80: "after:ut-w-[80%]",
+  90: "after:ut-w-[90%]",
+  100: "after:ut-w-[100%]",
+};
+
 /**
  * @example
  * <UploadButton<OurFileRouter>
@@ -101,9 +115,8 @@ export function UploadButton<TRouter extends FileRouter>(
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
-    $props.endpoint,
-    {
+  const { startUpload, isUploading, permittedFileInfo, uploadProgress } =
+    useUploadThing($props.endpoint, {
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -113,12 +126,20 @@ export function UploadButton<TRouter extends FileRouter>(
         }
       },
       onUploadError: $props.onUploadError,
-    },
-  );
+    });
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
     permittedFileInfo?.config,
   );
+
+  const progress: number = useMemo(() => {
+    if (uploadProgress.size === 0) return 0;
+    let sum = 0;
+    uploadProgress.forEach((p) => {
+      sum += p;
+    });
+    return Math.floor(sum / uploadProgress.size / 10) * 10;
+  }, [uploadProgress]);
 
   const ready = fileTypes.length > 0;
 
@@ -131,10 +152,14 @@ export function UploadButton<TRouter extends FileRouter>(
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
       <label
         className={classNames(
-          " ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
+          "ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-overflow-hidden ut-relative ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
+          isUploading ? "ut-bg-blue-400" : "ut-bg-blue-600",
           !ready
-            ? "ut-opacity-50 ut-bg-gray-600 ut-cursor-not-allowed"
+            ? "ut-bg-gray-600 ut-cursor-not-allowed"
             : "ut-bg-blue-600",
+          isUploading
+            ? `after:ut-h-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${progressHeights[progress]}`
+            : "",
         )}
       >
         <input
@@ -151,7 +176,7 @@ export function UploadButton<TRouter extends FileRouter>(
           }}
           disabled={!ready}
         />
-        <span className="ut-px-3 ut-py-2 ut-text-white">
+        <span className="ut-px-3 ut-py-2 ut-z-10 ut-text-white">
           {isUploading ? <Spinner /> : getUploadButtonText(fileTypes)}
         </span>
       </label>
@@ -181,9 +206,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
     setFiles(acceptedFiles);
   }, []);
 
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
-    $props.endpoint,
-    {
+  const { startUpload, isUploading, permittedFileInfo, uploadProgress } =
+    useUploadThing($props.endpoint, {
       onClientUploadComplete: (res) => {
         setFiles([]);
         if ($props.onClientUploadComplete) {
@@ -191,8 +215,15 @@ export function UploadDropzone<TRouter extends FileRouter>(
         }
       },
       onUploadError: $props.onUploadError,
-    },
-  );
+    });
+  const progress: number = useMemo(() => {
+    if (uploadProgress.size === 0) return 0;
+    let sum = 0;
+    uploadProgress.forEach((p) => {
+      sum += p;
+    });
+    return Math.floor(sum / uploadProgress.size / 10) * 10;
+  }, [uploadProgress]);
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
@@ -249,7 +280,13 @@ export function UploadDropzone<TRouter extends FileRouter>(
         {files.length > 0 && (
           <div className="ut-mt-4 ut-flex ut-items-center ut-justify-center">
             <button
-              className="ut-bg-blue-600 ut-rounded-md ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center"
+              className={classNames(
+                "ut-bg-blue-600 after:ut-transition-[width] after:ut-duration-500 ut-rounded-md ut-relative ut-overflow-hidden ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center",
+                isUploading ? "ut-bg-blue-400" : "ut-bg-blue-600",
+                isUploading
+                  ? `after:ut-h-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${progressHeights[progress]}`
+                  : "",
+              )}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -259,7 +296,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
                 void startUpload(files, input);
               }}
             >
-              <span className="ut-px-3 ut-py-2 ut-text-white">
+              <span className="ut-px-3 ut-py-2 ut-z-10 ut-text-white">
                 {isUploading ? (
                   <Spinner />
                 ) : (
