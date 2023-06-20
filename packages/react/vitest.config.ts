@@ -5,8 +5,8 @@ export default defineConfig({
   test: {},
   resolve: {
     alias: {
-      "uploadthing/server": join(__dirname, "../uploadthing/server"),
-      "uploadthing/client": join(__dirname, "../uploadthing/client"),
+      "uploadthing/server": join(__dirname, "../uploadthing/src/server"),
+      "uploadthing/client": join(__dirname, "../uploadthing/src/client"),
     },
   },
 });
