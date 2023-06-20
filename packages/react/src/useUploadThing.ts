@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
@@ -21,9 +21,9 @@ export type UseUploadthingProps = {
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
+  onUploadProgress?: (p: number) => void
   onUploadError?: (e: Error) => void;
 };
-
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
@@ -31,7 +31,8 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     opts?: UseUploadthingProps,
   ) => {
     const [isUploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState<Map<string,number>>(new Map());
+    const uploadProgress = useRef(0)
+    const fileProgress = useRef<Map<string, number>>(new Map());
 
     const permittedFileInfo = useEndpointMetadata(endpoint as string);
 
@@ -48,24 +49,39 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
           files,
           endpoint: endpoint as string,
           input,
-          onUploadProgress: (progress) => setUploadProgress((up) => new Map(up.set(progress.file, progress.progress))),
+          onUploadProgress: (progress) => {
+            if(!opts?.onUploadProgress) return
+            fileProgress.current.set(progress.file, progress.progress);
+            let sum = 0;
+            fileProgress.current.forEach((p) => {
+              sum += p;
+            });
+            const averageProgress =
+              Math.floor(sum / fileProgress.current.size / 10) * 10;
+            if (averageProgress !== uploadProgress.current){
+              opts?.onUploadProgress?.(averageProgress)
+              uploadProgress.current = averageProgress
+            }
+          },
         });
         setUploading(false);
-        setUploadProgress(() => new Map())
+        fileProgress.current = new Map();
+        uploadProgress.current = 0
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         setUploading(false);
-        setUploadProgress(() => new Map())
+        fileProgress.current = new Map();
+        uploadProgress.current = 0
         opts?.onUploadError?.(e as Error);
         return;
       }
     });
+
     return {
       startUpload,
       isUploading,
       permittedFileInfo,
-      uploadProgress,
     } as const;
   };
 
