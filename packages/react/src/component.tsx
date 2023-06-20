@@ -9,6 +9,7 @@ import {
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
+import type { UploadFileType } from "uploadthing/client";
 import type {
   ErrorMessage,
   FileRouter,
@@ -82,20 +83,6 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
       });
 }[keyof TRouter];
 
-const progressHeights: { [key: number]: string } = {
-  0: "after:ut-w-0",
-  10: "after:ut-w-[10%]",
-  20: "after:ut-w-[20%]",
-  30: "after:ut-w-[30%]",
-  40: "after:ut-w-[40%]",
-  50: "after:ut-w-[50%]",
-  60: "after:ut-w-[60%]",
-  70: "after:ut-w-[70%]",
-  80: "after:ut-w-[80%]",
-  90: "after:ut-w-[90%]",
-  100: "after:ut-w-[100%]",
-};
-
 /**
  * @example
  * <UploadButton<OurFileRouter>
@@ -115,8 +102,9 @@ export function UploadButton<TRouter extends FileRouter>(
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { startUpload, isUploading, permittedFileInfo, uploadProgress } =
-    useUploadThing($props.endpoint, {
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+    $props.endpoint,
+    {
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -126,7 +114,8 @@ export function UploadButton<TRouter extends FileRouter>(
         }
       },
       onUploadError: $props.onUploadError,
-    });
+    },
+  );
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
     permittedFileInfo?.config,
@@ -206,8 +195,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
     setFiles(acceptedFiles);
   }, []);
 
-  const { startUpload, isUploading, permittedFileInfo, uploadProgress } =
-    useUploadThing($props.endpoint, {
+  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+    $props.endpoint,
+    {
       onClientUploadComplete: (res) => {
         setFiles([]);
         if ($props.onClientUploadComplete) {
@@ -215,15 +205,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
         }
       },
       onUploadError: $props.onUploadError,
-    });
-  const progress: number = useMemo(() => {
-    if (uploadProgress.size === 0) return 0;
-    let sum = 0;
-    uploadProgress.forEach((p) => {
-      sum += p;
-    });
-    return Math.floor(sum / uploadProgress.size / 10) * 10;
-  }, [uploadProgress]);
+    },
+  );
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 

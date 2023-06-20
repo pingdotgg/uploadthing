@@ -5,33 +5,6 @@ import { pollForFileData } from "@uploadthing/shared";
 
 import type { FileRouter, inferEndpointInput } from "./src/internal/types";
 
-function fetchWithProgress(
-  url: string,
-  opts: {
-    headers?: Headers;
-    method?: string;
-    body?: string | FormData;
-  } = {},
-  onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
-) {
-  return new Promise<XMLHttpRequest>((res, rej) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open(opts.method || "get", url);
-    opts.headers &&
-      Object.keys(opts.headers).forEach(
-        (h) =>
-          opts.headers && xhr.setRequestHeader(h, opts.headers.get(h) ?? ""),
-      );
-    xhr.onload = (e) => {
-      res(e.target as XMLHttpRequest);
-    };
-
-    xhr.onerror = rej;
-    if (xhr.upload && onProgress) xhr.upload.onprogress = onProgress;
-    xhr.send(opts.body);
-  });
-}
-
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
 
@@ -41,7 +14,6 @@ const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
-    onUploadProgress?: ({file, progress}: {file: string, progress: number}) => void;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];

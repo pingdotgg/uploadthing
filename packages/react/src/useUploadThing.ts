@@ -24,14 +24,12 @@ export type UseUploadthingProps = {
   onUploadError?: (e: Error) => void;
 };
 
-
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps,
   ) => {
     const [isUploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(new Map());
 
     const permittedFileInfo = useEndpointMetadata(endpoint as string);
 
@@ -48,15 +46,12 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
           files,
           endpoint: endpoint as string,
           input,
-          onUploadProgress: (progress) => setUploadProgress((up) => new Map(up.set(progress.file, progress.progress))),
         });
         setUploading(false);
-        setUploadProgress(() => new Map())
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         setUploading(false);
-        setUploadProgress(() => new Map())
         opts?.onUploadError?.(e as Error);
         return;
       }
@@ -65,7 +60,6 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       startUpload,
       isUploading,
       permittedFileInfo,
-      uploadProgress,
     } as const;
   };
 
