@@ -1,4 +1,4 @@
-import type { MaybePromise } from "./internal/types";
+import type { MaybePromise } from "./types";
 
 export type JsonValue = string | number | boolean;
 export type Json = { [key: string]: JsonValue | Json };

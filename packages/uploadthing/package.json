@@ -27,8 +27,17 @@
   ],
   "typesVersions": {
     "*": {
-      "*": [
-        "dist/*"
+      "client": [
+        "dist/client.d.ts"
+      ],
+      "server": [
+        "dist/server.d.ts"
+      ],
+      "next": [
+        "dist/next.d.ts"
+      ],
+      "next-legacy": [
+        "dist/next-legacy.d.ts"
       ]
     }
   },
