@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "4.1.3",
+  "version": "5.0.0",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
