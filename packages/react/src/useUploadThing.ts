@@ -31,7 +31,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     opts?: UseUploadthingProps,
   ) => {
     const [isUploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(new Map());
+    const [uploadProgress, setUploadProgress] = useState<Map<string,number>>(new Map());
 
     const permittedFileInfo = useEndpointMetadata(endpoint as string);
 

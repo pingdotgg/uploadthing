@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
@@ -71,6 +71,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
 
+    onUploadProgress?: (progress: Map<string, number>) => void;
     onClientUploadComplete?: (
       res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
     ) => void;
@@ -148,15 +149,18 @@ export function UploadButton<TRouter extends FileRouter>(
     return `Choose File${multiple ? `(s)` : ``}`;
   };
 
+  useEffect(() => {
+    if (!$props.onUploadProgress) return;
+    $props.onUploadProgress(uploadProgress);
+  }, [uploadProgress, $props]);
+
   return (
     <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
       <label
         className={classNames(
           "ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-overflow-hidden ut-relative ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
           isUploading ? "ut-bg-blue-400" : "ut-bg-blue-600",
-          !ready
-            ? "ut-bg-gray-600 ut-cursor-not-allowed"
-            : "ut-bg-blue-600",
+          !ready ? "ut-bg-gray-600 ut-cursor-not-allowed" : "ut-bg-blue-600",
           isUploading
             ? `after:ut-h-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${progressHeights[progress]}`
             : "",
@@ -233,6 +237,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
   });
 
   const ready = fileTypes.length > 0;
+
+  useEffect(() => {
+    if (!$props.onUploadProgress) return;
+    $props.onUploadProgress(uploadProgress);
+  }, [uploadProgress, $props]);
 
   return (
     <div
