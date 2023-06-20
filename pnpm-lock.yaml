@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -28,7 +28,7 @@ importers:
         version: link:packages/config/eslint
       dotenv:
         specifier: latest
-        version: 16.1.4
+        version: 16.3.1
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
@@ -73,8 +73,8 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 4.1.3
-        version: link:../../packages/react
+        specifier: 5.0.0
+        version: 5.0.0(react-dropzone@14.2.3)(react@18.2.0)(uploadthing@5.0.0)(zod@3.21.4)
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.22)
@@ -94,8 +94,8 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 4.1.3
-        version: link:../../packages/uploadthing
+        specifier: 5.0.0
+        version: 5.0.0(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -134,8 +134,8 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 4.1.3
-        version: link:../../packages/react
+        specifier: 5.0.0
+        version: 5.0.0(react-dropzone@14.2.3)(react@18.2.0)(uploadthing@5.0.0)(zod@3.21.4)
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.22)
@@ -158,8 +158,8 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 4.1.3
-        version: link:../../packages/uploadthing
+        specifier: 5.0.0
+        version: 5.0.0(zod@3.21.4)
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -3021,6 +3021,39 @@ packages:
       '@typescript-eslint/types': 5.59.9
       eslint-visitor-keys: 3.4.1
 
+  /@uploadthing/mime-types@0.2.0:
+    resolution: {integrity: sha512-nRcdyM622+GYT9SdaJIVLknqoc8i7krItinfuBPtvmPc+UNGDJ+pMkr4AatYp88cEc4iYtPlN8flJvZ3dNtgrg==}
+    dev: false
+
+  /@uploadthing/react@5.0.0(react-dropzone@14.2.3)(react@18.2.0)(uploadthing@5.0.0)(zod@3.21.4):
+    resolution: {integrity: sha512-rWqL9V/gyCa+rWB0XNPSUEdy0w9Mlx/I/LxQkmzC2NCAwIUeub11pecdMwlKdVsogg45oMhzEI3odA2g9a5Scw==}
+    peerDependencies:
+      react: ^17.0.2 || ^18.0.0
+      react-dropzone: ^14.2.3
+      uploadthing: ^5.0.0
+    dependencies:
+      '@uploadthing/shared': 5.0.0(@uploadthing/mime-types@0.2.0)(zod@3.21.4)
+      react: 18.2.0
+      react-dropzone: 14.2.3(react@18.2.0)
+      uploadthing: 5.0.0(zod@3.21.4)
+    transitivePeerDependencies:
+      - '@uploadthing/mime-types'
+      - zod
+    dev: false
+
+  /@uploadthing/shared@5.0.0(@uploadthing/mime-types@0.2.0)(zod@3.21.4):
+    resolution: {integrity: sha512-Owr/RbSZgThcjZWWy6xTcmRH6jNcCfTGtrH3jAftA1nlGW1g4FzrdTZIHB2fdjZ5qJJ2KoyY3cPY1wEdE4FjaQ==}
+    peerDependencies:
+      '@uploadthing/mime-types': ^0.2.0
+      zod: ^3.21.4
+    peerDependenciesMeta:
+      '@uploadthing/mime-types':
+        optional: true
+    dependencies:
+      '@uploadthing/mime-types': 0.2.0
+      zod: 3.21.4
+    dev: false
+
   /@vitest/expect@0.30.1:
     resolution: {integrity: sha512-c3kbEtN8XXJSeN81iDGq29bUzSjQhjES2WR3aColsS4lPGbivwLtas4DNUe0jD9gg/FYGIteqOenfU95EFituw==}
     dependencies:
@@ -4280,6 +4313,11 @@ packages:
   /dotenv@16.1.4:
     resolution: {integrity: sha512-m55RtE8AsPeJBpOIFKihEmqUcoVncQIwo7x9U8ZwLEZw9ZpXboz2c+rvog+jUaJvVrZ5kBOeYQBX5+8Aa/OZQw==}
     engines: {node: '>=12'}
+
+  /dotenv@16.3.1:
+    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /dotenv@8.6.0:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
@@ -7761,7 +7799,6 @@ packages:
       file-selector: 0.6.0
       prop-types: 15.8.1
       react: 18.2.0
-    dev: true
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -9155,6 +9192,15 @@ packages:
       browserslist: 4.21.7
       escalade: 3.1.1
       picocolors: 1.0.0
+
+  /uploadthing@5.0.0(zod@3.21.4):
+    resolution: {integrity: sha512-ahWcBKkcOrEF3NpTH9bpZWS4ZDim92lezd3+uSLkvhUg5kKoGT1+lyOWUUWgiIq9HlYwN8oXIb8LFvg6jLv05Q==}
+    dependencies:
+      '@uploadthing/mime-types': 0.2.0
+      '@uploadthing/shared': 5.0.0(@uploadthing/mime-types@0.2.0)(zod@3.21.4)
+    transitivePeerDependencies:
+      - zod
+    dev: false
 
   /uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
