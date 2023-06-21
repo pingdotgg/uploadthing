@@ -31,8 +31,7 @@ FileRoute similar to an endpoint, it has:
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
 
-```ts copy
-/** server/uploadthing.ts */
+```tsx copy filename="server/uploadthing.ts"
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
@@ -108,7 +107,7 @@ export const { UploadButton, UploadDropzone, Uploader } =
 The `@uploadthing/react` package includes an "UploadButton" component that you
 can simply drop into your app, and start uploading files immediately.
 
-```tsx copy
+```tsx copy filename="app/example-uploader.tsx"
 import { UploadButton } from "~/utils/uploadthing";
 // You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
 import "@uploadthing/react/styles.css";
