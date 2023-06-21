@@ -32,6 +32,7 @@ export const OurUploadButton = () => (
 | input                  | string   | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
 | onClientUploadComplete | function | No                      | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
 | onUploadError          | function | No                      | callback function when upload fails                                                 |
+| onUploadProgress       | function | No                      | callback function for upload progress                                               |
 
 ## UploadDropzone
 
@@ -64,6 +65,7 @@ export const OurUploadDropzone = () => (
 | input                  | string   | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
 | onClientUploadComplete | function | No                      | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
 | onUploadError          | function | No                      | callback function when upload fails                                                 |
+| onUploadProgress       | function | No                      | callback function for upload progress                                               |
 
 ## generateReactHelpers
 
@@ -131,6 +133,35 @@ export function MultiUploader() {
   );
 }
 ```
+
+### Configuration
+
+```tsx
+const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+  endpoint,
+  opts: {
+    onClientUploadComplete: ({fileKey: string, fileUrl: string}[]) => void
+    onUploadError: (error: Error) => void
+    onUploadProgress: (progress: number) => void
+  },
+);
+```
+
+- `endpoint`: The name of the route you want this button to upload to
+
+| Options                | Type     | Description                                                                       |
+| :--------------------- | :------- | :-------------------------------------------------------------------------------- |
+| onClientUploadComplete | function | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
+| onUploadError          | function | callback function when upload fails                                               |
+| onUploadProgress       | function | callback function for upload progress                                             |
+
+### Returns
+
+| Prop              | Type     | Description                                               |
+| :---------------- | :------- | :-------------------------------------------------------- |
+| startUpload       | function | `(files: File[]) => void` function to start a file upload |
+| isUploading       | function | if file(s) are currently uploading                        |
+| permittedFileInfo | function | information on permitted file types, sizes, and counts    |
 
 ## uploadFiles
 
