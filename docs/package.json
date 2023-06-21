@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "next dev --port 3030 -H 127.0.0.1",
+    "dev": "next dev --port 3030",
     "clean": "git clean -xdf dist node_modules",
     "build": "next build",
     "start": "next start",
