@@ -5,8 +5,12 @@ import { pollForFileData } from "@uploadthing/shared";
 
 import type { FileRouter, inferEndpointInput } from "./src/internal/types";
 
-const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
-  const queryParams = `?actionType=upload&slug=${config.slug}`;
+const createRequestPermsUrl = (config: {
+  url?: string;
+  slug: string;
+  actionType: "upload" | "failure";
+}) => {
+  const queryParams = `?actionType=${config.actionType}&slug=${config.slug}`;
 
   return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
 };
@@ -31,6 +35,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     createRequestPermsUrl({
       url: config?.url,
       slug: String(opts.endpoint),
+      actionType: "upload",
     }),
     {
       method: "POST",
@@ -93,7 +98,24 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       }),
     });
 
-    if (!upload.ok) throw new Error("Upload failed.");
+    if (!upload.ok) {
+      // Mark the file as failed.
+      await fetch(
+        createRequestPermsUrl({
+          url: config?.url,
+          slug: String(opts.endpoint),
+          actionType: "failure",
+        }),
+        {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: fields["key"],
+          }),
+        },
+      );
+
+      throw new Error("Upload failed.");
+    }
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl =
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
