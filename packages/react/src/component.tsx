@@ -154,7 +154,7 @@ export function UploadButton<TRouter extends FileRouter>(
           !ready && "ut-bg-blue-400 ut-cursor-not-allowed",
           ready &&
             isUploading &&
-            `ut-bg-blue-400 after:uth-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${progressHeights[uploadProgress]}`,
+            `ut-bg-blue-400 after:ut-h-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${progressHeights[uploadProgress]}`,
           ready && !isUploading && "ut-bg-blue-600",
         )}
       >
