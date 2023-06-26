@@ -79,7 +79,6 @@ module.exports = {
       brightness: {
         25: ".25",
       },
-      plugins: [require("@tailwindcss/forms")],
     },
   },
 };
