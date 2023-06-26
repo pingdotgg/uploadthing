@@ -108,10 +108,17 @@ export function UploadButton<TRouter extends FileRouter>(
     : UploadthingComponentProps<TRouter>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
+  let inputRef: HTMLInputElement;
   const $props = props as UploadthingComponentProps<TRouter>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
   const uploadedThing = useUploadThing($props.endpoint, {
-    onClientUploadComplete: $props.onClientUploadComplete,
+    onClientUploadComplete: (res) => {
+      if (inputRef) {
+        inputRef.value = "";
+      }
+      $props.onClientUploadComplete?.(res);
+      setUploadProgress(0);
+    },
     onUploadProgress: (p) => {
       setUploadProgress(p);
       $props.onUploadProgress?.(p);
@@ -137,6 +144,8 @@ export function UploadButton<TRouter extends FileRouter>(
       >
         <input
           class="ut-hidden"
+          /*eslint-disable @typescript-eslint/no-non-null-assertion*/
+          ref={inputRef!}
           type="file"
           multiple={fileInfo().multiple}
           accept={generateMimeTypes(fileInfo().fileTypes ?? [])?.join(", ")}
@@ -177,7 +186,11 @@ export const UploadDropzone = <TRouter extends FileRouter>(
   const $props = props as UploadthingComponentProps<TRouter>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
   const uploadedThing = useUploadThing($props.endpoint, {
-    onClientUploadComplete: $props.onClientUploadComplete,
+    onClientUploadComplete: (res) => {
+      setFiles([]);
+      $props.onClientUploadComplete?.(res);
+      setUploadProgress(0);
+    },
     onUploadProgress: (p) => {
       setUploadProgress(p);
       $props.onUploadProgress?.(p);
@@ -231,7 +244,10 @@ export const UploadDropzone = <TRouter extends FileRouter>(
             <span class="ut-flex ut-w-64 ut-items-center ut-justify-center">
               Choose files or drag and drop
             </span>
-            <input class="ut-sr-only" {...getInputProps()} />
+            <input
+              class="ut-sr-only"
+              {...getInputProps()}
+            />
           </label>
         </div>
         <div class="ut-h-[1.25rem]">
