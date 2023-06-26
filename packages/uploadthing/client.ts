@@ -41,7 +41,13 @@ const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
-    onUploadProgress?: ({file, progress}: {file: string, progress: number}) => void;
+    onUploadProgress?: ({
+      file,
+      progress,
+    }: {
+      file: string;
+      progress: number;
+    }) => void;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
@@ -124,7 +130,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       },
       (progressEvent) =>
         opts.onUploadProgress &&
-        opts.onUploadProgress({file: file.name, progress: (progressEvent.loaded / progressEvent.total) * 100}),
+        opts.onUploadProgress({
+          file: file.name,
+          progress: (progressEvent.loaded / progressEvent.total) * 100,
+        }),
     );
 
     if (upload.status > 299 || upload.status < 200)

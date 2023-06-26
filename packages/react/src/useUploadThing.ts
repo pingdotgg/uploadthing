@@ -21,7 +21,7 @@ export type UseUploadthingProps = {
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
-  onUploadProgress?: (p: number) => void
+  onUploadProgress?: (p: number) => void;
   onUploadError?: (e: Error) => void;
 };
 
@@ -31,7 +31,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     opts?: UseUploadthingProps,
   ) => {
     const [isUploading, setUploading] = useState(false);
-    const uploadProgress = useRef(0)
+    const uploadProgress = useRef(0);
     const fileProgress = useRef<Map<string, number>>(new Map());
 
     const permittedFileInfo = useEndpointMetadata(endpoint as string);
@@ -50,7 +50,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
           endpoint: endpoint as string,
           input,
           onUploadProgress: (progress) => {
-            if(!opts?.onUploadProgress) return
+            if (!opts?.onUploadProgress) return;
             fileProgress.current.set(progress.file, progress.progress);
             let sum = 0;
             fileProgress.current.forEach((p) => {
@@ -58,21 +58,21 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             });
             const averageProgress =
               Math.floor(sum / fileProgress.current.size / 10) * 10;
-            if (averageProgress !== uploadProgress.current){
-              opts?.onUploadProgress?.(averageProgress)
-              uploadProgress.current = averageProgress
+            if (averageProgress !== uploadProgress.current) {
+              opts?.onUploadProgress?.(averageProgress);
+              uploadProgress.current = averageProgress;
             }
           },
         });
         setUploading(false);
         fileProgress.current = new Map();
-        uploadProgress.current = 0
+        uploadProgress.current = 0;
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         setUploading(false);
         fileProgress.current = new Map();
-        uploadProgress.current = 0
+        uploadProgress.current = 0;
         opts?.onUploadError?.(e as Error);
         return;
       }

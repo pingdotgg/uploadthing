@@ -124,12 +124,12 @@ export function UploadButton<TRouter extends FileRouter>(
     generatePermittedFileTypes(uploadedThing.permittedFileInfo()?.config);
 
   return (
-    <div class="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
+    <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-1">
       <label
         class={classNames(
-          "ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-overflow-hidden ut-relative ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
+          "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
           uploadedThing.isUploading()
-            ? `ut-bg-blue-400 after:ut-h-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${
+            ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
                 progressHeights[uploadProgress()]
               }`
             : "ut-bg-blue-600",
@@ -147,7 +147,7 @@ export function UploadButton<TRouter extends FileRouter>(
             void uploadedThing.startUpload(files, input);
           }}
         />
-        <span class="ut-px-3 ut-z-10 ut-py-2 ut-text-white">
+        <span class="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
           {uploadedThing?.isUploading() ? (
             <Spinner />
           ) : (
@@ -245,9 +245,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
           <div class="ut-mt-4 ut-flex ut-items-center ut-justify-center">
             <button
               class={classNames(
-                "ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-overflow-hidden ut-relative ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
+                "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
                 uploadedThing.isUploading()
-                  ? `ut-bg-blue-400 after:ut-h-full after:ut-left-0 after:ut-bg-blue-600 after:ut-absolute ${
+                  ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
                       progressHeights[uploadProgress()]
                     }`
                   : "ut-bg-blue-600",
@@ -261,7 +261,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
                 void uploadedThing.startUpload(files(), input);
               }}
             >
-              <span class="ut-px-3 ut-z-10 ut-py-2 ut-text-white">
+              <span class="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
                 {uploadedThing.isUploading() ? (
                   <Spinner />
                 ) : (
