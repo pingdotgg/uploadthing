@@ -87,7 +87,6 @@
     "@uploadthing/shared": "^5.0.0"
   },
   "devDependencies": {
-    "@tailwindcss/forms": "^0.5.3",
     "autoprefixer": "10.4.14",
     "postcss": "8.4.22",
     "solid-js": "^1.7.6",

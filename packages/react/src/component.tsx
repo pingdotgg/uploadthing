@@ -147,7 +147,7 @@ export function UploadButton<TRouter extends FileRouter>(
   };
 
   return (
-    <div className="ut-flex ut-flex-col ut-gap-1 ut-items-center ut-justify-center">
+    <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-1">
       <label
         className={classNames(
           "ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-overflow-hidden ut-relative ut-w-36 ut-h-10 ut-flex ut-items-center ut-justify-center ut-cursor-pointer",
@@ -178,7 +178,7 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p className="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
@@ -235,11 +235,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
         isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
-      <div className="text-center" {...getRootProps()}>
+      <div className="ut-text-center" {...getRootProps()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
-          className="ut-mx-auto ut-h-12 ut-w-12 ut-text-gray-400"
+          className="ut-mx-auto ut-block ut-h-12 ut-w-12 ut-align-middle ut-text-gray-400"
         >
           <path
             fill="currentColor"
@@ -256,7 +256,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
               ready ? "ut-text-blue-600" : "ut-text-gray-500",
             )}
           >
-            <span className="ut-w-64 ut-flex ut-items-center ut-justify-center">
+            <span className="ut-flex ut-w-64 ut-items-center ut-justify-center">
               {ready ? `Choose files or drag and drop` : `Loading...`}
             </span>
             <input
@@ -267,7 +267,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
           </label>
         </div>
         <div className="ut-h-[1.25rem]">
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p className="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         </div>
@@ -311,15 +311,15 @@ export function Uploader<TRouter extends FileRouter>(
 ) {
   return (
     <>
-      <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-center text-4xl font-bold">
+      <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span className="ut-text-center ut-text-4xl ut-font-bold">
           {`Upload a file using a button:`}
         </span>
         {/* @ts-expect-error - this is validated above */}
         <UploadButton<TRouter> {...props} />
       </div>
-      <div className="flex flex-col items-center justify-center gap-4">
-        <span className="text-center text-4xl font-bold">
+      <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span className="ut-text-center ut-text-4xl ut-font-bold">
           {`...or using a dropzone:`}
         </span>
         {/* @ts-expect-error - this is validated above */}
@@ -332,7 +332,7 @@ export function Uploader<TRouter extends FileRouter>(
 function Spinner() {
   return (
     <svg
-      className="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
+      className="ut-block ut-h-5 ut-w-5 ut-animate-spin ut-align-middle ut-text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 576 512"

@@ -1,6 +1,8 @@
 ### The UploadThing components look all weird, what's going on?
 
-If your components appear unstyled, you likely forgot to import our CSS file from the React package. Don't forget to add the following to your root `layout.tsx` or `_app.tsx`:
+If your components appear unstyled, you likely forgot to import our CSS file
+from the React package. Don't forget to add the following to your root
+`layout.tsx` or `_app.tsx`:
 
 ```tsx
 import "@uploadthing/react/styles.css";
@@ -8,7 +10,8 @@ import "@uploadthing/react/styles.css";
 
 ### Some of my other components look weird now... what's up with that?
 
-You may need to check the order of imports. Making sure that the uploadthing component styles are imported before others usually does the trick
+You may need to check the order of imports. Making sure that the uploadthing
+component styles are imported before others usually does the trick
 
 ```tsx
 import "@uploadthing/react/styles.css";
@@ -17,10 +20,15 @@ import "../styles/globals.css";
 
 ### When I upload files, I get the error `Failed to simulate callback for file. Is your webhook configured correctly?`
 
-This error is our catch-all if we were unable to query the `/api/uploadthing` endpoint. Almost every time we've seen someone who has this issue, it's because their `middleware.ts` is configured incorrectly.
+This error is our catch-all if we were unable to query the `/api/uploadthing`
+endpoint. Almost every time we've seen someone who has this issue, it's because
+their `middleware.ts` is configured incorrectly.
 
-Make sure that `/api/uploadthing` is NOT blocked through your middleware. It serves as both a validation endpoint from client AND a webhook for the `onUploadComplete` calls.
+Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
+serves as both a validation endpoint from client AND a webhook for the
+`onUploadComplete` calls.
 
 ### I'm getting the error `Named export 'useDropzone' not found`
 
-This is because you forgot to include `esmExternals: true` in your `next.config.(m)js` file
+This is because you forgot to include `esmExternals: true` in your
+`next.config.(m)js` file

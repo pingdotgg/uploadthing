@@ -157,7 +157,7 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div class="ut-h-[1.25rem]">
         {fileInfo().fileTypes ? (
-          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p class="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(
               uploadedThing.permittedFileInfo()?.config,
             )}
@@ -210,11 +210,11 @@ export const UploadDropzone = <TRouter extends FileRouter>(
         isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
-      <div class="text-center" {...getRootProps()}>
+      <div class="ut-text-center" {...getRootProps()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
-          class="ut-mx-auto ut-h-12 ut-w-12 ut-text-gray-400"
+          class="ut-mx-auto ut-block ut-h-12 ut-w-12 ut-align-middle ut-text-gray-400"
         >
           <path
             fill="currentColor"
@@ -225,16 +225,17 @@ export const UploadDropzone = <TRouter extends FileRouter>(
         </svg>
         <div class="ut-mt-4 ut-flex ut-text-sm ut-leading-6 ut-text-gray-600">
           <label
-            for="file-upload"
+            html-for="file-upload"
             class="ut-relative ut-cursor-pointer ut-font-semibold ut-text-blue-600 focus-within:ut-outline-none focus-within:ut-ring-2 focus-within:ut-ring-blue-600 focus-within:ut-ring-offset-2 hover:ut-text-blue-500"
           >
-            {`Choose files`}
+            <span class="ut-flex ut-w-64 ut-items-center ut-justify-center">
+              Choose files or drag and drop
+            </span>
             <input class="ut-sr-only" {...getInputProps()} />
           </label>
-          <p class="ut-pl-1">{`or drag and drop`}</p>
         </div>
         <div class="ut-h-[1.25rem]">
-          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p class="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
             {allowedContentTextLabelGenerator(
               uploadedThing.permittedFileInfo()?.config,
             )}
@@ -286,15 +287,15 @@ export const Uploader = <TRouter extends FileRouter>(
 
   return (
     <>
-      <div class="flex flex-col items-center justify-center gap-4">
-        <span class="text-center text-4xl font-bold">
+      <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span class="ut-text-center ut-text-4xl ut-font-bold">
           {`Upload a file using a button:`}
         </span>
         {/* @ts-expect-error - we know this is valid from the check above */}
         <UploadButton<TRouter> {...$props} />
       </div>
-      <div class="flex flex-col items-center justify-center gap-4">
-        <span class="text-center text-4xl font-bold">
+      <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+        <span class="ut-text-center ut-text-4xl ut-font-bold">
           {`...or using a dropzone:`}
         </span>
         {/* @ts-expect-error - we know this is valid from the check above */}
@@ -307,7 +308,7 @@ export const Uploader = <TRouter extends FileRouter>(
 function Spinner() {
   return (
     <svg
-      class="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
+      class="ut-block ut-h-5 ut-w-5 ut-animate-spin ut-align-middle ut-text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 576 512"
