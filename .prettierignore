@@ -4,11 +4,7 @@ node_modules
 coverage
 
 .changeset
-
-*.md
-*.mdx
-*.yml
-*.yaml
+.github
 
 .next/
 **/next-env.d.ts
@@ -23,13 +19,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 .turbo
 
 dist
 .solid
+pnpm-lock.yaml
