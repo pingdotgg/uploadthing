@@ -244,10 +244,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
             <span class="ut-flex ut-w-64 ut-items-center ut-justify-center">
               Choose files or drag and drop
             </span>
-            <input
-              class="ut-sr-only"
-              {...getInputProps()}
-            />
+            <input class="ut-sr-only" {...getInputProps()} />
           </label>
         </div>
         <div class="ut-h-[1.25rem]">
