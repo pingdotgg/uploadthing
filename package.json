@@ -7,7 +7,7 @@
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev": "turbo run dev",
     "lint": "turbo run lint && manypkg check",
-    "format": "prettier --write . --ignore-path .gitignore",
+    "format": "prettier --write .",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck"
