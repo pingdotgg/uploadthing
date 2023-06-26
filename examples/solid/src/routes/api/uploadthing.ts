@@ -1,4 +1,4 @@
-import { createServerHandler } from "@uploadthing/solid";
+import { createServerHandler } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 

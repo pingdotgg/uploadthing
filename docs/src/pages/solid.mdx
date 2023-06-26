@@ -1,6 +1,9 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started
+# Getting Started with SolidStart
+
+Make sure you
+[install the packages and get your env variables first](/getting-started)
 
 ## Package Setup
 
@@ -126,7 +129,7 @@ export type OurFileRouter = typeof uploadRouter;
 </Callout>
 
 ```ts copy filename="src/api/uploadthing.ts"
-import { createServerHandler } from "@uploadthing/solid";
+import { createServerHandler } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
