@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-
 import { createSignal } from "solid-js";
 import type { OnDropHandler } from "solidjs-dropzone";
 import { createDropzone } from "solidjs-dropzone";
@@ -69,14 +67,12 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
 
+    onUploadProgress?: (progress: number) => void;
     onClientUploadComplete?: (
       res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
     ) => void;
     onUploadError?: (error: Error) => void;
     url?: string;
-    uploadedThing?: ReturnType<
-      ReturnType<typeof INTERNAL_uploadthingHookGen<TRouter>>
-    >;
     multiple?: boolean;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? {}
@@ -84,6 +80,20 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
         input: inferEndpointInput<TRouter[TEndpoint]>;
       });
 }[keyof TRouter];
+
+const progressHeights: { [key: number]: string } = {
+  0: "after:ut-w-0",
+  10: "after:ut-w-[10%]",
+  20: "after:ut-w-[20%]",
+  30: "after:ut-w-[30%]",
+  40: "after:ut-w-[40%]",
+  50: "after:ut-w-[50%]",
+  60: "after:ut-w-[60%]",
+  70: "after:ut-w-[70%]",
+  80: "after:ut-w-[80%]",
+  90: "after:ut-w-[90%]",
+  100: "after:ut-w-[100%]",
+};
 
 /**
  * @example
@@ -97,24 +107,45 @@ export function UploadButton<TRouter extends FileRouter>(
     ? ErrorMessage<"You forgot to pass the generic">
     : UploadthingComponentProps<TRouter>,
 ) {
+  const [uploadProgress, setUploadProgress] = createSignal(0);
+  let inputRef: HTMLInputElement;
   const $props = props as UploadthingComponentProps<TRouter>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
-  const uploadedThing =
-    $props.uploadedThing ??
-    useUploadThing($props.endpoint, {
-      onClientUploadComplete: $props.onClientUploadComplete,
-      onUploadError: $props.onUploadError,
-      url: $props.url,
-    });
+  const uploadedThing = useUploadThing($props.endpoint, {
+    onClientUploadComplete: (res) => {
+      if (inputRef) {
+        inputRef.value = "";
+      }
+      $props.onClientUploadComplete?.(res);
+      setUploadProgress(0);
+    },
+    onUploadProgress: (p) => {
+      setUploadProgress(p);
+      $props.onUploadProgress?.(p);
+    },
+    onUploadError: $props.onUploadError,
+    url: $props.url,
+  });
 
   const fileInfo = () =>
     generatePermittedFileTypes(uploadedThing.permittedFileInfo()?.config);
 
   return (
     <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-1">
-      <label class="ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-rounded-md ut-bg-blue-600">
+      <label
+        class={classNames(
+          "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
+          uploadedThing.isUploading()
+            ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
+                progressHeights[uploadProgress()]
+              }`
+            : "ut-bg-blue-600",
+        )}
+      >
         <input
           class="ut-hidden"
+          /*eslint-disable @typescript-eslint/no-non-null-assertion*/
+          ref={inputRef!}
           type="file"
           multiple={fileInfo().multiple}
           accept={generateMimeTypes(fileInfo().fileTypes ?? [])?.join(", ")}
@@ -125,7 +156,7 @@ export function UploadButton<TRouter extends FileRouter>(
             void uploadedThing.startUpload(files, input);
           }}
         />
-        <span class="ut-px-3 ut-py-2 ut-text-white">
+        <span class="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
           {uploadedThing?.isUploading() ? (
             <Spinner />
           ) : (
@@ -151,15 +182,22 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     ? ErrorMessage<"You forgot to pass the generic">
     : UploadthingComponentProps<TRouter>,
 ) => {
+  const [uploadProgress, setUploadProgress] = createSignal(0);
   const $props = props as UploadthingComponentProps<TRouter>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
-  const uploadedThing =
-    $props.uploadedThing ??
-    useUploadThing($props.endpoint, {
-      onClientUploadComplete: $props.onClientUploadComplete,
-      onUploadError: $props.onUploadError,
-      url: $props.url,
-    });
+  const uploadedThing = useUploadThing($props.endpoint, {
+    onClientUploadComplete: (res) => {
+      setFiles([]);
+      $props.onClientUploadComplete?.(res);
+      setUploadProgress(0);
+    },
+    onUploadProgress: (p) => {
+      setUploadProgress(p);
+      $props.onUploadProgress?.(p);
+    },
+    onUploadError: $props.onUploadError,
+    url: $props.url,
+  });
 
   const [files, setFiles] = createSignal<File[]>([]);
   const onDrop: OnDropHandler = (acceptedFiles) => {
@@ -216,10 +254,17 @@ export const UploadDropzone = <TRouter extends FileRouter>(
             )}
           </p>
         </div>
-        {files.length > 0 && (
+        {files().length > 0 && (
           <div class="ut-mt-4 ut-flex ut-items-center ut-justify-center">
             <button
-              class="ut-flex ut-h-10 ut-w-36 ut-items-center ut-justify-center ut-rounded-md ut-bg-blue-600"
+              class={classNames(
+                "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
+                uploadedThing.isUploading()
+                  ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
+                      progressHeights[uploadProgress()]
+                    }`
+                  : "ut-bg-blue-600",
+              )}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -229,11 +274,13 @@ export const UploadDropzone = <TRouter extends FileRouter>(
                 void uploadedThing.startUpload(files(), input);
               }}
             >
-              <span class="ut-px-3 ut-py-2 ut-text-white">
+              <span class="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
                 {uploadedThing.isUploading() ? (
                   <Spinner />
                 ) : (
-                  `Upload ${files.length} file${files.length === 1 ? "" : "s"}`
+                  `Upload ${files().length} file${
+                    files().length === 1 ? "" : "s"
+                  }`
                 )}
               </span>
             </button>
@@ -250,15 +297,7 @@ export const Uploader = <TRouter extends FileRouter>(
     : UploadthingComponentProps<TRouter>,
 ) => {
   const $props = props as UploadthingComponentProps<TRouter>;
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
-  const uploadedThing =
-    $props.uploadedThing ??
-    useUploadThing<string>($props.endpoint as string, {
-      onClientUploadComplete: $props.onClientUploadComplete,
-      url: $props.url,
-      onUploadError: $props.onUploadError,
-    });
   return (
     <>
       <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
@@ -266,14 +305,14 @@ export const Uploader = <TRouter extends FileRouter>(
           {`Upload a file using a button:`}
         </span>
         {/* @ts-expect-error - we know this is valid from the check above */}
-        <UploadButton<TRouter> {...$props} uploadedThing={uploadedThing} />
+        <UploadButton<TRouter> {...$props} />
       </div>
       <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
         <span class="ut-text-center ut-text-4xl ut-font-bold">
           {`...or using a dropzone:`}
         </span>
         {/* @ts-expect-error - we know this is valid from the check above */}
-        <UploadDropzone<TRouter> {...$props} uploadedThing={uploadedThing} />
+        <UploadDropzone<TRouter> {...$props} />
       </div>
     </>
   );

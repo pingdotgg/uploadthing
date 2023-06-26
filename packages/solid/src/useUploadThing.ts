@@ -19,6 +19,7 @@ const createEndpointMetadata = (endpoint: string, url?: string) => {
 };
 
 export type UseUploadthingProps = {
+  onUploadProgress?: (p: number) => void;
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
@@ -36,6 +37,8 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       endpoint as string,
       opts?.url,
     );
+    let uploadProgress = 0;
+    let fileProgress = new Map();
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -50,12 +53,30 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
           files,
           endpoint: endpoint as string,
           input,
+          onUploadProgress: (progress) => {
+            if (!opts?.onUploadProgress) return;
+            fileProgress.set(progress.file, progress.progress);
+            let sum = 0;
+            fileProgress.forEach((p) => {
+              sum += p;
+            });
+            const averageProgress =
+              Math.floor(sum / fileProgress.size / 10) * 10;
+            if (averageProgress !== uploadProgress) {
+              opts?.onUploadProgress?.(averageProgress);
+              uploadProgress = averageProgress;
+            }
+          },
         });
         setUploading(false);
+        fileProgress = new Map();
+        uploadProgress = 0;
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         setUploading(false);
+        fileProgress = new Map();
+        uploadProgress = 0;
         opts?.onUploadError?.(e as Error);
         return;
       }

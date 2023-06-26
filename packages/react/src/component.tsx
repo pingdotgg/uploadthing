@@ -71,6 +71,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
 
+    onUploadProgress?: (progress: number) => void;
     onClientUploadComplete?: (
       res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
     ) => void;
@@ -81,6 +82,20 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
         input: inferEndpointInput<TRouter[TEndpoint]>;
       });
 }[keyof TRouter];
+
+const progressHeights: { [key: number]: string } = {
+  0: "after:ut-w-0",
+  10: "after:ut-w-[10%]",
+  20: "after:ut-w-[20%]",
+  30: "after:ut-w-[30%]",
+  40: "after:ut-w-[40%]",
+  50: "after:ut-w-[50%]",
+  60: "after:ut-w-[60%]",
+  70: "after:ut-w-[70%]",
+  80: "after:ut-w-[80%]",
+  90: "after:ut-w-[90%]",
+  100: "after:ut-w-[100%]",
+};
 
 /**
  * @example
@@ -101,6 +116,7 @@ export function UploadButton<TRouter extends FileRouter>(
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
@@ -108,9 +124,12 @@ export function UploadButton<TRouter extends FileRouter>(
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
-        if ($props.onClientUploadComplete) {
-          $props.onClientUploadComplete(res);
-        }
+        $props.onClientUploadComplete?.(res);
+        setUploadProgress(0);
+      },
+      onUploadProgress: (p) => {
+        setUploadProgress(p);
+        $props.onUploadProgress?.(p);
       },
       onUploadError: $props.onUploadError,
     },
@@ -131,10 +150,12 @@ export function UploadButton<TRouter extends FileRouter>(
     <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-1">
       <label
         className={classNames(
-          " ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-rounded-md",
-          !ready
-            ? "ut-cursor-not-allowed ut-bg-gray-600 ut-opacity-50"
-            : "ut-bg-blue-600",
+          "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
+          !ready && "ut-cursor-not-allowed ut-bg-blue-400",
+          ready &&
+            isUploading &&
+            `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress]}`,
+          ready && !isUploading && "ut-bg-blue-600",
         )}
       >
         <input
@@ -151,7 +172,7 @@ export function UploadButton<TRouter extends FileRouter>(
           }}
           disabled={!ready}
         />
-        <span className="ut-px-3 ut-py-2 ut-text-white">
+        <span className="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
           {isUploading ? <Spinner /> : getUploadButtonText(fileTypes)}
         </span>
       </label>
@@ -181,14 +202,18 @@ export function UploadDropzone<TRouter extends FileRouter>(
     setFiles(acceptedFiles);
   }, []);
 
+  const [uploadProgress, setUploadProgress] = useState(0);
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
       onClientUploadComplete: (res) => {
         setFiles([]);
-        if ($props.onClientUploadComplete) {
-          $props.onClientUploadComplete(res);
-        }
+        $props.onClientUploadComplete?.(res);
+        setUploadProgress(0);
+      },
+      onUploadProgress: (p) => {
+        setUploadProgress(p);
+        $props.onUploadProgress?.(p);
       },
       onUploadError: $props.onUploadError,
     },
@@ -249,7 +274,12 @@ export function UploadDropzone<TRouter extends FileRouter>(
         {files.length > 0 && (
           <div className="ut-mt-4 ut-flex ut-items-center ut-justify-center">
             <button
-              className="ut-flex ut-h-10 ut-w-36 ut-items-center ut-justify-center ut-rounded-md ut-bg-blue-600"
+              className={classNames(
+                "ut-relative ut-flex ut-h-10 ut-w-36 ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
+                isUploading
+                  ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress]}`
+                  : "ut-bg-blue-600",
+              )}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -259,7 +289,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
                 void startUpload(files, input);
               }}
             >
-              <span className="ut-px-3 ut-py-2 ut-text-white">
+              <span className="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
                 {isUploading ? (
                   <Spinner />
                 ) : (
