@@ -5,19 +5,52 @@ import { pollForFileData } from "@uploadthing/shared";
 
 import type { FileRouter, inferEndpointInput } from "./src/internal/types";
 
+function fetchWithProgress(
+  url: string,
+  opts: {
+    headers?: Headers;
+    method?: string;
+    body?: string | FormData;
+  } = {},
+  onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
+) {
+  return new Promise<XMLHttpRequest>((res, rej) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(opts.method || "get", url);
+    opts.headers &&
+      Object.keys(opts.headers).forEach(
+        (h) =>
+          opts.headers && xhr.setRequestHeader(h, opts.headers.get(h) ?? ""),
+      );
+    xhr.onload = (e) => {
+      res(e.target as XMLHttpRequest);
+    };
+
+    xhr.onerror = rej;
+    if (xhr.upload && onProgress) xhr.upload.onprogress = onProgress;
+    xhr.send(opts.body);
+  });
+}
+
 const createRequestPermsUrl = (config: {
   url?: string;
   slug: string;
   actionType: "upload" | "failure";
 }) => {
   const queryParams = `?actionType=${config.actionType}&slug=${config.slug}`;
-
   return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
 };
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
+    onUploadProgress?: ({
+      file,
+      progress,
+    }: {
+      file: string;
+      progress: number;
+    }) => void;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
@@ -90,16 +123,25 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     });
 
     // Do S3 upload
-    const upload = await fetch(url, {
-      method: "POST",
-      body: formData,
-      headers: new Headers({
-        Accept: "application/xml",
-      }),
-    });
+    const upload = await fetchWithProgress(
+      url,
+      {
+        method: "POST",
+        body: formData,
+        headers: new Headers({
+          Accept: "application/xml",
+        }),
+      },
+      (progressEvent) =>
+        opts.onUploadProgress &&
+        opts.onUploadProgress({
+          file: file.name,
+          progress: (progressEvent.loaded / progressEvent.total) * 100,
+        }),
+    );
 
-    if (!upload.ok) {
-      // Mark the file as failed.
+    if (upload.status > 299 || upload.status < 200) {
+       // Mark the file as failed.
       await fetch(
         createRequestPermsUrl({
           url: config?.url,
@@ -143,7 +185,7 @@ export const genUploader = <
   return DANGEROUS__uploadFiles;
 };
 
-export const classNames = (...classes: string[]) => {
+export const classNames = (...classes: Array<string | boolean>) => {
   return classes.filter(Boolean).join(" ");
 };
 
