@@ -3,12 +3,12 @@ import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { UploadFileType } from "uploadthing/client";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
-import type { UploadFileType } from "uploadthing/client";
 import type {
   ErrorMessage,
   FileRouter,
@@ -157,7 +157,7 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div className="ut-h-[1.25rem]">
         {fileTypes && (
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p className="ut-text-xs ut-leading-5 ut-text-gray-600 ut-m-0">
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
@@ -210,11 +210,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
         isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
-      <div className="text-center" {...getRootProps()}>
+      <div className="ut-text-center" {...getRootProps()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
-          className="ut-mx-auto ut-h-12 ut-w-12 ut-text-gray-400"
+          className="ut-mx-auto ut-h-12 ut-w-12 ut-text-gray-400 ut-block ut-align-middle"
         >
           <path
             fill="currentColor"
@@ -242,7 +242,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
           </label>
         </div>
         <div className="ut-h-[1.25rem]">
-          <p className="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p className="ut-text-xs ut-leading-5 ut-text-gray-600 ut-m-0">
             {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         </div>
@@ -302,7 +302,7 @@ export function Uploader<TRouter extends FileRouter>(
 function Spinner() {
   return (
     <svg
-      className="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
+      className="ut-animate-spin ut-h-5 ut-w-5 ut-text-white ut-block ut-align-middle"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 576 512"

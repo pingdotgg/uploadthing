@@ -5,12 +5,12 @@ import type { OnDropHandler } from "solidjs-dropzone";
 import { createDropzone } from "solidjs-dropzone";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { UploadFileType } from "uploadthing/client";
 import {
   classNames,
   generateClientDropzoneAccept,
   generateMimeTypes,
 } from "uploadthing/client";
-import type { UploadFileType } from "uploadthing/client";
 import type {
   ErrorMessage,
   FileRouter,
@@ -135,7 +135,7 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div class="ut-h-[1.25rem]">
         {fileInfo().fileTypes ? (
-          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p class="ut-text-xs ut-leading-5 ut-text-gray-600 ut-m-0">
             {allowedContentTextLabelGenerator(
               uploadedThing.permittedFileInfo()?.config,
             )}
@@ -185,11 +185,11 @@ export const UploadDropzone = <TRouter extends FileRouter>(
         isDragActive ? "ut-bg-blue-600/10" : "",
       )}
     >
-      <div class="text-center" {...getRootProps()}>
+      <div class="ut-text-center" {...getRootProps()}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
-          class="ut-mx-auto ut-h-12 ut-w-12 ut-text-gray-400"
+          class="ut-mx-auto ut-h-12 ut-w-12 ut-text-gray-400 ut-block ut-align-middle"
         >
           <path
             fill="currentColor"
@@ -200,16 +200,17 @@ export const UploadDropzone = <TRouter extends FileRouter>(
         </svg>
         <div class="ut-mt-4 ut-flex ut-text-sm ut-leading-6 ut-text-gray-600">
           <label
-            for="file-upload"
-            class="ut-relative ut-cursor-pointer ut-font-semibold ut-text-blue-600 focus-within:ut-outline-none focus-within:ut-ring-2 focus-within:ut-ring-blue-600 focus-within:ut-ring-offset-2 hover:ut-text-blue-500"
+            html-for="file-upload"
+            class="ut-relative ut-cursor-pointer ut-font-semibold  focus-within:ut-outline-none focus-within:ut-ring-2 focus-within:ut-ring-blue-600 focus-within:ut-ring-offset-2 hover:ut-text-blue-500 ut-text-blue-600"
           >
-            {`Choose files`}
+            <span class="ut-w-64 ut-flex ut-items-center ut-justify-center">
+              Choose files or drag and drop
+            </span>
             <input class="ut-sr-only" {...getInputProps()} />
           </label>
-          <p class="ut-pl-1">{`or drag and drop`}</p>
         </div>
         <div class="ut-h-[1.25rem]">
-          <p class="ut-text-xs ut-leading-5 ut-text-gray-600">
+          <p class="ut-text-xs ut-leading-5 ut-text-gray-600 ut-m-0">
             {allowedContentTextLabelGenerator(
               uploadedThing.permittedFileInfo()?.config,
             )}
@@ -281,7 +282,7 @@ export const Uploader = <TRouter extends FileRouter>(
 function Spinner() {
   return (
     <svg
-      class="ut-animate-spin ut-h-5 ut-w-5 ut-text-white"
+      class="ut-animate-spin ut-h-5 ut-w-5 ut-text-white ut-block ut-align-middle"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 576 512"
