@@ -32,9 +32,12 @@ function fetchWithProgress(
   });
 }
 
-const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
-  const queryParams = `?actionType=upload&slug=${config.slug}`;
-
+const createRequestUrl = (config: {
+  url?: string;
+  slug: string;
+  actionType: "upload" | "failure";
+}) => {
+  const queryParams = `?actionType=${config.actionType}&slug=${config.slug}`;
   return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
 };
 
@@ -62,9 +65,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
-    createRequestPermsUrl({
+    createRequestUrl({
       url: config?.url,
       slug: String(opts.endpoint),
+      actionType: "upload",
     }),
     {
       method: "POST",
