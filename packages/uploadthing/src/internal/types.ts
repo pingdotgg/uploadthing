@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 
 import type { FileRouterInputConfig, UploadedFile } from "@uploadthing/shared";
 
-import type { JsonParser } from "../parser";
+import type { JsonParser } from "./parser";
 
 //
 // Utils

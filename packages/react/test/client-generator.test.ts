@@ -3,7 +3,7 @@ import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";
 
-import { generateReactHelpers } from "./useUploadThing";
+import { generateReactHelpers } from "../src/hooks";
 
 function ignoreErrors(fn: () => void) {
   try {

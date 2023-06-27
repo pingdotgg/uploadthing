@@ -13,9 +13,6 @@
       "import": "./dist/db.mjs"
     }
   },
-  "files": [
-    "dist"
-  ],
   "typesVersions": {
     "*": {
       "*": [
@@ -23,6 +20,9 @@
       ]
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
     "build": "tsup",

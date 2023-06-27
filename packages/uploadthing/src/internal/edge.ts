@@ -1,4 +1,4 @@
-import { createNextRouteHandler } from "../../next";
+import { createNextRouteHandler } from "../next";
 
 export const createServerHandler = (
   ...args: Parameters<typeof createNextRouteHandler>

@@ -15,8 +15,8 @@ import type {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { Json } from "../parser";
-import { getParseFn } from "../parser";
+import type { Json } from "./parser";
+import { getParseFn } from "./parser";
 import type { AnyRuntime, FileRouter } from "./types";
 
 const fileCountLimitHit = (

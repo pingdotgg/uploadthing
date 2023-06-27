@@ -5,5 +5,5 @@ export {
   UploadDropzone,
   Uploader,
   generateComponents,
-} from "./src/component";
-export type { UploadthingComponentProps } from "./src/component";
+} from "./component";
+export type { UploadthingComponentProps } from "./component";
