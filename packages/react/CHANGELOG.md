@@ -1,5 +1,24 @@
 # @uploadthing/react
 
+## 5.1.0
+
+### Minor Changes
+
+- [#176](https://github.com/pingdotgg/uploadthing/pull/176)
+  [`9f56c64`](https://github.com/pingdotgg/uploadthing/commit/9f56c646d44bd257d243925d714d69d8f1c1f81d)
+  Thanks [@GentikSolm](https://github.com/GentikSolm)! - feat: upload progress
+
+### Patch Changes
+
+- [#186](https://github.com/pingdotgg/uploadthing/pull/186)
+  [`a9e1eaa`](https://github.com/pingdotgg/uploadthing/commit/a9e1eaab2c17732b143b8919fbea9a223ffa2971)
+  Thanks [@GentikSolm](https://github.com/GentikSolm)! - fix: disable preflight
+  and add reset styles inline
+
+- Updated dependencies
+  [[`a0cc65c`](https://github.com/pingdotgg/uploadthing/commit/a0cc65c779f81e1455dd5ec14ce9663ff231ea73)]:
+  - @uploadthing/shared@5.0.1
+
 ## 5.0.0
 
 ### Major Changes
