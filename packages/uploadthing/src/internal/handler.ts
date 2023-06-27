@@ -293,6 +293,10 @@ export const buildRequestHandler = <
           }
           throw new Error("[UT] Failed to mark upload as failed.");
         }
+
+        return { status: 200 };
+      } else {
+        return { message: "invalid actionType", status: 500 };
       }
     } catch (e) {
       console.error("[UT] middleware failed to run");
