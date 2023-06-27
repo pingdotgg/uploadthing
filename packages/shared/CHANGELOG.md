@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 5.0.1
+
+### Patch Changes
+
+- [#185](https://github.com/pingdotgg/uploadthing/pull/185)
+  [`a0cc65c`](https://github.com/pingdotgg/uploadthing/commit/a0cc65c779f81e1455dd5ec14ce9663ff231ea73)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - [fix] Add
+  missing `size` to `file` object in simulated callback
+
 ## 5.0.0
 
 ### Patch Changes

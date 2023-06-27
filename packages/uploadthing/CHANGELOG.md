@@ -1,5 +1,29 @@
 # uploadthing
 
+## 5.1.0
+
+### Minor Changes
+
+- [#176](https://github.com/pingdotgg/uploadthing/pull/176)
+  [`9f56c64`](https://github.com/pingdotgg/uploadthing/commit/9f56c646d44bd257d243925d714d69d8f1c1f81d)
+  Thanks [@GentikSolm](https://github.com/GentikSolm)! - feat: upload progress
+
+### Patch Changes
+
+- [#155](https://github.com/pingdotgg/uploadthing/pull/155)
+  [`9797f51`](https://github.com/pingdotgg/uploadthing/commit/9797f5182351caaaacd88e12f187547937667b44)
+  Thanks [@OrJDev](https://github.com/OrJDev)! - fix(solid): make sure running
+  info only prints on server & server code doesn't leak
+
+- [#185](https://github.com/pingdotgg/uploadthing/pull/185)
+  [`a0cc65c`](https://github.com/pingdotgg/uploadthing/commit/a0cc65c779f81e1455dd5ec14ce9663ff231ea73)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - [fix] Add
+  missing `size` to `file` object in simulated callback
+
+- Updated dependencies
+  [[`a0cc65c`](https://github.com/pingdotgg/uploadthing/commit/a0cc65c779f81e1455dd5ec14ce9663ff231ea73)]:
+  - @uploadthing/shared@5.0.1
+
 ## 5.0.0
 
 ### Major Changes
