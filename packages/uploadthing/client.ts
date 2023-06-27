@@ -140,8 +140,25 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         }),
     );
 
-    if (upload.status > 299 || upload.status < 200)
+    if (upload.status > 299 || upload.status < 200) {
+      // Upload failed, tell the server
+      await fetch(
+        createRequestUrl({
+          url: config?.url,
+          slug: String(opts.endpoint),
+          actionType: "failure",
+        }),
+        {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: fields["key"],
+          }),
+        },
+      );
+      // Throw error so that the client can handle it
       throw new Error("Upload failed.");
+    }
+
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl =
       "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
