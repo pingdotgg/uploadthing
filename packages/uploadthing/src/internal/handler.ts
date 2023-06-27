@@ -131,7 +131,11 @@ export const buildRequestHandler = <
     uploadthingHook?: string;
     slug?: string;
     actionType?: string;
-    req: Partial<Request> & { json: Request["json"] };
+    req: TRuntime extends "pages"
+      ? NextApiRequest & RequestBase
+      : TRuntime extends "app"
+      ? NextRequest
+      : Partial<Request> & RequestBase;
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
     const { router, config } = opts;
