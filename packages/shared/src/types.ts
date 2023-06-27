@@ -9,6 +9,7 @@ export interface FileData {
 
   fileKey: string | null;
   fileName: string;
+  fileSize: number;
   metadata: string | null;
 
   callbackUrl: string;

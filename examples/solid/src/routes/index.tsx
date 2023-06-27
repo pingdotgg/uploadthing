@@ -13,7 +13,7 @@ const Home: VoidComponent = () => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
         }}
-        buttonMultiple
+        multiple
       />
     </main>
   );
