@@ -9,7 +9,9 @@ import useFetch from "./utils/useFetch";
 
 type EndpointMetadata = {
   slug: string;
-  config: ExpandedRouteConfig;
+  // Not using the ExpandedRouteConfig type "fixes" the declaration issue, but we don't want to do that
+  // config: ExpandedRouteConfig;
+  config: any;
 }[];
 
 const useEndpointMetadata = (endpoint: string) => {
