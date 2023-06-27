@@ -100,7 +100,7 @@
   "peerDependencies": {
     "solid-js": "^1.5.3",
     "solidjs-dropzone": "^1.0.0",
-    "uploadthing": "5.0.0"
+    "uploadthing": "^5.0.0"
   },
   "keywords": [
     "SolidJS",
