@@ -1,7 +1,9 @@
 import type { MaybePromise } from "./types";
 
-export type JsonValue = string | number | boolean;
-export type Json = { [key: string]: JsonValue | Json };
+export type JsonValue = string | number | boolean | null | undefined;
+export type JsonArray = JsonValue[];
+export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
+export type Json = JsonValue | JsonObject | JsonArray;
 
 // Don't want to use Zod cause it's an optional dependency
 export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;
