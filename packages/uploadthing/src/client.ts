@@ -76,7 +76,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   ).then(async (res) => {
     // check for 200 response
     if (!res.ok) {
-      const error = await UploadThingError.from(res);
+      const error = await UploadThingError.fromResponse(res);
       throw error;
     }
 

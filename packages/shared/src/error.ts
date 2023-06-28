@@ -39,7 +39,7 @@ export class UploadThingError extends Error {
     this.code = opts.code;
   }
 
-  public static async from(response: Response) {
+  public static async fromResponse(response: Response) {
     const message = await response.text();
     return new UploadThingError({
       message,
