@@ -155,6 +155,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw new UploadThingError({
         code: "FAILED_TO_UPLOAD",
         message: `Failed to upload file ${file.name} to S3`,
+        cause: upload,
       });
     }
 
