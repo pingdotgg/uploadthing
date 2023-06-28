@@ -26,7 +26,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web";
+export type AnyRuntime = "app" | "pages" | "web" | "nuxt";
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -35,10 +35,10 @@ export interface AnyParams {
 
 type MiddlewareFnArgs<TParams extends AnyParams> =
   TParams["_runtime"] extends "web"
-    ? { req: Request; res?: never; input: TParams["_input"] }
-    : TParams["_runtime"] extends "app"
-    ? { req: NextRequest; res?: never; input: TParams["_input"] }
-    : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
+  ? { req: Request; res?: never; input: TParams["_input"] }
+  : TParams["_runtime"] extends "app"
+  ? { req: NextRequest; res?: never; input: TParams["_input"] }
+  : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
 
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
@@ -92,5 +92,5 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
-    ? undefined
-    : TUploader["_def"]["_input"];
+  ? undefined
+  : TUploader["_def"]["_input"];
