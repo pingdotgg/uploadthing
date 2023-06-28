@@ -39,22 +39,26 @@ const fileCountLimitHit = (
     }
   });
 
-  return Object.keys(counts).some((key) => {
-    const count = counts[key as FileRouterInputKey];
-    if (count === 0) return false;
+  for (const _key in counts) {
+    const key = _key as FileRouterInputKey;
+    const count = counts[key];
+    const limit = routeConfig[key]?.maxFileCount;
 
-    const limit = routeConfig[key as FileRouterInputKey]?.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
       throw new UploadThingError({
         code: "BAD_REQUEST",
         message: "Invalid config during file count",
-        // cause: More info here that can be hidden from the client if chosen
+        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`,
       });
     }
 
-    return count > limit;
-  });
+    if (count > limit) {
+      return { limitHit: true, type: key, limit, count };
+    }
+  }
+
+  return { limitHit: false };
 };
 
 if (process.env.NODE_ENV === "development") {
@@ -115,7 +119,7 @@ const conditionalDevServer = async (fileKey: string) => {
 
   console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
   throw new UploadThingError({
-    code: "FAILED_TO_UPLOAD",
+    code: "UPLOAD_FAILED",
     message: "File took too long to upload",
   });
 };
@@ -157,16 +161,16 @@ export const buildRequestHandler = <
     if (!preferredOrEnvSecret) {
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "No secret provided",
-        cause: `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
+        message: `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
+        cause: "No secret provided",
       });
     }
 
     const uploadable = router[slug];
     if (!uploadable) {
       return new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "No uploadable found for slug",
+        code: "NOT_FOUND",
+        message: `No file route found for slug ${slug}`,
       });
     }
 
@@ -194,8 +198,8 @@ export const buildRequestHandler = <
 
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "Invalid action type",
-        cause: `Expected "upload" but got "${actionType}"`,
+        cause: `Invalid action type ${actionType}`,
+        message: `Expected "upload" but got "${actionType}"`,
       });
     }
 
@@ -231,7 +235,7 @@ export const buildRequestHandler = <
         return new UploadThingError({
           code: "BAD_REQUEST",
           message: "Files must be a string array",
-          cause: files,
+          cause: JSON.stringify(files),
         });
 
       // FILL THE ROUTE CONFIG so the server only has one happy path
@@ -239,12 +243,16 @@ export const buildRequestHandler = <
         uploadable._def.routerConfig,
       );
 
-      const limitHit = fileCountLimitHit(files, parsedConfig);
+      const { limitHit, count, limit, type } = fileCountLimitHit(
+        files,
+        parsedConfig,
+      );
 
       if (limitHit)
         return new UploadThingError({
           code: "BAD_REQUEST",
           message: "File limit exceeded",
+          cause: `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`,
         });
 
       const uploadthingApiResponse = await fetch(
@@ -277,11 +285,12 @@ export const buildRequestHandler = <
             code: "BAD_REQUEST",
             cause: error,
           });
-        } catch (e) {
+        } catch (cause) {
           console.error("[UT] unable to parse response");
           return new UploadThingError({
-            code: "FAILED_TO_SIGN",
+            code: "URL_GENERATION_FAILED",
             message: "Unable to get presigned urls",
+            cause,
           });
         }
       }
@@ -300,12 +309,13 @@ export const buildRequestHandler = <
       }
 
       return { body: parsedResponse, status: 200 };
-    } catch (e) {
+    } catch (cause) {
       console.error("[UT] middleware failed to run");
-      console.error(e);
+      console.error(cause);
       return new UploadThingError({
         code: "BAD_REQUEST",
-        cause: e,
+        message: `An error occured when running the middleware for the ${slug} route`,
+        cause,
       });
     }
   };

@@ -108,9 +108,11 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     if (!file) {
       console.error("No file found for presigned URL", presigned);
       throw new UploadThingError({
-        code: "BAD_REQUEST",
+        code: "NOT_FOUND",
         message: "No file found for presigned URL",
-        cause: presigned,
+        cause: `Expected file with name ${
+          presigned.name
+        } but got '${opts.files.join(",")}'`,
       });
     }
     const { url, fields } = presigned.presignedUrl;
@@ -154,9 +156,9 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 
     if (upload.status > 299 || upload.status < 200) {
       throw new UploadThingError({
-        code: "FAILED_TO_UPLOAD",
+        code: "UPLOAD_FAILED",
         message: `Failed to upload file ${file.name} to S3`,
-        cause: upload,
+        cause: upload.statusText,
       });
     }
 
