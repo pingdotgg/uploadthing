@@ -35,7 +35,7 @@ type RouteConfig = {
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
 export type ExpandedRouteConfig = Partial<
-  Record<FileRouterInputKey, RouteConfig>
+  Record<AllowedFileType | MimeType, RouteConfig>
 >;
 
 type PartialRouteConfig = Partial<
