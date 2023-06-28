@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+
 import { UPLOADTHING_VERSION } from "../../constants";
+import { defaultErrorFormatter } from "../error-formatter";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
 import type { FileRouter } from "../types";
@@ -9,6 +12,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
+  const errorFormatter = opts.errorFormatter ?? defaultErrorFormatter;
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
@@ -53,11 +57,22 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       res,
     });
 
-    res.status(response.status);
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-    if (response.status === 200) {
-      return res.json(response.body);
+
+    if (response instanceof UploadThingError) {
+      res.status(getStatusCodeFromError(response));
+      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+      const formattedError = errorFormatter(response);
+      return res.json(formattedError);
     }
-    return res.send(response.message ?? "Unable to upload file.");
+
+    if (response.status !== 200) {
+      // We messed up - this should never happen
+      res.status(500);
+      return res.send("An unknown error occured");
+    }
+
+    res.status(response.status);
+    return res.json(response.body);
   };
 };
