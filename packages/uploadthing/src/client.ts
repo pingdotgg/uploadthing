@@ -89,6 +89,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw new UploadThingError({
         code: "BAD_REQUEST",
         message: `Failed to parse response as JSON. Got: ${res.body}`,
+        cause: e,
       });
     }
   });
