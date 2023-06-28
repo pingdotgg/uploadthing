@@ -24,7 +24,7 @@ function messageFromUnknown(cause: unknown) {
 
 export class UploadThingError extends Error {
   public readonly cause?: Error;
-  public readonly code;
+  public readonly code: ErrorCode;
 
   constructor(opts: {
     code: keyof typeof ERROR_CODES;
