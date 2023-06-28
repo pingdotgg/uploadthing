@@ -25,6 +25,10 @@
       "types": "./dist/tw.d.ts",
       "import": "./dist/tw.mjs",
       "require": "./dist/tw.js"
+    },
+    "./nuxt": {
+      "import": "./dist/nuxt.mjs",
+      "types": "./dist/nuxt.d.ts"
     }
   },
   "files": [
@@ -76,7 +80,8 @@
     "type-fest": "^3.11.1",
     "typescript": "^5.1.6",
     "vitest": "^0.30.1",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "nuxt": "3.6.1"
   },
   "eslintConfig": {
     "root": true,
