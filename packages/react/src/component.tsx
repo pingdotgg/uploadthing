@@ -2,7 +2,10 @@ import { useCallback, useRef, useState } from "react";
 import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { UploadFileType } from "uploadthing/client";
 import {
   classNames,
@@ -75,7 +78,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     onClientUploadComplete?: (
       res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
     ) => void;
-    onUploadError?: (error: Error) => void;
+    onUploadError?: (error: UploadThingError) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? {}
     : {

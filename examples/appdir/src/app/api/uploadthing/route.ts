@@ -7,6 +7,7 @@ export const runtime = "edge";
 export const { GET, POST } = createNextRouteHandler({
   router: uploadRouter,
   errorFormatter: (error) => {
+    console.log("error", error.cause);
     return {
       message: error.message,
       foo: "my custom field",

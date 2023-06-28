@@ -27,7 +27,8 @@ export default function Home() {
               console.log("Files: ", res);
               alert("Upload Completed");
             }}
-            onUploadError={(error: Error) => {
+            onUploadError={(error) => {
+              console.log("Error: ", error);
               alert(`ERROR! ${error.message}`);
             }}
           />
@@ -38,7 +39,7 @@ export default function Home() {
               console.log("Files: ", res);
               alert("Upload Completed");
             }}
-            onUploadError={(error: Error) => {
+            onUploadError={(error) => {
               alert(`ERROR! ${error.message}`);
             }}
           />

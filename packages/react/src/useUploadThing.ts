@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
@@ -22,8 +23,13 @@ export type UseUploadthingProps = {
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: Error) => void;
+  onUploadError?: (e: UploadThingError) => void;
 };
+
+const fatalClientError = new UploadThingError({
+  code: "INTERNAL_CLIENT_ERROR",
+  message: "Something went wrong. Please report this to UploadThing.",
+});
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
@@ -64,17 +70,16 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             }
           },
         });
-        setUploading(false);
-        fileProgress.current = new Map();
-        uploadProgress.current = 0;
+
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        const error = e instanceof UploadThingError ? e : fatalClientError;
+        opts?.onUploadError?.(error);
+      } finally {
         setUploading(false);
         fileProgress.current = new Map();
         uploadProgress.current = 0;
-        opts?.onUploadError?.(e as Error);
-        return;
       }
     });
 
