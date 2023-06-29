@@ -141,22 +141,51 @@ export const buildRequestHandler = <
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
-    uploadthingHook?: string;
-    slug?: string;
-    actionType?: string;
     req: Partial<Request> & { json: Request["json"] };
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
+    const { req, res } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
-    const { uploadthingHook, slug, req, res, actionType } = input;
 
+    // Get inputs from query and params
+    const params = new URL(req.url ?? "").searchParams;
+    const uploadthingHook = req.headers?.get("uploadthing-hook") ?? undefined;
+    const slug = params.get("slug") ?? undefined;
+    const actionType = params.get("actionType") ?? undefined;
+
+    // Validate inputs
     if (!slug)
       return new UploadThingError({
         code: "BAD_REQUEST",
         message: "No slug provided",
       });
+
+    if (slug && typeof slug !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`slug` must not be an array",
+      });
+    }
+    if (actionType && typeof actionType !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`actionType` must not be an array",
+      });
+    }
+    if (uploadthingHook && typeof uploadthingHook !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`uploadthingHook` must not be an array",
+      });
+    }
+    if (typeof req.body !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Request body must be a JSON string",
+      });
+    }
 
     if (!preferredOrEnvSecret) {
       return new UploadThingError({

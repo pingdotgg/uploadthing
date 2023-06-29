@@ -13,17 +13,7 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
   const errorFormatter = opts.errorFormatter ?? defaultErrorFormatter;
 
   const POST = async (req: Request) => {
-    const params = new URL(req.url).searchParams;
-    const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
-    const slug = params.get("slug") ?? undefined;
-    const actionType = params.get("actionType") ?? undefined;
-
-    const response = await requestHandler({
-      uploadthingHook,
-      slug,
-      actionType,
-      req,
-    });
+    const response = await requestHandler({ req });
 
     if (response instanceof UploadThingError) {
       const formattedError = errorFormatter(response);
