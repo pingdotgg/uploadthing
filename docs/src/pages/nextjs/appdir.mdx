@@ -78,6 +78,8 @@ everytime you mount a component, but you can also import the components
 individually from `@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
+"use client" 
+
 import { generateComponents } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
