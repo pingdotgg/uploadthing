@@ -5,7 +5,6 @@
     { "repo": "pingdotgg/uploadthing" }
   ],
   "commit": false,
-  "fixed": [["uploadthing", "@uploadthing/react", "@uploadthing/solid"]],
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
