@@ -42,6 +42,9 @@
       ],
       "next-legacy": [
         "dist/next-legacy.d.ts"
+      ],
+      "nuxt": [
+        "dist/nuxt.d.ts"
       ]
     }
   },

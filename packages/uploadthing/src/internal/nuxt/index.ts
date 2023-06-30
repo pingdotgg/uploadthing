@@ -1,7 +1,7 @@
 
-import type { FileRouter } from "../internal/types";
-import type { RouterWithConfig } from "../internal/handler";
-import { UPLOADTHING_VERSION } from "../constants";
+import type { FileRouter } from "../types";
+import type { RouterWithConfig } from "../handler";
+import { UPLOADTHING_VERSION } from "../../constants";
 import {
     createRouter,
     defineEventHandler,
@@ -13,7 +13,7 @@ import {
 import {
     buildPermissionsInfoHandler,
     buildRequestHandler,
-} from "../internal/handler";
+} from "../handler";
 
 export const createNuxtRouteHandler = <TRouter extends FileRouter>(
     opts: RouterWithConfig<TRouter>,
