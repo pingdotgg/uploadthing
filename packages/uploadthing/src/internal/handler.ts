@@ -15,6 +15,10 @@ import type {
   Json,
   UploadedFile,
 } from "@uploadthing/shared";
+import type {
+  IncomingMessage,
+  ServerResponse
+} from 'node:http'
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
