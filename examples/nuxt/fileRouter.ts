@@ -1,7 +1,7 @@
 import * as z from "zod";
 
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing } from "uploadthing/nuxt";
+import type { FileRouter } from "uploadthing/nuxt";
 
 const f = createUploadthing();
 
@@ -41,7 +41,7 @@ export const uploadRouter = {
         },
     })
         .middleware(({ req }) => {
-            const h = req.headers.get("someProperty");
+            const h = req.headers["someProperty"];
 
             if (!h) throw new Error("someProperty is required");
 

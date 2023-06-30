@@ -17,6 +17,17 @@ const config = {
       rootDir: ["examples/*/"],
     },
   },
+  overrides: [
+    {
+      files: [
+        "packages/vue/**",
+      ],
+      rules: {
+        "react/display-name": "off",
+        "react-hooks/rules-of-hooks": "off",
+      }
+    }
+  ]
 };
 
 module.exports = config;

@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 import type { FileRouterInputConfig, UploadedFile } from "@uploadthing/shared";
 
 import type { JsonParser } from "./parser";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
 //
 // Utils
@@ -38,6 +39,8 @@ type MiddlewareFnArgs<TParams extends AnyParams> =
   ? { req: Request; res?: never; input: TParams["_input"] }
   : TParams["_runtime"] extends "app"
   ? { req: NextRequest; res?: never; input: TParams["_input"] }
+  : TParams["_runtime"] extends "nuxt"
+  ? { req: IncomingMessage; res: ServerResponse<IncomingMessage>; input: TParams["_input"] }
   : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
 
 type MiddlewareFn<

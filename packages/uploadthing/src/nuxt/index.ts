@@ -8,7 +8,7 @@ import {
     useBase,
     readBody,
     setResponseStatus,
-    getQuery
+    getQuery,
 } from 'h3'
 import {
     buildPermissionsInfoHandler,
@@ -19,7 +19,7 @@ export const createNuxtRouteHandler = <TRouter extends FileRouter>(
     opts: RouterWithConfig<TRouter>,
 ) => {
     const router = createRouter()
-    const requestHandler = buildRequestHandler<TRouter, "app">(opts);
+    const requestHandler = buildRequestHandler<TRouter, "nuxt">(opts);
 
     const POST = defineEventHandler(
         async (event) => {
@@ -31,16 +31,21 @@ export const createNuxtRouteHandler = <TRouter extends FileRouter>(
             const slug = params.slug ?? undefined;
             const actionType = params.actionType ?? undefined;
 
+            event.node.res
+
             const response = await requestHandler({
                 uploadthingHook: Array.isArray(uploadthingHook) ? uploadthingHook[0] : uploadthingHook,
                 slug,
                 actionType,
                 req: {
+                    ...event.node.req,
                     json: () => readBody(event),
                 },
+                res: event.node.res,
             });
 
             setResponseStatus(event, response.status)
+
             event.node.res.setHeader('x-uploadthing-version', UPLOADTHING_VERSION)
 
             if (response.status === 200) {
