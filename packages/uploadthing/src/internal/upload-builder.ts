@@ -3,6 +3,7 @@ import type { FileRouterInputConfig } from "@uploadthing/shared";
 import type {
   AnyParams,
   AnyRuntime,
+  FileRouter,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
@@ -54,18 +55,29 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   };
 }
 
-type InOut<TRuntime extends AnyRuntime = "web"> = (
-  input: FileRouterInputConfig,
-) => UploadBuilder<{
-  _input: UnsetMarker;
-  _metadata: UnsetMarker;
-  _runtime: TRuntime;
-}>;
+type InOut<TRuntime extends AnyRuntime = "web"> = {
+  (input: FileRouterInputConfig): UploadBuilder<{
+    _input: UnsetMarker;
+    _metadata: UnsetMarker;
+    _runtime: TRuntime;
+  }>;
+  router: <T extends FileRouter>(router: T) => T;
+};
 
 export function createBuilder<
   TRuntime extends AnyRuntime = "web",
 >(): InOut<TRuntime> {
-  return (input: FileRouterInputConfig) => {
+  const handler = (input: FileRouterInputConfig) => {
     return internalCreateBuilder<TRuntime>({ routerConfig: input });
   };
+  return new Proxy(handler, {
+    get(target, prop) {
+      if (prop === "router") {
+        return (router: FileRouter) => {
+          return router;
+        };
+      }
+      return target[prop as keyof typeof handler];
+    },
+  }) as InOut<TRuntime>;
 }
