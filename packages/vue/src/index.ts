@@ -1,6 +1,8 @@
 import {
     UploadButton,
-    useUploadButton
+    useUploadButton,
+    UploadDropzone,
+    useUploadDropzone
 } from './components'
 import './styles.css'
 import { generateVueHelpers } from './useUploadThing'
@@ -8,5 +10,7 @@ import { generateVueHelpers } from './useUploadThing'
 export {
     UploadButton,
     useUploadButton,
+    UploadDropzone,
+    useUploadDropzone,
     generateVueHelpers
 }
