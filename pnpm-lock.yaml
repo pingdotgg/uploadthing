@@ -562,6 +562,9 @@ importers:
       '@vueuse/core':
         specifier: ^10.2.1
         version: 10.2.1(vue@3.2.47)
+      vue3-dropzone:
+        specifier: ^2.0.1
+        version: 2.0.1(vue@3.2.47)
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^4.1.0
@@ -7684,6 +7687,13 @@ packages:
     engines: {node: ^10.12.0 || >=12.0.0}
     dependencies:
       flat-cache: 3.0.4
+
+  /file-selector@0.2.4:
+    resolution: {integrity: sha512-ZDsQNbrv6qRi1YTDOEWzf5J2KjZ9KMI1Q2SGeTkCJmNNW25Jg4TW4UMcmoqcg4WrAyKRcpBXdbWRxkfrOzVRbA==}
+    engines: {node: '>= 10'}
+    dependencies:
+      tslib: 2.6.1
+    dev: false
 
   /file-selector@0.6.0:
     resolution: {integrity: sha512-QlZ5yJC0VxHxQQsQhXvBaC7VRJ2uaxTf+Tfpu4Z/OcVQJVpZO+DGU0rkoVW5ce2SccxugvpBJoMvUs59iILYdw==}
@@ -14996,6 +15006,16 @@ packages:
       semver: 7.5.4
       typescript: 5.1.6
     dev: true
+
+  /vue3-dropzone@2.0.1(vue@3.2.47):
+    resolution: {integrity: sha512-jY36ZhIpGCxyok6cKxFb2s9s15c1KXmLHxcHzHhjoPzZ5IHW7+2RrnYUenCdq88ym66KyknscNkJYJzh3C23hw==}
+    peerDependencies:
+      vue: '>=3'
+    dependencies:
+      attr-accept: 2.2.2
+      file-selector: 0.2.4
+      vue: 3.2.47
+    dev: false
 
   /vue@3.2.47:
     resolution: {integrity: sha512-60188y/9Dc9WVrAZeUVSDxRQOZ+z+y5nO2ts9jWXSTkMvayiWxCWOWtBQoYjLeccfXkiiPZWAHcV+WTPhkqJHQ==}

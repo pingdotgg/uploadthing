@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { OurFileRouter } from "fileRouter";
 
-import { useUploadButton } from "@uploadthing/vue/index";
+import { useUploadButton, useUploadDropzone } from "@uploadthing/vue/index";
 
 const UploadButton = useUploadButton<OurFileRouter>();
+const UploadDropzone = useUploadDropzone<OurFileRouter>();
 </script>
 
 <template>
@@ -19,6 +20,18 @@ const UploadButton = useUploadButton<OurFileRouter>();
         <UploadButton
           :config="{
             endpoint: 'videoAndImage',
+          }"
+        />
+      </ClientOnly>
+    </div>
+    <div className="flex flex-col items-center justify-center gap-4">
+      <span className="text-center text-4xl font-bold">
+        ...or using a dropzone:
+      </span>
+      <ClientOnly fallback-tag="div" fallback="Loading...">
+        <UploadDropzone
+          :config="{
+            endpoint: 'withoutMdwr',
           }"
         />
       </ClientOnly>
