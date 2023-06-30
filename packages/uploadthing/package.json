@@ -53,6 +53,9 @@
       ],
       "tw": [
         "dist/tw.d.ts"
+      ],
+      "nuxt": [
+        "dist/nuxt.d.ts"
       ]
     }
   },
