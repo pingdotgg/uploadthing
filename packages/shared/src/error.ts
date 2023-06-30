@@ -47,8 +47,7 @@ export class UploadThingError extends Error {
     if (opts.cause instanceof Error) {
       this.cause = opts.cause;
     } else if (opts.cause instanceof Response) {
-      // TODO: Handle this
-      // this.cause = ;
+      this.cause = new Error(`Response ${opts.cause.status} ${opts.cause.statusText}`);
     } else if (typeof opts.cause === "string") {
       this.cause = new Error(opts.cause);
     } else {
