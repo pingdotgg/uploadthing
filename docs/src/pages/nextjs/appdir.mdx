@@ -51,6 +51,35 @@ export const ourFileRouter = {
 export type OurFileRouter = typeof ourFileRouter;
 ```
 
+#### Not using TypeScript V4.9 or above?
+
+Not using `v4.9` or above, meaning you won't get access to the `satisfies`
+keyword, therefore you should be using `f.router` to define a router.
+
+```ts copy filename="src/server/uploadthing.ts"
+import { createUploadthing } from "uploadthing/next";
+
+const f = createUploadthing();
+
+export const uploadRouter = f.router({
+  imageUploader: f({
+    image: {
+      maxFileCount: 2,
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(() => {
+      return { testMetadata: "lol" };
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      console.log("uploaded with the following metadata:", metadata);
+      console.log("files successfully uploaded:", file);
+    }),
+});
+
+export type OurFileRouter = typeof uploadRouter;
+```
+
 ### Create a Next.js API route using the FileRouter
 
 <Callout type="warning">
@@ -72,10 +101,10 @@ export const { GET, POST } = createNextRouteHandler({
 
 ### Creating The UploadThing Components (optional)
 
-Generating components lets you pass your generic `FileRouter` once and then
-have typesafe components everywhere, instead of having to pass the generic
-everytime you mount a component, but you can also import the components
-individually from `@uploadthing/react`.
+Generating components lets you pass your generic `FileRouter` once and then have
+typesafe components everywhere, instead of having to pass the generic everytime
+you mount a component, but you can also import the components individually from
+`@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";

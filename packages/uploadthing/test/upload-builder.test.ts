@@ -5,7 +5,7 @@ import type { NextRequest } from "next/server";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import type { UnsetMarker } from "../src/internal/types";
+import type { FileRouter, UnsetMarker } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
 
 const badReqMock = {
@@ -177,4 +177,15 @@ it("smoke", async () => {
     input: { foo: "bar" },
   });
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
+});
+
+it("make sure f.router type is correct", () => {
+  const f = createBuilder();
+  const rtr = f.router({
+    action1: f(["image"]).onUploadComplete(() => {}),
+  });
+  expectTypeOf(rtr).toMatchTypeOf<FileRouter>();
+  rtr.action1;
+  // @ts-expect-error - action2 does not exist
+  rtr.action2;
 });
