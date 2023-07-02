@@ -183,13 +183,6 @@ export const buildRequestHandler = <
         cause: `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`,
       });
     }
-    if (typeof req.body !== "string") {
-      return new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "Request body must be a JSON string",
-        cause: `Expected request body to be of type 'string', got '${typeof req.body}'`,
-      });
-    }
 
     if (!preferredOrEnvSecret) {
       return new UploadThingError({

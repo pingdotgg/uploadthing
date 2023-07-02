@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 
 import { useState } from "react";
@@ -6,6 +8,7 @@ import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
 
 export default function Home() {
   const [userInput, setUserInput] = useState("");
+  const [error, setError] = useState("");
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
@@ -17,6 +20,7 @@ export default function Home() {
           value={userInput}
           onChange={(e) => setUserInput(e.currentTarget.value)}
         />
+        {error && <div className="text-red-500">{error}</div>}
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex gap-4">
@@ -29,7 +33,11 @@ export default function Home() {
             }}
             onUploadError={(error) => {
               console.log("Error: ", error);
-              alert(`ERROR! ${error.message}`);
+              if (error.data?.zodError.fieldErrors.foo) {
+                setError(error.data?.zodError.fieldErrors.foo);
+              } else {
+                setError("");
+              }
             }}
           />
 

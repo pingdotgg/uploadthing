@@ -33,21 +33,27 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
 export class UploadThingError extends Error {
   public readonly cause?: Error;
   public readonly code: ErrorCode;
+  public readonly data?: any;
 
   constructor(opts: {
     code: keyof typeof ERROR_CODES;
     message?: string;
     cause?: unknown;
+    data?: any;
   }) {
     const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
 
     super(message);
     this.code = opts.code;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    this.data = opts.data;
 
     if (opts.cause instanceof Error) {
       this.cause = opts.cause;
     } else if (opts.cause instanceof Response) {
-      this.cause = new Error(`Response ${opts.cause.status} ${opts.cause.statusText}`);
+      this.cause = new Error(
+        `Response ${opts.cause.status} ${opts.cause.statusText}`,
+      );
     } else if (typeof opts.cause === "string") {
       this.cause = new Error(opts.cause);
     } else {
@@ -57,10 +63,15 @@ export class UploadThingError extends Error {
 
   public static async fromResponse(response: Response) {
     const message = await response.text();
+    let shape: unknown = undefined;
+    try {
+      shape = JSON.parse(message);
+    } catch {}
     return new UploadThingError({
       message,
       code: getErrorTypeFromStatusCode(response.status),
       cause: response,
+      data: shape,
     });
   }
 }
