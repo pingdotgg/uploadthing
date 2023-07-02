@@ -8,5 +8,5 @@ export * as utapi from "./sdk";
 export { createServerHandler } from "./internal/edge";
 
 export const createUploadthing = <TErrorShape extends Json>(
-  opts: CreateBuilderOptions<TErrorShape>,
+  opts?: CreateBuilderOptions<TErrorShape>,
 ) => createBuilder<"web", TErrorShape>(opts);

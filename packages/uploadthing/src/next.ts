@@ -7,5 +7,5 @@ export { createNextRouteHandler } from "./internal/next/approuter";
 export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
-  opts: CreateBuilderOptions<TErrorShape>,
+  opts?: CreateBuilderOptions<TErrorShape>,
 ) => createBuilder<"app", TErrorShape>(opts);
