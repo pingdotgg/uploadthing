@@ -165,25 +165,29 @@ export const buildRequestHandler = <
     if (slug && typeof slug !== "string") {
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "`slug` must not be an array",
+        message: "`slug` must be a string",
+        cause: `Expected slug to be of type 'string', got '${typeof slug}'`,
       });
     }
     if (actionType && typeof actionType !== "string") {
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "`actionType` must not be an array",
+        message: "`actionType` must be a string",
+        cause: `Expected actionType to be of type 'string', got '${typeof actionType}'`,
       });
     }
     if (uploadthingHook && typeof uploadthingHook !== "string") {
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "`uploadthingHook` must not be an array",
+        message: "`uploadthingHook` must be a string",
+        cause: `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`,
       });
     }
     if (typeof req.body !== "string") {
       return new UploadThingError({
         code: "BAD_REQUEST",
         message: "Request body must be a JSON string",
+        cause: `Expected request body to be of type 'string', got '${typeof req.body}'`,
       });
     }
 
@@ -210,11 +214,10 @@ export const buildRequestHandler = <
       input?: Json;
     };
 
-    if (uploadthingHook && uploadthingHook === "callback") {
+    if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       await uploadable.resolver({
         file: reqBody.file,
-
         metadata: reqBody.metadata,
       });
 
@@ -222,9 +225,7 @@ export const buildRequestHandler = <
     }
 
     if (!actionType || actionType !== "upload") {
-      // This would either be someone spamming
-      // or the AWS webhook
-
+      // This would either be someone spamming or the AWS webhook
       return new UploadThingError({
         code: "BAD_REQUEST",
         cause: `Invalid action type ${actionType}`,
@@ -264,7 +265,9 @@ export const buildRequestHandler = <
         return new UploadThingError({
           code: "BAD_REQUEST",
           message: "Files must be a string array",
-          cause: JSON.stringify(files),
+          cause: `Expected files to be of type 'string[]', got '${JSON.stringify(
+            files,
+          )}'`,
         });
 
       // FILL THE ROUTE CONFIG so the server only has one happy path
@@ -290,9 +293,7 @@ export const buildRequestHandler = <
           method: "POST",
           body: JSON.stringify({
             files: files,
-
             routeConfig: parsedConfig,
-
             metadata,
             callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
             callbackSlug: slug,
