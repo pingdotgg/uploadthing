@@ -82,7 +82,7 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
 export function createBuilder<
   TRuntime extends AnyRuntime = "web",
   TErrorShape extends Json = { message: string },
->(opts: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
+>(opts?: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
   return (input: FileRouterInputConfig) => {
     return internalCreateBuilder<TRuntime, TErrorShape>({
       routerConfig: input,
