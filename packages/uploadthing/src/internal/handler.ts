@@ -12,11 +12,11 @@ import type {
   ExpandedRouteConfig,
   FileData,
   FileRouterInputKey,
+  Json,
   UploadedFile,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { Json } from "./parser";
 import { getParseFn } from "./parser";
 import type { AnyRuntime, FileRouter } from "./types";
 
@@ -126,7 +126,6 @@ const conditionalDevServer = async (fileKey: string) => {
 
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
-  errorFormatter?: (error: UploadThingError) => Json;
   config?: {
     callbackUrl?: string;
     uploadthingId?: string;

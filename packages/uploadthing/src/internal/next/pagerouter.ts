@@ -6,13 +6,15 @@ import { UPLOADTHING_VERSION } from "../../constants";
 import { defaultErrorFormatter } from "../error-formatter";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
-import type { FileRouter } from "../types";
+import type { FileRouter, inferErrorShape } from "../types";
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
-  const errorFormatter = opts.errorFormatter ?? defaultErrorFormatter;
+  const errorFormatter =
+    opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
+    defaultErrorFormatter;
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
@@ -43,7 +45,9 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     if (response instanceof UploadThingError) {
       res.status(getStatusCodeFromError(response));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      const formattedError = errorFormatter(response);
+      const formattedError = errorFormatter(
+        response,
+      ) as inferErrorShape<TRouter>;
       return res.json(formattedError);
     }
 

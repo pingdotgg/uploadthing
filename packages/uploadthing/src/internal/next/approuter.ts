@@ -4,19 +4,24 @@ import { UPLOADTHING_VERSION } from "../../constants";
 import { defaultErrorFormatter } from "../error-formatter";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
-import type { FileRouter } from "../types";
+import type { FileRouter, inferErrorShape } from "../types";
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "app">(opts);
-  const errorFormatter = opts.errorFormatter ?? defaultErrorFormatter;
 
   const POST = async (req: Request) => {
     const response = await requestHandler({ req });
+    const errorFormatter =
+      opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
+      defaultErrorFormatter;
 
     if (response instanceof UploadThingError) {
-      const formattedError = errorFormatter(response);
+      const formattedError = errorFormatter(
+        response,
+      ) as inferErrorShape<TRouter>;
+      console.log("formattedError", formattedError);
       return new Response(JSON.stringify(formattedError), {
         status: getStatusCodeFromError(response),
         headers: {

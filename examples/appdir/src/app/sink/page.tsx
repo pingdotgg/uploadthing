@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 
 import { useState } from "react";
@@ -33,8 +31,8 @@ export default function Home() {
             }}
             onUploadError={(error) => {
               console.log("Error: ", error);
-              if (error.data?.zodError.fieldErrors.foo) {
-                setError(error.data?.zodError.fieldErrors.foo);
+              if (error.data?.zodError?.fieldErrors.foo) {
+                setError(error.data?.zodError?.fieldErrors.foo[0]);
               } else {
                 setError("");
               }

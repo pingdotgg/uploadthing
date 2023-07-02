@@ -1,9 +1,6 @@
-import type { MaybePromise } from "./types";
+import type { Json } from "@uploadthing/shared";
 
-export type JsonValue = string | number | boolean | null | undefined;
-export type JsonArray = JsonValue[];
-export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
-export type Json = JsonValue | JsonObject | JsonArray;
+import type { MaybePromise } from "./types";
 
 // Don't want to use Zod cause it's an optional dependency
 export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;

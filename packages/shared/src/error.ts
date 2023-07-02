@@ -1,3 +1,5 @@
+import type { Json } from "./types";
+
 const ERROR_CODES = {
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
@@ -30,22 +32,23 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
   return fallback ?? "An unknown error occurred";
 }
 
-export class UploadThingError extends Error {
+export class UploadThingError<
+  TShape extends Json = { message: string },
+> extends Error {
   public readonly cause?: Error;
   public readonly code: ErrorCode;
-  public readonly data?: any;
+  public readonly data?: TShape;
 
   constructor(opts: {
     code: keyof typeof ERROR_CODES;
     message?: string;
     cause?: unknown;
-    data?: any;
+    data?: TShape;
   }) {
     const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
 
     super(message);
     this.code = opts.code;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.data = opts.data;
 
     if (opts.cause instanceof Error) {
@@ -62,21 +65,24 @@ export class UploadThingError extends Error {
   }
 
   public static async fromResponse(response: Response) {
-    const message = await response.text();
-    let shape: unknown = undefined;
-    try {
-      shape = JSON.parse(message);
-    } catch {}
+    const json = (await response.json()) as Json;
+    const message =
+      json &&
+      typeof json === "object" &&
+      "message" in json &&
+      typeof json.message === "string"
+        ? json.message
+        : undefined;
     return new UploadThingError({
       message,
       code: getErrorTypeFromStatusCode(response.status),
       cause: response,
-      data: shape,
+      data: json,
     });
   }
 }
 
-export function getStatusCodeFromError(error: UploadThingError) {
+export function getStatusCodeFromError(error: UploadThingError<any>) {
   return ERROR_CODES[error.code] ?? 500;
 }
 

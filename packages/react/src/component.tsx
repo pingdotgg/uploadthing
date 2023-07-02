@@ -16,6 +16,7 @@ import type {
   ErrorMessage,
   FileRouter,
   inferEndpointInput,
+  inferErrorShape,
 } from "uploadthing/server";
 
 import { INTERNAL_uploadthingHookGen } from "./useUploadThing";
@@ -78,7 +79,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     onClientUploadComplete?: (
       res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
     ) => void;
-    onUploadError?: (error: UploadThingError) => void;
+    onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? {}
     : {
