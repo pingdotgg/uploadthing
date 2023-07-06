@@ -1,3 +1,4 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
 import type { NextApiResponse } from "next";
 
 import {
@@ -13,10 +14,6 @@ import type {
   FileRouterInputKey,
   UploadedFile,
 } from "@uploadthing/shared";
-import type {
-  IncomingMessage,
-  ServerResponse
-} from 'node:http'
 
 import { UPLOADTHING_VERSION } from "../constants";
 import type { Json } from "./parser";
@@ -135,9 +132,14 @@ export const buildRequestHandler = <
     uploadthingHook?: string;
     slug?: string;
     actionType?: string;
-    req: TRuntime extends "nuxt" ? Partial<IncomingMessage> & { json: Request["json"] } : Partial<Request> & { json: Request["json"] };
-    res?: TRuntime extends "pages" ? NextApiResponse :
-    TRuntime extends "nuxt" ? ServerResponse<IncomingMessage> : undefined;
+    req: TRuntime extends "nuxt"
+      ? Partial<IncomingMessage> & { json: Request["json"] }
+      : Partial<Request> & { json: Request["json"] };
+    res?: TRuntime extends "pages"
+      ? NextApiResponse
+      : TRuntime extends "nuxt"
+      ? ServerResponse<IncomingMessage>
+      : undefined;
   }) => {
     const { router, config } = opts;
     const preferredOrEnvSecret =
