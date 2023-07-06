@@ -559,6 +559,9 @@ importers:
       '@uploadthing/shared':
         specifier: ^5.0.1
         version: link:../shared
+      '@uploadthing/vue-dropzone':
+        specifier: ^5.0.1
+        version: link:../vue-dropzone
       '@vueuse/core':
         specifier: ^10.2.1
         version: 10.2.1(vue@3.2.47)
@@ -593,6 +596,31 @@ importers:
       vue:
         specifier: ^3.2.47
         version: 3.2.47
+      vue-tsc:
+        specifier: ^1.4.2
+        version: 1.4.2(typescript@5.1.6)
+
+  packages/vue-dropzone:
+    dependencies:
+      attr-accept:
+        specifier: 2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: 0.6.0
+        version: 0.6.0
+      vue:
+        specifier: ^3.2.47
+        version: 3.2.47
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^4.1.0
+        version: 4.1.0(vite@4.3.9)(vue@3.2.47)
+      typescript:
+        specifier: ^5.0.2
+        version: 5.1.6
+      vite:
+        specifier: ^4.3.9
+        version: 4.3.9(@types/node@18.16.0)
       vue-tsc:
         specifier: ^1.4.2
         version: 1.4.2(typescript@5.1.6)

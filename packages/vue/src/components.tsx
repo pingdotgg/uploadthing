@@ -1,8 +1,8 @@
 import type { FileRouter } from "uploadthing/server";
-import { defineComponent, computed, ref } from "vue";
+import { defineComponent, computed, ref, watch, reactive } from "vue";
 import type { UploadthingComponentProps } from "./types";
-import { useDropzone } from "vue3-dropzone";
 import { classNames, generateMimeTypes } from "uploadthing/client";
+import { useDropzone, type FileUploadOptions } from '@uploadthing/vue-dropzone'
 
 import {
     allowedContentTextLabelGenerator,
@@ -143,6 +143,14 @@ export const UploadDropzone = <TRouter extends FileRouter>() => defineComponent(
         const $props = props.config;
         const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
         const files = ref<File[]>([]);
+
+        watch(
+            () => files.value,
+            (newFiles) => {
+                console.log('files change', newFiles);
+            }
+        )
+
         const uploadProgress = ref(0);
 
         const setFiles = (newFiles: File[]) => {
@@ -170,19 +178,50 @@ export const UploadDropzone = <TRouter extends FileRouter>() => defineComponent(
                 permittedFileInfo.value?.config,
             )
         )
+        const acceptedFileTypes = computed(
+            () => generatedPermittedFileTypes.value.fileTypes.map(
+                (fileType) => {
+                    const map: Record<string, string> = {
+                        "image": "image/*",
+                        "video": "video/*",
+                        "audio": "audio/*",
+                        "text": "text/*",
+                    }
+
+                    return map[fileType] || fileType;
+                }
+            )
+        )
 
         const ready = computed(() => generatedPermittedFileTypes.value.fileTypes.length > 0)
+
+        const dropzoneOptions = reactive<Partial<FileUploadOptions>>({
+            onDrop: (acceptedFiles) => {
+                console.log(acceptedFiles);
+
+                setFiles(acceptedFiles);
+            },
+            onDropAccepted: (acceptedFiles) => {
+                console.log('onDropAccepted', acceptedFiles);
+            },
+            onDropRejected(rejectReasons, event) {
+                console.log('onDropRejected', rejectReasons, event);
+            },
+            accept: acceptedFileTypes.value
+        })
+
+        watch(
+            () => acceptedFileTypes.value,
+            (value) => {
+                dropzoneOptions.accept = value;
+            }
+        )
 
         const {
             getRootProps,
             getInputProps,
             isDragActive
-        } = useDropzone({
-            onDrop: (acceptedFiles) => {
-                setFiles(acceptedFiles);
-            },
-            accept: generatedPermittedFileTypes.value.fileTypes
-        });
+        } = useDropzone(() => dropzoneOptions);
 
         return () => {
             return (
