@@ -151,13 +151,6 @@ export const UploadDropzone = <TRouter extends FileRouter>() => defineComponent(
         const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
         const files = ref<File[]>([]);
 
-        watch(
-            () => files.value,
-            (newFiles) => {
-                console.log('files change', newFiles);
-            }
-        )
-
         const uploadProgress = ref(0);
 
         const setFiles = (newFiles: File[]) => {
@@ -207,12 +200,6 @@ export const UploadDropzone = <TRouter extends FileRouter>() => defineComponent(
                 console.log(acceptedFiles);
 
                 setFiles(acceptedFiles);
-            },
-            onDropAccepted: (acceptedFiles) => {
-                console.log('onDropAccepted', acceptedFiles);
-            },
-            onDropRejected(rejectReasons, event) {
-                console.log('onDropRejected', rejectReasons, event);
             },
             accept: acceptedFileTypes.value
         })
