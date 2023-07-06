@@ -64,5 +64,7 @@ export const createNuxtRouteHandler = <TRouter extends FileRouter>(
   router.post("/", POST);
   router.get("/", GET);
 
+  // this is not a hook
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   return useBase("/api/uploadthing", router.handler);
 };
