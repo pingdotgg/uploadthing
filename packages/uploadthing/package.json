@@ -20,6 +20,10 @@
     "./next-legacy": {
       "import": "./dist/next-legacy.mjs",
       "types": "./dist/next-legacy.d.ts"
+    },
+    "./nuxt": {
+      "import": "./dist/nuxt.mjs",
+      "types": "./dist/nuxt.d.ts"
     }
   },
   "files": [
@@ -38,6 +42,9 @@
       ],
       "next-legacy": [
         "dist/next-legacy.d.ts"
+      ],
+      "nuxt": [
+        "dist/nuxt.d.ts"
       ]
     }
   },
@@ -59,7 +66,9 @@
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.42.0",
+    "h3": "^1.7.1",
     "next": "13.4.4",
+    "nuxt": "3.6.1",
     "tsup": "6.7.0",
     "type-fest": "^3.11.1",
     "typescript": "5.1.3",

@@ -9,6 +9,7 @@ export default defineConfig((opts) => ({
     "./src/server.ts",
     "./src/next.ts",
     "./src/next-legacy.ts",
+    "./src/nuxt.ts",
   ],
   clean: !opts.watch,
 }));
