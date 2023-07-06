@@ -40,6 +40,13 @@ export const UploadButton = <TRouter extends FileRouter>() => defineComponent(
         const fileInputRef = ref<HTMLInputElement | null>(null);
         const uploadProgress = ref(0);
 
+        watch(
+            () => uploadProgress.value,
+            (value) => {
+                console.log('uploadProgress', value);
+            }
+        )
+
         const $props = props.config;
 
         const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
@@ -100,7 +107,7 @@ export const UploadButton = <TRouter extends FileRouter>() => defineComponent(
                 !ready.value && "ut-cursor-not-allowed ut-bg-blue-400",
                 ready.value &&
                 isUploading.value &&
-                `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress.value]}`,
+                `ut-bg-blue-400 after:ut-content-[''] after:ut-block after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress.value]}`,
                 ready.value && !isUploading.value && "ut-bg-blue-600",
             )
         )
@@ -271,9 +278,9 @@ export const UploadDropzone = <TRouter extends FileRouter>() => defineComponent(
                             <div class="ut-mt-4 ut-flex ut-items-center ut-justify-center">
                                 <button
                                     class={classNames(
-                                        "ut-relative ut-flex ut-h-10 ut-w-36 ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
+                                        "ut-relative ut-flex ut-cursor-pointer ut-h-10 ut-w-36 ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-border-none",
                                         isUploading.value
-                                            ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress.value]}`
+                                            ? `ut-bg-blue-400 after:ut-content-[''] after:ut-block after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress.value]}`
                                             : "ut-bg-blue-600",
                                     )}
                                     onClick={(e) => {

@@ -3,5 +3,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: [
     '@uploadthing/vue/style.css'
+  ],
+  modules: [
+    '@nuxtjs/tailwindcss'
   ]
 })
