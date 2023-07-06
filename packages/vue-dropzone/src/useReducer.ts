@@ -1,7 +1,7 @@
 // copy from mya-ake/vue-use-reducer
 // [link](https://github.com/mya-ake/vue-use-reducer/blob/master/src/type.ts)
 
-import { reactive, toRaw } from 'vue'
+import { reactive, toRaw } from "vue";
 
 type Unwrap<T> = T extends { [k: string]: infer U }
   ? U
@@ -20,8 +20,8 @@ type State = Record<string, unknown>;
 type Action = {
   type: string;
 };
-export type ReducerState = State
-export type ReducerAction = Action
+export type ReducerState = State;
+export type ReducerAction = Action;
 
 export type Dispatch<A extends Action> = (action: A) => void;
 export type Reducer<S extends State, A extends Action> = (
@@ -38,16 +38,16 @@ export const useReducer = <S extends State, A extends Action>(
   initialState: S,
   initialAction?: A,
 ): ReturnValue<S, A> => {
-  const state = reactive(initialState)
+  const state = reactive(initialState);
   const dispatch: Dispatch<A> = (action) => {
-    const newState = reducer(toRaw(state) as S, action)
+    const newState = reducer(toRaw(state) as S, action);
     Object.keys(newState).forEach((key: keyof S) => {
-      (state as S)[key] = newState[key]
-    })
-  }
+      (state as S)[key] = newState[key];
+    });
+  };
 
   if (initialAction != null) {
-    dispatch(initialAction)
+    dispatch(initialAction);
   }
-  return [state as DeepReadonly<S>, dispatch]
-}
+  return [state as DeepReadonly<S>, dispatch];
+};

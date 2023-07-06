@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-types */
-import type { IncomingHttpHeaders } from "node:http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
@@ -10,7 +9,6 @@ import type {
 } from "@uploadthing/shared";
 
 import type { JsonParser } from "./parser";
-import type { IncomingMessage, ServerResponse } from "node:http";
 
 //
 // Utils
@@ -56,7 +54,11 @@ type MiddlewareFnArgs<TParams extends AnyParams> =
   : TParams["_runtime"] extends "app"
   ? { req: NextRequest; res?: never; input: TParams["_input"] }
   : TParams["_runtime"] extends "nuxt"
-  ? { req: IncomingMessage; res: ServerResponse<IncomingMessage>; input: TParams["_input"] }
+  ? {
+    req: IncomingMessage;
+    res: ServerResponse<IncomingMessage>;
+    input: TParams["_input"];
+  }
   : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
 
 type MiddlewareFn<
