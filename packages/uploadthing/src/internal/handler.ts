@@ -307,10 +307,18 @@ export const buildRequestHandler = <
           try {
             const error = (await uploadthingApiResponse.json()) as unknown;
             console.error(error);
-          } catch (e) {
+            return new UploadThingError({
+              code: "BAD_REQUEST",
+              cause: error,
+            });
+          } catch (cause) {
             console.error("[UT] unable to parse response");
+            return new UploadThingError({
+              code: "URL_GENERATION_FAILED",
+              message: "Unable to get presigned urls",
+              cause,
+            });
           }
-          throw new Error("ending upload");
         }
 
         // This is when we send the response back to the user's form so they can submit the files
@@ -355,10 +363,19 @@ export const buildRequestHandler = <
           try {
             const error = (await uploadthingApiResponse.json()) as unknown;
             console.error(error);
-          } catch (e) {
+            return new UploadThingError({
+              message: "Failed to mark upload as failed",
+              code: "INTERNAL_SERVER_ERROR",
+              cause: error,
+            });
+          } catch (cause) {
             console.error("[UT] unable to parse response");
+            return new UploadThingError({
+              code: "URL_GENERATION_FAILED",
+              message: "Unable to get presigned urls",
+              cause,
+            });
           }
-          throw new Error("[UT] Failed to mark upload as failed.");
         }
 
         return { status: 200 };
