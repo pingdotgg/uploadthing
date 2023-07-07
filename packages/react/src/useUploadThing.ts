@@ -1,8 +1,13 @@
 import { useRef, useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+import type {
+  FileRouter,
+  inferEndpointInput,
+  inferErrorShape,
+} from "uploadthing/server";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -17,18 +22,23 @@ const useEndpointMetadata = (endpoint: string) => {
   return data?.find((x) => x.slug === endpoint);
 };
 
-export type UseUploadthingProps = {
+export type UseUploadthingProps<TRouter extends FileRouter> = {
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: Error) => void;
+  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
+
+const fatalClientError = new UploadThingError({
+  code: "INTERNAL_CLIENT_ERROR",
+  message: "Something went wrong. Please report this to UploadThing.",
+});
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps,
+    opts?: UseUploadthingProps<TRouter>,
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
@@ -64,17 +74,18 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             }
           },
         });
-        setUploading(false);
-        fileProgress.current = new Map();
-        uploadProgress.current = 0;
+
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        const error = e instanceof UploadThingError ? e : fatalClientError;
+        opts?.onUploadError?.(
+          error as UploadThingError<inferErrorShape<TRouter>>,
+        );
+      } finally {
         setUploading(false);
         fileProgress.current = new Map();
         uploadProgress.current = 0;
-        opts?.onUploadError?.(e as Error);
-        return;
       }
     });
 

@@ -1,7 +1,10 @@
+import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+
 import { UPLOADTHING_VERSION } from "../../constants";
+import { defaultErrorFormatter } from "../error-formatter";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
-import type { FileRouter } from "../types";
+import type { FileRouter, inferErrorShape } from "../types";
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
@@ -9,27 +12,34 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
   const requestHandler = buildRequestHandler<TRouter, "app">(opts);
 
   const POST = async (req: Request) => {
-    const params = new URL(req.url).searchParams;
-    const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
-    const slug = params.get("slug") ?? undefined;
-    const actionType = params.get("actionType") ?? undefined;
+    const response = await requestHandler({ req });
+    const errorFormatter =
+      opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
+      defaultErrorFormatter;
 
-    const response = await requestHandler({
-      uploadthingHook,
-      slug,
-      actionType,
-      req,
-    });
-    if (response.status === 200) {
-      return new Response(JSON.stringify(response.body), {
-        status: response.status,
+    if (response instanceof UploadThingError) {
+      const formattedError = errorFormatter(
+        response,
+      ) as inferErrorShape<TRouter>;
+      console.log("formattedError", formattedError);
+      return new Response(JSON.stringify(formattedError), {
+        status: getStatusCodeFromError(response),
+        headers: {
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+        },
+      });
+    }
+    if (response.status !== 200) {
+      // We messed up - this should never happen
+      return new Response("An unknown error occured", {
+        status: 500,
         headers: {
           "x-uploadthing-version": UPLOADTHING_VERSION,
         },
       });
     }
 
-    return new Response(response.message ?? "Unable to upload file.", {
+    return new Response(JSON.stringify(response.body), {
       status: response.status,
       headers: {
         "x-uploadthing-version": UPLOADTHING_VERSION,
