@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { pollForFileData } from "@uploadthing/shared";
+import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
-import type { FileRouter, inferEndpointInput } from "./src/internal/types";
+import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 function fetchWithProgress(
   url: string,
@@ -77,9 +77,12 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         input: opts.input,
       }),
     },
-  ).then((res) => {
+  ).then(async (res) => {
     // check for 200 response
-    if (!res.ok) throw new Error("Failed to get presigned URLs");
+    if (!res.ok) {
+      const error = await UploadThingError.fromResponse(res);
+      throw error;
+    }
 
     // attempt to parse response
     try {
@@ -87,19 +90,34 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     } catch (e) {
       // response is not JSON
       console.error(e);
-      throw new Error(`Failed to parse response as JSON. Got: ${res.body}`);
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Failed to parse response as JSON. Got: ${res.body}`,
+        cause: e,
+      });
     }
   });
 
-  if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes))
-    throw "No url received. How did you get here?";
+  if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
+    throw new UploadThingError({
+      code: "BAD_REQUEST",
+      message: "No URL. How did you even get here?",
+      cause: s3ConnectionRes,
+    });
+  }
 
   const fileUploadPromises = s3ConnectionRes.map(async (presigned: any) => {
     const file = opts.files.find((f) => f.name === presigned.name);
 
     if (!file) {
       console.error("No file found for presigned URL", presigned);
-      throw new Error("No file found for presigned URL");
+      throw new UploadThingError({
+        code: "NOT_FOUND",
+        message: "No file found for presigned URL",
+        cause: `Expected file with name ${
+          presigned.name
+        } but got '${opts.files.join(",")}'`,
+      });
     }
     const { url, fields } = presigned.presignedUrl;
     const formData = new FormData();
@@ -156,7 +174,11 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         },
       );
       // Throw error so that the client can handle it
-      throw new Error("Upload failed.");
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: `Failed to upload file ${file.name} to S3`,
+        cause: upload.statusText,
+      });
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one

@@ -2,6 +2,11 @@ import type { MimeType } from "@uploadthing/mime-types/db";
 
 import type { AllowedFileType } from "./file-types";
 
+export type JsonValue = string | number | boolean | null | undefined;
+export type JsonArray = JsonValue[];
+export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
+export type Json = JsonValue | JsonObject | JsonArray;
+
 /** This matches the return type from the infra */
 export interface FileData {
   id: string;
@@ -34,9 +39,9 @@ type RouteConfig = {
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
-export type ExpandedRouteConfig = Partial<
-  Record<FileRouterInputKey, RouteConfig>
->;
+export type ExpandedRouteConfig = Partial<{
+  [key in FileRouterInputKey]: RouteConfig;
+}>;
 
 type PartialRouteConfig = Partial<
   Record<FileRouterInputKey, Partial<RouteConfig>>

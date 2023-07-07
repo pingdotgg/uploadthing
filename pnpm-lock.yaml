@@ -73,7 +73,7 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -90,11 +90,14 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
+      react-image-crop:
+        specifier: ^10.1.5
+        version: 10.1.5(react@18.2.0)
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -134,7 +137,7 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -158,7 +161,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -201,7 +204,7 @@ importers:
         specifier: ^0.8.2
         version: 0.8.2(solid-js@1.7.6)
       '@uploadthing/solid':
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -222,7 +225,7 @@ importers:
         specifier: 5.20.0
         version: 5.20.0
       uploadthing:
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -331,7 +334,7 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: link:../shared
     devDependencies:
       '@types/node':
@@ -377,7 +380,7 @@ importers:
         specifier: 5.1.3
         version: 5.1.3
       uploadthing:
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -419,7 +422,7 @@ importers:
   packages/solid:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: link:../shared
     devDependencies:
       autoprefixer:
@@ -447,7 +450,7 @@ importers:
         specifier: 5.1.3
         version: 5.1.3
       uploadthing:
-        specifier: 5.0.0
+        specifier: 5.1.0
         version: link:../uploadthing
 
   packages/uploadthing:
@@ -456,7 +459,7 @@ importers:
         specifier: ^0.2.0
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: ^5.0.0
+        specifier: ^5.0.1
         version: link:../shared
     devDependencies:
       '@uploadthing/eslint-config':
@@ -4262,14 +4265,9 @@ packages:
     resolution: {integrity: sha512-axQ9zieHLnAnHh0sfAamKYiqXMJAVwu+LM/alQ7WDagoWessyWvMSFyW65CqF3owufNu8HBcE4cM2Vflu7YWcQ==}
     dev: false
 
-  /dotenv@16.1.4:
-    resolution: {integrity: sha512-m55RtE8AsPeJBpOIFKihEmqUcoVncQIwo7x9U8ZwLEZw9ZpXboz2c+rvog+jUaJvVrZ5kBOeYQBX5+8Aa/OZQw==}
-    engines: {node: '>=12'}
-
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
     engines: {node: '>=12'}
-    dev: false
 
   /dotenv@8.6.0:
     resolution: {integrity: sha512-IrPdXQsk2BbzvCBGBOTmmSH5SodmqZNt4ERAZDmW4CT+tL8VtvinqywuANaFu4bOMWki16nqf0e4oC0QIaDr/g==}
@@ -7748,6 +7746,15 @@ packages:
       react: 18.2.0
     dev: true
 
+  /react-image-crop@10.1.5(react@18.2.0):
+    resolution: {integrity: sha512-BL8Rd/UHCE4O5GcYQiWDKVh5JOJb0Ic/Gde2W171v5nY7RyQzFLM1cxIzlYfESLO/lNgBVhDHuEV9RHnqALMkA==}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      clsx: 1.2.1
+      react: 18.2.0
+    dev: false
+
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
@@ -8302,7 +8309,7 @@ packages:
       connect: 3.7.0
       debug: 4.3.4
       dequal: 2.0.3
-      dotenv: 16.1.4
+      dotenv: 16.3.1
       es-module-lexer: 1.2.1
       esbuild: 0.17.19
       esbuild-plugin-solid: 0.5.0(esbuild@0.17.19)(solid-js@1.7.6)

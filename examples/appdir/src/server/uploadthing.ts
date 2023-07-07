@@ -3,7 +3,14 @@ import * as z from "zod";
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
 
-const f = createUploadthing();
+const f = createUploadthing({
+  errorFormatter: (err) => {
+    return {
+      message: err.message,
+      zodError: err.cause instanceof z.ZodError ? err.cause.flatten() : null,
+    };
+  },
+});
 
 export const uploadRouter = {
   videoAndImage: f({

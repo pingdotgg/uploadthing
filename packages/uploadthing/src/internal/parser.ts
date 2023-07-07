@@ -1,7 +1,6 @@
-import type { MaybePromise } from "./internal/types";
+import type { Json } from "@uploadthing/shared";
 
-export type JsonValue = string | number | boolean;
-export type Json = { [key: string]: JsonValue | Json };
+import type { MaybePromise } from "./types";
 
 // Don't want to use Zod cause it's an optional dependency
 export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;

@@ -4,8 +4,10 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
+    "build:pkgs": "turbo run build --filter \"./packages/*\"",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev": "turbo run dev",
+    "dev:pkgs": "turbo run dev --filter \"./packages/*\"",
     "lint": "turbo run lint && manypkg check",
     "format": "prettier --write .",
     "test": "turbo run test",
