@@ -29,6 +29,10 @@ const config = {
         disallowTypeAnnotations: false,
       },
     ],
+    "@typescript-eslint/no-misused-promises": [
+      2,
+      { checksVoidReturn: { attributes: false } },
+    ],
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
   },
   overrides: [
