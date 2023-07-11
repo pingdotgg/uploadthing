@@ -1,8 +1,32 @@
+import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 
 const UT_SECRET = process.env.UPLOADTHING_SECRET;
+
+type File = Blob & { name: string };
+
+export const uploadFiles = async (files: File[], metadata?: Json) => {
+  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
+
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+  metadata && formData.append("metadata", JSON.stringify(metadata));
+
+  const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
+    method: "POST",
+    headers: {
+      "x-uploadthing-api-key": UT_SECRET,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    },
+    body: formData,
+  });
+  if (!res.ok) {
+    throw new Error("Failed to upload files");
+  }
+  return res.json().then(({ data }) => data as { key: string; url: string }[]);
+};
 
 /**
  * Request to delete files from UploadThing storage.
