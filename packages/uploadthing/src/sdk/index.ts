@@ -29,7 +29,6 @@ export const uploadFiles = async (
       "x-uploadthing-api-key": UT_SECRET,
       "x-uploadthing-version": UPLOADTHING_VERSION,
     },
-    cache: "no-store",
     body: formData,
   });
   const json = (await res.json()) as
