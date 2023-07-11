@@ -12,7 +12,7 @@ export const uploadFiles = async (files: File[], metadata?: Json) => {
 
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
-  metadata && formData.append("metadata", JSON.stringify(metadata));
+  formData.append("metadata", JSON.stringify(metadata ?? {}));
 
   const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
     method: "POST",
