@@ -5,14 +5,23 @@ import { UPLOADTHING_VERSION } from "../constants";
 
 const UT_SECRET = process.env.UPLOADTHING_SECRET;
 
-type File = Blob & { name: string };
+// File is just a Blob with a name property
+type FileEsque = Blob & { name: string };
 
-export const uploadFiles = async (files: File[], metadata?: Json) => {
+/**
+ * @param {FileEsque | FileEsque[]} files The file(s) to upload
+ * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+ */
+export const uploadFiles = async (
+  files: FileEsque[] | FileEsque,
+  metadata: Json = {},
+) => {
+  if (!Array.isArray(files)) files = [files];
   if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
 
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
-  formData.append("metadata", JSON.stringify(metadata ?? {}));
+  formData.append("metadata", JSON.stringify(metadata));
 
   const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
     method: "POST",
@@ -22,10 +31,16 @@ export const uploadFiles = async (files: File[], metadata?: Json) => {
     },
     body: formData,
   });
-  if (!res.ok) {
+  const json = (await res.json()) as
+    | { data: { key: string; url: string }[] }
+    | { error: string };
+
+  if (!res.ok || "error" in json) {
+    console.log("Error", "error" in json ? json.error : "Unknown error");
+    // TODO: Return something more useful
     throw new Error("Failed to upload files");
   }
-  return res.json().then(({ data }) => data as { key: string; url: string }[]);
+  return json.data;
 };
 
 /**
