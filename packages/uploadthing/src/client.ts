@@ -110,8 +110,9 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw new UploadThingError({
         code: "NOT_FOUND",
         message: "No file found for presigned URL",
-        cause: `Expected file with name ${presigned.name
-          } but got '${opts.files.join(",")}'`,
+        cause: `Expected file with name ${
+          presigned.name
+        } but got '${opts.files.join(",")}'`,
       });
     }
     const { url, fields } = presigned.presignedUrl;
