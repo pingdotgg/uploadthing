@@ -8,7 +8,7 @@ const config = {
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
   ],
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "import"],
+  plugins: ["@typescript-eslint", "import", "svelte3"],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "turbo/no-undeclared-env-vars": "off",
@@ -43,6 +43,13 @@ const config = {
         react: {
           version: "detect",
         },
+      },
+    },
+    {
+      files: ["*.svelte"],
+      processor: "svelte3/svelte3",
+      settings: {
+        "svelte3/typescript": () => require("typescript"),
       },
     },
   ],

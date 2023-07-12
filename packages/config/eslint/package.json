@@ -12,7 +12,8 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-turbo": "^1.10.1",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-react": "7.32.2"
+    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-svelte3": "^4.0.0"
   },
   "devDependencies": {
     "eslint": "^8.42.0",
