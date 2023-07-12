@@ -31,16 +31,56 @@ export const uploadFiles = async (
     },
     body: formData,
   });
-  const json = (await res.json()) as
-    | { data: { key: string; url: string }[] }
-    | { error: string };
-
-  if (!res.ok || "error" in json) {
-    console.log("Error", "error" in json ? json.error : "Unknown error");
-    // TODO: Return something more useful
-    throw new Error("Failed to upload files");
+  const data = res.body;
+  if (!data) {
+    throw new Error("Failed to upload files, no data returned");
   }
-  return json.data;
+  const reader = res.body?.getReader();
+  const decoder = new TextDecoder();
+
+  let done = false;
+  let temp = "";
+  const uploadedFiles: { key: string; url: string }[] = [];
+
+  while (!done) {
+    const { value, done: doneReading } = await reader.read();
+    done = doneReading;
+
+    let chunk = decoder.decode(value);
+    console.log("Got chunk", chunk);
+
+    if (temp) {
+      chunk = temp + chunk;
+      temp = "";
+    }
+
+    const match = chunk.match(/\{(.*?)\}/);
+    if (match) {
+      temp = chunk.replace(match[0], "");
+      chunk = match[0];
+    }
+
+    try {
+      const data = JSON.parse(chunk) as { key: string; url: string };
+      console.log("Parsed data", data);
+      uploadedFiles.push(data);
+    } catch (e) {
+      // store the incomplete json string in the temporary value
+      temp = chunk;
+    }
+  }
+
+  return uploadedFiles;
+  // const json = (await res.json()) as
+  //   | { data: { key: string; url: string }[] }
+  //   | { error: string };
+
+  // if (!res.ok || "error" in json) {
+  //   console.log("Error", "error" in json ? json.error : "Unknown error");
+  //   // TODO: Return something more useful
+  //   throw new Error("Failed to upload files");
+  // }
+  // return json.data;
 };
 
 /**
