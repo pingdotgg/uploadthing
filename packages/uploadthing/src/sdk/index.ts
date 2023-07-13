@@ -1,8 +1,87 @@
+import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 
 const UT_SECRET = process.env.UPLOADTHING_SECRET;
+
+// File is just a Blob with a name property
+type FileEsque = Blob & { name: string };
+
+/**
+ * @param {FileEsque | FileEsque[]} files The file(s) to upload
+ * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+ */
+export const uploadFiles = async (
+  files: FileEsque[] | FileEsque,
+  metadata: Json = {},
+) => {
+  if (!Array.isArray(files)) files = [files];
+  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
+
+  const formData = new FormData();
+  files.forEach((file) => formData.append("files", file));
+  formData.append("metadata", JSON.stringify(metadata));
+
+  const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
+    method: "POST",
+    headers: {
+      "x-uploadthing-api-key": UT_SECRET,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    },
+    body: formData,
+  });
+  const data = res.body;
+  if (!data) {
+    throw new Error("Failed to upload files, no data returned");
+  }
+  const reader = res.body?.getReader();
+  const decoder = new TextDecoder();
+
+  let done = false;
+  let temp = "";
+  const uploadedFiles: { key: string; url: string }[] = [];
+
+  while (!done) {
+    const { value, done: doneReading } = await reader.read();
+    done = doneReading;
+
+    let chunk = decoder.decode(value);
+    console.log("Got chunk", chunk);
+
+    if (temp) {
+      chunk = temp + chunk;
+      temp = "";
+    }
+
+    const match = chunk.match(/\{(.*?)\}/);
+    if (match) {
+      temp = chunk.replace(match[0], "");
+      chunk = match[0];
+    }
+
+    try {
+      const data = JSON.parse(chunk) as { key: string; url: string };
+      console.log("Parsed data", data);
+      uploadedFiles.push(data);
+    } catch (e) {
+      // store the incomplete json string in the temporary value
+      temp = chunk;
+    }
+  }
+
+  return uploadedFiles;
+  // const json = (await res.json()) as
+  //   | { data: { key: string; url: string }[] }
+  //   | { error: string };
+
+  // if (!res.ok || "error" in json) {
+  //   console.log("Error", "error" in json ? json.error : "Unknown error");
+  //   // TODO: Return something more useful
+  //   throw new Error("Failed to upload files");
+  // }
+  // return json.data;
+};
 
 /**
  * Request to delete files from UploadThing storage.
