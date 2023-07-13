@@ -1,5 +1,26 @@
 # @uploadthing/shared
 
+## 5.1.0
+
+### Minor Changes
+
+- [#195](https://github.com/pingdotgg/uploadthing/pull/195)
+  [`a6c969e`](https://github.com/pingdotgg/uploadthing/commit/a6c969e67c85df490907b121d8e7df41779172b3)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: improve
+  errors and add `errorFormatter` option on the backend
+
+### Patch Changes
+
+- [#192](https://github.com/pingdotgg/uploadthing/pull/192)
+  [`c508868`](https://github.com/pingdotgg/uploadthing/commit/c508868690d3de48094c10a7facb880662d03b6a)
+  Thanks [@GentikSolm](https://github.com/GentikSolm)! - fix(types): change
+  internal types to solve declaration emitting
+
+- [#207](https://github.com/pingdotgg/uploadthing/pull/207)
+  [`f3640fb`](https://github.com/pingdotgg/uploadthing/commit/f3640fb0872a12fe0ad95e0ac604136113fa6ca4)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(shared):
+  Swap order of cases in `getUploadthingUrl()`
+
 ## 5.0.1
 
 ### Patch Changes
