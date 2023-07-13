@@ -156,7 +156,6 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
       allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
       buttonContainer?: StyleField<DropzoneStyleFieldCallbackArgs>;
       button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      buttonContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
       buttonSpinner?: SpinnerField<DropzoneStyleFieldCallbackArgs>;
     };
     content?: {
@@ -577,7 +576,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
             <button
               className={twMerge(
                 classNames(
-                  "relative flex h-10 w-36 items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
+                  "relative flex text-white h-10 w-36 items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
                   isUploading
                     ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`
                     : "bg-blue-600",
@@ -590,27 +589,17 @@ export function UploadDropzone<TRouter extends FileRouter>(
               )}
               onClick={onUploadClick}
             >
-              <span
-                className={twMerge(
-                  "z-10 px-3 py-2 text-white",
-                  styleFieldToClassName(
-                    $props.appearance?.buttonContent,
-                    styleFieldArg,
-                  ),
-                )}
-              >
-                {isUploading
-                  ? spinnerFieldToElement(
-                    $props.appearance?.buttonSpinner,
-                    styleFieldArg,
-                  ) || <Spinner />
-                  : contentFieldToContent(
-                    $props.content?.button,
-                    styleFieldArg,
-                  ) ||
-                  `Upload ${files.length} file${files.length === 1 ? "" : "s"
-                  }`}
-              </span>
+              {isUploading
+                ? spinnerFieldToElement(
+                  $props.appearance?.buttonSpinner,
+                  styleFieldArg,
+                ) || <Spinner />
+                : contentFieldToContent(
+                  $props.content?.button,
+                  styleFieldArg,
+                ) ||
+                `Upload ${files.length} file${files.length === 1 ? "" : "s"
+                }`}
             </button>
           </div>
         )}
