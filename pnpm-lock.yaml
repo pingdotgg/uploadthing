@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -336,6 +336,9 @@ importers:
       '@uploadthing/shared':
         specifier: ^5.2.0
         version: link:../shared
+      tailwind-merge:
+        specifier: ^1.13.2
+        version: 1.13.2
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -8617,6 +8620,10 @@ packages:
     dependencies:
       '@pkgr/utils': 2.4.1
       tslib: 2.5.3
+    dev: false
+
+  /tailwind-merge@1.13.2:
+    resolution: {integrity: sha512-R2/nULkdg1VR/EL4RXg4dEohdoxNUJGLMnWIQnPKL+O9Twu7Cn3Rxi4dlXkDzZrEGtR+G+psSXFouWlpTyLhCQ==}
     dev: false
 
   /tailwindcss@3.3.2:
