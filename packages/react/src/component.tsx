@@ -87,38 +87,72 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     });
 }[keyof TRouter];
 
-type StyleFieldCallbackArgs = {
+type ButtonStyleFieldCallbackArgs = {
   ready: boolean;
   isUploading: boolean;
   uploadProgress: number;
   fileTypes: string[];
-}
+};
+type DropzoneStyleFieldCallbackArgs = {
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+  isDragActive: boolean;
+};
 
-type StyleField = string | CSSProperties | ((arg: StyleFieldCallbackArgs) => string | CSSProperties);
-type SpinnerField = JSX.Element | ((arg: StyleFieldCallbackArgs) => JSX.Element);
-type ContentField = string | JSX.Element | ((arg: StyleFieldCallbackArgs) => string | JSX.Element);
+type StyleField<CallbackArg> =
+  | string
+  | CSSProperties
+  | ((arg: CallbackArg) => string | CSSProperties);
+type SpinnerField<CallbackArg> =
+  | JSX.Element
+  | ((arg: CallbackArg) => JSX.Element);
+type ContentField<CallbackArg> =
+  | string
+  | JSX.Element
+  | ((arg: CallbackArg) => string | JSX.Element);
 
 export type UploadButtonProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
     appearance?: {
-      elements?: {
-        container?: StyleField;
-        button?: StyleField;
-        buttonContent?: StyleField;
-        buttonSpinner?: SpinnerField;
-        allowedContentContainer?: StyleField;
-        allowedContent?: StyleField;
-      },
-      content?: {
-        button?: ContentField;
-        allowedContent?: ContentField;
-      }
+      container?: StyleField<ButtonStyleFieldCallbackArgs>;
+      button?: StyleField<ButtonStyleFieldCallbackArgs>;
+      buttonSpinner?: SpinnerField<ButtonStyleFieldCallbackArgs>;
+      allowedContentContainer?: StyleField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+    };
+    content?: {
+      button?: ContentField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
   };
 
-const styleFieldToClassName = (
-  styleField: StyleField | undefined,
-  args: StyleFieldCallbackArgs,
+export type UploadDropzoneProps<TRouter extends FileRouter> =
+  UploadthingComponentProps<TRouter> & {
+    appearance?: {
+      container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      dropzoneRoot?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      allowedContentContainer?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      buttonContainer?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      button?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      buttonContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      buttonSpinner?: SpinnerField<DropzoneStyleFieldCallbackArgs>;
+    };
+    content?: {
+      uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+      label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+      allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+      button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    };
+  };
+
+const styleFieldToClassName = <T,>(
+  styleField: StyleField<T> | undefined,
+  args: T,
 ) => {
   if (typeof styleField === "string") return styleField;
   if (typeof styleField === "function") {
@@ -128,11 +162,11 @@ const styleFieldToClassName = (
   }
 
   return "";
-}
+};
 
-const styleFieldToCssObject = (
-  styleField: StyleField | undefined,
-  args: StyleFieldCallbackArgs,
+const styleFieldToCssObject = <T,>(
+  styleField: StyleField<T> | undefined,
+  args: T,
 ) => {
   if (typeof styleField === "object") return styleField;
   if (typeof styleField === "function") {
@@ -142,11 +176,11 @@ const styleFieldToCssObject = (
   }
 
   return {};
-}
+};
 
-const spinnerFieldToElement = (
-  spinnerField: SpinnerField | undefined,
-  args: StyleFieldCallbackArgs,
+const spinnerFieldToElement = <T,>(
+  spinnerField: SpinnerField<T> | undefined,
+  args: T,
 ) => {
   if (typeof spinnerField === "function") {
     const result = spinnerField(args);
@@ -154,12 +188,12 @@ const spinnerFieldToElement = (
     return result;
   }
 
-  return spinnerField
-}
+  return spinnerField;
+};
 
-const contentFieldToContent = (
-  contentField: ContentField | undefined,
-  arg: StyleFieldCallbackArgs,
+const contentFieldToContent = <T,>(
+  contentField: ContentField<T> | undefined,
+  arg: T,
 ) => {
   if (!contentField) return undefined;
   if (typeof contentField === "string") return contentField;
@@ -171,7 +205,7 @@ const contentFieldToContent = (
   }
 
   return undefined;
-}
+};
 
 const progressHeights: { [key: number]: string } = {
   0: "after:w-0",
@@ -236,36 +270,34 @@ export function UploadButton<TRouter extends FileRouter>(
     return `Choose File${multiple ? `(s)` : ``}`;
   };
 
-  const styleFieldArg = {
+  const styleFieldArg: ButtonStyleFieldCallbackArgs = {
     ready,
     isUploading,
     uploadProgress,
-    fileTypes
+    fileTypes,
   };
 
   return (
     <div
       className={twMerge(
         "flex flex-col items-center justify-center gap-1",
-        styleFieldToClassName($props.appearance?.elements?.container, styleFieldArg),
+        styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
-      style={styleFieldToCssObject($props.appearance?.elements?.container, styleFieldArg)}
+      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
     >
       <label
-        className={
-          twMerge(
-            classNames(
-              "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
-              !ready && "cursor-not-allowed bg-blue-400",
-              ready &&
-              isUploading &&
-              `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`,
-              ready && !isUploading && "bg-blue-600",
-            ),
-            styleFieldToClassName($props.appearance?.elements?.button, styleFieldArg),
-          )
-        }
-        style={styleFieldToCssObject($props.appearance?.elements?.button, styleFieldArg)}
+        className={twMerge(
+          classNames(
+            "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+            !ready && "cursor-not-allowed bg-blue-400",
+            ready &&
+            isUploading &&
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`,
+            ready && !isUploading && "bg-blue-600",
+          ),
+          styleFieldToClassName($props.appearance?.button, styleFieldArg),
+        )}
+        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
       >
         <input
           className="hidden"
@@ -281,37 +313,45 @@ export function UploadButton<TRouter extends FileRouter>(
           }}
           disabled={!ready}
         />
-        <span className={
-          twMerge(
-            "z-10 px-3 py-2 text-white",
-            styleFieldToClassName($props.appearance?.elements?.buttonContent, styleFieldArg),
-          )
-        }>
-          {isUploading
-            ? spinnerFieldToElement($props.appearance?.elements?.buttonSpinner, styleFieldArg) || <Spinner />
-            : contentFieldToContent($props.appearance?.content?.button, styleFieldArg) || getUploadButtonText(fileTypes)}
-        </span>
+        {isUploading
+          ? spinnerFieldToElement(
+            $props.appearance?.buttonSpinner,
+            styleFieldArg,
+          ) || <Spinner />
+          : contentFieldToContent($props.content?.button, styleFieldArg) ||
+          getUploadButtonText(fileTypes)}
       </label>
       <div
-        className={
-          twMerge(
-            "h-[1.25rem]",
-            styleFieldToClassName($props.appearance?.elements?.allowedContentContainer, styleFieldArg),
-          )
-        }
-        style={styleFieldToCssObject($props.appearance?.elements?.allowedContentContainer, styleFieldArg)}
+        className={twMerge(
+          "h-[1.25rem]",
+          styleFieldToClassName(
+            $props.appearance?.allowedContentContainer,
+            styleFieldArg,
+          ),
+        )}
+        style={styleFieldToCssObject(
+          $props.appearance?.allowedContentContainer,
+          styleFieldArg,
+        )}
       >
         {fileTypes && (
           <p
-            className={
-              twMerge(
-                "m-0 text-xs leading-5 text-gray-600",
-                styleFieldToClassName($props.appearance?.elements?.allowedContent, styleFieldArg),
-              )
-            }
-            style={styleFieldToCssObject($props.appearance?.elements?.allowedContent, styleFieldArg)}
+            className={twMerge(
+              "m-0 text-xs leading-5 text-gray-600",
+              styleFieldToClassName(
+                $props.appearance?.allowedContent,
+                styleFieldArg,
+              ),
+            )}
+            style={styleFieldToCssObject(
+              $props.appearance?.allowedContent,
+              styleFieldArg,
+            )}
           >
-            {contentFieldToContent($props.appearance?.content?.allowedContent, styleFieldArg) || allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+            {contentFieldToContent(
+              $props.content?.allowedContent,
+              styleFieldArg,
+            ) || allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
       </div>
@@ -322,11 +362,11 @@ export function UploadButton<TRouter extends FileRouter>(
 export function UploadDropzone<TRouter extends FileRouter>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadthingComponentProps<TRouter>,
+    : UploadDropzoneProps<TRouter>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as UploadthingComponentProps<TRouter>;
+  const $props = props as UploadDropzoneProps<TRouter>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const [files, setFiles] = useState<File[]>([]);
@@ -360,57 +400,130 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   const ready = fileTypes.length > 0;
 
+  const styleFieldArg: DropzoneStyleFieldCallbackArgs = {
+    fileTypes,
+    isDragActive,
+    isUploading,
+    ready,
+    uploadProgress,
+  };
+
   return (
     <div
-      className={classNames(
-        "mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
-        isDragActive ? "bg-blue-600/10" : "",
+      className={twMerge(
+        classNames(
+          "mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
+          isDragActive ? "bg-blue-600/10" : "",
+        ),
+        styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
+      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
     >
-      <div className="text-center" {...getRootProps()}>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          className="mx-auto block h-12 w-12 align-middle text-gray-400"
-        >
-          <path
-            fill="currentColor"
-            fillRule="evenodd"
-            d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
-            clipRule="evenodd"
-          ></path>
-        </svg>
-        <div className="mt-4 flex text-sm leading-6 text-gray-600">
-          <label
-            htmlFor="file-upload"
-            className={classNames(
-              "relative cursor-pointer font-semibold  focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-              ready ? "text-blue-600" : "text-gray-500",
+      <div
+        className={twMerge(
+          "text-center",
+          styleFieldToClassName($props.appearance?.dropzoneRoot, styleFieldArg),
+        )}
+        {...getRootProps()}
+        style={styleFieldToCssObject(
+          $props.appearance?.dropzoneRoot,
+          styleFieldArg,
+        )}
+      >
+        {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) || (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            className={twMerge(
+              "mx-auto block h-12 w-12 align-middle text-gray-400",
+              styleFieldToClassName(
+                $props.appearance?.uploadIcon,
+                styleFieldArg,
+              ),
+            )}
+            style={styleFieldToCssObject(
+              $props.appearance?.uploadIcon,
+              styleFieldArg,
             )}
           >
-            <span className="flex w-64 items-center justify-center">
-              {ready ? `Choose files or drag and drop` : `Loading...`}
-            </span>
-            <input
-              className="sr-only"
-              {...getInputProps()}
-              disabled={!ready}
-            />
-          </label>
-        </div>
-        <div className="h-[1.25rem]">
-          <p className="m-0 text-xs leading-5 text-gray-600">
-            {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+            <path
+              fill="currentColor"
+              fillRule="evenodd"
+              d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+              clipRule="evenodd"
+            ></path>
+          </svg>
+        )}
+        <label
+          htmlFor="file-upload"
+          className={twMerge(
+            classNames(
+              "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+              ready ? "text-blue-600" : "text-gray-500",
+            ),
+            styleFieldToClassName($props.appearance?.label, styleFieldArg),
+          )}
+          style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
+        >
+          {contentFieldToContent($props.content?.label, styleFieldArg) ||
+            (ready ? `Choose files or drag and drop` : `Loading...`)}
+          <input className="sr-only" {...getInputProps()} disabled={!ready} />
+        </label>
+        <div
+          className={twMerge(
+            "h-[1.25rem]",
+            styleFieldToClassName(
+              $props.appearance?.allowedContentContainer,
+              styleFieldArg,
+            ),
+          )}
+          style={styleFieldToCssObject(
+            $props.appearance?.allowedContentContainer,
+            styleFieldArg,
+          )}
+        >
+          <p
+            className={twMerge(
+              "m-0 text-xs leading-5 text-gray-600",
+              styleFieldToClassName(
+                $props.appearance?.allowedContent,
+                styleFieldArg,
+              ),
+            )}
+          >
+            {contentFieldToContent(
+              $props.content?.allowedContent,
+              styleFieldArg,
+            ) || allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         </div>
         {files.length > 0 && (
-          <div className="mt-4 flex items-center justify-center">
+          <div
+            className={twMerge(
+              "mt-4 flex items-center justify-center",
+              styleFieldToClassName(
+                $props.appearance?.buttonContainer,
+                styleFieldArg,
+              ),
+            )}
+            style={styleFieldToCssObject(
+              $props.appearance?.buttonContainer,
+              styleFieldArg,
+            )}
+          >
             <button
-              className={classNames(
-                "relative flex h-10 w-36 items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
-                isUploading
-                  ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`
-                  : "bg-blue-600",
+              className={twMerge(
+                classNames(
+                  "relative flex h-10 w-36 items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
+                  isUploading
+                    ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`
+                    : "bg-blue-600",
+                ),
+                styleFieldToClassName($props.appearance?.button, styleFieldArg),
+              )}
+              style={styleFieldToCssObject(
+                $props.appearance?.button,
+                styleFieldArg,
               )}
               onClick={(e) => {
                 e.preventDefault();
@@ -421,12 +534,26 @@ export function UploadDropzone<TRouter extends FileRouter>(
                 void startUpload(files, input);
               }}
             >
-              <span className="z-10 px-3 py-2 text-white">
-                {isUploading ? (
-                  <Spinner />
-                ) : (
-                  `Upload ${files.length} file${files.length === 1 ? "" : "s"}`
+              <span
+                className={twMerge(
+                  "z-10 px-3 py-2 text-white",
+                  styleFieldToClassName(
+                    $props.appearance?.buttonContent,
+                    styleFieldArg,
+                  ),
                 )}
+              >
+                {isUploading
+                  ? spinnerFieldToElement(
+                    $props.appearance?.buttonSpinner,
+                    styleFieldArg,
+                  ) || <Spinner />
+                  : contentFieldToContent(
+                    $props.content?.button,
+                    styleFieldArg,
+                  ) ||
+                  `Upload ${files.length} file${files.length === 1 ? "" : "s"
+                  }`}
               </span>
             </button>
           </div>
