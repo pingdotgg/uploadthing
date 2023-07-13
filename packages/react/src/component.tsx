@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useCallback, useRef, useState } from "react";
-import type { FileWithPath } from "react-dropzone";
+import type { FileWithPath, DropzoneState } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 import { twMerge } from "tailwind-merge";
 
@@ -106,6 +106,16 @@ type DropzoneStyleFieldCallbackArgs = {
   fileTypes: string[];
   isDragActive: boolean;
 };
+type DropzoneRenderArg = DropzoneStyleFieldCallbackArgs & {
+  getInputProps: DropzoneState["getInputProps"];
+  getRootProps: DropzoneState["getRootProps"]
+  getUploadButtonText: () => string;
+  getAllowedContentText: () => string;
+  getUploadButtonProps: () => JSX.IntrinsicElements["button"];
+  getLabelText: () => string;
+  files: File[];
+}
+type DropzoneRenderProp = (arg: DropzoneRenderArg) => JSX.Element
 
 type StyleField<CallbackArg> =
   | string
@@ -155,6 +165,7 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
       allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
       button?: ContentField<DropzoneStyleFieldCallbackArgs>;
     };
+    render?: DropzoneRenderProp;
   };
 
 const styleFieldToClassName = <T,>(
@@ -300,7 +311,7 @@ export function UploadButton<TRouter extends FileRouter>(
   };
 
   if ($props.render) {
-    const renderProps = {
+    const renderProps: ButtonRenderArg = {
       ...styleFieldArg,
       getInputProps,
       getUploadButtonText: () => getUploadButtonText(fileTypes),
@@ -429,6 +440,36 @@ export function UploadDropzone<TRouter extends FileRouter>(
     ready,
     uploadProgress,
   };
+  const onUploadClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!files) return;
+
+    const input = "input" in $props ? $props.input : undefined;
+    void startUpload(files, input);
+  }
+
+  if ($props.render) {
+    const renderProps: DropzoneRenderArg = {
+      ...styleFieldArg,
+      getInputProps: () => ({
+        ...getInputProps(),
+        disabled: !ready,
+        className: "sr-only",
+      }),
+      getRootProps,
+      getUploadButtonText: () => `Upload ${files.length} file${files.length === 1 ? "" : "s"
+        }`,
+      getAllowedContentText: () => allowedContentTextLabelGenerator(permittedFileInfo?.config),
+      getUploadButtonProps: () => ({
+        onChange: onUploadClick
+      }),
+      getLabelText: () => ready ? `Choose files or drag and drop` : `Loading...`,
+      files
+    }
+
+    return $props.render(renderProps);
+  }
 
   return (
     <div
@@ -547,14 +588,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
                 $props.appearance?.button,
                 styleFieldArg,
               )}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!files) return;
-
-                const input = "input" in $props ? $props.input : undefined;
-                void startUpload(files, input);
-              }}
+              onClick={onUploadClick}
             >
               <span
                 className={twMerge(
