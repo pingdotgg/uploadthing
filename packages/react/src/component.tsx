@@ -93,6 +93,12 @@ type ButtonStyleFieldCallbackArgs = {
   uploadProgress: number;
   fileTypes: string[];
 };
+type ButtonRenderArg = ButtonStyleFieldCallbackArgs & {
+  getInputProps: () => JSX.IntrinsicElements["input"];
+  getUploadButtonText: () => string;
+  getAllowedContentText: () => string;
+}
+type ButtonRenderProp = (arg: ButtonRenderArg) => JSX.Element
 type DropzoneStyleFieldCallbackArgs = {
   ready: boolean;
   isUploading: boolean;
@@ -126,6 +132,7 @@ export type UploadButtonProps<TRouter extends FileRouter> =
       button?: ContentField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
+    render?: ButtonRenderProp;
   };
 
 export type UploadDropzoneProps<TRouter extends FileRouter> =
@@ -270,12 +277,38 @@ export function UploadButton<TRouter extends FileRouter>(
     return `Choose File${multiple ? `(s)` : ``}`;
   };
 
+  const getInputProps = () => ({
+    className: "hidden",
+    type: "file",
+    ref: fileInputRef,
+    multiple,
+    accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files) return;
+      const input = "input" in $props ? $props.input : undefined;
+      const files = Array.from(e.target.files);
+      void startUpload(files, input);
+    },
+    disabled: !ready,
+  })
+
   const styleFieldArg: ButtonStyleFieldCallbackArgs = {
     ready,
     isUploading,
     uploadProgress,
     fileTypes,
   };
+
+  if ($props.render) {
+    const renderProps = {
+      ...styleFieldArg,
+      getInputProps,
+      getUploadButtonText: () => getUploadButtonText(fileTypes),
+      getAllowedContentText: () => allowedContentTextLabelGenerator(permittedFileInfo?.config),
+    }
+
+    return $props.render(renderProps);
+  }
 
   return (
     <div
@@ -300,18 +333,7 @@ export function UploadButton<TRouter extends FileRouter>(
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
       >
         <input
-          className="hidden"
-          type="file"
-          ref={fileInputRef}
-          multiple={multiple}
-          accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
-          onChange={(e) => {
-            if (!e.target.files) return;
-            const input = "input" in $props ? $props.input : undefined;
-            const files = Array.from(e.target.files);
-            void startUpload(files, input);
-          }}
-          disabled={!ready}
+          {...getInputProps()}
         />
         {isUploading
           ? spinnerFieldToElement(
