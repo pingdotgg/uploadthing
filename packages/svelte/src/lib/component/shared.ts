@@ -69,7 +69,6 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
       res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
     ) => void;
     onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
-    url?: string;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? {}
     : {

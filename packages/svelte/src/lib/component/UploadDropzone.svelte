@@ -36,7 +36,6 @@
         uploader.onUploadProgress?.(p);
       },
       onUploadError: uploader.onUploadError,
-      url: uploader.url,
     },
   );
 
