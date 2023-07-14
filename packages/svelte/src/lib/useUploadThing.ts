@@ -16,10 +16,8 @@ type EndpointMetadata = {
   config: ExpandedRouteConfig;
 }[];
 
-const createEndpointMetadata = (endpoint: string, url?: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(
-    `${url ?? ""}/api/uploadthing`,
-  );
+const createEndpointMetadata = (endpoint: string) => {
+  const dataGetter = createFetch<EndpointMetadata>(`/api/uploadthing`);
   return derived(dataGetter, ($data) =>
     $data.data?.find((x) => x.slug === endpoint),
   );
@@ -31,7 +29,6 @@ export type UseUploadthingProps<TRouter extends FileRouter> = {
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
-  url?: string;
 };
 
 const fatalClientError = new UploadThingError({
@@ -45,10 +42,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     opts?: UseUploadthingProps<TRouter>,
   ) => {
     const isUploading = writable(false);
-    const permittedFileInfo = createEndpointMetadata(
-      endpoint as string,
-      opts?.url,
-    );
+    const permittedFileInfo = createEndpointMetadata(endpoint as string);
     let uploadProgress = 0;
     let fileProgress = new Map();
 
