@@ -293,6 +293,7 @@
 
       if (onDrop) {
         onDrop(acceptedFiles, fileRejections, event);
+        eventDispatch("dragging", false);
       }
 
       if (fileRejections.length > 0 && onDropRejected) {
@@ -381,10 +382,18 @@ Example:
   on:focus={composeKeyboardHandler(onFocusCb)}
   on:blur={composeKeyboardHandler(onBlurCb)}
   on:click={composeHandler(onClickCb)}
-  on:dragenter|preventDefault={composeDragHandler(onDragEnterCb)}
-  on:dragover|preventDefault={composeDragHandler(onDragOverCb)}
-  on:dragleave|preventDefault={composeDragHandler(onDragLeaveCb)}
-  on:drop|preventDefault={composeDragHandler(onDropCb)}
+  on:dragenter|preventDefault={composeDragHandler(
+    composeEventHandlers(onDragEnter, onDragEnterCb),
+  )}
+  on:dragover|preventDefault={composeDragHandler(
+    composeEventHandlers(onDragOver, onDragOverCb),
+  )}
+  on:dragleave|preventDefault={composeDragHandler(
+    composeEventHandlers(onDragLeave, onDragLeaveCb),
+  )}
+  on:drop|preventDefault={composeDragHandler(
+    composeEventHandlers(onDrop, onDropCb),
+  )}
 >
   <slot inputProps={getInputProps()} />
 </div>
