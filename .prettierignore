@@ -27,3 +27,4 @@ dist
 CHANGELOG.md
 
 .svelte-kit
+.vscode
