@@ -157,7 +157,9 @@ export function normalizeAccept(accept: FileAccept): string | string[] {
     return accept;
   }
   if (typeof accept === "object") {
-    return Object.values(accept).flat();
+    const keys = Object.keys(accept).map((key) => key);
+    const values = Object.values(accept).flat();
+    return [...keys, ...values];
   }
   return [];
 }

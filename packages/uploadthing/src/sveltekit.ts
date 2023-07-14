@@ -20,7 +20,7 @@ export const createUploadthingHandle = <TRouter extends FileRouter>(
   const { GET, POST } = createNextRouteHandler(opts);
   return ({ event, resolve }) => {
     const { request, url } = event;
-    if (url.pathname === "/api/uploadthing") {
+    if (url.pathname.startsWith("/api/uploadthing")) {
       if (request.method === "POST") {
         return POST(request);
       }
