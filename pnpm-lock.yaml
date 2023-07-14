@@ -461,6 +461,12 @@ importers:
       '@uploadthing/shared':
         specifier: ^5.0.1
         version: link:../shared
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: ^0.6.0
+        version: 0.6.0
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^2.0.0
