@@ -1,0 +1,239 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Getting Started with SvelteKit
+
+Make sure you
+[install the packages and get your env variables first](/getting-started)
+
+## Package Setup
+
+<Steps>
+
+### Install the packages
+
+import { Tab, Tabs } from "nextra-theme-docs";
+
+{/* prettier-ignore-start */}
+
+<Tabs items={["npm", "yarn", "pnpm"]}>
+  <Tab>
+    ```bash copy 
+    npm install uploadthing @uploadthing/svelte
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    yarn add uploadthing @uploadthing/svelte
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    pnpm install uploadthing @uploadthing/svelte
+    ```
+  </Tab>
+</Tabs>
+
+{/* prettier-ignore-end */}
+
+### Add env variables
+
+```bash copy
+UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+UPLOADTHING_APP_ID=... # Your app id
+```
+
+<Callout type="warning">
+  If you don't already have a uploadthing secret key, [sign up](/create-account) and create one from
+  the [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+</Steps>
+
+## Set Up A FileRouter
+
+<Steps>
+### Creating your first FileRoute
+
+All files uploaded to uploadthing are associated with a FileRoute. Think of a
+FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+```ts copy filename="src/lib/server/uploadthing.ts"
+import { createUploadthing } from "uploadthing/sveltekit";
+import type { FileRouter } from "uploadthing/sveltekit";
+
+const f = createUploadthing();
+
+export const uploadRouter = {
+  videoAndImage: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(() => ({}))
+    .onUploadComplete((data) => {
+      console.log("upload completed", data);
+    }),
+
+  withMdwr: f({
+    image: {
+      maxFileCount: 2,
+      maxFileSize: "1MB",
+    },
+  })
+    .middleware((opts) => {
+      const h = opts.req.headers.get("someProperty");
+
+      if (!h) throw new Error("someProperty is required");
+
+      return {
+        someProperty: h,
+        otherProperty: "hello" as const,
+      };
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      console.log("uploaded with the following metadata:", metadata);
+      console.log("files successfully uploaded:", file);
+    }),
+
+  withoutMdwr: f({
+    image: {
+      maxFileCount: 2,
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(() => {
+      return { testMetadata: "lol" };
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      console.log("uploaded with the following metadata:", metadata);
+      console.log("files successfully uploaded:", file);
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof uploadRouter;
+```
+
+### Create a handle hook using the FileRouter
+
+<Callout type="warning">
+  Note: This exposes the API route `/api/uploadthing`. Make sure not to create
+  an endpoint with the same path.
+</Callout>
+
+```ts copy filename="src/hooks.server.ts"
+import type { Handle } from "@sveltejs/kit";
+import {
+  PORT,
+  UPLOADTHING_APP_ID,
+  UPLOADTHING_SECRET,
+} from "$env/static/private";
+import { uploadRouter } from "$lib/server/uploadthing";
+
+import { createUploadthingHandle } from "uploadthing/sveltekit";
+
+export const handle: Handle = createUploadthingHandle({
+  router: uploadRouter,
+  config: {
+    callbackUrl: `http://localhost:${PORT ?? 5173}/api/uploadthing`,
+    uploadthingSecret: UPLOADTHING_SECRET,
+    uploadthingId: UPLOADTHING_APP_ID,
+  },
+});
+```
+
+If you need multiple handle hooks in your application take a look at the
+[sequence](https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks-sequence)
+helper function from SvelteKit.
+
+### Creating The UploadThing Components (optional)
+
+Generating components let's you pass your generic `FileRouter` once and then
+have typesafe components everywhere, instead of having to pass the generic
+everytime you mount a component, but you can also import the components
+individually from `@uploadthing/svelte`.
+
+```ts copy filename="src/lib/utils/uploadthing.ts"
+import { generateComponents } from "@uploadthing/svelte";
+
+import type { OurFileRouter } from "../server/uploadthing";
+
+export const { UploadButton, UploadDropzone, Uploader } =
+  generateComponents<OurFileRouter>();
+```
+
+### Use the FileRouter in your app
+
+The `@uploadthing/svelte` package includes an "Uploader" component that you can
+simply drop into your app, and start uploading files immediately. To create the
+"Uploader" props you can use the "createUploader" helper. Make sure to pass your
+generic `FileRouter` to this function.
+
+```svelte copy filename="src/routes/+page.svelte"
+<script lang="ts">
+  import type { OurFileRouter } from "$lib/server/uploadthing";
+
+  import { createUploader, Uploader } from "@uploadthing/svelte";
+
+  const uploader = createUploader<OurFileRouter>({
+    endpoint: "withoutMdwr",
+    onClientUploadComplete: (res) => {
+      console.log(`onClientUploadComplete`, res);
+      alert("Upload Completed");
+    },
+    onUploadError: (error: Error) => {
+      alert(`ERROR! ${error.message}`);
+    },
+  });
+</script>
+
+<main
+  class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
+>
+  <Uploader {uploader} />
+</main>
+```
+
+You can also choose to use the "UploadButton" and "UploadDropzone" components
+separately. Both are included in the `@uploadthing/svelte` package.
+
+```svelte copy filename="src/routes/+page.svelte"
+<script lang="ts">
+  import type { OurFileRouter } from "$lib/server/uploadthing";
+
+  import { createUploader, Uploader } from "@uploadthing/svelte";
+
+  const uploader = createUploader<OurFileRouter>({
+    endpoint: "withoutMdwr",
+    onClientUploadComplete: (res) => {
+      console.log(`onClientUploadComplete`, res);
+      alert("Upload Completed");
+    },
+    onUploadError: (error: Error) => {
+      alert(`ERROR! ${error.message}`);
+    },
+  });
+</script>
+
+<div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+  <span class="ut-text-center ut-text-4xl ut-font-bold">
+    {`Upload a file using a button:`}
+  </span>
+  <UploadButton {uploader} />
+</div>
+<div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+  <span class="ut-text-center ut-text-4xl ut-font-bold">
+    {`...or using a dropzone:`}
+  </span>
+  <UploadDropzone {uploader} />
+</div>
+```
+
+</Steps>
