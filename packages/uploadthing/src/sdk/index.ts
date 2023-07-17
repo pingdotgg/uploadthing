@@ -57,7 +57,7 @@ export const uploadFileFromUrl = async (
   return uploadFilesInternal(formData, {
     apiKey: UT_SECRET,
     utVersion: UPLOADTHING_VERSION,
-  });
+  }).then((files) => files[0]);
 };
 
 /**

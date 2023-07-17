@@ -190,6 +190,39 @@ interface FileEsque extends Blob {
 }
 ```
 
+### `uploadFileFromUrl`
+
+`uploadFileFromUrl` is similar to `uploadFiles` as it let's you upload files
+directly from your server, without having to define file routes.
+
+When uploading files from URL, the file is first downloaded on **your** server,
+before being uploaded to S3 via our servers.
+
+```tsx
+import { utapi } from "uploadthing/server";
+
+async function uploadFile(formData: FormData) {
+  "use server";
+  const url = fd.get("url");
+  const response = await utapi.uploadFileFromUrl(url);
+  //    ^? { key: string, url: string }
+}
+
+function MyForm() {
+  return (
+    <form action={uploadFile}>
+      <input name="url" />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+| Arguments | Type            | Required | Description                            |
+| :-------- | :-------------- | :------- | :------------------------------------- |
+| url       | URL \|\| string | Yes      | The URL of the file you wish to upload |
+| metadata  | Json            | No       | Metadata to attach to the file(s)      |
+
 ### `deleteFiles`
 
 `deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
