@@ -188,3 +188,22 @@ const multipleUrls = await utapi.getFileUrls([
 | Arguments | Type                 | Required | Description                                      |
 | :-------- | :------------------- | :------- | :----------------------------------------------- |
 | input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to get URLs for |
+
+### `listFiles`
+
+`listFiles` takes no input and returns a list of all of the fileIds and fileKeys
+for the application your API key corresponds to.
+
+```ts
+import { utapi } from "uploadthing/server";
+
+const files = utapi.listFiles();
+
+console.log(files);
+/*
+ *  {
+ *    fileIds: ["2e0fdb64-9957-4262-8e45-f372ba903ac8"],
+ *    fileKeys: ["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"]
+ *  }
+ */
+```
