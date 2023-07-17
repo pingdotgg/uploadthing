@@ -21,9 +21,8 @@ export const uploadFilesInternal = async (
     | { error: string };
 
   if (!res.ok || "error" in json) {
-    console.log("Error", "error" in json ? json.error : "Unknown error");
-    // TODO: Return something more useful
-    throw new Error("Failed to upload files");
+    const message = "error" in json ? json.error : "Unknown error";
+    throw new Error(message);
   }
   return json.data;
 };
