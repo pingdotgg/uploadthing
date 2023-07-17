@@ -2,7 +2,17 @@ import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 
-const UT_SECRET = process.env.UPLOADTHING_SECRET;
+function guardServerOnly() {
+  if (typeof window !== "undefined") {
+    throw new Error("The `utapi` should only be used on the client.");
+  }
+}
+
+function guardApiKey() {
+  if (!process.env.UPLOADTHING_SECRET)
+    throw new Error("Missing UPLOADTHING_SECRET env variable.");
+  return process.env.UPLOADTHING_SECRET;
+}
 
 /**
  * Request to delete files from UploadThing storage.
@@ -13,14 +23,16 @@ const UT_SECRET = process.env.UPLOADTHING_SECRET;
  * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
  */
 export const deleteFiles = async (fileKeys: string[] | string) => {
+  guardServerOnly();
+  const apiKey = guardApiKey();
+
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
-  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
 
   const res = await fetch(generateUploadThingURL("/api/deleteFile"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": UT_SECRET,
+      "x-uploadthing-api-key": apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
     },
     body: JSON.stringify({ fileKeys }),
@@ -43,14 +55,16 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
  * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
  */
 export const getFileUrls = async (fileKeys: string[] | string) => {
+  guardServerOnly();
+  const apiKey = guardApiKey();
+
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
-  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
 
   const res = await fetch(generateUploadThingURL("/api/getFileUrl"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": UT_SECRET,
+      "x-uploadthing-api-key": apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
     },
     body: JSON.stringify({ fileKeys }),
