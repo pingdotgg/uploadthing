@@ -16,6 +16,7 @@ export const uploadFilesInternal = async (
     cache: "no-store",
     body: formData,
   });
+
   const json = (await res.json()) as
     | { data: { key: string; url: string }[] }
     | { error: string };
@@ -24,5 +25,6 @@ export const uploadFilesInternal = async (
     const message = "error" in json ? json.error : "Unknown error";
     throw new Error(message);
   }
+
   return json.data;
 };
