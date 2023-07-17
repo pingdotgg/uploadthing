@@ -237,7 +237,6 @@ export const buildRequestHandler = <
         const inputParser = uploadable._def.inputParser;
         parsedInput = await getParseFn(inputParser)(userInput);
       } catch (error) {
-        console.error(error);
         return new UploadThingError({
           code: "BAD_REQUEST",
           message: "Invalid input",
@@ -245,12 +244,22 @@ export const buildRequestHandler = <
         });
       }
 
-      const metadata = await uploadable._def.middleware({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        req: req as any,
-        res,
-        input: parsedInput,
-      });
+      let metadata: Json = {};
+      try {
+        metadata = await uploadable._def.middleware({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          req: req as any,
+          res,
+          input: parsedInput,
+        });
+      } catch (error) {
+        console.error(error);
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "An error occured in the upload middleware",
+          cause: error,
+        });
+      }
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
