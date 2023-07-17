@@ -253,7 +253,6 @@ export const buildRequestHandler = <
           input: parsedInput,
         });
       } catch (error) {
-        console.error(error);
         return new UploadThingError({
           code: "BAD_REQUEST",
           message: "An error occured in the upload middleware",
