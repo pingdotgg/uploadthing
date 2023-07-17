@@ -2,6 +2,7 @@ import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { uploadFilesInternal } from "./utils";
 
 const UT_SECRET = process.env.UPLOADTHING_SECRET;
 
@@ -23,24 +24,40 @@ export const uploadFiles = async (
   files.forEach((file) => formData.append("files", file));
   formData.append("metadata", JSON.stringify(metadata));
 
-  const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
-    method: "POST",
-    headers: {
-      "x-uploadthing-api-key": UT_SECRET,
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-    },
-    body: formData,
+  return uploadFilesInternal(formData, {
+    apiKey: UT_SECRET,
+    utVersion: UPLOADTHING_VERSION,
   });
-  const json = (await res.json()) as
-    | { data: { key: string; url: string }[] }
-    | { error: string };
+};
 
-  if (!res.ok || "error" in json) {
-    console.log("Error", "error" in json ? json.error : "Unknown error");
-    // TODO: Return something more useful
-    throw new Error("Failed to upload files");
+/**
+ * @param {string} url The URL of the file to upload
+ * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+ */
+export const uploadFileFromUrl = async (
+  url: string | URL,
+  metadata: Json = {},
+) => {
+  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
+
+  url = url instanceof URL ? url : new URL(url);
+  const filename = url.pathname.split("/").pop() ?? "unknown-filename";
+
+  // Download the file on the user's server to avoid egress charges
+  const fileResponse = await fetch(url);
+  if (!fileResponse.ok) {
+    throw new Error("Failed to download file");
   }
-  return json.data;
+  const blob = await fileResponse.blob();
+
+  const formData = new FormData();
+  formData.append("files", blob, filename);
+  formData.append("metadata", JSON.stringify(metadata));
+
+  return uploadFilesInternal(formData, {
+    apiKey: UT_SECRET,
+    utVersion: UPLOADTHING_VERSION,
+  }).then((files) => files[0]);
 };
 
 /**
