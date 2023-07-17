@@ -1,5 +1,14 @@
 # uploadthing
 
+## 5.2.1
+
+### Patch Changes
+
+- [#219](https://github.com/pingdotgg/uploadthing/pull/219)
+  [`a11a7f0`](https://github.com/pingdotgg/uploadthing/commit/a11a7f0f98585acf96220f9f454c74966e6c39b0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: make sure
+  url is absolute in pagedir
+
 ## 5.2.0
 
 ### Minor Changes
