@@ -70,7 +70,6 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
 
 /**
  * Request file list from UploadThing storage.
- * @param {string | string[]} fileKeys
  *
  * @example
  * const data = await listFiles();
