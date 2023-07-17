@@ -93,7 +93,7 @@ export const listFiles = async () => {
     throw new Error("Failed to list files");
   }
 
-  return res
-    .json()
-    .then(({ data }) => data as { fileKeys: string[]; fileIds: string[] });
+  return res.json().then(({ data: { files } }) => {
+    return files as { id: string; key: string }[];
+  });
 };
