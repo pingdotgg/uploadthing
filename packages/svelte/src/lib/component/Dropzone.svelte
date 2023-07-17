@@ -3,21 +3,33 @@
   import { createEventDispatcher, onDestroy } from "svelte";
 
   import {
-    composeEventHandlers,
     fileAccepted,
     fileMatchSize,
     isEvtWithFiles,
     isIeOrEdge,
     isPropagationStopped,
+    normalizeAccept,
     onDocumentDragOver,
     TOO_MANY_FILES_REJECTION,
-    useDropzoneReducer,
     type ComposeFunction,
     type FileAccept,
-    type FileHandler,
     type FileRejectReason,
     type InputFile,
   } from "../utils/dropzone";
+
+  interface Dispatch {
+    drop: {
+      acceptedFiles: any[];
+      rejectReasons: FileRejectReason[];
+      event: Event;
+    };
+    dragEnter: Event;
+    dragLeave: Event;
+    dragOver: Event;
+    dropAccepted: { acceptedFiles: InputFile[]; event: Event };
+    dropRejected: { rejectReasons: FileRejectReason[]; event: Event };
+    fileDialogCancel: void;
+  }
 
   // default props
   export let disabled = false;
@@ -31,44 +43,25 @@
   export let noKeyboard = false;
   export let noDrag = false;
   export let noDragEventsBubbling = false;
+  export let isFocused = false;
+  export let isDragActive = false;
+  export let draggedFiles: InputFile[] = [];
   // required props
   export let inputRef: HTMLInputElement | null;
-  export let onDrop: (
-    acceptedFiles: any[],
-    rejectReasons: FileRejectReason[],
-    event: Event,
-  ) => void;
   // optional props
   export let accept: FileAccept | undefined = undefined;
-  export let onDragEnter: FileHandler | undefined = undefined;
-  export let onDragLeave: FileHandler | undefined = undefined;
-  export let onDragOver: FileHandler | undefined = undefined;
-  export let onDropAccepted:
-    | ((acceptedFiles: InputFile[], event: Event) => void)
-    | undefined = undefined;
-  export let onDropRejected:
-    | ((rejectReasons: FileRejectReason[], event: Event) => void)
-    | undefined = undefined;
-  export let onFileDialogCancel: (() => void) | undefined = undefined;
 
   let rootRef: HTMLElement;
   let dragTargetsRef: any[] = [];
+  let isFileDialogActive = false;
+  let acceptedFiles: InputFile[] = [];
+  let fileRejections: FileRejectReason[] = [];
 
-  const eventDispatch = createEventDispatcher<{ dragging: boolean }>();
-  const [state, dispatch] = useDropzoneReducer({
-    isFocused: false,
-    isFileDialogActive: false,
-    isDragActive: false,
-    isDragAccept: false,
-    isDragReject: false,
-    draggedFiles: [],
-    acceptedFiles: [],
-    fileRejections: [],
-  });
+  const dispatch = createEventDispatcher<Dispatch>();
 
   const openFileDialog = () => {
     if (inputRef) {
-      dispatch({ type: "openDialog" });
+      isFileDialogActive = true;
       inputRef.value = "";
       inputRef.click();
     }
@@ -76,23 +69,21 @@
 
   const onWindowFocus = () => {
     // Execute the timeout only if the file dialog is opened in the browser
-    if ($state.isFileDialogActive) {
+    if (isFileDialogActive) {
       setTimeout(() => {
         if (inputRef) {
           const { files } = inputRef;
 
           if (files && !files.length) {
-            dispatch({ type: "closeDialog" });
-            if (typeof onFileDialogCancel === "function") {
-              onFileDialogCancel();
-            }
+            isFileDialogActive = false;
+            dispatch("fileDialogCancel");
           }
         }
       }, 300);
     }
   };
 
-  function onKeyDownCb(event: Event) {
+  const onKeyDownCb = (event: Event) => {
     if (!rootRef) {
       return;
     }
@@ -106,17 +97,17 @@
         openFileDialog();
       }
     }
-  }
+  };
 
-  function onFocusCb() {
-    dispatch({ type: "focus" });
-  }
+  const onFocusCb = () => {
+    isFocused = true;
+  };
 
-  function onBlurCb() {
-    dispatch({ type: "blur" });
-  }
+  const onBlurCb = () => {
+    isFocused = false;
+  };
 
-  function onClickCb() {
+  const onClickCb = () => {
     if (noClick) {
       return;
     }
@@ -125,7 +116,7 @@
     } else {
       openFileDialog();
     }
-  }
+  };
 
   const onDocumentDrop = (event: Event) => {
     if (!rootRef) {
@@ -145,16 +136,7 @@
     inputRef = null;
   });
 
-  function stopPropagation(event: Event) {
-    if (noDragEventsBubbling) {
-      event.stopPropagation();
-    }
-  }
-
-  async function onDragEnterCb(event: Event) {
-    // Persist here because we need the event later after getFilesFromEvent() is done
-    stopPropagation(event);
-
+  const onDragEnterCb = async (event: Event) => {
     dragTargetsRef = [...dragTargetsRef, event.target];
 
     if (isEvtWithFiles(event)) {
@@ -169,24 +151,15 @@
         return;
       }
 
-      dispatch({
-        draggedFiles: draggedFilesRes,
-        isDragActive: true,
-        type: "setDraggedFiles",
-      });
-      eventDispatch("dragging", true);
-
-      if (onDragEnter) {
-        onDragEnter(event);
-      }
+      draggedFiles = draggedFilesRes;
+      isDragActive = true;
+      dispatch("dragEnter", event);
     }
-  }
+  };
 
-  function onDragOverCb(
+  const onDragOverCb = (
     event: Event & { dataTransfer?: { dropEffect: string } },
-  ) {
-    stopPropagation(event);
-
+  ) => {
     if (event.dataTransfer) {
       try {
         event.dataTransfer.dropEffect = "copy";
@@ -195,16 +168,14 @@
       }
     }
 
-    if (isEvtWithFiles(event) && onDragOver) {
-      onDragOver(event);
+    if (isEvtWithFiles(event)) {
+      dispatch("dragOver", event);
     }
 
     return false;
-  }
+  };
 
-  function onDragLeaveCb(event: Event) {
-    stopPropagation(event);
-
+  const onDragLeaveCb = (event: Event) => {
     // Only deactivate once the dropzone and all children have been left
     const targets = dragTargetsRef.filter((target: EventTarget) => {
       if (!rootRef) {
@@ -223,24 +194,16 @@
       return;
     }
 
-    dispatch({
-      isDragActive: false,
-      type: "setDraggedFiles",
-      draggedFiles: [],
-    });
-    eventDispatch("dragging", false);
+    draggedFiles = [];
+    isDragActive = false;
 
-    if (isEvtWithFiles(event) && onDragLeave) {
-      onDragLeave(event);
+    if (isEvtWithFiles(event)) {
+      dispatch("dragLeave", event);
     }
-  }
+  };
 
-  async function onDropCb(event: Event) {
-    // Persist here because we need the event later after getFilesFromEvent() is done
-    stopPropagation(event);
-
+  const onDropCb = async (event: Event) => {
     dragTargetsRef = [];
-
     if (isEvtWithFiles(event)) {
       if (!getFilesFromEvent) {
         return;
@@ -251,61 +214,51 @@
         return;
       }
 
-      const acceptedFiles: InputFile[] = [];
-      const fileRejections: FileRejectReason[] = [];
-
       files.forEach((file) => {
-        const [accepted, acceptError] = fileAccepted(
-          file,
-          accept as FileAccept,
-        );
-        const [sizeMatch, sizeError] = fileMatchSize(
-          file,
-          minSize as number,
-          maxSize as number,
-        );
+        const [accepted, acceptError] = fileAccepted(file, accept ?? "");
+        const [sizeMatch, sizeError] = fileMatchSize(file, minSize, maxSize);
         if (accepted && sizeMatch) {
-          acceptedFiles.push(file);
+          acceptedFiles = [...acceptedFiles, file];
         } else {
           const errors = [acceptError, sizeError].filter((e) => e);
-          fileRejections.push({ file, errors });
+          fileRejections = [...fileRejections, { file, errors }];
         }
       });
 
       if (
         (!multiple && acceptedFiles.length > 1) ||
-        (multiple &&
-          (maxFiles as number) >= 1 &&
-          acceptedFiles.length > (maxFiles as number))
+        (multiple && maxFiles >= 1 && acceptedFiles.length > maxFiles)
       ) {
         // Reject everything and empty accepted files
         acceptedFiles.forEach((file) => {
-          fileRejections.push({ file, errors: [TOO_MANY_FILES_REJECTION] });
+          fileRejections = [
+            ...fileRejections,
+            { file, errors: [TOO_MANY_FILES_REJECTION] },
+          ];
         });
-        acceptedFiles.splice(0);
+        acceptedFiles = [];
       }
 
-      dispatch({
+      dispatch("drop", {
         acceptedFiles,
-        fileRejections,
-        type: "setFiles",
+        rejectReasons: fileRejections,
+        event,
       });
 
-      if (onDrop) {
-        onDrop(acceptedFiles, fileRejections, event);
-        eventDispatch("dragging", false);
+      if (fileRejections.length > 0) {
+        dispatch("dropRejected", { rejectReasons: fileRejections, event });
       }
 
-      if (fileRejections.length > 0 && onDropRejected) {
-        onDropRejected(fileRejections, event);
-      }
-
-      if (acceptedFiles.length > 0 && onDropAccepted) {
-        onDropAccepted(acceptedFiles, event);
+      if (acceptedFiles.length > 0) {
+        dispatch("dropAccepted", { acceptedFiles, event });
       }
     }
-    dispatch({ type: "reset" });
-  }
+    isFileDialogActive = false;
+    isDragActive = false;
+    draggedFiles = [];
+    acceptedFiles = [];
+    fileRejections = [];
+  };
 
   const composeHandler = (fn: ComposeFunction) => (disabled ? undefined : fn);
 
@@ -315,33 +268,22 @@
   const composeDragHandler = (fn: ComposeFunction) =>
     noDrag ? undefined : composeHandler(fn);
 
-  const onInputElementClick = (event: Event) => {
-    event.stopPropagation();
+  const getInputAccept = (accept: FileAccept | undefined) => {
+    const normalizedAccept = normalizeAccept(accept ?? "");
+    return Array.isArray(normalizedAccept)
+      ? normalizedAccept.join("")
+      : normalizedAccept;
   };
 
-  function getInputProps({
-    onChange,
-    onClick,
-    ...rest
-  }: { onChange?: () => void; onClick?: () => void } = {}) {
-    const inputProps = {
-      accept,
-      multiple,
-      style: "display: none",
-      type: "file",
-      onChange: composeHandler(composeEventHandlers(onChange, onDropCb)),
-      onClick: composeHandler(
-        composeEventHandlers(onClick, onInputElementClick),
-      ),
-      autoComplete: "off",
-      tabIndex: -1,
-      ref: inputRef,
-    };
-    return {
-      ...inputProps,
-      ...rest,
-    };
-  }
+  $: inputProps = {
+    multiple,
+    disabled,
+    accept: getInputAccept(accept),
+    style: "display: none",
+    type: "file",
+    autoComplete: "off",
+    tabIndex: -1,
+  };
 </script>
 
 <!--
@@ -350,19 +292,17 @@ Example:
 ```tsx
   <Dropzone
     bind:inputRef
+    bind:isDragActive
     class="ut-text-center"
     let:inputProps
-    {onDrop}
-    accept={fileTypes}
-    on:dragging={(e) => (isDragActive = e.detail)}
+    let:onInputChange
+    accept={fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined}
+    on:drop={(e) => onDrop(e.detail.acceptedFiles)}
   >
     <input
       class="ut-sr-only"
       {...inputProps}
-      disabled={!ready}
-      accept={Array.isArray(accept) ? accept.join("") : accept}
-      on:change={inputProps.onChange}
-      on:click={inputProps.onClick}
+      on:change|preventDefault|stopPropagation={onInputChange}
       bind:this={inputRef}
     />
   </Dropzone>
@@ -382,18 +322,17 @@ Example:
   on:focus={composeKeyboardHandler(onFocusCb)}
   on:blur={composeKeyboardHandler(onBlurCb)}
   on:click={composeHandler(onClickCb)}
-  on:dragenter|preventDefault={composeDragHandler(
-    composeEventHandlers(onDragEnter, onDragEnterCb),
-  )}
-  on:dragover|preventDefault={composeDragHandler(
-    composeEventHandlers(onDragOver, onDragOverCb),
-  )}
-  on:dragleave|preventDefault={composeDragHandler(
-    composeEventHandlers(onDragLeave, onDragLeaveCb),
-  )}
-  on:drop|preventDefault={composeDragHandler(
-    composeEventHandlers(onDrop, onDropCb),
-  )}
+  on:dragenter|preventDefault={composeDragHandler(onDragEnterCb)}
+  on:dragover|preventDefault={composeDragHandler(onDragOverCb)}
+  on:dragleave|preventDefault={composeDragHandler(onDragLeaveCb)}
+  on:drop|preventDefault={composeDragHandler(onDropCb)}
 >
-  <slot inputProps={getInputProps()} />
+  <slot {inputProps} onInputChange={composeHandler(onDropCb)}>
+    <input
+      {...inputProps}
+      on:change|preventDefault={composeHandler(onDropCb)}
+      on:click|stopPropagation
+      bind:this={inputRef}
+    />
+  </slot>
 </div>
