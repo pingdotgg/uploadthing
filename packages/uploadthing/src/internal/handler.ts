@@ -149,7 +149,7 @@ export const buildRequestHandler = <
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
     // Get inputs from query and params
-    const params = new URL(req.url ?? "").searchParams;
+    const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
     const uploadthingHook = req.headers?.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = params.get("actionType") ?? undefined;
