@@ -7,8 +7,10 @@ const UT_SECRET = process.env.UPLOADTHING_SECRET;
 /**
  * Request to delete files from UploadThing storage.
  * @param {string | string[]} fileKeys
+ *
  * @example
  * await deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+ *
  * @example
  * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
  */
@@ -25,15 +27,18 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
     },
     body: JSON.stringify({ fileKeys }),
   });
+
   if (!res.ok) {
     throw new Error("Failed to delete files");
   }
+
   return res.json() as Promise<{ success: boolean }>;
 };
 
 /**
  * Request file URLs from UploadThing storage.
  * @param {string | string[]} fileKeys
+ *
  * @example
  * const data = await getFileUrls("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
  * console.log(data); // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"}]
@@ -55,8 +60,40 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
     },
     body: JSON.stringify({ fileKeys }),
   });
+
   if (!res.ok) {
     throw new Error("Failed to get file urls");
   }
+
   return res.json().then(({ data }) => data as { key: string; url: string }[]);
+};
+
+/**
+ * Request file list from UploadThing storage.
+ * @param {string | string[]} fileKeys
+ *
+ * @example
+ * const data = await listFiles();
+ * console.log(data); // {fileKeys: ["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"], fileIds: ["2e0fdb64-9957-4262-8e45-f372ba903ac8"]}
+ */
+export const listFiles = async () => {
+  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
+
+  // TODO: Implement filtering and pagination
+  const res = await fetch(generateUploadThingURL("/api/listFiles"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-uploadthing-api-key": UT_SECRET,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to list files");
+  }
+
+  return res
+    .json()
+    .then(({ data }) => data as { fileKeys: string[]; fileIds: string[] });
 };
