@@ -197,6 +197,7 @@ export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) => {
     if (type === "blob") return "blob";
     if (type === "pdf") return "application/pdf";
+    if (type.includes("/")) return type;
     else return `${type}/*`;
   });
 
