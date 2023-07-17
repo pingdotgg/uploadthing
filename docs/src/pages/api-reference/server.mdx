@@ -149,6 +149,46 @@ accessible here
 The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
 API but better
 
+### `uploadFiles`
+
+`uploadFiles` let's you upload files directly from your server, without having
+to define file routes. When uploadthing files from the server, no presigned URLs
+are used, your files are uploaded directly to S3 via our servers.
+
+This can be useful for uploading files from sever actions,
+
+```tsx
+import { utapi } from "uploadthing/server";
+
+async function uploadFiles(formData: FormData) {
+  "use server";
+  const files = fd.getAll("files");
+  const response = await utapi.uploadFiles(files);
+  //    ^? { key: string, url: string }[]
+}
+
+function MyForm() {
+  return (
+    <form action={uploadFiles}>
+      <input name="files" type="file" multiple />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+| Arguments | Type                       | Required | Description                       |
+| :-------- | :------------------------- | :------- | :-------------------------------- |
+| files     | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload    |
+| metadata  | Json                       | No       | Metadata to attach to the file(s) |
+
+```ts
+// Edge / Node < 20 friendle File interface
+interface FileEsque extends Blob {
+  name: string;
+}
+```
+
 ### `deleteFiles`
 
 `deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
