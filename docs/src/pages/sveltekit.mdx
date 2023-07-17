@@ -43,9 +43,27 @@ UPLOADTHING_APP_ID=... # Your app id
 ```
 
 <Callout type="warning">
-  If you don't already have a uploadthing secret key, [sign up](/create-account) and create one from
-  the [dashboard!](https://uploadthing.com/dashboard)
+  If you don't already have a uploadthing secret key, [sign up](/create-account)
+  and create one from the [dashboard!](https://uploadthing.com/dashboard)
 </Callout>
+
+### Define process in vite.config
+
+Uploadthing internals use process.env which is not defined in vite, so it is
+necessary to add the following to your vite.config.
+
+```ts copy filename="vite.config.ts"
+import { sveltekit } from "@sveltejs/kit/vite";
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  plugins: [sveltekit()],
+  define: {
+    "process.env": {},
+  },
+});
+```
+
 </Steps>
 
 ## Set Up A FileRouter
