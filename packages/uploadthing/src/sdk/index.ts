@@ -73,7 +73,7 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
  *
  * @example
  * const data = await listFiles();
- * console.log(data); // {fileKeys: ["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"], fileIds: ["2e0fdb64-9957-4262-8e45-f372ba903ac8"]}
+ * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
  */
 export const listFiles = async () => {
   if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
