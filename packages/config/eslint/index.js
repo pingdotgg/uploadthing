@@ -30,7 +30,7 @@ const config = {
       },
     ],
     "@typescript-eslint/no-misused-promises": [
-      2,
+      "error",
       { checksVoidReturn: { attributes: false } },
     ],
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
