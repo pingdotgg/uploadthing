@@ -198,7 +198,7 @@ corresponds to.
 ```ts
 import { utapi } from "uploadthing/server";
 
-const files = utapi.listFiles();
+const files = await utapi.listFiles();
 
 console.log(files);
 /*
