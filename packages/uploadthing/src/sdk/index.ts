@@ -88,11 +88,14 @@ export const listFiles = async () => {
     },
   });
 
-  if (!res.ok) {
-    throw new Error("Failed to list files");
+  const json = (await res.json()) as
+    | { files: { key: string; id: string }[] }
+    | { error: string };
+
+  if (!res.ok || "error" in json) {
+    const message = "error" in json ? json.error : "Unknown error";
+    throw new Error(message);
   }
 
-  return res.json().then(({ files }) => {
-    return files as { id: string; key: string }[];
-  });
+  return json.files as { id: string; key: string }[];
 };
