@@ -21,7 +21,6 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
       const formattedError = errorFormatter(
         response,
       ) as inferErrorShape<TRouter>;
-      console.log("formattedError", formattedError);
       return new Response(JSON.stringify(formattedError), {
         status: getStatusCodeFromError(response),
         headers: {

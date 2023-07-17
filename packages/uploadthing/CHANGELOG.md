@@ -1,5 +1,46 @@
 # uploadthing
 
+## 5.2.1
+
+### Patch Changes
+
+- [#219](https://github.com/pingdotgg/uploadthing/pull/219)
+  [`a11a7f0`](https://github.com/pingdotgg/uploadthing/commit/a11a7f0f98585acf96220f9f454c74966e6c39b0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: make sure
+  url is absolute in pagedir
+
+## 5.2.0
+
+### Minor Changes
+
+- [#195](https://github.com/pingdotgg/uploadthing/pull/195)
+  [`a6c969e`](https://github.com/pingdotgg/uploadthing/commit/a6c969e67c85df490907b121d8e7df41779172b3)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: improve
+  errors and add `errorFormatter` option on the backend
+
+### Patch Changes
+
+- [#215](https://github.com/pingdotgg/uploadthing/pull/215)
+  [`e4f650c`](https://github.com/pingdotgg/uploadthing/commit/e4f650ca208f55074460d1eb20a70c15ab34f63b)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix(uploadthing): fixed
+  incorrect mapping of precise MIME types
+
+- [#205](https://github.com/pingdotgg/uploadthing/pull/205)
+  [`8658002`](https://github.com/pingdotgg/uploadthing/commit/8658002ca01e6502f06c2c56f90b353cf5db71df)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore(deps):
+  update dependency '@uploadthing/shared'
+
+- [#207](https://github.com/pingdotgg/uploadthing/pull/207)
+  [`f3640fb`](https://github.com/pingdotgg/uploadthing/commit/f3640fb0872a12fe0ad95e0ac604136113fa6ca4)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(shared):
+  Swap order of cases in `getUploadthingUrl()`
+
+- Updated dependencies
+  [[`c508868`](https://github.com/pingdotgg/uploadthing/commit/c508868690d3de48094c10a7facb880662d03b6a),
+  [`f3640fb`](https://github.com/pingdotgg/uploadthing/commit/f3640fb0872a12fe0ad95e0ac604136113fa6ca4),
+  [`a6c969e`](https://github.com/pingdotgg/uploadthing/commit/a6c969e67c85df490907b121d8e7df41779172b3)]:
+  - @uploadthing/shared@5.1.0
+
 ## 5.1.0
 
 ### Minor Changes
