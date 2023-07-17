@@ -5,7 +5,6 @@
   import type { FileRouter } from "uploadthing/server";
 
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-  import { normalizeAccept } from "../utils/dropzone";
   import Dropzone from "./Dropzone.svelte";
   import {
     allowedContentTextLabelGenerator,
@@ -55,13 +54,14 @@
 >
   <Dropzone
     bind:inputRef
+    bind:isDragActive
     class="ut-text-center"
     let:inputProps
-    {onDrop}
+    let:onInputChange
+    maxFiles={2}
     accept={fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined}
-    on:dragging={(e) => (isDragActive = e.detail)}
+    on:drop={(e) => onDrop(e.detail.acceptedFiles)}
   >
-    {@const accept = normalizeAccept(inputProps.accept ?? "")}
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
@@ -89,9 +89,7 @@
           class="ut-sr-only"
           {...inputProps}
           disabled={!ready}
-          accept={Array.isArray(accept) ? accept.join("") : accept}
-          on:change={inputProps.onChange}
-          on:click={inputProps.onClick}
+          on:change|preventDefault={onInputChange}
           bind:this={inputRef}
         />
       </label>

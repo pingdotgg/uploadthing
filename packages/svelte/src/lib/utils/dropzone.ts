@@ -1,6 +1,5 @@
 import accepts from "attr-accept";
 import type { FileWithPath } from "file-selector";
-import { get, writable } from "svelte/store";
 
 export type FileAccept =
   | string
@@ -28,32 +27,6 @@ export type FileRejectReason = {
   file: InputFile;
   errors: FileRejectionError[];
 };
-
-export interface FileUploadOptions {
-  accept: FileAccept;
-  disabled: boolean;
-  getFilesFromEvent: (evt: Event | any) => Promise<InputFile[]>;
-  maxSize: number;
-  minSize: number;
-  multiple: boolean;
-  maxFiles: number;
-  onDragEnter: FileHandler;
-  onDragLeave: FileHandler;
-  onDragOver: FileHandler;
-  onDrop: (
-    acceptedFiles: any[],
-    rejectReasons: FileRejectReason[],
-    event: Event,
-  ) => void;
-  onDropAccepted: (acceptedFiles: InputFile[], event: Event) => void;
-  onDropRejected: (rejectReasons: FileRejectReason[], event: Event) => void;
-  onFileDialogCancel: () => void;
-  preventDropOnDocument: boolean;
-  noClick: boolean;
-  noKeyboard: boolean;
-  noDrag: boolean;
-  noDragEventsBubbling: boolean;
-}
 
 export interface FileUploadInitState {
   isFocused: boolean;
@@ -132,9 +105,9 @@ export const TOO_MANY_FILES_REJECTION: FileRejectionError = {
 };
 
 // File Errors
-export const getInvalidTypeRejectionErr = (
+export function getInvalidTypeRejectionErr(
   accept: FileAccept,
-): FileRejectionError => {
+): FileRejectionError {
   accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
   const messageSuffix = Array.isArray(accept)
     ? `one of ${accept.join(", ")}`
@@ -143,7 +116,7 @@ export const getInvalidTypeRejectionErr = (
     code: FILE_INVALID_TYPE,
     message: `File type must be ${messageSuffix}`,
   };
-};
+}
 
 function isDefined(value: any) {
   return value !== undefined && value !== null;
@@ -209,77 +182,4 @@ export function fileMatchSize(
     }
   }
   return [true, null];
-}
-
-export function composeEventHandlers(...fns: any[]): ComposeFunction {
-  return (event: Event, ...args: unknown[]) =>
-    fns.some((fn: (...args: unknown[]) => void) => {
-      if (!isPropagationStopped(event) && fn) {
-        fn(event, ...args);
-      }
-      return isPropagationStopped(event);
-    });
-}
-
-function reducer(
-  state: FileUploadInitState,
-  action: { type: string } & Partial<FileUploadInitState>,
-) {
-  switch (action.type) {
-    case "focus":
-      return {
-        ...state,
-        isFocused: true,
-      };
-    case "blur":
-      return {
-        ...state,
-        isFocused: false,
-      };
-    case "openDialog":
-      return {
-        ...state,
-        isFileDialogActive: true,
-      };
-    case "closeDialog":
-      return {
-        ...state,
-        isFileDialogActive: false,
-      };
-    case "setDraggedFiles":
-      const { isDragActive, draggedFiles } = action;
-      return {
-        ...state,
-        draggedFiles: draggedFiles ?? [],
-        isDragActive: isDragActive ?? false,
-      };
-    case "setFiles":
-      return {
-        ...state,
-        acceptedFiles: action.acceptedFiles ?? [],
-        fileRejections: action.fileRejections ?? [],
-      };
-    case "reset":
-      return {
-        ...state,
-        isFileDialogActive: false,
-        isDragActive: false,
-        draggedFiles: [],
-        acceptedFiles: [],
-        fileRejections: [],
-      };
-    default:
-      return state;
-  }
-}
-
-export function useDropzoneReducer(initialState: FileUploadInitState) {
-  const state = writable(initialState);
-  const dispatch = (
-    action: { type: string } & Partial<FileUploadInitState>,
-  ) => {
-    const newState = reducer(get(state), action);
-    state.set(newState);
-  };
-  return [state, dispatch] as const;
 }
