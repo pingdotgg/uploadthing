@@ -97,5 +97,5 @@ export const listFiles = async () => {
     throw new Error(message);
   }
 
-  return json.files as { id: string; key: string }[];
+  return json.files;
 };
