@@ -4,11 +4,11 @@ import { UPLOADTHING_VERSION } from "../constants";
 
 function guardServerOnly() {
   if (typeof window !== "undefined") {
-    throw new Error("The `utapi` should only be used on the client.");
+    throw new Error("The `utapi` can only be used on the server.");
   }
 }
 
-function guardApiKey() {
+function getApiKeyOrThrow() {
   if (!process.env.UPLOADTHING_SECRET)
     throw new Error("Missing UPLOADTHING_SECRET env variable.");
   return process.env.UPLOADTHING_SECRET;
@@ -24,7 +24,6 @@ function guardApiKey() {
  */
 export const deleteFiles = async (fileKeys: string[] | string) => {
   guardServerOnly();
-  const apiKey = guardApiKey();
 
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
@@ -32,7 +31,7 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": apiKey,
+      "x-uploadthing-api-key": getApiKeyOrThrow(),
       "x-uploadthing-version": UPLOADTHING_VERSION,
     },
     body: JSON.stringify({ fileKeys }),
@@ -56,7 +55,6 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
  */
 export const getFileUrls = async (fileKeys: string[] | string) => {
   guardServerOnly();
-  const apiKey = guardApiKey();
 
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
@@ -64,7 +62,7 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": apiKey,
+      "x-uploadthing-api-key": getApiKeyOrThrow(),
       "x-uploadthing-version": UPLOADTHING_VERSION,
     },
     body: JSON.stringify({ fileKeys }),
