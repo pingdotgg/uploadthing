@@ -27,15 +27,16 @@ export const uploadFiles = async (
   files: FileEsque[] | FileEsque,
   metadata: Json = {},
 ) => {
+  guardServerOnly();
+
   if (!Array.isArray(files)) files = [files];
-  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
 
   const formData = new FormData();
   files.forEach((file) => formData.append("files", file));
   formData.append("metadata", JSON.stringify(metadata));
 
   return uploadFilesInternal(formData, {
-    apiKey: UT_SECRET,
+    apiKey: getApiKeyOrThrow(),
     utVersion: UPLOADTHING_VERSION,
   });
 };
@@ -48,9 +49,9 @@ export const uploadFileFromUrl = async (
   url: string | URL,
   metadata: Json = {},
 ) => {
-  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
+  guardServerOnly();
 
-  url = url instanceof URL ? url : new URL(url);
+  if (typeof url === "string") url = new URL(url);
   const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
   // Download the file on the user's server to avoid egress charges
@@ -65,7 +66,7 @@ export const uploadFileFromUrl = async (
   formData.append("metadata", JSON.stringify(metadata));
 
   return uploadFilesInternal(formData, {
-    apiKey: UT_SECRET,
+    apiKey: getApiKeyOrThrow(),
     utVersion: UPLOADTHING_VERSION,
   }).then((files) => files[0]);
 };
