@@ -88,14 +88,14 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
  * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
  */
 export const listFiles = async () => {
-  if (!UT_SECRET) throw new Error("Missing UPLOADTHING_SECRET env variable.");
+  guardServerOnly();
 
   // TODO: Implement filtering and pagination
   const res = await fetch(generateUploadThingURL("/api/listFiles"), {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": UT_SECRET,
+      "x-uploadthing-api-key": getApiKeyOrThrow(),
       "x-uploadthing-version": UPLOADTHING_VERSION,
     },
   });
