@@ -1,55 +1,50 @@
-import type { StyleField, SpinnerField, ContentField } from "../types";
+import type { CSSProperties, ReactNode } from "react";
 
-export const styleFieldToClassName = <T,>(
-    styleField: StyleField<T> | undefined,
-    args: T,
+export type StyleField<CallbackArg> =
+  | string
+  | CSSProperties
+  | ((arg: CallbackArg) => string | CSSProperties);
+export type ContentField<CallbackArg> =
+  | ReactNode
+  | ((arg: CallbackArg) => ReactNode);
+
+export const styleFieldToClassName = <T>(
+  styleField: StyleField<T> | undefined,
+  args: T,
 ) => {
-    if (typeof styleField === "string") return styleField;
-    if (typeof styleField === "function") {
-        const result = styleField(args);
+  if (typeof styleField === "string") return styleField;
+  if (typeof styleField === "function") {
+    const result = styleField(args);
 
-        if (typeof result === "string") return result;
-    }
+    if (typeof result === "string") return result;
+  }
 
-    return "";
+  return "";
 };
 
-export const styleFieldToCssObject = <T,>(
-    styleField: StyleField<T> | undefined,
-    args: T,
+export const styleFieldToCssObject = <T>(
+  styleField: StyleField<T> | undefined,
+  args: T,
 ) => {
-    if (typeof styleField === "object") return styleField;
-    if (typeof styleField === "function") {
-        const result = styleField(args);
+  if (typeof styleField === "object") return styleField;
+  if (typeof styleField === "function") {
+    const result = styleField(args);
 
-        if (typeof result === "object") return result;
-    }
+    if (typeof result === "object") return result;
+  }
 
-    return {};
+  return {};
 };
 
-export const spinnerFieldToElement = <T,>(
-    spinnerField: SpinnerField<T> | undefined,
-    args: T,
+export const contentFieldToContent = <T>(
+  contentField: ContentField<T> | undefined,
+  arg: T,
 ) => {
-    if (typeof spinnerField === "function") {
-        const result = spinnerField(args);
+  if (!contentField) return null;
+  if (typeof contentField !== "function") return contentField;
+  if (typeof contentField === "function") {
+    const result = contentField(arg);
 
-        return result;
-    }
-
-    return spinnerField;
-};
-
-export const contentFieldToContent = <T,>(
-    contentField: ContentField<T> | undefined,
-    arg: T,
-) => {
-    if (!contentField) return undefined;
-    if (typeof contentField !== "function") return contentField;
-    if (typeof contentField === "function") {
-        const result = contentField(arg);
-
-        return result;
-    }
+    return result;
+  }
 };
