@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useCallback, useRef, useState } from "react";
 import type { FileWithPath, DropzoneState } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
@@ -110,9 +110,8 @@ type SpinnerField<CallbackArg> =
   | JSX.Element
   | ((arg: CallbackArg) => JSX.Element);
 type ContentField<CallbackArg> =
-  | string
-  | JSX.Element
-  | ((arg: CallbackArg) => string | JSX.Element);
+  | ReactNode
+  | ((arg: CallbackArg) => ReactNode);
 
 export type UploadButtonProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
@@ -196,15 +195,12 @@ const contentFieldToContent = <T,>(
   arg: T,
 ) => {
   if (!contentField) return undefined;
-  if (typeof contentField === "string") return contentField;
   if (typeof contentField !== "function") return contentField;
   if (typeof contentField === "function") {
     const result = contentField(arg);
 
     return result;
   }
-
-  return undefined;
 };
 
 const progressHeights: { [key: number]: string } = {
