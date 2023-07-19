@@ -32,9 +32,9 @@ const withUt = (twConfig) => {
     }
 
     Object.assign(twConfig.theme.data, {
-        'ut-readying': 'ut-state=readying',
-        'ut-ready': 'ut-state=ready',
-        'ut-uploading': 'ut-state=uploading',
+        'ut-readying': 'state=readying',
+        'ut-ready': 'state=ready',
+        'ut-uploading': 'state=uploading',
     })
 
     return twConfig;
