@@ -12,10 +12,6 @@
     "./hooks": {
       "types": "./dist/hooks.d.ts",
       "import": "./dist/hooks.mjs"
-    },
-    "./tw": {
-      "types": "./dist/tw.d.ts",
-      "import": "./dist/tw.mjs"
     }
   },
   "files": [
