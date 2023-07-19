@@ -292,6 +292,13 @@ export function UploadButton<TRouter extends FileRouter>(
     fileTypes,
   };
 
+  const getUtState = () => {
+    if (!ready) return 'readying';
+    if (ready && !isUploading) return 'ready';
+
+    return 'uploading';
+  }
+
   return (
     <div
       className={twMerge(
@@ -300,6 +307,7 @@ export function UploadButton<TRouter extends FileRouter>(
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
+      data-ut-state={getUtState()}
     >
       <label
         className={twMerge(
@@ -314,6 +322,7 @@ export function UploadButton<TRouter extends FileRouter>(
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        data-ut-state={getUtState()}
       >
         <input
           {...getInputProps()}
@@ -338,6 +347,7 @@ export function UploadButton<TRouter extends FileRouter>(
           $props.appearance?.allowedContent,
           styleFieldArg,
         )}
+        data-ut-state={getUtState()}
       >
         {fileTypes &&
           (

@@ -46,7 +46,7 @@ export default function Home() {
           //   },
           // }}
 
-          className="border rounded p-3 ut-button:bg-red-400 ut-allowed-content:text-lg"
+          className="border rounded p-3 ut-button:bg-red-400 ut-allowed-content:text-lg ut-button:data-ut-readying:bg-orange-300"
         />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">

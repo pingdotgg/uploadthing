@@ -12,13 +12,25 @@ export const withUt = (twConfig: Config) => {
     addVariant('ut-allowed-content', '&>div')
   })
 
-  if (twConfig.plugins) {
-    twConfig.plugins.push(utPlugin);
-  } else {
-    twConfig.plugins = [
-      utPlugin
-    ];
+  if (!twConfig.plugins) {
+    twConfig.plugins = [];
   }
+
+  twConfig.plugins.push(utPlugin);
+
+  if (!twConfig.theme) {
+    twConfig.theme = {};
+  }
+
+  if (!twConfig.theme.data) {
+    twConfig.theme.data = {};
+  }
+
+  Object.assign(twConfig.theme.data, {
+    'ut-readying': 'ut-state=readying',
+    'ut-ready': 'ut-state=ready',
+    'ut-uploading': 'ut-state=uploading',
+  })
 
   return twConfig;
 };
