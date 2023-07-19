@@ -93,12 +93,7 @@ type ButtonStyleFieldCallbackArgs = {
   uploadProgress: number;
   fileTypes: string[];
 };
-type ButtonRenderArg = ButtonStyleFieldCallbackArgs & {
-  getInputProps: () => JSX.IntrinsicElements["input"];
-  getUploadButtonText: () => string;
-  getAllowedContentText: () => string;
-}
-type ButtonRenderProp = (arg: ButtonRenderArg) => JSX.Element
+
 type DropzoneStyleFieldCallbackArgs = {
   ready: boolean;
   isUploading: boolean;
@@ -106,16 +101,6 @@ type DropzoneStyleFieldCallbackArgs = {
   fileTypes: string[];
   isDragActive: boolean;
 };
-type DropzoneRenderArg = DropzoneStyleFieldCallbackArgs & {
-  getInputProps: DropzoneState["getInputProps"];
-  getRootProps: DropzoneState["getRootProps"]
-  getUploadButtonText: () => string;
-  getAllowedContentText: () => string;
-  getUploadButtonProps: () => JSX.IntrinsicElements["button"];
-  getLabelText: () => string;
-  files: File[];
-}
-type DropzoneRenderProp = (arg: DropzoneRenderArg) => JSX.Element
 
 type StyleField<CallbackArg> =
   | string
@@ -135,14 +120,13 @@ export type UploadButtonProps<TRouter extends FileRouter> =
       container?: StyleField<ButtonStyleFieldCallbackArgs>;
       button?: StyleField<ButtonStyleFieldCallbackArgs>;
       buttonSpinner?: SpinnerField<ButtonStyleFieldCallbackArgs>;
-      allowedContentContainer?: StyleField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
     };
     content?: {
       button?: ContentField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
-    render?: ButtonRenderProp;
+    className?: string;
   };
 
 export type UploadDropzoneProps<TRouter extends FileRouter> =
@@ -164,7 +148,6 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
       allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
       button?: ContentField<DropzoneStyleFieldCallbackArgs>;
     };
-    render?: DropzoneRenderProp;
   };
 
 const styleFieldToClassName = <T,>(
@@ -309,21 +292,11 @@ export function UploadButton<TRouter extends FileRouter>(
     fileTypes,
   };
 
-  if ($props.render) {
-    const renderProps: ButtonRenderArg = {
-      ...styleFieldArg,
-      getInputProps,
-      getUploadButtonText: () => getUploadButtonText(fileTypes),
-      getAllowedContentText: () => allowedContentTextLabelGenerator(permittedFileInfo?.config),
-    }
-
-    return $props.render(renderProps);
-  }
-
   return (
     <div
       className={twMerge(
         "flex flex-col items-center justify-center gap-1",
+        $props.className,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
@@ -355,37 +328,25 @@ export function UploadButton<TRouter extends FileRouter>(
       </label>
       <div
         className={twMerge(
-          "h-[1.25rem]",
+          "h-[1.25rem]  text-xs leading-5 text-gray-600",
           styleFieldToClassName(
-            $props.appearance?.allowedContentContainer,
+            $props.appearance?.allowedContent,
             styleFieldArg,
           ),
         )}
         style={styleFieldToCssObject(
-          $props.appearance?.allowedContentContainer,
+          $props.appearance?.allowedContent,
           styleFieldArg,
         )}
       >
-        {fileTypes && (
-          <p
-            className={twMerge(
-              "m-0 text-xs leading-5 text-gray-600",
-              styleFieldToClassName(
-                $props.appearance?.allowedContent,
-                styleFieldArg,
-              ),
-            )}
-            style={styleFieldToCssObject(
-              $props.appearance?.allowedContent,
-              styleFieldArg,
-            )}
-          >
-            {contentFieldToContent(
+        {fileTypes &&
+          (
+            contentFieldToContent(
               $props.content?.allowedContent,
               styleFieldArg,
-            ) || allowedContentTextLabelGenerator(permittedFileInfo?.config)}
-          </p>
-        )}
+            ) || allowedContentTextLabelGenerator(permittedFileInfo?.config)
+          )
+        }
       </div>
     </div>
   );
@@ -446,28 +407,6 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
     const input = "input" in $props ? $props.input : undefined;
     void startUpload(files, input);
-  }
-
-  if ($props.render) {
-    const renderProps: DropzoneRenderArg = {
-      ...styleFieldArg,
-      getInputProps: () => ({
-        ...getInputProps(),
-        disabled: !ready,
-        className: "sr-only",
-      }),
-      getRootProps,
-      getUploadButtonText: () => `Upload ${files.length} file${files.length === 1 ? "" : "s"
-        }`,
-      getAllowedContentText: () => allowedContentTextLabelGenerator(permittedFileInfo?.config),
-      getUploadButtonProps: () => ({
-        onChange: onUploadClick
-      }),
-      getLabelText: () => ready ? `Choose files or drag and drop` : `Loading...`,
-      files
-    }
-
-    return $props.render(renderProps);
   }
 
   return (
