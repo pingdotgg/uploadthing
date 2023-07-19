@@ -76,7 +76,6 @@ export default function Home() {
 
         //     return "";
         //   },
-        //   allowedContentContainer: "h-auto",
         //   button: "bg-yellow-400 hover:bg-yellow-500 text-blue-400",
         // }}
 
