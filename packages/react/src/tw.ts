@@ -8,8 +8,10 @@ export const withUt = (twConfig: Config) => {
   }
 
   const utPlugin = plugin(function ({ addVariant }) {
-    addVariant('ut-button', '&>label')
-    addVariant('ut-allowed-content', '&>div')
+    addVariant('ut-button', '&>*[data-ut-element="button"]')
+    addVariant('ut-allowed-content', '&>*[data-ut-element="allowed-content"]')
+    addVariant('ut-label', '&>*[data-ut-element="label"]')
+    addVariant('ut-upload-icon', '&>*[data-ut-element="upload-icon"]')
   })
 
   if (!twConfig.plugins) {

@@ -132,12 +132,9 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
     appearance?: {
       container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      dropzoneRoot?: StyleField<DropzoneStyleFieldCallbackArgs>;
       uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
       label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      allowedContentContainer?: StyleField<DropzoneStyleFieldCallbackArgs>;
       allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      buttonContainer?: StyleField<DropzoneStyleFieldCallbackArgs>;
       button?: StyleField<DropzoneStyleFieldCallbackArgs>;
       buttonSpinner?: SpinnerField<DropzoneStyleFieldCallbackArgs>;
     };
@@ -147,6 +144,7 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
       allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
       button?: ContentField<DropzoneStyleFieldCallbackArgs>;
     };
+    className?: string;
   };
 
 const styleFieldToClassName = <T,>(
@@ -319,6 +317,7 @@ export function UploadButton<TRouter extends FileRouter>(
         )}
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-ut-state={getUtState()}
+        data-ut-element="button"
       >
         <input
           {...getInputProps()}
@@ -344,6 +343,7 @@ export function UploadButton<TRouter extends FileRouter>(
           styleFieldArg,
         )}
         data-ut-state={getUtState()}
+        data-ut-element="allowed-content"
       >
         {fileTypes &&
           (
@@ -414,141 +414,126 @@ export function UploadDropzone<TRouter extends FileRouter>(
     const input = "input" in $props ? $props.input : undefined;
     void startUpload(files, input);
   }
+  const getUtState = () => {
+    if (!ready) return 'readying';
+    if (ready && !isUploading) return 'ready';
+
+    return 'uploading';
+  }
 
   return (
     <div
       className={twMerge(
-        classNames(
-          "mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
-          isDragActive ? "bg-blue-600/10" : "",
-        ),
+        "text-center mt-2 flex flex-col justify-center items-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
+        isDragActive ? "bg-blue-600/10" : "",
+        $props.className,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
+      {...getRootProps()}
+      style={styleFieldToCssObject(
+        $props.appearance?.container,
+        styleFieldArg,
+      )}
+      data-ut-state={getUtState()}
     >
-      <div
-        className={twMerge(
-          "text-center",
-          styleFieldToClassName($props.appearance?.dropzoneRoot, styleFieldArg),
-        )}
-        {...getRootProps()}
-        style={styleFieldToCssObject(
-          $props.appearance?.dropzoneRoot,
-          styleFieldArg,
-        )}
-      >
-        {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) || (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            className={twMerge(
-              "mx-auto block h-12 w-12 align-middle text-gray-400",
-              styleFieldToClassName(
-                $props.appearance?.uploadIcon,
-                styleFieldArg,
-              ),
-            )}
-            style={styleFieldToCssObject(
-              $props.appearance?.uploadIcon,
-              styleFieldArg,
-            )}
-          >
-            <path
-              fill="currentColor"
-              fillRule="evenodd"
-              d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
-        )}
-        <label
-          htmlFor="file-upload"
+      {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) || (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
           className={twMerge(
-            classNames(
-              "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-              ready ? "text-blue-600" : "text-gray-500",
-            ),
-            styleFieldToClassName($props.appearance?.label, styleFieldArg),
-          )}
-          style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
-        >
-          {contentFieldToContent($props.content?.label, styleFieldArg) ||
-            (ready ? `Choose files or drag and drop` : `Loading...`)}
-          <input className="sr-only" {...getInputProps()} disabled={!ready} />
-        </label>
-        <div
-          className={twMerge(
-            "h-[1.25rem]",
+            "mx-auto block h-12 w-12 align-middle text-gray-400",
             styleFieldToClassName(
-              $props.appearance?.allowedContentContainer,
+              $props.appearance?.uploadIcon,
               styleFieldArg,
             ),
           )}
           style={styleFieldToCssObject(
-            $props.appearance?.allowedContentContainer,
+            $props.appearance?.uploadIcon,
             styleFieldArg,
           )}
+          data-ut-element="upload-icon"
+          data-ut-state={getUtState()}
         >
-          <p
-            className={twMerge(
-              "m-0 text-xs leading-5 text-gray-600",
-              styleFieldToClassName(
-                $props.appearance?.allowedContent,
-                styleFieldArg,
-              ),
-            )}
-          >
-            {contentFieldToContent(
-              $props.content?.allowedContent,
-              styleFieldArg,
-            ) || allowedContentTextLabelGenerator(permittedFileInfo?.config)}
-          </p>
-        </div>
-        {files.length > 0 && (
-          <div
-            className={twMerge(
-              "mt-4 flex items-center justify-center",
-              styleFieldToClassName(
-                $props.appearance?.buttonContainer,
-                styleFieldArg,
-              ),
-            )}
-            style={styleFieldToCssObject(
-              $props.appearance?.buttonContainer,
-              styleFieldArg,
-            )}
-          >
-            <button
-              className={twMerge(
-                classNames(
-                  "relative flex text-white h-10 w-36 items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
-                  isUploading
-                    ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`
-                    : "bg-blue-600",
-                ),
-                styleFieldToClassName($props.appearance?.button, styleFieldArg),
-              )}
-              style={styleFieldToCssObject(
-                $props.appearance?.button,
-                styleFieldArg,
-              )}
-              onClick={onUploadClick}
-            >
-              {isUploading
-                ? spinnerFieldToElement(
-                  $props.appearance?.buttonSpinner,
-                  styleFieldArg,
-                ) || <Spinner />
-                : contentFieldToContent(
-                  $props.content?.button,
-                  styleFieldArg,
-                ) ||
-                `Upload ${files.length} file${files.length === 1 ? "" : "s"
-                }`}
-            </button>
-          </div>
+          <path
+            fill="currentColor"
+            fillRule="evenodd"
+            d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+            clipRule="evenodd"
+          ></path>
+        </svg>
+      )}
+      <label
+        htmlFor="file-upload"
+        className={twMerge(
+          classNames(
+            "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+            ready ? "text-blue-600" : "text-gray-500",
+          ),
+          styleFieldToClassName($props.appearance?.label, styleFieldArg),
         )}
+        style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
+        data-ut-element="label"
+        data-ut-state={getUtState()}
+      >
+        {contentFieldToContent($props.content?.label, styleFieldArg) ||
+          (ready ? `Choose files or drag and drop` : `Loading...`)}
+        <input className="sr-only" {...getInputProps()} disabled={!ready} />
+      </label>
+      <div
+        className={twMerge(
+          "h-[1.25rem] m-0 text-xs leading-5 text-gray-600",
+          styleFieldToClassName(
+            $props.appearance?.allowedContent,
+            styleFieldArg,
+          ),
+        )}
+        style={styleFieldToCssObject(
+          $props.appearance?.allowedContent,
+          styleFieldArg,
+        )}
+        data-ut-element="allowed-content"
+        data-ut-state={getUtState()}
+      >
+        {
+          contentFieldToContent(
+            $props.content?.allowedContent,
+            styleFieldArg,
+          ) || allowedContentTextLabelGenerator(permittedFileInfo?.config)
+        }
       </div>
+      {files.length > 0 && (
+        <button
+          className={twMerge(
+            classNames(
+              "relative flex mt-4 text-white h-10 w-36 items-center justify-center overflow-hidden rounded-md after:transition-[width] after:duration-500",
+              isUploading
+                ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`
+                : "bg-blue-600",
+            ),
+            styleFieldToClassName($props.appearance?.button, styleFieldArg),
+          )}
+          style={styleFieldToCssObject(
+            $props.appearance?.button,
+            styleFieldArg,
+          )}
+          onClick={onUploadClick}
+          data-ut-element="button"
+          data-ut-state={getUtState()}
+          disabled={isUploading}
+        >
+          {isUploading
+            ? spinnerFieldToElement(
+              $props.appearance?.buttonSpinner,
+              styleFieldArg,
+            ) || <Spinner />
+            : contentFieldToContent(
+              $props.content?.button,
+              styleFieldArg,
+            ) ||
+            `Upload ${files.length} file${files.length === 1 ? "" : "s"
+            }`}
+        </button>
+      )}
     </div>
   );
 }
