@@ -79,7 +79,7 @@ export function UploadButton<TRouter extends FileRouter>(
     const ready = fileTypes.length > 0;
 
     const getUploadButtonText = (fileTypes: string[]) => {
-        if (!(fileTypes.length > 0)) return "Loading...";
+        if (fileTypes.length === 0) return "Loading...";
         return `Choose File${multiple ? `(s)` : ``}`;
     };
 
