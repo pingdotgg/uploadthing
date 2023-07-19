@@ -1,5 +1,8 @@
+// @ts-check
+const { withUt } = require("@uploadthing/react/tw");
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+module.exports = withUt({
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
@@ -15,4 +18,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+});

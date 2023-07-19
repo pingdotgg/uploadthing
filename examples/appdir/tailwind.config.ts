@@ -1,7 +1,7 @@
-const withUt = require("@uploadthing/tw");
+import { withUt } from "@uploadthing/react/tw";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = withUt({
+export default withUt({
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
     "./src/components/**/*.{js,ts,jsx,tsx}",
