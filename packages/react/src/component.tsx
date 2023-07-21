@@ -101,22 +101,76 @@ const progressHeights: { [key: number]: string } = {
   100: "after:ut-w-[100%]",
 };
 
+export interface UI_UploadButton {
+  btn?: {
+    text?: string;
+    color?: string;
+    backgroundColor?: string;
+  };
+  description?: string;
+  color?: string;
+  backgroundColor?: string;
+  border?: boolean;
+  short?: boolean;
+}
+
 /**
  * @example
  * <UploadButton<OurFileRouter>
  *   endpoint="someEndpoint"
  *   onUploadComplete={(res) => console.log(res)}
  *   onUploadError={(err) => console.log(err)}
+ *   description={"Image up to 4MB"}
+ *   color={"red"}
+ *   short={false}
+ *   border={true}
+ *   btn={{
+ *     text: "Click to upload",
+ *     color: "yellow",
+ *     backgroundColor: "green",
+ *   }}
+ * />
+ * @default
+ *  optional props to customize the UploadButton
+ *  <UploadButton<OurFileRouter>
+ *    {...}
+ *    description={"Image up to 4MB"}
+ *    color={"rgb(142,	158,	144)"}
+ *    backgroundColor={"whitesmoke"}
+ *    short={false}
+ *    border={true}
+ *    btn={{
+ *      text: "Select",
+ *      color: "black",
+ *      backgroundColor: "#EB9C25",
+ *    }}
  * />
  */
 export function UploadButton<TRouter extends FileRouter>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadthingComponentProps<TRouter>,
+    : UploadthingComponentProps<TRouter> & UI_UploadButton,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
   const $props = props as UploadthingComponentProps<TRouter>;
+  const defaultUI_UploadButton: UI_UploadButton = {
+    btn: {
+      text: "",
+      color: "",
+      backgroundColor: "",
+    },
+    description: "",
+    color: "",
+    backgroundColor: "",
+    border: false,
+    short: true,
+  };
+  const $optionalProps = {
+    ...defaultUI_UploadButton,
+    ...(props as UI_UploadButton),
+  } as UI_UploadButton;
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -151,8 +205,21 @@ export function UploadButton<TRouter extends FileRouter>(
   };
 
   return (
-    <div className="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-1">
+    <div
+      style={{
+        borderColor: $optionalProps?.btn?.backgroundColor,
+        backgroundColor: $optionalProps?.backgroundColor,
+      }}
+      className={classNames(
+        "ut-flex ut-items-center ut-justify-center ut-gap-1 ut-rounded-lg",
+        !$optionalProps?.short ? "ut-flex-row" : "ut-flex-col",
+        $optionalProps?.short ? "ut-p-2" : "",
+        $optionalProps?.border ? "ut-border" : "",
+        "ut-border-blue-600",
+      )}
+    >
       <label
+        style={{ backgroundColor: $optionalProps?.btn?.backgroundColor }}
         className={classNames(
           "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
           !ready && "ut-cursor-not-allowed ut-bg-blue-400",
@@ -160,6 +227,7 @@ export function UploadButton<TRouter extends FileRouter>(
             isUploading &&
             `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress]}`,
           ready && !isUploading && "ut-bg-blue-600",
+          $optionalProps?.short ? "" : "ut-rounded-l-md ut-rounded-r-none",
         )}
       >
         <input
@@ -176,14 +244,30 @@ export function UploadButton<TRouter extends FileRouter>(
           }}
           disabled={!ready}
         />
-        <span className="ut-z-10 ut-px-3 ut-py-2 ut-text-white">
-          {isUploading ? <Spinner /> : getUploadButtonText(fileTypes)}
+        <span
+          style={{ color: $optionalProps?.btn?.color }}
+          className="ut-z-10 ut-px-3 ut-py-2 ut-text-white"
+        >
+          {isUploading ? (
+            <Spinner />
+          ) : (
+            $optionalProps?.btn?.text || getUploadButtonText(fileTypes)
+          )}
         </span>
       </label>
-      <div className="ut-h-[1.25rem]">
+      <div
+        className={classNames(
+          "ut-h-[1.25rem]",
+          !$optionalProps?.short && "ut-pl-3 ut-pr-20",
+        )}
+      >
         {fileTypes && (
-          <p className="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
-            {allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+          <p
+            style={{ color: $optionalProps?.color }}
+            className="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600"
+          >
+            {$optionalProps?.description ||
+              allowedContentTextLabelGenerator(permittedFileInfo?.config)}
           </p>
         )}
       </div>
