@@ -39,7 +39,13 @@ export interface FileUploadInitState {
   fileRejections: FileRejectReason[];
 }
 
-export type ComposeFunction = (event: Event, ...args: unknown[]) => void;
+export interface DropEvent {
+  acceptedFiles: (InputFile | FileWithPath)[];
+  rejectReasons: FileRejectReason[];
+  event: Event;
+}
+
+export type ComposeFunction = (event: Event, ...args: unknown[]) => any;
 
 function isIe(userAgent: string) {
   return userAgent.includes("MSIE") || userAgent.includes("Trident/");

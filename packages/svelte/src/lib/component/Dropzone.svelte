@@ -11,18 +11,17 @@
     normalizeAccept,
     onDocumentDragOver,
     TOO_MANY_FILES_REJECTION,
-    type ComposeFunction,
-    type FileAccept,
-    type FileRejectReason,
-    type InputFile,
+  } from "../utils/dropzone";
+  import type {
+    ComposeFunction,
+    DropEvent,
+    FileAccept,
+    FileRejectReason,
+    InputFile,
   } from "../utils/dropzone";
 
   interface Dispatch {
-    drop: {
-      acceptedFiles: any[];
-      rejectReasons: FileRejectReason[];
-      event: Event;
-    };
+    drop: DropEvent;
     dragEnter: Event;
     dragLeave: Event;
     dragOver: Event;
@@ -52,7 +51,7 @@
   export let accept: FileAccept | undefined = undefined;
 
   let rootRef: HTMLElement;
-  let dragTargetsRef: any[] = [];
+  let dragTargetsRef: (EventTarget | null)[] = [];
   let isFileDialogActive = false;
   let acceptedFiles: InputFile[] = [];
   let fileRejections: FileRejectReason[] = [];
@@ -177,7 +176,7 @@
 
   const onDragLeaveCb = (event: Event) => {
     // Only deactivate once the dropzone and all children have been left
-    const targets = dragTargetsRef.filter((target: EventTarget) => {
+    const targets = dragTargetsRef.filter((target) => {
       if (!rootRef) {
         return false;
       }
