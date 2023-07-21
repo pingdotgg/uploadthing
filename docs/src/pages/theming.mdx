@@ -1,0 +1,198 @@
+import { Callout } from "nextra-theme-docs";
+
+# Theming
+
+## Components anatomy
+
+### UploadButton
+
+Simplified component structure:
+
+```jsx
+<div data-state={getUtState()} className={className}>
+  <label data-state={getUtState()} data-ut-element="button">
+    <input />
+    /button content goes here/
+  </label>
+  <div data-state={getUtState()} data-ut-element="allowed-content">
+    /allowed content text goes here/
+  </div>
+</div>
+```
+
+<Callout type="info">
+  UploadButton consists of three themable elements: container, button and
+  allowed content.
+</Callout>
+
+<Callout type="warning">
+  Note: UploadButton's button element is defined using `label`
+</Callout>
+
+import Image from "next/image";
+
+<Image
+  src="/upload-button-anatomy.png"
+  alt="Upload button anatomy"
+  width="1546"
+  height="998"
+  style={{ marginTop: "1rem", borderRadius: "0.5rem" }}
+/>
+
+### UploadDropzone
+
+Simplified component structure:
+
+```jsx
+<div className={className} data-state={getUtState()}>
+  <svg data-ut-element="upload-icon" data-state={getUtState()}>
+    ...
+  </svg>
+  <label data-ut-element="label" data-state={getUtState()}>
+    /label content goes here/
+    <input disabled={!ready} />
+  </label>
+  <div data-ut-element="allowed-content" data-state={getUtState()}>
+    /allowed content goes here/
+  </div>
+  <button
+    data-ut-element="button"
+    data-state={getUtState()}
+    disabled={isUploading}
+  >
+    /button content goes here/
+  </button>
+</div>
+```
+
+<Callout type="info">
+  UploadDropzone consists of five themable elements: container, upload icon,
+  label, button and allowed content.
+</Callout>
+
+<Callout type="warning">
+  Note: While in UploadButton the button element is defined using `label`, in
+  UploadDropzone it is defined using `button`. As an abstraction layer, button
+  element in these two components have special data attribute applied:
+  `data-ut-element="button"`.
+</Callout>
+
+<Image
+  src="/upload-dropzone-anatomy.png"
+  alt="Upload dropzone anatomy"
+  width="2010"
+  height="1594"
+  style={{ marginTop: "1rem", borderRadius: "0.5rem" }}
+/>
+
+## How to theme
+
+### With TailwindCSS
+
+#### Configuring TailwindCSS
+
+To leverage best developer experience, we strongly recommend extending your
+TailwindCSS config using our utility function `withUt`
+
+<Callout type="warning">
+  Note: `withUt` is optional but if you do not use it, you will not be able to
+  use new classes and variants it adds. Also, in case you are not using it, make
+  sure to import default stylesheet into your app.
+</Callout>
+
+```ts filename="tailwind.config.ts"
+import { withUt } from "@uploadthing/react/tw";
+
+/** @type {import('tailwindcss').Config} */
+export default withUt({
+  // your config goes here
+});
+```
+
+```js filename="tailwind.config.js"
+// @ts-check
+const { withUt } = require("@uploadthing/react/tw");
+
+/** @type {import('tailwindcss').Config} */
+module.exports = withUt({
+  // your config goes here
+});
+```
+
+`withUt` does two major things:
+
+- Adds new entry to `content` property so that it includes UploadThing's
+  components. It allows to avoid having duplicated styles in your bundle.
+- Registers plugin and adds nice-to-have classes to improve styling experience.
+
+#### `className` prop
+
+Both UploadButton and UploadDropzone accept `className` prop. It allows you to
+pass any additional classes to the component. All classes that are being passed
+through this prop are going to be applied to the outermost element - container
+
+Since Uploadthing's components consist of multiple elements and may have
+different states, they provide a way of applying styles to specific elements and
+based on current state.
+
+Tailwind variants that allow applying styles to internal elements and their
+arbitrary variant alternatives:
+
+| Custom variant       |                        Arbitrary variant |
+| :------------------- | ---------------------------------------: |
+| `ut-button`          |          `&>*[data-ut-element="button"]` |
+| `ut-allowed-content` | `&>*[data-ut-element="allowed-content"]` |
+| `ut-label`           |           `&>*[data-ut-element="label"]` |
+| `ut-upload-icon`     |     `&>*[data-ut-element="upload-icon"]` |
+
+Tailwind classes that allow applying styles based on state of element and their
+arbitrary `data` class alternatives:
+
+| Custom class   |          Arbitrary class |
+| :------------- | -----------------------: |
+| `ut-readying`  |  `data-[state=readying]` |
+| `ut-ready`     |     `data-[state=ready]` |
+| `ut-uploading` | `data-[state=uploading]` |
+
+These variants and classes can be used in conjunction with each other to make
+component match your design in the exact way you want.
+
+##### Examples
+
+#### `appearance` prop
+
+Both UploadButton and UploadDropzone accept `appearance` prop. The difference is
+that it accepts an object with keys that correspond to elements of component.
+You can not only pass string containing classes but also provide a callback to
+apply styles based on current state of element.
+
+The interfaces of `appearance` prop for `UploadButton` and `UploadDropzone` are
+following
+
+```ts
+type UploadButtonProps = {
+  /* rest of props */
+  appearance?: {
+    container?: StyleField;
+    button?: StyleField;
+    buttonSpinner?: SpinnerField;
+    allowedContent?: StyleField;
+  };
+};
+
+type UploadDropzoneProps = {
+  /* rest of props */
+  appearance?: {
+    container?: StyleField;
+    uploadIcon?: StyleField;
+    label?: StyleField;
+    allowedContent?: StyleField;
+    button?: StyleField;
+    buttonSpinner?: SpinnerField;
+  };
+};
+```
+
+##### Examples
+
+### Without TailwindCSS
