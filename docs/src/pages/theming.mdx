@@ -85,6 +85,69 @@ Simplified component structure:
   style={{ marginTop: "1rem", borderRadius: "0.5rem" }}
 />
 
+## Theming props
+
+### `className`
+
+Both UploadButton and UploadDropzone accept `className` prop. It allows you to
+pass any additional classes to the component. All classes that are being passed
+through this prop are going to be applied to the outermost element - container
+
+### `appearance`
+
+Both `UploadButton` and `UploadDropzone` accept `appearance` prop. It accepts an
+object with keys that correspond to elements of component. You can pass
+following types of values:
+
+- `string` - it will be applied as a class to the element
+- `CSSProperties` object - it will be applied as an inline style to the element
+- `callback` - it will be called with current state of the component and should
+  return one of the above types
+
+The interfaces of `appearance` prop for `UploadButton` and `UploadDropzone` are
+following
+
+```ts
+type UploadButtonProps = {
+  /* rest of props */
+  appearance?: {
+    container?: StyleField;
+    button?: StyleField;
+    allowedContent?: StyleField;
+  };
+};
+
+type UploadDropzoneProps = {
+  /* rest of props */
+  appearance?: {
+    container?: StyleField;
+    uploadIcon?: StyleField;
+    label?: StyleField;
+    allowedContent?: StyleField;
+    button?: StyleField;
+  };
+};
+```
+
+The types of callback arguments are following:
+
+```ts
+type ButtonCallbackArguments = {
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+};
+
+type DropzoneCallbackArguments = {
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+  isDragActive: boolean;
+};
+```
+
 ## How to theme
 
 ### With TailwindCSS
@@ -127,13 +190,9 @@ module.exports = withUt({
 
 #### `className` prop
 
-Both UploadButton and UploadDropzone accept `className` prop. It allows you to
-pass any additional classes to the component. All classes that are being passed
-through this prop are going to be applied to the outermost element - container
-
-Since Uploadthing's components consist of multiple elements and may have
-different states, they provide a way of applying styles to specific elements and
-based on current state.
+`className` prop accepts any classes so you can pass there anything you like.
+When it comes to TailwindCSS, to make styling easier, `withUt` adds few utility
+classes and variants for you to leverage.
 
 Tailwind variants that allow applying styles to internal elements and their
 arbitrary variant alternatives:
@@ -157,42 +216,210 @@ arbitrary `data` class alternatives:
 These variants and classes can be used in conjunction with each other to make
 component match your design in the exact way you want.
 
-##### Examples
+```jsx
+<UploadButton
+    className="bg-blue-500 ut-button:bg-cyan-500 ut-button:ut-readying:bg-cyan-500/50"
+               ^           ^ applied to button   ^ applied to button when loading config
+               | applied to container
+
+/>
+
+<UploadDropzone
+    className="bg-blue-500 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
+               ^           ^                ^ applied to allowed content when uploading file
+               |           | applied to label
+               | applied to container
+
+/>
+```
 
 #### `appearance` prop
 
-Both UploadButton and UploadDropzone accept `appearance` prop. The difference is
-that it accepts an object with keys that correspond to elements of component.
-You can not only pass string containing classes but also provide a callback to
-apply styles based on current state of element.
+If you need, you can pass TailwindCSS classes directly to specific elements of
+component or provide a callback that will be called with current state of the
+component and will return a string
 
-The interfaces of `appearance` prop for `UploadButton` and `UploadDropzone` are
-following
+```jsx
+<UploadButton
+  appearance={{
+    button({ ready, isUploading }) {
+      return `${ready ? "bg-green-500" : "bg-red-500"} ${
+        isUploading ? "cursor-not-allowed" : ""
+      } after:bg-orange-400`;
+    },
+    container: "p-4 border rounded border-2 border-cyan-300",
+    allowedContent: "h-8 flex flex-col items-center justify-center bg-red-100",
+  }}
+/>
+```
+
+### With custom classes
+
+#### `className` prop
+
+`className` prop accepts any classes so you can pass there anything you like.
+When it comes to custom classes, you can use `data` attributes to target
+specific elements of component.
+
+```jsx
+<UploadButton className="custom-class" />
+```
+
+```css
+/* applied to container */
+.custom-class {
+  background-color: blue;
+}
+
+/* applied to container when readying */
+.custom-class[data-ut-state="readying"] {
+  background-color: cyan;
+}
+
+/* applied to button */
+.custom-class > *[data-ut-element="button"] {
+  font-size: 2rem;
+  color: black;
+}
+
+/* applied to button when uploading */
+.custom-class > *[data-ut-element="button"][data-ut-state="uploading"] {
+  color: red;
+}
+```
+
+#### `appearance` prop
+
+If you need, you can pass classes directly to specific elements of component or
+provide a callback that will be called with current state of the component and
+will return a string
+
+```jsx
+<UploadButton
+  appearance={{
+    button({ ready, isUploading }) {
+      return `custom-button ${
+        ready ? "custom-button-ready" : "custom-button-not-ready"
+      } ${isUploading ? "custom-button-uploading" : ""}`;
+    },
+    container: "custom-container",
+    allowedContent: "custom-allowed-content",
+  }}
+/>
+```
+
+```css
+/* applied to container */
+.custom-container {
+  background-color: blue;
+}
+
+/* applied to container when readying */
+.custom-container[data-ut-state="readying"] {
+  background-color: cyan;
+}
+
+/* applied to button */
+.custom-button {
+  font-size: 2rem;
+  color: black;
+}
+
+/* applied to button when uploading */
+.custom-button-uploading {
+  color: red;
+}
+
+/* applied to button when ready */
+.custom-button-ready {
+  color: green;
+}
+
+/* applied to button when not ready */
+.custom-button-not-ready {
+  color: red;
+}
+```
+
+### With inline styles
+
+#### `appearance` prop
+
+If you need, you can pass inline styles directly to specific elements of
+component or provide a callback that will be called with current state of the
+component and will return a `CSSProperties` object
+
+```jsx
+<UploadButton
+  appearance={{
+    button({ ready, isUploading }) {
+      return {
+        fontSize: "2rem",
+        color: "black",
+        ...(ready && { color: "green" }),
+        ...(isUploading && { color: "red" }),
+      };
+    },
+    container: {
+      backgroundColor: "blue",
+    },
+    allowedContent: {
+      backgroundColor: "red",
+    },
+  }}
+/>
+```
+
+## Content customisation
+
+To customise content of `UploadButton` and `UploadDropzone`, you can use
+`content` prop.
+
+The interfaces of `content` prop for `UploadButton` and `UploadDropzone` are
+following:
 
 ```ts
 type UploadButtonProps = {
   /* rest of props */
-  appearance?: {
-    container?: StyleField;
-    button?: StyleField;
-    buttonSpinner?: SpinnerField;
-    allowedContent?: StyleField;
+  content?: {
+    button?: ContentField;
+    allowedContent?: ContentField;
   };
 };
 
 type UploadDropzoneProps = {
   /* rest of props */
-  appearance?: {
-    container?: StyleField;
-    uploadIcon?: StyleField;
-    label?: StyleField;
-    allowedContent?: StyleField;
-    button?: StyleField;
-    buttonSpinner?: SpinnerField;
+  content?: {
+    uploadIcon?: ContentField;
+    label?: ContentField;
+    allowedContent?: ContentField;
+    button?: ContentField;
   };
 };
 ```
 
-##### Examples
+`content` prop allows you to customise the text and specific elements of
+`UploadButton` and `UploadDropzone`. It accepts an object with keys that
+correspond to content elements of component. You can pass following types of
+values:
 
-### Without TailwindCSS
+- `ReactNode`
+- `callback` - it will be called with current state of the component and should
+  return `ReactNode`
+
+```jsx
+<UploadButton
+  content={{
+    button({ ready }) {
+      if (ready) return <div>Upload stuff</div>;
+
+      return "Getting ready...";
+    },
+    allowedContent({ ready, fileTypes, isUploading }) {
+      if (!ready) return "Checking what you allow";
+      if (isUploading) return "Seems stuff is uploading";
+      return `Stuff you can upload: ${fileTypes.join(", ")}`;
+    },
+  }}
+/>
+```
