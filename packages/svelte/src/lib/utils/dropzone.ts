@@ -1,5 +1,5 @@
 import accepts from "attr-accept";
-import type { FileWithPath } from "file-selector";
+import type { FileWithPath, fromEvent } from "file-selector";
 
 export type FileAccept =
   | string
@@ -7,7 +7,6 @@ export type FileAccept =
   | {
       [key: string]: string[];
     };
-export type FileHandler = (evt: Event) => void;
 
 type FileErrorCode =
   | "file-invalid-type"
@@ -28,15 +27,19 @@ export type FileRejectReason = {
   errors: FileRejectionError[];
 };
 
-export interface FileUploadInitState {
-  isFocused: boolean;
-  isFileDialogActive: boolean;
-  isDragAccept: boolean;
-  isDragActive: boolean;
-  isDragReject: boolean;
-  draggedFiles: InputFile[];
-  acceptedFiles: InputFile[];
-  fileRejections: FileRejectReason[];
+export interface DropzoneOptions {
+  disabled: boolean;
+  getFilesFromEvent: typeof fromEvent;
+  maxSize: number;
+  minSize: number;
+  maxFiles: number;
+  multiple: boolean;
+  preventDropOnDocument: boolean;
+  noClick: boolean;
+  noKeyboard: boolean;
+  noDrag: boolean;
+  noDragEventsBubbling: boolean;
+  accept: FileAccept | undefined;
 }
 
 export interface DropEvent {

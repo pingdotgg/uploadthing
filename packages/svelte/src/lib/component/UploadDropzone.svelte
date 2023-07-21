@@ -68,8 +68,10 @@
     class="ut-text-center"
     let:inputProps
     let:onInputChange
-    maxFiles={2}
-    accept={fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined}
+    options={{
+      maxFiles: 2,
+      accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    }}
     on:drop={onDrop}
   >
     <svg

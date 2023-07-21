@@ -15,6 +15,7 @@
   import type {
     ComposeFunction,
     DropEvent,
+    DropzoneOptions,
     FileAccept,
     FileRejectReason,
     InputFile,
@@ -30,25 +31,13 @@
     fileDialogCancel: void;
   }
 
-  // default props
-  export let disabled = false;
-  export let getFilesFromEvent = fromEvent;
-  export let maxSize = Infinity;
-  export let minSize = 0;
-  export let multiple = true;
-  export let maxFiles = 0;
-  export let preventDropOnDocument = true;
-  export let noClick = false;
-  export let noKeyboard = false;
-  export let noDrag = false;
-  export let noDragEventsBubbling = false;
+  // readonly props
+  export let options: Partial<DropzoneOptions> = {};
+  // binding props
   export let isFocused = false;
   export let isDragActive = false;
   export let draggedFiles: InputFile[] = [];
-  // required props
   export let inputRef: HTMLInputElement | null;
-  // optional props
-  export let accept: FileAccept | undefined = undefined;
 
   let rootRef: HTMLElement;
   let dragTargetsRef: (EventTarget | null)[] = [];
@@ -57,6 +46,25 @@
   let fileRejections: FileRejectReason[] = [];
 
   const dispatch = createEventDispatcher<Dispatch>();
+  const defaultOptions: DropzoneOptions = {
+    disabled: false,
+    getFilesFromEvent: fromEvent,
+    maxSize: Infinity,
+    minSize: 0,
+    multiple: true,
+    maxFiles: 0,
+    preventDropOnDocument: true,
+    noClick: false,
+    noKeyboard: false,
+    noDrag: false,
+    noDragEventsBubbling: false,
+    accept: undefined,
+  };
+
+  $: combinedOptions = {
+    ...defaultOptions,
+    ...options,
+  } satisfies DropzoneOptions;
 
   const openFileDialog = () => {
     if (inputRef) {
@@ -107,7 +115,7 @@
   };
 
   const onClickCb = () => {
-    if (noClick) {
+    if (combinedOptions.noClick) {
       return;
     }
     if (isIeOrEdge()) {
@@ -136,6 +144,7 @@
   });
 
   const onDragEnterCb = async (event: Event) => {
+    const { getFilesFromEvent, noDragEventsBubbling } = combinedOptions;
     dragTargetsRef = [...dragTargetsRef, event.target];
 
     if (isEvtWithFiles(event)) {
@@ -202,6 +211,15 @@
   };
 
   const onDropCb = async (event: Event) => {
+    const {
+      getFilesFromEvent,
+      noDragEventsBubbling,
+      accept,
+      minSize,
+      maxSize,
+      multiple,
+      maxFiles,
+    } = combinedOptions;
     dragTargetsRef = [];
     if (isEvtWithFiles(event)) {
       if (!getFilesFromEvent) {
@@ -259,13 +277,14 @@
     fileRejections = [];
   };
 
-  const composeHandler = (fn: ComposeFunction) => (disabled ? undefined : fn);
+  const composeHandler = (fn: ComposeFunction) =>
+    combinedOptions.disabled ? undefined : fn;
 
   const composeKeyboardHandler = (fn: ComposeFunction) =>
-    noKeyboard ? undefined : composeHandler(fn);
+    combinedOptions.noKeyboard ? undefined : composeHandler(fn);
 
   const composeDragHandler = (fn: ComposeFunction) =>
-    noDrag ? undefined : composeHandler(fn);
+    combinedOptions.noDrag ? undefined : composeHandler(fn);
 
   const getInputAccept = (accept: FileAccept | undefined) => {
     const normalizedAccept = normalizeAccept(accept ?? "");
@@ -275,9 +294,9 @@
   };
 
   $: inputProps = {
-    multiple,
-    disabled,
-    accept: getInputAccept(accept),
+    multiple: combinedOptions.multiple,
+    disabled: combinedOptions.disabled,
+    accept: getInputAccept(combinedOptions.accept),
     style: "display: none",
     type: "file",
     autoComplete: "off",
@@ -295,13 +314,15 @@ Example:
     class="ut-text-center"
     let:inputProps
     let:onInputChange
-    accept={fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined}
+    options={{
+      accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined
+    }}
     on:drop={(e) => onDrop(e.detail.acceptedFiles)}
   >
     <input
       class="ut-sr-only"
       {...inputProps}
-      on:change|preventDefault|stopPropagation={onInputChange}
+      on:change|preventDefault={onInputChange}
       bind:this={inputRef}
     />
   </Dropzone>
@@ -309,13 +330,16 @@ Example:
 -->
 <svelte:window
   on:focus={onWindowFocus}
-  on:dragover={(e) => !preventDropOnDocument && onDocumentDragOver(e)}
-  on:drop={(e) => !preventDropOnDocument && onDocumentDrop(e)}
+  on:dragover={(e) =>
+    !combinedOptions.preventDropOnDocument && onDocumentDragOver(e)}
+  on:drop={(e) => !combinedOptions.preventDropOnDocument && onDocumentDrop(e)}
 />
 <div
   bind:this={rootRef}
   role="button"
-  tabindex={disabled && noKeyboard ? 0 : undefined}
+  tabindex={combinedOptions.disabled && combinedOptions.noKeyboard
+    ? 0
+    : undefined}
   class={$$props.class}
   on:keydown={composeKeyboardHandler(onKeyDownCb)}
   on:focus={composeKeyboardHandler(onFocusCb)}
