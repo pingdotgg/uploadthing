@@ -130,12 +130,12 @@ export const listFiles = async () => {
  *
  */
 
-type Update = {
+type Rename = {
   fileKey: string;
   newName: string;
 };
 
-export const renameFile = async (updates: Update | Update[]) => {
+export const renameFile = async (updates: Rename | Rename[]) => {
   guardServerOnly();
 
   if (!Array.isArray(updates)) updates = [updates];
