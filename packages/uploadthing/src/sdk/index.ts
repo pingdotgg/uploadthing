@@ -111,3 +111,53 @@ export const listFiles = async () => {
 
   return json.files;
 };
+
+/**
+ * Rename a file in UploadThing storage.
+ *
+ * type Update = {
+ *   fileKey: string;
+ *   newName: string;
+ * };
+ *
+ * @param {Update | Update[]} updates
+ *
+ * @example
+ * await renameFile({ fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", newName: "new_image.jpg" });
+ *
+ * @example
+ * await renameFile([{ fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", newName: "new_image.jpg" }, { fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", newName: "new_image2.jpg" }]);
+ *
+ */
+
+type Update = {
+  fileKey: string;
+  newName: string;
+};
+
+export const renameFile = async (updates: Update | Update[]) => {
+  guardServerOnly();
+
+  if (!Array.isArray(updates)) updates = [updates];
+
+  const res = await fetch(generateUploadThingURL("/api/renameFile"), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-uploadthing-api-key": getApiKeyOrThrow(),
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    },
+    body: JSON.stringify({ updates }),
+  });
+
+  const json = (await res.json()) as
+    | { files: { key: string; id: string }[] }
+    | { error: string };
+
+  if (!res.ok || "error" in json) {
+    const message = "error" in json ? json.error : "Unknown error";
+    throw new Error(message);
+  }
+
+  return res.json() as Promise<{ success: boolean }>;
+};
