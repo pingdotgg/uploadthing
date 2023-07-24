@@ -213,7 +213,7 @@ console.log(files);
 
 ### `renameFiles`
 
-`renameFiles` takes in an `Rename` or an array of `Rename`s and renames the
+`renameFiles` takes in a `Rename` or an array of `Rename`s and renames the
 appropriate files on the server
 
 ```ts
@@ -245,6 +245,6 @@ type Rename = {
 };
 ```
 
-| Arguments | Type                 | Required | Description                                 |
-| :-------- | :------------------- | :------- | :------------------------------------------ |
-| input     | Rename \|\| Rename[] | Yes      | The `Rename` or `Rename`s you want to apply |
+| Arguments | Type                 | Required | Description                                            |
+| :-------- | :------------------- | :------- | :----------------------------------------------------- |
+| renames   | Rename \|\| Rename[] | Yes      | Object specifying what file to rename and the new name |
