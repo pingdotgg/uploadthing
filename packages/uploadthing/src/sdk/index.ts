@@ -79,6 +79,8 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
 
   const formData = new FormData();
+  formData.append("metadata", JSON.stringify(metadata));
+
   await Promise.all(
     fileUrls.map(async (url) => {
       if (typeof url === "string") url = new URL(url);
@@ -91,7 +93,6 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
       }
       const blob = await fileResponse.blob();
       formData.append("files", blob, filename);
-      formData.append("metadata", JSON.stringify(metadata));
     }),
   );
 
