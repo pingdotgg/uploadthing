@@ -10,6 +10,6 @@ export async function uploadFiles(fd: FormData) {
 
 export async function uploadFromUrl(fd: FormData) {
   const url = fd.get("url") as string;
-  const uploadedFile = await utapi.uploadFileFromUrl(url);
+  const uploadedFile = await utapi.uploadFilesFromUrl(url);
   return uploadedFile;
 }

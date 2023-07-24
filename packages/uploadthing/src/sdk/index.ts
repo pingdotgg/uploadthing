@@ -70,7 +70,7 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
  * ])
  */
 type Url = string | URL;
-export const uploadFileFromUrl = async <T extends Url | Url[]>(
+export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   urls: T,
   metadata: Json = {},
 ): Promise<T extends Url[] ? UploadFileResponse[] : UploadFileResponse> => {
