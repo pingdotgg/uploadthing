@@ -25,14 +25,14 @@ export const OurUploadButton = () => (
 
 ### Configuration
 
-| Prop                   | Type     | Required                | Description                                                                         |
-| :--------------------- | :------- | :---------------------- | :---------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic  | Yes                     | The type from the FileRouter you defined in your backend                            |
-| endpoint               | string   | Yes                     | The name of the [route](./server#FileRouter) you want this button to upload to      |
-| input                  | string   | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
-| onClientUploadComplete | function | No                      | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
-| onUploadError          | function | No                      | callback function when upload fails                                                 |
-| onUploadProgress       | function | No                      | callback function for upload progress                                               |
+| Prop                   | Type     | Required                | Notes           | Description                                                                         |
+| :--------------------- | :------- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes                     |                 | The type from the FileRouter you defined in your backend                            |
+| endpoint               | string   | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to      |
+| input                  | string   | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
+| onClientUploadComplete | function | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
+| onUploadError          | function | No                      |                 | callback function when upload fails                                                 |
+| onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
 
 ## UploadDropzone
 
@@ -58,14 +58,14 @@ export const OurUploadDropzone = () => (
 
 ### Configuration
 
-| Prop                   | Type     | Required                | Description                                                                         |
-| :--------------------- | :------- | :---------------------- | :---------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic  | Yes                     | The type from the FileRouter you defined in your backend                            |
-| endpoint               | string   | Yes                     | The name of the [route](./server#FileRouter) you want this button to upload to      |
-| input                  | string   | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
-| onClientUploadComplete | function | No                      | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
-| onUploadError          | function | No                      | callback function when upload fails                                                 |
-| onUploadProgress       | function | No                      | callback function for upload progress                                               |
+| Prop                   | Type     | Required                | Notes           | Description                                                                         |
+| :--------------------- | :------- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes                     |                 | The type from the FileRouter you defined in your backend                            |
+| endpoint               | string   | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to      |
+| input                  | string   | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
+| onClientUploadComplete | function | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
+| onUploadError          | function | No                      |                 | callback function when upload fails                                                 |
+| onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
 
 ## generateReactHelpers
 
@@ -149,11 +149,11 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 
 - `endpoint`: The name of the route you want this button to upload to
 
-| Options                | Type     | Description                                                                       |
-| :--------------------- | :------- | :-------------------------------------------------------------------------------- |
-| onClientUploadComplete | function | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
-| onUploadError          | function | callback function when upload fails                                               |
-| onUploadProgress       | function | callback function for upload progress                                             |
+| Options                | Type     | Type            | Description                                                                       |
+| :--------------------- | :------- | :-------------- | :-------------------------------------------------------------------------------- |
+| onClientUploadComplete | function |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
+| onUploadError          | function |                 | callback function when upload fails                                               |
+| onUploadProgress       | function | Added in `v5.1` | callback function for upload progress                                             |
 
 ### Returns
 
@@ -194,8 +194,8 @@ uploadFiles(opts: {
 })
 ```
 
-| Arguments | Type   | Required                | Description                                                                         |
-| :-------- | :----- | :---------------------- | :---------------------------------------------------------------------------------- |
-| files     | File[] | Yes                     | The files you intend to upload                                                      |
-| endpoint  | string | Yes                     | The name of the [route](./server#FileRouter) you want to upload to                  |
-| input     | string | If set on the fileroute | Object matching the input schema that was set for this endpoint in your File Router |
+| Arguments | Type   | Required                | Notes           | Description                                                                         |
+| :-------- | :----- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
+| files     | File[] | Yes                     |                 | The files you intend to upload                                                      |
+| endpoint  | string | Yes                     |                 | The name of the [route](./server#FileRouter) you want to upload to                  |
+| input     | string | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
