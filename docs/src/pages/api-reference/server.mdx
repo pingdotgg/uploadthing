@@ -153,7 +153,7 @@ API but better
 
 `uploadFiles` let's you upload files directly from your server, without having
 to define file routes. When uploadthing files from the server, no presigned URLs
-are used, your files are uploaded directly to S3 via our servers.
+are used, your files are uploaded via our servers.
 
 This can be useful for uploading files from sever actions, or your own API
 routes.
@@ -196,7 +196,7 @@ interface FileEsque extends Blob {
 directly from your server, without having to define file routes.
 
 When uploading files from URL, the file is first downloaded on **your** server,
-before being uploaded to S3 via our servers.
+before being uploaded via our servers.
 
 ```tsx
 import { utapi } from "uploadthing/server";

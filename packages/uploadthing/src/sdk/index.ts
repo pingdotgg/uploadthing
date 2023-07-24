@@ -18,57 +18,90 @@ function getApiKeyOrThrow() {
 
 // File is just a Blob with a name property
 type FileEsque = Blob & { name: string };
+type UploadFileResponse = Awaited<ReturnType<typeof uploadFilesInternal>>[0];
 
 /**
  * @param {FileEsque | FileEsque[]} files The file(s) to upload
  * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+ *
+ * @example
+ * await uploadFiles(new File(["foo"], "foo.txt"));
+ *
+ * @example
+ * await uploadFiles([
+ *   new File(["foo"], "foo.txt"),
+ *   new File(["bar"], "bar.txt"),
+ * ]);
  */
-export const uploadFiles = async (
-  files: FileEsque[] | FileEsque,
+export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
+  files: T,
   metadata: Json = {},
-) => {
+): Promise<
+  T extends FileEsque[] ? UploadFileResponse[] : UploadFileResponse
+> => {
   guardServerOnly();
 
-  if (!Array.isArray(files)) files = [files];
+  const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
 
   const formData = new FormData();
-  files.forEach((file) => formData.append("files", file));
+  filesToUpload.forEach((file) => formData.append("files", file));
   formData.append("metadata", JSON.stringify(metadata));
 
-  return uploadFilesInternal(formData, {
+  const uploads = await uploadFilesInternal(formData, {
     apiKey: getApiKeyOrThrow(),
     utVersion: UPLOADTHING_VERSION,
   });
+
+  // @ts-expect-error - ehh? type is tested in sdk.test.ts
+  return uploads;
 };
 
 /**
  * @param {string} url The URL of the file to upload
  * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+ *
+ * @example
+ * await uploadFileFromUrl("https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+ *
+ * @example
+ * await uploadFileFromUrl([
+ *   "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+ *   "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"
+ * ])
  */
-export const uploadFileFromUrl = async (
-  url: string | URL,
+type Url = string | URL;
+export const uploadFileFromUrl = async <T extends Url | Url[]>(
+  urls: T,
   metadata: Json = {},
-) => {
+): Promise<T extends Url[] ? UploadFileResponse[] : UploadFileResponse> => {
   guardServerOnly();
 
-  if (typeof url === "string") url = new URL(url);
-  const filename = url.pathname.split("/").pop() ?? "unknown-filename";
-
-  // Download the file on the user's server to avoid egress charges
-  const fileResponse = await fetch(url);
-  if (!fileResponse.ok) {
-    throw new Error("Failed to download file");
-  }
-  const blob = await fileResponse.blob();
+  const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
 
   const formData = new FormData();
-  formData.append("files", blob, filename);
-  formData.append("metadata", JSON.stringify(metadata));
+  await Promise.all(
+    fileUrls.map(async (url) => {
+      if (typeof url === "string") url = new URL(url);
+      const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
-  return uploadFilesInternal(formData, {
+      // Download the file on the user's server to avoid egress charges
+      const fileResponse = await fetch(url);
+      if (!fileResponse.ok) {
+        throw new Error("Failed to download file");
+      }
+      const blob = await fileResponse.blob();
+      formData.append("files", blob, filename);
+      formData.append("metadata", JSON.stringify(metadata));
+    }),
+  );
+
+  const uploads = await uploadFilesInternal(formData, {
     apiKey: getApiKeyOrThrow(),
     utVersion: UPLOADTHING_VERSION,
-  }).then((files) => files[0]);
+  });
+
+  // @ts-expect-error - ehh? type is tested in sdk.test.ts
+  return Array.isArray(urls) ? uploads : uploads[0];
 };
 
 /**
