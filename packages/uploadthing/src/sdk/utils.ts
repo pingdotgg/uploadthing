@@ -1,12 +1,24 @@
-import { generateUploadThingURL } from "@uploadthing/shared";
+import type { Json } from "@uploadthing/shared";
+import { generateUploadThingURL, pollForFileData } from "@uploadthing/shared";
+
+export type FileEsque = Blob & { name: string };
 
 export const uploadFilesInternal = async (
-  formData: FormData,
+  data: {
+    files: FileEsque[];
+    metadata: Json;
+  },
   opts: {
     apiKey: string;
     utVersion: string;
   },
 ) => {
+  // Request presigned URLs for each file
+  const fileData = data.files.map((file) => ({
+    name: file.name,
+    type: file.type,
+    size: file.size,
+  }));
   const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
     method: "POST",
     headers: {
@@ -14,11 +26,21 @@ export const uploadFilesInternal = async (
       "x-uploadthing-version": opts.utVersion,
     },
     cache: "no-store",
-    body: formData,
+    body: JSON.stringify({
+      files: fileData,
+      metadata: data.metadata,
+    }),
   });
 
   const json = (await res.json()) as
-    | { data: { key: string; url: string }[] }
+    | {
+        data: {
+          presignedUrl: string; // url to post to
+          fields: Record<string, string>;
+          key: string;
+          fileUrl: string; // the final url of the file after upload
+        }[];
+      }
     | { error: string };
 
   if (!res.ok || "error" in json) {
@@ -26,5 +48,39 @@ export const uploadFilesInternal = async (
     throw new Error(message);
   }
 
-  return json.data;
+  // Upload each file to S3
+  const uploads = await Promise.all(
+    data.files.map(async (file, i) => {
+      const { presignedUrl, fields, key, fileUrl } = json.data[i];
+
+      if (!presignedUrl || !fields) {
+        throw new Error("Failed to upload file");
+      }
+
+      const formData = new FormData();
+      Object.entries(fields).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+      formData.append("file", file);
+
+      const s3res = await fetch(presignedUrl, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!s3res.ok) {
+        throw new Error("Failed to upload file");
+      }
+
+      // Poll for file to be available
+      await pollForFileData(key);
+
+      return {
+        key,
+        url: fileUrl,
+      };
+    }),
+  );
+
+  return uploads;
 };

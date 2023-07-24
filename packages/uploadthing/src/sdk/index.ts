@@ -2,6 +2,7 @@ import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import type { FileEsque } from "./utils";
 import { uploadFilesInternal } from "./utils";
 
 function guardServerOnly() {
@@ -17,7 +18,6 @@ function getApiKeyOrThrow() {
 }
 
 // File is just a Blob with a name property
-type FileEsque = Blob & { name: string };
 type UploadFileResponse = Awaited<ReturnType<typeof uploadFilesInternal>>[0];
 
 /**
@@ -43,14 +43,16 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
 
   const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
 
-  const formData = new FormData();
-  filesToUpload.forEach((file) => formData.append("files", file));
-  formData.append("metadata", JSON.stringify(metadata));
-
-  const uploads = await uploadFilesInternal(formData, {
-    apiKey: getApiKeyOrThrow(),
-    utVersion: UPLOADTHING_VERSION,
-  });
+  const uploads = await uploadFilesInternal(
+    {
+      files: filesToUpload,
+      metadata,
+    },
+    {
+      apiKey: getApiKeyOrThrow(),
+      utVersion: UPLOADTHING_VERSION,
+    },
+  );
 
   // @ts-expect-error - ehh? type is tested in sdk.test.ts
   return uploads;
@@ -81,7 +83,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   const formData = new FormData();
   formData.append("metadata", JSON.stringify(metadata));
 
-  await Promise.all(
+  const files = await Promise.all(
     fileUrls.map(async (url) => {
       if (typeof url === "string") url = new URL(url);
       const filename = url.pathname.split("/").pop() ?? "unknown-filename";
@@ -92,14 +94,20 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
         throw new Error("Failed to download file");
       }
       const blob = await fileResponse.blob();
-      formData.append("files", blob, filename);
+      return Object.assign(blob, { name: filename });
     }),
   );
 
-  const uploads = await uploadFilesInternal(formData, {
-    apiKey: getApiKeyOrThrow(),
-    utVersion: UPLOADTHING_VERSION,
-  });
+  const uploads = await uploadFilesInternal(
+    {
+      files,
+      metadata,
+    },
+    {
+      apiKey: getApiKeyOrThrow(),
+      utVersion: UPLOADTHING_VERSION,
+    },
+  );
 
   // @ts-expect-error - ehh? type is tested in sdk.test.ts
   return Array.isArray(urls) ? uploads : uploads[0];
