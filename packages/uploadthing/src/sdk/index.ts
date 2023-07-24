@@ -150,14 +150,12 @@ export const renameFile = async (updates: Rename | Rename[]) => {
     body: JSON.stringify({ updates }),
   });
 
-  const json = (await res.json()) as
-    | { files: { key: string; id: string }[] }
-    | { error: string };
+  const json = (await res.json()) as { success: true } | { error: string };
 
   if (!res.ok || "error" in json) {
     const message = "error" in json ? json.error : "Unknown error";
     throw new Error(message);
   }
 
-  return res.json() as Promise<{ success: boolean }>;
+  return json;
 };
