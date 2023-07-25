@@ -9,12 +9,12 @@ import { Callout } from "nextra-theme-docs";
 Simplified component structure:
 
 ```jsx
-<div data-state={getUtState()} className={className}>
-  <label data-state={getUtState()} data-ut-element="button">
+<div data-state={/* "ready" | "readying" | "uploading" */} className={className}>
+  <label data-state={/* "ready" | "readying" | "uploading" */} data-ut-element="button">
     <input />
     /button content goes here/
   </label>
-  <div data-state={getUtState()} data-ut-element="allowed-content">
+  <div data-state={/* "ready" | "readying" | "uploading" */} data-ut-element="allowed-content">
     /allowed content text goes here/
   </div>
 </div>
@@ -44,20 +44,20 @@ import Image from "next/image";
 Simplified component structure:
 
 ```jsx
-<div className={className} data-state={getUtState()}>
-  <svg data-ut-element="upload-icon" data-state={getUtState()}>
+<div className={className} data-state={/* "ready" | "readying" | "uploading" */}>
+  <svg data-ut-element="upload-icon" data-state={/* "ready" | "readying" | "uploading" */}>
     ...
   </svg>
-  <label data-ut-element="label" data-state={getUtState()}>
+  <label data-ut-element="label" data-state={/* "ready" | "readying" | "uploading" */}>
     /label content goes here/
     <input disabled={!ready} />
   </label>
-  <div data-ut-element="allowed-content" data-state={getUtState()}>
+  <div data-ut-element="allowed-content" data-state={/* "ready" | "readying" | "uploading" */}>
     /allowed content goes here/
   </div>
   <button
     data-ut-element="button"
-    data-state={getUtState()}
+    data-state={/* "ready" | "readying" | "uploading" */}
     disabled={isUploading}
   >
     /button content goes here/
@@ -108,6 +108,8 @@ The interfaces of `appearance` prop for `UploadButton` and `UploadDropzone` are
 following
 
 ```ts
+type StyleField = /* accepts string, inline style object or callback that returns one of mentioned types */
+
 type UploadButtonProps = {
   /* rest of props */
   appearance?: {
@@ -155,13 +157,10 @@ type DropzoneCallbackArguments = {
 #### Configuring TailwindCSS
 
 To leverage best developer experience, we strongly recommend extending your
-TailwindCSS config using our utility function `withUt`
-
-<Callout type="warning">
-  Note: `withUt` is optional but if you do not use it, you will not be able to
-  use new classes and variants it adds. Also, in case you are not using it, make
-  sure to import default stylesheet into your app.
-</Callout>
+TailwindCSS config using our utility function `withUt`. This utility function
+adds additional classes and variants used to style the uploadthing components.
+If you choose not to use it, be sure to import the default stylesheet into your
+app.
 
 ```ts filename="tailwind.config.ts"
 import { withUt } from "@uploadthing/react/tw";
@@ -199,24 +198,18 @@ module.exports = withUt({
 When it comes to TailwindCSS, to make styling easier, `withUt` adds few utility
 classes and variants for you to leverage.
 
-Tailwind variants that allow applying styles to internal elements and their
-arbitrary variant alternatives:
+Tailwind variants that allow applying styles to the internal elements:
 
-| Custom variant       |                        Arbitrary variant |
-| :------------------- | ---------------------------------------: |
-| `ut-button`          |          `&>*[data-ut-element="button"]` |
-| `ut-allowed-content` | `&>*[data-ut-element="allowed-content"]` |
-| `ut-label`           |           `&>*[data-ut-element="label"]` |
-| `ut-upload-icon`     |     `&>*[data-ut-element="upload-icon"]` |
+- `ut-button`
+- `ut-allowed-content`
+- `ut-label`
+- `ut-upload-icon`
 
-Tailwind classes that allow applying styles based on state of element and their
-arbitrary `data` class alternatives:
+Tailwind classes that allow applying styles based on state of element:
 
-| Custom class   |          Arbitrary class |
-| :------------- | -----------------------: |
-| `ut-readying`  |  `data-[state=readying]` |
-| `ut-ready`     |     `data-[state=ready]` |
-| `ut-uploading` | `data-[state=uploading]` |
+- `ut-readying`
+- `ut-ready`
+- `ut-uploading`
 
 These variants and classes can be used in conjunction with each other to make
 component match your design in the exact way you want.
@@ -228,7 +221,9 @@ component match your design in the exact way you want.
                | applied to container
 
 />
+```
 
+```jsx
 <UploadDropzone
     className="bg-blue-500 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
                ^           ^                ^ applied to allowed content when uploading file
@@ -247,11 +242,6 @@ component and will return a string
 ```jsx
 <UploadButton
   appearance={{
-    button({ ready, isUploading }) {
-      return `${ready ? "bg-green-500" : "bg-red-500"} ${
-        isUploading ? "cursor-not-allowed" : ""
-      } after:bg-orange-400`;
-    },
     container: "p-4 border rounded border-2 border-cyan-300",
     allowedContent: "h-8 flex flex-col items-center justify-center bg-red-100",
   }}
