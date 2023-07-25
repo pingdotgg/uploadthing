@@ -159,8 +159,11 @@ type DropzoneCallbackArguments = {
 To leverage best developer experience, we strongly recommend extending your
 TailwindCSS config using our utility function `withUt`. This utility function
 adds additional classes and variants used to style the uploadthing components.
-If you choose not to use it, be sure to import the default stylesheet into your
-app.
+In addition, it adds UploadThing's components to the `content` property of your
+config. This allows you to avoid having duplicated styles in your bundle.
+Therefore, when using `withUt`, you should not import default stylesheet. If you
+choose not to use `withUt`, you have to import default stylesheet to make
+components look right.
 
 ```ts filename="tailwind.config.ts"
 import { withUt } from "@uploadthing/react/tw";
@@ -180,11 +183,6 @@ module.exports = withUt({
   // your config goes here
 });
 ```
-
-<Callout type="warning">
-  Note: Once you extended your config, it is recommended to remove default
-  stylesheet import
-</Callout>
 
 `withUt` does two major things:
 
