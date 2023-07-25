@@ -153,12 +153,8 @@ API but better
 
 > Added in `v5.3`
 
-`uploadFiles` let's you upload files directly from your server, without having
-to define file routes. When uploadthing files from the server, no presigned URLs
-are used, your files are uploaded via our servers.
-
-This can be useful for uploading files from sever actions, or your own API
-routes.
+`uploadFiles` let's you upload files without needing to define file routes. This
+can be useful for uploading files from sever actions, or your own API routes.
 
 ```tsx
 import { utapi } from "uploadthing/server";
@@ -180,6 +176,10 @@ function MyForm() {
 }
 ```
 
+When uploading files using `uploadFiles`, the files must be present on your
+server. Then presigned URLs are generated on our servers before the files can be
+uploaded to the storage provider.
+
 | Arguments | Type                       | Required | Description                       |
 | :-------- | :------------------------- | :------- | :-------------------------------- |
 | files     | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload    |
@@ -199,8 +199,11 @@ interface FileEsque extends Blob {
 `uploadFilesFromUrl` is similar to `uploadFiles` as it let's you upload files
 directly from your server, without having to define file routes.
 
-When uploading files from URL, the file is first downloaded on **your** server,
-before being uploaded via our servers.
+<Callout type="warning">
+  When uploading files from URL, the file is first downloaded on **your**
+  server, before presigned URLs are created and the file is uploaded to the
+  storage provider.
+</Callout>
 
 ```tsx
 import { utapi } from "uploadthing/server";
