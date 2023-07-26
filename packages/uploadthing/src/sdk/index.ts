@@ -115,12 +115,12 @@ export const listFiles = async () => {
 /**
  * Rename a file in UploadThing storage.
  *
- * type Update = {
+ * type Rename = {
  *   fileKey: string;
- *   newName: string;
+ *   newName: string; // Should include file extension
  * };
  *
- * @param {Update | Update[]} updates
+ * @param {Rename | Rename[]} updates
  *
  * @example
  * await renameFile({ fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", newName: "new_image.jpg" });

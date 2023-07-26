@@ -226,7 +226,7 @@ console.log(files);
 > Added in `v5.3`
 
 `renameFiles` takes in a `Rename` or an array of `Rename`s and renames the
-appropriate files on the server
+appropriate files on the server.
 
 ```ts
 import { utapi } from "uploadthing/server";
@@ -253,7 +253,7 @@ await utapi.renameFiles([
 ```ts
 type Rename = {
   fileKey: string;
-  newName: string;
+  newName: string; // should include file extension
 };
 ```
 
