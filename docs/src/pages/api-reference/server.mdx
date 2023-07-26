@@ -77,8 +77,9 @@ export type OurFileRouter = typeof ourFileRouter;
 ### Input
 
 ```ts
-// Your file types can be any of the following
-type ValidFileTypes = "image" | "video" | "audio" | "blob";
+// Your file types can be any of the following types
+type MimeType = /** any web mime-type */
+type ValidFileTypes = "image" | "video" | "audio" | "blob" | "pdf" | "text" | MimeType;
 
 // The input to your f() function can be an array of file types OR an object of them w/ config
 type FileRouterInput =
@@ -101,6 +102,9 @@ All routes default to a max file count of 1. The file size defaults are below
 | video     | 16MB             |
 | audio     | 8MB              |
 | blob      | 8MB              |
+| pdf       | 4MB              |
+| text      | 64kB             |
+| MimeType  | 4MB              |
 
 ### `input`
 
@@ -151,6 +155,8 @@ API but better
 
 ### `deleteFiles`
 
+> Added in `v4.0`
+
 `deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
 the server.
 
@@ -164,11 +170,13 @@ await utapi.deleteFiles([
 ]);
 ```
 
-| Arguments | Type                 | Required | Description                                |
-| :-------- | :------------------- | :------- | :----------------------------------------- |
-| input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to delete |
+| Arguments | Type                 | Required | Notes           | Description                                |
+| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------- |
+| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to delete |
 
 ### `getFileUrls`
+
+> Added in `v4.0`
 
 `getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to
 access them.
@@ -185,11 +193,13 @@ const multipleUrls = await utapi.getFileUrls([
 ]);
 ```
 
-| Arguments | Type                 | Required | Description                                      |
-| :-------- | :------------------- | :------- | :----------------------------------------------- |
-| input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to get URLs for |
+| Arguments | Type                 | Required | Notes           | Description                                      |
+| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------------- |
+| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to get URLs for |
 
 ### `listFiles`
+
+> Added in `v5.3`
 
 `listFiles` takes no input and returns an array of objects containing file ids
 and keys for all files that have been uploaded to the application your API key
