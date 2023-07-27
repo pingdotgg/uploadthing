@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* applied to container */
+.custom-class {
+    background-color: #1e293b;
+  }
+   
+  /* applied to container when readying */
+  .custom-class[data-state="readying"] {
+    background-color: #334155;
+  }
+   
+  /* applied to button */
+  .custom-class > *[data-ut-element="button"] {
+    font-size: 2rem;
+    color: black;
+    background-color: #ef4444;
+  }
+   
+  /* applied to button when uploading */
+  .custom-class > *[data-ut-element="button"][data-state="uploading"] {
+    color: red;
+  }
+
+  /* applied to container */
+.custom-container {
+    background-color: #1e293b;
+  }
+   
+  /* applied to container when readying */
+  .custom-container[data-state="readying"] {
+    background-color: #334155;
+  }
+   
+  /* applied to button */
+  .custom-button {
+    font-size: 2rem;
+    color: black;
+    background-color: #ef4444;
+  }
+   
+  /* applied to button when uploading */
+  .custom-button-uploading {
+    color: #ffedd5;
+  }
+   
+  /* applied to button when ready */
+  .custom-button-ready {
+    color: #ecfdf5;
+  }
+   
+  /* applied to button when not ready */
+  .custom-button-not-ready {
+    color: #fed7aa;
+  }

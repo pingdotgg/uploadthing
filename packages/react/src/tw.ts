@@ -8,29 +8,23 @@ export function withUt(twConfig: Config) {
   }
 
   const utPlugin = plugin(({ addVariant }) => {
+    // Variants to select specific underlying element
     addVariant("ut-button", '&>*[data-ut-element="button"]');
     addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
     addVariant("ut-label", '&>*[data-ut-element="label"]');
     addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+
+    // Variants to select specific state
+    addVariant("ut-readying", '&[data-state="readying"]');
+    addVariant("ut-ready", '&[data-state="ready"]');
+    addVariant("ut-uploading", '&[data-state="uploading"]');
   });
 
   if (!twConfig.plugins) {
     twConfig.plugins = [];
   }
+
   twConfig.plugins.push(utPlugin);
-
-  if (!twConfig.theme) {
-    twConfig.theme = {};
-  }
-
-  if (!twConfig.theme.data) {
-    twConfig.theme.data = {};
-  }
-  Object.assign(twConfig.theme.data, {
-    "ut-readying": "state=readying",
-    "ut-ready": "state=ready",
-    "ut-uploading": "state=uploading",
-  });
 
   return twConfig;
 }

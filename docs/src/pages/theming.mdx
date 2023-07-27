@@ -1,4 +1,5 @@
 import { Callout } from "nextra-theme-docs";
+import { twMerge } from "tailwind-merge";
 
 # Theming
 
@@ -214,22 +215,166 @@ component match your design in the exact way you want.
 
 ```jsx
 <UploadButton
-    className="bg-blue-500 ut-button:bg-cyan-500 ut-button:ut-readying:bg-cyan-500/50"
-               ^           ^ applied to button   ^ applied to button when loading config
+    className="bg-slate-800 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
+               ^           ^ applied to button  ^ applied to button when loading config
                | applied to container
 
 />
 ```
 
+<div
+  className={twMerge(
+    "flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 bg-slate-800",
+  )}
+>
+  <label
+    className="relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500"
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <p>Ready</p>
+  </label>
+  <div
+    className="h-[1.25rem] text-xs leading-5 text-white"
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 bg-slate-800",
+  )}
+  data-state="readying"
+>
+  <label
+    className="relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500"
+    data-ut-element="button"
+    data-state="readying"
+  >
+    <input className="sr-only" disabled />
+    <p>Readying</p>
+  </label>
+  <div
+    className="h-[1.25rem] text-xs leading-5 text-white"
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
 ```jsx
 <UploadDropzone
-    className="bg-blue-500 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
+    className="bg-slate-800 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
                ^           ^                ^ applied to allowed content when uploading file
                |           | applied to label
                | applied to container
 
 />
 ```
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
+    "ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 bg-slate-800",
+  )}
+  data-state="ready"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    className={twMerge("mx-auto block h-12 w-12 align-middle text-gray-400")}
+    data-ut-element="upload-icon"
+    data-state="ready"
+  >
+    <path
+      fill="currentColor"
+      fillRule="evenodd"
+      d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+      clipRule="evenodd"
+    ></path>
+  </svg>
+  <label
+    htmlFor="file-upload"
+    className={twMerge(
+      "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+    )}
+    data-ut-element="label"
+    data-state="ready"
+  >
+    <p>Choose files or drag and drop</p>
+    <input className="sr-only" disabled />
+  </label>
+  <div
+    className={twMerge("m-0 h-[1.25rem] text-xs leading-5 text-gray-600")}
+    data-ut-element="allowed-content"
+    data-state="ready"
+  >
+    <p>Allowed content</p>
+  </div>
+  <button
+    className={twMerge(
+      "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    data-state="ready"
+  >
+    <p>Upload Files</p>
+  </button>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
+    "ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 bg-slate-800",
+  )}
+  data-state="uploading"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    className={twMerge("mx-auto block h-12 w-12 align-middle text-gray-400")}
+    data-ut-element="upload-icon"
+    data-state="uploading"
+  >
+    <path
+      fill="currentColor"
+      fillRule="evenodd"
+      d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+      clipRule="evenodd"
+    ></path>
+  </svg>
+  <label
+    htmlFor="file-upload"
+    className={twMerge(
+      "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-blue-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+    )}
+    data-ut-element="label"
+    data-state="uploading"
+  >
+    <p>Choose files or drag and drop</p>
+    <input className="sr-only" disabled />
+  </label>
+  <div
+    className={twMerge("m-0 h-[1.25rem] text-xs leading-5 text-gray-600")}
+    data-ut-element="allowed-content"
+    data-state="uploading"
+  >
+    <p>Allowed content</p>
+  </div>
+  <button
+    className={twMerge(
+      "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    data-state="uploading"
+  >
+    <p>Uploading</p>
+  </button>
+</div>
 
 #### `appearance` prop
 
@@ -242,11 +387,67 @@ component and will return a string
   appearance={{
     button:
       "after:bg-orange-400 bg-red-500 ut-ready:bg-green-500 ut-uploading:cursor-not-allowed",
-    container: "p-4 border rounded border-2 border-cyan-300",
-    allowedContent: "h-8 flex flex-col items-center justify-center bg-red-100",
+    container: "p-4 rounded border-2 border-cyan-300 bg-slate-800",
+    allowedContent: "h-8 flex flex-col items-center justify-center",
   }}
 />
 ```
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "rounded border-2 border-cyan-300 bg-slate-800 p-4",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed bg-red-500 after:bg-orange-400",
+    )}
+    data-ut-element="button"
+    data-state="uploading"
+  >
+    <input className="sr-only" disabled />
+    <p>Uploading</p>
+  </label>
+  <div
+    className={twMerge(
+      "h-[1.25rem] text-xs leading-5 text-white",
+      "flex h-8 flex-col items-center justify-center",
+    )}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "rounded border-2 border-cyan-300 bg-slate-800 p-4",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed bg-red-500 after:bg-orange-400",
+    )}
+    data-ut-element="button"
+    data-state="ready"
+  >
+    <input className="sr-only" disabled />
+    <p>Ready</p>
+  </label>
+  <div
+    className={twMerge(
+      "h-[1.25rem] text-xs leading-5 text-white",
+      "flex h-8 flex-col items-center justify-center",
+    )}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
 
 ### With custom classes
 
@@ -263,18 +464,19 @@ specific elements of component.
 ```css
 /* applied to container */
 .custom-class {
-  background-color: blue;
+  background-color: #1e293b;
 }
 
 /* applied to container when readying */
 .custom-class[data-state="readying"] {
-  background-color: cyan;
+  background-color: #334155;
 }
 
 /* applied to button */
 .custom-class > *[data-ut-element="button"] {
   font-size: 2rem;
   color: black;
+  background-color: #ef4444;
 }
 
 /* applied to button when uploading */
@@ -282,6 +484,80 @@ specific elements of component.
   color: red;
 }
 ```
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "custom-class",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    data-state="ready"
+  >
+    <input className="sr-only" disabled />
+    <p>Ready</p>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "custom-class",
+  )}
+  data-state="readying"
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    data-state="readying"
+  >
+    <input className="sr-only" disabled />
+    <p>Readying</p>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "custom-class",
+  )}
+  data-state="uploading"
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    data-state="uploading"
+  >
+    <input className="sr-only" disabled />
+    <p>Uploading</p>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
 
 #### `appearance` prop
 
@@ -306,35 +582,118 @@ will return a string
 ```css
 /* applied to container */
 .custom-container {
-  background-color: blue;
+  background-color: #1e293b;
 }
 
 /* applied to container when readying */
 .custom-container[data-state="readying"] {
-  background-color: cyan;
+  background-color: #334155;
 }
 
 /* applied to button */
 .custom-button {
   font-size: 2rem;
   color: black;
+  background-color: #ef4444;
 }
 
 /* applied to button when uploading */
 .custom-button-uploading {
-  color: red;
+  color: #ffedd5;
 }
 
 /* applied to button when ready */
 .custom-button-ready {
-  color: green;
+  color: #ecfdf5;
 }
 
 /* applied to button when not ready */
 .custom-button-not-ready {
-  color: red;
+  color: #fed7aa;
 }
 ```
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "custom-container",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "custom-button custom-button-ready",
+    )}
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <p>Ready</p>
+  </label>
+  <div
+    className={twMerge(
+      "h-[1.25rem] text-xs leading-5 text-white",
+      "custom-allowed-content",
+    )}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "custom-container",
+  )}
+  data-state="readying"
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "custom-button custom-button-not-ready",
+    )}
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <p>Readying</p>
+  </label>
+  <div
+    className={twMerge(
+      "h-[1.25rem] text-xs leading-5 text-white",
+      "custom-allowed-content",
+    )}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "custom-container",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "custom-button custom-button-uploading",
+    )}
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <p>Uploading</p>
+  </label>
+  <div
+    className={twMerge(
+      "h-[1.25rem] text-xs leading-5 text-white",
+      "custom-allowed-content",
+    )}
+    data-ut-element="allowed-content"
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
 
 ### With inline styles
 
@@ -356,14 +715,110 @@ component and will return a `CSSProperties` object
       };
     },
     container: {
-      backgroundColor: "blue",
+      backgroundColor: "#1e293b",
     },
     allowedContent: {
-      backgroundColor: "red",
+      backgroundColor: "#ef4444",
     },
   }}
 />
 ```
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+  )}
+  style={{
+    backgroundColor: "#1e293b",
+  }}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    style={{
+      fontSize: "2rem",
+      color: "black",
+    }}
+  >
+    <input className="sr-only" disabled />
+    <p>Readying</p>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+    style={{
+      backgroundColor: "#ef4444",
+    }}
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+  )}
+  style={{
+    backgroundColor: "#1e293b",
+  }}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    style={{
+      fontSize: "2rem",
+      color: "#ecfdf5",
+    }}
+  >
+    <input className="sr-only" disabled />
+    <p>Ready</p>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+    style={{
+      backgroundColor: "#ef4444",
+    }}
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+  )}
+  style={{
+    backgroundColor: "#1e293b",
+  }}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+    style={{
+      fontSize: "2rem",
+      color: "#ecfdf5",
+    }}
+  >
+    <input className="sr-only" disabled />
+    <p>Ready</p>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+    style={{
+      backgroundColor: "#ef4444",
+    }}
+  >
+    <p>Allowed content</p>
+  </div>
+</div>
 
 ## Content customisation
 
@@ -418,3 +873,69 @@ values:
   }}
 />
 ```
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <div>Upload stuff</div>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+  >
+    <p>Seems stuff is uploading</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <div>Upload stuff</div>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+  >
+    <p>Stuff you can upload: image, audio</p>
+  </div>
+</div>
+
+<div
+  className={twMerge(
+    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+  )}
+>
+  <label
+    className={twMerge(
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+    )}
+    data-ut-element="button"
+  >
+    <input className="sr-only" disabled />
+    <div>Getting ready...</div>
+  </label>
+  <div
+    className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
+    data-ut-element="allowed-content"
+  >
+    <p>Checking what you allow</p>
+  </div>
+</div>

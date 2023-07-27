@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -44,6 +44,9 @@ importers:
 
   docs:
     dependencies:
+      '@uploadthing/react':
+        specifier: 5.2.0
+        version: link:../packages/react
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -66,6 +69,18 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
+      autoprefixer:
+        specifier: 10.4.14
+        version: 10.4.14(postcss@8.4.22)
+      postcss:
+        specifier: 8.4.22
+        version: 8.4.22
+      tailwind-merge:
+        specifier: ^1.13.2
+        version: 1.13.2
+      tailwindcss:
+        specifier: ^3.3.2
+        version: 3.3.2
 
   examples/appdir:
     dependencies:
@@ -8624,7 +8639,6 @@ packages:
 
   /tailwind-merge@1.13.2:
     resolution: {integrity: sha512-R2/nULkdg1VR/EL4RXg4dEohdoxNUJGLMnWIQnPKL+O9Twu7Cn3Rxi4dlXkDzZrEGtR+G+psSXFouWlpTyLhCQ==}
-    dev: false
 
   /tailwindcss@3.3.2:
     resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}
