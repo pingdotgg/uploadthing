@@ -215,8 +215,8 @@ component match your design in the exact way you want.
 
 ```jsx
 <UploadButton
-    className="bg-slate-800 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
-               ^           ^ applied to button  ^ applied to button when loading config
+    className="mt-6 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
+               ^    ^ applied to button  ^ applied to button when loading config
                | applied to container
 
 />
@@ -224,8 +224,8 @@ component match your design in the exact way you want.
 
 <div
   className={twMerge(
-    "flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
-    "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 bg-slate-800",
+    "flex flex-col items-center justify-center gap-1",
+    "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-6",
   )}
 >
   <label
@@ -245,8 +245,8 @@ component match your design in the exact way you want.
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
-    "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 bg-slate-800",
+    "mt-2 flex flex-col items-center justify-center gap-1",
+    "ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-6",
   )}
   data-state="readying"
 >
@@ -386,9 +386,9 @@ component and will return a string
 <UploadButton
   appearance={{
     button:
-      "after:bg-orange-400 bg-red-500 ut-ready:bg-green-500 ut-uploading:cursor-not-allowed",
-    container: "p-4 rounded border-2 border-cyan-300 bg-slate-800",
-    allowedContent: "h-8 flex flex-col items-center justify-center",
+      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
+    container: "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
+    allowedContent: "flex h-8 flex-col items-center justify-center px-2",
   }}
 />
 ```
@@ -396,13 +396,13 @@ component and will return a string
 <div
   className={twMerge(
     "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
-    "rounded border-2 border-cyan-300 bg-slate-800 p-4",
+    "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
   )}
 >
   <label
     className={twMerge(
       "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
-      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed bg-red-500 after:bg-orange-400",
+      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
     )}
     data-ut-element="button"
     data-state="uploading"
@@ -413,7 +413,7 @@ component and will return a string
   <div
     className={twMerge(
       "h-[1.25rem] text-xs leading-5 text-white",
-      "flex h-8 flex-col items-center justify-center",
+      "flex h-8 flex-col items-center justify-center px-2",
     )}
     data-ut-element="allowed-content"
   >
@@ -424,13 +424,13 @@ component and will return a string
 <div
   className={twMerge(
     "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
-    "rounded border-2 border-cyan-300 bg-slate-800 p-4",
+    "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
   )}
 >
   <label
     className={twMerge(
       "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
-      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed bg-red-500 after:bg-orange-400",
+      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 after:bg-orange-400",
     )}
     data-ut-element="button"
     data-state="ready"
@@ -441,7 +441,7 @@ component and will return a string
   <div
     className={twMerge(
       "h-[1.25rem] text-xs leading-5 text-white",
-      "flex h-8 flex-col items-center justify-center",
+      "flex h-8 flex-col items-center justify-center px-2",
     )}
     data-ut-element="allowed-content"
   >
