@@ -464,30 +464,39 @@ specific elements of component.
 ```css
 /* applied to container */
 .custom-class {
-  background-color: #1e293b;
-}
-
-/* applied to container when readying */
-.custom-class[data-state="readying"] {
-  background-color: #334155;
+  background-color: none;
 }
 
 /* applied to button */
 .custom-class > *[data-ut-element="button"] {
-  font-size: 2rem;
-  color: black;
-  background-color: #ef4444;
+  font-size: 1.6rem;
+  color: rgb(0 0 0 / 1);
+  background-color: rgb(239 68 68 / 1);
+}
+
+/* applied to button when uploading */
+.custom-class > *[data-ut-element="button"][data-state="readying"] {
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
 }
 
 /* applied to button when uploading */
 .custom-class > *[data-ut-element="button"][data-state="uploading"] {
-  color: red;
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
+}
+
+/* applied to upload indicator when uploading */
+.custom-class > *[data-ut-element="button"][data-state="uploading"]::after {
+  background-color: rgb(234 88 12 / 1);
 }
 ```
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mt-2 flex flex-col items-center justify-center gap-1",
     "custom-class",
   )}
 >
@@ -511,7 +520,7 @@ specific elements of component.
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mt-2 flex flex-col items-center justify-center gap-1",
     "custom-class",
   )}
   data-state="readying"
@@ -536,14 +545,14 @@ specific elements of component.
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mt-2 flex flex-col items-center justify-center gap-1",
     "custom-class",
   )}
   data-state="uploading"
 >
   <label
     className={twMerge(
-      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:absolute after:left-0 after:h-full after:w-[40%] after:bg-blue-600 after:transition-[width] after:duration-500",
     )}
     data-ut-element="button"
     data-state="uploading"
@@ -582,24 +591,30 @@ will return a string
 ```css
 /* applied to container */
 .custom-container {
-  background-color: #1e293b;
+  background-color: none;
 }
 
 /* applied to container when readying */
 .custom-container[data-state="readying"] {
-  background-color: #334155;
+  background-color: none;
 }
 
 /* applied to button */
 .custom-button {
-  font-size: 2rem;
-  color: black;
-  background-color: #ef4444;
+  font-size: 1.6rem;
+  color: rgb(0 0 0 / 1);
+  background-color: rgb(239 68 68 / 1);
 }
 
 /* applied to button when uploading */
 .custom-button-uploading {
-  color: #ffedd5;
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
+}
+
+.custom-button-uploading::after {
+  background-color: rgb(234 88 12 / 1) !important;
 }
 
 /* applied to button when ready */
@@ -609,13 +624,15 @@ will return a string
 
 /* applied to button when not ready */
 .custom-button-not-ready {
-  color: #fed7aa;
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
 }
 ```
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mt-2 flex flex-col items-center justify-center gap-1",
     "custom-container",
   )}
 >
@@ -642,7 +659,7 @@ will return a string
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mt-2 flex flex-col items-center justify-center gap-1",
     "custom-container",
   )}
   data-state="readying"
@@ -670,13 +687,13 @@ will return a string
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mt-2 flex flex-col items-center justify-center gap-1",
     "custom-container",
   )}
 >
   <label
     className={twMerge(
-      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:transition-[width] after:duration-500",
+      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md bg-blue-600 text-white after:absolute after:left-0 after:h-full after:w-[40%] after:bg-blue-600 after:transition-[width] after:duration-500",
       "custom-button custom-button-uploading",
     )}
     data-ut-element="button"
@@ -708,28 +725,26 @@ component and will return a `CSSProperties` object
   appearance={{
     button({ ready, isUploading }) {
       return {
-        fontSize: "2rem",
+        fontSize: "1.6rem",
         color: "black",
-        ...(ready && { color: "green" }),
-        ...(isUploading && { color: "red" }),
+        ...(ready && { color: "#ecfdf5" }),
+        ...(isUploading && { color: "#d1d5db" }),
       };
     },
     container: {
-      backgroundColor: "#1e293b",
+      marginTop: "1rem",
     },
     allowedContent: {
-      backgroundColor: "#ef4444",
+      color: "#a1a1aa",
     },
   }}
 />
 ```
 
 <div
-  className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
-  )}
+  className={twMerge("flex flex-col items-center justify-center gap-1 rounded")}
   style={{
-    backgroundColor: "#1e293b",
+    marginTop: "1rem",
   }}
 >
   <label
@@ -738,7 +753,7 @@ component and will return a `CSSProperties` object
     )}
     data-ut-element="button"
     style={{
-      fontSize: "2rem",
+      fontSize: "1.6rem",
       color: "black",
     }}
   >
@@ -749,7 +764,7 @@ component and will return a `CSSProperties` object
     className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
     data-ut-element="allowed-content"
     style={{
-      backgroundColor: "#ef4444",
+      color: "#a1a1aa",
     }}
   >
     <p>Allowed content</p>
@@ -758,10 +773,10 @@ component and will return a `CSSProperties` object
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+    "flex flex-col items-center justify-center gap-1 rounded ",
   )}
   style={{
-    backgroundColor: "#1e293b",
+    marginTop: "1rem",
   }}
 >
   <label
@@ -770,7 +785,7 @@ component and will return a `CSSProperties` object
     )}
     data-ut-element="button"
     style={{
-      fontSize: "2rem",
+      fontSize: "1.6rem",
       color: "#ecfdf5",
     }}
   >
@@ -781,7 +796,7 @@ component and will return a `CSSProperties` object
     className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
     data-ut-element="allowed-content"
     style={{
-      backgroundColor: "#ef4444",
+      color: "#a1a1aa",
     }}
   >
     <p>Allowed content</p>
@@ -790,10 +805,10 @@ component and will return a `CSSProperties` object
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded ",
+    "flex flex-col items-center justify-center gap-1 rounded ",
   )}
   style={{
-    backgroundColor: "#1e293b",
+    marginTop: "1rem",
   }}
 >
   <label
@@ -802,18 +817,18 @@ component and will return a `CSSProperties` object
     )}
     data-ut-element="button"
     style={{
-      fontSize: "2rem",
-      color: "#ecfdf5",
+      fontSize: "1.6rem",
+      color: "#d1d5db",
     }}
   >
     <input className="sr-only" disabled />
-    <p>Ready</p>
+    <p>Uploading</p>
   </label>
   <div
     className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
     data-ut-element="allowed-content"
     style={{
-      backgroundColor: "#ef4444",
+      color: "#a1a1aa",
     }}
   >
     <p>Allowed content</p>
