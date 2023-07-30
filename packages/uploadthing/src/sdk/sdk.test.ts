@@ -14,14 +14,22 @@ describe("uploadFiles", () => {
   test("returns array if array is passed", () => {
     void ignoreErrors(async () => {
       const result = await utapi.uploadFiles([{} as File]);
-      expectTypeOf<{ key: string; url: string }[]>(result);
+      expectTypeOf<
+        (
+          | { data: { key: string; url: string }; error: null }
+          | { data: null; error: Error }
+        )[]
+      >(result);
     });
   });
 
   test("returns single object if no array is passed", () => {
     void ignoreErrors(async () => {
       const result = await utapi.uploadFiles({} as File);
-      expectTypeOf<{ key: string; url: string }>(result);
+      expectTypeOf<
+        | { data: { key: string; url: string }; error: null }
+        | { data: null; error: Error }
+      >(result);
     });
   });
 });
@@ -30,14 +38,22 @@ describe("uploadFilesFromUrl", () => {
   test("returns array if array is passed", () => {
     void ignoreErrors(async () => {
       const result = await utapi.uploadFilesFromUrl(["foo", "bar"]);
-      expectTypeOf<{ key: string; url: string }[]>(result);
+      expectTypeOf<
+        (
+          | { data: { key: string; url: string }; error: null }
+          | { data: null; error: Error }
+        )[]
+      >(result);
     });
   });
 
   test("returns single object if no array is passed", () => {
     void ignoreErrors(async () => {
       const result = await utapi.uploadFilesFromUrl("foo");
-      expectTypeOf<{ key: string; url: string }>(result);
+      expectTypeOf<
+        | { data: { key: string; url: string }; error: null }
+        | { data: null; error: Error }
+      >(result);
     });
   });
 });

@@ -49,7 +49,7 @@ export const uploadFilesInternal = async (
   }
 
   // Upload each file to S3
-  const uploads = await Promise.all(
+  const uploads = await Promise.allSettled(
     data.files.map(async (file, i) => {
       const { presignedUrl, fields, key, fileUrl } = json.data[i];
 
@@ -82,5 +82,10 @@ export const uploadFilesInternal = async (
     }),
   );
 
-  return uploads;
+  return uploads.map((upload) => {
+    if (upload.status === "fulfilled") {
+      return { data: upload.value, error: null };
+    }
+    return { data: null, error: upload.reason as Error };
+  });
 };

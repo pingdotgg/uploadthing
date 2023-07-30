@@ -51,9 +51,10 @@ export default function ServerUploadPage() {
           setIsUploading(true);
           const fd = new FormData(e.target as HTMLFormElement);
           const uploadedFile = await uploadFromUrl(fd);
-          setIsUploading(false);
-
-          open(uploadedFile.url, "_blank");
+          if (uploadedFile.data) {
+            setIsUploading(false);
+            open(uploadedFile.data.url, "_blank");
+          }
         }}
         className="flex w-full flex-col gap-2"
       >
