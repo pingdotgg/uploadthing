@@ -153,8 +153,7 @@ API but better
 
 > Added in `v5.3`
 
-`uploadFiles` let's you upload files without needing to define file routes. This
-can be useful for uploading files from sever actions, or your own API routes.
+Upload files directly from your server **without** using the file router. Useful for server-side file processing, uploading from a server action, and much more.
 
 ```tsx
 import { utapi } from "uploadthing/server";
@@ -196,8 +195,7 @@ interface FileEsque extends Blob {
 
 > Added in `v5.3`
 
-`uploadFilesFromUrl` is similar to `uploadFiles` as it let's you upload files
-directly from your server, without having to define file routes.
+Have a file hosted somewhere else you want to upload on UploadThing? This is the function you're looking for.
 
 <Callout type="warning">
   When uploading files from URL, the file is first downloaded on **your**
@@ -208,21 +206,9 @@ directly from your server, without having to define file routes.
 ```tsx
 import { utapi } from "uploadthing/server";
 
-async function uploadFile(formData: FormData) {
-  "use server";
-  const url = fd.get("url");
-  const response = await utapi.uploadFileFromUrl(url);
-  //    ^? { key: string, url: string }
-}
+const fileUrl = "https://test.com/some.png";
 
-function MyForm() {
-  return (
-    <form action={uploadFile}>
-      <input name="url" />
-      <button type="submit">Upload</button>
-    </form>
-  );
-}
+const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
 ```
 
 | Arguments | Type            | Required | Description                            |
