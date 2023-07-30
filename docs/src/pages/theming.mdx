@@ -9,21 +9,21 @@ import { twMerge } from "tailwind-merge";
 
 Simplified component structure:
 
-```jsx
-<div data-state={/* "ready" | "readying" | "uploading" */} className={className}>
-  <label data-state={/* "ready" | "readying" | "uploading" */} data-ut-element="button">
+```tsx
+<div className={className} data-state={}>
+  <label data-ut-element="button" data-state={/* "ready" | "readying" | "uploading" */}>
     <input />
     /button content goes here/
   </label>
-  <div data-state={/* "ready" | "readying" | "uploading" */} data-ut-element="allowed-content">
+  <div data-ut-element="allowed-content" data-state={/* "ready" | "readying" | "uploading" */}>
     /allowed content text goes here/
   </div>
 </div>
 ```
 
 <Callout type="info">
-  UploadDropzone consists of five themable elements: `container`, `upload icon`,
-  `label`, `button` and `allowed content`.
+  UploadButton consists of three themable elements: `container`, `button` and
+  `allowed content`.
 </Callout>
 
 <Callout type="warning">
@@ -50,7 +50,7 @@ Simplified component structure:
     ...
   </svg>
   <label data-ut-element="label" data-state={/* "ready" | "readying" | "uploading" */}>
-    /label content goes here/
+    {/* label content goes here */}
     <input disabled={!ready} />
   </label>
   <div data-ut-element="allowed-content" data-state={/* "ready" | "readying" | "uploading" */}>
@@ -61,7 +61,7 @@ Simplified component structure:
     data-state={/* "ready" | "readying" | "uploading" */}
     disabled={isUploading}
   >
-    /button content goes here/
+    {/* button content goes here */}
   </button>
 </div>
 ```
@@ -92,24 +92,20 @@ Simplified component structure:
 
 Both UploadButton and UploadDropzone accept `className` prop. It allows you to
 pass any additional classes to the component. All classes that are being passed
-through this prop are going to be applied to the outermost element - container.
+through this prop are going to be applied to the outermost element -
+`container`.
 
 ### `appearance`
 
-Both `UploadButton` and `UploadDropzone` accept `appearance` prop. It accepts an
-object with keys that correspond to elements of component. You can pass
-following types of values:
-
-- `string` - it will be applied as a class to the element
-- `CSSProperties` object - it will be applied as an inline style to the element
-- `callback` - it will be called with current state of the component and should
-  return one of the above types
-
-The interfaces of `appearance` prop for `UploadButton` and `UploadDropzone` are
-following
+Both `UploadButton` and `UploadDropzone` accept an `appearance` prop. It accepts
+an object with keys that correspond to elements of component. The interfaces for
+the `appearance` prop for `UploadButton` and `UploadDropzone` are:
 
 ```ts
-type StyleField = /* accepts string, inline style object or callback that returns one of mentioned types */
+type StyleField =
+  | string
+  | CSSProperties
+  | ((args: CallbackArguments) => string | CSSProperties);
 
 type UploadButtonProps = {
   /* rest of props */
@@ -132,7 +128,7 @@ type UploadDropzoneProps = {
 };
 ```
 
-The types of callback arguments are following:
+where the `CallbackArguments` is defined as (depending on the component):
 
 ```ts
 type ButtonCallbackArguments = {
@@ -157,14 +153,15 @@ type DropzoneCallbackArguments = {
 
 #### Configuring TailwindCSS
 
-To leverage best developer experience, we strongly recommend extending your
-TailwindCSS config using our utility function `withUt`. This utility function
-adds additional classes and variants used to style the uploadthing components.
-In addition, it adds UploadThing's components to the `content` property of your
-config. This allows you to avoid having duplicated styles in your bundle.
-Therefore, when using `withUt`, you should not import default stylesheet. If you
-choose not to use `withUt`, you have to import default stylesheet to make
-components look right.
+To leverage the best developer experience, we strongly recommend wrapping your
+Tailwind config with our utility function `withUt`. This utility function adds
+additional classes and variants used to style our components.
+
+In addition, it also automatically sets the `content` option to include all the
+necessary classes that the components uses. This allows you to avoid having
+duplicated styles in your bundle. Therefore, when using `withUt`, you should not
+import our stylesheet into your app. If you choose not to use `withUt`, you have
+to import default stylesheet to make components look right.
 
 ```ts filename="tailwind.config.ts"
 import { withUt } from "@uploadthing/react/tw";
@@ -185,40 +182,55 @@ module.exports = withUt({
 });
 ```
 
-`withUt` does two major things:
+<Callout type="info">
+  If you're not wrapping your config as shown above, you have to import our
+  stylesheet into your app. Otherwise, components will not look right.
 
-- Adds new entry to `content` property so that it includes UploadThing's
-  components. It allows to avoid having duplicated styles in your bundle.
-- Registers plugin and adds nice-to-have classes to improve styling experience.
+```ts filename="app/layout.tsx"
+import "@uploadthing/react/styles.css";
 
-#### `className` prop
+// ...
+```
 
-`className` prop accepts any classes so you can pass there anything you like.
-When it comes to TailwindCSS, to make styling easier, `withUt` adds few utility
-classes and variants for you to leverage.
+</Callout>
 
-Tailwind variants that allow applying styles to the internal elements:
+#### Style using the `className` prop
 
-- `ut-button`
-- `ut-allowed-content`
-- `ut-label`
-- `ut-upload-icon`
+`className` accepts any classes and will merge them using `tailwind-merge`,
+meaning you can pass any class you like and it will be applied correctly,
+overriding the default styles if necessary.
 
-Tailwind classes that allow applying styles based on state of element:
+The `withUt` wrapper adds custom variants that you can leverage to easily target
+different elements of the component and its state:
 
-- `ut-readying`
-- `ut-ready`
-- `ut-uploading`
+<div className="mx-auto w-max mt-4">
+
+| Variant               | Description                                                       |
+| --------------------- | ----------------------------------------------------------------- |
+| `ut-button:`          | Applied to the button element.                                    |
+| `ut-allowed-content:` | Applied to the allowed content element.                           |
+| `ut-label:`           | Applied to the label element.                                     |
+| `ut-upload-icon:`     | Applied to the upload icon element.                               |
+| ---                   | ---                                                               |
+| `ut-readying:`        | Applied to the container element when the component is readying.  |
+| `ut-ready:`           | Applied to the container element when the component is ready.     |
+| `ut-uploading:`       | Applied to the container element when the component is uploading. |
+
+</div>
+
+<Callout>
+  If you're not using the `withUt` wrapper, the state variants can be applied
+  using `data-[state="..."]:`
+</Callout>
 
 These variants and classes can be used in conjunction with each other to make
 component match your design in the exact way you want.
 
-```jsx
+```tsx
 <UploadButton
     className="mt-6 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
-               ^    ^ applied to button  ^ applied to button when loading config
-               | applied to container
-
+               |    └─ applied to `button`  └─ applied to `button` when `readying`
+               └─ applied to `container`
 />
 ```
 
@@ -269,9 +281,9 @@ component match your design in the exact way you want.
 ```jsx
 <UploadDropzone
     className="bg-slate-800 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
-               ^           ^                ^ applied to allowed content when uploading file
-               |           | applied to label
-               | applied to container
+               |            |                └─ applied to allowed content when uploading
+               |            └─ applied to label
+               └─ applied to container
 
 />
 ```
@@ -372,15 +384,25 @@ component match your design in the exact way you want.
     data-ut-element="button"
     data-state="uploading"
   >
-    <p>Uploading</p>
+    <svg
+      className="block h-5 w-5 animate-spin align-middle text-white"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 576 512"
+    >
+      <path
+        fill="currentColor"
+        d="M256 32C256 14.33 270.3 0 288 0C429.4 0 544 114.6 544 256C544 302.6 531.5 346.4 509.7 384C500.9 399.3 481.3 404.6 465.1 395.7C450.7 386.9 445.5 367.3 454.3 351.1C470.6 323.8 480 291 480 255.1C480 149.1 394 63.1 288 63.1C270.3 63.1 256 49.67 256 31.1V32z"
+      />
+    </svg>
   </button>
 </div>
 
-#### `appearance` prop
+#### Style using the `appearance` prop
 
-If you need, you can pass TailwindCSS classes directly to specific elements of
-component or provide a callback that will be called with current state of the
-component and will return a string
+If you're not using the `withUt` wrapper, or prefer splitting your styles up a
+bit, you can use the `appearance` prop to target the different elements of the
+component.
 
 ```jsx
 <UploadButton
@@ -395,7 +417,7 @@ component and will return a string
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mx-auto mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
     "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
   )}
 >
@@ -423,7 +445,7 @@ component and will return a string
 
 <div
   className={twMerge(
-    "mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
+    "mx-auto mt-2 flex flex-col items-center justify-center gap-1 rounded bg-blue-500",
     "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
   )}
 >
@@ -837,13 +859,12 @@ component and will return a `CSSProperties` object
 
 ## Content customisation
 
-To customise content of `UploadButton` and `UploadDropzone`, you can use
-`content` prop.
-
-The interfaces of `content` prop for `UploadButton` and `UploadDropzone` are
-following:
+To customise content of `UploadButton` and `UploadDropzone`, you can use the
+`content` prop that accepts an object with following shape:
 
 ```ts
+type ContentField = ReactNode | ((args: CallbackArguments) => ReactNode);
+
 type UploadButtonProps = {
   /* rest of props */
   content?: {
@@ -863,14 +884,14 @@ type UploadDropzoneProps = {
 };
 ```
 
-`content` prop allows you to customise the text and specific elements of
-`UploadButton` and `UploadDropzone`. It accepts an object with keys that
-correspond to content elements of component. You can pass following types of
-values:
+<Callout type="info">
+  When you take over the `content` of an element, you get full responsibility to
+  control the different states of the component. For example, if you customize
+  the `button` element, we will not show a spinner when the component is
+  uploading.
+</Callout>
 
-- `ReactNode`
-- `callback` - it will be called with current state of the component and should
-  return `ReactNode`
+### Example
 
 ```jsx
 <UploadButton
@@ -882,7 +903,7 @@ values:
     },
     allowedContent({ ready, fileTypes, isUploading }) {
       if (!ready) return "Checking what you allow";
-      if (isUploading) return "Seems stuff is uploading";
+      if (isUploading) return "Seems like stuff is uploading";
       return `Stuff you can upload: ${fileTypes.join(", ")}`;
     },
   }}
@@ -907,7 +928,7 @@ values:
     className={twMerge("h-[1.25rem] text-xs leading-5 text-white")}
     data-ut-element="allowed-content"
   >
-    <p>Seems stuff is uploading</p>
+    <p>Seems like stuff is uploading</p>
   </div>
 </div>
 
