@@ -62,6 +62,7 @@ export const uploadFilesInternal = async (
         formData.append(key, value);
       });
       formData.append("file", file);
+      formData.append("Content-Type", file.type);
 
       const s3res = await fetch(presignedUrl, {
         method: "POST",

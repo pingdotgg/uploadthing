@@ -3,9 +3,17 @@
 import { useState } from "react";
 
 import { uploadFiles, uploadFromUrl } from "./_actions";
+import { useUploadThing } from "~/utils/uploadthing";
 
 export default function ServerUploadPage() {
   const [isUploading, setIsUploading] = useState(false);
+
+  const { startUpload } = useUploadThing("videoAndImage", {
+    onUploadError: (err) => {
+      console.log(err);
+    }
+
+  })
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-sm flex-col items-center justify-center gap-4">
@@ -50,11 +58,19 @@ export default function ServerUploadPage() {
 
           setIsUploading(true);
           const fd = new FormData(e.target as HTMLFormElement);
-          const uploadedFile = await uploadFromUrl(fd);
-          if (uploadedFile.data) {
-            setIsUploading(false);
-            open(uploadedFile.data.url, "_blank");
-          }
+          const url = fd.get("url") as string;
+
+          const fileToUpload = await fetch(url).then((res) => res.blob());
+          const file = new File([fileToUpload], "test.jpg", { type: fileToUpload.type });
+
+          const res = await startUpload([file]);
+          console.log(res)
+
+          // const uploadedFile = await uploadFromUrl(fd);
+          // if (uploadedFile.data) {
+          //   setIsUploading(false);
+          //   open(uploadedFile.data.url, "_blank");
+          // }
         }}
         className="flex w-full flex-col gap-2"
       >
