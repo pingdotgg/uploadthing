@@ -83,7 +83,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   const formData = new FormData();
   formData.append("metadata", JSON.stringify(metadata));
 
-  const files = await Promise.all(
+  const filesToUpload = await Promise.all(
     fileUrls.map(async (url) => {
       if (typeof url === "string") url = new URL(url);
       const filename = url.pathname.split("/").pop() ?? "unknown-filename";
@@ -100,7 +100,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
 
   const uploads = await uploadFilesInternal(
     {
-      files,
+      files: filesToUpload,
       metadata,
     },
     {
