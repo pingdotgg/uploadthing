@@ -58,15 +58,23 @@ export const uploadFilesInternal = async (
       }
 
       const formData = new FormData();
-      Object.entries(fields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
-      formData.append("file", file);
+
+      // Give content type to blobs because S3 is dumb
+      // we know this is a valid mime type because we got it from the server
       formData.append("Content-Type", file.type);
 
+      // Dump all values from response (+ the file itself) into form for S3 upload
+      Object.entries({ ...fields, file: file }).forEach(([key, value]) => {
+        formData.append(key, value as Blob);
+      });
+
+      // Do S3 upload
       const s3res = await fetch(presignedUrl, {
         method: "POST",
         body: formData,
+        headers: new Headers({
+          Accept: "application/xml",
+        }),
       });
 
       if (!s3res.ok) {
