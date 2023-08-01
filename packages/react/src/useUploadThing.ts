@@ -18,8 +18,10 @@ type EndpointMetadata = {
   config: ExpandedRouteConfig;
 }[];
 
-const useEndpointMetadata = (endpoint: string) => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+const useEndpointMetadata = (endpoint: string, isEnabled = true) => {
+  // if !enabled, pass undefined instead of URL to prevent making a request
+  // Once URL is provided, useFetch will make a request
+  const { data } = useFetch<EndpointMetadata>(isEnabled ? "/api/uploadthing" : undefined);
   return data?.find((x) => x.slug === endpoint);
 };
 
@@ -27,6 +29,7 @@ export type UseUploadthingProps<TRouter extends FileRouter> = {
   onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
+  isEnabled?: boolean;
 };
 
 const fatalClientError = new UploadThingError({
@@ -39,11 +42,12 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter>,
   ) => {
+    const { isEnabled } = opts || {};
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
     const fileProgress = useRef<Map<string, number>>(new Map());
 
-    const permittedFileInfo = useEndpointMetadata(endpoint as string);
+    const permittedFileInfo = useEndpointMetadata(endpoint as string, isEnabled);
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput

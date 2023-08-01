@@ -55,11 +55,22 @@ export function UploadButton<TRouter extends FileRouter>(
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as UploadButtonProps<TRouter>;
+  const $props = props as unknown as UploadButtonProps<TRouter> & {
+    // props not exposed on public type
+    // Allow to set internal state for testing
+    __internal_state?: "readying" | "ready" | "uploading",
+    // Allow to disable the button for testing
+    __internal_ut_disabled?: boolean,
+    // Allow to set upload progress for testing
+    __internal_upload_progress?: number,
+    // Allow to set ready explicitly and independently of internal state
+    __internal_ready?: boolean,
+  };
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgressState, setUploadProgress] = useState($props.__internal_upload_progress ?? 0);
+  const uploadProgress = $props.__internal_upload_progress ?? uploadProgressState;
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
@@ -75,6 +86,7 @@ export function UploadButton<TRouter extends FileRouter>(
         $props.onUploadProgress?.(p);
       },
       onUploadError: $props.onUploadError,
+      isEnabled: !$props.__internal_state
     },
   );
 
@@ -82,7 +94,7 @@ export function UploadButton<TRouter extends FileRouter>(
     permittedFileInfo?.config,
   );
 
-  const ready = fileTypes.length > 0;
+  const ready = $props.__internal_ready || $props.__internal_state === "ready" || fileTypes.length > 0;
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (fileTypes.length === 0) return "Loading...";
@@ -101,17 +113,18 @@ export function UploadButton<TRouter extends FileRouter>(
       const files = Array.from(e.target.files);
       void startUpload(files, input);
     },
-    disabled: !ready,
+    disabled: $props.__internal_ut_disabled || !ready,
   });
 
   const styleFieldArg: ButtonStyleFieldCallbackArgs = {
-    ready,
-    isUploading,
+    ready: ready,
+    isUploading: $props.__internal_state === "uploading" || isUploading,
     uploadProgress,
     fileTypes,
   };
 
   const state = (() => {
+    if ($props.__internal_state) return $props.__internal_state;
     if (!ready) return "readying";
     if (ready && !isUploading) return "ready";
 
@@ -133,7 +146,7 @@ export function UploadButton<TRouter extends FileRouter>(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`,
+          `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`,
           state === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
@@ -143,7 +156,7 @@ export function UploadButton<TRouter extends FileRouter>(
       >
         <input {...getInputProps()} />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          (isUploading ? <Spinner /> : getUploadButtonText(fileTypes))}
+          (state === 'uploading' ? <Spinner /> : getUploadButtonText(fileTypes))}
       </label>
       <div
         className={twMerge(
