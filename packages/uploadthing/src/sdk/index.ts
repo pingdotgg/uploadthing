@@ -1,5 +1,5 @@
 import type { Json } from "@uploadthing/shared";
-import { generateUploadThingURL } from "@uploadthing/shared";
+import { UploadThingError, generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import type { FileEsque } from "./utils";
@@ -7,13 +7,20 @@ import { uploadFilesInternal } from "./utils";
 
 function guardServerOnly() {
   if (typeof window !== "undefined") {
-    throw new Error("The `utapi` can only be used on the server.");
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "The `utapi` can only be used on the server.",
+    })
   }
 }
 
 function getApiKeyOrThrow() {
-  if (!process.env.UPLOADTHING_SECRET)
-    throw new Error("Missing UPLOADTHING_SECRET env variable.");
+  if (!process.env.UPLOADTHING_SECRET) {
+    throw new UploadThingError({
+      code: "MISSING_ENV",
+      message: "Missing `UPLOADTHING_SECRET` env variable.",
+    })
+  }
   return process.env.UPLOADTHING_SECRET;
 }
 
@@ -91,7 +98,11 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
       // Download the file on the user's server to avoid egress charges
       const fileResponse = await fetch(url);
       if (!fileResponse.ok) {
-        throw new Error("Failed to download file");
+        throw new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Failed to download requested file.",
+          cause: fileResponse,
+        })
       }
       const blob = await fileResponse.blob();
       return Object.assign(blob, { name: filename });

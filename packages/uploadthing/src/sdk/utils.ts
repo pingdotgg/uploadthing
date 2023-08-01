@@ -1,5 +1,9 @@
 import type { Json } from "@uploadthing/shared";
-import { generateUploadThingURL, pollForFileData } from "@uploadthing/shared";
+import {
+  generateUploadThingURL,
+  pollForFileData,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 export type FileEsque = Blob & { name: string };
 
@@ -44,8 +48,7 @@ export const uploadFilesInternal = async (
     | { error: string };
 
   if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
+    throw UploadThingError.fromResponse(res);
   }
 
   // Upload each file to S3
@@ -54,19 +57,19 @@ export const uploadFilesInternal = async (
       const { presignedUrl, fields, key, fileUrl } = json.data[i];
 
       if (!presignedUrl || !fields) {
-        throw new Error("Failed to upload file");
+        throw new UploadThingError({
+          code: "URL_GENERATION_FAILED",
+          message: "Failed to generate presigned URL",
+          cause: JSON.stringify(json.data[i]),
+        });
       }
 
       const formData = new FormData();
-
-      // Give content type to blobs because S3 is dumb
-      // we know this is a valid mime type because we got it from the server
       formData.append("Content-Type", file.type);
-
-      // Dump all values from response (+ the file itself) into form for S3 upload
-      Object.entries({ ...fields, file: file }).forEach(([key, value]) => {
-        formData.append(key, value as Blob);
+      Object.entries(fields).forEach(([key, value]) => {
+        formData.append(key, value);
       });
+      formData.append("file", file);
 
       // Do S3 upload
       const s3res = await fetch(presignedUrl, {
@@ -78,7 +81,11 @@ export const uploadFilesInternal = async (
       });
 
       if (!s3res.ok) {
-        throw new Error("Failed to upload file");
+        throw new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: "Failed to upload file to storage provider",
+          cause: s3res,
+        });
       }
 
       // Poll for file to be available
@@ -95,6 +102,9 @@ export const uploadFilesInternal = async (
     if (upload.status === "fulfilled") {
       return { data: upload.value, error: null };
     }
-    return { data: null, error: upload.reason as Error };
+    return {
+      data: null,
+      error: UploadThingError.toObject(upload.reason as UploadThingError),
+    };
   });
 };

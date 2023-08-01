@@ -66,19 +66,32 @@ export class UploadThingError<
 
   public static async fromResponse(response: Response) {
     const json = (await response.json()) as Json;
-    const message =
-      json &&
-      typeof json === "object" &&
-      "message" in json &&
-      typeof json.message === "string"
-        ? json.message
-        : undefined;
+    let message: string | undefined = undefined;
+    if (json !== null && typeof json === "object" && !Array.isArray(json)) {
+      if (typeof json.message === "string") {
+        message = json.message;
+      } else if (typeof json.error === "string") {
+        message = json.error;
+      }
+    }
     return new UploadThingError({
       message,
       code: getErrorTypeFromStatusCode(response.status),
       cause: response,
       data: json,
     });
+  }
+
+  public static toObject(error: UploadThingError) {
+    return {
+      code: error.code,
+      message: error.message,
+      data: error.data,
+    };
+  }
+
+  public static serialize(error: UploadThingError) {
+    return JSON.stringify(UploadThingError.toObject(error));
   }
 }
 
