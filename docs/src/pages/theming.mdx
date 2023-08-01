@@ -237,6 +237,7 @@ component match your design in the exact way you want.
 ```
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="ready"
   className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-6"
   content={{
@@ -246,6 +247,7 @@ component match your design in the exact way you want.
 />
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="readying"
   className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-6"
   content={{
@@ -267,6 +269,7 @@ component match your design in the exact way you want.
   __internal_state="ready"
   __internal_button_disabled
   __internal_dropzone_disabled
+  __internal_ut_disabled
   __internal_show_button
   className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-6 bg-slate-800"
   content={{
@@ -279,6 +282,7 @@ component match your design in the exact way you want.
   __internal_state="uploading"
   __internal_button_disabled
   __internal_dropzone_disabled
+  __internal_ut_disabled
   __internal_show_button
   className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-6 bg-slate-800"
   content={{
@@ -305,6 +309,7 @@ component.
 
 <UploadButton
   __internal_state="uploading"
+  __internal_ut_disabled
   appearance={{
     button:
       "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
@@ -318,6 +323,7 @@ component.
 
 <UploadButton
   __internal_state="ready"
+  __internal_ut_disabled
   appearance={{
     button:
       "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
@@ -378,6 +384,7 @@ specific elements of component.
 
 <UploadButton
   __internal_state="ready"
+  __internal_ut_disabled
   className="custom-class"
   content={{
     allowedContent: "Allowed content",
@@ -387,6 +394,7 @@ specific elements of component.
 
 <UploadButton
   __internal_state="readying"
+  __internal_ut_disabled
   className="custom-class"
   content={{
     allowedContent: "Allowed content",
@@ -396,6 +404,7 @@ specific elements of component.
 
 <UploadButton
   __internal_state="uploading"
+  __internal_ut_disabled
   className="custom-class"
   content={{
     allowedContent: "Allowed content",
@@ -467,6 +476,7 @@ will return a string
 
 <UploadButton
   __internal_state="ready"
+  __internal_ut_disabled
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
@@ -484,6 +494,7 @@ will return a string
 
 <UploadButton
   __internal_state="readying"
+  __internal_ut_disabled
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
@@ -500,6 +511,7 @@ will return a string
 
 <UploadButton
   __internal_state="uploading"
+  __internal_ut_disabled
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
@@ -545,6 +557,7 @@ component and will return a `CSSProperties` object
 ```
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="readying"
   appearance={{
     button({ ready, isUploading }) {
@@ -568,6 +581,7 @@ component and will return a `CSSProperties` object
 />
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="ready"
   appearance={{
     button({ ready, isUploading }) {
@@ -591,6 +605,7 @@ component and will return a `CSSProperties` object
 />
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="uploading"
   appearance={{
     button({ ready, isUploading }) {
@@ -667,6 +682,7 @@ type UploadDropzoneProps = {
 ```
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="readying"
   content={{
     button({ ready }) {
@@ -683,6 +699,7 @@ type UploadDropzoneProps = {
 }} />
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="ready"
   content={{
     button({ ready }) {
@@ -699,6 +716,7 @@ type UploadDropzoneProps = {
 }} />
 
 <UploadButton
+  __internal_ut_disabled
   __internal_state="uploading"
   __internal_ready={true}
   content={{

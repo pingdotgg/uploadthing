@@ -86,7 +86,7 @@ export function UploadButton<TRouter extends FileRouter>(
         $props.onUploadProgress?.(p);
       },
       onUploadError: $props.onUploadError,
-      isEnabled: !$props.__internal_state
+      isEnabled: !$props.__internal_ut_disabled ?? true,
     },
   );
 
