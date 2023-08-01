@@ -37,6 +37,9 @@ export default function ServerUploadPage() {
           className="inline-flex items-center justify-center rounded bg-red-500 p-2 font-semibold hover:bg-red-600"
           disabled={isUploading}
         >
+          {isUploading && (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-r-0" />
+          )}
           Upload Files
         </button>
       </form>
