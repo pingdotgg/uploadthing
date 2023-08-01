@@ -2,6 +2,12 @@ import { describe, expectTypeOf, test } from "vitest";
 
 import * as utapi from ".";
 
+type SerializedUploadthingError = {
+  code: string;
+  message: string;
+  data: any;
+};
+
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
     await fn();
@@ -17,7 +23,7 @@ describe("uploadFiles", () => {
       expectTypeOf<
         (
           | { data: { key: string; url: string }; error: null }
-          | { data: null; error: Error }
+          | { data: null; error: SerializedUploadthingError }
         )[]
       >(result);
     });
@@ -28,7 +34,7 @@ describe("uploadFiles", () => {
       const result = await utapi.uploadFiles({} as File);
       expectTypeOf<
         | { data: { key: string; url: string }; error: null }
-        | { data: null; error: Error }
+        | { data: null; error: SerializedUploadthingError }
       >(result);
     });
   });
@@ -41,7 +47,7 @@ describe("uploadFilesFromUrl", () => {
       expectTypeOf<
         (
           | { data: { key: string; url: string }; error: null }
-          | { data: null; error: Error }
+          | { data: null; error: SerializedUploadthingError }
         )[]
       >(result);
     });
@@ -52,7 +58,7 @@ describe("uploadFilesFromUrl", () => {
       const result = await utapi.uploadFilesFromUrl("foo");
       expectTypeOf<
         | { data: { key: string; url: string }; error: null }
-        | { data: null; error: Error }
+        | { data: null; error: SerializedUploadthingError }
       >(result);
     });
   });
