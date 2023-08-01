@@ -2,17 +2,10 @@
 
 import { useState } from "react";
 
-import { useUploadThing } from "~/utils/uploadthing";
 import { uploadFiles, uploadFromUrl } from "./_actions";
 
 export default function ServerUploadPage() {
   const [isUploading, setIsUploading] = useState(false);
-
-  const { startUpload } = useUploadThing("videoAndImage", {
-    onUploadError: (err) => {
-      console.log(err);
-    },
-  });
 
   return (
     <div className="mx-auto flex h-screen w-full max-w-sm flex-col items-center justify-center gap-4">
