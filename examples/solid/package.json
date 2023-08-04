@@ -31,7 +31,7 @@
     "solid-start": "^0.2.26",
     "solidjs-dropzone": "^1.0.0",
     "undici": "5.20.0",
-    "uploadthing": "5.2.1",
+    "uploadthing": "5.3.0",
     "zod": "^3.21.4"
   },
   "engines": {
