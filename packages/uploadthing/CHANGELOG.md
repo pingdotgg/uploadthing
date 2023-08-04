@@ -1,5 +1,41 @@
 # uploadthing
 
+## 5.3.0
+
+### Minor Changes
+
+- [#214](https://github.com/pingdotgg/uploadthing/pull/214)
+  [`4191e16`](https://github.com/pingdotgg/uploadthing/commit/4191e1638e911a98984676ae018faedcc7d2be0b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `uploadFilesFromUrl` to utapi for server side uploads via URl
+
+- [#214](https://github.com/pingdotgg/uploadthing/pull/214)
+  [`4191e16`](https://github.com/pingdotgg/uploadthing/commit/4191e1638e911a98984676ae018faedcc7d2be0b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `uploadFiles` to the utapi for serverside uplaods
+
+### Patch Changes
+
+- [#228](https://github.com/pingdotgg/uploadthing/pull/228)
+  [`e34d46b`](https://github.com/pingdotgg/uploadthing/commit/e34d46b28dc434969b7c642f13b48dc3f752d122)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore(utapi):
+  add server guard to listFiles
+
+- [#226](https://github.com/pingdotgg/uploadthing/pull/226)
+  [`a1e6e3c`](https://github.com/pingdotgg/uploadthing/commit/a1e6e3cf0536fc8a1f0401e13f07e4829a2735b3)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: add
+  server only guard
+
+- [#221](https://github.com/pingdotgg/uploadthing/pull/221)
+  [`090c8ed`](https://github.com/pingdotgg/uploadthing/commit/090c8edeeef88660b08a61733a47e826994860aa)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: errors
+  thrown in middleware causes entire request to throw
+
+- [#224](https://github.com/pingdotgg/uploadthing/pull/224)
+  [`c02e99a`](https://github.com/pingdotgg/uploadthing/commit/c02e99a40d20ae37c08564cf4985d74af2bb6495)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat(utapi):
+  Add listFiles to UTAPI
+
 ## 5.2.1
 
 ### Patch Changes
