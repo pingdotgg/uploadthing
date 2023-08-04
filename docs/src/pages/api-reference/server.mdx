@@ -153,6 +153,73 @@ accessible here
 The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
 API but better
 
+### `uploadFiles`
+
+> Added in `v5.3`
+
+Upload files directly from your server **without** using the file router. Useful for server-side file processing, uploading from a server action, and much more.
+
+```tsx
+import { utapi } from "uploadthing/server";
+
+async function uploadFiles(formData: FormData) {
+  "use server";
+  const files = fd.getAll("files");
+  const response = await utapi.uploadFiles(files);
+  //    ^? { key: string, url: string }[]
+}
+
+function MyForm() {
+  return (
+    <form action={uploadFiles}>
+      <input name="files" type="file" multiple />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+When uploading files using `uploadFiles`, the files must be present on your
+server. Then presigned URLs are generated on our servers before the files can be
+uploaded to the storage provider.
+
+| Arguments | Type                       | Required | Description                       |
+| :-------- | :------------------------- | :------- | :-------------------------------- |
+| files     | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload    |
+| metadata  | Json                       | No       | Metadata to attach to the file(s) |
+
+```ts
+// Edge / Node < 20 friendly File interface
+interface FileEsque extends Blob {
+  name: string;
+}
+```
+
+### `uploadFilesFromUrl`
+
+> Added in `v5.3`
+
+Have a file hosted somewhere else you want to upload on UploadThing? This is the function you're looking for.
+
+<Callout type="warning">
+  When uploading files from URL, the file is first downloaded on **your**
+  server, before presigned URLs are created and the file is uploaded to the
+  storage provider.
+</Callout>
+
+```tsx
+import { utapi } from "uploadthing/server";
+
+const fileUrl = "https://test.com/some.png";
+
+const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
+```
+
+| Arguments | Type            | Required | Description                            |
+| :-------- | :-------------- | :------- | :------------------------------------- |
+| url       | URL \|\| string | Yes      | The URL of the file you wish to upload |
+| metadata  | Json            | No       | Metadata to attach to the file(s)      |
+
 ### `deleteFiles`
 
 > Added in `v4.0`
