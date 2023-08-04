@@ -21,10 +21,10 @@ provides a `flatten` method that returns a JSON-serializable object which we can
 return to the client.
 
 ```ts filename="server/uploadthing.ts"
-import * as z from "zod";
+import * as z from 'zod';
 
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing } from 'uploadthing/next';
+import type { FileRouter } from 'uploadthing/next';
 
 const f = createUploadthing({
   errorFormatter: (err) => {
@@ -52,10 +52,10 @@ that you returned from your error formatter on the `data` property:
   endpoint="withInput"
   input={{ foo: userInput }}
   onUploadError={(error) => {
-    console.log("Error: ", error);
+    console.log('Error: ', error);
     const fieldErrors = error.data?.zodError?.fieldErrors;
     //                              ^? typeToFlattenedError
-    setError(fieldErrors.foo[0] ?? "");
+    setError(fieldErrors.foo[0] ?? '');
   }}
 />
 ```

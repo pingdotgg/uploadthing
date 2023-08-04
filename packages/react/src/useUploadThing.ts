@@ -1,16 +1,16 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type { ExpandedRouteConfig } from '@uploadthing/shared';
+import { UploadThingError } from '@uploadthing/shared';
+import { dangerousUploadFiles } from 'uploadthing/client';
 import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
-} from "uploadthing/server";
+} from 'uploadthing/server';
 
-import { useEvent } from "./utils/useEvent";
-import useFetch from "./utils/useFetch";
+import { useEvent } from './utils/useEvent.ts';
+import useFetch from './utils/useFetch.ts';
 
 type EndpointMetadata = {
   slug: string;
@@ -18,24 +18,27 @@ type EndpointMetadata = {
 }[];
 
 const useEndpointMetadata = (endpoint: string) => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+  const { data } = useFetch<EndpointMetadata>('/api/uploadthing');
   return data?.find((x) => x.slug === endpoint);
 };
 
 export type UseUploadthingProps<TRouter extends FileRouter> = {
   onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
+    // eslint-disable-next-line no-unused-vars
+    res?: Awaited<ReturnType<typeof dangerousUploadFiles>>,
   ) => void;
+  // eslint-disable-next-line no-unused-vars
   onUploadProgress?: (p: number) => void;
+  // eslint-disable-next-line no-unused-vars
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
 
 const fatalClientError = new UploadThingError({
-  code: "INTERNAL_CLIENT_ERROR",
-  message: "Something went wrong. Please report this to UploadThing.",
+  code: 'INTERNAL_CLIENT_ERROR',
+  message: 'Something went wrong. Please report this to UploadThing.',
 });
 
-export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
+export const internalUploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter>,
@@ -55,7 +58,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       const [files, input] = args;
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles({
+        const res = await dangerousUploadFiles({
           files,
           endpoint: endpoint as string,
           input,
@@ -66,8 +69,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             fileProgress.current.forEach((p) => {
               sum += p;
             });
-            const averageProgress =
-              Math.floor(sum / fileProgress.current.size / 10) * 10;
+            const averageProgress = Math.floor(sum / fileProgress.current.size / 10) * 10;
             if (averageProgress !== uploadProgress.current) {
               opts?.onUploadProgress?.(averageProgress);
               uploadProgress.current = averageProgress;
@@ -87,6 +89,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
         fileProgress.current = new Map();
         uploadProgress.current = 0;
       }
+      return undefined;
     });
 
     return {
@@ -99,12 +102,12 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   return useUploadThing;
 };
 
-export const generateReactHelpers = <TRouter extends FileRouter>() => {
-  return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
-  } as const;
-};
+export const generateReactHelpers = <TRouter extends FileRouter>() => (
+  {
+    useUploadThing: internalUploadthingHookGen<TRouter>(),
+    uploadFiles: dangerousUploadFiles<TRouter>,
+  } as const
+);
 
 export type FullFile = {
   file: File;

@@ -1,10 +1,10 @@
-import { createSignal } from "solid-js";
+import { createSignal } from 'solid-js';
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+import type { ExpandedRouteConfig } from '@uploadthing/shared';
+import { dangerousUploadFiles } from 'uploadthing/client';
+import type { FileRouter, inferEndpointInput } from 'uploadthing/server';
 
-import { createFetch } from "./utils/createFetch";
+import { createFetch } from './utils/createFetch.ts';
 
 type EndpointMetadata = {
   slug: string;
@@ -13,21 +13,36 @@ type EndpointMetadata = {
 
 const createEndpointMetadata = (endpoint: string, url?: string) => {
   const dataGetter = createFetch<EndpointMetadata>(
-    `${url ?? ""}/api/uploadthing`,
+    `${url ?? ''}/api/uploadthing`,
   );
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
+const onUploadProgressExample = (p: number) => {
+  if (p) return undefined;
+  return undefined;
+};
+
+const onClientUploadCompleteExample = (
+  res?: Awaited<ReturnType<typeof dangerousUploadFiles>>,
+) => {
+  if (res) return undefined;
+  return undefined;
+};
+
+const onUploadErrorExample = (e: Error): undefined | void => {
+  if (e) return undefined;
+  return undefined;
+};
+
 export type UseUploadthingProps = {
-  onUploadProgress?: (p: number) => void;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
-  onUploadError?: (e: Error) => void;
+  onUploadProgress?: typeof onUploadProgressExample;
+  onClientUploadComplete?: typeof onClientUploadCompleteExample;
+  onUploadError?: typeof onUploadErrorExample;
   url?: string;
 };
 
-export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
+export const internalUploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps,
@@ -49,36 +64,36 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       const [files, input] = args;
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles({
+        const res = (await dangerousUploadFiles({
           files,
           endpoint: endpoint as string,
           input,
-          onUploadProgress: (progress) => {
+          onUploadProgress: (progress: { file: string; progress: number }) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.set(progress.file, progress.progress);
             let sum = 0;
             fileProgress.forEach((p) => {
               sum += p;
             });
-            const averageProgress =
-              Math.floor(sum / fileProgress.size / 10) * 10;
+            const averageProgress = Math.floor(sum / fileProgress.size / 10) * 10;
             if (averageProgress !== uploadProgress) {
               opts?.onUploadProgress?.(averageProgress);
               uploadProgress = averageProgress;
             }
           },
-        });
+        })) as unknown as Awaited<ReturnType<typeof dangerousUploadFiles>>;
         setUploading(false);
         fileProgress = new Map();
         uploadProgress = 0;
         opts?.onClientUploadComplete?.(res);
+
         return res;
       } catch (e) {
         setUploading(false);
         fileProgress = new Map();
         uploadProgress = 0;
         opts?.onUploadError?.(e as Error);
-        return;
+        return undefined;
       }
     };
 
@@ -92,12 +107,10 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   return useUploadThing;
 };
 
-export const generateSolidHelpers = <TRouter extends FileRouter>() => {
-  return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
-  } as const;
-};
+export const generateSolidHelpers = <TRouter extends FileRouter>() => ({
+  useUploadThing: internalUploadthingHookGen<TRouter>(),
+  uploadFiles: dangerousUploadFiles<TRouter>,
+} as const);
 
 export type FullFile = {
   file: File;

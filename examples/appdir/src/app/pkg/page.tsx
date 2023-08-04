@@ -1,6 +1,8 @@
-import { UploadButton } from "@uploadthing/react";
+/* eslint-disable react/react-in-jsx-scope */
+/* eslint-disable react/jsx-filename-extension */
+import { UploadButton } from '@uploadthing/react';
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import type { OurFileRouter } from '~/server/uploadthing';
 
 export default function Home() {
   return (

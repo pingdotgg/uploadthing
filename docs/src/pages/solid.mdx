@@ -1,4 +1,4 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Callout, Steps } from 'nextra-theme-docs';
 
 # Getting Started with SolidStart
 
@@ -11,7 +11,7 @@ Make sure you
 
 ### Install the packages
 
-import { Tab, Tabs } from "nextra-theme-docs";
+import { Tab, Tabs } from 'nextra-theme-docs';
 
 {/* prettier-ignore-start */}
 
@@ -62,59 +62,59 @@ FileRoute similar to an endpoint, it has:
 - `onUploadComplete` callback for when uploads are completed
 
 ```ts copy filename="src/server/uploadthing.ts"
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing } from 'uploadthing/next';
+import type { FileRouter } from 'uploadthing/next';
 
 const f = createUploadthing();
 
 export const uploadRouter = {
   videoAndImage: f({
     image: {
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 4,
     },
     video: {
-      maxFileSize: "16MB",
+      maxFileSize: '16MB',
     },
   })
     .middleware(() => ({}))
     .onUploadComplete((data) => {
-      console.log("upload completed", data);
+      console.log('upload completed', data);
     }),
 
   withMdwr: f({
     image: {
       maxFileCount: 2,
-      maxFileSize: "1MB",
+      maxFileSize: '1MB',
     },
   })
     .middleware((opts) => {
-      const h = opts.req.headers.get("someProperty");
+      const h = opts.req.headers.get('someProperty');
 
-      if (!h) throw new Error("someProperty is required");
+      if (!h) throw new Error('someProperty is required');
 
       return {
         someProperty: h,
-        otherProperty: "hello" as const,
+        otherProperty: 'hello' as const,
       };
     })
     .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      console.log("files successfully uploaded:", file);
+      console.log('uploaded with the following metadata:', metadata);
+      console.log('files successfully uploaded:', file);
     }),
 
   withoutMdwr: f({
     image: {
       maxFileCount: 2,
-      maxFileSize: "16MB",
+      maxFileSize: '16MB',
     },
   })
     .middleware(() => {
-      return { testMetadata: "lol" };
+      return { testMetadata: 'lol' };
     })
     .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      console.log("files successfully uploaded:", file);
+      console.log('uploaded with the following metadata:', metadata);
+      console.log('files successfully uploaded:', file);
     }),
 } satisfies FileRouter;
 
@@ -129,9 +129,9 @@ export type OurFileRouter = typeof uploadRouter;
 </Callout>
 
 ```ts copy filename="src/api/uploadthing.ts"
-import { createServerHandler } from "uploadthing/server";
+import { createServerHandler } from 'uploadthing/server';
 
-import { uploadRouter } from "~/server/uploadthing";
+import { uploadRouter } from '~/server/uploadthing';
 
 export const { GET, POST } = createServerHandler({
   router: uploadRouter,
@@ -149,9 +149,9 @@ everytime you mount a component, but you can also import the components
 individually from `@uploadthing/solid`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/solid";
+import { generateComponents } from '@uploadthing/solid';
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import type { OurFileRouter } from '~/server/uploadthing';
 
 const url = `http://localhost:${process.env.PORT ?? 3000}`;
 
@@ -165,11 +165,11 @@ The `@uploadthing/solid` package includes an "Uploader" component that you can
 simply drop into your app, and start uploading files immediately.
 
 ```tsx copy filename="src/routes/index.tsx"
-import type { VoidComponent } from "solid-js";
+import type { VoidComponent } from 'solid-js';
 
-import { Uploader } from "~/utils/uploadthing";
+import { Uploader } from '~/utils/uploadthing';
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
+import '@uploadthing/solid/styles.css';
 
 const Home: VoidComponent = () => {
   return (
@@ -178,7 +178,7 @@ const Home: VoidComponent = () => {
         endpoint="withoutMdwr"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
-          alert("Upload Completed");
+          alert('Upload Completed');
         }}
         buttonMultiple
       />
@@ -200,13 +200,13 @@ simply drop into your app, and start uploading files immediately.
 
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
+import '@uploadthing/solid/styles.css';
 
-import { type VoidComponent } from "solid-js";
+import { type VoidComponent } from 'solid-js';
 
-import { Uploader } from "@uploadthing/solid";
+import { Uploader } from '@uploadthing/solid';
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import type { OurFileRouter } from '~/server/uploadthing';
 
 const Home: VoidComponent = () => {
   return (
@@ -216,7 +216,7 @@ const Home: VoidComponent = () => {
         // needed when server side rendering
         url="http://localhost:3000"
         onClientUploadComplete={() => {
-          alert("Upload Completed");
+          alert('Upload Completed');
         }}
       />
     </main>
@@ -233,13 +233,13 @@ clicking on it.
 
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
+import '@uploadthing/solid/styles.css';
 
-import { type VoidComponent } from "solid-js";
+import { type VoidComponent } from 'solid-js';
 
-import { UploadButton } from "@uploadthing/solid";
+import { UploadButton } from '@uploadthing/solid';
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import type { OurFileRouter } from '~/server/uploadthing';
 
 const Home: VoidComponent = () => {
   return (
@@ -249,7 +249,7 @@ const Home: VoidComponent = () => {
         // needed when server side rendering
         url="http://localhost:3000"
         onClientUploadComplete={() => {
-          alert("Upload Completed");
+          alert('Upload Completed');
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
@@ -270,13 +270,13 @@ drag files into it.
 
 ```tsx copy
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
+import '@uploadthing/solid/styles.css';
 
-import { type VoidComponent } from "solid-js";
+import { type VoidComponent } from 'solid-js';
 
-import { UploadDropzone } from "@uploadthing/solid";
+import { UploadDropzone } from '@uploadthing/solid';
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import type { OurFileRouter } from '~/server/uploadthing';
 
 const Home: VoidComponent = () => {
   return (
@@ -286,7 +286,7 @@ const Home: VoidComponent = () => {
         // needed when server side rendering
         url="http://localhost:3000"
         onClientUploadComplete={() => {
-          alert("Upload Completed");
+          alert('Upload Completed');
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.

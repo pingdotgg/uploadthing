@@ -1,13 +1,13 @@
-import { lookup } from "@uploadthing/mime-types";
+import { lookup } from '@uploadthing/mime-types';
 
-import type { AllowedFileType } from "./file-types";
+import type { AllowedFileType } from './file-types';
 import type {
   ExpandedRouteConfig,
   FileData,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
-} from "./types";
+} from './types';
 
 export function isRouteArray(
   routeConfig: FileRouterInputConfig,
@@ -16,14 +16,14 @@ export function isRouteArray(
 }
 
 export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
-  if (fileType === "image") return "4MB";
-  if (fileType === "video") return "16MB";
-  if (fileType === "audio") return "8MB";
-  if (fileType === "blob") return "8MB";
-  if (fileType === "pdf") return "4MB";
-  if (fileType === "text") return "64KB";
+  if (fileType === 'image') return '4MB';
+  if (fileType === 'video') return '16MB';
+  if (fileType === 'audio') return '8MB';
+  if (fileType === 'blob') return '8MB';
+  if (fileType === 'pdf') return '4MB';
+  if (fileType === 'text') return '64KB';
 
-  return "4MB";
+  return '4MB';
 }
 
 /**
@@ -54,7 +54,7 @@ export function fillInputRouteConfig(
   const inputKeys = Object.keys(routeConfig) as FileRouterInputKey[];
   inputKeys.forEach((key) => {
     const value = routeConfig[key];
-    if (!value) throw new Error("Invalid config during fill");
+    if (!value) throw new Error('Invalid config during fill');
 
     const defaultValues = {
       maxFileSize: getDefaultSizeForType(key),
@@ -79,7 +79,7 @@ export function getTypeFromFileName(
   }
 
   // If the user has specified a specific mime type, use that
-  if (allowedTypes.some((type) => type.includes("/"))) {
+  if (allowedTypes.some((type) => type.includes('/'))) {
     if (allowedTypes.includes(mimeType)) {
       return mimeType;
     }
@@ -87,25 +87,24 @@ export function getTypeFromFileName(
 
   // Otherwise, we have a "magic" type eg. "image" or "video"
   const type = (
-    mimeType.toLowerCase() === "application/pdf"
-      ? "pdf"
-      : mimeType.split("/")[0]
+    mimeType.toLowerCase() === 'application/pdf'
+      ? 'pdf'
+      : mimeType.split('/')[0]
   ) as AllowedFileType;
 
   if (!allowedTypes.includes(type)) {
     // Blob is a catch-all for any file type not explicitly supported
-    if (allowedTypes.includes("blob")) {
-      return "blob";
-    } else {
-      throw new Error(`File type ${type} not allowed for ${fileName}`);
+    if (allowedTypes.includes('blob')) {
+      return 'blob';
     }
+    throw new Error(`File type ${type} not allowed for ${fileName}`);
   }
 
   return type;
 }
 
 export function generateUploadThingURL(path: `/${string}`) {
-  const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
+  const host = process.env.CUSTOM_INFRA_URL ?? 'https://uploadthing.com';
   return `${host}${path}`;
 }
 
@@ -119,7 +118,7 @@ export const withExponentialBackoff = async <T>(
   let backoffFuzzMs = 0;
 
   let result = null;
-  while (tries <= MAX_RETRIES) {
+  const attempt = async (): Promise<T | null> => {
     result = await doTheThing();
     if (result !== null) return result;
 
@@ -127,35 +126,32 @@ export const withExponentialBackoff = async <T>(
     backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
     backoffFuzzMs = Math.floor(Math.random() * 500);
 
-    if (tries > 3) {
-      console.error(
-        `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-          backoffMs / 1000,
-        )} seconds...`,
-      );
-    }
+    await new Promise((r) => {
+      setTimeout(r, backoffMs + backoffFuzzMs);
+    });
+    if (tries > MAX_RETRIES) return null;
+    return attempt();
+  };
 
-    await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
-  }
-
-  return null;
+  return attempt();
 };
 
 export async function pollForFileData(
   fileKey: string,
-  callback?: (json: any) => Promise<any>,
+  callback?: (json: any) => Promise<typeof json>,
 ) {
   const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
 
   return withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
     const json = (await res.json()) as
-      | { status: "done"; fileData: FileData }
-      | { status: "something else" };
+      | { status: 'done'; fileData: FileData }
+      | { status: 'something else' };
 
-    if (json.status !== "done") return null;
+    if (json.status !== 'done') return null;
 
     await callback?.(json);
+    return undefined;
   });
 }
 
@@ -181,25 +177,25 @@ export function getUploadthingUrl() {
   return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
 }
 
-export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
+export const FILESIZE_UNITS = ['B', 'KB', 'MB', 'GB'] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = (input: string) => {
   const regex = new RegExp(
-    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
-    "i",
+    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join('|')})$`,
+    'i',
   );
   const match = input.match(regex);
 
   if (!match) {
-    return new Error("Invalid file size format");
+    return new Error('Invalid file size format');
   }
 
   const sizeValue = parseFloat(match[1]);
   const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
 
   if (!FILESIZE_UNITS.includes(sizeUnit)) {
-    throw new Error("Invalid file size unit");
+    throw new Error('Invalid file size unit');
   }
-  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
+  const bytes = sizeValue * 1024 ** FILESIZE_UNITS.indexOf(sizeUnit);
   return Math.floor(bytes);
 };

@@ -18,8 +18,7 @@
     "postcss": "8.4.22",
     "solid-start-node": "^0.2.26",
     "tailwindcss": "^3.3.2",
-    "typescript": "5.1.3",
-    "vite": "^4.3.9"
+    "typescript": "5.1.3"
   },
   "dependencies": {
     "@solidjs/meta": "^0.28.5",
@@ -32,6 +31,7 @@
     "solidjs-dropzone": "^1.0.0",
     "undici": "5.20.0",
     "uploadthing": "5.2.1",
+    "vite": "^4.3.9",
     "zod": "^3.21.4"
   },
   "engines": {

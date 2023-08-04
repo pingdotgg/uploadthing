@@ -8,19 +8,19 @@ Learn more: [docs.uploadthing.com](https://docs.uploadthing.com)
 
 ```tsx
 // Name is temp
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton } from '@uploadthing/react';
 
-import type { FileRouter } from "./someUploadRouter";
+import type { FileRouter } from './someUploadRouter';
 
 export const SomePage = () => {
   return (
     <UploadButton<FileRouter>
       endpoint="someTypesafeEndpoint"
       onNewFileDropped={(file) => {
-        console.log("new file added by user", file);
+        console.log('new file added by user', file);
       }}
       onClientStartedUpload={(file) => {
-        console.log("new file added by user", file);
+        console.log('new file added by user', file);
       }}
       onClientFinishedUpload={(file) => {
         console.log(file);
@@ -34,9 +34,9 @@ export const SomePage = () => {
 
 ```tsx
 // Name is temp
-import { UploadFileView, UploadProvider, UploadZone } from "@uploadthing/react";
+import { UploadFileView, UploadProvider, UploadZone } from '@uploadthing/react';
 
-import type { FileRouter } from "./someUploadRouter";
+import type { FileRouter } from './someUploadRouter';
 
 export const SomePage = () => {
   return (

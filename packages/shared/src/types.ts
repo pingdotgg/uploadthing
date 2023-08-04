@@ -1,6 +1,6 @@
-import type { MimeType } from "@uploadthing/mime-types/db";
+import type { MimeType } from '@uploadthing/mime-types/db';
 
-import type { AllowedFileType } from "./file-types";
+import type { AllowedFileType } from './file-types';
 
 export type JsonValue = string | number | boolean | null | undefined;
 export type JsonArray = JsonValue[];
@@ -29,7 +29,7 @@ export type UploadedFile = {
 };
 
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
-export type SizeUnit = "B" | "KB" | "MB" | "GB";
+export type SizeUnit = 'B' | 'KB' | 'MB' | 'GB';
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
 type RouteConfig = {
@@ -40,7 +40,7 @@ type RouteConfig = {
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
 export type ExpandedRouteConfig = Partial<{
-  [key in FileRouterInputKey]: RouteConfig;
+  [key in FileRouterInputKey]: key extends never ? RouteConfig : RouteConfig;
 }>;
 
 type PartialRouteConfig = Partial<

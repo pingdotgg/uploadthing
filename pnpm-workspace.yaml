@@ -1,5 +1,5 @@
 packages:
-  - "packages/config/*"
-  - "packages/*"
-  - "examples/*"
-  - "docs"
+  - 'packages/config/*'
+  - 'packages/*'
+  - 'examples/*'
+  - 'docs'

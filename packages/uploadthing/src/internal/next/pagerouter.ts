@@ -1,29 +1,28 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError, UploadThingError } from '@uploadthing/shared';
 
-import { UPLOADTHING_VERSION } from "../../constants";
-import { defaultErrorFormatter } from "../error-formatter";
-import type { RouterWithConfig } from "../handler";
-import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
-import type { FileRouter, inferErrorShape } from "../types";
+import { UPLOADTHING_VERSION } from '../../constants.ts';
+import { defaultErrorFormatter } from '../error-formatter.ts';
+import type { RouterWithConfig } from '../handler';
+import { buildPermissionsInfoHandler, buildRequestHandler } from '../handler.ts';
+import type { FileRouter, inferErrorShape } from '../types';
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
-  const errorFormatter =
-    opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
-    defaultErrorFormatter;
+  const requestHandler = buildRequestHandler<TRouter, 'pages'>(opts);
+  // eslint-disable-next-line no-underscore-dangle
+  const errorFormatter = opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter
+    ?? defaultErrorFormatter;
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // Return valid endpoints
-    if (req.method === "GET") {
+    if (req.method === 'GET') {
       const perms = getBuildPerms();
-      res.status(200).json(perms);
-      return;
+      return res.status(200).json(perms);
     }
 
     const standardRequest = {
@@ -40,11 +39,11 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       res,
     });
 
-    res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+    res.setHeader('x-uploadthing-version', UPLOADTHING_VERSION);
 
     if (response instanceof UploadThingError) {
       res.status(getStatusCodeFromError(response));
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+      res.setHeader('x-uploadthing-version', UPLOADTHING_VERSION);
       const formattedError = errorFormatter(
         response,
       ) as inferErrorShape<TRouter>;
@@ -54,10 +53,12 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     if (response.status !== 200) {
       // We messed up - this should never happen
       res.status(500);
-      return res.send("An unknown error occured");
+      return res.send('An unknown error occured');
     }
 
     res.status(response.status);
     return res.json(response.body);
   };
 };
+
+export const AIRBNB_IS_STUPID = true;

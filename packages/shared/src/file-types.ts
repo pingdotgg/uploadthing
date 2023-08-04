@@ -1,14 +1,14 @@
-import * as z from "zod";
+import * as z from 'zod';
 
-import { mimeTypes } from "@uploadthing/mime-types/db";
+import { mimeTypes } from '@uploadthing/mime-types/db';
 
 export const ALLOWED_FILE_TYPES = [
-  "image",
-  "video",
-  "audio",
-  "pdf",
-  "text",
-  "blob",
+  'image',
+  'video',
+  'audio',
+  'pdf',
+  'text',
+  'blob',
 ] as const;
 
 export type AllowedFileType = (typeof ALLOWED_FILE_TYPES)[number];

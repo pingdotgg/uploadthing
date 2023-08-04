@@ -1,70 +1,62 @@
-import * as z from "zod";
+import * as z from 'zod';
 
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing } from 'uploadthing/next';
+import type { FileRouter } from 'uploadthing/next';
 
 const f = createUploadthing({
-  errorFormatter: (err) => {
-    return {
-      message: err.message,
-      zodError: err.cause instanceof z.ZodError ? err.cause.flatten() : null,
-    };
-  },
+  errorFormatter: (err) => ({
+    message: err.message,
+    zodError: err.cause instanceof z.ZodError ? err.cause.flatten() : null,
+  }),
 });
 
 export const uploadRouter = {
   videoAndImage: f({
     image: {
-      maxFileSize: "4MB",
+      maxFileSize: '4MB',
       maxFileCount: 4,
     },
     video: {
-      maxFileSize: "16MB",
+      maxFileSize: '16MB',
     },
   })
     .middleware(() => ({}))
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+    .onUploadComplete(() => undefined),
 
-  withInput: f(["image"])
+  withInput: f(['image'])
     .input(
       z.object({
         foo: z.string().min(5),
       }),
     )
-    .middleware((opts) => {
-      console.log("input", opts.input);
-      return {};
-    })
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+    .middleware(() => ({}))
+    .onUploadComplete(() => undefined),
 
   withMdwr: f({
     image: {
       maxFileCount: 2,
-      maxFileSize: "1MB",
+      maxFileSize: '1MB',
     },
   })
     .middleware(({ req }) => {
-      const h = req.headers.get("someProperty");
+      const h = req.headers.get('someProperty');
 
-      if (!h) throw new Error("someProperty is required");
+      if (!h) throw new Error('someProperty is required');
 
       return {
         someProperty: h,
-        otherProperty: "hello" as const,
+        otherProperty: 'hello' as const,
       };
     })
     .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
+      // eslint-disable-next-line no-unused-expressions
       metadata.someProperty;
       //       ^?
+      // eslint-disable-next-line no-unused-expressions
       metadata.otherProperty;
       //       ^?
 
-      console.log("files successfully uploaded:", file);
+      // eslint-disable-next-line no-unused-expressions
       file;
       // ^?
     }),
@@ -72,18 +64,16 @@ export const uploadRouter = {
   withoutMdwr: f({
     image: {
       maxFileCount: 2,
-      maxFileSize: "16MB",
+      maxFileSize: '16MB',
     },
   })
-    .middleware(() => {
-      return { testMetadata: "lol" };
-    })
+    .middleware(() => ({ testMetadata: 'lol' }))
     .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
+      // eslint-disable-next-line no-unused-expressions
       metadata;
       // ^?
 
-      console.log("files successfully uploaded:", file);
+      // eslint-disable-next-line no-unused-expressions
       file;
       // ^?
     }),

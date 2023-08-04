@@ -1,4 +1,4 @@
-import { Callout, Tab, Tabs } from "nextra-theme-docs";
+import { Callout, Tab, Tabs } from 'nextra-theme-docs';
 
 ## createUploadthing
 
@@ -42,33 +42,33 @@ File Routes are the routes you create with the helped instantiated by
 upload. The keys in the object are the names of your endpoints.
 
 ```ts
-import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from 'uploadthing/next';
 
 const f = createUploadthing();
 
 export const ourFileRouter = {
   // Example "profile picture upload" route - these can be named whatever you want!
-  profilePicture: f(["image"])
+  profilePicture: f(['image'])
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log("file", data)),
+    .onUploadComplete((data) => console.log('file', data)),
 
   // This route takes an attached image OR video
-  messageAttachment: f(["image", "video"])
+  messageAttachment: f(['image', 'video'])
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log("file", data)),
+    .onUploadComplete((data) => console.log('file', data)),
 
   // Takes ONE image up to 2MB
-  strictImageAttachment: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
+  strictImageAttachment: f({ image: { maxFileSize: '2MB', maxFileCount: 1 } })
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log("file", data)),
+    .onUploadComplete((data) => console.log('file', data)),
 
   // Takes a 4 2mb images and/or 1 256mb video
   mediaPost: f({
-    image: { maxFileSize: "2MB", maxFileCount: 4 },
-    video: { maxFileSize: "256MB", maxFileCount: 1 },
+    image: { maxFileSize: '2MB', maxFileCount: 4 },
+    video: { maxFileSize: '256MB', maxFileCount: 1 },
   })
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log("file", data)),
+    .onUploadComplete((data) => console.log('file', data)),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
@@ -124,21 +124,21 @@ This is the function where you authorize a user to do an upload. You can also
 tag the upload with metadata here. Example using Clerk:
 
 ```ts
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from '@clerk/nextjs';
 
-f(["image"])
+f(['image'])
   .middleware(async ({ req, res }) => {
     const user = await currentUser();
 
     // Throw if user isn't signed in
     if (!user)
-      throw new Error("You must be logged in to upload a profile picture");
+      throw new Error('You must be logged in to upload a profile picture');
 
     // Return userId to be used in onUploadComplete
     return { userId: user.id };
   })
   .onUploadComplete(async ({ metadata }) => {
-    console.log("Uploaded by user", metadata.userId);
+    console.log('Uploaded by user', metadata.userId);
   });
 ```
 
@@ -161,12 +161,12 @@ API but better
 the server.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from 'uploadthing/server';
 
-await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+await utapi.deleteFiles('2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg');
 await utapi.deleteFiles([
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
+  '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
 ]);
 ```
 
@@ -182,14 +182,14 @@ await utapi.deleteFiles([
 access them.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from 'uploadthing/server';
 
 const oneUrl = await utapi.getFileUrls(
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
 );
 const multipleUrls = await utapi.getFileUrls([
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
+  '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
 ]);
 ```
 
@@ -206,7 +206,7 @@ and keys for all files that have been uploaded to the application your API key
 corresponds to.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from 'uploadthing/server';
 
 const files = await utapi.listFiles();
 
@@ -229,21 +229,21 @@ console.log(files);
 appropriate files on the server.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from 'uploadthing/server';
 
 await utapi.renameFiles({
-  fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  newName: "myImage.jpg",
+  fileKey: '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
+  newName: 'myImage.jpg',
 });
 
 await utapi.renameFiles([
   {
-    fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-    newName: "myImage.jpg",
+    fileKey: '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
+    newName: 'myImage.jpg',
   },
   {
-    fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
-    newName: "myOtherImage.jpg",
+    fileKey: '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
+    newName: 'myOtherImage.jpg',
   },
 ]);
 ```

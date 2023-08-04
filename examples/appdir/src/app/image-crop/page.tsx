@@ -1,11 +1,15 @@
-"use client";
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/react-in-jsx-scope */
 
-import { useState } from "react";
+'use client';
 
-import { ImageCropper } from "./image-cropper";
+import { useState } from 'react';
+
+import { ImageCropper } from './image-cropper.tsx';
 
 export default function Page() {
-  const [imgSrc, setImgSrc] = useState("");
+  const [imgSrc, setImgSrc] = useState('');
 
   return (
     <div className="grid min-h-screen place-items-center">
@@ -13,7 +17,8 @@ export default function Page() {
         <div>
           <h1 className="text-xl font-bold">Image Cropper</h1>
           <p>
-            This is a simple example of using the{" "}
+            This is a simple example of using the
+            {' '}
             <a
               href="
 https://www.npmjs.com/package/react-image-crop"
@@ -21,7 +26,8 @@ https://www.npmjs.com/package/react-image-crop"
               rel="noreferrer"
             >
               react-image-crop
-            </a>{" "}
+            </a>
+            {' '}
             package to crop an image before uploading it.
           </p>
         </div>
@@ -35,8 +41,8 @@ https://www.npmjs.com/package/react-image-crop"
               if (!file) return;
 
               const reader = new FileReader();
-              reader.addEventListener("load", () => {
-                setImgSrc(reader.result?.toString() ?? "");
+              reader.addEventListener('load', () => {
+                setImgSrc(reader.result?.toString() ?? '');
               });
               reader.readAsDataURL(file);
             }}

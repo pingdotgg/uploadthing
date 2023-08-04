@@ -1,13 +1,13 @@
-const { execSync } = require("child_process");
+const { execSync } = require('child_process');
 
 /** @type {import("tsup").Options} */
 const config = {
   sourcemap: true,
   dts: true,
-  format: ["esm"],
+  format: ['esm'],
   async onSuccess() {
     // emit dts and sourcemaps to enable jump to definition
-    execSync("pnpm tsc --project tsconfig.sourcemap.json");
+    execSync('pnpm tsc --project tsconfig.sourcemap.json');
   },
 };
 

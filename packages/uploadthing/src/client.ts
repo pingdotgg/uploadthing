@@ -1,9 +1,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { pollForFileData, UploadThingError } from "@uploadthing/shared";
+import { pollForFileData, UploadThingError } from '@uploadthing/shared';
 
-import type { FileRouter, inferEndpointInput } from "./internal/types";
+import type { FileRouter, inferEndpointInput } from './internal/types';
+
+const exampleOnProgressFunction = ({ file, progress }: { file: string; progress: number }) => {
+  if (file && progress) {
+    return undefined;
+  }
+  return undefined;
+};
 
 function fetchWithProgress(
   url: string,
@@ -12,16 +19,16 @@ function fetchWithProgress(
     method?: string;
     body?: string | FormData;
   } = {},
-  onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
+  onProgress: XMLHttpRequestEventTarget['onprogress'] | undefined = undefined,
 ) {
   return new Promise<XMLHttpRequest>((res, rej) => {
     const xhr = new XMLHttpRequest();
-    xhr.open(opts.method || "get", url);
-    opts.headers &&
+    xhr.open(opts.method || 'get', url);
+    if (opts.headers) {
       Object.keys(opts.headers).forEach(
-        (h) =>
-          opts.headers && xhr.setRequestHeader(h, opts.headers.get(h) ?? ""),
+        (h) => opts.headers && xhr.setRequestHeader(h, opts.headers.get(h) ?? ''),
       );
+    }
     xhr.onload = (e) => {
       res(e.target as XMLHttpRequest);
     };
@@ -35,26 +42,20 @@ function fetchWithProgress(
 const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
   const queryParams = `?actionType=upload&slug=${config.slug}`;
 
-  return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
+  return `${config?.url ?? '/api/uploadthing'}${queryParams}`;
 };
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
-    onUploadProgress?: ({
-      file,
-      progress,
-    }: {
-      file: string;
-      progress: number;
-    }) => void;
+    onUploadProgress?: typeof exampleOnProgressFunction;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
   };
 }[keyof TRouter];
 
-export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
+export const dangerousUploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
   config?: {
     url?: string;
@@ -67,7 +68,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       slug: String(opts.endpoint),
     }),
     {
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify({
         files: opts.files.map((f) => f.name),
         input: opts.input,
@@ -85,9 +86,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       return res.json();
     } catch (e) {
       // response is not JSON
-      console.error(e);
       throw new UploadThingError({
-        code: "BAD_REQUEST",
+        code: 'BAD_REQUEST',
         message: `Failed to parse response as JSON. Got: ${res.body}`,
         cause: e,
       });
@@ -96,8 +96,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 
   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
     throw new UploadThingError({
-      code: "BAD_REQUEST",
-      message: "No URL. How did you even get here?",
+      code: 'BAD_REQUEST',
+      message: 'No URL. How did you even get here?',
       cause: s3ConnectionRes,
     });
   }
@@ -106,33 +106,33 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     const file = opts.files.find((f) => f.name === presigned.name);
 
     if (!file) {
-      console.error("No file found for presigned URL", presigned);
       throw new UploadThingError({
-        code: "NOT_FOUND",
-        message: "No file found for presigned URL",
+        code: 'NOT_FOUND',
+        message: 'No file found for presigned URL',
         cause: `Expected file with name ${
           presigned.name
-        } but got '${opts.files.join(",")}'`,
+        } but got '${opts.files.join(',')}'`,
       });
     }
     const { url, fields } = presigned.presignedUrl;
     const formData = new FormData();
 
     // Give content type to blobs because S3 is dumb
-    // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
+    // check if content-type is one of the allowed types,
+    // or if not and blobs are allowed, use application/octet-stream
     if (
-      presigned.fileType === file.type.split("/")[0] ||
-      presigned.fileType === file.type
+      presigned.fileType === file.type.split('/')[0]
+      || presigned.fileType === file.type
     ) {
-      formData.append("Content-Type", file.type);
-    } else if (presigned.fileType === "blob") {
-      formData.append("Content-Type", "application/octet-stream");
-    } else if (presigned.fileType === "pdf") {
-      formData.append("Content-Type", "application/pdf");
+      formData.append('Content-Type', file.type);
+    } else if (presigned.fileType === 'blob') {
+      formData.append('Content-Type', 'application/octet-stream');
+    } else if (presigned.fileType === 'pdf') {
+      formData.append('Content-Type', 'application/pdf');
     }
 
     // Dump all values from response (+ the file itself) into form for S3 upload
-    Object.entries({ ...fields, file: file }).forEach(([key, value]) => {
+    Object.entries({ ...fields, file }).forEach(([key, value]) => {
       formData.append(key, value as Blob);
     });
 
@@ -140,15 +140,14 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     const upload = await fetchWithProgress(
       url,
       {
-        method: "POST",
+        method: 'POST',
         body: formData,
         headers: new Headers({
-          Accept: "application/xml",
+          Accept: 'application/xml',
         }),
       },
-      (progressEvent) =>
-        opts.onUploadProgress &&
-        opts.onUploadProgress({
+      (progressEvent) => opts.onUploadProgress
+        && opts.onUploadProgress({
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
@@ -156,17 +155,17 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 
     if (upload.status > 299 || upload.status < 200) {
       throw new UploadThingError({
-        code: "UPLOAD_FAILED",
+        code: 'UPLOAD_FAILED',
         message: `Failed to upload file ${file.name} to S3`,
         cause: upload.statusText,
       });
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
-    const genUrl =
-      "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
+    const genUrl = `https://uploadthing.com/f/${encodeURIComponent(fields.key)}`;
 
-    // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
+    // Poll for file data, this way we know that the client-side onUploadComplete
+    // callback will be called after the server-side version
     await pollForFileData(presigned.key);
 
     return {
@@ -181,27 +180,23 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 };
 
 export type UploadFileType<TRouter extends FileRouter> =
-  typeof DANGEROUS__uploadFiles<TRouter>;
+  typeof dangerousUploadFiles<TRouter>;
 
 export const genUploader = <
   TRouter extends FileRouter,
->(): typeof DANGEROUS__uploadFiles<TRouter> => {
-  return DANGEROUS__uploadFiles;
-};
+>(): typeof dangerousUploadFiles<TRouter> => dangerousUploadFiles;
 
-export const classNames = (...classes: Array<string | boolean>) => {
-  return classes.filter(Boolean).join(" ");
-};
+export const classNames = (...classes: Array<string | boolean>) => classes.filter(Boolean).join(' ');
 
 export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) => {
-    if (type === "blob") return "blob";
-    if (type === "pdf") return "application/pdf";
-    if (type.includes("/")) return type;
-    else return `${type}/*`;
+    if (type === 'blob') return 'blob';
+    if (type === 'pdf') return 'application/pdf';
+    if (type.includes('/')) return type;
+    return `${type}/*`;
   });
 
-  if (accepted.includes("blob")) {
+  if (accepted.includes('blob')) {
     return undefined;
   }
   return accepted;

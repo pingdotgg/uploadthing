@@ -1,12 +1,16 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+/* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/react-in-jsx-scope */
 
-import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
+import { useState } from 'react';
+
+import { UploadButton, UploadDropzone } from '~/utils/uploadthing.ts';
 
 export default function Home() {
-  const [userInput, setUserInput] = useState("");
-  const [error, setError] = useState("");
+  const [userInput, setUserInput] = useState('');
+  const [error, setError] = useState('');
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
@@ -25,46 +29,33 @@ export default function Home() {
           <UploadButton
             endpoint="withInput"
             input={{ foo: userInput }}
-            onClientUploadComplete={(res) => {
-              console.log("Files: ", res);
-              alert("Upload Completed");
-            }}
-            onUploadError={(error) => {
-              console.log("Error: ", error);
-              if (error.data?.zodError?.fieldErrors.foo) {
-                setError(error.data?.zodError?.fieldErrors.foo[0]);
+            onClientUploadComplete={() => undefined}
+            onUploadError={(myError) => {
+              if (myError.data?.zodError?.fieldErrors.foo) {
+                setError(myError.data?.zodError?.fieldErrors.foo[0]);
               } else {
-                setError("");
+                setError('');
               }
             }}
           />
 
           <UploadButton
             endpoint="videoAndImage"
-            onClientUploadComplete={(res) => {
-              console.log("Files: ", res);
-              alert("Upload Completed");
-            }}
-            onUploadError={(error) => {
-              alert(`ERROR! ${error.message}`);
-            }}
+            onClientUploadComplete={() => undefined}
+            onUploadError={() => undefined}
           />
         </div>
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
         <span className="text-center text-4xl font-bold">
-          {`...or using a dropzone:`}
+          ...or using a dropzone:
         </span>
         <UploadDropzone
           endpoint="withoutMdwr"
-          onClientUploadComplete={(res) => {
+          onClientUploadComplete={() => {
             // Do something with the response
-            console.log("Files: ", res);
-            alert("Upload Completed");
           }}
-          onUploadError={(error: Error) => {
-            alert(`ERROR! ${error.message}`);
-          }}
+          onUploadError={() => undefined}
         />
       </div>
     </main>

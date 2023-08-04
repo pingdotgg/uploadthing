@@ -1,12 +1,12 @@
-import type { ComponentProps, ReactElement } from "react";
-import { useCallback, useRef } from "react";
-import { Button, CopyToClipboard } from "nextra/components";
-import { WordWrapIcon } from "nextra/icons";
+import type { ComponentProps, ReactElement } from 'react';
+import { useCallback, useRef } from 'react';
+import { Button, CopyToClipboard } from 'nextra/components';
+import { WordWrapIcon } from 'nextra/icons';
 
-import { Javascript, Json, Typescript } from "./icons";
+import { Javascript, Json, Typescript } from './icons';
 
 function cn(...classes: Array<string | boolean | undefined>) {
-  return classes.filter(Boolean).join(" ");
+  return classes.filter(Boolean).join(' ');
 }
 
 export const Pre = ({
@@ -15,24 +15,24 @@ export const Pre = ({
   hasCopyCode,
   filename,
   ...props
-}: ComponentProps<"pre"> & {
+}: ComponentProps<'pre'> & {
   filename?: string;
   hasCopyCode?: boolean;
-  "data-language"?: string;
+  'data-language'?: string;
 }): ReactElement => {
   const preRef = useRef<HTMLPreElement | null>(null);
 
   const toggleWordWrap = useCallback(() => {
     const htmlDataset = document.documentElement.dataset;
-    const hasWordWrap = "nextraWordWrap" in htmlDataset;
+    const hasWordWrap = 'nextraWordWrap' in htmlDataset;
     if (hasWordWrap) {
       delete htmlDataset.nextraWordWrap;
     } else {
-      htmlDataset.nextraWordWrap = "";
+      htmlDataset.nextraWordWrap = '';
     }
   }, []);
 
-  const language = props["data-language"] ?? "";
+  const language = props['data-language'] ?? '';
   const Icon = {
     js: Javascript,
     jsx: Javascript,
@@ -53,7 +53,7 @@ export const Pre = ({
             {hasCopyCode && (
               <CopyToClipboard
                 getValue={() =>
-                  preRef.current?.querySelector("code")?.textContent || ""
+                  preRef.current?.querySelector('code')?.textContent || ''
                 }
               />
             )}
@@ -62,9 +62,9 @@ export const Pre = ({
       )}
       <pre
         className={cn(
-          "nx-bg-primary-700/5 nx-mb-4 nx-overflow-x-auto nx-rounded-xl nx-font-medium nx-subpixel-antialiased dark:nx-bg-primary-300/10 nx-text-[.9em]",
-          "contrast-more:nx-border contrast-more:nx-border-primary-900/20 contrast-more:nx-contrast-150 contrast-more:dark:nx-border-primary-100/40",
-          filename ? "nx-pt-12 nx-pb-4" : "nx-py-4",
+          'nx-bg-primary-700/5 nx-mb-4 nx-overflow-x-auto nx-rounded-xl nx-font-medium nx-subpixel-antialiased dark:nx-bg-primary-300/10 nx-text-[.9em]',
+          'contrast-more:nx-border contrast-more:nx-border-primary-900/20 contrast-more:nx-contrast-150 contrast-more:dark:nx-border-primary-100/40',
+          filename ? 'nx-pt-12 nx-pb-4' : 'nx-py-4',
           className,
         )}
         ref={preRef}
@@ -74,9 +74,9 @@ export const Pre = ({
       </pre>
       <div
         className={cn(
-          "nx-opacity-0 nx-transition [div:hover>&]:nx-opacity-100 focus-within:nx-opacity-100",
-          "nx-flex nx-gap-1 nx-absolute nx-m-[11px] nx-right-0",
-          filename ? "nx-top-8" : "nx-top-0",
+          'nx-opacity-0 nx-transition [div:hover>&]:nx-opacity-100 focus-within:nx-opacity-100',
+          'nx-flex nx-gap-1 nx-absolute nx-m-[11px] nx-right-0',
+          filename ? 'nx-top-8' : 'nx-top-0',
         )}
       >
         <Button
@@ -89,7 +89,7 @@ export const Pre = ({
         {hasCopyCode && !filename && (
           <CopyToClipboard
             getValue={() =>
-              preRef.current?.querySelector("code")?.textContent || ""
+              preRef.current?.querySelector('code')?.textContent || ''
             }
           />
         )}

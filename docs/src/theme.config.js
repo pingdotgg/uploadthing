@@ -1,7 +1,7 @@
-import { useRouter } from "next/router";
-import { useConfig } from "nextra-theme-docs";
+import { useRouter } from 'next/router';
+import { useConfig } from 'nextra-theme-docs';
 
-import { Pre } from "./components/Pre";
+import { Pre } from './components/Pre';
 
 const hackedCss = `
 body {
@@ -60,7 +60,7 @@ const Head = () => {
   const { asPath, defaultLocale, locale } = useRouter();
   const { frontMatter } = useConfig();
   const url =
-    "https://my-app.com" +
+    'https://my-app.com' +
     (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
   return (
@@ -68,13 +68,13 @@ const Head = () => {
       <meta property="og:url" content={url} />
       <meta
         property="og:title"
-        content={frontMatter.title || "uploadthing docs"}
+        content={frontMatter.title || 'uploadthing docs'}
       />
       <style>{hackedCss}</style>
       <meta
         property="og:description"
         content={
-          frontMatter.description || "Docs for the best file uploader to date"
+          frontMatter.description || 'Docs for the best file uploader to date'
         }
       />
       <meta
@@ -103,7 +103,7 @@ export const Logo = () => {
  */
 const config = {
   chat: {
-    link: "https://discord.gg/UCXkw6xj2K",
+    link: 'https://discord.gg/UCXkw6xj2K',
   },
 
   darkMode: true,
@@ -120,53 +120,53 @@ const config = {
   head: Head,
   logo: Logo,
   nextThemes: {
-    defaultTheme: "light",
+    defaultTheme: 'light',
   },
   primaryHue: 348,
   project: {
-    link: "https://github.com/pingdotgg/uploadthing",
+    link: 'https://github.com/pingdotgg/uploadthing',
   },
   useNextSeoProps() {
     return {
       additionalLinkTags: [
         {
-          href: "/apple-icon-180x180.png",
-          rel: "apple-touch-icon",
-          sizes: "180x180",
+          href: '/apple-icon-180x180.png',
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
         },
         {
-          href: "/android-icon-192x192.png",
-          rel: "icon",
-          sizes: "192x192",
-          type: "image/png",
+          href: '/android-icon-192x192.png',
+          rel: 'icon',
+          sizes: '192x192',
+          type: 'image/png',
         },
         {
-          href: "/favicon-32x32.png",
-          rel: "icon",
-          sizes: "32x32",
-          type: "image/png",
+          href: '/favicon-32x32.png',
+          rel: 'icon',
+          sizes: '32x32',
+          type: 'image/png',
         },
         {
-          href: "/favicon-16x16.png",
-          rel: "icon",
-          sizes: "16x16",
-          type: "image/png",
+          href: '/favicon-16x16.png',
+          rel: 'icon',
+          sizes: '16x16',
+          type: 'image/png',
         },
       ],
       additionalMetaTags: [
-        { content: "en", httpEquiv: "Content-Language" },
-        { content: "Nextra", name: "apple-mobile-web-app-title" },
+        { content: 'en', httpEquiv: 'Content-Language' },
+        { content: 'Nextra', name: 'apple-mobile-web-app-title' },
       ],
-      description: "Docs for the best file uploader to date",
+      description: 'Docs for the best file uploader to date',
       openGraph: {
         images: [
-          { url: "https://docs.uploadthing.com/og.jpg?random=aaaaaaaaaaaaa" },
+          { url: 'https://docs.uploadthing.com/og.jpg?random=aaaaaaaaaaaaa' },
         ],
       },
-      titleTemplate: "%s – uploadthing",
+      titleTemplate: '%s – uploadthing',
       twitter: {
-        cardType: "summary_large_image",
-        site: "https://docs.uploadthing.com",
+        cardType: 'summary_large_image',
+        site: 'https://docs.uploadthing.com',
       },
     };
   },

@@ -1,4609 +1,4609 @@
 const mimeTypesInternal = {
-  "application/andrew-inset": {
-    source: "iana",
-    extensions: ["ez"],
+  'application/andrew-inset': {
+    source: 'iana',
+    extensions: ['ez'],
     compressible: null,
   },
-  "application/applixware": {
-    source: "apache",
-    extensions: ["aw"],
+  'application/applixware': {
+    source: 'apache',
+    extensions: ['aw'],
     compressible: null,
   },
-  "application/atom+xml": {
-    source: "iana",
+  'application/atom+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["atom"],
+    extensions: ['atom'],
   },
-  "application/atomcat+xml": {
-    source: "iana",
+  'application/atomcat+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["atomcat"],
+    extensions: ['atomcat'],
   },
-  "application/atomdeleted+xml": {
-    source: "iana",
+  'application/atomdeleted+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["atomdeleted"],
+    extensions: ['atomdeleted'],
   },
-  "application/atomsvc+xml": {
-    source: "iana",
+  'application/atomsvc+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["atomsvc"],
+    extensions: ['atomsvc'],
   },
-  "application/atsc-dwd+xml": {
-    source: "iana",
+  'application/atsc-dwd+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["dwd"],
+    extensions: ['dwd'],
   },
-  "application/atsc-held+xml": {
-    source: "iana",
+  'application/atsc-held+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["held"],
+    extensions: ['held'],
   },
-  "application/atsc-rsat+xml": {
-    source: "iana",
+  'application/atsc-rsat+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rsat"],
+    extensions: ['rsat'],
   },
-  "application/calendar+xml": {
-    source: "iana",
+  'application/calendar+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xcs"],
+    extensions: ['xcs'],
   },
-  "application/ccxml+xml": {
-    source: "iana",
+  'application/ccxml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ccxml"],
+    extensions: ['ccxml'],
   },
-  "application/cdfx+xml": {
-    source: "iana",
+  'application/cdfx+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["cdfx"],
+    extensions: ['cdfx'],
   },
-  "application/cdmi-capability": {
-    source: "iana",
-    extensions: ["cdmia"],
+  'application/cdmi-capability': {
+    source: 'iana',
+    extensions: ['cdmia'],
     compressible: null,
   },
-  "application/cdmi-container": {
-    source: "iana",
-    extensions: ["cdmic"],
+  'application/cdmi-container': {
+    source: 'iana',
+    extensions: ['cdmic'],
     compressible: null,
   },
-  "application/cdmi-domain": {
-    source: "iana",
-    extensions: ["cdmid"],
+  'application/cdmi-domain': {
+    source: 'iana',
+    extensions: ['cdmid'],
     compressible: null,
   },
-  "application/cdmi-object": {
-    source: "iana",
-    extensions: ["cdmio"],
+  'application/cdmi-object': {
+    source: 'iana',
+    extensions: ['cdmio'],
     compressible: null,
   },
-  "application/cdmi-queue": {
-    source: "iana",
-    extensions: ["cdmiq"],
+  'application/cdmi-queue': {
+    source: 'iana',
+    extensions: ['cdmiq'],
     compressible: null,
   },
-  "application/cpl+xml": {
-    source: "iana",
+  'application/cpl+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["cpl"],
+    extensions: ['cpl'],
   },
-  "application/cu-seeme": {
-    source: "apache",
-    extensions: ["cu"],
+  'application/cu-seeme': {
+    source: 'apache',
+    extensions: ['cu'],
     compressible: null,
   },
-  "application/dash+xml": {
-    source: "iana",
+  'application/dash+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mpd"],
+    extensions: ['mpd'],
   },
-  "application/dash-patch+xml": {
-    source: "iana",
+  'application/dash-patch+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mpp"],
+    extensions: ['mpp'],
   },
-  "application/davmount+xml": {
-    source: "iana",
+  'application/davmount+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["davmount"],
+    extensions: ['davmount'],
   },
-  "application/docbook+xml": {
-    source: "apache",
+  'application/docbook+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["dbk"],
+    extensions: ['dbk'],
   },
-  "application/dssc+der": {
-    source: "iana",
-    extensions: ["dssc"],
+  'application/dssc+der': {
+    source: 'iana',
+    extensions: ['dssc'],
     compressible: null,
   },
-  "application/dssc+xml": {
-    source: "iana",
+  'application/dssc+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xdssc"],
+    extensions: ['xdssc'],
   },
-  "application/ecmascript": {
-    source: "iana",
+  'application/ecmascript': {
+    source: 'iana',
     compressible: true,
-    extensions: ["es", "ecma"],
+    extensions: ['es', 'ecma'],
   },
-  "application/emma+xml": {
-    source: "iana",
+  'application/emma+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["emma"],
+    extensions: ['emma'],
   },
-  "application/emotionml+xml": {
-    source: "iana",
+  'application/emotionml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["emotionml"],
+    extensions: ['emotionml'],
   },
-  "application/epub+zip": {
-    source: "iana",
+  'application/epub+zip': {
+    source: 'iana',
     compressible: false,
-    extensions: ["epub"],
+    extensions: ['epub'],
   },
-  "application/exi": {
-    source: "iana",
-    extensions: ["exi"],
+  'application/exi': {
+    source: 'iana',
+    extensions: ['exi'],
     compressible: null,
   },
-  "application/express": {
-    source: "iana",
-    extensions: ["exp"],
+  'application/express': {
+    source: 'iana',
+    extensions: ['exp'],
     compressible: null,
   },
-  "application/fdt+xml": {
-    source: "iana",
+  'application/fdt+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["fdt"],
+    extensions: ['fdt'],
   },
-  "application/font-tdpfr": {
-    source: "iana",
-    extensions: ["pfr"],
+  'application/font-tdpfr': {
+    source: 'iana',
+    extensions: ['pfr'],
     compressible: null,
   },
-  "application/geo+json": {
-    source: "iana",
+  'application/geo+json': {
+    source: 'iana',
     compressible: true,
-    extensions: ["geojson"],
+    extensions: ['geojson'],
   },
-  "application/gml+xml": {
-    source: "iana",
+  'application/gml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["gml"],
+    extensions: ['gml'],
   },
-  "application/gpx+xml": {
-    source: "apache",
+  'application/gpx+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["gpx"],
+    extensions: ['gpx'],
   },
-  "application/gxf": {
-    source: "apache",
-    extensions: ["gxf"],
+  'application/gxf': {
+    source: 'apache',
+    extensions: ['gxf'],
     compressible: null,
   },
-  "application/gzip": {
-    source: "iana",
+  'application/gzip': {
+    source: 'iana',
     compressible: false,
-    extensions: ["gz"],
+    extensions: ['gz'],
   },
-  "application/hyperstudio": {
-    source: "iana",
-    extensions: ["stk"],
+  'application/hyperstudio': {
+    source: 'iana',
+    extensions: ['stk'],
     compressible: null,
   },
-  "application/inkml+xml": {
-    source: "iana",
+  'application/inkml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ink", "inkml"],
+    extensions: ['ink', 'inkml'],
   },
-  "application/ipfix": {
-    source: "iana",
-    extensions: ["ipfix"],
+  'application/ipfix': {
+    source: 'iana',
+    extensions: ['ipfix'],
     compressible: null,
   },
-  "application/its+xml": {
-    source: "iana",
+  'application/its+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["its"],
+    extensions: ['its'],
   },
-  "application/java-archive": {
-    source: "apache",
+  'application/java-archive': {
+    source: 'apache',
     compressible: false,
-    extensions: ["jar", "war", "ear"],
+    extensions: ['jar', 'war', 'ear'],
   },
-  "application/java-serialized-object": {
-    source: "apache",
+  'application/java-serialized-object': {
+    source: 'apache',
     compressible: false,
-    extensions: ["ser"],
+    extensions: ['ser'],
   },
-  "application/java-vm": {
-    source: "apache",
+  'application/java-vm': {
+    source: 'apache',
     compressible: false,
-    extensions: ["class"],
+    extensions: ['class'],
   },
-  "application/javascript": {
-    source: "iana",
-    charset: "UTF-8",
+  'application/javascript': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["js", "mjs"],
+    extensions: ['js', 'mjs'],
   },
-  "application/json": {
-    source: "iana",
-    charset: "UTF-8",
+  'application/json': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["json", "map"],
+    extensions: ['json', 'map'],
   },
-  "application/jsonml+json": {
-    source: "apache",
+  'application/jsonml+json': {
+    source: 'apache',
     compressible: true,
-    extensions: ["jsonml"],
+    extensions: ['jsonml'],
   },
-  "application/ld+json": {
-    source: "iana",
+  'application/ld+json': {
+    source: 'iana',
     compressible: true,
-    extensions: ["jsonld"],
+    extensions: ['jsonld'],
   },
-  "application/lgr+xml": {
-    source: "iana",
+  'application/lgr+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["lgr"],
+    extensions: ['lgr'],
   },
-  "application/lost+xml": {
-    source: "iana",
+  'application/lost+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["lostxml"],
+    extensions: ['lostxml'],
   },
-  "application/mac-binhex40": {
-    source: "iana",
-    extensions: ["hqx"],
+  'application/mac-binhex40': {
+    source: 'iana',
+    extensions: ['hqx'],
     compressible: null,
   },
-  "application/mac-compactpro": {
-    source: "apache",
-    extensions: ["cpt"],
+  'application/mac-compactpro': {
+    source: 'apache',
+    extensions: ['cpt'],
     compressible: null,
   },
-  "application/mads+xml": {
-    source: "iana",
+  'application/mads+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mads"],
+    extensions: ['mads'],
   },
-  "application/manifest+json": {
-    source: "iana",
-    charset: "UTF-8",
+  'application/manifest+json': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["webmanifest"],
+    extensions: ['webmanifest'],
   },
-  "application/marc": {
-    source: "iana",
-    extensions: ["mrc"],
+  'application/marc': {
+    source: 'iana',
+    extensions: ['mrc'],
     compressible: null,
   },
-  "application/marcxml+xml": {
-    source: "iana",
+  'application/marcxml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mrcx"],
+    extensions: ['mrcx'],
   },
-  "application/mathematica": {
-    source: "iana",
-    extensions: ["ma", "nb", "mb"],
+  'application/mathematica': {
+    source: 'iana',
+    extensions: ['ma', 'nb', 'mb'],
     compressible: null,
   },
-  "application/mathml+xml": {
-    source: "iana",
+  'application/mathml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mathml"],
+    extensions: ['mathml'],
   },
-  "application/mbox": {
-    source: "iana",
-    extensions: ["mbox"],
+  'application/mbox': {
+    source: 'iana',
+    extensions: ['mbox'],
     compressible: null,
   },
-  "application/media-policy-dataset+xml": {
-    source: "iana",
+  'application/media-policy-dataset+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mpf"],
+    extensions: ['mpf'],
   },
-  "application/mediaservercontrol+xml": {
-    source: "iana",
+  'application/mediaservercontrol+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mscml"],
+    extensions: ['mscml'],
   },
-  "application/metalink+xml": {
-    source: "apache",
+  'application/metalink+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["metalink"],
+    extensions: ['metalink'],
   },
-  "application/metalink4+xml": {
-    source: "iana",
+  'application/metalink4+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["meta4"],
+    extensions: ['meta4'],
   },
-  "application/mets+xml": {
-    source: "iana",
+  'application/mets+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mets"],
+    extensions: ['mets'],
   },
-  "application/mmt-aei+xml": {
-    source: "iana",
+  'application/mmt-aei+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["maei"],
+    extensions: ['maei'],
   },
-  "application/mmt-usd+xml": {
-    source: "iana",
+  'application/mmt-usd+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["musd"],
+    extensions: ['musd'],
   },
-  "application/mods+xml": {
-    source: "iana",
+  'application/mods+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mods"],
+    extensions: ['mods'],
   },
-  "application/mp21": {
-    source: "iana",
-    extensions: ["m21", "mp21"],
+  'application/mp21': {
+    source: 'iana',
+    extensions: ['m21', 'mp21'],
     compressible: null,
   },
-  "application/mp4": {
-    source: "iana",
-    extensions: ["mp4s", "m4p"],
+  'application/mp4': {
+    source: 'iana',
+    extensions: ['mp4s', 'm4p'],
     compressible: null,
   },
-  "application/msword": {
-    source: "iana",
+  'application/msword': {
+    source: 'iana',
     compressible: false,
-    extensions: ["doc", "dot"],
+    extensions: ['doc', 'dot'],
   },
-  "application/mxf": {
-    source: "iana",
-    extensions: ["mxf"],
+  'application/mxf': {
+    source: 'iana',
+    extensions: ['mxf'],
     compressible: null,
   },
-  "application/n-quads": {
-    source: "iana",
-    extensions: ["nq"],
+  'application/n-quads': {
+    source: 'iana',
+    extensions: ['nq'],
     compressible: null,
   },
-  "application/n-triples": {
-    source: "iana",
-    extensions: ["nt"],
+  'application/n-triples': {
+    source: 'iana',
+    extensions: ['nt'],
     compressible: null,
   },
-  "application/node": {
-    source: "iana",
-    extensions: ["cjs"],
+  'application/node': {
+    source: 'iana',
+    extensions: ['cjs'],
     compressible: null,
   },
-  "application/octet-stream": {
-    source: "iana",
+  'application/octet-stream': {
+    source: 'iana',
     compressible: false,
     extensions: [
-      "bin",
-      "dms",
-      "lrf",
-      "mar",
-      "so",
-      "dist",
-      "distz",
-      "pkg",
-      "bpk",
-      "dump",
-      "elc",
-      "deploy",
-      "exe",
-      "dll",
-      "deb",
-      "dmg",
-      "iso",
-      "img",
-      "msi",
-      "msp",
-      "msm",
-      "buffer",
+      'bin',
+      'dms',
+      'lrf',
+      'mar',
+      'so',
+      'dist',
+      'distz',
+      'pkg',
+      'bpk',
+      'dump',
+      'elc',
+      'deploy',
+      'exe',
+      'dll',
+      'deb',
+      'dmg',
+      'iso',
+      'img',
+      'msi',
+      'msp',
+      'msm',
+      'buffer',
     ],
   },
-  "application/oda": {
-    source: "iana",
-    extensions: ["oda"],
+  'application/oda': {
+    source: 'iana',
+    extensions: ['oda'],
     compressible: null,
   },
-  "application/oebps-package+xml": {
-    source: "iana",
+  'application/oebps-package+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["opf"],
+    extensions: ['opf'],
   },
-  "application/ogg": {
-    source: "iana",
+  'application/ogg': {
+    source: 'iana',
     compressible: false,
-    extensions: ["ogx"],
+    extensions: ['ogx'],
   },
-  "application/omdoc+xml": {
-    source: "apache",
+  'application/omdoc+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["omdoc"],
+    extensions: ['omdoc'],
   },
-  "application/onenote": {
-    source: "apache",
-    extensions: ["onetoc", "onetoc2", "onetmp", "onepkg"],
+  'application/onenote': {
+    source: 'apache',
+    extensions: ['onetoc', 'onetoc2', 'onetmp', 'onepkg'],
     compressible: null,
   },
-  "application/oxps": {
-    source: "iana",
-    extensions: ["oxps"],
+  'application/oxps': {
+    source: 'iana',
+    extensions: ['oxps'],
     compressible: null,
   },
-  "application/p2p-overlay+xml": {
-    source: "iana",
+  'application/p2p-overlay+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["relo"],
+    extensions: ['relo'],
   },
-  "application/patch-ops-error+xml": {
-    source: "iana",
+  'application/patch-ops-error+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xer"],
+    extensions: ['xer'],
   },
-  "application/pdf": {
-    source: "iana",
+  'application/pdf': {
+    source: 'iana',
     compressible: false,
-    extensions: ["pdf"],
+    extensions: ['pdf'],
   },
-  "application/pgp-encrypted": {
-    source: "iana",
+  'application/pgp-encrypted': {
+    source: 'iana',
     compressible: false,
-    extensions: ["pgp"],
+    extensions: ['pgp'],
   },
-  "application/pgp-keys": {
-    source: "iana",
-    extensions: ["asc"],
+  'application/pgp-keys': {
+    source: 'iana',
+    extensions: ['asc'],
     compressible: null,
   },
-  "application/pgp-signature": {
-    source: "iana",
-    extensions: ["asc", "sig"],
+  'application/pgp-signature': {
+    source: 'iana',
+    extensions: ['asc', 'sig'],
     compressible: null,
   },
-  "application/pics-rules": {
-    source: "apache",
-    extensions: ["prf"],
+  'application/pics-rules': {
+    source: 'apache',
+    extensions: ['prf'],
     compressible: null,
   },
-  "application/pkcs10": {
-    source: "iana",
-    extensions: ["p10"],
+  'application/pkcs10': {
+    source: 'iana',
+    extensions: ['p10'],
     compressible: null,
   },
-  "application/pkcs7-mime": {
-    source: "iana",
-    extensions: ["p7m", "p7c"],
+  'application/pkcs7-mime': {
+    source: 'iana',
+    extensions: ['p7m', 'p7c'],
     compressible: null,
   },
-  "application/pkcs7-signature": {
-    source: "iana",
-    extensions: ["p7s"],
+  'application/pkcs7-signature': {
+    source: 'iana',
+    extensions: ['p7s'],
     compressible: null,
   },
-  "application/pkcs8": {
-    source: "iana",
-    extensions: ["p8"],
+  'application/pkcs8': {
+    source: 'iana',
+    extensions: ['p8'],
     compressible: null,
   },
-  "application/pkix-attr-cert": {
-    source: "iana",
-    extensions: ["ac"],
+  'application/pkix-attr-cert': {
+    source: 'iana',
+    extensions: ['ac'],
     compressible: null,
   },
-  "application/pkix-cert": {
-    source: "iana",
-    extensions: ["cer"],
+  'application/pkix-cert': {
+    source: 'iana',
+    extensions: ['cer'],
     compressible: null,
   },
-  "application/pkix-crl": {
-    source: "iana",
-    extensions: ["crl"],
+  'application/pkix-crl': {
+    source: 'iana',
+    extensions: ['crl'],
     compressible: null,
   },
-  "application/pkix-pkipath": {
-    source: "iana",
-    extensions: ["pkipath"],
+  'application/pkix-pkipath': {
+    source: 'iana',
+    extensions: ['pkipath'],
     compressible: null,
   },
-  "application/pkixcmp": {
-    source: "iana",
-    extensions: ["pki"],
+  'application/pkixcmp': {
+    source: 'iana',
+    extensions: ['pki'],
     compressible: null,
   },
-  "application/pls+xml": {
-    source: "iana",
+  'application/pls+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["pls"],
+    extensions: ['pls'],
   },
-  "application/postscript": {
-    source: "iana",
+  'application/postscript': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ai", "eps", "ps"],
+    extensions: ['ai', 'eps', 'ps'],
   },
-  "application/provenance+xml": {
-    source: "iana",
+  'application/provenance+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["provx"],
+    extensions: ['provx'],
   },
-  "application/prs.cww": {
-    source: "iana",
-    extensions: ["cww"],
+  'application/prs.cww': {
+    source: 'iana',
+    extensions: ['cww'],
     compressible: null,
   },
-  "application/pskc+xml": {
-    source: "iana",
+  'application/pskc+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["pskcxml"],
+    extensions: ['pskcxml'],
   },
-  "application/rdf+xml": {
-    source: "iana",
+  'application/rdf+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rdf", "owl"],
+    extensions: ['rdf', 'owl'],
   },
-  "application/reginfo+xml": {
-    source: "iana",
+  'application/reginfo+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rif"],
+    extensions: ['rif'],
   },
-  "application/relax-ng-compact-syntax": {
-    source: "iana",
-    extensions: ["rnc"],
+  'application/relax-ng-compact-syntax': {
+    source: 'iana',
+    extensions: ['rnc'],
     compressible: null,
   },
-  "application/resource-lists+xml": {
-    source: "iana",
+  'application/resource-lists+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rl"],
+    extensions: ['rl'],
   },
-  "application/resource-lists-diff+xml": {
-    source: "iana",
+  'application/resource-lists-diff+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rld"],
+    extensions: ['rld'],
   },
-  "application/rls-services+xml": {
-    source: "iana",
+  'application/rls-services+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rs"],
+    extensions: ['rs'],
   },
-  "application/route-apd+xml": {
-    source: "iana",
+  'application/route-apd+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rapd"],
+    extensions: ['rapd'],
   },
-  "application/route-s-tsid+xml": {
-    source: "iana",
+  'application/route-s-tsid+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["sls"],
+    extensions: ['sls'],
   },
-  "application/route-usd+xml": {
-    source: "iana",
+  'application/route-usd+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rusd"],
+    extensions: ['rusd'],
   },
-  "application/rpki-ghostbusters": {
-    source: "iana",
-    extensions: ["gbr"],
+  'application/rpki-ghostbusters': {
+    source: 'iana',
+    extensions: ['gbr'],
     compressible: null,
   },
-  "application/rpki-manifest": {
-    source: "iana",
-    extensions: ["mft"],
+  'application/rpki-manifest': {
+    source: 'iana',
+    extensions: ['mft'],
     compressible: null,
   },
-  "application/rpki-roa": {
-    source: "iana",
-    extensions: ["roa"],
+  'application/rpki-roa': {
+    source: 'iana',
+    extensions: ['roa'],
     compressible: null,
   },
-  "application/rsd+xml": {
-    source: "apache",
+  'application/rsd+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["rsd"],
+    extensions: ['rsd'],
   },
-  "application/rss+xml": {
-    source: "apache",
+  'application/rss+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["rss"],
+    extensions: ['rss'],
   },
-  "application/rtf": {
-    source: "iana",
+  'application/rtf': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rtf"],
+    extensions: ['rtf'],
   },
-  "application/sbml+xml": {
-    source: "iana",
+  'application/sbml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["sbml"],
+    extensions: ['sbml'],
   },
-  "application/scvp-cv-request": {
-    source: "iana",
-    extensions: ["scq"],
+  'application/scvp-cv-request': {
+    source: 'iana',
+    extensions: ['scq'],
     compressible: null,
   },
-  "application/scvp-cv-response": {
-    source: "iana",
-    extensions: ["scs"],
+  'application/scvp-cv-response': {
+    source: 'iana',
+    extensions: ['scs'],
     compressible: null,
   },
-  "application/scvp-vp-request": {
-    source: "iana",
-    extensions: ["spq"],
+  'application/scvp-vp-request': {
+    source: 'iana',
+    extensions: ['spq'],
     compressible: null,
   },
-  "application/scvp-vp-response": {
-    source: "iana",
-    extensions: ["spp"],
+  'application/scvp-vp-response': {
+    source: 'iana',
+    extensions: ['spp'],
     compressible: null,
   },
-  "application/sdp": {
-    source: "iana",
-    extensions: ["sdp"],
+  'application/sdp': {
+    source: 'iana',
+    extensions: ['sdp'],
     compressible: null,
   },
-  "application/senml+xml": {
-    source: "iana",
+  'application/senml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["senmlx"],
+    extensions: ['senmlx'],
   },
-  "application/sensml+xml": {
-    source: "iana",
+  'application/sensml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["sensmlx"],
+    extensions: ['sensmlx'],
   },
-  "application/set-payment-initiation": {
-    source: "iana",
-    extensions: ["setpay"],
+  'application/set-payment-initiation': {
+    source: 'iana',
+    extensions: ['setpay'],
     compressible: null,
   },
-  "application/set-registration-initiation": {
-    source: "iana",
-    extensions: ["setreg"],
+  'application/set-registration-initiation': {
+    source: 'iana',
+    extensions: ['setreg'],
     compressible: null,
   },
-  "application/shf+xml": {
-    source: "iana",
+  'application/shf+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["shf"],
+    extensions: ['shf'],
   },
-  "application/sieve": {
-    source: "iana",
-    extensions: ["siv", "sieve"],
+  'application/sieve': {
+    source: 'iana',
+    extensions: ['siv', 'sieve'],
     compressible: null,
   },
-  "application/smil+xml": {
-    source: "iana",
+  'application/smil+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["smi", "smil"],
+    extensions: ['smi', 'smil'],
   },
-  "application/sparql-query": {
-    source: "iana",
-    extensions: ["rq"],
+  'application/sparql-query': {
+    source: 'iana',
+    extensions: ['rq'],
     compressible: null,
   },
-  "application/sparql-results+xml": {
-    source: "iana",
+  'application/sparql-results+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["srx"],
+    extensions: ['srx'],
   },
-  "application/srgs": {
-    source: "iana",
-    extensions: ["gram"],
+  'application/srgs': {
+    source: 'iana',
+    extensions: ['gram'],
     compressible: null,
   },
-  "application/srgs+xml": {
-    source: "iana",
+  'application/srgs+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["grxml"],
+    extensions: ['grxml'],
   },
-  "application/sru+xml": {
-    source: "iana",
+  'application/sru+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["sru"],
+    extensions: ['sru'],
   },
-  "application/ssdl+xml": {
-    source: "apache",
+  'application/ssdl+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["ssdl"],
+    extensions: ['ssdl'],
   },
-  "application/ssml+xml": {
-    source: "iana",
+  'application/ssml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ssml"],
+    extensions: ['ssml'],
   },
-  "application/swid+xml": {
-    source: "iana",
+  'application/swid+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["swidtag"],
+    extensions: ['swidtag'],
   },
-  "application/tei+xml": {
-    source: "iana",
+  'application/tei+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["tei", "teicorpus"],
+    extensions: ['tei', 'teicorpus'],
   },
-  "application/thraud+xml": {
-    source: "iana",
+  'application/thraud+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["tfi"],
+    extensions: ['tfi'],
   },
-  "application/timestamped-data": {
-    source: "iana",
-    extensions: ["tsd"],
+  'application/timestamped-data': {
+    source: 'iana',
+    extensions: ['tsd'],
     compressible: null,
   },
-  "application/trig": {
-    source: "iana",
-    extensions: ["trig"],
+  'application/trig': {
+    source: 'iana',
+    extensions: ['trig'],
     compressible: null,
   },
-  "application/ttml+xml": {
-    source: "iana",
+  'application/ttml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ttml"],
+    extensions: ['ttml'],
   },
-  "application/urc-ressheet+xml": {
-    source: "iana",
+  'application/urc-ressheet+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rsheet"],
+    extensions: ['rsheet'],
   },
-  "application/urc-targetdesc+xml": {
-    source: "iana",
+  'application/urc-targetdesc+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["td"],
+    extensions: ['td'],
   },
-  "application/vnd.1000minds.decision-model+xml": {
-    source: "iana",
+  'application/vnd.1000minds.decision-model+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["1km"],
+    extensions: ['1km'],
   },
-  "application/vnd.3gpp.pic-bw-large": {
-    source: "iana",
-    extensions: ["plb"],
+  'application/vnd.3gpp.pic-bw-large': {
+    source: 'iana',
+    extensions: ['plb'],
     compressible: null,
   },
-  "application/vnd.3gpp.pic-bw-small": {
-    source: "iana",
-    extensions: ["psb"],
+  'application/vnd.3gpp.pic-bw-small': {
+    source: 'iana',
+    extensions: ['psb'],
     compressible: null,
   },
-  "application/vnd.3gpp.pic-bw-var": {
-    source: "iana",
-    extensions: ["pvb"],
+  'application/vnd.3gpp.pic-bw-var': {
+    source: 'iana',
+    extensions: ['pvb'],
     compressible: null,
   },
-  "application/vnd.3gpp2.tcap": {
-    source: "iana",
-    extensions: ["tcap"],
+  'application/vnd.3gpp2.tcap': {
+    source: 'iana',
+    extensions: ['tcap'],
     compressible: null,
   },
-  "application/vnd.3m.post-it-notes": {
-    source: "iana",
-    extensions: ["pwn"],
+  'application/vnd.3m.post-it-notes': {
+    source: 'iana',
+    extensions: ['pwn'],
     compressible: null,
   },
-  "application/vnd.accpac.simply.aso": {
-    source: "iana",
-    extensions: ["aso"],
+  'application/vnd.accpac.simply.aso': {
+    source: 'iana',
+    extensions: ['aso'],
     compressible: null,
   },
-  "application/vnd.accpac.simply.imp": {
-    source: "iana",
-    extensions: ["imp"],
+  'application/vnd.accpac.simply.imp': {
+    source: 'iana',
+    extensions: ['imp'],
     compressible: null,
   },
-  "application/vnd.acucobol": {
-    source: "iana",
-    extensions: ["acu"],
+  'application/vnd.acucobol': {
+    source: 'iana',
+    extensions: ['acu'],
     compressible: null,
   },
-  "application/vnd.acucorp": {
-    source: "iana",
-    extensions: ["atc", "acutc"],
+  'application/vnd.acucorp': {
+    source: 'iana',
+    extensions: ['atc', 'acutc'],
     compressible: null,
   },
-  "application/vnd.adobe.air-application-installer-package+zip": {
-    source: "apache",
+  'application/vnd.adobe.air-application-installer-package+zip': {
+    source: 'apache',
     compressible: false,
-    extensions: ["air"],
+    extensions: ['air'],
   },
-  "application/vnd.adobe.formscentral.fcdt": {
-    source: "iana",
-    extensions: ["fcdt"],
+  'application/vnd.adobe.formscentral.fcdt': {
+    source: 'iana',
+    extensions: ['fcdt'],
     compressible: null,
   },
-  "application/vnd.adobe.fxp": {
-    source: "iana",
-    extensions: ["fxp", "fxpl"],
+  'application/vnd.adobe.fxp': {
+    source: 'iana',
+    extensions: ['fxp', 'fxpl'],
     compressible: null,
   },
-  "application/vnd.adobe.xdp+xml": {
-    source: "iana",
+  'application/vnd.adobe.xdp+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xdp"],
+    extensions: ['xdp'],
   },
-  "application/vnd.adobe.xfdf": {
-    source: "iana",
-    extensions: ["xfdf"],
+  'application/vnd.adobe.xfdf': {
+    source: 'iana',
+    extensions: ['xfdf'],
     compressible: null,
   },
-  "application/vnd.age": {
-    source: "iana",
-    extensions: ["age"],
+  'application/vnd.age': {
+    source: 'iana',
+    extensions: ['age'],
     compressible: null,
   },
-  "application/vnd.ahead.space": {
-    source: "iana",
-    extensions: ["ahead"],
+  'application/vnd.ahead.space': {
+    source: 'iana',
+    extensions: ['ahead'],
     compressible: null,
   },
-  "application/vnd.airzip.filesecure.azf": {
-    source: "iana",
-    extensions: ["azf"],
+  'application/vnd.airzip.filesecure.azf': {
+    source: 'iana',
+    extensions: ['azf'],
     compressible: null,
   },
-  "application/vnd.airzip.filesecure.azs": {
-    source: "iana",
-    extensions: ["azs"],
+  'application/vnd.airzip.filesecure.azs': {
+    source: 'iana',
+    extensions: ['azs'],
     compressible: null,
   },
-  "application/vnd.amazon.ebook": {
-    source: "apache",
-    extensions: ["azw"],
+  'application/vnd.amazon.ebook': {
+    source: 'apache',
+    extensions: ['azw'],
     compressible: null,
   },
-  "application/vnd.americandynamics.acc": {
-    source: "iana",
-    extensions: ["acc"],
+  'application/vnd.americandynamics.acc': {
+    source: 'iana',
+    extensions: ['acc'],
     compressible: null,
   },
-  "application/vnd.amiga.ami": {
-    source: "iana",
-    extensions: ["ami"],
+  'application/vnd.amiga.ami': {
+    source: 'iana',
+    extensions: ['ami'],
     compressible: null,
   },
-  "application/vnd.android.package-archive": {
-    source: "apache",
+  'application/vnd.android.package-archive': {
+    source: 'apache',
     compressible: false,
-    extensions: ["apk"],
+    extensions: ['apk'],
   },
-  "application/vnd.anser-web-certificate-issue-initiation": {
-    source: "iana",
-    extensions: ["cii"],
+  'application/vnd.anser-web-certificate-issue-initiation': {
+    source: 'iana',
+    extensions: ['cii'],
     compressible: null,
   },
-  "application/vnd.anser-web-funds-transfer-initiation": {
-    source: "apache",
-    extensions: ["fti"],
+  'application/vnd.anser-web-funds-transfer-initiation': {
+    source: 'apache',
+    extensions: ['fti'],
     compressible: null,
   },
-  "application/vnd.antix.game-component": {
-    source: "iana",
-    extensions: ["atx"],
+  'application/vnd.antix.game-component': {
+    source: 'iana',
+    extensions: ['atx'],
     compressible: null,
   },
-  "application/vnd.apple.installer+xml": {
-    source: "iana",
+  'application/vnd.apple.installer+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mpkg"],
+    extensions: ['mpkg'],
   },
-  "application/vnd.apple.keynote": {
-    source: "iana",
-    extensions: ["key"],
+  'application/vnd.apple.keynote': {
+    source: 'iana',
+    extensions: ['key'],
     compressible: null,
   },
-  "application/vnd.apple.mpegurl": {
-    source: "iana",
-    extensions: ["m3u8"],
+  'application/vnd.apple.mpegurl': {
+    source: 'iana',
+    extensions: ['m3u8'],
     compressible: null,
   },
-  "application/vnd.apple.numbers": {
-    source: "iana",
-    extensions: ["numbers"],
+  'application/vnd.apple.numbers': {
+    source: 'iana',
+    extensions: ['numbers'],
     compressible: null,
   },
-  "application/vnd.apple.pages": {
-    source: "iana",
-    extensions: ["pages"],
+  'application/vnd.apple.pages': {
+    source: 'iana',
+    extensions: ['pages'],
     compressible: null,
   },
-  "application/vnd.aristanetworks.swi": {
-    source: "iana",
-    extensions: ["swi"],
+  'application/vnd.aristanetworks.swi': {
+    source: 'iana',
+    extensions: ['swi'],
     compressible: null,
   },
-  "application/vnd.astraea-software.iota": {
-    source: "iana",
-    extensions: ["iota"],
+  'application/vnd.astraea-software.iota': {
+    source: 'iana',
+    extensions: ['iota'],
     compressible: null,
   },
-  "application/vnd.audiograph": {
-    source: "iana",
-    extensions: ["aep"],
+  'application/vnd.audiograph': {
+    source: 'iana',
+    extensions: ['aep'],
     compressible: null,
   },
-  "application/vnd.balsamiq.bmml+xml": {
-    source: "iana",
+  'application/vnd.balsamiq.bmml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["bmml"],
+    extensions: ['bmml'],
   },
-  "application/vnd.blueice.multipass": {
-    source: "iana",
-    extensions: ["mpm"],
+  'application/vnd.blueice.multipass': {
+    source: 'iana',
+    extensions: ['mpm'],
     compressible: null,
   },
-  "application/vnd.bmi": {
-    source: "iana",
-    extensions: ["bmi"],
+  'application/vnd.bmi': {
+    source: 'iana',
+    extensions: ['bmi'],
     compressible: null,
   },
-  "application/vnd.businessobjects": {
-    source: "iana",
-    extensions: ["rep"],
+  'application/vnd.businessobjects': {
+    source: 'iana',
+    extensions: ['rep'],
     compressible: null,
   },
-  "application/vnd.chemdraw+xml": {
-    source: "iana",
+  'application/vnd.chemdraw+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["cdxml"],
+    extensions: ['cdxml'],
   },
-  "application/vnd.chipnuts.karaoke-mmd": {
-    source: "iana",
-    extensions: ["mmd"],
+  'application/vnd.chipnuts.karaoke-mmd': {
+    source: 'iana',
+    extensions: ['mmd'],
     compressible: null,
   },
-  "application/vnd.cinderella": {
-    source: "iana",
-    extensions: ["cdy"],
+  'application/vnd.cinderella': {
+    source: 'iana',
+    extensions: ['cdy'],
     compressible: null,
   },
-  "application/vnd.citationstyles.style+xml": {
-    source: "iana",
+  'application/vnd.citationstyles.style+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["csl"],
+    extensions: ['csl'],
   },
-  "application/vnd.claymore": {
-    source: "iana",
-    extensions: ["cla"],
+  'application/vnd.claymore': {
+    source: 'iana',
+    extensions: ['cla'],
     compressible: null,
   },
-  "application/vnd.cloanto.rp9": {
-    source: "iana",
-    extensions: ["rp9"],
+  'application/vnd.cloanto.rp9': {
+    source: 'iana',
+    extensions: ['rp9'],
     compressible: null,
   },
-  "application/vnd.clonk.c4group": {
-    source: "iana",
-    extensions: ["c4g", "c4d", "c4f", "c4p", "c4u"],
+  'application/vnd.clonk.c4group': {
+    source: 'iana',
+    extensions: ['c4g', 'c4d', 'c4f', 'c4p', 'c4u'],
     compressible: null,
   },
-  "application/vnd.cluetrust.cartomobile-config": {
-    source: "iana",
-    extensions: ["c11amc"],
+  'application/vnd.cluetrust.cartomobile-config': {
+    source: 'iana',
+    extensions: ['c11amc'],
     compressible: null,
   },
-  "application/vnd.cluetrust.cartomobile-config-pkg": {
-    source: "iana",
-    extensions: ["c11amz"],
+  'application/vnd.cluetrust.cartomobile-config-pkg': {
+    source: 'iana',
+    extensions: ['c11amz'],
     compressible: null,
   },
-  "application/vnd.commonspace": {
-    source: "iana",
-    extensions: ["csp"],
+  'application/vnd.commonspace': {
+    source: 'iana',
+    extensions: ['csp'],
     compressible: null,
   },
-  "application/vnd.contact.cmsg": {
-    source: "iana",
-    extensions: ["cdbcmsg"],
+  'application/vnd.contact.cmsg': {
+    source: 'iana',
+    extensions: ['cdbcmsg'],
     compressible: null,
   },
-  "application/vnd.cosmocaller": {
-    source: "iana",
-    extensions: ["cmc"],
+  'application/vnd.cosmocaller': {
+    source: 'iana',
+    extensions: ['cmc'],
     compressible: null,
   },
-  "application/vnd.crick.clicker": {
-    source: "iana",
-    extensions: ["clkx"],
+  'application/vnd.crick.clicker': {
+    source: 'iana',
+    extensions: ['clkx'],
     compressible: null,
   },
-  "application/vnd.crick.clicker.keyboard": {
-    source: "iana",
-    extensions: ["clkk"],
+  'application/vnd.crick.clicker.keyboard': {
+    source: 'iana',
+    extensions: ['clkk'],
     compressible: null,
   },
-  "application/vnd.crick.clicker.palette": {
-    source: "iana",
-    extensions: ["clkp"],
+  'application/vnd.crick.clicker.palette': {
+    source: 'iana',
+    extensions: ['clkp'],
     compressible: null,
   },
-  "application/vnd.crick.clicker.template": {
-    source: "iana",
-    extensions: ["clkt"],
+  'application/vnd.crick.clicker.template': {
+    source: 'iana',
+    extensions: ['clkt'],
     compressible: null,
   },
-  "application/vnd.crick.clicker.wordbank": {
-    source: "iana",
-    extensions: ["clkw"],
+  'application/vnd.crick.clicker.wordbank': {
+    source: 'iana',
+    extensions: ['clkw'],
     compressible: null,
   },
-  "application/vnd.criticaltools.wbs+xml": {
-    source: "iana",
+  'application/vnd.criticaltools.wbs+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["wbs"],
+    extensions: ['wbs'],
   },
-  "application/vnd.ctc-posml": {
-    source: "iana",
-    extensions: ["pml"],
+  'application/vnd.ctc-posml': {
+    source: 'iana',
+    extensions: ['pml'],
     compressible: null,
   },
-  "application/vnd.cups-ppd": {
-    source: "iana",
-    extensions: ["ppd"],
+  'application/vnd.cups-ppd': {
+    source: 'iana',
+    extensions: ['ppd'],
     compressible: null,
   },
-  "application/vnd.curl.car": {
-    source: "apache",
-    extensions: ["car"],
+  'application/vnd.curl.car': {
+    source: 'apache',
+    extensions: ['car'],
     compressible: null,
   },
-  "application/vnd.curl.pcurl": {
-    source: "apache",
-    extensions: ["pcurl"],
+  'application/vnd.curl.pcurl': {
+    source: 'apache',
+    extensions: ['pcurl'],
     compressible: null,
   },
-  "application/vnd.dart": {
-    source: "iana",
+  'application/vnd.dart': {
+    source: 'iana',
     compressible: true,
-    extensions: ["dart"],
+    extensions: ['dart'],
   },
-  "application/vnd.data-vision.rdz": {
-    source: "iana",
-    extensions: ["rdz"],
+  'application/vnd.data-vision.rdz': {
+    source: 'iana',
+    extensions: ['rdz'],
     compressible: null,
   },
-  "application/vnd.dbf": {
-    source: "iana",
-    extensions: ["dbf"],
+  'application/vnd.dbf': {
+    source: 'iana',
+    extensions: ['dbf'],
     compressible: null,
   },
-  "application/vnd.dece.data": {
-    source: "iana",
-    extensions: ["uvf", "uvvf", "uvd", "uvvd"],
+  'application/vnd.dece.data': {
+    source: 'iana',
+    extensions: ['uvf', 'uvvf', 'uvd', 'uvvd'],
     compressible: null,
   },
-  "application/vnd.dece.ttml+xml": {
-    source: "iana",
+  'application/vnd.dece.ttml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["uvt", "uvvt"],
+    extensions: ['uvt', 'uvvt'],
   },
-  "application/vnd.dece.unspecified": {
-    source: "iana",
-    extensions: ["uvx", "uvvx"],
+  'application/vnd.dece.unspecified': {
+    source: 'iana',
+    extensions: ['uvx', 'uvvx'],
     compressible: null,
   },
-  "application/vnd.dece.zip": {
-    source: "iana",
-    extensions: ["uvz", "uvvz"],
+  'application/vnd.dece.zip': {
+    source: 'iana',
+    extensions: ['uvz', 'uvvz'],
     compressible: null,
   },
-  "application/vnd.denovo.fcselayout-link": {
-    source: "iana",
-    extensions: ["fe_launch"],
+  'application/vnd.denovo.fcselayout-link': {
+    source: 'iana',
+    extensions: ['fe_launch'],
     compressible: null,
   },
-  "application/vnd.dna": {
-    source: "iana",
-    extensions: ["dna"],
+  'application/vnd.dna': {
+    source: 'iana',
+    extensions: ['dna'],
     compressible: null,
   },
-  "application/vnd.dolby.mlp": {
-    source: "apache",
-    extensions: ["mlp"],
+  'application/vnd.dolby.mlp': {
+    source: 'apache',
+    extensions: ['mlp'],
     compressible: null,
   },
-  "application/vnd.dpgraph": {
-    source: "iana",
-    extensions: ["dpg"],
+  'application/vnd.dpgraph': {
+    source: 'iana',
+    extensions: ['dpg'],
     compressible: null,
   },
-  "application/vnd.dreamfactory": {
-    source: "iana",
-    extensions: ["dfac"],
+  'application/vnd.dreamfactory': {
+    source: 'iana',
+    extensions: ['dfac'],
     compressible: null,
   },
-  "application/vnd.ds-keypoint": {
-    source: "apache",
-    extensions: ["kpxx"],
+  'application/vnd.ds-keypoint': {
+    source: 'apache',
+    extensions: ['kpxx'],
     compressible: null,
   },
-  "application/vnd.dvb.ait": {
-    source: "iana",
-    extensions: ["ait"],
+  'application/vnd.dvb.ait': {
+    source: 'iana',
+    extensions: ['ait'],
     compressible: null,
   },
-  "application/vnd.dvb.service": {
-    source: "iana",
-    extensions: ["svc"],
+  'application/vnd.dvb.service': {
+    source: 'iana',
+    extensions: ['svc'],
     compressible: null,
   },
-  "application/vnd.dynageo": {
-    source: "iana",
-    extensions: ["geo"],
+  'application/vnd.dynageo': {
+    source: 'iana',
+    extensions: ['geo'],
     compressible: null,
   },
-  "application/vnd.ecowin.chart": {
-    source: "iana",
-    extensions: ["mag"],
+  'application/vnd.ecowin.chart': {
+    source: 'iana',
+    extensions: ['mag'],
     compressible: null,
   },
-  "application/vnd.enliven": {
-    source: "iana",
-    extensions: ["nml"],
+  'application/vnd.enliven': {
+    source: 'iana',
+    extensions: ['nml'],
     compressible: null,
   },
-  "application/vnd.epson.esf": {
-    source: "iana",
-    extensions: ["esf"],
+  'application/vnd.epson.esf': {
+    source: 'iana',
+    extensions: ['esf'],
     compressible: null,
   },
-  "application/vnd.epson.msf": {
-    source: "iana",
-    extensions: ["msf"],
+  'application/vnd.epson.msf': {
+    source: 'iana',
+    extensions: ['msf'],
     compressible: null,
   },
-  "application/vnd.epson.quickanime": {
-    source: "iana",
-    extensions: ["qam"],
+  'application/vnd.epson.quickanime': {
+    source: 'iana',
+    extensions: ['qam'],
     compressible: null,
   },
-  "application/vnd.epson.salt": {
-    source: "iana",
-    extensions: ["slt"],
+  'application/vnd.epson.salt': {
+    source: 'iana',
+    extensions: ['slt'],
     compressible: null,
   },
-  "application/vnd.epson.ssf": {
-    source: "iana",
-    extensions: ["ssf"],
+  'application/vnd.epson.ssf': {
+    source: 'iana',
+    extensions: ['ssf'],
     compressible: null,
   },
-  "application/vnd.eszigno3+xml": {
-    source: "iana",
+  'application/vnd.eszigno3+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["es3", "et3"],
+    extensions: ['es3', 'et3'],
   },
-  "application/vnd.ezpix-album": {
-    source: "iana",
-    extensions: ["ez2"],
+  'application/vnd.ezpix-album': {
+    source: 'iana',
+    extensions: ['ez2'],
     compressible: null,
   },
-  "application/vnd.ezpix-package": {
-    source: "iana",
-    extensions: ["ez3"],
+  'application/vnd.ezpix-package': {
+    source: 'iana',
+    extensions: ['ez3'],
     compressible: null,
   },
-  "application/vnd.fdf": {
-    source: "iana",
-    extensions: ["fdf"],
+  'application/vnd.fdf': {
+    source: 'iana',
+    extensions: ['fdf'],
     compressible: null,
   },
-  "application/vnd.fdsn.mseed": {
-    source: "iana",
-    extensions: ["mseed"],
+  'application/vnd.fdsn.mseed': {
+    source: 'iana',
+    extensions: ['mseed'],
     compressible: null,
   },
-  "application/vnd.fdsn.seed": {
-    source: "iana",
-    extensions: ["seed", "dataless"],
+  'application/vnd.fdsn.seed': {
+    source: 'iana',
+    extensions: ['seed', 'dataless'],
     compressible: null,
   },
-  "application/vnd.flographit": {
-    source: "iana",
-    extensions: ["gph"],
+  'application/vnd.flographit': {
+    source: 'iana',
+    extensions: ['gph'],
     compressible: null,
   },
-  "application/vnd.fluxtime.clip": {
-    source: "iana",
-    extensions: ["ftc"],
+  'application/vnd.fluxtime.clip': {
+    source: 'iana',
+    extensions: ['ftc'],
     compressible: null,
   },
-  "application/vnd.framemaker": {
-    source: "iana",
-    extensions: ["fm", "frame", "maker", "book"],
+  'application/vnd.framemaker': {
+    source: 'iana',
+    extensions: ['fm', 'frame', 'maker', 'book'],
     compressible: null,
   },
-  "application/vnd.frogans.fnc": {
-    source: "iana",
-    extensions: ["fnc"],
+  'application/vnd.frogans.fnc': {
+    source: 'iana',
+    extensions: ['fnc'],
     compressible: null,
   },
-  "application/vnd.frogans.ltf": {
-    source: "iana",
-    extensions: ["ltf"],
+  'application/vnd.frogans.ltf': {
+    source: 'iana',
+    extensions: ['ltf'],
     compressible: null,
   },
-  "application/vnd.fsc.weblaunch": {
-    source: "iana",
-    extensions: ["fsc"],
+  'application/vnd.fsc.weblaunch': {
+    source: 'iana',
+    extensions: ['fsc'],
     compressible: null,
   },
-  "application/vnd.fujitsu.oasys": {
-    source: "iana",
-    extensions: ["oas"],
+  'application/vnd.fujitsu.oasys': {
+    source: 'iana',
+    extensions: ['oas'],
     compressible: null,
   },
-  "application/vnd.fujitsu.oasys2": {
-    source: "iana",
-    extensions: ["oa2"],
+  'application/vnd.fujitsu.oasys2': {
+    source: 'iana',
+    extensions: ['oa2'],
     compressible: null,
   },
-  "application/vnd.fujitsu.oasys3": {
-    source: "iana",
-    extensions: ["oa3"],
+  'application/vnd.fujitsu.oasys3': {
+    source: 'iana',
+    extensions: ['oa3'],
     compressible: null,
   },
-  "application/vnd.fujitsu.oasysgp": {
-    source: "iana",
-    extensions: ["fg5"],
+  'application/vnd.fujitsu.oasysgp': {
+    source: 'iana',
+    extensions: ['fg5'],
     compressible: null,
   },
-  "application/vnd.fujitsu.oasysprs": {
-    source: "iana",
-    extensions: ["bh2"],
+  'application/vnd.fujitsu.oasysprs': {
+    source: 'iana',
+    extensions: ['bh2'],
     compressible: null,
   },
-  "application/vnd.fujixerox.ddd": {
-    source: "iana",
-    extensions: ["ddd"],
+  'application/vnd.fujixerox.ddd': {
+    source: 'iana',
+    extensions: ['ddd'],
     compressible: null,
   },
-  "application/vnd.fujixerox.docuworks": {
-    source: "iana",
-    extensions: ["xdw"],
+  'application/vnd.fujixerox.docuworks': {
+    source: 'iana',
+    extensions: ['xdw'],
     compressible: null,
   },
-  "application/vnd.fujixerox.docuworks.binder": {
-    source: "iana",
-    extensions: ["xbd"],
+  'application/vnd.fujixerox.docuworks.binder': {
+    source: 'iana',
+    extensions: ['xbd'],
     compressible: null,
   },
-  "application/vnd.fuzzysheet": {
-    source: "iana",
-    extensions: ["fzs"],
+  'application/vnd.fuzzysheet': {
+    source: 'iana',
+    extensions: ['fzs'],
     compressible: null,
   },
-  "application/vnd.genomatix.tuxedo": {
-    source: "iana",
-    extensions: ["txd"],
+  'application/vnd.genomatix.tuxedo': {
+    source: 'iana',
+    extensions: ['txd'],
     compressible: null,
   },
-  "application/vnd.geogebra.file": {
-    source: "iana",
-    extensions: ["ggb"],
+  'application/vnd.geogebra.file': {
+    source: 'iana',
+    extensions: ['ggb'],
     compressible: null,
   },
-  "application/vnd.geogebra.tool": {
-    source: "iana",
-    extensions: ["ggt"],
+  'application/vnd.geogebra.tool': {
+    source: 'iana',
+    extensions: ['ggt'],
     compressible: null,
   },
-  "application/vnd.geometry-explorer": {
-    source: "iana",
-    extensions: ["gex", "gre"],
+  'application/vnd.geometry-explorer': {
+    source: 'iana',
+    extensions: ['gex', 'gre'],
     compressible: null,
   },
-  "application/vnd.geonext": {
-    source: "iana",
-    extensions: ["gxt"],
+  'application/vnd.geonext': {
+    source: 'iana',
+    extensions: ['gxt'],
     compressible: null,
   },
-  "application/vnd.geoplan": {
-    source: "iana",
-    extensions: ["g2w"],
+  'application/vnd.geoplan': {
+    source: 'iana',
+    extensions: ['g2w'],
     compressible: null,
   },
-  "application/vnd.geospace": {
-    source: "iana",
-    extensions: ["g3w"],
+  'application/vnd.geospace': {
+    source: 'iana',
+    extensions: ['g3w'],
     compressible: null,
   },
-  "application/vnd.gmx": {
-    source: "iana",
-    extensions: ["gmx"],
+  'application/vnd.gmx': {
+    source: 'iana',
+    extensions: ['gmx'],
     compressible: null,
   },
-  "application/vnd.google-earth.kml+xml": {
-    source: "iana",
+  'application/vnd.google-earth.kml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["kml"],
+    extensions: ['kml'],
   },
-  "application/vnd.google-earth.kmz": {
-    source: "iana",
+  'application/vnd.google-earth.kmz': {
+    source: 'iana',
     compressible: false,
-    extensions: ["kmz"],
+    extensions: ['kmz'],
   },
-  "application/vnd.grafeq": {
-    source: "iana",
-    extensions: ["gqf", "gqs"],
+  'application/vnd.grafeq': {
+    source: 'iana',
+    extensions: ['gqf', 'gqs'],
     compressible: null,
   },
-  "application/vnd.groove-account": {
-    source: "iana",
-    extensions: ["gac"],
+  'application/vnd.groove-account': {
+    source: 'iana',
+    extensions: ['gac'],
     compressible: null,
   },
-  "application/vnd.groove-help": {
-    source: "iana",
-    extensions: ["ghf"],
+  'application/vnd.groove-help': {
+    source: 'iana',
+    extensions: ['ghf'],
     compressible: null,
   },
-  "application/vnd.groove-identity-message": {
-    source: "iana",
-    extensions: ["gim"],
+  'application/vnd.groove-identity-message': {
+    source: 'iana',
+    extensions: ['gim'],
     compressible: null,
   },
-  "application/vnd.groove-injector": {
-    source: "iana",
-    extensions: ["grv"],
+  'application/vnd.groove-injector': {
+    source: 'iana',
+    extensions: ['grv'],
     compressible: null,
   },
-  "application/vnd.groove-tool-message": {
-    source: "iana",
-    extensions: ["gtm"],
+  'application/vnd.groove-tool-message': {
+    source: 'iana',
+    extensions: ['gtm'],
     compressible: null,
   },
-  "application/vnd.groove-tool-template": {
-    source: "iana",
-    extensions: ["tpl"],
+  'application/vnd.groove-tool-template': {
+    source: 'iana',
+    extensions: ['tpl'],
     compressible: null,
   },
-  "application/vnd.groove-vcard": {
-    source: "iana",
-    extensions: ["vcg"],
+  'application/vnd.groove-vcard': {
+    source: 'iana',
+    extensions: ['vcg'],
     compressible: null,
   },
-  "application/vnd.hal+xml": {
-    source: "iana",
+  'application/vnd.hal+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["hal"],
+    extensions: ['hal'],
   },
-  "application/vnd.handheld-entertainment+xml": {
-    source: "iana",
+  'application/vnd.handheld-entertainment+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["zmm"],
+    extensions: ['zmm'],
   },
-  "application/vnd.hbci": {
-    source: "iana",
-    extensions: ["hbci"],
+  'application/vnd.hbci': {
+    source: 'iana',
+    extensions: ['hbci'],
     compressible: null,
   },
-  "application/vnd.hhe.lesson-player": {
-    source: "iana",
-    extensions: ["les"],
+  'application/vnd.hhe.lesson-player': {
+    source: 'iana',
+    extensions: ['les'],
     compressible: null,
   },
-  "application/vnd.hp-hpgl": {
-    source: "iana",
-    extensions: ["hpgl"],
+  'application/vnd.hp-hpgl': {
+    source: 'iana',
+    extensions: ['hpgl'],
     compressible: null,
   },
-  "application/vnd.hp-hpid": {
-    source: "iana",
-    extensions: ["hpid"],
+  'application/vnd.hp-hpid': {
+    source: 'iana',
+    extensions: ['hpid'],
     compressible: null,
   },
-  "application/vnd.hp-hps": {
-    source: "iana",
-    extensions: ["hps"],
+  'application/vnd.hp-hps': {
+    source: 'iana',
+    extensions: ['hps'],
     compressible: null,
   },
-  "application/vnd.hp-jlyt": {
-    source: "iana",
-    extensions: ["jlt"],
+  'application/vnd.hp-jlyt': {
+    source: 'iana',
+    extensions: ['jlt'],
     compressible: null,
   },
-  "application/vnd.hp-pcl": {
-    source: "iana",
-    extensions: ["pcl"],
+  'application/vnd.hp-pcl': {
+    source: 'iana',
+    extensions: ['pcl'],
     compressible: null,
   },
-  "application/vnd.hp-pclxl": {
-    source: "iana",
-    extensions: ["pclxl"],
+  'application/vnd.hp-pclxl': {
+    source: 'iana',
+    extensions: ['pclxl'],
     compressible: null,
   },
-  "application/vnd.hydrostatix.sof-data": {
-    source: "iana",
-    extensions: ["sfd-hdstx"],
+  'application/vnd.hydrostatix.sof-data': {
+    source: 'iana',
+    extensions: ['sfd-hdstx'],
     compressible: null,
   },
-  "application/vnd.ibm.minipay": {
-    source: "iana",
-    extensions: ["mpy"],
+  'application/vnd.ibm.minipay': {
+    source: 'iana',
+    extensions: ['mpy'],
     compressible: null,
   },
-  "application/vnd.ibm.modcap": {
-    source: "iana",
-    extensions: ["afp", "listafp", "list3820"],
+  'application/vnd.ibm.modcap': {
+    source: 'iana',
+    extensions: ['afp', 'listafp', 'list3820'],
     compressible: null,
   },
-  "application/vnd.ibm.rights-management": {
-    source: "iana",
-    extensions: ["irm"],
+  'application/vnd.ibm.rights-management': {
+    source: 'iana',
+    extensions: ['irm'],
     compressible: null,
   },
-  "application/vnd.ibm.secure-container": {
-    source: "iana",
-    extensions: ["sc"],
+  'application/vnd.ibm.secure-container': {
+    source: 'iana',
+    extensions: ['sc'],
     compressible: null,
   },
-  "application/vnd.iccprofile": {
-    source: "iana",
-    extensions: ["icc", "icm"],
+  'application/vnd.iccprofile': {
+    source: 'iana',
+    extensions: ['icc', 'icm'],
     compressible: null,
   },
-  "application/vnd.igloader": {
-    source: "iana",
-    extensions: ["igl"],
+  'application/vnd.igloader': {
+    source: 'iana',
+    extensions: ['igl'],
     compressible: null,
   },
-  "application/vnd.immervision-ivp": {
-    source: "iana",
-    extensions: ["ivp"],
+  'application/vnd.immervision-ivp': {
+    source: 'iana',
+    extensions: ['ivp'],
     compressible: null,
   },
-  "application/vnd.immervision-ivu": {
-    source: "iana",
-    extensions: ["ivu"],
+  'application/vnd.immervision-ivu': {
+    source: 'iana',
+    extensions: ['ivu'],
     compressible: null,
   },
-  "application/vnd.insors.igm": {
-    source: "iana",
-    extensions: ["igm"],
+  'application/vnd.insors.igm': {
+    source: 'iana',
+    extensions: ['igm'],
     compressible: null,
   },
-  "application/vnd.intercon.formnet": {
-    source: "iana",
-    extensions: ["xpw", "xpx"],
+  'application/vnd.intercon.formnet': {
+    source: 'iana',
+    extensions: ['xpw', 'xpx'],
     compressible: null,
   },
-  "application/vnd.intergeo": {
-    source: "iana",
-    extensions: ["i2g"],
+  'application/vnd.intergeo': {
+    source: 'iana',
+    extensions: ['i2g'],
     compressible: null,
   },
-  "application/vnd.intu.qbo": {
-    source: "iana",
-    extensions: ["qbo"],
+  'application/vnd.intu.qbo': {
+    source: 'iana',
+    extensions: ['qbo'],
     compressible: null,
   },
-  "application/vnd.intu.qfx": {
-    source: "iana",
-    extensions: ["qfx"],
+  'application/vnd.intu.qfx': {
+    source: 'iana',
+    extensions: ['qfx'],
     compressible: null,
   },
-  "application/vnd.ipunplugged.rcprofile": {
-    source: "iana",
-    extensions: ["rcprofile"],
+  'application/vnd.ipunplugged.rcprofile': {
+    source: 'iana',
+    extensions: ['rcprofile'],
     compressible: null,
   },
-  "application/vnd.irepository.package+xml": {
-    source: "iana",
+  'application/vnd.irepository.package+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["irp"],
+    extensions: ['irp'],
   },
-  "application/vnd.is-xpr": {
-    source: "iana",
-    extensions: ["xpr"],
+  'application/vnd.is-xpr': {
+    source: 'iana',
+    extensions: ['xpr'],
     compressible: null,
   },
-  "application/vnd.isac.fcs": {
-    source: "iana",
-    extensions: ["fcs"],
+  'application/vnd.isac.fcs': {
+    source: 'iana',
+    extensions: ['fcs'],
     compressible: null,
   },
-  "application/vnd.jam": {
-    source: "iana",
-    extensions: ["jam"],
+  'application/vnd.jam': {
+    source: 'iana',
+    extensions: ['jam'],
     compressible: null,
   },
-  "application/vnd.jcp.javame.midlet-rms": {
-    source: "iana",
-    extensions: ["rms"],
+  'application/vnd.jcp.javame.midlet-rms': {
+    source: 'iana',
+    extensions: ['rms'],
     compressible: null,
   },
-  "application/vnd.jisp": {
-    source: "iana",
-    extensions: ["jisp"],
+  'application/vnd.jisp': {
+    source: 'iana',
+    extensions: ['jisp'],
     compressible: null,
   },
-  "application/vnd.joost.joda-archive": {
-    source: "iana",
-    extensions: ["joda"],
+  'application/vnd.joost.joda-archive': {
+    source: 'iana',
+    extensions: ['joda'],
     compressible: null,
   },
-  "application/vnd.kahootz": {
-    source: "iana",
-    extensions: ["ktz", "ktr"],
+  'application/vnd.kahootz': {
+    source: 'iana',
+    extensions: ['ktz', 'ktr'],
     compressible: null,
   },
-  "application/vnd.kde.karbon": {
-    source: "iana",
-    extensions: ["karbon"],
+  'application/vnd.kde.karbon': {
+    source: 'iana',
+    extensions: ['karbon'],
     compressible: null,
   },
-  "application/vnd.kde.kchart": {
-    source: "iana",
-    extensions: ["chrt"],
+  'application/vnd.kde.kchart': {
+    source: 'iana',
+    extensions: ['chrt'],
     compressible: null,
   },
-  "application/vnd.kde.kformula": {
-    source: "iana",
-    extensions: ["kfo"],
+  'application/vnd.kde.kformula': {
+    source: 'iana',
+    extensions: ['kfo'],
     compressible: null,
   },
-  "application/vnd.kde.kivio": {
-    source: "iana",
-    extensions: ["flw"],
+  'application/vnd.kde.kivio': {
+    source: 'iana',
+    extensions: ['flw'],
     compressible: null,
   },
-  "application/vnd.kde.kontour": {
-    source: "iana",
-    extensions: ["kon"],
+  'application/vnd.kde.kontour': {
+    source: 'iana',
+    extensions: ['kon'],
     compressible: null,
   },
-  "application/vnd.kde.kpresenter": {
-    source: "iana",
-    extensions: ["kpr", "kpt"],
+  'application/vnd.kde.kpresenter': {
+    source: 'iana',
+    extensions: ['kpr', 'kpt'],
     compressible: null,
   },
-  "application/vnd.kde.kspread": {
-    source: "iana",
-    extensions: ["ksp"],
+  'application/vnd.kde.kspread': {
+    source: 'iana',
+    extensions: ['ksp'],
     compressible: null,
   },
-  "application/vnd.kde.kword": {
-    source: "iana",
-    extensions: ["kwd", "kwt"],
+  'application/vnd.kde.kword': {
+    source: 'iana',
+    extensions: ['kwd', 'kwt'],
     compressible: null,
   },
-  "application/vnd.kenameaapp": {
-    source: "iana",
-    extensions: ["htke"],
+  'application/vnd.kenameaapp': {
+    source: 'iana',
+    extensions: ['htke'],
     compressible: null,
   },
-  "application/vnd.kidspiration": {
-    source: "iana",
-    extensions: ["kia"],
+  'application/vnd.kidspiration': {
+    source: 'iana',
+    extensions: ['kia'],
     compressible: null,
   },
-  "application/vnd.kinar": {
-    source: "iana",
-    extensions: ["kne", "knp"],
+  'application/vnd.kinar': {
+    source: 'iana',
+    extensions: ['kne', 'knp'],
     compressible: null,
   },
-  "application/vnd.koan": {
-    source: "iana",
-    extensions: ["skp", "skd", "skt", "skm"],
+  'application/vnd.koan': {
+    source: 'iana',
+    extensions: ['skp', 'skd', 'skt', 'skm'],
     compressible: null,
   },
-  "application/vnd.kodak-descriptor": {
-    source: "iana",
-    extensions: ["sse"],
+  'application/vnd.kodak-descriptor': {
+    source: 'iana',
+    extensions: ['sse'],
     compressible: null,
   },
-  "application/vnd.las.las+xml": {
-    source: "iana",
+  'application/vnd.las.las+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["lasxml"],
+    extensions: ['lasxml'],
   },
-  "application/vnd.llamagraphics.life-balance.desktop": {
-    source: "iana",
-    extensions: ["lbd"],
+  'application/vnd.llamagraphics.life-balance.desktop': {
+    source: 'iana',
+    extensions: ['lbd'],
     compressible: null,
   },
-  "application/vnd.llamagraphics.life-balance.exchange+xml": {
-    source: "iana",
+  'application/vnd.llamagraphics.life-balance.exchange+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["lbe"],
+    extensions: ['lbe'],
   },
-  "application/vnd.lotus-1-2-3": {
-    source: "iana",
-    extensions: ["123"],
+  'application/vnd.lotus-1-2-3': {
+    source: 'iana',
+    extensions: ['123'],
     compressible: null,
   },
-  "application/vnd.lotus-approach": {
-    source: "iana",
-    extensions: ["apr"],
+  'application/vnd.lotus-approach': {
+    source: 'iana',
+    extensions: ['apr'],
     compressible: null,
   },
-  "application/vnd.lotus-freelance": {
-    source: "iana",
-    extensions: ["pre"],
+  'application/vnd.lotus-freelance': {
+    source: 'iana',
+    extensions: ['pre'],
     compressible: null,
   },
-  "application/vnd.lotus-notes": {
-    source: "iana",
-    extensions: ["nsf"],
+  'application/vnd.lotus-notes': {
+    source: 'iana',
+    extensions: ['nsf'],
     compressible: null,
   },
-  "application/vnd.lotus-organizer": {
-    source: "iana",
-    extensions: ["org"],
+  'application/vnd.lotus-organizer': {
+    source: 'iana',
+    extensions: ['org'],
     compressible: null,
   },
-  "application/vnd.lotus-screencam": {
-    source: "iana",
-    extensions: ["scm"],
+  'application/vnd.lotus-screencam': {
+    source: 'iana',
+    extensions: ['scm'],
     compressible: null,
   },
-  "application/vnd.lotus-wordpro": {
-    source: "iana",
-    extensions: ["lwp"],
+  'application/vnd.lotus-wordpro': {
+    source: 'iana',
+    extensions: ['lwp'],
     compressible: null,
   },
-  "application/vnd.macports.portpkg": {
-    source: "iana",
-    extensions: ["portpkg"],
+  'application/vnd.macports.portpkg': {
+    source: 'iana',
+    extensions: ['portpkg'],
     compressible: null,
   },
-  "application/vnd.mapbox-vector-tile": {
-    source: "iana",
-    extensions: ["mvt"],
+  'application/vnd.mapbox-vector-tile': {
+    source: 'iana',
+    extensions: ['mvt'],
     compressible: null,
   },
-  "application/vnd.mcd": {
-    source: "iana",
-    extensions: ["mcd"],
+  'application/vnd.mcd': {
+    source: 'iana',
+    extensions: ['mcd'],
     compressible: null,
   },
-  "application/vnd.medcalcdata": {
-    source: "iana",
-    extensions: ["mc1"],
+  'application/vnd.medcalcdata': {
+    source: 'iana',
+    extensions: ['mc1'],
     compressible: null,
   },
-  "application/vnd.mediastation.cdkey": {
-    source: "iana",
-    extensions: ["cdkey"],
+  'application/vnd.mediastation.cdkey': {
+    source: 'iana',
+    extensions: ['cdkey'],
     compressible: null,
   },
-  "application/vnd.mfer": {
-    source: "iana",
-    extensions: ["mwf"],
+  'application/vnd.mfer': {
+    source: 'iana',
+    extensions: ['mwf'],
     compressible: null,
   },
-  "application/vnd.mfmp": {
-    source: "iana",
-    extensions: ["mfm"],
+  'application/vnd.mfmp': {
+    source: 'iana',
+    extensions: ['mfm'],
     compressible: null,
   },
-  "application/vnd.micrografx.flo": {
-    source: "iana",
-    extensions: ["flo"],
+  'application/vnd.micrografx.flo': {
+    source: 'iana',
+    extensions: ['flo'],
     compressible: null,
   },
-  "application/vnd.micrografx.igx": {
-    source: "iana",
-    extensions: ["igx"],
+  'application/vnd.micrografx.igx': {
+    source: 'iana',
+    extensions: ['igx'],
     compressible: null,
   },
-  "application/vnd.mif": {
-    source: "iana",
-    extensions: ["mif"],
+  'application/vnd.mif': {
+    source: 'iana',
+    extensions: ['mif'],
     compressible: null,
   },
-  "application/vnd.mobius.daf": {
-    source: "iana",
-    extensions: ["daf"],
+  'application/vnd.mobius.daf': {
+    source: 'iana',
+    extensions: ['daf'],
     compressible: null,
   },
-  "application/vnd.mobius.dis": {
-    source: "iana",
-    extensions: ["dis"],
+  'application/vnd.mobius.dis': {
+    source: 'iana',
+    extensions: ['dis'],
     compressible: null,
   },
-  "application/vnd.mobius.mbk": {
-    source: "iana",
-    extensions: ["mbk"],
+  'application/vnd.mobius.mbk': {
+    source: 'iana',
+    extensions: ['mbk'],
     compressible: null,
   },
-  "application/vnd.mobius.mqy": {
-    source: "iana",
-    extensions: ["mqy"],
+  'application/vnd.mobius.mqy': {
+    source: 'iana',
+    extensions: ['mqy'],
     compressible: null,
   },
-  "application/vnd.mobius.msl": {
-    source: "iana",
-    extensions: ["msl"],
+  'application/vnd.mobius.msl': {
+    source: 'iana',
+    extensions: ['msl'],
     compressible: null,
   },
-  "application/vnd.mobius.plc": {
-    source: "iana",
-    extensions: ["plc"],
+  'application/vnd.mobius.plc': {
+    source: 'iana',
+    extensions: ['plc'],
     compressible: null,
   },
-  "application/vnd.mobius.txf": {
-    source: "iana",
-    extensions: ["txf"],
+  'application/vnd.mobius.txf': {
+    source: 'iana',
+    extensions: ['txf'],
     compressible: null,
   },
-  "application/vnd.mophun.application": {
-    source: "iana",
-    extensions: ["mpn"],
+  'application/vnd.mophun.application': {
+    source: 'iana',
+    extensions: ['mpn'],
     compressible: null,
   },
-  "application/vnd.mophun.certificate": {
-    source: "iana",
-    extensions: ["mpc"],
+  'application/vnd.mophun.certificate': {
+    source: 'iana',
+    extensions: ['mpc'],
     compressible: null,
   },
-  "application/vnd.mozilla.xul+xml": {
-    source: "iana",
+  'application/vnd.mozilla.xul+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xul"],
+    extensions: ['xul'],
   },
-  "application/vnd.ms-artgalry": {
-    source: "iana",
-    extensions: ["cil"],
+  'application/vnd.ms-artgalry': {
+    source: 'iana',
+    extensions: ['cil'],
     compressible: null,
   },
-  "application/vnd.ms-cab-compressed": {
-    source: "iana",
-    extensions: ["cab"],
+  'application/vnd.ms-cab-compressed': {
+    source: 'iana',
+    extensions: ['cab'],
     compressible: null,
   },
-  "application/vnd.ms-excel": {
-    source: "iana",
+  'application/vnd.ms-excel': {
+    source: 'iana',
     compressible: false,
-    extensions: ["xls", "xlm", "xla", "xlc", "xlt", "xlw"],
+    extensions: ['xls', 'xlm', 'xla', 'xlc', 'xlt', 'xlw'],
   },
-  "application/vnd.ms-excel.addin.macroenabled.12": {
-    source: "iana",
-    extensions: ["xlam"],
+  'application/vnd.ms-excel.addin.macroenabled.12': {
+    source: 'iana',
+    extensions: ['xlam'],
     compressible: null,
   },
-  "application/vnd.ms-excel.sheet.binary.macroenabled.12": {
-    source: "iana",
-    extensions: ["xlsb"],
+  'application/vnd.ms-excel.sheet.binary.macroenabled.12': {
+    source: 'iana',
+    extensions: ['xlsb'],
     compressible: null,
   },
-  "application/vnd.ms-excel.sheet.macroenabled.12": {
-    source: "iana",
-    extensions: ["xlsm"],
+  'application/vnd.ms-excel.sheet.macroenabled.12': {
+    source: 'iana',
+    extensions: ['xlsm'],
     compressible: null,
   },
-  "application/vnd.ms-excel.template.macroenabled.12": {
-    source: "iana",
-    extensions: ["xltm"],
+  'application/vnd.ms-excel.template.macroenabled.12': {
+    source: 'iana',
+    extensions: ['xltm'],
     compressible: null,
   },
-  "application/vnd.ms-fontobject": {
-    source: "iana",
+  'application/vnd.ms-fontobject': {
+    source: 'iana',
     compressible: true,
-    extensions: ["eot"],
+    extensions: ['eot'],
   },
-  "application/vnd.ms-htmlhelp": {
-    source: "iana",
-    extensions: ["chm"],
+  'application/vnd.ms-htmlhelp': {
+    source: 'iana',
+    extensions: ['chm'],
     compressible: null,
   },
-  "application/vnd.ms-ims": {
-    source: "iana",
-    extensions: ["ims"],
+  'application/vnd.ms-ims': {
+    source: 'iana',
+    extensions: ['ims'],
     compressible: null,
   },
-  "application/vnd.ms-lrm": {
-    source: "iana",
-    extensions: ["lrm"],
+  'application/vnd.ms-lrm': {
+    source: 'iana',
+    extensions: ['lrm'],
     compressible: null,
   },
-  "application/vnd.ms-officetheme": {
-    source: "iana",
-    extensions: ["thmx"],
+  'application/vnd.ms-officetheme': {
+    source: 'iana',
+    extensions: ['thmx'],
     compressible: null,
   },
-  "application/vnd.ms-pki.seccat": {
-    source: "apache",
-    extensions: ["cat"],
+  'application/vnd.ms-pki.seccat': {
+    source: 'apache',
+    extensions: ['cat'],
     compressible: null,
   },
-  "application/vnd.ms-pki.stl": {
-    source: "apache",
-    extensions: ["stl"],
+  'application/vnd.ms-pki.stl': {
+    source: 'apache',
+    extensions: ['stl'],
     compressible: null,
   },
-  "application/vnd.ms-powerpoint": {
-    source: "iana",
+  'application/vnd.ms-powerpoint': {
+    source: 'iana',
     compressible: false,
-    extensions: ["ppt", "pps", "pot"],
+    extensions: ['ppt', 'pps', 'pot'],
   },
-  "application/vnd.ms-powerpoint.addin.macroenabled.12": {
-    source: "iana",
-    extensions: ["ppam"],
+  'application/vnd.ms-powerpoint.addin.macroenabled.12': {
+    source: 'iana',
+    extensions: ['ppam'],
     compressible: null,
   },
-  "application/vnd.ms-powerpoint.presentation.macroenabled.12": {
-    source: "iana",
-    extensions: ["pptm"],
+  'application/vnd.ms-powerpoint.presentation.macroenabled.12': {
+    source: 'iana',
+    extensions: ['pptm'],
     compressible: null,
   },
-  "application/vnd.ms-powerpoint.slide.macroenabled.12": {
-    source: "iana",
-    extensions: ["sldm"],
+  'application/vnd.ms-powerpoint.slide.macroenabled.12': {
+    source: 'iana',
+    extensions: ['sldm'],
     compressible: null,
   },
-  "application/vnd.ms-powerpoint.slideshow.macroenabled.12": {
-    source: "iana",
-    extensions: ["ppsm"],
+  'application/vnd.ms-powerpoint.slideshow.macroenabled.12': {
+    source: 'iana',
+    extensions: ['ppsm'],
     compressible: null,
   },
-  "application/vnd.ms-powerpoint.template.macroenabled.12": {
-    source: "iana",
-    extensions: ["potm"],
+  'application/vnd.ms-powerpoint.template.macroenabled.12': {
+    source: 'iana',
+    extensions: ['potm'],
     compressible: null,
   },
-  "application/vnd.ms-project": {
-    source: "iana",
-    extensions: ["mpp", "mpt"],
+  'application/vnd.ms-project': {
+    source: 'iana',
+    extensions: ['mpp', 'mpt'],
     compressible: null,
   },
-  "application/vnd.ms-word.document.macroenabled.12": {
-    source: "iana",
-    extensions: ["docm"],
+  'application/vnd.ms-word.document.macroenabled.12': {
+    source: 'iana',
+    extensions: ['docm'],
     compressible: null,
   },
-  "application/vnd.ms-word.template.macroenabled.12": {
-    source: "iana",
-    extensions: ["dotm"],
+  'application/vnd.ms-word.template.macroenabled.12': {
+    source: 'iana',
+    extensions: ['dotm'],
     compressible: null,
   },
-  "application/vnd.ms-works": {
-    source: "iana",
-    extensions: ["wps", "wks", "wcm", "wdb"],
+  'application/vnd.ms-works': {
+    source: 'iana',
+    extensions: ['wps', 'wks', 'wcm', 'wdb'],
     compressible: null,
   },
-  "application/vnd.ms-wpl": {
-    source: "iana",
-    extensions: ["wpl"],
+  'application/vnd.ms-wpl': {
+    source: 'iana',
+    extensions: ['wpl'],
     compressible: null,
   },
-  "application/vnd.ms-xpsdocument": {
-    source: "iana",
+  'application/vnd.ms-xpsdocument': {
+    source: 'iana',
     compressible: false,
-    extensions: ["xps"],
+    extensions: ['xps'],
   },
-  "application/vnd.mseq": {
-    source: "iana",
-    extensions: ["mseq"],
+  'application/vnd.mseq': {
+    source: 'iana',
+    extensions: ['mseq'],
     compressible: null,
   },
-  "application/vnd.musician": {
-    source: "iana",
-    extensions: ["mus"],
+  'application/vnd.musician': {
+    source: 'iana',
+    extensions: ['mus'],
     compressible: null,
   },
-  "application/vnd.muvee.style": {
-    source: "iana",
-    extensions: ["msty"],
+  'application/vnd.muvee.style': {
+    source: 'iana',
+    extensions: ['msty'],
     compressible: null,
   },
-  "application/vnd.mynfc": {
-    source: "iana",
-    extensions: ["taglet"],
+  'application/vnd.mynfc': {
+    source: 'iana',
+    extensions: ['taglet'],
     compressible: null,
   },
-  "application/vnd.neurolanguage.nlu": {
-    source: "iana",
-    extensions: ["nlu"],
+  'application/vnd.neurolanguage.nlu': {
+    source: 'iana',
+    extensions: ['nlu'],
     compressible: null,
   },
-  "application/vnd.nitf": {
-    source: "iana",
-    extensions: ["ntf", "nitf"],
+  'application/vnd.nitf': {
+    source: 'iana',
+    extensions: ['ntf', 'nitf'],
     compressible: null,
   },
-  "application/vnd.noblenet-directory": {
-    source: "iana",
-    extensions: ["nnd"],
+  'application/vnd.noblenet-directory': {
+    source: 'iana',
+    extensions: ['nnd'],
     compressible: null,
   },
-  "application/vnd.noblenet-sealer": {
-    source: "iana",
-    extensions: ["nns"],
+  'application/vnd.noblenet-sealer': {
+    source: 'iana',
+    extensions: ['nns'],
     compressible: null,
   },
-  "application/vnd.noblenet-web": {
-    source: "iana",
-    extensions: ["nnw"],
+  'application/vnd.noblenet-web': {
+    source: 'iana',
+    extensions: ['nnw'],
     compressible: null,
   },
-  "application/vnd.nokia.n-gage.ac+xml": {
-    source: "iana",
+  'application/vnd.nokia.n-gage.ac+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ac"],
+    extensions: ['ac'],
   },
-  "application/vnd.nokia.n-gage.data": {
-    source: "iana",
-    extensions: ["ngdat"],
+  'application/vnd.nokia.n-gage.data': {
+    source: 'iana',
+    extensions: ['ngdat'],
     compressible: null,
   },
-  "application/vnd.nokia.n-gage.symbian.install": {
-    source: "iana",
-    extensions: ["n-gage"],
+  'application/vnd.nokia.n-gage.symbian.install': {
+    source: 'iana',
+    extensions: ['n-gage'],
     compressible: null,
   },
-  "application/vnd.nokia.radio-preset": {
-    source: "iana",
-    extensions: ["rpst"],
+  'application/vnd.nokia.radio-preset': {
+    source: 'iana',
+    extensions: ['rpst'],
     compressible: null,
   },
-  "application/vnd.nokia.radio-presets": {
-    source: "iana",
-    extensions: ["rpss"],
+  'application/vnd.nokia.radio-presets': {
+    source: 'iana',
+    extensions: ['rpss'],
     compressible: null,
   },
-  "application/vnd.novadigm.edm": {
-    source: "iana",
-    extensions: ["edm"],
+  'application/vnd.novadigm.edm': {
+    source: 'iana',
+    extensions: ['edm'],
     compressible: null,
   },
-  "application/vnd.novadigm.edx": {
-    source: "iana",
-    extensions: ["edx"],
+  'application/vnd.novadigm.edx': {
+    source: 'iana',
+    extensions: ['edx'],
     compressible: null,
   },
-  "application/vnd.novadigm.ext": {
-    source: "iana",
-    extensions: ["ext"],
+  'application/vnd.novadigm.ext': {
+    source: 'iana',
+    extensions: ['ext'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.chart": {
-    source: "iana",
-    extensions: ["odc"],
+  'application/vnd.oasis.opendocument.chart': {
+    source: 'iana',
+    extensions: ['odc'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.chart-template": {
-    source: "iana",
-    extensions: ["otc"],
+  'application/vnd.oasis.opendocument.chart-template': {
+    source: 'iana',
+    extensions: ['otc'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.database": {
-    source: "iana",
-    extensions: ["odb"],
+  'application/vnd.oasis.opendocument.database': {
+    source: 'iana',
+    extensions: ['odb'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.formula": {
-    source: "iana",
-    extensions: ["odf"],
+  'application/vnd.oasis.opendocument.formula': {
+    source: 'iana',
+    extensions: ['odf'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.formula-template": {
-    source: "iana",
-    extensions: ["odft"],
+  'application/vnd.oasis.opendocument.formula-template': {
+    source: 'iana',
+    extensions: ['odft'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.graphics": {
-    source: "iana",
+  'application/vnd.oasis.opendocument.graphics': {
+    source: 'iana',
     compressible: false,
-    extensions: ["odg"],
+    extensions: ['odg'],
   },
-  "application/vnd.oasis.opendocument.graphics-template": {
-    source: "iana",
-    extensions: ["otg"],
+  'application/vnd.oasis.opendocument.graphics-template': {
+    source: 'iana',
+    extensions: ['otg'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.image": {
-    source: "iana",
-    extensions: ["odi"],
+  'application/vnd.oasis.opendocument.image': {
+    source: 'iana',
+    extensions: ['odi'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.image-template": {
-    source: "iana",
-    extensions: ["oti"],
+  'application/vnd.oasis.opendocument.image-template': {
+    source: 'iana',
+    extensions: ['oti'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.presentation": {
-    source: "iana",
+  'application/vnd.oasis.opendocument.presentation': {
+    source: 'iana',
     compressible: false,
-    extensions: ["odp"],
+    extensions: ['odp'],
   },
-  "application/vnd.oasis.opendocument.presentation-template": {
-    source: "iana",
-    extensions: ["otp"],
+  'application/vnd.oasis.opendocument.presentation-template': {
+    source: 'iana',
+    extensions: ['otp'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.spreadsheet": {
-    source: "iana",
+  'application/vnd.oasis.opendocument.spreadsheet': {
+    source: 'iana',
     compressible: false,
-    extensions: ["ods"],
+    extensions: ['ods'],
   },
-  "application/vnd.oasis.opendocument.spreadsheet-template": {
-    source: "iana",
-    extensions: ["ots"],
+  'application/vnd.oasis.opendocument.spreadsheet-template': {
+    source: 'iana',
+    extensions: ['ots'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.text": {
-    source: "iana",
+  'application/vnd.oasis.opendocument.text': {
+    source: 'iana',
     compressible: false,
-    extensions: ["odt"],
+    extensions: ['odt'],
   },
-  "application/vnd.oasis.opendocument.text-master": {
-    source: "iana",
-    extensions: ["odm"],
+  'application/vnd.oasis.opendocument.text-master': {
+    source: 'iana',
+    extensions: ['odm'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.text-template": {
-    source: "iana",
-    extensions: ["ott"],
+  'application/vnd.oasis.opendocument.text-template': {
+    source: 'iana',
+    extensions: ['ott'],
     compressible: null,
   },
-  "application/vnd.oasis.opendocument.text-web": {
-    source: "iana",
-    extensions: ["oth"],
+  'application/vnd.oasis.opendocument.text-web': {
+    source: 'iana',
+    extensions: ['oth'],
     compressible: null,
   },
-  "application/vnd.olpc-sugar": {
-    source: "iana",
-    extensions: ["xo"],
+  'application/vnd.olpc-sugar': {
+    source: 'iana',
+    extensions: ['xo'],
     compressible: null,
   },
-  "application/vnd.oma.dd2+xml": {
-    source: "iana",
+  'application/vnd.oma.dd2+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["dd2"],
+    extensions: ['dd2'],
   },
-  "application/vnd.openblox.game+xml": {
-    source: "iana",
+  'application/vnd.openblox.game+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["obgx"],
+    extensions: ['obgx'],
   },
-  "application/vnd.openofficeorg.extension": {
-    source: "apache",
-    extensions: ["oxt"],
+  'application/vnd.openofficeorg.extension': {
+    source: 'apache',
+    extensions: ['oxt'],
     compressible: null,
   },
-  "application/vnd.openstreetmap.data+xml": {
-    source: "iana",
+  'application/vnd.openstreetmap.data+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["osm"],
+    extensions: ['osm'],
   },
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation": {
-    source: "iana",
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation': {
+    source: 'iana',
     compressible: false,
-    extensions: ["pptx"],
+    extensions: ['pptx'],
   },
-  "application/vnd.openxmlformats-officedocument.presentationml.slide": {
-    source: "iana",
-    extensions: ["sldx"],
+  'application/vnd.openxmlformats-officedocument.presentationml.slide': {
+    source: 'iana',
+    extensions: ['sldx'],
     compressible: null,
   },
-  "application/vnd.openxmlformats-officedocument.presentationml.slideshow": {
-    source: "iana",
-    extensions: ["ppsx"],
+  'application/vnd.openxmlformats-officedocument.presentationml.slideshow': {
+    source: 'iana',
+    extensions: ['ppsx'],
     compressible: null,
   },
-  "application/vnd.openxmlformats-officedocument.presentationml.template": {
-    source: "iana",
-    extensions: ["potx"],
+  'application/vnd.openxmlformats-officedocument.presentationml.template': {
+    source: 'iana',
+    extensions: ['potx'],
     compressible: null,
   },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
-    source: "iana",
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
+    source: 'iana',
     compressible: false,
-    extensions: ["xlsx"],
+    extensions: ['xlsx'],
   },
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.template": {
-    source: "iana",
-    extensions: ["xltx"],
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.template': {
+    source: 'iana',
+    extensions: ['xltx'],
     compressible: null,
   },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
-    source: "iana",
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {
+    source: 'iana',
     compressible: false,
-    extensions: ["docx"],
+    extensions: ['docx'],
   },
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.template": {
-    source: "iana",
-    extensions: ["dotx"],
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.template': {
+    source: 'iana',
+    extensions: ['dotx'],
     compressible: null,
   },
-  "application/vnd.osgeo.mapguide.package": {
-    source: "iana",
-    extensions: ["mgp"],
+  'application/vnd.osgeo.mapguide.package': {
+    source: 'iana',
+    extensions: ['mgp'],
     compressible: null,
   },
-  "application/vnd.osgi.dp": {
-    source: "iana",
-    extensions: ["dp"],
+  'application/vnd.osgi.dp': {
+    source: 'iana',
+    extensions: ['dp'],
     compressible: null,
   },
-  "application/vnd.osgi.subsystem": {
-    source: "iana",
-    extensions: ["esa"],
+  'application/vnd.osgi.subsystem': {
+    source: 'iana',
+    extensions: ['esa'],
     compressible: null,
   },
-  "application/vnd.palm": {
-    source: "iana",
-    extensions: ["pdb", "pqa", "oprc"],
+  'application/vnd.palm': {
+    source: 'iana',
+    extensions: ['pdb', 'pqa', 'oprc'],
     compressible: null,
   },
-  "application/vnd.pawaafile": {
-    source: "iana",
-    extensions: ["paw"],
+  'application/vnd.pawaafile': {
+    source: 'iana',
+    extensions: ['paw'],
     compressible: null,
   },
-  "application/vnd.pg.format": {
-    source: "iana",
-    extensions: ["str"],
+  'application/vnd.pg.format': {
+    source: 'iana',
+    extensions: ['str'],
     compressible: null,
   },
-  "application/vnd.pg.osasli": {
-    source: "iana",
-    extensions: ["ei6"],
+  'application/vnd.pg.osasli': {
+    source: 'iana',
+    extensions: ['ei6'],
     compressible: null,
   },
-  "application/vnd.picsel": {
-    source: "iana",
-    extensions: ["efif"],
+  'application/vnd.picsel': {
+    source: 'iana',
+    extensions: ['efif'],
     compressible: null,
   },
-  "application/vnd.pmi.widget": {
-    source: "iana",
-    extensions: ["wg"],
+  'application/vnd.pmi.widget': {
+    source: 'iana',
+    extensions: ['wg'],
     compressible: null,
   },
-  "application/vnd.pocketlearn": {
-    source: "iana",
-    extensions: ["plf"],
+  'application/vnd.pocketlearn': {
+    source: 'iana',
+    extensions: ['plf'],
     compressible: null,
   },
-  "application/vnd.powerbuilder6": {
-    source: "iana",
-    extensions: ["pbd"],
+  'application/vnd.powerbuilder6': {
+    source: 'iana',
+    extensions: ['pbd'],
     compressible: null,
   },
-  "application/vnd.previewsystems.box": {
-    source: "iana",
-    extensions: ["box"],
+  'application/vnd.previewsystems.box': {
+    source: 'iana',
+    extensions: ['box'],
     compressible: null,
   },
-  "application/vnd.proteus.magazine": {
-    source: "iana",
-    extensions: ["mgz"],
+  'application/vnd.proteus.magazine': {
+    source: 'iana',
+    extensions: ['mgz'],
     compressible: null,
   },
-  "application/vnd.publishare-delta-tree": {
-    source: "iana",
-    extensions: ["qps"],
+  'application/vnd.publishare-delta-tree': {
+    source: 'iana',
+    extensions: ['qps'],
     compressible: null,
   },
-  "application/vnd.pvi.ptid1": {
-    source: "iana",
-    extensions: ["ptid"],
+  'application/vnd.pvi.ptid1': {
+    source: 'iana',
+    extensions: ['ptid'],
     compressible: null,
   },
-  "application/vnd.quark.quarkxpress": {
-    source: "iana",
-    extensions: ["qxd", "qxt", "qwd", "qwt", "qxl", "qxb"],
+  'application/vnd.quark.quarkxpress': {
+    source: 'iana',
+    extensions: ['qxd', 'qxt', 'qwd', 'qwt', 'qxl', 'qxb'],
     compressible: null,
   },
-  "application/vnd.rar": {
-    source: "iana",
-    extensions: ["rar"],
+  'application/vnd.rar': {
+    source: 'iana',
+    extensions: ['rar'],
     compressible: null,
   },
-  "application/vnd.realvnc.bed": {
-    source: "iana",
-    extensions: ["bed"],
+  'application/vnd.realvnc.bed': {
+    source: 'iana',
+    extensions: ['bed'],
     compressible: null,
   },
-  "application/vnd.recordare.musicxml": {
-    source: "iana",
-    extensions: ["mxl"],
+  'application/vnd.recordare.musicxml': {
+    source: 'iana',
+    extensions: ['mxl'],
     compressible: null,
   },
-  "application/vnd.recordare.musicxml+xml": {
-    source: "iana",
+  'application/vnd.recordare.musicxml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["musicxml"],
+    extensions: ['musicxml'],
   },
-  "application/vnd.rig.cryptonote": {
-    source: "iana",
-    extensions: ["cryptonote"],
+  'application/vnd.rig.cryptonote': {
+    source: 'iana',
+    extensions: ['cryptonote'],
     compressible: null,
   },
-  "application/vnd.rim.cod": {
-    source: "apache",
-    extensions: ["cod"],
+  'application/vnd.rim.cod': {
+    source: 'apache',
+    extensions: ['cod'],
     compressible: null,
   },
-  "application/vnd.rn-realmedia": {
-    source: "apache",
-    extensions: ["rm"],
+  'application/vnd.rn-realmedia': {
+    source: 'apache',
+    extensions: ['rm'],
     compressible: null,
   },
-  "application/vnd.rn-realmedia-vbr": {
-    source: "apache",
-    extensions: ["rmvb"],
+  'application/vnd.rn-realmedia-vbr': {
+    source: 'apache',
+    extensions: ['rmvb'],
     compressible: null,
   },
-  "application/vnd.route66.link66+xml": {
-    source: "iana",
+  'application/vnd.route66.link66+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["link66"],
+    extensions: ['link66'],
   },
-  "application/vnd.sailingtracker.track": {
-    source: "iana",
-    extensions: ["st"],
+  'application/vnd.sailingtracker.track': {
+    source: 'iana',
+    extensions: ['st'],
     compressible: null,
   },
-  "application/vnd.seemail": {
-    source: "iana",
-    extensions: ["see"],
+  'application/vnd.seemail': {
+    source: 'iana',
+    extensions: ['see'],
     compressible: null,
   },
-  "application/vnd.sema": {
-    source: "iana",
-    extensions: ["sema"],
+  'application/vnd.sema': {
+    source: 'iana',
+    extensions: ['sema'],
     compressible: null,
   },
-  "application/vnd.semd": {
-    source: "iana",
-    extensions: ["semd"],
+  'application/vnd.semd': {
+    source: 'iana',
+    extensions: ['semd'],
     compressible: null,
   },
-  "application/vnd.semf": {
-    source: "iana",
-    extensions: ["semf"],
+  'application/vnd.semf': {
+    source: 'iana',
+    extensions: ['semf'],
     compressible: null,
   },
-  "application/vnd.shana.informed.formdata": {
-    source: "iana",
-    extensions: ["ifm"],
+  'application/vnd.shana.informed.formdata': {
+    source: 'iana',
+    extensions: ['ifm'],
     compressible: null,
   },
-  "application/vnd.shana.informed.formtemplate": {
-    source: "iana",
-    extensions: ["itp"],
+  'application/vnd.shana.informed.formtemplate': {
+    source: 'iana',
+    extensions: ['itp'],
     compressible: null,
   },
-  "application/vnd.shana.informed.interchange": {
-    source: "iana",
-    extensions: ["iif"],
+  'application/vnd.shana.informed.interchange': {
+    source: 'iana',
+    extensions: ['iif'],
     compressible: null,
   },
-  "application/vnd.shana.informed.package": {
-    source: "iana",
-    extensions: ["ipk"],
+  'application/vnd.shana.informed.package': {
+    source: 'iana',
+    extensions: ['ipk'],
     compressible: null,
   },
-  "application/vnd.simtech-mindmapper": {
-    source: "iana",
-    extensions: ["twd", "twds"],
+  'application/vnd.simtech-mindmapper': {
+    source: 'iana',
+    extensions: ['twd', 'twds'],
     compressible: null,
   },
-  "application/vnd.smaf": {
-    source: "iana",
-    extensions: ["mmf"],
+  'application/vnd.smaf': {
+    source: 'iana',
+    extensions: ['mmf'],
     compressible: null,
   },
-  "application/vnd.smart.teacher": {
-    source: "iana",
-    extensions: ["teacher"],
+  'application/vnd.smart.teacher': {
+    source: 'iana',
+    extensions: ['teacher'],
     compressible: null,
   },
-  "application/vnd.software602.filler.form+xml": {
-    source: "iana",
+  'application/vnd.software602.filler.form+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["fo"],
+    extensions: ['fo'],
   },
-  "application/vnd.solent.sdkm+xml": {
-    source: "iana",
+  'application/vnd.solent.sdkm+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["sdkm", "sdkd"],
+    extensions: ['sdkm', 'sdkd'],
   },
-  "application/vnd.spotfire.dxp": {
-    source: "iana",
-    extensions: ["dxp"],
+  'application/vnd.spotfire.dxp': {
+    source: 'iana',
+    extensions: ['dxp'],
     compressible: null,
   },
-  "application/vnd.spotfire.sfs": {
-    source: "iana",
-    extensions: ["sfs"],
+  'application/vnd.spotfire.sfs': {
+    source: 'iana',
+    extensions: ['sfs'],
     compressible: null,
   },
-  "application/vnd.stardivision.calc": {
-    source: "apache",
-    extensions: ["sdc"],
+  'application/vnd.stardivision.calc': {
+    source: 'apache',
+    extensions: ['sdc'],
     compressible: null,
   },
-  "application/vnd.stardivision.draw": {
-    source: "apache",
-    extensions: ["sda"],
+  'application/vnd.stardivision.draw': {
+    source: 'apache',
+    extensions: ['sda'],
     compressible: null,
   },
-  "application/vnd.stardivision.impress": {
-    source: "apache",
-    extensions: ["sdd"],
+  'application/vnd.stardivision.impress': {
+    source: 'apache',
+    extensions: ['sdd'],
     compressible: null,
   },
-  "application/vnd.stardivision.math": {
-    source: "apache",
-    extensions: ["smf"],
+  'application/vnd.stardivision.math': {
+    source: 'apache',
+    extensions: ['smf'],
     compressible: null,
   },
-  "application/vnd.stardivision.writer": {
-    source: "apache",
-    extensions: ["sdw", "vor"],
+  'application/vnd.stardivision.writer': {
+    source: 'apache',
+    extensions: ['sdw', 'vor'],
     compressible: null,
   },
-  "application/vnd.stardivision.writer-global": {
-    source: "apache",
-    extensions: ["sgl"],
+  'application/vnd.stardivision.writer-global': {
+    source: 'apache',
+    extensions: ['sgl'],
     compressible: null,
   },
-  "application/vnd.stepmania.package": {
-    source: "iana",
-    extensions: ["smzip"],
+  'application/vnd.stepmania.package': {
+    source: 'iana',
+    extensions: ['smzip'],
     compressible: null,
   },
-  "application/vnd.stepmania.stepchart": {
-    source: "iana",
-    extensions: ["sm"],
+  'application/vnd.stepmania.stepchart': {
+    source: 'iana',
+    extensions: ['sm'],
     compressible: null,
   },
-  "application/vnd.sun.wadl+xml": {
-    source: "iana",
+  'application/vnd.sun.wadl+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["wadl"],
+    extensions: ['wadl'],
   },
-  "application/vnd.sun.xml.calc": {
-    source: "apache",
-    extensions: ["sxc"],
+  'application/vnd.sun.xml.calc': {
+    source: 'apache',
+    extensions: ['sxc'],
     compressible: null,
   },
-  "application/vnd.sun.xml.calc.template": {
-    source: "apache",
-    extensions: ["stc"],
+  'application/vnd.sun.xml.calc.template': {
+    source: 'apache',
+    extensions: ['stc'],
     compressible: null,
   },
-  "application/vnd.sun.xml.draw": {
-    source: "apache",
-    extensions: ["sxd"],
+  'application/vnd.sun.xml.draw': {
+    source: 'apache',
+    extensions: ['sxd'],
     compressible: null,
   },
-  "application/vnd.sun.xml.draw.template": {
-    source: "apache",
-    extensions: ["std"],
+  'application/vnd.sun.xml.draw.template': {
+    source: 'apache',
+    extensions: ['std'],
     compressible: null,
   },
-  "application/vnd.sun.xml.impress": {
-    source: "apache",
-    extensions: ["sxi"],
+  'application/vnd.sun.xml.impress': {
+    source: 'apache',
+    extensions: ['sxi'],
     compressible: null,
   },
-  "application/vnd.sun.xml.impress.template": {
-    source: "apache",
-    extensions: ["sti"],
+  'application/vnd.sun.xml.impress.template': {
+    source: 'apache',
+    extensions: ['sti'],
     compressible: null,
   },
-  "application/vnd.sun.xml.math": {
-    source: "apache",
-    extensions: ["sxm"],
+  'application/vnd.sun.xml.math': {
+    source: 'apache',
+    extensions: ['sxm'],
     compressible: null,
   },
-  "application/vnd.sun.xml.writer": {
-    source: "apache",
-    extensions: ["sxw"],
+  'application/vnd.sun.xml.writer': {
+    source: 'apache',
+    extensions: ['sxw'],
     compressible: null,
   },
-  "application/vnd.sun.xml.writer.global": {
-    source: "apache",
-    extensions: ["sxg"],
+  'application/vnd.sun.xml.writer.global': {
+    source: 'apache',
+    extensions: ['sxg'],
     compressible: null,
   },
-  "application/vnd.sun.xml.writer.template": {
-    source: "apache",
-    extensions: ["stw"],
+  'application/vnd.sun.xml.writer.template': {
+    source: 'apache',
+    extensions: ['stw'],
     compressible: null,
   },
-  "application/vnd.sus-calendar": {
-    source: "iana",
-    extensions: ["sus", "susp"],
+  'application/vnd.sus-calendar': {
+    source: 'iana',
+    extensions: ['sus', 'susp'],
     compressible: null,
   },
-  "application/vnd.svd": {
-    source: "iana",
-    extensions: ["svd"],
+  'application/vnd.svd': {
+    source: 'iana',
+    extensions: ['svd'],
     compressible: null,
   },
-  "application/vnd.symbian.install": {
-    source: "apache",
-    extensions: ["sis", "sisx"],
+  'application/vnd.symbian.install': {
+    source: 'apache',
+    extensions: ['sis', 'sisx'],
     compressible: null,
   },
-  "application/vnd.syncml+xml": {
-    source: "iana",
-    charset: "UTF-8",
+  'application/vnd.syncml+xml': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["xsm"],
+    extensions: ['xsm'],
   },
-  "application/vnd.syncml.dm+wbxml": {
-    source: "iana",
-    charset: "UTF-8",
-    extensions: ["bdm"],
+  'application/vnd.syncml.dm+wbxml': {
+    source: 'iana',
+    charset: 'UTF-8',
+    extensions: ['bdm'],
     compressible: null,
   },
-  "application/vnd.syncml.dm+xml": {
-    source: "iana",
-    charset: "UTF-8",
+  'application/vnd.syncml.dm+xml': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["xdm"],
+    extensions: ['xdm'],
   },
-  "application/vnd.syncml.dmddf+xml": {
-    source: "iana",
-    charset: "UTF-8",
+  'application/vnd.syncml.dmddf+xml': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["ddf"],
+    extensions: ['ddf'],
   },
-  "application/vnd.tao.intent-module-archive": {
-    source: "iana",
-    extensions: ["tao"],
+  'application/vnd.tao.intent-module-archive': {
+    source: 'iana',
+    extensions: ['tao'],
     compressible: null,
   },
-  "application/vnd.tcpdump.pcap": {
-    source: "iana",
-    extensions: ["pcap", "cap", "dmp"],
+  'application/vnd.tcpdump.pcap': {
+    source: 'iana',
+    extensions: ['pcap', 'cap', 'dmp'],
     compressible: null,
   },
-  "application/vnd.tmobile-livetv": {
-    source: "iana",
-    extensions: ["tmo"],
+  'application/vnd.tmobile-livetv': {
+    source: 'iana',
+    extensions: ['tmo'],
     compressible: null,
   },
-  "application/vnd.trid.tpt": {
-    source: "iana",
-    extensions: ["tpt"],
+  'application/vnd.trid.tpt': {
+    source: 'iana',
+    extensions: ['tpt'],
     compressible: null,
   },
-  "application/vnd.triscape.mxs": {
-    source: "iana",
-    extensions: ["mxs"],
+  'application/vnd.triscape.mxs': {
+    source: 'iana',
+    extensions: ['mxs'],
     compressible: null,
   },
-  "application/vnd.trueapp": {
-    source: "iana",
-    extensions: ["tra"],
+  'application/vnd.trueapp': {
+    source: 'iana',
+    extensions: ['tra'],
     compressible: null,
   },
-  "application/vnd.ufdl": {
-    source: "iana",
-    extensions: ["ufd", "ufdl"],
+  'application/vnd.ufdl': {
+    source: 'iana',
+    extensions: ['ufd', 'ufdl'],
     compressible: null,
   },
-  "application/vnd.uiq.theme": {
-    source: "iana",
-    extensions: ["utz"],
+  'application/vnd.uiq.theme': {
+    source: 'iana',
+    extensions: ['utz'],
     compressible: null,
   },
-  "application/vnd.umajin": {
-    source: "iana",
-    extensions: ["umj"],
+  'application/vnd.umajin': {
+    source: 'iana',
+    extensions: ['umj'],
     compressible: null,
   },
-  "application/vnd.unity": {
-    source: "iana",
-    extensions: ["unityweb"],
+  'application/vnd.unity': {
+    source: 'iana',
+    extensions: ['unityweb'],
     compressible: null,
   },
-  "application/vnd.uoml+xml": {
-    source: "iana",
+  'application/vnd.uoml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["uoml"],
+    extensions: ['uoml'],
   },
-  "application/vnd.vcx": {
-    source: "iana",
-    extensions: ["vcx"],
+  'application/vnd.vcx': {
+    source: 'iana',
+    extensions: ['vcx'],
     compressible: null,
   },
-  "application/vnd.visio": {
-    source: "iana",
-    extensions: ["vsd", "vst", "vss", "vsw"],
+  'application/vnd.visio': {
+    source: 'iana',
+    extensions: ['vsd', 'vst', 'vss', 'vsw'],
     compressible: null,
   },
-  "application/vnd.visionary": {
-    source: "iana",
-    extensions: ["vis"],
+  'application/vnd.visionary': {
+    source: 'iana',
+    extensions: ['vis'],
     compressible: null,
   },
-  "application/vnd.vsf": {
-    source: "iana",
-    extensions: ["vsf"],
+  'application/vnd.vsf': {
+    source: 'iana',
+    extensions: ['vsf'],
     compressible: null,
   },
-  "application/vnd.wap.wbxml": {
-    source: "iana",
-    charset: "UTF-8",
-    extensions: ["wbxml"],
+  'application/vnd.wap.wbxml': {
+    source: 'iana',
+    charset: 'UTF-8',
+    extensions: ['wbxml'],
     compressible: null,
   },
-  "application/vnd.wap.wmlc": {
-    source: "iana",
-    extensions: ["wmlc"],
+  'application/vnd.wap.wmlc': {
+    source: 'iana',
+    extensions: ['wmlc'],
     compressible: null,
   },
-  "application/vnd.wap.wmlscriptc": {
-    source: "iana",
-    extensions: ["wmlsc"],
+  'application/vnd.wap.wmlscriptc': {
+    source: 'iana',
+    extensions: ['wmlsc'],
     compressible: null,
   },
-  "application/vnd.webturbo": {
-    source: "iana",
-    extensions: ["wtb"],
+  'application/vnd.webturbo': {
+    source: 'iana',
+    extensions: ['wtb'],
     compressible: null,
   },
-  "application/vnd.wolfram.player": {
-    source: "iana",
-    extensions: ["nbp"],
+  'application/vnd.wolfram.player': {
+    source: 'iana',
+    extensions: ['nbp'],
     compressible: null,
   },
-  "application/vnd.wordperfect": {
-    source: "iana",
-    extensions: ["wpd"],
+  'application/vnd.wordperfect': {
+    source: 'iana',
+    extensions: ['wpd'],
     compressible: null,
   },
-  "application/vnd.wqd": {
-    source: "iana",
-    extensions: ["wqd"],
+  'application/vnd.wqd': {
+    source: 'iana',
+    extensions: ['wqd'],
     compressible: null,
   },
-  "application/vnd.wt.stf": {
-    source: "iana",
-    extensions: ["stf"],
+  'application/vnd.wt.stf': {
+    source: 'iana',
+    extensions: ['stf'],
     compressible: null,
   },
-  "application/vnd.xara": {
-    source: "iana",
-    extensions: ["xar"],
+  'application/vnd.xara': {
+    source: 'iana',
+    extensions: ['xar'],
     compressible: null,
   },
-  "application/vnd.xfdl": {
-    source: "iana",
-    extensions: ["xfdl"],
+  'application/vnd.xfdl': {
+    source: 'iana',
+    extensions: ['xfdl'],
     compressible: null,
   },
-  "application/vnd.yamaha.hv-dic": {
-    source: "iana",
-    extensions: ["hvd"],
+  'application/vnd.yamaha.hv-dic': {
+    source: 'iana',
+    extensions: ['hvd'],
     compressible: null,
   },
-  "application/vnd.yamaha.hv-script": {
-    source: "iana",
-    extensions: ["hvs"],
+  'application/vnd.yamaha.hv-script': {
+    source: 'iana',
+    extensions: ['hvs'],
     compressible: null,
   },
-  "application/vnd.yamaha.hv-voice": {
-    source: "iana",
-    extensions: ["hvp"],
+  'application/vnd.yamaha.hv-voice': {
+    source: 'iana',
+    extensions: ['hvp'],
     compressible: null,
   },
-  "application/vnd.yamaha.openscoreformat": {
-    source: "iana",
-    extensions: ["osf"],
+  'application/vnd.yamaha.openscoreformat': {
+    source: 'iana',
+    extensions: ['osf'],
     compressible: null,
   },
-  "application/vnd.yamaha.openscoreformat.osfpvg+xml": {
-    source: "iana",
+  'application/vnd.yamaha.openscoreformat.osfpvg+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["osfpvg"],
+    extensions: ['osfpvg'],
   },
-  "application/vnd.yamaha.smaf-audio": {
-    source: "iana",
-    extensions: ["saf"],
+  'application/vnd.yamaha.smaf-audio': {
+    source: 'iana',
+    extensions: ['saf'],
     compressible: null,
   },
-  "application/vnd.yamaha.smaf-phrase": {
-    source: "iana",
-    extensions: ["spf"],
+  'application/vnd.yamaha.smaf-phrase': {
+    source: 'iana',
+    extensions: ['spf'],
     compressible: null,
   },
-  "application/vnd.yellowriver-custom-menu": {
-    source: "iana",
-    extensions: ["cmp"],
+  'application/vnd.yellowriver-custom-menu': {
+    source: 'iana',
+    extensions: ['cmp'],
     compressible: null,
   },
-  "application/vnd.zul": {
-    source: "iana",
-    extensions: ["zir", "zirz"],
+  'application/vnd.zul': {
+    source: 'iana',
+    extensions: ['zir', 'zirz'],
     compressible: null,
   },
-  "application/vnd.zzazz.deck+xml": {
-    source: "iana",
+  'application/vnd.zzazz.deck+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["zaz"],
+    extensions: ['zaz'],
   },
-  "application/voicexml+xml": {
-    source: "iana",
+  'application/voicexml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["vxml"],
+    extensions: ['vxml'],
   },
-  "application/wasm": {
-    source: "iana",
+  'application/wasm': {
+    source: 'iana',
     compressible: true,
-    extensions: ["wasm"],
+    extensions: ['wasm'],
   },
-  "application/watcherinfo+xml": {
-    source: "iana",
+  'application/watcherinfo+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["wif"],
+    extensions: ['wif'],
   },
-  "application/widget": {
-    source: "iana",
-    extensions: ["wgt"],
+  'application/widget': {
+    source: 'iana',
+    extensions: ['wgt'],
     compressible: null,
   },
-  "application/winhlp": {
-    source: "apache",
-    extensions: ["hlp"],
+  'application/winhlp': {
+    source: 'apache',
+    extensions: ['hlp'],
     compressible: null,
   },
-  "application/wsdl+xml": {
-    source: "iana",
+  'application/wsdl+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["wsdl"],
+    extensions: ['wsdl'],
   },
-  "application/wspolicy+xml": {
-    source: "iana",
+  'application/wspolicy+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["wspolicy"],
+    extensions: ['wspolicy'],
   },
-  "application/x-7z-compressed": {
-    source: "apache",
+  'application/x-7z-compressed': {
+    source: 'apache',
     compressible: false,
-    extensions: ["7z"],
+    extensions: ['7z'],
   },
-  "application/x-abiword": {
-    source: "apache",
-    extensions: ["abw"],
+  'application/x-abiword': {
+    source: 'apache',
+    extensions: ['abw'],
     compressible: null,
   },
-  "application/x-ace-compressed": {
-    source: "apache",
-    extensions: ["ace"],
+  'application/x-ace-compressed': {
+    source: 'apache',
+    extensions: ['ace'],
     compressible: null,
   },
-  "application/x-apple-diskimage": {
-    source: "apache",
-    extensions: ["dmg"],
+  'application/x-apple-diskimage': {
+    source: 'apache',
+    extensions: ['dmg'],
     compressible: null,
   },
-  "application/x-authorware-bin": {
-    source: "apache",
-    extensions: ["aab", "x32", "u32", "vox"],
+  'application/x-authorware-bin': {
+    source: 'apache',
+    extensions: ['aab', 'x32', 'u32', 'vox'],
     compressible: null,
   },
-  "application/x-authorware-map": {
-    source: "apache",
-    extensions: ["aam"],
+  'application/x-authorware-map': {
+    source: 'apache',
+    extensions: ['aam'],
     compressible: null,
   },
-  "application/x-authorware-seg": {
-    source: "apache",
-    extensions: ["aas"],
+  'application/x-authorware-seg': {
+    source: 'apache',
+    extensions: ['aas'],
     compressible: null,
   },
-  "application/x-bcpio": {
-    source: "apache",
-    extensions: ["bcpio"],
+  'application/x-bcpio': {
+    source: 'apache',
+    extensions: ['bcpio'],
     compressible: null,
   },
-  "application/x-bittorrent": {
-    source: "apache",
-    extensions: ["torrent"],
+  'application/x-bittorrent': {
+    source: 'apache',
+    extensions: ['torrent'],
     compressible: null,
   },
-  "application/x-blorb": {
-    source: "apache",
-    extensions: ["blb", "blorb"],
+  'application/x-blorb': {
+    source: 'apache',
+    extensions: ['blb', 'blorb'],
     compressible: null,
   },
-  "application/x-bzip": {
-    source: "apache",
+  'application/x-bzip': {
+    source: 'apache',
     compressible: false,
-    extensions: ["bz"],
+    extensions: ['bz'],
   },
-  "application/x-bzip2": {
-    source: "apache",
+  'application/x-bzip2': {
+    source: 'apache',
     compressible: false,
-    extensions: ["bz2", "boz"],
+    extensions: ['bz2', 'boz'],
   },
-  "application/x-cbr": {
-    source: "apache",
-    extensions: ["cbr", "cba", "cbt", "cbz", "cb7"],
+  'application/x-cbr': {
+    source: 'apache',
+    extensions: ['cbr', 'cba', 'cbt', 'cbz', 'cb7'],
     compressible: null,
   },
-  "application/x-cdlink": {
-    source: "apache",
-    extensions: ["vcd"],
+  'application/x-cdlink': {
+    source: 'apache',
+    extensions: ['vcd'],
     compressible: null,
   },
-  "application/x-cfs-compressed": {
-    source: "apache",
-    extensions: ["cfs"],
+  'application/x-cfs-compressed': {
+    source: 'apache',
+    extensions: ['cfs'],
     compressible: null,
   },
-  "application/x-chat": {
-    source: "apache",
-    extensions: ["chat"],
+  'application/x-chat': {
+    source: 'apache',
+    extensions: ['chat'],
     compressible: null,
   },
-  "application/x-chess-pgn": {
-    source: "apache",
-    extensions: ["pgn"],
+  'application/x-chess-pgn': {
+    source: 'apache',
+    extensions: ['pgn'],
     compressible: null,
   },
-  "application/x-cocoa": {
-    source: "nginx",
-    extensions: ["cco"],
+  'application/x-cocoa': {
+    source: 'nginx',
+    extensions: ['cco'],
     compressible: null,
   },
-  "application/x-conference": {
-    source: "apache",
-    extensions: ["nsc"],
+  'application/x-conference': {
+    source: 'apache',
+    extensions: ['nsc'],
     compressible: null,
   },
-  "application/x-cpio": {
-    source: "apache",
-    extensions: ["cpio"],
+  'application/x-cpio': {
+    source: 'apache',
+    extensions: ['cpio'],
     compressible: null,
   },
-  "application/x-csh": {
-    source: "apache",
-    extensions: ["csh"],
+  'application/x-csh': {
+    source: 'apache',
+    extensions: ['csh'],
     compressible: null,
   },
-  "application/x-debian-package": {
-    source: "apache",
-    extensions: ["deb", "udeb"],
+  'application/x-debian-package': {
+    source: 'apache',
+    extensions: ['deb', 'udeb'],
     compressible: null,
   },
-  "application/x-dgc-compressed": {
-    source: "apache",
-    extensions: ["dgc"],
+  'application/x-dgc-compressed': {
+    source: 'apache',
+    extensions: ['dgc'],
     compressible: null,
   },
-  "application/x-director": {
-    source: "apache",
-    extensions: ["dir", "dcr", "dxr", "cst", "cct", "cxt", "w3d", "fgd", "swa"],
+  'application/x-director': {
+    source: 'apache',
+    extensions: ['dir', 'dcr', 'dxr', 'cst', 'cct', 'cxt', 'w3d', 'fgd', 'swa'],
     compressible: null,
   },
-  "application/x-doom": {
-    source: "apache",
-    extensions: ["wad"],
+  'application/x-doom': {
+    source: 'apache',
+    extensions: ['wad'],
     compressible: null,
   },
-  "application/x-dtbncx+xml": {
-    source: "apache",
+  'application/x-dtbncx+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["ncx"],
+    extensions: ['ncx'],
   },
-  "application/x-dtbook+xml": {
-    source: "apache",
+  'application/x-dtbook+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["dtb"],
+    extensions: ['dtb'],
   },
-  "application/x-dtbresource+xml": {
-    source: "apache",
+  'application/x-dtbresource+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["res"],
+    extensions: ['res'],
   },
-  "application/x-dvi": {
-    source: "apache",
+  'application/x-dvi': {
+    source: 'apache',
     compressible: false,
-    extensions: ["dvi"],
+    extensions: ['dvi'],
   },
-  "application/x-envoy": {
-    source: "apache",
-    extensions: ["evy"],
+  'application/x-envoy': {
+    source: 'apache',
+    extensions: ['evy'],
     compressible: null,
   },
-  "application/x-eva": {
-    source: "apache",
-    extensions: ["eva"],
+  'application/x-eva': {
+    source: 'apache',
+    extensions: ['eva'],
     compressible: null,
   },
-  "application/x-font-bdf": {
-    source: "apache",
-    extensions: ["bdf"],
+  'application/x-font-bdf': {
+    source: 'apache',
+    extensions: ['bdf'],
     compressible: null,
   },
-  "application/x-font-ghostscript": {
-    source: "apache",
-    extensions: ["gsf"],
+  'application/x-font-ghostscript': {
+    source: 'apache',
+    extensions: ['gsf'],
     compressible: null,
   },
-  "application/x-font-linux-psf": {
-    source: "apache",
-    extensions: ["psf"],
+  'application/x-font-linux-psf': {
+    source: 'apache',
+    extensions: ['psf'],
     compressible: null,
   },
-  "application/x-font-pcf": {
-    source: "apache",
-    extensions: ["pcf"],
+  'application/x-font-pcf': {
+    source: 'apache',
+    extensions: ['pcf'],
     compressible: null,
   },
-  "application/x-font-snf": {
-    source: "apache",
-    extensions: ["snf"],
+  'application/x-font-snf': {
+    source: 'apache',
+    extensions: ['snf'],
     compressible: null,
   },
-  "application/x-font-type1": {
-    source: "apache",
-    extensions: ["pfa", "pfb", "pfm", "afm"],
+  'application/x-font-type1': {
+    source: 'apache',
+    extensions: ['pfa', 'pfb', 'pfm', 'afm'],
     compressible: null,
   },
-  "application/x-freearc": {
-    source: "apache",
-    extensions: ["arc"],
+  'application/x-freearc': {
+    source: 'apache',
+    extensions: ['arc'],
     compressible: null,
   },
-  "application/x-futuresplash": {
-    source: "apache",
-    extensions: ["spl"],
+  'application/x-futuresplash': {
+    source: 'apache',
+    extensions: ['spl'],
     compressible: null,
   },
-  "application/x-gca-compressed": {
-    source: "apache",
-    extensions: ["gca"],
+  'application/x-gca-compressed': {
+    source: 'apache',
+    extensions: ['gca'],
     compressible: null,
   },
-  "application/x-glulx": {
-    source: "apache",
-    extensions: ["ulx"],
+  'application/x-glulx': {
+    source: 'apache',
+    extensions: ['ulx'],
     compressible: null,
   },
-  "application/x-gnumeric": {
-    source: "apache",
-    extensions: ["gnumeric"],
+  'application/x-gnumeric': {
+    source: 'apache',
+    extensions: ['gnumeric'],
     compressible: null,
   },
-  "application/x-gramps-xml": {
-    source: "apache",
-    extensions: ["gramps"],
+  'application/x-gramps-xml': {
+    source: 'apache',
+    extensions: ['gramps'],
     compressible: null,
   },
-  "application/x-gtar": {
-    source: "apache",
-    extensions: ["gtar"],
+  'application/x-gtar': {
+    source: 'apache',
+    extensions: ['gtar'],
     compressible: null,
   },
-  "application/x-hdf": {
-    source: "apache",
-    extensions: ["hdf"],
+  'application/x-hdf': {
+    source: 'apache',
+    extensions: ['hdf'],
     compressible: null,
   },
-  "application/x-install-instructions": {
-    source: "apache",
-    extensions: ["install"],
+  'application/x-install-instructions': {
+    source: 'apache',
+    extensions: ['install'],
     compressible: null,
   },
-  "application/x-iso9660-image": {
-    source: "apache",
-    extensions: ["iso"],
+  'application/x-iso9660-image': {
+    source: 'apache',
+    extensions: ['iso'],
     compressible: null,
   },
-  "application/x-java-archive-diff": {
-    source: "nginx",
-    extensions: ["jardiff"],
+  'application/x-java-archive-diff': {
+    source: 'nginx',
+    extensions: ['jardiff'],
     compressible: null,
   },
-  "application/x-java-jnlp-file": {
-    source: "apache",
+  'application/x-java-jnlp-file': {
+    source: 'apache',
     compressible: false,
-    extensions: ["jnlp"],
+    extensions: ['jnlp'],
   },
-  "application/x-latex": {
-    source: "apache",
+  'application/x-latex': {
+    source: 'apache',
     compressible: false,
-    extensions: ["latex"],
+    extensions: ['latex'],
   },
-  "application/x-lzh-compressed": {
-    source: "apache",
-    extensions: ["lzh", "lha"],
+  'application/x-lzh-compressed': {
+    source: 'apache',
+    extensions: ['lzh', 'lha'],
     compressible: null,
   },
-  "application/x-makeself": {
-    source: "nginx",
-    extensions: ["run"],
+  'application/x-makeself': {
+    source: 'nginx',
+    extensions: ['run'],
     compressible: null,
   },
-  "application/x-mie": {
-    source: "apache",
-    extensions: ["mie"],
+  'application/x-mie': {
+    source: 'apache',
+    extensions: ['mie'],
     compressible: null,
   },
-  "application/x-mobipocket-ebook": {
-    source: "apache",
-    extensions: ["prc", "mobi"],
+  'application/x-mobipocket-ebook': {
+    source: 'apache',
+    extensions: ['prc', 'mobi'],
     compressible: null,
   },
-  "application/x-ms-application": {
-    source: "apache",
-    extensions: ["application"],
+  'application/x-ms-application': {
+    source: 'apache',
+    extensions: ['application'],
     compressible: null,
   },
-  "application/x-ms-shortcut": {
-    source: "apache",
-    extensions: ["lnk"],
+  'application/x-ms-shortcut': {
+    source: 'apache',
+    extensions: ['lnk'],
     compressible: null,
   },
-  "application/x-ms-wmd": {
-    source: "apache",
-    extensions: ["wmd"],
+  'application/x-ms-wmd': {
+    source: 'apache',
+    extensions: ['wmd'],
     compressible: null,
   },
-  "application/x-ms-wmz": {
-    source: "apache",
-    extensions: ["wmz"],
+  'application/x-ms-wmz': {
+    source: 'apache',
+    extensions: ['wmz'],
     compressible: null,
   },
-  "application/x-ms-xbap": {
-    source: "apache",
-    extensions: ["xbap"],
+  'application/x-ms-xbap': {
+    source: 'apache',
+    extensions: ['xbap'],
     compressible: null,
   },
-  "application/x-msaccess": {
-    source: "apache",
-    extensions: ["mdb"],
+  'application/x-msaccess': {
+    source: 'apache',
+    extensions: ['mdb'],
     compressible: null,
   },
-  "application/x-msbinder": {
-    source: "apache",
-    extensions: ["obd"],
+  'application/x-msbinder': {
+    source: 'apache',
+    extensions: ['obd'],
     compressible: null,
   },
-  "application/x-mscardfile": {
-    source: "apache",
-    extensions: ["crd"],
+  'application/x-mscardfile': {
+    source: 'apache',
+    extensions: ['crd'],
     compressible: null,
   },
-  "application/x-msclip": {
-    source: "apache",
-    extensions: ["clp"],
+  'application/x-msclip': {
+    source: 'apache',
+    extensions: ['clp'],
     compressible: null,
   },
-  "application/x-msdownload": {
-    source: "apache",
-    extensions: ["exe", "dll", "com", "bat", "msi"],
+  'application/x-msdownload': {
+    source: 'apache',
+    extensions: ['exe', 'dll', 'com', 'bat', 'msi'],
     compressible: null,
   },
-  "application/x-msmediaview": {
-    source: "apache",
-    extensions: ["mvb", "m13", "m14"],
+  'application/x-msmediaview': {
+    source: 'apache',
+    extensions: ['mvb', 'm13', 'm14'],
     compressible: null,
   },
-  "application/x-msmetafile": {
-    source: "apache",
-    extensions: ["wmf", "wmz", "emf", "emz"],
+  'application/x-msmetafile': {
+    source: 'apache',
+    extensions: ['wmf', 'wmz', 'emf', 'emz'],
     compressible: null,
   },
-  "application/x-msmoney": {
-    source: "apache",
-    extensions: ["mny"],
+  'application/x-msmoney': {
+    source: 'apache',
+    extensions: ['mny'],
     compressible: null,
   },
-  "application/x-mspublisher": {
-    source: "apache",
-    extensions: ["pub"],
+  'application/x-mspublisher': {
+    source: 'apache',
+    extensions: ['pub'],
     compressible: null,
   },
-  "application/x-msschedule": {
-    source: "apache",
-    extensions: ["scd"],
+  'application/x-msschedule': {
+    source: 'apache',
+    extensions: ['scd'],
     compressible: null,
   },
-  "application/x-msterminal": {
-    source: "apache",
-    extensions: ["trm"],
+  'application/x-msterminal': {
+    source: 'apache',
+    extensions: ['trm'],
     compressible: null,
   },
-  "application/x-mswrite": {
-    source: "apache",
-    extensions: ["wri"],
+  'application/x-mswrite': {
+    source: 'apache',
+    extensions: ['wri'],
     compressible: null,
   },
-  "application/x-netcdf": {
-    source: "apache",
-    extensions: ["nc", "cdf"],
+  'application/x-netcdf': {
+    source: 'apache',
+    extensions: ['nc', 'cdf'],
     compressible: null,
   },
-  "application/x-nzb": {
-    source: "apache",
-    extensions: ["nzb"],
+  'application/x-nzb': {
+    source: 'apache',
+    extensions: ['nzb'],
     compressible: null,
   },
-  "application/x-perl": {
-    source: "nginx",
-    extensions: ["pl", "pm"],
+  'application/x-perl': {
+    source: 'nginx',
+    extensions: ['pl', 'pm'],
     compressible: null,
   },
-  "application/x-pilot": {
-    source: "nginx",
-    extensions: ["prc", "pdb"],
+  'application/x-pilot': {
+    source: 'nginx',
+    extensions: ['prc', 'pdb'],
     compressible: null,
   },
-  "application/x-pkcs12": {
-    source: "apache",
+  'application/x-pkcs12': {
+    source: 'apache',
     compressible: false,
-    extensions: ["p12", "pfx"],
+    extensions: ['p12', 'pfx'],
   },
-  "application/x-pkcs7-certificates": {
-    source: "apache",
-    extensions: ["p7b", "spc"],
+  'application/x-pkcs7-certificates': {
+    source: 'apache',
+    extensions: ['p7b', 'spc'],
     compressible: null,
   },
-  "application/x-pkcs7-certreqresp": {
-    source: "apache",
-    extensions: ["p7r"],
+  'application/x-pkcs7-certreqresp': {
+    source: 'apache',
+    extensions: ['p7r'],
     compressible: null,
   },
-  "application/x-rar-compressed": {
-    source: "apache",
+  'application/x-rar-compressed': {
+    source: 'apache',
     compressible: false,
-    extensions: ["rar"],
+    extensions: ['rar'],
   },
-  "application/x-redhat-package-manager": {
-    source: "nginx",
-    extensions: ["rpm"],
+  'application/x-redhat-package-manager': {
+    source: 'nginx',
+    extensions: ['rpm'],
     compressible: null,
   },
-  "application/x-research-info-systems": {
-    source: "apache",
-    extensions: ["ris"],
+  'application/x-research-info-systems': {
+    source: 'apache',
+    extensions: ['ris'],
     compressible: null,
   },
-  "application/x-sea": {
-    source: "nginx",
-    extensions: ["sea"],
+  'application/x-sea': {
+    source: 'nginx',
+    extensions: ['sea'],
     compressible: null,
   },
-  "application/x-sh": {
-    source: "apache",
+  'application/x-sh': {
+    source: 'apache',
     compressible: true,
-    extensions: ["sh"],
+    extensions: ['sh'],
   },
-  "application/x-shar": {
-    source: "apache",
-    extensions: ["shar"],
+  'application/x-shar': {
+    source: 'apache',
+    extensions: ['shar'],
     compressible: null,
   },
-  "application/x-shockwave-flash": {
-    source: "apache",
+  'application/x-shockwave-flash': {
+    source: 'apache',
     compressible: false,
-    extensions: ["swf"],
+    extensions: ['swf'],
   },
-  "application/x-silverlight-app": {
-    source: "apache",
-    extensions: ["xap"],
+  'application/x-silverlight-app': {
+    source: 'apache',
+    extensions: ['xap'],
     compressible: null,
   },
-  "application/x-sql": {
-    source: "apache",
-    extensions: ["sql"],
+  'application/x-sql': {
+    source: 'apache',
+    extensions: ['sql'],
     compressible: null,
   },
-  "application/x-stuffit": {
-    source: "apache",
+  'application/x-stuffit': {
+    source: 'apache',
     compressible: false,
-    extensions: ["sit"],
+    extensions: ['sit'],
   },
-  "application/x-stuffitx": {
-    source: "apache",
-    extensions: ["sitx"],
+  'application/x-stuffitx': {
+    source: 'apache',
+    extensions: ['sitx'],
     compressible: null,
   },
-  "application/x-subrip": {
-    source: "apache",
-    extensions: ["srt"],
+  'application/x-subrip': {
+    source: 'apache',
+    extensions: ['srt'],
     compressible: null,
   },
-  "application/x-sv4cpio": {
-    source: "apache",
-    extensions: ["sv4cpio"],
+  'application/x-sv4cpio': {
+    source: 'apache',
+    extensions: ['sv4cpio'],
     compressible: null,
   },
-  "application/x-sv4crc": {
-    source: "apache",
-    extensions: ["sv4crc"],
+  'application/x-sv4crc': {
+    source: 'apache',
+    extensions: ['sv4crc'],
     compressible: null,
   },
-  "application/x-t3vm-image": {
-    source: "apache",
-    extensions: ["t3"],
+  'application/x-t3vm-image': {
+    source: 'apache',
+    extensions: ['t3'],
     compressible: null,
   },
-  "application/x-tads": {
-    source: "apache",
-    extensions: ["gam"],
+  'application/x-tads': {
+    source: 'apache',
+    extensions: ['gam'],
     compressible: null,
   },
-  "application/x-tar": {
-    source: "apache",
+  'application/x-tar': {
+    source: 'apache',
     compressible: true,
-    extensions: ["tar"],
+    extensions: ['tar'],
   },
-  "application/x-tcl": {
-    source: "apache",
-    extensions: ["tcl", "tk"],
+  'application/x-tcl': {
+    source: 'apache',
+    extensions: ['tcl', 'tk'],
     compressible: null,
   },
-  "application/x-tex": {
-    source: "apache",
-    extensions: ["tex"],
+  'application/x-tex': {
+    source: 'apache',
+    extensions: ['tex'],
     compressible: null,
   },
-  "application/x-tex-tfm": {
-    source: "apache",
-    extensions: ["tfm"],
+  'application/x-tex-tfm': {
+    source: 'apache',
+    extensions: ['tfm'],
     compressible: null,
   },
-  "application/x-texinfo": {
-    source: "apache",
-    extensions: ["texinfo", "texi"],
+  'application/x-texinfo': {
+    source: 'apache',
+    extensions: ['texinfo', 'texi'],
     compressible: null,
   },
-  "application/x-tgif": {
-    source: "apache",
-    extensions: ["obj"],
+  'application/x-tgif': {
+    source: 'apache',
+    extensions: ['obj'],
     compressible: null,
   },
-  "application/x-ustar": {
-    source: "apache",
-    extensions: ["ustar"],
+  'application/x-ustar': {
+    source: 'apache',
+    extensions: ['ustar'],
     compressible: null,
   },
-  "application/x-wais-source": {
-    source: "apache",
-    extensions: ["src"],
+  'application/x-wais-source': {
+    source: 'apache',
+    extensions: ['src'],
     compressible: null,
   },
-  "application/x-x509-ca-cert": {
-    source: "iana",
-    extensions: ["der", "crt", "pem"],
+  'application/x-x509-ca-cert': {
+    source: 'iana',
+    extensions: ['der', 'crt', 'pem'],
     compressible: null,
   },
-  "application/x-xfig": {
-    source: "apache",
-    extensions: ["fig"],
+  'application/x-xfig': {
+    source: 'apache',
+    extensions: ['fig'],
     compressible: null,
   },
-  "application/x-xliff+xml": {
-    source: "apache",
+  'application/x-xliff+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["xlf"],
+    extensions: ['xlf'],
   },
-  "application/x-xpinstall": {
-    source: "apache",
+  'application/x-xpinstall': {
+    source: 'apache',
     compressible: false,
-    extensions: ["xpi"],
+    extensions: ['xpi'],
   },
-  "application/x-xz": {
-    source: "apache",
-    extensions: ["xz"],
+  'application/x-xz': {
+    source: 'apache',
+    extensions: ['xz'],
     compressible: null,
   },
-  "application/x-zmachine": {
-    source: "apache",
-    extensions: ["z1", "z2", "z3", "z4", "z5", "z6", "z7", "z8"],
+  'application/x-zmachine': {
+    source: 'apache',
+    extensions: ['z1', 'z2', 'z3', 'z4', 'z5', 'z6', 'z7', 'z8'],
     compressible: null,
   },
-  "application/xaml+xml": {
-    source: "apache",
+  'application/xaml+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["xaml"],
+    extensions: ['xaml'],
   },
-  "application/xcap-att+xml": {
-    source: "iana",
+  'application/xcap-att+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xav"],
+    extensions: ['xav'],
   },
-  "application/xcap-caps+xml": {
-    source: "iana",
+  'application/xcap-caps+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xca"],
+    extensions: ['xca'],
   },
-  "application/xcap-diff+xml": {
-    source: "iana",
+  'application/xcap-diff+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xdf"],
+    extensions: ['xdf'],
   },
-  "application/xcap-el+xml": {
-    source: "iana",
+  'application/xcap-el+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xel"],
+    extensions: ['xel'],
   },
-  "application/xcap-ns+xml": {
-    source: "iana",
+  'application/xcap-ns+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xns"],
+    extensions: ['xns'],
   },
-  "application/xenc+xml": {
-    source: "iana",
+  'application/xenc+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xenc"],
+    extensions: ['xenc'],
   },
-  "application/xhtml+xml": {
-    source: "iana",
+  'application/xhtml+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xhtml", "xht"],
+    extensions: ['xhtml', 'xht'],
   },
-  "application/xliff+xml": {
-    source: "iana",
+  'application/xliff+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xlf"],
+    extensions: ['xlf'],
   },
-  "application/xml": {
-    source: "iana",
+  'application/xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xml", "xsl", "xsd", "rng"],
+    extensions: ['xml', 'xsl', 'xsd', 'rng'],
   },
-  "application/xml-dtd": {
-    source: "iana",
+  'application/xml-dtd': {
+    source: 'iana',
     compressible: true,
-    extensions: ["dtd"],
+    extensions: ['dtd'],
   },
-  "application/xop+xml": {
-    source: "iana",
+  'application/xop+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xop"],
+    extensions: ['xop'],
   },
-  "application/xproc+xml": {
-    source: "apache",
+  'application/xproc+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["xpl"],
+    extensions: ['xpl'],
   },
-  "application/xslt+xml": {
-    source: "iana",
+  'application/xslt+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xsl", "xslt"],
+    extensions: ['xsl', 'xslt'],
   },
-  "application/xspf+xml": {
-    source: "apache",
+  'application/xspf+xml': {
+    source: 'apache',
     compressible: true,
-    extensions: ["xspf"],
+    extensions: ['xspf'],
   },
-  "application/xv+xml": {
-    source: "iana",
+  'application/xv+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["mxml", "xhvml", "xvml", "xvm"],
+    extensions: ['mxml', 'xhvml', 'xvml', 'xvm'],
   },
-  "application/yang": {
-    source: "iana",
-    extensions: ["yang"],
+  'application/yang': {
+    source: 'iana',
+    extensions: ['yang'],
     compressible: null,
   },
-  "application/yin+xml": {
-    source: "iana",
+  'application/yin+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["yin"],
+    extensions: ['yin'],
   },
-  "application/zip": {
-    source: "iana",
+  'application/zip': {
+    source: 'iana',
     compressible: false,
-    extensions: ["zip"],
+    extensions: ['zip'],
   },
-  "audio/3gpp": {
-    source: "iana",
+  'audio/3gpp': {
+    source: 'iana',
     compressible: false,
-    extensions: ["3gpp"],
+    extensions: ['3gpp'],
   },
-  "audio/adpcm": {
-    source: "apache",
-    extensions: ["adp"],
+  'audio/adpcm': {
+    source: 'apache',
+    extensions: ['adp'],
     compressible: null,
   },
-  "audio/amr": {
-    source: "iana",
-    extensions: ["amr"],
+  'audio/amr': {
+    source: 'iana',
+    extensions: ['amr'],
     compressible: null,
   },
-  "audio/basic": {
-    source: "iana",
+  'audio/basic': {
+    source: 'iana',
     compressible: false,
-    extensions: ["au", "snd"],
+    extensions: ['au', 'snd'],
   },
-  "audio/midi": {
-    source: "apache",
-    extensions: ["mid", "midi", "kar", "rmi"],
+  'audio/midi': {
+    source: 'apache',
+    extensions: ['mid', 'midi', 'kar', 'rmi'],
     compressible: null,
   },
-  "audio/mobile-xmf": {
-    source: "iana",
-    extensions: ["mxmf"],
+  'audio/mobile-xmf': {
+    source: 'iana',
+    extensions: ['mxmf'],
     compressible: null,
   },
-  "audio/mp4": {
-    source: "iana",
+  'audio/mp4': {
+    source: 'iana',
     compressible: false,
-    extensions: ["m4a", "mp4a"],
+    extensions: ['m4a', 'mp4a'],
   },
-  "audio/mpeg": {
-    source: "iana",
+  'audio/mpeg': {
+    source: 'iana',
     compressible: false,
-    extensions: ["mpga", "mp2", "mp2a", "mp3", "m2a", "m3a"],
+    extensions: ['mpga', 'mp2', 'mp2a', 'mp3', 'm2a', 'm3a'],
   },
-  "audio/ogg": {
-    source: "iana",
+  'audio/ogg': {
+    source: 'iana',
     compressible: false,
-    extensions: ["oga", "ogg", "spx", "opus"],
+    extensions: ['oga', 'ogg', 'spx', 'opus'],
   },
-  "audio/s3m": {
-    source: "apache",
-    extensions: ["s3m"],
+  'audio/s3m': {
+    source: 'apache',
+    extensions: ['s3m'],
     compressible: null,
   },
-  "audio/silk": {
-    source: "apache",
-    extensions: ["sil"],
+  'audio/silk': {
+    source: 'apache',
+    extensions: ['sil'],
     compressible: null,
   },
-  "audio/vnd.dece.audio": {
-    source: "iana",
-    extensions: ["uva", "uvva"],
+  'audio/vnd.dece.audio': {
+    source: 'iana',
+    extensions: ['uva', 'uvva'],
     compressible: null,
   },
-  "audio/vnd.digital-winds": {
-    source: "iana",
-    extensions: ["eol"],
+  'audio/vnd.digital-winds': {
+    source: 'iana',
+    extensions: ['eol'],
     compressible: null,
   },
-  "audio/vnd.dra": {
-    source: "iana",
-    extensions: ["dra"],
+  'audio/vnd.dra': {
+    source: 'iana',
+    extensions: ['dra'],
     compressible: null,
   },
-  "audio/vnd.dts": {
-    source: "iana",
-    extensions: ["dts"],
+  'audio/vnd.dts': {
+    source: 'iana',
+    extensions: ['dts'],
     compressible: null,
   },
-  "audio/vnd.dts.hd": {
-    source: "iana",
-    extensions: ["dtshd"],
+  'audio/vnd.dts.hd': {
+    source: 'iana',
+    extensions: ['dtshd'],
     compressible: null,
   },
-  "audio/vnd.lucent.voice": {
-    source: "iana",
-    extensions: ["lvp"],
+  'audio/vnd.lucent.voice': {
+    source: 'iana',
+    extensions: ['lvp'],
     compressible: null,
   },
-  "audio/vnd.ms-playready.media.pya": {
-    source: "iana",
-    extensions: ["pya"],
+  'audio/vnd.ms-playready.media.pya': {
+    source: 'iana',
+    extensions: ['pya'],
     compressible: null,
   },
-  "audio/vnd.nuera.ecelp4800": {
-    source: "iana",
-    extensions: ["ecelp4800"],
+  'audio/vnd.nuera.ecelp4800': {
+    source: 'iana',
+    extensions: ['ecelp4800'],
     compressible: null,
   },
-  "audio/vnd.nuera.ecelp7470": {
-    source: "iana",
-    extensions: ["ecelp7470"],
+  'audio/vnd.nuera.ecelp7470': {
+    source: 'iana',
+    extensions: ['ecelp7470'],
     compressible: null,
   },
-  "audio/vnd.nuera.ecelp9600": {
-    source: "iana",
-    extensions: ["ecelp9600"],
+  'audio/vnd.nuera.ecelp9600': {
+    source: 'iana',
+    extensions: ['ecelp9600'],
     compressible: null,
   },
-  "audio/vnd.rip": {
-    source: "iana",
-    extensions: ["rip"],
+  'audio/vnd.rip': {
+    source: 'iana',
+    extensions: ['rip'],
     compressible: null,
   },
-  "audio/webm": {
-    source: "apache",
+  'audio/webm': {
+    source: 'apache',
     compressible: false,
-    extensions: ["weba"],
+    extensions: ['weba'],
   },
-  "audio/x-aac": {
-    source: "apache",
+  'audio/x-aac': {
+    source: 'apache',
     compressible: false,
-    extensions: ["aac"],
+    extensions: ['aac'],
   },
-  "audio/x-aiff": {
-    source: "apache",
-    extensions: ["aif", "aiff", "aifc"],
+  'audio/x-aiff': {
+    source: 'apache',
+    extensions: ['aif', 'aiff', 'aifc'],
     compressible: null,
   },
-  "audio/x-caf": {
-    source: "apache",
+  'audio/x-caf': {
+    source: 'apache',
     compressible: false,
-    extensions: ["caf"],
+    extensions: ['caf'],
   },
-  "audio/x-flac": {
-    source: "apache",
-    extensions: ["flac"],
+  'audio/x-flac': {
+    source: 'apache',
+    extensions: ['flac'],
     compressible: null,
   },
-  "audio/x-m4a": {
-    source: "nginx",
-    extensions: ["m4a"],
+  'audio/x-m4a': {
+    source: 'nginx',
+    extensions: ['m4a'],
     compressible: null,
   },
-  "audio/x-matroska": {
-    source: "apache",
-    extensions: ["mka"],
+  'audio/x-matroska': {
+    source: 'apache',
+    extensions: ['mka'],
     compressible: null,
   },
-  "audio/x-mpegurl": {
-    source: "apache",
-    extensions: ["m3u"],
+  'audio/x-mpegurl': {
+    source: 'apache',
+    extensions: ['m3u'],
     compressible: null,
   },
-  "audio/x-ms-wax": {
-    source: "apache",
-    extensions: ["wax"],
+  'audio/x-ms-wax': {
+    source: 'apache',
+    extensions: ['wax'],
     compressible: null,
   },
-  "audio/x-ms-wma": {
-    source: "apache",
-    extensions: ["wma"],
+  'audio/x-ms-wma': {
+    source: 'apache',
+    extensions: ['wma'],
     compressible: null,
   },
-  "audio/x-pn-realaudio": {
-    source: "apache",
-    extensions: ["ram", "ra"],
+  'audio/x-pn-realaudio': {
+    source: 'apache',
+    extensions: ['ram', 'ra'],
     compressible: null,
   },
-  "audio/x-pn-realaudio-plugin": {
-    source: "apache",
-    extensions: ["rmp"],
+  'audio/x-pn-realaudio-plugin': {
+    source: 'apache',
+    extensions: ['rmp'],
     compressible: null,
   },
-  "audio/x-realaudio": {
-    source: "nginx",
-    extensions: ["ra"],
+  'audio/x-realaudio': {
+    source: 'nginx',
+    extensions: ['ra'],
     compressible: null,
   },
-  "audio/x-wav": {
-    source: "apache",
-    extensions: ["wav"],
+  'audio/x-wav': {
+    source: 'apache',
+    extensions: ['wav'],
     compressible: null,
   },
-  "audio/xm": {
-    source: "apache",
-    extensions: ["xm"],
+  'audio/xm': {
+    source: 'apache',
+    extensions: ['xm'],
     compressible: null,
   },
-  "chemical/x-cdx": {
-    source: "apache",
-    extensions: ["cdx"],
+  'chemical/x-cdx': {
+    source: 'apache',
+    extensions: ['cdx'],
     compressible: null,
   },
-  "chemical/x-cif": {
-    source: "apache",
-    extensions: ["cif"],
+  'chemical/x-cif': {
+    source: 'apache',
+    extensions: ['cif'],
     compressible: null,
   },
-  "chemical/x-cmdf": {
-    source: "apache",
-    extensions: ["cmdf"],
+  'chemical/x-cmdf': {
+    source: 'apache',
+    extensions: ['cmdf'],
     compressible: null,
   },
-  "chemical/x-cml": {
-    source: "apache",
-    extensions: ["cml"],
+  'chemical/x-cml': {
+    source: 'apache',
+    extensions: ['cml'],
     compressible: null,
   },
-  "chemical/x-csml": {
-    source: "apache",
-    extensions: ["csml"],
+  'chemical/x-csml': {
+    source: 'apache',
+    extensions: ['csml'],
     compressible: null,
   },
-  "chemical/x-xyz": {
-    source: "apache",
-    extensions: ["xyz"],
+  'chemical/x-xyz': {
+    source: 'apache',
+    extensions: ['xyz'],
     compressible: null,
   },
-  "font/collection": {
-    source: "iana",
-    extensions: ["ttc"],
+  'font/collection': {
+    source: 'iana',
+    extensions: ['ttc'],
     compressible: null,
   },
-  "font/otf": {
-    source: "iana",
+  'font/otf': {
+    source: 'iana',
     compressible: true,
-    extensions: ["otf"],
+    extensions: ['otf'],
   },
-  "font/ttf": {
-    source: "iana",
+  'font/ttf': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ttf"],
+    extensions: ['ttf'],
   },
-  "font/woff": {
-    source: "iana",
-    extensions: ["woff"],
+  'font/woff': {
+    source: 'iana',
+    extensions: ['woff'],
     compressible: null,
   },
-  "font/woff2": {
-    source: "iana",
-    extensions: ["woff2"],
+  'font/woff2': {
+    source: 'iana',
+    extensions: ['woff2'],
     compressible: null,
   },
-  "image/aces": {
-    source: "iana",
-    extensions: ["exr"],
+  'image/aces': {
+    source: 'iana',
+    extensions: ['exr'],
     compressible: null,
   },
-  "image/avci": {
-    source: "iana",
-    extensions: ["avci"],
+  'image/avci': {
+    source: 'iana',
+    extensions: ['avci'],
     compressible: null,
   },
-  "image/avcs": {
-    source: "iana",
-    extensions: ["avcs"],
+  'image/avcs': {
+    source: 'iana',
+    extensions: ['avcs'],
     compressible: null,
   },
-  "image/avif": {
-    source: "iana",
+  'image/avif': {
+    source: 'iana',
     compressible: false,
-    extensions: ["avif"],
+    extensions: ['avif'],
   },
-  "image/bmp": {
-    source: "iana",
+  'image/bmp': {
+    source: 'iana',
     compressible: true,
-    extensions: ["bmp"],
+    extensions: ['bmp'],
   },
-  "image/cgm": {
-    source: "iana",
-    extensions: ["cgm"],
+  'image/cgm': {
+    source: 'iana',
+    extensions: ['cgm'],
     compressible: null,
   },
-  "image/dicom-rle": {
-    source: "iana",
-    extensions: ["drle"],
+  'image/dicom-rle': {
+    source: 'iana',
+    extensions: ['drle'],
     compressible: null,
   },
-  "image/emf": {
-    source: "iana",
-    extensions: ["emf"],
+  'image/emf': {
+    source: 'iana',
+    extensions: ['emf'],
     compressible: null,
   },
-  "image/fits": {
-    source: "iana",
-    extensions: ["fits"],
+  'image/fits': {
+    source: 'iana',
+    extensions: ['fits'],
     compressible: null,
   },
-  "image/g3fax": {
-    source: "iana",
-    extensions: ["g3"],
+  'image/g3fax': {
+    source: 'iana',
+    extensions: ['g3'],
     compressible: null,
   },
-  "image/gif": {
-    source: "iana",
+  'image/gif': {
+    source: 'iana',
     compressible: false,
-    extensions: ["gif"],
+    extensions: ['gif'],
   },
-  "image/heic": {
-    source: "iana",
-    extensions: ["heic"],
+  'image/heic': {
+    source: 'iana',
+    extensions: ['heic'],
     compressible: null,
   },
-  "image/heic-sequence": {
-    source: "iana",
-    extensions: ["heics"],
+  'image/heic-sequence': {
+    source: 'iana',
+    extensions: ['heics'],
     compressible: null,
   },
-  "image/heif": {
-    source: "iana",
-    extensions: ["heif"],
+  'image/heif': {
+    source: 'iana',
+    extensions: ['heif'],
     compressible: null,
   },
-  "image/heif-sequence": {
-    source: "iana",
-    extensions: ["heifs"],
+  'image/heif-sequence': {
+    source: 'iana',
+    extensions: ['heifs'],
     compressible: null,
   },
-  "image/hej2k": {
-    source: "iana",
-    extensions: ["hej2"],
+  'image/hej2k': {
+    source: 'iana',
+    extensions: ['hej2'],
     compressible: null,
   },
-  "image/hsj2": {
-    source: "iana",
-    extensions: ["hsj2"],
+  'image/hsj2': {
+    source: 'iana',
+    extensions: ['hsj2'],
     compressible: null,
   },
-  "image/ief": {
-    source: "iana",
-    extensions: ["ief"],
+  'image/ief': {
+    source: 'iana',
+    extensions: ['ief'],
     compressible: null,
   },
-  "image/jls": {
-    source: "iana",
-    extensions: ["jls"],
+  'image/jls': {
+    source: 'iana',
+    extensions: ['jls'],
     compressible: null,
   },
-  "image/jp2": {
-    source: "iana",
+  'image/jp2': {
+    source: 'iana',
     compressible: false,
-    extensions: ["jp2", "jpg2"],
+    extensions: ['jp2', 'jpg2'],
   },
-  "image/jpeg": {
-    source: "iana",
+  'image/jpeg': {
+    source: 'iana',
     compressible: false,
-    extensions: ["jpeg", "jpg", "jpe"],
+    extensions: ['jpeg', 'jpg', 'jpe'],
   },
-  "image/jph": {
-    source: "iana",
-    extensions: ["jph"],
+  'image/jph': {
+    source: 'iana',
+    extensions: ['jph'],
     compressible: null,
   },
-  "image/jphc": {
-    source: "iana",
-    extensions: ["jhc"],
+  'image/jphc': {
+    source: 'iana',
+    extensions: ['jhc'],
     compressible: null,
   },
-  "image/jpm": {
-    source: "iana",
+  'image/jpm': {
+    source: 'iana',
     compressible: false,
-    extensions: ["jpm"],
+    extensions: ['jpm'],
   },
-  "image/jpx": {
-    source: "iana",
+  'image/jpx': {
+    source: 'iana',
     compressible: false,
-    extensions: ["jpx", "jpf"],
+    extensions: ['jpx', 'jpf'],
   },
-  "image/jxr": {
-    source: "iana",
-    extensions: ["jxr"],
+  'image/jxr': {
+    source: 'iana',
+    extensions: ['jxr'],
     compressible: null,
   },
-  "image/jxra": {
-    source: "iana",
-    extensions: ["jxra"],
+  'image/jxra': {
+    source: 'iana',
+    extensions: ['jxra'],
     compressible: null,
   },
-  "image/jxrs": {
-    source: "iana",
-    extensions: ["jxrs"],
+  'image/jxrs': {
+    source: 'iana',
+    extensions: ['jxrs'],
     compressible: null,
   },
-  "image/jxs": {
-    source: "iana",
-    extensions: ["jxs"],
+  'image/jxs': {
+    source: 'iana',
+    extensions: ['jxs'],
     compressible: null,
   },
-  "image/jxsc": {
-    source: "iana",
-    extensions: ["jxsc"],
+  'image/jxsc': {
+    source: 'iana',
+    extensions: ['jxsc'],
     compressible: null,
   },
-  "image/jxsi": {
-    source: "iana",
-    extensions: ["jxsi"],
+  'image/jxsi': {
+    source: 'iana',
+    extensions: ['jxsi'],
     compressible: null,
   },
-  "image/jxss": {
-    source: "iana",
-    extensions: ["jxss"],
+  'image/jxss': {
+    source: 'iana',
+    extensions: ['jxss'],
     compressible: null,
   },
-  "image/ktx": {
-    source: "iana",
-    extensions: ["ktx"],
+  'image/ktx': {
+    source: 'iana',
+    extensions: ['ktx'],
     compressible: null,
   },
-  "image/ktx2": {
-    source: "iana",
-    extensions: ["ktx2"],
+  'image/ktx2': {
+    source: 'iana',
+    extensions: ['ktx2'],
     compressible: null,
   },
-  "image/png": {
-    source: "iana",
+  'image/png': {
+    source: 'iana',
     compressible: false,
-    extensions: ["png"],
+    extensions: ['png'],
   },
-  "image/prs.btif": {
-    source: "iana",
-    extensions: ["btif"],
+  'image/prs.btif': {
+    source: 'iana',
+    extensions: ['btif'],
     compressible: null,
   },
-  "image/prs.pti": {
-    source: "iana",
-    extensions: ["pti"],
+  'image/prs.pti': {
+    source: 'iana',
+    extensions: ['pti'],
     compressible: null,
   },
-  "image/sgi": {
-    source: "apache",
-    extensions: ["sgi"],
+  'image/sgi': {
+    source: 'apache',
+    extensions: ['sgi'],
     compressible: null,
   },
-  "image/svg+xml": {
-    source: "iana",
+  'image/svg+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["svg", "svgz"],
+    extensions: ['svg', 'svgz'],
   },
-  "image/t38": {
-    source: "iana",
-    extensions: ["t38"],
+  'image/t38': {
+    source: 'iana',
+    extensions: ['t38'],
     compressible: null,
   },
-  "image/tiff": {
-    source: "iana",
+  'image/tiff': {
+    source: 'iana',
     compressible: false,
-    extensions: ["tif", "tiff"],
+    extensions: ['tif', 'tiff'],
   },
-  "image/tiff-fx": {
-    source: "iana",
-    extensions: ["tfx"],
+  'image/tiff-fx': {
+    source: 'iana',
+    extensions: ['tfx'],
     compressible: null,
   },
-  "image/vnd.adobe.photoshop": {
-    source: "iana",
+  'image/vnd.adobe.photoshop': {
+    source: 'iana',
     compressible: true,
-    extensions: ["psd"],
+    extensions: ['psd'],
   },
-  "image/vnd.airzip.accelerator.azv": {
-    source: "iana",
-    extensions: ["azv"],
+  'image/vnd.airzip.accelerator.azv': {
+    source: 'iana',
+    extensions: ['azv'],
     compressible: null,
   },
-  "image/vnd.dece.graphic": {
-    source: "iana",
-    extensions: ["uvi", "uvvi", "uvg", "uvvg"],
+  'image/vnd.dece.graphic': {
+    source: 'iana',
+    extensions: ['uvi', 'uvvi', 'uvg', 'uvvg'],
     compressible: null,
   },
-  "image/vnd.djvu": {
-    source: "iana",
-    extensions: ["djvu", "djv"],
+  'image/vnd.djvu': {
+    source: 'iana',
+    extensions: ['djvu', 'djv'],
     compressible: null,
   },
-  "image/vnd.dvb.subtitle": {
-    source: "iana",
-    extensions: ["sub"],
+  'image/vnd.dvb.subtitle': {
+    source: 'iana',
+    extensions: ['sub'],
     compressible: null,
   },
-  "image/vnd.dwg": {
-    source: "iana",
-    extensions: ["dwg"],
+  'image/vnd.dwg': {
+    source: 'iana',
+    extensions: ['dwg'],
     compressible: null,
   },
-  "image/vnd.dxf": {
-    source: "iana",
-    extensions: ["dxf"],
+  'image/vnd.dxf': {
+    source: 'iana',
+    extensions: ['dxf'],
     compressible: null,
   },
-  "image/vnd.fastbidsheet": {
-    source: "iana",
-    extensions: ["fbs"],
+  'image/vnd.fastbidsheet': {
+    source: 'iana',
+    extensions: ['fbs'],
     compressible: null,
   },
-  "image/vnd.fpx": {
-    source: "iana",
-    extensions: ["fpx"],
+  'image/vnd.fpx': {
+    source: 'iana',
+    extensions: ['fpx'],
     compressible: null,
   },
-  "image/vnd.fst": {
-    source: "iana",
-    extensions: ["fst"],
+  'image/vnd.fst': {
+    source: 'iana',
+    extensions: ['fst'],
     compressible: null,
   },
-  "image/vnd.fujixerox.edmics-mmr": {
-    source: "iana",
-    extensions: ["mmr"],
+  'image/vnd.fujixerox.edmics-mmr': {
+    source: 'iana',
+    extensions: ['mmr'],
     compressible: null,
   },
-  "image/vnd.fujixerox.edmics-rlc": {
-    source: "iana",
-    extensions: ["rlc"],
+  'image/vnd.fujixerox.edmics-rlc': {
+    source: 'iana',
+    extensions: ['rlc'],
     compressible: null,
   },
-  "image/vnd.microsoft.icon": {
-    source: "iana",
+  'image/vnd.microsoft.icon': {
+    source: 'iana',
     compressible: true,
-    extensions: ["ico"],
+    extensions: ['ico'],
   },
-  "image/vnd.ms-modi": {
-    source: "iana",
-    extensions: ["mdi"],
+  'image/vnd.ms-modi': {
+    source: 'iana',
+    extensions: ['mdi'],
     compressible: null,
   },
-  "image/vnd.ms-photo": {
-    source: "apache",
-    extensions: ["wdp"],
+  'image/vnd.ms-photo': {
+    source: 'apache',
+    extensions: ['wdp'],
     compressible: null,
   },
-  "image/vnd.net-fpx": {
-    source: "iana",
-    extensions: ["npx"],
+  'image/vnd.net-fpx': {
+    source: 'iana',
+    extensions: ['npx'],
     compressible: null,
   },
-  "image/vnd.pco.b16": {
-    source: "iana",
-    extensions: ["b16"],
+  'image/vnd.pco.b16': {
+    source: 'iana',
+    extensions: ['b16'],
     compressible: null,
   },
-  "image/vnd.tencent.tap": {
-    source: "iana",
-    extensions: ["tap"],
+  'image/vnd.tencent.tap': {
+    source: 'iana',
+    extensions: ['tap'],
     compressible: null,
   },
-  "image/vnd.valve.source.texture": {
-    source: "iana",
-    extensions: ["vtf"],
+  'image/vnd.valve.source.texture': {
+    source: 'iana',
+    extensions: ['vtf'],
     compressible: null,
   },
-  "image/vnd.wap.wbmp": {
-    source: "iana",
-    extensions: ["wbmp"],
+  'image/vnd.wap.wbmp': {
+    source: 'iana',
+    extensions: ['wbmp'],
     compressible: null,
   },
-  "image/vnd.xiff": {
-    source: "iana",
-    extensions: ["xif"],
+  'image/vnd.xiff': {
+    source: 'iana',
+    extensions: ['xif'],
     compressible: null,
   },
-  "image/vnd.zbrush.pcx": {
-    source: "iana",
-    extensions: ["pcx"],
+  'image/vnd.zbrush.pcx': {
+    source: 'iana',
+    extensions: ['pcx'],
     compressible: null,
   },
-  "image/webp": {
-    source: "apache",
-    extensions: ["webp"],
+  'image/webp': {
+    source: 'apache',
+    extensions: ['webp'],
     compressible: null,
   },
-  "image/wmf": {
-    source: "iana",
-    extensions: ["wmf"],
+  'image/wmf': {
+    source: 'iana',
+    extensions: ['wmf'],
     compressible: null,
   },
-  "image/x-3ds": {
-    source: "apache",
-    extensions: ["3ds"],
+  'image/x-3ds': {
+    source: 'apache',
+    extensions: ['3ds'],
     compressible: null,
   },
-  "image/x-cmu-raster": {
-    source: "apache",
-    extensions: ["ras"],
+  'image/x-cmu-raster': {
+    source: 'apache',
+    extensions: ['ras'],
     compressible: null,
   },
-  "image/x-cmx": {
-    source: "apache",
-    extensions: ["cmx"],
+  'image/x-cmx': {
+    source: 'apache',
+    extensions: ['cmx'],
     compressible: null,
   },
-  "image/x-freehand": {
-    source: "apache",
-    extensions: ["fh", "fhc", "fh4", "fh5", "fh7"],
+  'image/x-freehand': {
+    source: 'apache',
+    extensions: ['fh', 'fhc', 'fh4', 'fh5', 'fh7'],
     compressible: null,
   },
-  "image/x-icon": {
-    source: "apache",
+  'image/x-icon': {
+    source: 'apache',
     compressible: true,
-    extensions: ["ico"],
+    extensions: ['ico'],
   },
-  "image/x-jng": {
-    source: "nginx",
-    extensions: ["jng"],
+  'image/x-jng': {
+    source: 'nginx',
+    extensions: ['jng'],
     compressible: null,
   },
-  "image/x-mrsid-image": {
-    source: "apache",
-    extensions: ["sid"],
+  'image/x-mrsid-image': {
+    source: 'apache',
+    extensions: ['sid'],
     compressible: null,
   },
-  "image/x-ms-bmp": {
-    source: "nginx",
+  'image/x-ms-bmp': {
+    source: 'nginx',
     compressible: true,
-    extensions: ["bmp"],
+    extensions: ['bmp'],
   },
-  "image/x-pcx": {
-    source: "apache",
-    extensions: ["pcx"],
+  'image/x-pcx': {
+    source: 'apache',
+    extensions: ['pcx'],
     compressible: null,
   },
-  "image/x-pict": {
-    source: "apache",
-    extensions: ["pic", "pct"],
+  'image/x-pict': {
+    source: 'apache',
+    extensions: ['pic', 'pct'],
     compressible: null,
   },
-  "image/x-portable-anymap": {
-    source: "apache",
-    extensions: ["pnm"],
+  'image/x-portable-anymap': {
+    source: 'apache',
+    extensions: ['pnm'],
     compressible: null,
   },
-  "image/x-portable-bitmap": {
-    source: "apache",
-    extensions: ["pbm"],
+  'image/x-portable-bitmap': {
+    source: 'apache',
+    extensions: ['pbm'],
     compressible: null,
   },
-  "image/x-portable-graymap": {
-    source: "apache",
-    extensions: ["pgm"],
+  'image/x-portable-graymap': {
+    source: 'apache',
+    extensions: ['pgm'],
     compressible: null,
   },
-  "image/x-portable-pixmap": {
-    source: "apache",
-    extensions: ["ppm"],
+  'image/x-portable-pixmap': {
+    source: 'apache',
+    extensions: ['ppm'],
     compressible: null,
   },
-  "image/x-rgb": {
-    source: "apache",
-    extensions: ["rgb"],
+  'image/x-rgb': {
+    source: 'apache',
+    extensions: ['rgb'],
     compressible: null,
   },
-  "image/x-tga": {
-    source: "apache",
-    extensions: ["tga"],
+  'image/x-tga': {
+    source: 'apache',
+    extensions: ['tga'],
     compressible: null,
   },
-  "image/x-xbitmap": {
-    source: "apache",
-    extensions: ["xbm"],
+  'image/x-xbitmap': {
+    source: 'apache',
+    extensions: ['xbm'],
     compressible: null,
   },
-  "image/x-xpixmap": {
-    source: "apache",
-    extensions: ["xpm"],
+  'image/x-xpixmap': {
+    source: 'apache',
+    extensions: ['xpm'],
     compressible: null,
   },
-  "image/x-xwindowdump": {
-    source: "apache",
-    extensions: ["xwd"],
+  'image/x-xwindowdump': {
+    source: 'apache',
+    extensions: ['xwd'],
     compressible: null,
   },
-  "message/disposition-notification": {
-    source: "iana",
-    extensions: ["disposition-notification"],
+  'message/disposition-notification': {
+    source: 'iana',
+    extensions: ['disposition-notification'],
     compressible: null,
   },
-  "message/global": {
-    source: "iana",
-    extensions: ["u8msg"],
+  'message/global': {
+    source: 'iana',
+    extensions: ['u8msg'],
     compressible: null,
   },
-  "message/global-delivery-status": {
-    source: "iana",
-    extensions: ["u8dsn"],
+  'message/global-delivery-status': {
+    source: 'iana',
+    extensions: ['u8dsn'],
     compressible: null,
   },
-  "message/global-disposition-notification": {
-    source: "iana",
-    extensions: ["u8mdn"],
+  'message/global-disposition-notification': {
+    source: 'iana',
+    extensions: ['u8mdn'],
     compressible: null,
   },
-  "message/global-headers": {
-    source: "iana",
-    extensions: ["u8hdr"],
+  'message/global-headers': {
+    source: 'iana',
+    extensions: ['u8hdr'],
     compressible: null,
   },
-  "message/rfc822": {
-    source: "iana",
+  'message/rfc822': {
+    source: 'iana',
     compressible: true,
-    extensions: ["eml", "mime"],
+    extensions: ['eml', 'mime'],
   },
-  "message/vnd.wfa.wsc": {
-    source: "iana",
-    extensions: ["wsc"],
+  'message/vnd.wfa.wsc': {
+    source: 'iana',
+    extensions: ['wsc'],
     compressible: null,
   },
-  "model/3mf": {
-    source: "iana",
-    extensions: ["3mf"],
+  'model/3mf': {
+    source: 'iana',
+    extensions: ['3mf'],
     compressible: null,
   },
-  "model/gltf+json": {
-    source: "iana",
+  'model/gltf+json': {
+    source: 'iana',
     compressible: true,
-    extensions: ["gltf"],
+    extensions: ['gltf'],
   },
-  "model/gltf-binary": {
-    source: "iana",
+  'model/gltf-binary': {
+    source: 'iana',
     compressible: true,
-    extensions: ["glb"],
+    extensions: ['glb'],
   },
-  "model/iges": {
-    source: "iana",
+  'model/iges': {
+    source: 'iana',
     compressible: false,
-    extensions: ["igs", "iges"],
+    extensions: ['igs', 'iges'],
   },
-  "model/mesh": {
-    source: "iana",
+  'model/mesh': {
+    source: 'iana',
     compressible: false,
-    extensions: ["msh", "mesh", "silo"],
+    extensions: ['msh', 'mesh', 'silo'],
   },
-  "model/mtl": {
-    source: "iana",
-    extensions: ["mtl"],
+  'model/mtl': {
+    source: 'iana',
+    extensions: ['mtl'],
     compressible: null,
   },
-  "model/obj": {
-    source: "iana",
-    extensions: ["obj"],
+  'model/obj': {
+    source: 'iana',
+    extensions: ['obj'],
     compressible: null,
   },
-  "model/step+xml": {
-    source: "iana",
+  'model/step+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["stpx"],
+    extensions: ['stpx'],
   },
-  "model/step+zip": {
-    source: "iana",
+  'model/step+zip': {
+    source: 'iana',
     compressible: false,
-    extensions: ["stpz"],
+    extensions: ['stpz'],
   },
-  "model/step-xml+zip": {
-    source: "iana",
+  'model/step-xml+zip': {
+    source: 'iana',
     compressible: false,
-    extensions: ["stpxz"],
+    extensions: ['stpxz'],
   },
-  "model/stl": {
-    source: "iana",
-    extensions: ["stl"],
+  'model/stl': {
+    source: 'iana',
+    extensions: ['stl'],
     compressible: null,
   },
-  "model/vnd.collada+xml": {
-    source: "iana",
+  'model/vnd.collada+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["dae"],
+    extensions: ['dae'],
   },
-  "model/vnd.dwf": {
-    source: "iana",
-    extensions: ["dwf"],
+  'model/vnd.dwf': {
+    source: 'iana',
+    extensions: ['dwf'],
     compressible: null,
   },
-  "model/vnd.gdl": {
-    source: "iana",
-    extensions: ["gdl"],
+  'model/vnd.gdl': {
+    source: 'iana',
+    extensions: ['gdl'],
     compressible: null,
   },
-  "model/vnd.gtw": {
-    source: "iana",
-    extensions: ["gtw"],
+  'model/vnd.gtw': {
+    source: 'iana',
+    extensions: ['gtw'],
     compressible: null,
   },
-  "model/vnd.mts": {
-    source: "iana",
-    extensions: ["mts"],
+  'model/vnd.mts': {
+    source: 'iana',
+    extensions: ['mts'],
     compressible: null,
   },
-  "model/vnd.opengex": {
-    source: "iana",
-    extensions: ["ogex"],
+  'model/vnd.opengex': {
+    source: 'iana',
+    extensions: ['ogex'],
     compressible: null,
   },
-  "model/vnd.parasolid.transmit.binary": {
-    source: "iana",
-    extensions: ["x_b"],
+  'model/vnd.parasolid.transmit.binary': {
+    source: 'iana',
+    extensions: ['x_b'],
     compressible: null,
   },
-  "model/vnd.parasolid.transmit.text": {
-    source: "iana",
-    extensions: ["x_t"],
+  'model/vnd.parasolid.transmit.text': {
+    source: 'iana',
+    extensions: ['x_t'],
     compressible: null,
   },
-  "model/vnd.sap.vds": {
-    source: "iana",
-    extensions: ["vds"],
+  'model/vnd.sap.vds': {
+    source: 'iana',
+    extensions: ['vds'],
     compressible: null,
   },
-  "model/vnd.usdz+zip": {
-    source: "iana",
+  'model/vnd.usdz+zip': {
+    source: 'iana',
     compressible: false,
-    extensions: ["usdz"],
+    extensions: ['usdz'],
   },
-  "model/vnd.valve.source.compiled-map": {
-    source: "iana",
-    extensions: ["bsp"],
+  'model/vnd.valve.source.compiled-map': {
+    source: 'iana',
+    extensions: ['bsp'],
     compressible: null,
   },
-  "model/vnd.vtu": {
-    source: "iana",
-    extensions: ["vtu"],
+  'model/vnd.vtu': {
+    source: 'iana',
+    extensions: ['vtu'],
     compressible: null,
   },
-  "model/vrml": {
-    source: "iana",
+  'model/vrml': {
+    source: 'iana',
     compressible: false,
-    extensions: ["wrl", "vrml"],
+    extensions: ['wrl', 'vrml'],
   },
-  "model/x3d+binary": {
-    source: "apache",
+  'model/x3d+binary': {
+    source: 'apache',
     compressible: false,
-    extensions: ["x3db", "x3dbz"],
+    extensions: ['x3db', 'x3dbz'],
   },
-  "model/x3d+fastinfoset": {
-    source: "iana",
-    extensions: ["x3db"],
+  'model/x3d+fastinfoset': {
+    source: 'iana',
+    extensions: ['x3db'],
     compressible: null,
   },
-  "model/x3d+vrml": {
-    source: "apache",
+  'model/x3d+vrml': {
+    source: 'apache',
     compressible: false,
-    extensions: ["x3dv", "x3dvz"],
+    extensions: ['x3dv', 'x3dvz'],
   },
-  "model/x3d+xml": {
-    source: "iana",
+  'model/x3d+xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["x3d", "x3dz"],
+    extensions: ['x3d', 'x3dz'],
   },
-  "model/x3d-vrml": {
-    source: "iana",
-    extensions: ["x3dv"],
+  'model/x3d-vrml': {
+    source: 'iana',
+    extensions: ['x3dv'],
     compressible: null,
   },
-  "text/cache-manifest": {
-    source: "iana",
+  'text/cache-manifest': {
+    source: 'iana',
     compressible: true,
-    extensions: ["appcache", "manifest"],
+    extensions: ['appcache', 'manifest'],
   },
-  "text/calendar": {
-    source: "iana",
-    extensions: ["ics", "ifb"],
+  'text/calendar': {
+    source: 'iana',
+    extensions: ['ics', 'ifb'],
     compressible: null,
   },
-  "text/css": {
-    source: "iana",
-    charset: "UTF-8",
+  'text/css': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["css"],
+    extensions: ['css'],
   },
-  "text/csv": {
-    source: "iana",
+  'text/csv': {
+    source: 'iana',
     compressible: true,
-    extensions: ["csv"],
+    extensions: ['csv'],
   },
-  "text/html": {
-    source: "iana",
+  'text/html': {
+    source: 'iana',
     compressible: true,
-    extensions: ["html", "htm", "shtml"],
+    extensions: ['html', 'htm', 'shtml'],
   },
-  "text/markdown": {
-    source: "iana",
+  'text/markdown': {
+    source: 'iana',
     compressible: true,
-    extensions: ["markdown", "md"],
+    extensions: ['markdown', 'md'],
   },
-  "text/mathml": {
-    source: "nginx",
-    extensions: ["mml"],
+  'text/mathml': {
+    source: 'nginx',
+    extensions: ['mml'],
     compressible: null,
   },
-  "text/n3": {
-    source: "iana",
-    charset: "UTF-8",
+  'text/n3': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["n3"],
+    extensions: ['n3'],
   },
-  "text/plain": {
-    source: "iana",
+  'text/plain': {
+    source: 'iana',
     compressible: true,
-    extensions: ["txt", "text", "conf", "def", "list", "log", "in", "ini"],
+    extensions: ['txt', 'text', 'conf', 'def', 'list', 'log', 'in', 'ini'],
   },
-  "text/prs.lines.tag": {
-    source: "iana",
-    extensions: ["dsc"],
+  'text/prs.lines.tag': {
+    source: 'iana',
+    extensions: ['dsc'],
     compressible: null,
   },
-  "text/richtext": {
-    source: "iana",
+  'text/richtext': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rtx"],
+    extensions: ['rtx'],
   },
-  "text/rtf": {
-    source: "iana",
+  'text/rtf': {
+    source: 'iana',
     compressible: true,
-    extensions: ["rtf"],
+    extensions: ['rtf'],
   },
-  "text/sgml": {
-    source: "iana",
-    extensions: ["sgml", "sgm"],
+  'text/sgml': {
+    source: 'iana',
+    extensions: ['sgml', 'sgm'],
     compressible: null,
   },
-  "text/shex": {
-    source: "iana",
-    extensions: ["shex"],
+  'text/shex': {
+    source: 'iana',
+    extensions: ['shex'],
     compressible: null,
   },
-  "text/spdx": {
-    source: "iana",
-    extensions: ["spdx"],
+  'text/spdx': {
+    source: 'iana',
+    extensions: ['spdx'],
     compressible: null,
   },
-  "text/tab-separated-values": {
-    source: "iana",
+  'text/tab-separated-values': {
+    source: 'iana',
     compressible: true,
-    extensions: ["tsv"],
+    extensions: ['tsv'],
   },
-  "text/troff": {
-    source: "iana",
-    extensions: ["t", "tr", "roff", "man", "me", "ms"],
+  'text/troff': {
+    source: 'iana',
+    extensions: ['t', 'tr', 'roff', 'man', 'me', 'ms'],
     compressible: null,
   },
-  "text/turtle": {
-    source: "iana",
-    charset: "UTF-8",
-    extensions: ["ttl"],
+  'text/turtle': {
+    source: 'iana',
+    charset: 'UTF-8',
+    extensions: ['ttl'],
     compressible: null,
   },
-  "text/uri-list": {
-    source: "iana",
+  'text/uri-list': {
+    source: 'iana',
     compressible: true,
-    extensions: ["uri", "uris", "urls"],
+    extensions: ['uri', 'uris', 'urls'],
   },
-  "text/vcard": {
-    source: "iana",
+  'text/vcard': {
+    source: 'iana',
     compressible: true,
-    extensions: ["vcard"],
+    extensions: ['vcard'],
   },
-  "text/vnd.curl": {
-    source: "iana",
-    extensions: ["curl"],
+  'text/vnd.curl': {
+    source: 'iana',
+    extensions: ['curl'],
     compressible: null,
   },
-  "text/vnd.curl.dcurl": {
-    source: "apache",
-    extensions: ["dcurl"],
+  'text/vnd.curl.dcurl': {
+    source: 'apache',
+    extensions: ['dcurl'],
     compressible: null,
   },
-  "text/vnd.curl.mcurl": {
-    source: "apache",
-    extensions: ["mcurl"],
+  'text/vnd.curl.mcurl': {
+    source: 'apache',
+    extensions: ['mcurl'],
     compressible: null,
   },
-  "text/vnd.curl.scurl": {
-    source: "apache",
-    extensions: ["scurl"],
+  'text/vnd.curl.scurl': {
+    source: 'apache',
+    extensions: ['scurl'],
     compressible: null,
   },
-  "text/vnd.dvb.subtitle": {
-    source: "iana",
-    extensions: ["sub"],
+  'text/vnd.dvb.subtitle': {
+    source: 'iana',
+    extensions: ['sub'],
     compressible: null,
   },
-  "text/vnd.familysearch.gedcom": {
-    source: "iana",
-    extensions: ["ged"],
+  'text/vnd.familysearch.gedcom': {
+    source: 'iana',
+    extensions: ['ged'],
     compressible: null,
   },
-  "text/vnd.fly": {
-    source: "iana",
-    extensions: ["fly"],
+  'text/vnd.fly': {
+    source: 'iana',
+    extensions: ['fly'],
     compressible: null,
   },
-  "text/vnd.fmi.flexstor": {
-    source: "iana",
-    extensions: ["flx"],
+  'text/vnd.fmi.flexstor': {
+    source: 'iana',
+    extensions: ['flx'],
     compressible: null,
   },
-  "text/vnd.graphviz": {
-    source: "iana",
-    extensions: ["gv"],
+  'text/vnd.graphviz': {
+    source: 'iana',
+    extensions: ['gv'],
     compressible: null,
   },
-  "text/vnd.in3d.3dml": {
-    source: "iana",
-    extensions: ["3dml"],
+  'text/vnd.in3d.3dml': {
+    source: 'iana',
+    extensions: ['3dml'],
     compressible: null,
   },
-  "text/vnd.in3d.spot": {
-    source: "iana",
-    extensions: ["spot"],
+  'text/vnd.in3d.spot': {
+    source: 'iana',
+    extensions: ['spot'],
     compressible: null,
   },
-  "text/vnd.sun.j2me.app-descriptor": {
-    source: "iana",
-    charset: "UTF-8",
-    extensions: ["jad"],
+  'text/vnd.sun.j2me.app-descriptor': {
+    source: 'iana',
+    charset: 'UTF-8',
+    extensions: ['jad'],
     compressible: null,
   },
-  "text/vnd.wap.wml": {
-    source: "iana",
-    extensions: ["wml"],
+  'text/vnd.wap.wml': {
+    source: 'iana',
+    extensions: ['wml'],
     compressible: null,
   },
-  "text/vnd.wap.wmlscript": {
-    source: "iana",
-    extensions: ["wmls"],
+  'text/vnd.wap.wmlscript': {
+    source: 'iana',
+    extensions: ['wmls'],
     compressible: null,
   },
-  "text/vtt": {
-    source: "iana",
-    charset: "UTF-8",
+  'text/vtt': {
+    source: 'iana',
+    charset: 'UTF-8',
     compressible: true,
-    extensions: ["vtt"],
+    extensions: ['vtt'],
   },
-  "text/x-asm": {
-    source: "apache",
-    extensions: ["s", "asm"],
+  'text/x-asm': {
+    source: 'apache',
+    extensions: ['s', 'asm'],
     compressible: null,
   },
-  "text/x-c": {
-    source: "apache",
-    extensions: ["c", "cc", "cxx", "cpp", "h", "hh", "dic"],
+  'text/x-c': {
+    source: 'apache',
+    extensions: ['c', 'cc', 'cxx', 'cpp', 'h', 'hh', 'dic'],
     compressible: null,
   },
-  "text/x-component": {
-    source: "nginx",
-    extensions: ["htc"],
+  'text/x-component': {
+    source: 'nginx',
+    extensions: ['htc'],
     compressible: null,
   },
-  "text/x-fortran": {
-    source: "apache",
-    extensions: ["f", "for", "f77", "f90"],
+  'text/x-fortran': {
+    source: 'apache',
+    extensions: ['f', 'for', 'f77', 'f90'],
     compressible: null,
   },
-  "text/x-java-source": {
-    source: "apache",
-    extensions: ["java"],
+  'text/x-java-source': {
+    source: 'apache',
+    extensions: ['java'],
     compressible: null,
   },
-  "text/x-nfo": {
-    source: "apache",
-    extensions: ["nfo"],
+  'text/x-nfo': {
+    source: 'apache',
+    extensions: ['nfo'],
     compressible: null,
   },
-  "text/x-opml": {
-    source: "apache",
-    extensions: ["opml"],
+  'text/x-opml': {
+    source: 'apache',
+    extensions: ['opml'],
     compressible: null,
   },
-  "text/x-pascal": {
-    source: "apache",
-    extensions: ["p", "pas"],
+  'text/x-pascal': {
+    source: 'apache',
+    extensions: ['p', 'pas'],
     compressible: null,
   },
-  "text/x-setext": {
-    source: "apache",
-    extensions: ["etx"],
+  'text/x-setext': {
+    source: 'apache',
+    extensions: ['etx'],
     compressible: null,
   },
-  "text/x-sfv": {
-    source: "apache",
-    extensions: ["sfv"],
+  'text/x-sfv': {
+    source: 'apache',
+    extensions: ['sfv'],
     compressible: null,
   },
-  "text/x-uuencode": {
-    source: "apache",
-    extensions: ["uu"],
+  'text/x-uuencode': {
+    source: 'apache',
+    extensions: ['uu'],
     compressible: null,
   },
-  "text/x-vcalendar": {
-    source: "apache",
-    extensions: ["vcs"],
+  'text/x-vcalendar': {
+    source: 'apache',
+    extensions: ['vcs'],
     compressible: null,
   },
-  "text/x-vcard": {
-    source: "apache",
-    extensions: ["vcf"],
+  'text/x-vcard': {
+    source: 'apache',
+    extensions: ['vcf'],
     compressible: null,
   },
-  "text/xml": {
-    source: "iana",
+  'text/xml': {
+    source: 'iana',
     compressible: true,
-    extensions: ["xml"],
+    extensions: ['xml'],
   },
-  "video/3gpp": {
-    source: "iana",
-    extensions: ["3gp", "3gpp"],
+  'video/3gpp': {
+    source: 'iana',
+    extensions: ['3gp', '3gpp'],
     compressible: null,
   },
-  "video/3gpp2": {
-    source: "iana",
-    extensions: ["3g2"],
+  'video/3gpp2': {
+    source: 'iana',
+    extensions: ['3g2'],
     compressible: null,
   },
-  "video/h261": {
-    source: "iana",
-    extensions: ["h261"],
+  'video/h261': {
+    source: 'iana',
+    extensions: ['h261'],
     compressible: null,
   },
-  "video/h263": {
-    source: "iana",
-    extensions: ["h263"],
+  'video/h263': {
+    source: 'iana',
+    extensions: ['h263'],
     compressible: null,
   },
-  "video/h264": {
-    source: "iana",
-    extensions: ["h264"],
+  'video/h264': {
+    source: 'iana',
+    extensions: ['h264'],
     compressible: null,
   },
-  "video/iso.segment": {
-    source: "iana",
-    extensions: ["m4s"],
+  'video/iso.segment': {
+    source: 'iana',
+    extensions: ['m4s'],
     compressible: null,
   },
-  "video/jpeg": {
-    source: "iana",
-    extensions: ["jpgv"],
+  'video/jpeg': {
+    source: 'iana',
+    extensions: ['jpgv'],
     compressible: null,
   },
-  "video/jpm": {
-    source: "apache",
-    extensions: ["jpm", "jpgm"],
+  'video/jpm': {
+    source: 'apache',
+    extensions: ['jpm', 'jpgm'],
     compressible: null,
   },
-  "video/mj2": {
-    source: "iana",
-    extensions: ["mj2", "mjp2"],
+  'video/mj2': {
+    source: 'iana',
+    extensions: ['mj2', 'mjp2'],
     compressible: null,
   },
-  "video/mp2t": {
-    source: "iana",
-    extensions: ["ts"],
+  'video/mp2t': {
+    source: 'iana',
+    extensions: ['ts'],
     compressible: null,
   },
-  "video/mp4": {
-    source: "iana",
+  'video/mp4': {
+    source: 'iana',
     compressible: false,
-    extensions: ["mp4", "mp4v", "mpg4"],
+    extensions: ['mp4', 'mp4v', 'mpg4'],
   },
-  "video/mpeg": {
-    source: "iana",
+  'video/mpeg': {
+    source: 'iana',
     compressible: false,
-    extensions: ["mpeg", "mpg", "mpe", "m1v", "m2v"],
+    extensions: ['mpeg', 'mpg', 'mpe', 'm1v', 'm2v'],
   },
-  "video/ogg": {
-    source: "iana",
+  'video/ogg': {
+    source: 'iana',
     compressible: false,
-    extensions: ["ogv"],
+    extensions: ['ogv'],
   },
-  "video/quicktime": {
-    source: "iana",
+  'video/quicktime': {
+    source: 'iana',
     compressible: false,
-    extensions: ["qt", "mov"],
+    extensions: ['qt', 'mov'],
   },
-  "video/vnd.dece.hd": {
-    source: "iana",
-    extensions: ["uvh", "uvvh"],
+  'video/vnd.dece.hd': {
+    source: 'iana',
+    extensions: ['uvh', 'uvvh'],
     compressible: null,
   },
-  "video/vnd.dece.mobile": {
-    source: "iana",
-    extensions: ["uvm", "uvvm"],
+  'video/vnd.dece.mobile': {
+    source: 'iana',
+    extensions: ['uvm', 'uvvm'],
     compressible: null,
   },
-  "video/vnd.dece.pd": {
-    source: "iana",
-    extensions: ["uvp", "uvvp"],
+  'video/vnd.dece.pd': {
+    source: 'iana',
+    extensions: ['uvp', 'uvvp'],
     compressible: null,
   },
-  "video/vnd.dece.sd": {
-    source: "iana",
-    extensions: ["uvs", "uvvs"],
+  'video/vnd.dece.sd': {
+    source: 'iana',
+    extensions: ['uvs', 'uvvs'],
     compressible: null,
   },
-  "video/vnd.dece.video": {
-    source: "iana",
-    extensions: ["uvv", "uvvv"],
+  'video/vnd.dece.video': {
+    source: 'iana',
+    extensions: ['uvv', 'uvvv'],
     compressible: null,
   },
-  "video/vnd.dvb.file": {
-    source: "iana",
-    extensions: ["dvb"],
+  'video/vnd.dvb.file': {
+    source: 'iana',
+    extensions: ['dvb'],
     compressible: null,
   },
-  "video/vnd.fvt": {
-    source: "iana",
-    extensions: ["fvt"],
+  'video/vnd.fvt': {
+    source: 'iana',
+    extensions: ['fvt'],
     compressible: null,
   },
-  "video/vnd.mpegurl": {
-    source: "iana",
-    extensions: ["mxu", "m4u"],
+  'video/vnd.mpegurl': {
+    source: 'iana',
+    extensions: ['mxu', 'm4u'],
     compressible: null,
   },
-  "video/vnd.ms-playready.media.pyv": {
-    source: "iana",
-    extensions: ["pyv"],
+  'video/vnd.ms-playready.media.pyv': {
+    source: 'iana',
+    extensions: ['pyv'],
     compressible: null,
   },
-  "video/vnd.uvvu.mp4": {
-    source: "iana",
-    extensions: ["uvu", "uvvu"],
+  'video/vnd.uvvu.mp4': {
+    source: 'iana',
+    extensions: ['uvu', 'uvvu'],
     compressible: null,
   },
-  "video/vnd.vivo": {
-    source: "iana",
-    extensions: ["viv"],
+  'video/vnd.vivo': {
+    source: 'iana',
+    extensions: ['viv'],
     compressible: null,
   },
-  "video/webm": {
-    source: "apache",
+  'video/webm': {
+    source: 'apache',
     compressible: false,
-    extensions: ["webm"],
+    extensions: ['webm'],
   },
-  "video/x-f4v": {
-    source: "apache",
-    extensions: ["f4v"],
+  'video/x-f4v': {
+    source: 'apache',
+    extensions: ['f4v'],
     compressible: null,
   },
-  "video/x-fli": {
-    source: "apache",
-    extensions: ["fli"],
+  'video/x-fli': {
+    source: 'apache',
+    extensions: ['fli'],
     compressible: null,
   },
-  "video/x-flv": {
-    source: "apache",
+  'video/x-flv': {
+    source: 'apache',
     compressible: false,
-    extensions: ["flv"],
+    extensions: ['flv'],
   },
-  "video/x-m4v": {
-    source: "apache",
-    extensions: ["m4v"],
+  'video/x-m4v': {
+    source: 'apache',
+    extensions: ['m4v'],
     compressible: null,
   },
-  "video/x-matroska": {
-    source: "apache",
+  'video/x-matroska': {
+    source: 'apache',
     compressible: false,
-    extensions: ["mkv", "mk3d", "mks"],
+    extensions: ['mkv', 'mk3d', 'mks'],
   },
-  "video/x-mng": {
-    source: "apache",
-    extensions: ["mng"],
+  'video/x-mng': {
+    source: 'apache',
+    extensions: ['mng'],
     compressible: null,
   },
-  "video/x-ms-asf": {
-    source: "apache",
-    extensions: ["asf", "asx"],
+  'video/x-ms-asf': {
+    source: 'apache',
+    extensions: ['asf', 'asx'],
     compressible: null,
   },
-  "video/x-ms-vob": {
-    source: "apache",
-    extensions: ["vob"],
+  'video/x-ms-vob': {
+    source: 'apache',
+    extensions: ['vob'],
     compressible: null,
   },
-  "video/x-ms-wm": {
-    source: "apache",
-    extensions: ["wm"],
+  'video/x-ms-wm': {
+    source: 'apache',
+    extensions: ['wm'],
     compressible: null,
   },
-  "video/x-ms-wmv": {
-    source: "apache",
+  'video/x-ms-wmv': {
+    source: 'apache',
     compressible: false,
-    extensions: ["wmv"],
+    extensions: ['wmv'],
   },
-  "video/x-ms-wmx": {
-    source: "apache",
-    extensions: ["wmx"],
+  'video/x-ms-wmx': {
+    source: 'apache',
+    extensions: ['wmx'],
     compressible: null,
   },
-  "video/x-ms-wvx": {
-    source: "apache",
-    extensions: ["wvx"],
+  'video/x-ms-wvx': {
+    source: 'apache',
+    extensions: ['wvx'],
     compressible: null,
   },
-  "video/x-msvideo": {
-    source: "apache",
-    extensions: ["avi"],
+  'video/x-msvideo': {
+    source: 'apache',
+    extensions: ['avi'],
     compressible: null,
   },
-  "video/x-sgi-movie": {
-    source: "apache",
-    extensions: ["movie"],
+  'video/x-sgi-movie': {
+    source: 'apache',
+    extensions: ['movie'],
     compressible: null,
   },
-  "video/x-smv": {
-    source: "apache",
-    extensions: ["smv"],
+  'video/x-smv': {
+    source: 'apache',
+    extensions: ['smv'],
     compressible: null,
   },
-  "x-conference/x-cooltalk": {
-    source: "apache",
-    extensions: ["ice"],
+  'x-conference/x-cooltalk': {
+    source: 'apache',
+    extensions: ['ice'],
     compressible: null,
   },
 } as const;
 
 export type FileExtension =
-  (typeof mimeTypesInternal)[keyof typeof mimeTypesInternal]["extensions"][number];
+  (typeof mimeTypesInternal)[keyof typeof mimeTypesInternal]['extensions'][number];
 
 export type MimeType = keyof typeof mimeTypesInternal;
 

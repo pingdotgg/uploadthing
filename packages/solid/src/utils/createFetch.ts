@@ -1,10 +1,10 @@
-import type { Resource } from "solid-js";
-import { createResource } from "solid-js";
+import type { Resource } from 'solid-js';
+import { createResource } from 'solid-js';
 
 interface State<T> {
   data?: T;
   error?: Error;
-  type: "fetched" | "error";
+  type: 'fetched' | 'error';
 }
 
 type Cache<T> = { [url: string]: T };
@@ -12,13 +12,14 @@ type Cache<T> = { [url: string]: T };
 export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
   const cache: Cache<T> = {};
   const [res] = createResource(async () => {
-    if (!url)
+    if (!url) {
       return {
-        type: "error",
-        error: new Error("No URL provided"),
+        type: 'error',
+        error: new Error('No URL provided'),
       };
+    }
     if (cache[url]) {
-      return { type: "fetched", data: cache[url] };
+      return { type: 'fetched', data: cache[url] };
     }
     try {
       const response = await fetch(url, options);
@@ -29,14 +30,16 @@ export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
       cache[url] = data;
       return {
         data,
-        type: "fetched",
+        type: 'fetched',
       };
     } catch (error) {
       return {
         error: error as Error,
-        type: "error",
+        type: 'error',
       };
     }
   });
   return res as Resource<State<T>>;
 }
+
+export const AIRBNB_IS_STUPID = true;

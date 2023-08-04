@@ -2,9 +2,9 @@ import type {
   FileRouterInputConfig,
   Json,
   UploadThingError,
-} from "@uploadthing/shared";
+} from '@uploadthing/shared';
 
-import { defaultErrorFormatter } from "./error-formatter";
+import { defaultErrorFormatter } from './error-formatter.ts';
 import type {
   AnyParams,
   AnyRuntime,
@@ -12,10 +12,10 @@ import type {
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-} from "./types";
+} from './types';
 
 function internalCreateBuilder<
-  TRuntime extends AnyRuntime = "web",
+  TRuntime extends AnyRuntime = 'web',
   TErrorShape extends Json = { message: string },
 >(
   initDef: Partial<UploadBuilderDef<any>> = {},
@@ -25,11 +25,12 @@ function internalCreateBuilder<
   _runtime: TRuntime;
   _errorShape: TErrorShape;
 }> {
+  // eslint-disable-next-line no-underscore-dangle
   const _def: UploadBuilderDef<AnyParams> = {
     // Default router config
     routerConfig: {
       image: {
-        maxFileSize: "4MB",
+        maxFileSize: '4MB',
       },
     },
 
@@ -66,8 +67,9 @@ function internalCreateBuilder<
 }
 
 type InOut<
-  TRuntime extends AnyRuntime = "web",
+  TRuntime extends AnyRuntime = 'web',
   TErrorShape extends Json = { message: string },
+// eslint-disable-next-line no-unused-vars
 > = (input: FileRouterInputConfig) => UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
@@ -76,17 +78,16 @@ type InOut<
 }>;
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {
+  // eslint-disable-next-line no-unused-vars
   errorFormatter: (err: UploadThingError) => TErrorShape;
 };
 
 export function createBuilder<
-  TRuntime extends AnyRuntime = "web",
+  TRuntime extends AnyRuntime = 'web',
   TErrorShape extends Json = { message: string },
 >(opts?: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
-  return (input: FileRouterInputConfig) => {
-    return internalCreateBuilder<TRuntime, TErrorShape>({
-      routerConfig: input,
-      ...opts,
-    });
-  };
+  return (input: FileRouterInputConfig) => internalCreateBuilder<TRuntime, TErrorShape>({
+    routerConfig: input,
+    ...opts,
+  });
 }

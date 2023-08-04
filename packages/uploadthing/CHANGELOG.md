@@ -105,16 +105,16 @@
 
   function MyComponent() {
     // Vanilla way
-    const { startUpload } = useUploadthing("withInput");
+    const { startUpload } = useUploadthing('withInput');
     async function onSubmit(files: File[]) {
-      await startUpload(files, { foo: "bar" });
+      await startUpload(files, { foo: 'bar' });
     }
 
     // Component way
     return (
       <UploadButton<OurFileRouter>
         endpoint="withInput"
-        input={{ foo: "bar" }} // or use some state to be dynamic
+        input={{ foo: 'bar' }} // or use some state to be dynamic
       />
     );
   }
@@ -131,14 +131,14 @@
 
     ```ts
     // before
-    route: f(["image"])
+    route: f(['image'])
       // res only for Next.js pages
       .middleware((req, res) => {
         return {};
       });
 
     // after
-    route: f(["image"])
+    route: f(['image'])
       // res only for Next.js pages
       .middleware((opts) => {
         opts.req; // Request, NextRequest, NextApiRequest depending on runtime

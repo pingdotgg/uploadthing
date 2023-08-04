@@ -3,17 +3,17 @@
 {/* TODO: add a picture */}
 
 ```tsx copy filename="app/example-uploader.tsx"
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton } from '@uploadthing/react';
 
-import { OurFileRouter } from "./api/uploadthing/core";
+import { OurFileRouter } from './api/uploadthing/core';
 
 export const OurUploadButton = () => (
   <UploadButton<OurFileRouter>
     endpoint="imageUploader"
     onClientUploadComplete={(res) => {
       // Do something with the response
-      console.log("Files: ", res);
-      alert("Upload Completed");
+      console.log('Files: ', res);
+      alert('Upload Completed');
     }}
     onUploadError={(error: Error) => {
       // Do something with the error.
@@ -37,17 +37,17 @@ export const OurUploadButton = () => (
 ## UploadDropzone
 
 ```tsx copy filename="app/example-uploader.tsx"
-import { UploadDropzone } from "@uploadthing/react";
+import { UploadDropzone } from '@uploadthing/react';
 
-import { OurFileRouter } from "./api/uploadthing/core";
+import { OurFileRouter } from './api/uploadthing/core';
 
 export const OurUploadDropzone = () => (
   <UploadDropzone<OurFileRouter>
     endpoint="withoutMdwr"
     onClientUploadComplete={(res) => {
       // Do something with the response
-      console.log("Files: ", res);
-      alert("Upload Completed");
+      console.log('Files: ', res);
+      alert('Upload Completed');
     }}
     onUploadError={(error: Error) => {
       alert(`ERROR! ${error.message}`);
@@ -74,9 +74,9 @@ and the uploadFiles functions you use to interact with UploadThing in custom
 components. It takes your File Router as a generic
 
 ```tsx copy
-import { generateReactHelpers } from "@uploadthing/react/hooks";
+import { generateReactHelpers } from '@uploadthing/react/hooks';
 
-import type { OurFileRouter } from "~/app/api/uploadthing/core";
+import type { OurFileRouter } from '~/app/api/uploadthing/core';
 
 export const { useUploadThing, uploadFiles } =
   generateReactHelpers<OurFileRouter>();
@@ -93,10 +93,10 @@ example, take a look at
 
 ```tsx copy filename="app/example-custom-uploader.tsx"
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import { useDropzone } from "react-dropzone";
-import type { FileWithPath } from "react-dropzone";
+import { useDropzone } from 'react-dropzone';
+import type { FileWithPath } from 'react-dropzone';
 
-import { useUploadThing } from "~/utils/uploadthing";
+import { useUploadThing } from '~/utils/uploadthing';
 
 export function MultiUploader() {
   const [files, setFiles] = useState<File[]>([]);
@@ -109,12 +109,12 @@ export function MultiUploader() {
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
   });
 
-  const { startUpload } = useUploadThing("myUploadEndpoint", {
+  const { startUpload } = useUploadThing('myUploadEndpoint', {
     onClientUploadComplete: () => {
-      alert("uploaded successfully!");
+      alert('uploaded successfully!');
     },
     onUploadError: () => {
-      alert("error occurred while uploading");
+      alert('error occurred while uploading');
     },
   });
 
@@ -167,18 +167,18 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 
 ```tsx copy
 // Note: this is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import { uploadFiles } from "~/utils/uploadthing";
+import { uploadFiles } from '~/utils/uploadthing';
 
 const uploadSomeFiles = async () => {
   const files = [
-    new File(["foo"], "foo.txt", {
-      type: "text/plain",
+    new File(['foo'], 'foo.txt', {
+      type: 'text/plain',
     }),
   ];
 
   const res = await uploadFiles({
     files,
-    endpoint: "imageUploader",
+    endpoint: 'imageUploader',
     input: {}, // will be typesafe to match the input set for `imageUploader` in your FileRouter
   });
 };

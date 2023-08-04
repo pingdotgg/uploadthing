@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-filename-extension */
+/* eslint-disable react/react-in-jsx-scope */
 // @refresh reload
-import "./root.css";
+import './root.css';
 
-import { Suspense } from "solid-js";
+import { Suspense } from 'solid-js';
 import {
   Body,
   ErrorBoundary,
@@ -13,7 +15,7 @@ import {
   Routes,
   Scripts,
   Title,
-} from "solid-start";
+} from 'solid-start';
 
 export default function Root() {
   return (

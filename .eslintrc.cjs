@@ -1,20 +1,20 @@
 /** @type {import("eslint").Linter.Config} */
 const config = {
   root: true,
-  extends: ["@uploadthing"], // uses the config in `packages/config/eslint`
-  parser: "@typescript-eslint/parser",
+  extends: ['@uploadthing', 'airbnb', 'airbnb/hooks'], // uses the config in `packages/config/eslint`
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: "latest",
+    ecmaVersion: 'latest',
     tsconfigRootDir: __dirname,
     project: [
-      "./examples/*/tsconfig.json",
-      "./docs/tsconfig.json",
-      "./packages/*/tsconfig.json",
+      './examples/*/tsconfig.json',
+      './docs/tsconfig.json',
+      './packages/*/tsconfig.json',
     ],
   },
   settings: {
     next: {
-      rootDir: ["examples/*/"],
+      rootDir: ['examples/*/'],
     },
   },
 };

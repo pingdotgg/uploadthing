@@ -1,8 +1,9 @@
-import type { Json } from "@uploadthing/shared";
+import type { Json } from '@uploadthing/shared';
 
-import type { MaybePromise } from "./types";
+import type { MaybePromise } from './types';
 
 // Don't want to use Zod cause it's an optional dependency
+// eslint-disable-next-line no-unused-vars
 export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;
 export type ParserZodEsque<TInput, TParsedInput extends Json> = {
   _input: TInput;
@@ -15,10 +16,10 @@ export type JsonParser = ParserZodEsque<Json, Json>;
 
 export function getParseFn<TParser extends JsonParser>(
   parser: TParser,
-): ParseFn<TParser["_output"]> {
-  if (typeof parser.parse === "function") {
+): ParseFn<TParser['_output']> {
+  if (typeof parser.parse === 'function') {
     return parser.parse;
   }
 
-  throw new Error("Invalid parser");
+  throw new Error('Invalid parser');
 }

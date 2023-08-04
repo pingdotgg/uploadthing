@@ -17,19 +17,16 @@
  * Module dependencies.
  * @private
  */
-import { mimeTypes as mimeDB } from "./db";
-import type { FileExtension, MimeType } from "./db";
+import { mimeTypes as mimeDB } from './db.ts';
+import type { FileExtension, MimeType } from './db';
 
 function extname(path: string) {
-  const index = path.lastIndexOf(".");
-  return index < 0 ? "" : path.substring(index);
+  const index = path.lastIndexOf('.');
+  return index < 0 ? '' : path.substring(index);
 }
 
 export const extensions = {} as Record<MimeType, FileExtension[]>;
 export const types = {} as Record<FileExtension, MimeType>;
-
-// Populate the extensions/types maps
-populateMaps(extensions, types);
 
 /**
  * Lookup the MIME type for a file path/extension.
@@ -38,12 +35,12 @@ populateMaps(extensions, types);
  * @return {boolean|string}
  */
 export function lookup(path: string) {
-  if (!path || typeof path !== "string") {
+  if (!path || typeof path !== 'string') {
     return false;
   }
 
   // get the extension ("ext" or ".ext" or full path)
-  const extension = extname("x." + path)
+  const extension = extname(`x.${path}`)
     .toLowerCase()
     .substring(1) as FileExtension;
 
@@ -60,11 +57,13 @@ export function lookup(path: string) {
  */
 
 function populateMaps(
-  extensions: Record<MimeType, FileExtension[]>,
-  types: Record<FileExtension, MimeType>,
+  extensionsArgument: Record<MimeType, FileExtension[]>,
+  typesArgument: Record<FileExtension, MimeType>,
 ) {
+  const extensionsReference = extensionsArgument;
+  const typesReference = typesArgument;
   // source preference (least -> most)
-  const preference = ["nginx", "apache", undefined, "iana"];
+  const preference = ['nginx', 'apache', undefined, 'iana'];
 
   (Object.keys(mimeDB) as MimeType[]).forEach((type) => {
     const mime = mimeDB[type];
@@ -75,29 +74,35 @@ function populateMaps(
     }
 
     // mime -> extensions
-    extensions[type] = exts;
+    extensionsReference[type] = exts;
 
     // extension -> mime
-    for (let i = 0; i < exts.length; i++) {
+    for (let i = 0; i < exts.length; i += 1) {
       const extension = exts[i];
 
-      if (types[extension]) {
-        const from = preference.indexOf(mimeDB[types[extension]].source);
+      let shouldContinue = false;
+      if (typesArgument[extension]) {
+        const from = preference.indexOf(mimeDB[typesArgument[extension]].source);
         const to = preference.indexOf(mime.source);
 
         if (
-          types[extension] !== "application/octet-stream" &&
-          (from > to ||
-            (from === to &&
-              types[extension].substring(0, 12) === "application/"))
+          typesArgument[extension] !== 'application/octet-stream'
+          && (from > to
+            || (from === to
+              && typesArgument[extension].substring(0, 12) === 'application/'))
         ) {
           // skip the remapping
-          continue;
+          shouldContinue = true;
         }
       }
 
       // set the extension -> mime
-      types[extension] = type;
+      if (!shouldContinue) {
+        typesReference[extension] = type;
+      }
     }
   });
 }
+
+// Populate the extensions/types maps
+populateMaps(extensions, types);

@@ -1,4 +1,4 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Callout, Steps } from 'nextra-theme-docs';
 
 # Getting Started With `pages/`
 
@@ -35,34 +35,34 @@ FileRoute similar to an endpoint, it has:
 - `onUploadComplete` callback for when uploads are completed
 
 ```tsx copy filename="server/uploadthing.ts"
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+import { createUploadthing, type FileRouter } from 'uploadthing/next-legacy';
 
 const f = createUploadthing();
 
-const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: "fakeId" }); // Fake auth function
+const auth = (req: NextApiRequest, res: NextApiResponse) => ({ id: 'fakeId' }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUploader: f({ image: { maxFileSize: "4MB" } })
+  imageUploader: f({ image: { maxFileSize: '4MB' } })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req, res }) => {
       // This code runs on your server before upload
       const user = await auth(req, res);
 
       // If you throw, the user will not be able to upload
-      if (!user) throw new Error("Unauthorized");
+      if (!user) throw new Error('Unauthorized');
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
+      console.log('Upload complete for userId:', metadata.userId);
 
-      console.log("file url", file.url);
+      console.log('file url', file.url);
     }),
 } satisfies FileRouter;
 
@@ -78,9 +78,9 @@ export type OurFileRouter = typeof ourFileRouter;
 </Callout>
 
 ```ts copy filename="pages/api/uploadthing.ts"
-import { createNextPageApiHandler } from "uploadthing/next-legacy";
+import { createNextPageApiHandler } from 'uploadthing/next-legacy';
 
-import { ourFileRouter } from "~/server/uploadthing";
+import { ourFileRouter } from '~/server/uploadthing';
 
 const handler = createNextPageApiHandler({
   router: ourFileRouter,
@@ -97,9 +97,9 @@ everytime you mount a component, but you can also import the components
 individually from `@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/react";
+import { generateComponents } from '@uploadthing/react';
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import type { OurFileRouter } from '~/server/uploadthing';
 
 export const { UploadButton, UploadDropzone, Uploader } =
   generateComponents<OurFileRouter>();
@@ -111,9 +111,9 @@ The `@uploadthing/react` package includes an "UploadButton" component that you
 can simply drop into your app, and start uploading files immediately.
 
 ```tsx copy filename="app/example-uploader.tsx"
-import { UploadButton } from "~/utils/uploadthing";
+import { UploadButton } from '~/utils/uploadthing';
 // You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
-import "@uploadthing/react/styles.css";
+import '@uploadthing/react/styles.css';
 
 export default function Home() {
   return (
@@ -122,8 +122,8 @@ export default function Home() {
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response
-          console.log("Files: ", res);
-          alert("Upload Completed");
+          console.log('Files: ', res);
+          alert('Upload Completed');
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
