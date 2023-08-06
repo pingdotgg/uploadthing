@@ -1,8 +1,8 @@
-import type { Json, SerializedUploadthingError } from "@uploadthing/shared";
+import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { FileEsque} from "./utils";
+import type { FileEsque } from "./utils";
 import { uploadFilesInternal } from "./utils";
 
 export type SuccessUpload = {
@@ -11,6 +11,12 @@ export type SuccessUpload = {
     url: string;
   };
   error: null;
+};
+
+export type SerializedUploadthingError = {
+  code: string;
+  message: string;
+  data: any;
 };
 
 export type FailedUpload = {

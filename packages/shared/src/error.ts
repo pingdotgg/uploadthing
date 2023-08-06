@@ -32,12 +32,6 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
   return fallback ?? "An unknown error occurred";
 }
 
-export type SerializedUploadthingError = {
-  code: string;
-  message: string;
-  data: any;
-};
-
 export class UploadThingError<
   TShape extends Json = { message: string },
 > extends Error {

@@ -1,8 +1,7 @@
 import { describe, expectTypeOf, test } from "vitest";
 
-import type { SerializedUploadthingError } from "@uploadthing/shared";
-
 import * as utapi from ".";
+import type { SerializedUploadthingError } from ".";
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
