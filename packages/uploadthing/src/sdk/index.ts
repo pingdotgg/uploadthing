@@ -62,7 +62,7 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
   );
 
   // @ts-expect-error - ehh? type is tested in sdk.test.ts
-  return uploads;
+  return Array.isArray(files) ? uploads : uploads[0];
 };
 
 /**
