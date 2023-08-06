@@ -5,11 +5,11 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { FailedUpload, FileEsque, SuccessUpload, Upload } from "./types";
+export type FileEsque = Blob & { name: string };
 
 export const uploadFilesInternal = async (
   data: {
-    files: FileEsque | FileEsque[];
+    files: FileEsque[];
     metadata: Json;
   },
   opts: {
@@ -17,12 +17,8 @@ export const uploadFilesInternal = async (
     utVersion: string;
   },
 ) => {
-  const filesToUpload: FileEsque[] = Array.isArray(data.files)
-    ? data.files
-    : [data.files];
-
   // Request presigned URLs for each file
-  const fileData = filesToUpload.map((file) => ({
+  const fileData = data.files.map((file) => ({
     name: file.name,
     type: file.type,
     size: file.size,
@@ -57,7 +53,7 @@ export const uploadFilesInternal = async (
 
   // Upload each file to S3
   const uploads = await Promise.allSettled(
-    filesToUpload.map(async (file, i) => {
+    data.files.map(async (file, i) => {
       const { presignedUrl, fields, key, fileUrl } = json.data[i];
 
       if (!presignedUrl || !fields) {
@@ -98,25 +94,17 @@ export const uploadFilesInternal = async (
       return {
         key,
         url: fileUrl,
-      } as Upload;
+      };
     }),
   );
 
-  if (Array.isArray(data.files)) {
-    return uploads.map((upload) => adaptResponse(upload));
-  } else {
-    const [upload] = uploads;
-
-    return adaptResponse(upload);
-  }
-};
-
-const adaptResponse = (upload: PromiseSettledResult<Upload>) => {
-  if (upload.status === "fulfilled") {
-    return { data: upload.value, error: null } as SuccessUpload;
-  }
-  return {
-    data: null,
-    error: UploadThingError.toObject(upload.reason as UploadThingError),
-  } as FailedUpload;
+  return uploads.map((upload) => {
+    if (upload.status === "fulfilled") {
+      return { data: upload.value, error: null };
+    }
+    return {
+      data: null,
+      error: UploadThingError.toObject(upload.reason as UploadThingError),
+    };
+  });
 };

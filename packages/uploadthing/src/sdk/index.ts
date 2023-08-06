@@ -1,9 +1,23 @@
-import type { Json } from "@uploadthing/shared";
+import type { Json, SerializedUploadthingError } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { FailedUpload, FileEsque, SuccessUpload } from "./types";
 import { uploadFilesInternal } from "./utils";
+
+export type FileEsque = Blob & { name: string };
+
+export type SuccessUpload = {
+  data: {
+    key: string;
+    url: string;
+  };
+  error: null;
+};
+
+export type FailedUpload = {
+  data: null;
+  error: SerializedUploadthingError;
+};
 
 function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -43,9 +57,10 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
 ) => {
   guardServerOnly();
 
+  const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
   const uploads = await uploadFilesInternal(
     {
-      files: files,
+      files: filesToUpload,
       metadata,
     },
     {
