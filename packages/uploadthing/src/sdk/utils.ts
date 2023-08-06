@@ -105,13 +105,14 @@ export const uploadFilesInternal = async (
       return {
         key,
         url: fileUrl,
-      } satisfies UploadData;
+      };
     }),
   );
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {
-      return { data: upload.value, error: null };
+      const data = upload.value satisfies UploadData;
+      return { data, error: null };
     }
 
     const error = UploadThingError.toObject(
