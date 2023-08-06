@@ -7,6 +7,17 @@ import {
 
 export type FileEsque = Blob & { name: string };
 
+export type UploadData = {
+  key: string;
+  url: string;
+};
+
+export type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+
 export const uploadFilesInternal = async (
   data: {
     files: FileEsque[];
@@ -94,7 +105,7 @@ export const uploadFilesInternal = async (
       return {
         key,
         url: fileUrl,
-      };
+      } satisfies UploadData;
     }),
   );
 
@@ -102,9 +113,10 @@ export const uploadFilesInternal = async (
     if (upload.status === "fulfilled") {
       return { data: upload.value, error: null };
     }
-    return {
-      data: null,
-      error: UploadThingError.toObject(upload.reason as UploadThingError),
-    };
+
+    const error = UploadThingError.toObject(
+      upload.reason as UploadThingError,
+    ) satisfies UploadError;
+    return { data: null, error };
   });
 };

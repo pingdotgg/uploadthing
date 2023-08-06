@@ -2,7 +2,7 @@ import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { FileEsque } from "./utils";
+import type { FileEsque, UploadData, UploadError } from "./utils";
 import { uploadFilesInternal } from "./utils";
 
 function guardServerOnly() {
@@ -24,24 +24,9 @@ function getApiKeyOrThrow() {
   return process.env.UPLOADTHING_SECRET;
 }
 
-type UploadSucess = {
-  data: {
-    key: string;
-    url: string;
-  };
-  error: null;
-};
-
-type UploadFailed = {
-  data: null;
-  error: {
-    code: string;
-    message: string;
-    data: any;
-  };
-};
-
-type UploadFileResponse = UploadSucess | UploadFailed;
+type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
 
 /**
  * @param {FileEsque | FileEsque[]} files The file(s) to upload
