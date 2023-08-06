@@ -1,5 +1,5 @@
 import type { Json } from "@uploadthing/shared";
-import { UploadThingError, generateUploadThingURL } from "@uploadthing/shared";
+import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import type { FileEsque } from "./utils";
@@ -10,7 +10,7 @@ function guardServerOnly() {
     throw new UploadThingError({
       code: "INTERNAL_SERVER_ERROR",
       message: "The `utapi` can only be used on the server.",
-    })
+    });
   }
 }
 
@@ -19,13 +19,29 @@ function getApiKeyOrThrow() {
     throw new UploadThingError({
       code: "MISSING_ENV",
       message: "Missing `UPLOADTHING_SECRET` env variable.",
-    })
+    });
   }
   return process.env.UPLOADTHING_SECRET;
 }
 
-// File is just a Blob with a name property
-type UploadFileResponse = Awaited<ReturnType<typeof uploadFilesInternal>>[0];
+export type SuccessUpload = {
+  data: {
+    key: string;
+    url: string;
+  };
+  error: null;
+};
+
+export type SerializedUploadthingError<T extends Json = any> = {
+  code: string;
+  message: string;
+  data: T;
+};
+
+export type FailedUpload = {
+  data: null;
+  error: SerializedUploadthingError;
+};
 
 /**
  * @param {FileEsque | FileEsque[]} files The file(s) to upload
@@ -43,9 +59,7 @@ type UploadFileResponse = Awaited<ReturnType<typeof uploadFilesInternal>>[0];
 export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
   files: T,
   metadata: Json = {},
-): Promise<
-  T extends FileEsque[] ? UploadFileResponse[] : UploadFileResponse
-> => {
+) => {
   guardServerOnly();
 
   const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
@@ -61,8 +75,9 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
     },
   );
 
-  // @ts-expect-error - ehh? type is tested in sdk.test.ts
-  return uploads;
+  return uploads as T extends FileEsque[]
+    ? (SuccessUpload | FailedUpload)[]
+    : SuccessUpload | FailedUpload;
 };
 
 /**
@@ -82,7 +97,7 @@ type Url = string | URL;
 export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   urls: T,
   metadata: Json = {},
-): Promise<T extends Url[] ? UploadFileResponse[] : UploadFileResponse> => {
+) => {
   guardServerOnly();
 
   const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
@@ -102,7 +117,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
           code: "BAD_REQUEST",
           message: "Failed to download requested file.",
           cause: fileResponse,
-        })
+        });
       }
       const blob = await fileResponse.blob();
       return Object.assign(blob, { name: filename });
@@ -120,8 +135,9 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
     },
   );
 
-  // @ts-expect-error - ehh? type is tested in sdk.test.ts
-  return Array.isArray(urls) ? uploads : uploads[0];
+  return uploads as T extends Url[]
+    ? (SuccessUpload | FailedUpload)[]
+    : SuccessUpload | FailedUpload;
 };
 
 /**
