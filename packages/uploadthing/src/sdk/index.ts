@@ -59,7 +59,11 @@ export type FailedUpload = {
 export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
   files: T,
   metadata: Json = {},
-) => {
+): Promise<
+  T extends FileEsque[]
+    ? (SuccessUpload | FailedUpload)[]
+    : SuccessUpload | FailedUpload
+> => {
   guardServerOnly();
 
   const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
@@ -75,9 +79,8 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
     },
   );
 
-  return uploads as T extends FileEsque[]
-    ? (SuccessUpload | FailedUpload)[]
-    : SuccessUpload | FailedUpload;
+  // @ts-expect-error - Array.isArray doesn't typeguard
+  return Array.isArray(files) ? uploads : uploads[0];
 };
 
 /**
@@ -97,7 +100,11 @@ type Url = string | URL;
 export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   urls: T,
   metadata: Json = {},
-) => {
+): Promise<
+  T extends Url[]
+    ? (SuccessUpload | FailedUpload)[]
+    : SuccessUpload | FailedUpload
+> => {
   guardServerOnly();
 
   const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
@@ -135,9 +142,8 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
     },
   );
 
-  return uploads as T extends Url[]
-    ? (SuccessUpload | FailedUpload)[]
-    : SuccessUpload | FailedUpload;
+  // @ts-expect-error - Array.isArray doesn't typeguard
+  return Array.isArray(urls) ? uploads : uploads[0];
 };
 
 /**
