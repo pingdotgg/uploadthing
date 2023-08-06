@@ -74,7 +74,9 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
     },
   );
 
-  return uploads as T extends FileEsque[]
+  const response = Array.isArray(files) ? uploads : uploads[0];
+
+  return response as T extends FileEsque[]
     ? (SuccessUpload | FailedUpload)[]
     : SuccessUpload | FailedUpload;
 };
