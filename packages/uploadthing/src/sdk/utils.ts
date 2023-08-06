@@ -114,6 +114,7 @@ export const uploadFilesInternal = async (
       const data = upload.value satisfies UploadData;
       return { data, error: null };
     }
+    // We only throw UploadThingErrors, so this is safe
     const reason = upload.reason as UploadThingError;
     const error = UploadThingError.toObject(reason) satisfies UploadError;
     return { data: null, error };
