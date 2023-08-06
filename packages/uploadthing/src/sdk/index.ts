@@ -24,7 +24,7 @@ function getApiKeyOrThrow() {
   return process.env.UPLOADTHING_SECRET;
 }
 
-export type SuccessUpload = {
+type SuccessUpload = {
   data: {
     key: string;
     url: string;
@@ -38,10 +38,12 @@ export type SerializedUploadthingError<T extends Json = any> = {
   data: T;
 };
 
-export type FailedUpload = {
+type FailedUpload = {
   data: null;
   error: SerializedUploadthingError;
 };
+
+type UploadFileResponse = SuccessUpload | FailedUpload;
 
 /**
  * @param {FileEsque | FileEsque[]} files The file(s) to upload
@@ -60,9 +62,7 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
   files: T,
   metadata: Json = {},
 ): Promise<
-  T extends FileEsque[]
-    ? (SuccessUpload | FailedUpload)[]
-    : SuccessUpload | FailedUpload
+  T extends FileEsque[] ? UploadFileResponse[] : UploadFileResponse
 > => {
   guardServerOnly();
 
@@ -100,11 +100,7 @@ type Url = string | URL;
 export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   urls: T,
   metadata: Json = {},
-): Promise<
-  T extends Url[]
-    ? (SuccessUpload | FailedUpload)[]
-    : SuccessUpload | FailedUpload
-> => {
+): Promise<T extends Url[] ? UploadFileResponse[] : UploadFileResponse> => {
   guardServerOnly();
 
   const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
