@@ -24,7 +24,7 @@ function getApiKeyOrThrow() {
   return process.env.UPLOADTHING_SECRET;
 }
 
-type SuccessUpload = {
+type UploadSucess = {
   data: {
     key: string;
     url: string;
@@ -32,7 +32,7 @@ type SuccessUpload = {
   error: null;
 };
 
-type FailedUpload = {
+type UploadFailed = {
   data: null;
   error: {
     code: string;
@@ -41,7 +41,7 @@ type FailedUpload = {
   };
 };
 
-type UploadFileResponse = SuccessUpload | FailedUpload;
+type UploadFileResponse = UploadSucess | UploadFailed;
 
 /**
  * @param {FileEsque | FileEsque[]} files The file(s) to upload
