@@ -2,9 +2,8 @@ import type { Json, SerializedUploadthingError } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import type { FileEsque} from "./utils";
 import { uploadFilesInternal } from "./utils";
-
-export type FileEsque = Blob & { name: string };
 
 export type SuccessUpload = {
   data: {
