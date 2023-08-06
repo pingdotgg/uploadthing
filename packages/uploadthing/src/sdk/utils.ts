@@ -114,10 +114,8 @@ export const uploadFilesInternal = async (
       const data = upload.value satisfies UploadData;
       return { data, error: null };
     }
-
-    const error = UploadThingError.toObject(
-      upload.reason as UploadThingError,
-    ) satisfies UploadError;
+    const reason = upload.reason as UploadThingError;
+    const error = UploadThingError.toObject(reason) satisfies UploadError;
     return { data: null, error };
   });
 };
