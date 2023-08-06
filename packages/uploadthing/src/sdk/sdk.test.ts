@@ -1,7 +1,8 @@
 import { describe, expectTypeOf, test } from "vitest";
 
+import type { SerializedUploadthingError } from "@uploadthing/shared";
+
 import * as utapi from ".";
-import type { SerializedUploadthingError, Upload } from "./types";
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
@@ -17,7 +18,7 @@ describe("uploadFiles", () => {
       const result = await utapi.uploadFiles([{} as File]);
       expectTypeOf<
         (
-          | { data: Upload; error: null }
+          | { data: { key: string; url: string }; error: null }
           | { data: null; error: SerializedUploadthingError }
         )[]
       >(result);
@@ -28,7 +29,7 @@ describe("uploadFiles", () => {
     void ignoreErrors(async () => {
       const result = await utapi.uploadFiles({} as File);
       expectTypeOf<
-        | { data: Upload; error: null }
+        | { data: { key: string; url: string }; error: null }
         | { data: null; error: SerializedUploadthingError }
       >(result);
     });
@@ -41,7 +42,7 @@ describe("uploadFilesFromUrl", () => {
       const result = await utapi.uploadFilesFromUrl(["foo", "bar"]);
       expectTypeOf<
         (
-          | { data: Upload; error: null }
+          | { data: { key: string; url: string }; error: null }
           | { data: null; error: SerializedUploadthingError }
         )[]
       >(result);
@@ -52,7 +53,7 @@ describe("uploadFilesFromUrl", () => {
     void ignoreErrors(async () => {
       const result = await utapi.uploadFilesFromUrl("foo");
       expectTypeOf<
-        | { data: Upload; error: null }
+        | { data: { key: string; url: string }; error: null }
         | { data: null; error: SerializedUploadthingError }
       >(result);
     });
