@@ -32,15 +32,13 @@ type SuccessUpload = {
   error: null;
 };
 
-export type SerializedUploadthingError<T extends Json = any> = {
-  code: string;
-  message: string;
-  data: T;
-};
-
 type FailedUpload = {
   data: null;
-  error: SerializedUploadthingError;
+  error: {
+    code: string;
+    message: string;
+    data: any;
+  };
 };
 
 type UploadFileResponse = SuccessUpload | FailedUpload;
