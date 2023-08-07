@@ -7,6 +7,17 @@ import {
 
 export type FileEsque = Blob & { name: string };
 
+export type UploadData = {
+  key: string;
+  url: string;
+};
+
+export type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+
 export const uploadFilesInternal = async (
   data: {
     files: FileEsque[];
@@ -100,11 +111,12 @@ export const uploadFilesInternal = async (
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {
-      return { data: upload.value, error: null };
+      const data = upload.value satisfies UploadData;
+      return { data, error: null };
     }
-    return {
-      data: null,
-      error: UploadThingError.toObject(upload.reason as UploadThingError),
-    };
+    // We only throw UploadThingErrors, so this is safe
+    const reason = upload.reason as UploadThingError;
+    const error = UploadThingError.toObject(reason) satisfies UploadError;
+    return { data: null, error };
   });
 };
