@@ -1,5 +1,14 @@
 # uploadthing
 
+## 5.3.1
+
+### Patch Changes
+
+- [#247](https://github.com/pingdotgg/uploadthing/pull/247)
+  [`84a7b7d`](https://github.com/pingdotgg/uploadthing/commit/84a7b7d9bf3c3f7d7f716ea7506d86a6234dbafa)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: runtime
+  return type of `utapi.uploadFiles`
+
 ## 5.3.0
 
 ### Minor Changes
