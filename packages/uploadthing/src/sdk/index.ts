@@ -44,9 +44,7 @@ type UploadFileResponse =
 export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
   files: T,
   metadata: Json = {},
-): Promise<
-  T extends FileEsque[] ? UploadFileResponse[] : UploadFileResponse
-> => {
+) => {
   guardServerOnly();
 
   const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
@@ -62,8 +60,11 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
     },
   );
 
-  // @ts-expect-error - Array.isArray doesn't typeguard
-  return Array.isArray(files) ? uploads : uploads[0];
+  const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
+
+  return uploadFileResponse as T extends FileEsque[]
+    ? UploadFileResponse[]
+    : UploadFileResponse;
 };
 
 /**
@@ -83,7 +84,7 @@ type Url = string | URL;
 export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   urls: T,
   metadata: Json = {},
-): Promise<T extends Url[] ? UploadFileResponse[] : UploadFileResponse> => {
+) => {
   guardServerOnly();
 
   const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
@@ -121,8 +122,11 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
     },
   );
 
-  // @ts-expect-error - Array.isArray doesn't typeguard
-  return Array.isArray(urls) ? uploads : uploads[0];
+  const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
+
+  return uploadFileResponse as T extends Url[]
+    ? UploadFileResponse[]
+    : UploadFileResponse;
 };
 
 /**
