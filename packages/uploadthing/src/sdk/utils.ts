@@ -10,6 +10,8 @@ export type FileEsque = Blob & { name: string };
 export type UploadData = {
   key: string;
   url: string;
+  name: string;
+  size: number;
 };
 
 export type UploadError = {
@@ -105,6 +107,8 @@ export const uploadFilesInternal = async (
       return {
         key,
         url: fileUrl,
+        name: file.name,
+        size: file.size,
       };
     }),
   );
