@@ -170,6 +170,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     await pollForFileData(presigned.key);
 
     return {
+      fileName: file.name,
+      fileSize: file.size,
       fileKey: presigned.key,
       fileUrl: genUrl,
     };
