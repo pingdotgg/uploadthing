@@ -169,6 +169,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     await pollForFileData(presigned.key);
 
+    // TODO: remove `file` prefix in next major version
     return {
       fileName: file.name,
       fileSize: file.size,
