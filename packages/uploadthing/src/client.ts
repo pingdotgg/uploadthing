@@ -171,18 +171,18 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 
     // TODO: remove `file` prefix in next major version
     return {
-    // @deprecated - use `name` instead
-    fileName: file.name,
-    name: file.name,
-    // @deprecated - use `size` instead
-    fileSize: file.size,
-    size: file.size,
-    // @deprecated - use `key` instead
-    fileKey: presigned.key,
-    key: presigned.key,
-    // @deprecated - use `url` instead
-    fileUrl: genUrl,
-    url: genUrl,
+      // @deprecated - use `name` instead
+      fileName: file.name,
+      name: file.name,
+      // @deprecated - use `size` instead
+      fileSize: file.size,
+      size: file.size,
+      // @deprecated - use `key` instead
+      fileKey: presigned.key,
+      key: presigned.key,
+      // @deprecated - use `url` instead
+      fileUrl: genUrl,
+      url: genUrl,
     };
   });
 
