@@ -70,6 +70,10 @@ export const uploadFilesInternal = async (
       const { presignedUrl, fields, key, fileUrl } = json.data[i];
 
       if (!presignedUrl || !fields) {
+        console.log(
+          "Error: Failed to generate presigned URL. Caused by",
+          json.data[i],
+        );
         throw new UploadThingError({
           code: "URL_GENERATION_FAILED",
           message: "Failed to generate presigned URL",
@@ -94,6 +98,10 @@ export const uploadFilesInternal = async (
       });
 
       if (!s3res.ok) {
+        console.log(
+          "Error: Failed to upload file to storage provider. Caused by",
+          s3res,
+        );
         throw new UploadThingError({
           code: "UPLOAD_FAILED",
           message: "Failed to upload file to storage provider",
