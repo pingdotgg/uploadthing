@@ -2,6 +2,9 @@
   "extends": "@uploadthing/tsconfig/nextjs.json",
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
+    "declaration": true,
+    "noEmit": false,
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
