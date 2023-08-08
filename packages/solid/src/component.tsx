@@ -3,7 +3,7 @@ import type { OnDropHandler } from "solidjs-dropzone";
 import { createDropzone } from "solidjs-dropzone";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import type { UploadFileType } from "uploadthing/client";
+import type { UploadFileResponse } from "uploadthing/client";
 import {
   classNames,
   generateClientDropzoneAccept,
@@ -68,9 +68,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     endpoint: TEndpoint;
 
     onUploadProgress?: (progress: number) => void;
-    onClientUploadComplete?: (
-      res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
-    ) => void;
+    onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: Error) => void;
     url?: string;
     multiple?: boolean;

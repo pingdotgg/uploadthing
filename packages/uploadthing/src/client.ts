@@ -54,6 +54,33 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
   };
 }[keyof TRouter];
 
+export type UploadFileResponse = {
+  /**
+   * @deprecated
+   * use `name` instead
+   */
+  fileName: string;
+  name: string;
+  /**
+   * @deprecated
+   * use `size` instead
+   */
+  fileSize: number;
+  size: number;
+  /**
+   * @deprecated
+   * use `key` instead
+   */
+  fileKey: string;
+  key: string;
+  /**
+   * @deprecated
+   * use `url` instead
+   */
+  fileUrl: string;
+  url: string;
+};
+
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
   config?: {
@@ -169,19 +196,22 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     await pollForFileData(presigned.key);
 
-    return {
+    // TODO: remove `file` prefix in next major version
+    const ret: UploadFileResponse = {
+      fileName: file.name,
+      name: file.name,
+      fileSize: file.size,
+      size: file.size,
       fileKey: presigned.key,
+      key: presigned.key,
       fileUrl: genUrl,
+      url: genUrl,
     };
+    return ret;
   });
 
-  return Promise.all(fileUploadPromises) as Promise<
-    { fileUrl: string; fileKey: string }[]
-  >;
+  return Promise.all(fileUploadPromises);
 };
-
-export type UploadFileType<TRouter extends FileRouter> =
-  typeof DANGEROUS__uploadFiles<TRouter>;
 
 export const genUploader = <
   TRouter extends FileRouter,
