@@ -92,8 +92,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
         setUploadProgress(p);
         $props.onUploadProgress?.(p);
       },
-      onUploadError: $props.onUploadError,
-      isEnabled: !$props.__internal_ut_disabled ?? true,
+      onUploadError: $props.onUploadError
     },
   );
 
