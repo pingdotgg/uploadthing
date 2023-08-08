@@ -6,7 +6,7 @@ import type {
   ExpandedRouteConfig,
   UploadThingError,
 } from "@uploadthing/shared";
-import type { UploadFileType } from "uploadthing/client";
+import type { UploadFileResponse } from "uploadthing/client";
 import {
   classNames,
   generateClientDropzoneAccept,
@@ -76,9 +76,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     endpoint: TEndpoint;
 
     onUploadProgress?: (progress: number) => void;
-    onClientUploadComplete?: (
-      res?: Awaited<ReturnType<UploadFileType<TRouter>>>,
-    ) => void;
+    onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? {}

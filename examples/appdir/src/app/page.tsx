@@ -31,6 +31,7 @@ export default function Home() {
           onClientUploadComplete={(res) => {
             // Do something with the response
             console.log("Files: ", res);
+            res?.[0]?.fileKey;
             alert("Upload Completed");
           }}
           onUploadError={(error: Error) => {
