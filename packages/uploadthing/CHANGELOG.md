@@ -1,5 +1,37 @@
 # uploadthing
 
+## 5.3.2
+
+### Patch Changes
+
+- [#251](https://github.com/pingdotgg/uploadthing/pull/251)
+  [`872c8a0`](https://github.com/pingdotgg/uploadthing/commit/872c8a08e01cd2c0f59a837b410bf4b0fc29ce9c)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: coherent
+  file info in all methods
+
+  all methods now receives a similarly shaped object as the serverside
+  `onUploadComplete` callback:
+
+  ```ts
+  export type UploadFileResponse = {
+    name: string;
+    size: number;
+    key: string;
+    url: string;
+  };
+  ```
+
+  Updated methods are:
+
+  - `onClientUploadComplete` in hooks as well as components (The old `fileName`,
+    `fileSize`, `fileUrl` and `fileKey` are retained but marked as deprecated
+    for backwards compatibility, and will be removed in the next major.)
+  - `utapi.uploadFiles` as well as `utapi.uploadFilesFromUrl`
+
+- Updated dependencies
+  [[`fe46b81`](https://github.com/pingdotgg/uploadthing/commit/fe46b814aa75646eac0694fdcb3889a3f7f5122b)]:
+  - @uploadthing/shared@5.2.0
+
 ## 5.3.1
 
 ### Patch Changes
