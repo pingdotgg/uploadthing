@@ -98,9 +98,12 @@ export const uploadFilesInternal = async (
       });
 
       if (!s3res.ok) {
+        const respBody = await s3res.text()
         console.log(
           "Error: Failed to upload file to storage provider. Caused by",
           s3res,
+          "Repsonse body:",
+          respBody
         );
         throw new UploadThingError({
           code: "UPLOAD_FAILED",
