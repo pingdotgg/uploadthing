@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 5.2.0
+
+### Minor Changes
+
+- [#255](https://github.com/pingdotgg/uploadthing/pull/255)
+  [`fe46b81`](https://github.com/pingdotgg/uploadthing/commit/fe46b814aa75646eac0694fdcb3889a3f7f5122b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  serialization functions for UploadthingError
+
 ## 5.1.0
 
 ### Minor Changes
