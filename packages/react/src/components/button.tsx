@@ -59,12 +59,12 @@ export function UploadButton<TRouter extends FileRouter>(
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading",
-    // Allow to disable the button for testing
-    __internal_ut_disabled?: boolean,
     // Allow to set upload progress for testing
     __internal_upload_progress?: number,
     // Allow to set ready explicitly and independently of internal state
     __internal_ready?: boolean,
+    // Allow to disable the button
+    __internal_button_disabled?: boolean
   };
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
@@ -93,7 +93,7 @@ export function UploadButton<TRouter extends FileRouter>(
     permittedFileInfo?.config,
   );
 
-  const ready = $props.__internal_ready || $props.__internal_state === "ready" || fileTypes.length > 0;
+  const ready = $props.__internal_ready ?? ($props.__internal_state === "ready" || fileTypes.length > 0);
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (fileTypes.length === 0) return "Loading...";
@@ -112,7 +112,7 @@ export function UploadButton<TRouter extends FileRouter>(
       const files = Array.from(e.target.files);
       void startUpload(files, input);
     },
-    disabled: $props.__internal_ut_disabled || !ready,
+    disabled: $props.__internal_button_disabled || !ready,
   });
 
   const styleFieldArg: ButtonStyleFieldCallbackArgs = {

@@ -58,8 +58,6 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading",
-    // Allow to disable the button for testing
-    __internal_ut_disabled?: boolean,
     // Allow to set upload progress for testing
     __internal_upload_progress?: number,
     // Allow to set ready explicitly and independently of internal state
@@ -104,7 +102,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
     disabled: $props.__internal_dropzone_disabled
   });
 
-  const ready = $props.__internal_ready || $props.__internal_state === "ready" || fileTypes.length > 0;
+  const ready = $props.__internal_ready ?? ($props.__internal_state === "ready" || fileTypes.length > 0);
 
   const onUploadClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -183,7 +181,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       >
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
           (ready ? `Choose files or drag and drop` : `Loading...`)}
-        <input className="sr-only" {...getInputProps()} disabled={$props.__internal_ut_disabled ?? !ready} />
+        <input className="sr-only" {...getInputProps()} />
       </label>
       <div
         className={twMerge(
