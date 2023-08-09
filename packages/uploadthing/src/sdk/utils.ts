@@ -92,6 +92,7 @@ export const uploadFilesInternal = async (
       const s3res = await fetch(presignedUrl, {
         method: "POST",
         body: formData,
+        cache: "no-store",
         headers: new Headers({
           Accept: "application/xml",
         }),
