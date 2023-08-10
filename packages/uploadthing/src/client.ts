@@ -82,22 +82,15 @@ export type UploadFileResponse = {
 };
 
 const maybeParseResponseXML = (maybeXml: string) => {
-  // Attempt to parse string as xml, looking for Code and Message elements
-  // (which are returned by S3 on error)
-  try {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(maybeXml, "text/xml");
+  const codeMatch = maybeXml.match(/<Code>(.*?)<\/Code>/s);
+  const messageMatch = maybeXml.match(/<Message>(.*?)<\/Message>/s);
 
-    const code =
-      xmlDoc.getElementsByTagName("Code")[0]?.childNodes[0]?.nodeValue;
-    const message =
-      xmlDoc.getElementsByTagName("Message")[0]?.childNodes[0]?.nodeValue;
+  const code = codeMatch?.[1];
+  const message = messageMatch?.[1];
 
-    return { code, message };
-  } catch {
-    // not XML
-    return null;
-  }
+  if (!code || !message) return null;
+
+  return { code, message };
 };
 
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
