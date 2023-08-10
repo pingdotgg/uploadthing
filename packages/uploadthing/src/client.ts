@@ -81,6 +81,25 @@ export type UploadFileResponse = {
   url: string;
 };
 
+const maybeParseResponseXML = (maybeXml: string) => {
+  // Attempt to parse string as xml, looking for Code and Message elements
+  // (which are returned by S3 on error)
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(maybeXml, "text/xml");
+
+    const code =
+      xmlDoc.getElementsByTagName("Code")[0]?.childNodes[0]?.nodeValue;
+    const message =
+      xmlDoc.getElementsByTagName("Message")[0]?.childNodes[0]?.nodeValue;
+
+    return { code, message };
+  } catch {
+    // not XML
+    return null;
+  }
+};
+
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
   config?: {
@@ -182,11 +201,21 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     );
 
     if (upload.status > 299 || upload.status < 200) {
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: `Failed to upload file ${file.name} to S3`,
-        cause: upload.statusText,
-      });
+      // Attempt to parse response as XML
+      const parsed = maybeParseResponseXML(upload.responseText);
+
+      if (parsed?.message) {
+        throw new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: parsed.message,
+        });
+      } else {
+        throw new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: `Failed to upload file ${file.name} to S3`,
+          cause: upload.responseText,
+        });
+      }
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
