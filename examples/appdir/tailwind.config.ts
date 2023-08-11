@@ -1,4 +1,4 @@
-import { withUt } from "@uploadthing/react/tw";
+import { withUt } from "uploadthing/tw";
 
 export default withUt({
   content: [
