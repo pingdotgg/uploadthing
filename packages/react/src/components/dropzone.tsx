@@ -17,7 +17,7 @@ import {
 import {
   allowedContentTextLabelGenerator,
   generatePermittedFileTypes,
-  progressHeights,
+  progressWidths,
   Spinner,
 } from "./shared";
 
@@ -207,7 +207,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
             classNames(
               "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
               state === 'uploading'
-                ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressHeights[uploadProgress]}`
+                ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`
                 : "bg-blue-600",
             ),
             styleFieldToClassName($props.appearance?.button, styleFieldArg),

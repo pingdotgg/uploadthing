@@ -50,7 +50,7 @@ export const allowedContentTextLabelGenerator = (
     return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
-export const progressHeights: { [key: number]: string } = {
+export const progressWidths: { [key: number]: string } = {
     0: "after:w-0",
     10: "after:w-[10%]",
     20: "after:w-[20%]",

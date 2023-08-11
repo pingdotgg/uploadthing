@@ -1,6 +1,5 @@
-import { withUt } from "@uploadthing/react/tw";
+import { withUt } from "uploadthing/tw";
 
-/** @type {import('tailwindcss').Config} */
 export default withUt({
   content: [
     "./app/**/*.{js,ts,jsx,tsx,md,mdx}",

@@ -1,6 +1,5 @@
 import { withUt } from "@uploadthing/react/tw";
 
-/** @type {import('tailwindcss').Config} */
 export default withUt({
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
