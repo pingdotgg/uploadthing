@@ -1,5 +1,5 @@
 // @ts-check
-const { withUt } = require("@uploadthing/react/tw");
+const { withUt } = require("uploadthing/tw");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = withUt({

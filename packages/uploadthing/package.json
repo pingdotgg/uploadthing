@@ -43,6 +43,9 @@
       ],
       "next-legacy": [
         "dist/next-legacy.d.ts"
+      ],
+      "tw": [
+        "dist/tw.d.ts"
       ]
     }
   },
