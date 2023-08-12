@@ -75,9 +75,6 @@
     "vitest": "^0.30.1",
     "zod": "^3.21.4"
   },
-  "peerDependencies": {
-    "tailwindcss": "^3.3.2"
-  },
   "publishConfig": {
     "access": "public"
   }
