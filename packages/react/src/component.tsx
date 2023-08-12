@@ -78,7 +78,8 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-    ? Record<string, never>
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
     : {
         input: inferEndpointInput<TRouter[TEndpoint]>;
       });

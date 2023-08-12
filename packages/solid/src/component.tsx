@@ -72,7 +72,8 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     url?: string;
     multiple?: boolean;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-    ? Record<string, never>
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
     : {
         input: inferEndpointInput<TRouter[TEndpoint]>;
       });
