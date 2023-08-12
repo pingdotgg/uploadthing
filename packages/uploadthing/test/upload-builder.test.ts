@@ -89,7 +89,7 @@ it("uses defaults for not-chained", async () => {
     input: {} as UnsetMarker,
   });
   expect(metadata).toEqual({});
-  expectTypeOf(metadata).toMatchTypeOf<{}>();
+  expectTypeOf<Record<string, never>>(metadata);
 });
 
 it("passes `Request` by default", () => {

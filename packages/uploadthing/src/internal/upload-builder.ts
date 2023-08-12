@@ -37,7 +37,7 @@ function internalCreateBuilder<
 
     middleware: () => ({}),
 
-    errorFormatter: initDef.errorFormatter || defaultErrorFormatter,
+    errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 
     // Overload with properties passed in
     ...initDef,
