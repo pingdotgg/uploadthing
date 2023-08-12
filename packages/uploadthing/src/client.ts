@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
-import { maybeParseResponseXML } from "./internal/parse-error";
+import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 function fetchWithProgress(
@@ -188,8 +188,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 
       if (parsed?.message) {
         throw new UploadThingError({
-          code:
-            parsed.code === "EntityTooLarge" ? "TOO_LARGE" : "UPLOAD_FAILED",
+          code: parsed.code,
           message: parsed.message,
         });
       } else {
