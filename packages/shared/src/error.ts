@@ -2,6 +2,7 @@ import type { Json } from "./types";
 
 const ERROR_CODES = {
   BAD_REQUEST: 400,
+  TOO_LARGE: 413,
   NOT_FOUND: 404,
 
   INTERNAL_SERVER_ERROR: 500,
