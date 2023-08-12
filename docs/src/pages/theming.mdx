@@ -165,9 +165,8 @@ import our stylesheet into your app. If you choose not to use `withUt`, you have
 to import default stylesheet to make components look right.
 
 ```ts filename="tailwind.config.ts"
-import { withUt } from "@uploadthing/react/tw";
+import { withUt } from "uploadthing/tw";
 
-/** @type {import('tailwindcss').Config} */
 export default withUt({
   // your config goes here
 });
@@ -175,9 +174,8 @@ export default withUt({
 
 ```js filename="tailwind.config.js"
 // @ts-check
-const { withUt } = require("@uploadthing/react/tw");
+const { withUt } = require("uploadthing/tw");
 
-/** @type {import('tailwindcss').Config} */
 module.exports = withUt({
   // your config goes here
 });
