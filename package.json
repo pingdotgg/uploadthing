@@ -4,7 +4,8 @@
   "type": "module",
   "packageManager": "pnpm@8.6.12",
   "engines": {
-    "node": ">=v18.17.1"
+    "node": ">=v18.17.1",
+    "pnpm": ">=8.6.0"
   },
   "scripts": {
     "build": "turbo run build",
