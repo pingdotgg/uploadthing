@@ -12,6 +12,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "typesVersions": {
     "*": {
       "*": [
@@ -44,9 +47,6 @@
     "@uploadthing/mime-types": {
       "optional": true
     }
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "eslintConfig": {
     "root": true,

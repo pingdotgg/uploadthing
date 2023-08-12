@@ -1,13 +1,13 @@
 {
   "name": "@example/solidstart",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "solid-start dev --port 9898",
     "start": "solid-start start --port 9898",
     "build": "solid-start build",
     "lint": "eslint \"**/*.{ts,tsx}\""
   },
-  "type": "module",
   "dependencies": {
     "@solidjs/meta": "^0.28.5",
     "@solidjs/router": "^0.8.2",
@@ -32,9 +32,6 @@
     "tailwindcss": "^3.3.2",
     "typescript": "^5.1.6",
     "vite": "^4.3.9"
-  },
-  "engines": {
-    "node": ">=16"
   },
   "eslintConfig": {
     "extends": [

@@ -17,6 +17,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "typesVersions": {
     "*": {
       "*": [
@@ -60,9 +63,6 @@
     "vitest": "^0.30.1",
     "wait-on": "^7.0.1",
     "zod": "^3.21.4"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "eslintConfig": {
     "root": true,

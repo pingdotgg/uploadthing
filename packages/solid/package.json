@@ -1,9 +1,13 @@
 {
   "name": "@uploadthing/solid",
+  "type": "module",
   "author": "OrJDev",
   "license": "MIT",
   "version": "5.1.2",
-  "type": "module",
+  "main": "./dist/server.cjs",
+  "module": "./dist/server.js",
+  "types": "./dist/index.d.ts",
+  "typesVersions": {},
   "exports": {
     ".": {
       "worker": {
@@ -67,8 +71,6 @@
     },
     "./styles.css": "./dist/index.css"
   },
-  "main": "./dist/server.cjs",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "README.md"
@@ -106,8 +108,6 @@
     "SolidJS",
     "Uploadthing"
   ],
-  "typesVersions": {},
-  "module": "./dist/server.js",
   "eslintConfig": {
     "root": true,
     "extends": [
