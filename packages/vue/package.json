@@ -30,8 +30,8 @@
   "dependencies": {
     "@uploadthing/shared": "^5.0.1",
     "@vueuse/core": "^10.2.1",
-    "vue3-dropzone": "^2.0.1",
-    "@uploadthing/vue-dropzone": "^5.0.1"
+    "attr-accept": "^2.2.2",
+    "file-selector": "^0.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.1.0",

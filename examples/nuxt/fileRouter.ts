@@ -41,12 +41,8 @@ export const uploadRouter = {
     },
   })
     .middleware(({ req }) => {
-      const h = req.headers["someProperty"];
-
-      if (!h) throw new Error("someProperty is required");
-
       return {
-        someProperty: h,
+        someProperty: "goodbye" as const,
         otherProperty: "hello" as const,
       };
     })

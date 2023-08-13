@@ -13,10 +13,12 @@ export default defineConfig({
       fileName: "index",
     },
     rollupOptions: {
-      external: ["vue"],
+      external: ["vue", "uploadthing", "@uploadthing/shared"],
       output: {
         globals: {
           vue: "Vue",
+          uploadthing: "Uploadthing",
+          "@uploadthing/shared": "UploadthingShared",
         },
       },
     },

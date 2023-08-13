@@ -1,6 +1,6 @@
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
-import { useDropzone, type FileUploadOptions } from "@uploadthing/vue-dropzone";
+import { useDropzone, type FileUploadOptions } from "./useDropzone";
 import { classNames, generateMimeTypes } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 
@@ -75,9 +75,8 @@ export const UploadButton = <TRouter extends FileRouter>() =>
 
       const getUploadButtonText = (fileTypes: string[]) => {
         if (!(fileTypes.length > 0)) return "Loading...";
-        return `Choose File${
-          generatedPermittedFileTypes.value.multiple ? `(s)` : ``
-        }`;
+        return `Choose File${generatedPermittedFileTypes.value.multiple ? `(s)` : ``
+          }`;
       };
 
       const uploadButtonText = computed(() =>
@@ -112,10 +111,9 @@ export const UploadButton = <TRouter extends FileRouter>() =>
           "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
           !ready.value && "ut-cursor-not-allowed ut-bg-blue-400",
           ready.value &&
-            isUploading.value &&
-            `ut-bg-blue-400 after:ut-content-[''] after:ut-block after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
-              progressHeights[uploadProgress.value]
-            }`,
+          isUploading.value &&
+          `ut-bg-blue-400 after:ut-content-[''] after:ut-block after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress.value]
+          }`,
           ready.value && !isUploading.value && "ut-bg-blue-600",
         ),
       );
@@ -214,9 +212,7 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
         },
       );
 
-      const { getRootProps, getInputProps, isDragActive } = useDropzone(
-        () => dropzoneOptions,
-      );
+      const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
       return () => {
         return (
@@ -272,9 +268,8 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
                     class={classNames(
                       "ut-relative ut-flex ut-cursor-pointer ut-h-10 ut-w-36 ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500 ut-border-none",
                       isUploading.value
-                        ? `ut-bg-blue-400 after:ut-content-[''] after:ut-block after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
-                            progressHeights[uploadProgress.value]
-                          }`
+                        ? `ut-bg-blue-400 after:ut-content-[''] after:ut-block after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress.value]
+                        }`
                         : "ut-bg-blue-600",
                     )}
                     onClick={(e) => {
@@ -291,8 +286,7 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
                       {isUploading.value ? (
                         <Spinner />
                       ) : (
-                        `Upload ${files.value.length} file${
-                          files.value.length === 1 ? "" : "s"
+                        `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"
                         }`
                       )}
                     </span>

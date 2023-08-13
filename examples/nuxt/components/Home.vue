@@ -31,7 +31,7 @@ const UploadDropzone = useUploadDropzone<OurFileRouter>();
       <ClientOnly fallback-tag="div" fallback="Loading...">
         <UploadDropzone
           :config="{
-            endpoint: 'videoAndImage',
+            endpoint: 'withMdwr',
           }"
         />
       </ClientOnly>

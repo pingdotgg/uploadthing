@@ -559,15 +559,15 @@ importers:
       '@uploadthing/shared':
         specifier: ^5.0.1
         version: link:../shared
-      '@uploadthing/vue-dropzone':
-        specifier: ^5.0.1
-        version: link:../vue-dropzone
       '@vueuse/core':
         specifier: ^10.2.1
         version: 10.2.1(vue@3.2.47)
-      vue3-dropzone:
-        specifier: ^2.0.1
-        version: 2.0.1(vue@3.2.47)
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: ^0.2.4
+        version: 0.2.4
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^4.1.0
@@ -596,31 +596,6 @@ importers:
       vue:
         specifier: ^3.2.47
         version: 3.2.47
-      vue-tsc:
-        specifier: ^1.4.2
-        version: 1.4.2(typescript@5.1.6)
-
-  packages/vue-dropzone:
-    dependencies:
-      attr-accept:
-        specifier: 2.2.2
-        version: 2.2.2
-      file-selector:
-        specifier: 0.6.0
-        version: 0.6.0
-      vue:
-        specifier: ^3.2.47
-        version: 3.2.47
-    devDependencies:
-      '@vitejs/plugin-vue':
-        specifier: ^4.1.0
-        version: 4.1.0(vite@4.3.9)(vue@3.2.47)
-      typescript:
-        specifier: ^5.0.2
-        version: 5.1.6
-      vite:
-        specifier: ^4.3.9
-        version: 4.3.9(@types/node@18.16.0)
       vue-tsc:
         specifier: ^1.4.2
         version: 1.4.2(typescript@5.1.6)
@@ -4485,9 +4460,9 @@ packages:
       vite: ^4.0.0
       vue: ^3.0.0
     dependencies:
-      '@babel/core': 7.22.10
-      '@babel/plugin-transform-typescript': 7.22.10(@babel/core@7.22.10)
-      '@vue/babel-plugin-jsx': 1.1.5(@babel/core@7.22.10)
+      '@babel/core': 7.22.1
+      '@babel/plugin-transform-typescript': 7.22.10(@babel/core@7.22.1)
+      '@vue/babel-plugin-jsx': 1.1.5(@babel/core@7.22.1)
       vite: 4.3.9(@types/node@18.16.0)
       vue: 3.3.4
     transitivePeerDependencies:
@@ -15034,16 +15009,6 @@ packages:
       semver: 7.5.4
       typescript: 5.1.6
     dev: true
-
-  /vue3-dropzone@2.0.1(vue@3.2.47):
-    resolution: {integrity: sha512-jY36ZhIpGCxyok6cKxFb2s9s15c1KXmLHxcHzHhjoPzZ5IHW7+2RrnYUenCdq88ym66KyknscNkJYJzh3C23hw==}
-    peerDependencies:
-      vue: '>=3'
-    dependencies:
-      attr-accept: 2.2.2
-      file-selector: 0.2.4
-      vue: 3.2.47
-    dev: false
 
   /vue@3.2.47:
     resolution: {integrity: sha512-60188y/9Dc9WVrAZeUVSDxRQOZ+z+y5nO2ts9jWXSTkMvayiWxCWOWtBQoYjLeccfXkiiPZWAHcV+WTPhkqJHQ==}
