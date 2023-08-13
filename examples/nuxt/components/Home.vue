@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import type { OurFileRouter } from "fileRouter";
+import type { OurFileRouter } from "server/uploadthing";
 
-import { useUploadButton, useUploadDropzone } from "@uploadthing/vue";
+import {
+  useUploadButton,
+  useUploadDropzone,
+  useUploader,
+} from "@uploadthing/vue";
 
 const UploadButton = useUploadButton<OurFileRouter>();
 const UploadDropzone = useUploadDropzone<OurFileRouter>();
+const Uploader = useUploader<OurFileRouter>();
 </script>
 
 <template>

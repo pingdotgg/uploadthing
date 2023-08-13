@@ -303,6 +303,35 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
     },
   );
 
+export const Uploader = <TRouter extends FileRouter>() =>
+  defineComponent(
+    (props: { config: UploadthingComponentProps<TRouter> }) => {
+      return () => {
+        return (
+          <>
+            <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+              <span class="ut-text-center ut-text-4xl ut-font-bold">
+                {`Upload a file using a button:`}
+              </span>
+              {/* @ts-expect-error - this is validated above */}
+              <UploadButton<TRouter> {...props} />
+            </div>
+            <div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
+              <span class="ut-text-center ut-text-4xl ut-font-bold">
+                {`...or using a dropzone:`}
+              </span>
+              {/* @ts-expect-error - this is validated above */}
+              <UploadDropzone<TRouter> {...props} />
+            </div>
+          </>
+        );
+      };
+    },
+    {
+      props: ["config"],
+    },
+  );
+
 // builder function to create generic component inside of SFC setup script
 export const useUploadButton = <TRouter extends FileRouter>() => {
   return UploadButton<TRouter>();
@@ -311,3 +340,7 @@ export const useUploadButton = <TRouter extends FileRouter>() => {
 export const useUploadDropzone = <TRouter extends FileRouter>() => {
   return UploadDropzone<TRouter>();
 };
+
+export const useUploader = <TRouter extends FileRouter>() => {
+  return Uploader<TRouter>();
+}

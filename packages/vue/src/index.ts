@@ -3,6 +3,7 @@ import {
   UploadDropzone,
   useUploadButton,
   useUploadDropzone,
+  useUploader,
 } from "./components";
 
 import "./styles.css";
@@ -15,4 +16,5 @@ export {
   UploadDropzone,
   useUploadDropzone,
   generateVueHelpers,
+  useUploader,
 };
