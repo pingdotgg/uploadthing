@@ -1,16 +1,16 @@
 import {
   createRouter,
   defineEventHandler,
-  getQuery,
   readBody,
   setResponseStatus,
   useBase,
 } from "h3";
-
+import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { defaultErrorFormatter } from "../error-formatter";
 import { UPLOADTHING_VERSION } from "../../constants";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
-import type { FileRouter } from "../types";
+import type { FileRouter, inferErrorShape } from "../types";
 
 export const createNuxtRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
@@ -19,39 +19,61 @@ export const createNuxtRouteHandler = <TRouter extends FileRouter>(
   const requestHandler = buildRequestHandler<TRouter, "nuxt">(opts);
 
   const POST = defineEventHandler(async (event) => {
-    const params = getQuery(event) as {
-      slug?: string;
-      actionType?: string;
-    };
-    const uploadthingHook =
-      event.node.req.headers["uploadthing-hook"] ?? undefined;
-    const slug = params.slug ?? undefined;
-    const actionType = params.actionType ?? undefined;
-
-    event.node.res;
-
+    const errorFormatter =
+      opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
+      defaultErrorFormatter;
     const response = await requestHandler({
-      uploadthingHook: Array.isArray(uploadthingHook)
-        ? uploadthingHook[0]
-        : uploadthingHook,
-      slug,
-      actionType,
       req: {
-        ...event.node.req,
+        // Removing original headers property
+        ...(() => {
+          const { headers: _, ...rest } = event.node.req;
+
+          return rest;
+        })(),
         json: () => readBody(event),
+        // Building custom headers property that will comply with type definitions
+        // of the `requestHandler` function
+        headers: {
+          get(name) {
+            const result = event.node.req.headers[name];
+
+            if (!result) {
+              return null;
+            }
+
+            if (Array.isArray(result)) {
+              return result.join(',');
+            }
+
+            return result;
+          },
+        }
       },
       res: event.node.res,
     });
 
-    setResponseStatus(event, response.status);
-
     event.node.res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
 
-    if (response.status === 200) {
-      return response.body;
+    if (response instanceof UploadThingError) {
+      const formattedError = errorFormatter(
+        response,
+      ) as inferErrorShape<TRouter>;
+
+      setResponseStatus(event, getStatusCodeFromError(response));
+
+      return JSON.stringify(formattedError);
     }
 
-    return response.message ?? "Unable to upload file.";
+    if (response.status !== 200) {
+      // We messed up - this should never happen
+      setResponseStatus(event, 500);
+
+      return "An unknown error occured";
+    }
+
+    setResponseStatus(event, response.status);
+
+    return JSON.stringify(response.body);
   });
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);

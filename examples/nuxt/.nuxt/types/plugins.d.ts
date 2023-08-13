@@ -10,8 +10,6 @@ type NuxtAppInjections =
   InjectionType<typeof import("../../../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/app/plugins/revive-payload.client").default> &
   InjectionType<typeof import("../../../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/head/runtime/plugins/unhead").default> &
   InjectionType<typeof import("../../../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/app/plugins/router").default> &
-  InjectionType<typeof import("../../../../node_modules/.pnpm/@nuxt+devtools@0.6.5_nuxt@3.6.1_vite@4.3.9/node_modules/@nuxt/devtools/dist/runtime/plugins/devtools.server").default> &
-  InjectionType<typeof import("../../../../node_modules/.pnpm/@nuxt+devtools@0.6.5_nuxt@3.6.1_vite@4.3.9/node_modules/@nuxt/devtools/dist/runtime/plugins/devtools.client").default> &
   InjectionType<typeof import("../../../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/app/plugins/chunk-reload.client").default>
 
 declare module '#app' {

@@ -4757,12 +4757,93 @@ z.union([
   InternalMimeTypeValidator
 ]);
 
+// src/error.ts
+var ERROR_CODES = {
+  BAD_REQUEST: 400,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+  INTERNAL_CLIENT_ERROR: 500,
+  URL_GENERATION_FAILED: 500,
+  UPLOAD_FAILED: 500,
+  MISSING_ENV: 500,
+  FILE_LIMIT_EXCEEDED: 500
+};
+function messageFromUnknown(cause, fallback) {
+  if (typeof cause === "string") {
+    return cause;
+  }
+  if (cause instanceof Error) {
+    return cause.message;
+  }
+  if (cause && typeof cause === "object" && "message" in cause && typeof cause.message === "string") {
+    return cause.message;
+  }
+  return fallback ?? "An unknown error occurred";
+}
+var UploadThingError = class extends Error {
+  constructor(opts) {
+    const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
+    super(message);
+    this.code = opts.code;
+    this.data = opts.data;
+    if (opts.cause instanceof Error) {
+      this.cause = opts.cause;
+    } else if (opts.cause instanceof Response) {
+      this.cause = new Error(
+        `Response ${opts.cause.status} ${opts.cause.statusText}`
+      );
+    } else if (typeof opts.cause === "string") {
+      this.cause = new Error(opts.cause);
+    } else {
+      this.cause = void 0;
+    }
+  }
+  static async fromResponse(response) {
+    const json = await response.json();
+    let message = void 0;
+    if (json !== null && typeof json === "object" && !Array.isArray(json)) {
+      if (typeof json.message === "string") {
+        message = json.message;
+      } else if (typeof json.error === "string") {
+        message = json.error;
+      }
+    }
+    return new UploadThingError({
+      message,
+      code: getErrorTypeFromStatusCode(response.status),
+      cause: response,
+      data: json
+    });
+  }
+  static toObject(error) {
+    return {
+      code: error.code,
+      message: error.message,
+      data: error.data
+    };
+  }
+  static serialize(error) {
+    return JSON.stringify(UploadThingError.toObject(error));
+  }
+};
+function getStatusCodeFromError(error) {
+  return ERROR_CODES[error.code] ?? 500;
+}
+function getErrorTypeFromStatusCode(statusCode) {
+  for (const [code, status] of Object.entries(ERROR_CODES)) {
+    if (status === statusCode) {
+      return code;
+    }
+  }
+  return "INTERNAL_SERVER_ERROR";
+}
+
 // package.json
 var require_package = __commonJS({
   "package.json"(exports, module) {
     module.exports = {
       name: "uploadthing",
-      version: "5.1.0",
+      version: "5.3.2",
       license: "MIT",
       exports: {
         "./package.json": "./package.json",
@@ -4821,7 +4902,7 @@ var require_package = __commonJS({
       },
       dependencies: {
         "@uploadthing/mime-types": "^0.2.0",
-        "@uploadthing/shared": "^5.0.1"
+        "@uploadthing/shared": "^5.2.0"
       },
       devDependencies: {
         "@uploadthing/eslint-config": "0.1.0",
@@ -4844,6 +4925,13 @@ var require_package = __commonJS({
   }
 });
 
+// src/internal/error-formatter.ts
+function defaultErrorFormatter(error) {
+  return {
+    message: error.message
+  };
+}
+
 // src/internal/upload-builder.ts
 function internalCreateBuilder(initDef = {}) {
   const _def = {
@@ -4855,6 +4943,7 @@ function internalCreateBuilder(initDef = {}) {
     },
     inputParser: { parse: () => ({}), _input: {}, _output: {} },
     middleware: () => ({}),
+    errorFormatter: initDef.errorFormatter || defaultErrorFormatter,
     // Overload with properties passed in
     ...initDef
   };
@@ -4879,9 +4968,12 @@ function internalCreateBuilder(initDef = {}) {
     }
   };
 }
-function createBuilder() {
+function createBuilder(opts) {
   return (input) => {
-    return internalCreateBuilder({ routerConfig: input });
+    return internalCreateBuilder({
+      routerConfig: input,
+      ...opts
+    });
   };
 }
 
@@ -4901,6 +4993,7 @@ function getParseFn(parser) {
 
 // src/internal/handler.ts
 var fileCountLimitHit = (files, routeConfig) => {
+  var _a;
   const counts = {};
   files.forEach((file) => {
     const type = getTypeFromFileName(
@@ -4913,40 +5006,79 @@ var fileCountLimitHit = (files, routeConfig) => {
       counts[type] += 1;
     }
   });
-  return Object.keys(counts).some((key) => {
-    var _a;
+  for (const _key in counts) {
+    const key = _key;
     const count = counts[key];
-    if (count === 0)
-      return false;
     const limit = (_a = routeConfig[key]) == null ? void 0 : _a.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
-      throw new Error("invalid config during file count");
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Invalid config during file count",
+        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`
+      });
     }
-    return count > limit;
-  });
+    if (count > limit) {
+      return { limitHit: true, type: key, limit, count };
+    }
+  }
+  return { limitHit: false };
 };
 var conditionalDevServer = async (fileKey) => {
   return;
 };
 var buildRequestHandler = (opts) => {
   return async (input) => {
+    var _a;
+    const { req, res } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret = (config == null ? void 0 : config.uploadthingSecret) ?? process.env.UPLOADTHING_SECRET;
-    const { uploadthingHook, slug, req, res, actionType } = input;
+    const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
+    const uploadthingHook = ((_a = req.headers) == null ? void 0 : _a.get("uploadthing-hook")) ?? void 0;
+    const slug = params.get("slug") ?? void 0;
+    const actionType = params.get("actionType") ?? void 0;
     if (!slug)
-      throw new Error("we need a slug");
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "No slug provided"
+      });
+    if (slug && typeof slug !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`slug` must be a string",
+        cause: `Expected slug to be of type 'string', got '${typeof slug}'`
+      });
+    }
+    if (actionType && typeof actionType !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`actionType` must be a string",
+        cause: `Expected actionType to be of type 'string', got '${typeof actionType}'`
+      });
+    }
+    if (uploadthingHook && typeof uploadthingHook !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`uploadthingHook` must be a string",
+        cause: `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`
+      });
+    }
     if (!preferredOrEnvSecret) {
-      throw new Error(
-        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`
-      );
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
+        cause: "No secret provided"
+      });
     }
     const uploadable = router[slug];
     if (!uploadable) {
-      return { status: 404 };
+      return new UploadThingError({
+        code: "NOT_FOUND",
+        message: `No file route found for slug ${slug}`
+      });
     }
     const reqBody = await req.json();
-    if (uploadthingHook && uploadthingHook === "callback") {
+    if (uploadthingHook === "callback") {
       await uploadable.resolver({
         file: reqBody.file,
         metadata: reqBody.metadata
@@ -4954,7 +5086,11 @@ var buildRequestHandler = (opts) => {
       return { status: 200 };
     }
     if (!actionType || actionType !== "upload") {
-      return { status: 404 };
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        cause: `Invalid action type ${actionType}`,
+        message: `Expected "upload" but got "${actionType}"`
+      });
     }
     try {
       const { files, input: userInput } = reqBody;
@@ -4963,23 +5099,48 @@ var buildRequestHandler = (opts) => {
         const inputParser = uploadable._def.inputParser;
         parsedInput = await getParseFn(inputParser)(userInput);
       } catch (error) {
-        console.error(error);
-        return { status: 400, mesage: "Invalid input" };
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid input",
+          cause: error
+        });
       }
-      const metadata = await uploadable._def.middleware({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        req,
-        res,
-        input: parsedInput
-      });
+      let metadata = {};
+      try {
+        metadata = await uploadable._def.middleware({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          req,
+          res,
+          input: parsedInput
+        });
+      } catch (error) {
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "An error occured in the upload middleware",
+          cause: error
+        });
+      }
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
-        throw new Error("Need file array");
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Files must be a string array",
+          cause: `Expected files to be of type 'string[]', got '${JSON.stringify(
+            files
+          )}'`
+        });
       const parsedConfig = fillInputRouteConfig(
         uploadable._def.routerConfig
       );
-      const limitHit = fileCountLimitHit(files, parsedConfig);
+      const { limitHit, count, limit, type } = fileCountLimitHit(
+        files,
+        parsedConfig
+      );
       if (limitHit)
-        throw new Error("Too many files");
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "File limit exceeded",
+          cause: `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`
+        });
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
         {
@@ -5003,18 +5164,30 @@ var buildRequestHandler = (opts) => {
         try {
           const error = await uploadthingApiResponse.json();
           console.error(error);
-        } catch (e) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            cause: error
+          });
+        } catch (cause) {
           console.error("[UT] unable to parse response");
+          return new UploadThingError({
+            code: "URL_GENERATION_FAILED",
+            message: "Unable to get presigned urls",
+            cause
+          });
         }
-        throw new Error("ending upload");
       }
       const parsedResponse = await uploadthingApiResponse.json();
       if ("production" === "development") ;
       return { body: parsedResponse, status: 200 };
-    } catch (e) {
+    } catch (cause) {
       console.error("[UT] middleware failed to run");
-      console.error(e);
-      return { status: 400, message: e.toString() };
+      console.error(cause);
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `An error occured when running the middleware for the ${slug} route`,
+        cause
+      });
     }
   };
 };
@@ -5033,56 +5206,6 @@ var buildPermissionsInfoHandler = (opts) => {
   };
 };
 
-var PLUS_RE = /\+/g;
-function decode(text = "") {
-  try {
-    return decodeURIComponent("" + text);
-  } catch {
-    return "" + text;
-  }
-}
-function decodeQueryValue(text) {
-  return decode(text.replace(PLUS_RE, " "));
-}
-function parseQuery(parametersString = "") {
-  const object = {};
-  if (parametersString[0] === "?") {
-    parametersString = parametersString.slice(1);
-  }
-  for (const parameter of parametersString.split("&")) {
-    const s = parameter.match(/([^=]+)=?(.*)/) || [];
-    if (s.length < 2) {
-      continue;
-    }
-    const key = decode(s[1]);
-    if (key === "__proto__" || key === "constructor") {
-      continue;
-    }
-    const value = decodeQueryValue(s[2] || "");
-    if (typeof object[key] !== "undefined") {
-      if (Array.isArray(object[key])) {
-        object[key].push(value);
-      } else {
-        object[key] = [object[key], value];
-      }
-    } else {
-      object[key] = value;
-    }
-  }
-  return object;
-}
-var PROTOCOL_STRICT_REGEX = /^\w{2,}:([/\\]{1,2})/;
-var PROTOCOL_REGEX = /^\w{2,}:([/\\]{2})?/;
-var PROTOCOL_RELATIVE_REGEX = /^([/\\]\s*){2,}[^/\\]/;
-function hasProtocol(inputString, opts = {}) {
-  if (typeof opts === "boolean") {
-    opts = { acceptRelative: opts };
-  }
-  if (opts.strict) {
-    return PROTOCOL_STRICT_REGEX.test(inputString);
-  }
-  return PROTOCOL_REGEX.test(inputString) || (opts.acceptRelative ? PROTOCOL_RELATIVE_REGEX.test(inputString) : false);
-}
 var TRAILING_SLASH_RE = /\/$|\/\?/;
 function hasTrailingSlash(input = "", queryParameters = false) {
   if (!queryParameters) {
@@ -5111,37 +5234,8 @@ function withoutBase(input, base) {
   const trimmed = input.slice(_base.length);
   return trimmed[0] === "/" ? trimmed : "/" + trimmed;
 }
-function getQuery(input) {
-  return parseQuery(parseURL(input).search);
-}
 function isEmptyURL(url) {
   return !url || url === "/";
-}
-function parseURL(input = "", defaultProto) {
-  if (!hasProtocol(input, { acceptRelative: true })) {
-    return defaultProto ? parseURL(defaultProto + input) : parsePath(input);
-  }
-  const [protocol = "", auth, hostAndPath = ""] = (input.replace(/\\/g, "/").match(/([^/:]+:)?\/\/([^/@]+@)?(.*)/) || []).splice(1);
-  const [host = "", path = ""] = (hostAndPath.match(/([^#/?]*)(.*)?/) || []).splice(1);
-  const { pathname, search, hash } = parsePath(
-    path.replace(/\/(?=[A-Za-z]:)/, "")
-  );
-  return {
-    protocol,
-    auth: auth ? auth.slice(0, Math.max(0, auth.length - 1)) : "",
-    host,
-    pathname,
-    search,
-    hash
-  };
-}
-function parsePath(input = "") {
-  const [pathname = "", search = "", hash = ""] = (input.match(/([^#?]*)(\?[^#]*)?(#.*)?/) || []).splice(1);
-  return {
-    pathname,
-    search,
-    hash
-  };
 }
 
 // ../../node_modules/.pnpm/radix3@1.0.1/node_modules/radix3/dist/index.mjs
@@ -5454,9 +5548,6 @@ function isError(input) {
   var _a;
   return ((_a = input == null ? void 0 : input.constructor) == null ? void 0 : _a.__h3_error__) === true;
 }
-function getQuery2(event) {
-  return getQuery(event.node.req.url || "");
-}
 function getMethod(event, defaultMethod = "GET") {
   return (event.node.req.method || defaultMethod).toUpperCase();
 }
@@ -5666,33 +5757,51 @@ function createRouter2(opts = {}) {
   });
   return router;
 }
-
-// src/internal/nuxt/index.ts
 var createNuxtRouteHandler = (opts) => {
   const router = createRouter2();
   const requestHandler = buildRequestHandler(opts);
   const POST = defineEventHandler(async (event) => {
-    const params = getQuery2(event);
-    const uploadthingHook = event.node.req.headers["uploadthing-hook"] ?? void 0;
-    const slug = params.slug ?? void 0;
-    const actionType = params.actionType ?? void 0;
-    event.node.res;
+    var _a;
+    const errorFormatter = ((_a = opts.router[Object.keys(opts.router)[0]]) == null ? void 0 : _a._def.errorFormatter) ?? defaultErrorFormatter;
     const response = await requestHandler({
-      uploadthingHook: Array.isArray(uploadthingHook) ? uploadthingHook[0] : uploadthingHook,
-      slug,
-      actionType,
       req: {
-        ...event.node.req,
-        json: () => readBody(event)
+        // Removing original headers property
+        ...(() => {
+          const { headers: _, ...rest } = event.node.req;
+          return rest;
+        })(),
+        json: () => readBody(event),
+        // Building custom headers property that will comply with type definitions
+        // of the `requestHandler` function
+        headers: {
+          get(name) {
+            const result = event.node.req.headers[name];
+            if (!result) {
+              return null;
+            }
+            if (Array.isArray(result)) {
+              return result.join(",");
+            }
+            return result;
+          }
+        }
       },
       res: event.node.res
     });
-    setResponseStatus(event, response.status);
     event.node.res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-    if (response.status === 200) {
-      return response.body;
+    if (response instanceof UploadThingError) {
+      const formattedError = errorFormatter(
+        response
+      );
+      setResponseStatus(event, getStatusCodeFromError(response));
+      return JSON.stringify(formattedError);
     }
-    return response.message ?? "Unable to upload file.";
+    if (response.status !== 200) {
+      setResponseStatus(event, 500);
+      return "An unknown error occured";
+    }
+    setResponseStatus(event, response.status);
+    return JSON.stringify(response.body);
   });
   const getBuildPerms = buildPermissionsInfoHandler(opts);
   const GET = defineEventHandler((event) => {
@@ -5736,11 +5845,8 @@ const uploadRouter = {
       maxFileSize: "1MB"
     }
   }).middleware(({ req }) => {
-    const h = req.headers["someProperty"];
-    if (!h)
-      throw new Error("someProperty is required");
     return {
-      someProperty: h,
+      someProperty: "goodbye",
       otherProperty: "hello"
     };
   }).onUploadComplete(({ metadata, file }) => {

@@ -8,7 +8,7 @@ const client_manifest = {
     "resourceType": "script",
     "module": true,
     "css": [],
-    "file": "error-404.38367f72.js",
+    "file": "error-404.573fde3c.js",
     "imports": [
       "../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/app/entry.js"
     ],
@@ -28,7 +28,7 @@ const client_manifest = {
     "resourceType": "script",
     "module": true,
     "css": [],
-    "file": "error-500.b9a0b801.js",
+    "file": "error-500.5827ddfd.js",
     "imports": [
       "../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/app/entry.js"
     ],
@@ -46,7 +46,7 @@ const client_manifest = {
       "../../node_modules/.pnpm/@nuxt+ui-templates@1.2.0/node_modules/@nuxt/ui-templates/dist/templates/error-404.vue",
       "../../node_modules/.pnpm/@nuxt+ui-templates@1.2.0/node_modules/@nuxt/ui-templates/dist/templates/error-500.vue"
     ],
-    "file": "entry.3acb2a36.js",
+    "file": "entry.1ab579b2.js",
     "isEntry": true,
     "src": "../../node_modules/.pnpm/nuxt@3.6.1_@types+node@18.16.0_eslint@8.42.0_typescript@5.1.3/node_modules/nuxt/dist/app/entry.js"
   }

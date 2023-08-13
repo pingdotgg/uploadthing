@@ -544,44 +544,44 @@ const assets = {
   "/favicon.ico": {
     "type": "image/vnd.microsoft.icon",
     "etag": "\"10be-n8egyE9tcb7sKGr/pYCaQ4uWqxI\"",
-    "mtime": "2023-08-13T14:47:02.841Z",
+    "mtime": "2023-08-13T16:59:07.541Z",
     "size": 4286,
     "path": "../public/favicon.ico"
   },
-  "/_nuxt/entry.3acb2a36.js": {
+  "/_nuxt/entry.1ab579b2.js": {
     "type": "application/javascript",
-    "etag": "\"3eb0a-mXhR0JsPG4ejyOiAXunzKojIdUQ\"",
-    "mtime": "2023-08-13T14:47:02.840Z",
-    "size": 256778,
-    "path": "../public/_nuxt/entry.3acb2a36.js"
+    "etag": "\"3f2cd-+OtPcMbSwtQQ8P0o2oZ0c2ikxhc\"",
+    "mtime": "2023-08-13T16:59:07.537Z",
+    "size": 258765,
+    "path": "../public/_nuxt/entry.1ab579b2.js"
   },
-  "/_nuxt/error-404.38367f72.js": {
+  "/_nuxt/error-404.573fde3c.js": {
     "type": "application/javascript",
-    "etag": "\"197d-OG9m320SNufNx5RzD5xKoVmkubQ\"",
-    "mtime": "2023-08-13T14:47:02.840Z",
+    "etag": "\"197d-nI0DI6l2PFfa7xIKU3qYOAZlULI\"",
+    "mtime": "2023-08-13T16:59:07.531Z",
     "size": 6525,
-    "path": "../public/_nuxt/error-404.38367f72.js"
+    "path": "../public/_nuxt/error-404.573fde3c.js"
   },
   "/_nuxt/error-404.dfbf3f20.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"e70-fxyxrsygcnpMmaIjxGSXT0lrM+w\"",
-    "mtime": "2023-08-13T14:47:02.839Z",
+    "mtime": "2023-08-13T16:59:07.530Z",
     "size": 3696,
     "path": "../public/_nuxt/error-404.dfbf3f20.css"
   },
   "/_nuxt/error-500.2faca791.css": {
     "type": "text/css; charset=utf-8",
     "etag": "\"7e0-dFPHZVM8qqqRyZCq7FhieLe/SNk\"",
-    "mtime": "2023-08-13T14:47:02.839Z",
+    "mtime": "2023-08-13T16:59:07.530Z",
     "size": 2016,
     "path": "../public/_nuxt/error-500.2faca791.css"
   },
-  "/_nuxt/error-500.b9a0b801.js": {
+  "/_nuxt/error-500.5827ddfd.js": {
     "type": "application/javascript",
-    "etag": "\"756-WIwklGHghfpJYw7yGzRDDqV3M9c\"",
-    "mtime": "2023-08-13T14:47:02.839Z",
+    "etag": "\"756-JzQdPiP1Thpj8cWr7rCzyen5W3E\"",
+    "mtime": "2023-08-13T16:59:07.529Z",
     "size": 1878,
-    "path": "../public/_nuxt/error-500.b9a0b801.js"
+    "path": "../public/_nuxt/error-500.5827ddfd.js"
   }
 };
 

@@ -3,8 +3,8 @@ import { computed, ref } from "vue";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
-
+import type { FileRouter, inferEndpointInput, inferErrorShape } from "uploadthing/server";
+import { UploadThingError } from "@uploadthing/shared";
 import { useEvent } from "./utils/useEvent";
 
 type EndpointMetadata = {
@@ -17,18 +17,23 @@ const useEndpointMetadata = () => {
   return { data };
 };
 
-export type UseUploadthingProps = {
+export type UseUploadthingProps<TRouter extends FileRouter> = {
   onClientUploadComplete?: (
     res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
   ) => void;
   onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: Error) => void;
+  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
+
+const fatalClientError = new UploadThingError({
+  code: "INTERNAL_CLIENT_ERROR",
+  message: "Something went wrong. Please report this to UploadThing.",
+});
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps,
+    opts?: UseUploadthingProps<TRouter>,
   ) => {
     const isUploading = ref(false);
     const uploadProgress = ref(0);
@@ -72,16 +77,18 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             }
           },
         });
-        isUploading.value = false;
-        fileProgress.value = new Map<string, number>();
-        uploadProgress.value = 0;
+
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        const error = e instanceof UploadThingError ? e : fatalClientError;
+        opts?.onUploadError?.(
+          error as UploadThingError<inferErrorShape<TRouter>>,
+        );
+      } finally {
         isUploading.value = false;
         fileProgress.value = new Map<string, number>();
         uploadProgress.value = 0;
-        opts?.onUploadError?.(e as Error);
       }
     });
 
