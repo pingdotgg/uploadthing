@@ -36,6 +36,7 @@
   /* applied to container */
 .custom-container {
   background-color: none;
+  margin-top: 1rem;
   }
    
   /* applied to container when readying */

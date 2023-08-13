@@ -228,7 +228,7 @@ component match your design in the exact way you want.
 
 ```tsx
 <UploadButton
-    className="mt-6 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
+    className="mt-4 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
                |    └─ applied to `button`  └─ applied to `button` when `readying`
                └─ applied to `container`
 />
@@ -237,7 +237,7 @@ component match your design in the exact way you want.
 <UploadButton
   __internal_button_disabled
   __internal_state="ready"
-  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-6"
+  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-4"
   content={{
     allowedContent: "Allowed content",
     button: "Ready",
@@ -247,7 +247,7 @@ component match your design in the exact way you want.
 <UploadButton
   __internal_button_disabled
   __internal_state="readying"
-  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-6"
+  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-4"
   content={{
     allowedContent: "Allowed content",
   }}
@@ -268,7 +268,7 @@ component match your design in the exact way you want.
   __internal_button_disabled
   __internal_dropzone_disabled
   __internal_show_button
-  className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-6 bg-slate-800"
+  className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-4 bg-slate-800"
   content={{
     allowedContent: "Allowed content",
     button: "Ready",
@@ -280,7 +280,7 @@ component match your design in the exact way you want.
   __internal_button_disabled
   __internal_dropzone_disabled
   __internal_show_button
-  className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-6 bg-slate-800"
+  className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-4 bg-slate-800"
   content={{
     allowedContent: "Allowed content",
   }}
@@ -324,7 +324,7 @@ component.
     button:
       "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
     container:
-      "mx-auto w-max flex-row rounded-md border-cyan-300 bg-slate-800 mt-2",
+      "mx-auto w-max flex-row rounded-md border-cyan-300 bg-slate-800 mt-4",
     allowedContent: "flex h-8 flex-col items-center justify-center px-2",
   }}
   content={{
@@ -396,6 +396,11 @@ specific elements of component.
     allowedContent: "Allowed content",
     button: "Readying",
   }}
+  appearance={{
+    container: {
+      marginTop: "1rem",
+    },
+  }}
 />
 
 <UploadButton
@@ -406,6 +411,11 @@ specific elements of component.
     allowedContent: "Allowed content",
   }}
   __internal_upload_progress={40}
+  appearance={{
+    container: {
+      marginTop: "1rem",
+    },
+  }}
 />
 
 #### `appearance` prop
@@ -432,6 +442,7 @@ will return a string
 /* applied to container */
 .custom-container {
   background-color: none;
+  margin-top: 1rem;
 }
 
 /* applied to container when readying */
@@ -709,7 +720,13 @@ type UploadDropzoneProps = {
       return `Stuff you can upload: ${fileTypes.join(", ")}`;
     },
 
-}} />
+}}
+
+appearance={{
+    container: {
+      marginTop: "1rem",
+    },
+  }} />
 
 <UploadButton
   __internal_button_disabled
@@ -727,4 +744,10 @@ type UploadDropzoneProps = {
       return `Stuff you can upload: ${fileTypes.join(", ")}`;
     },
 
-}} />
+}}
+
+appearance={{
+    container: {
+      marginTop: "1rem",
+    },
+  }} />
