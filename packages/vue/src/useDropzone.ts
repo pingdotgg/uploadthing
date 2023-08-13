@@ -1,3 +1,5 @@
+// Taken from: https://github.com/Yaxian/vue3-dropzone
+
 import {
   ref, watch, computed, toRefs,
   onMounted, onUnmounted, RendererElement,
