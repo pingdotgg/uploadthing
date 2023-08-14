@@ -18,7 +18,7 @@ import type {
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
-import type { AnyRuntime, FileRouter } from "./types";
+import type { AnyRuntime, FileRouter, RequestLike } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -133,6 +133,13 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   };
 };
 
+const getHeader = (req: RequestLike, key: string) => {
+  if (req.headers instanceof Headers) {
+    return req.headers.get(key);
+  }
+  return req.headers[key];
+};
+
 export const buildRequestHandler = <
   TRouter extends FileRouter,
   TRuntime extends AnyRuntime,
@@ -140,7 +147,7 @@ export const buildRequestHandler = <
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
-    req: Partial<Request> & { json: Request["json"] };
+    req: RequestLike;
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
     const { req, res } = input;
@@ -150,7 +157,7 @@ export const buildRequestHandler = <
 
     // Get inputs from query and params
     const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
-    const uploadthingHook = req.headers?.get("uploadthing-hook") ?? undefined;
+    const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = params.get("actionType") ?? undefined;
 

@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
+import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 function fetchWithProgress(
@@ -182,11 +183,21 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     );
 
     if (upload.status > 299 || upload.status < 200) {
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: `Failed to upload file ${file.name} to S3`,
-        cause: upload.statusText,
-      });
+      // Attempt to parse response as XML
+      const parsed = maybeParseResponseXML(upload.responseText);
+
+      if (parsed?.message) {
+        throw new UploadThingError({
+          code: parsed.code,
+          message: parsed.message,
+        });
+      } else {
+        throw new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: `Failed to upload file ${file.name} to S3`,
+          cause: upload.responseText,
+        });
+      }
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
