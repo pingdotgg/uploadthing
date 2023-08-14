@@ -268,7 +268,7 @@ component match your design in the exact way you want.
   __internal_button_disabled
   __internal_dropzone_disabled
   __internal_show_button
-  className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 mt-4 bg-slate-800"
+  className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 ut-allowed-content:text-blue-100 mt-4 bg-slate-800"
   content={{
     allowedContent: "Allowed content",
     button: "Ready",
@@ -298,7 +298,8 @@ component.
     button:
       "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
     container: "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
-    allowedContent: "flex h-8 flex-col items-center justify-center px-2",
+    allowedContent:
+      "flex h-8 flex-col items-center justify-center px-2 text-white",
   }}
 />
 ```
@@ -310,7 +311,8 @@ component.
     button:
       "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
     container: "mx-auto w-max flex-row rounded-md border-cyan-300 bg-slate-800",
-    allowedContent: "flex h-8 flex-col items-center justify-center px-2",
+    allowedContent:
+      "flex h-8 flex-col items-center justify-center px-2 text-white",
   }}
   content={{
     allowedContent: "Allowed content",
@@ -325,7 +327,8 @@ component.
       "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
     container:
       "mx-auto w-max flex-row rounded-md border-cyan-300 bg-slate-800 mt-4",
-    allowedContent: "flex h-8 flex-col items-center justify-center px-2",
+    allowedContent:
+      "flex h-8 flex-col items-center justify-center px-2 text-white",
   }}
   content={{
     allowedContent: "Allowed content",
@@ -691,6 +694,7 @@ type UploadDropzoneProps = {
 <UploadButton
   __internal_button_disabled
   __internal_state="readying"
+  className="ut-allowed-content:text-zinc-500"
   content={{
     button({ ready }) {
       if (ready) return <div>Upload stuff</div>;
@@ -726,6 +730,7 @@ appearance={{
     container: {
       marginTop: "1rem",
     },
+    allowedContent: "text-zinc-500",
   }} />
 
 <UploadButton
@@ -750,4 +755,5 @@ appearance={{
     container: {
       marginTop: "1rem",
     },
+    allowedContent: "text-zinc-500",
   }} />
