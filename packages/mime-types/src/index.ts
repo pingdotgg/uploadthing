@@ -70,7 +70,7 @@ function populateMaps(
     const mime = mimeDB[type];
     const exts = mime.extensions;
 
-    if (!exts || !exts.length) {
+    if (!exts?.length) {
       return;
     }
 
@@ -78,9 +78,8 @@ function populateMaps(
     extensions[type] = exts;
 
     // extension -> mime
-    for (let i = 0; i < exts.length; i++) {
-      const extension = exts[i];
 
+    for (const extension of exts) {
       if (types[extension]) {
         const from = preference.indexOf(mimeDB[types[extension]].source);
         const to = preference.indexOf(mime.source);
@@ -88,8 +87,7 @@ function populateMaps(
         if (
           types[extension] !== "application/octet-stream" &&
           (from > to ||
-            (from === to &&
-              types[extension].substring(0, 12) === "application/"))
+            (from === to && types[extension].startsWith("application/")))
         ) {
           // skip the remapping
           continue;

@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
+import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 function fetchWithProgress(
@@ -16,7 +17,7 @@ function fetchWithProgress(
 ) {
   return new Promise<XMLHttpRequest>((res, rej) => {
     const xhr = new XMLHttpRequest();
-    xhr.open(opts.method || "get", url);
+    xhr.open(opts.method ?? "get", url);
     opts.headers &&
       Object.keys(opts.headers).forEach(
         (h) =>
@@ -57,6 +58,33 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
   };
 }[keyof TRouter];
 
+export type UploadFileResponse = {
+  /**
+   * @deprecated
+   * use `name` instead
+   */
+  fileName: string;
+  name: string;
+  /**
+   * @deprecated
+   * use `size` instead
+   */
+  fileSize: number;
+  size: number;
+  /**
+   * @deprecated
+   * use `key` instead
+   */
+  fileKey: string;
+  key: string;
+  /**
+   * @deprecated
+   * use `url` instead
+   */
+  fileUrl: string;
+  url: string;
+};
+
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
   config?: {
@@ -92,7 +120,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       console.error(e);
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Failed to parse response as JSON. Got: ${res.body}`,
+        message: `Failed to parse response as JSON. Got: ${await res.text()}`,
         cause: e,
       });
     }
@@ -173,34 +201,48 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
           }),
         },
       );
-      // Throw error so that the client can handle it
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: `Failed to upload file ${file.name} to S3`,
-        cause: upload.statusText,
-      });
+
+      // Attempt to parse response as XML
+      const parsed = maybeParseResponseXML(upload.responseText);
+
+      // Throw an error for the client
+      if (parsed?.message) {
+        throw new UploadThingError({
+          code: parsed.code,
+          message: parsed.message,
+        });
+      } else {
+        throw new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: `Failed to upload file ${file.name} to S3`,
+          cause: upload.responseText,
+        });
+      }
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl =
-      "https://uploadthing.com/f/" + encodeURIComponent(fields["key"]);
+      "https://uploadthing.com/f/" + encodeURIComponent(fields.key);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     await pollForFileData(presigned.key);
 
-    return {
+    // TODO: remove `file` prefix in next major version
+    const ret: UploadFileResponse = {
+      fileName: file.name,
+      name: file.name,
+      fileSize: file.size,
+      size: file.size,
       fileKey: presigned.key,
+      key: presigned.key,
       fileUrl: genUrl,
+      url: genUrl,
     };
+    return ret;
   });
 
-  return Promise.all(fileUploadPromises) as Promise<
-    { fileUrl: string; fileKey: string }[]
-  >;
+  return Promise.all(fileUploadPromises);
 };
-
-export type UploadFileType<TRouter extends FileRouter> =
-  typeof DANGEROUS__uploadFiles<TRouter>;
 
 export const genUploader = <
   TRouter extends FileRouter,
@@ -208,7 +250,7 @@ export const genUploader = <
   return DANGEROUS__uploadFiles;
 };
 
-export const classNames = (...classes: Array<string | boolean>) => {
+export const classNames = (...classes: (string | boolean)[]) => {
   return classes.filter(Boolean).join(" ");
 };
 
@@ -216,6 +258,7 @@ export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) => {
     if (type === "blob") return "blob";
     if (type === "pdf") return "application/pdf";
+    if (type.includes("/")) return type;
     else return `${type}/*`;
   });
 

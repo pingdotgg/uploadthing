@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
+import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {
   FileRouter,
@@ -23,9 +24,7 @@ const useEndpointMetadata = (endpoint: string) => {
 };
 
 export type UseUploadthingProps<TRouter extends FileRouter> = {
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
+  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };

@@ -2,6 +2,8 @@
 
 ## Error Formatting
 
+> Added in `v5.2`
+
 You can customize the server-side behavior in your API handler's options by
 using an error formatter.
 
@@ -41,7 +43,7 @@ export const uploadRouter = {
 
 ## Catching errors on the client
 
-You can catch errors on the client by using the `onUploadFailed` property on the
+You can catch errors on the client by using the `onUploadError` property on the
 premade components, or the `useUploadthing` hook. You can access the JSON object
 that you returned from your error formatter on the `data` property:
 

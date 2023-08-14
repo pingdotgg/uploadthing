@@ -1,11 +1,20 @@
 import type { Json } from "./types";
 
 const ERROR_CODES = {
+  // Generic
   BAD_REQUEST: 400,
   NOT_FOUND: 404,
-
+  FORBIDDEN: 403,
   INTERNAL_SERVER_ERROR: 500,
   INTERNAL_CLIENT_ERROR: 500,
+
+  // S3 specific
+  TOO_LARGE: 413,
+  TOO_SMALL: 400,
+  TOO_MANY_FILES: 400,
+  KEY_TOO_LONG: 400,
+
+  // UploadThing specific
   URL_GENERATION_FAILED: 500,
   UPLOAD_FAILED: 500,
   MISSING_ENV: 500,
@@ -66,19 +75,32 @@ export class UploadThingError<
 
   public static async fromResponse(response: Response) {
     const json = (await response.json()) as Json;
-    const message =
-      json &&
-      typeof json === "object" &&
-      "message" in json &&
-      typeof json.message === "string"
-        ? json.message
-        : undefined;
+    let message: string | undefined = undefined;
+    if (json !== null && typeof json === "object" && !Array.isArray(json)) {
+      if (typeof json.message === "string") {
+        message = json.message;
+      } else if (typeof json.error === "string") {
+        message = json.error;
+      }
+    }
     return new UploadThingError({
       message,
       code: getErrorTypeFromStatusCode(response.status),
       cause: response,
       data: json,
     });
+  }
+
+  public static toObject(error: UploadThingError) {
+    return {
+      code: error.code,
+      message: error.message,
+      data: error.data,
+    };
+  }
+
+  public static serialize(error: UploadThingError) {
+    return JSON.stringify(UploadThingError.toObject(error));
   }
 }
 

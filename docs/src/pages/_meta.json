@@ -8,6 +8,7 @@
     "theme": { "toc": false }
   },
   "api-reference": "API Reference",
+  "errors": "Error Handling",
 
   "roadmap": {
     "title": "Roadmap",
