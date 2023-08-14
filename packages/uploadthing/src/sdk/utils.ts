@@ -104,7 +104,6 @@ export const uploadFilesInternal = async (
           throw new UploadThingError({
             code: "UPLOAD_FAILED",
             message: parsed.message,
-            cause: s3res,
           });
         }
         throw new UploadThingError({
