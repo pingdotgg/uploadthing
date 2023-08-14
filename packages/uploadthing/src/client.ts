@@ -197,7 +197,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         {
           method: "POST",
           body: JSON.stringify({
-            fileKey: fields["key"],
+            fileKey: fields.key,
           }),
         },
       );
