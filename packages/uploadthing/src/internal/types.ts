@@ -1,3 +1,4 @@
+import type { IncomingHttpHeaders } from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
@@ -20,6 +21,15 @@ export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 
 export type MaybePromise<TType> = TType | Promise<TType>;
 
+export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type Overwrite<T, U> = Omit<T, keyof U> & U;
+
+export type RequestLike = Overwrite<
+  WithRequired<Partial<Request>, "json">,
+  {
+    headers: Headers | IncomingHttpHeaders;
+  }
+>;
 //
 // Package
 type ResolverOptions<TParams extends AnyParams> = {
