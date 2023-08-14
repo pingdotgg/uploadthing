@@ -72,7 +72,7 @@ export const uploadRouter = {
   withoutMdwr: f({
     image: {
       maxFileCount: 2,
-      maxFileSize: "128B",
+      maxFileSize: "16MB",
     },
   })
     .middleware(() => {
