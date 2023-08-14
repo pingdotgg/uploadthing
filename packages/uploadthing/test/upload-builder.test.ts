@@ -70,7 +70,7 @@ it("typeerrors for invalid input", () => {
   f(["image"])
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => {
-      expectTypeOf(opts.input).toEqualTypeOf<{ foo: string }>();
+      expectTypeOf<{ foo: string }>(opts.input);
       return {};
     })
     // @ts-expect-error - cannot set multiple middlewares
@@ -89,14 +89,14 @@ it("uses defaults for not-chained", async () => {
     input: {} as UnsetMarker,
   });
   expect(metadata).toEqual({});
-  expectTypeOf(metadata).toMatchTypeOf<{}>();
+  expectTypeOf<Record<string, never>>(metadata);
 });
 
 it("passes `Request` by default", () => {
   const f = createBuilder();
 
   f(["image"]).middleware((opts) => {
-    expectTypeOf(opts.req).toMatchTypeOf<Request>();
+    expectTypeOf<Request>(opts.req);
 
     return {};
   });
@@ -107,12 +107,12 @@ it("allows async middleware", () => {
 
   f(["image"])
     .middleware((opts) => {
-      expectTypeOf(opts.req).toMatchTypeOf<Request>();
+      expectTypeOf<Request>(opts.req);
 
       return { foo: "bar" } as const;
     })
     .onUploadComplete((opts) => {
-      expectTypeOf(opts.metadata).toMatchTypeOf<{ foo: "bar" }>();
+      expectTypeOf<{ foo: "bar" }>(opts.metadata);
     });
 });
 
@@ -120,7 +120,7 @@ it("passes `NextRequest` for /app", () => {
   const f = createBuilder<"app">();
 
   f(["image"]).middleware((opts) => {
-    expectTypeOf(opts.req).toMatchTypeOf<NextRequest>();
+    expectTypeOf<NextRequest>(opts.req);
     return { nextUrl: opts.req.nextUrl };
   });
 });
@@ -129,8 +129,8 @@ it("passes `res` for /pages", () => {
   const f = createBuilder<"pages">();
 
   f(["image"]).middleware((opts) => {
-    expectTypeOf(opts.req).toMatchTypeOf<NextApiRequest>();
-    expectTypeOf(opts.res).toMatchTypeOf<NextApiResponse>();
+    expectTypeOf<NextApiRequest>(opts.req);
+    expectTypeOf<NextApiResponse>(opts.res);
 
     return {};
   });
@@ -141,7 +141,7 @@ it("with input", () => {
   f(["image"])
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => {
-      expectTypeOf(opts.input).toEqualTypeOf<{ foo: string }>();
+      expectTypeOf<{ foo: string }>(opts.input);
       return {};
     });
 });
@@ -153,7 +153,7 @@ it("smoke", async () => {
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => {
       expect(opts.input).toEqual({ foo: "bar" });
-      expectTypeOf(opts.input).toMatchTypeOf<{ foo: string }>();
+      expectTypeOf<{ foo: string }>(opts.input);
 
       const header1 = opts.req.headers.get("header1");
 
@@ -161,13 +161,13 @@ it("smoke", async () => {
     })
     .onUploadComplete(({ file, metadata }) => {
       // expect(file).toEqual({ name: "file", url: "http://localhost" })
-      expectTypeOf(file).toMatchTypeOf<{ name: string; url: string }>();
+      expectTypeOf<{ name: string; url: string }>(file);
 
       expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
-      expectTypeOf(metadata).toMatchTypeOf<{
+      expectTypeOf<{
         header1: string | null;
         userId: "123";
-      }>();
+      }>(metadata);
     });
 
   expect(uploadable._def.routerConfig).toEqual(["image", "video"]);

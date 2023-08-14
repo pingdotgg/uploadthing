@@ -24,7 +24,7 @@ const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: { [k: string]: number } = {};
+  const counts: Record<string, number> = {};
 
   files.forEach((file) => {
     const type = getTypeFromFileName(

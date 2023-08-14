@@ -55,7 +55,6 @@ const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
   const key = allowedTypes[0];
   const formattedKey = formattedTypes[0];
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const { maxFileSize, maxFileCount } = config[key]!;
 
   if (maxFileCount && maxFileCount > 1) {
@@ -79,13 +78,14 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-    ? {}
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
     : {
         input: inferEndpointInput<TRouter[TEndpoint]>;
       });
 }[keyof TRouter];
 
-const progressHeights: { [key: number]: string } = {
+const progressHeights: Record<number, string> = {
   0: "after:ut-w-0",
   10: "after:ut-w-[10%]",
   20: "after:ut-w-[20%]",

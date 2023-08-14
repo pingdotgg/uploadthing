@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import type { IncomingHttpHeaders } from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
