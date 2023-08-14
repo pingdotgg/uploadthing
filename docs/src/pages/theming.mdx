@@ -237,7 +237,7 @@ component match your design in the exact way you want.
 <UploadButton
   __internal_button_disabled
   __internal_state="ready"
-  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-4"
+  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 dark:ut-allowed-content:text-white mt-4"
   content={{
     allowedContent: "Allowed content",
     button: "Ready",
@@ -247,7 +247,7 @@ component match your design in the exact way you want.
 <UploadButton
   __internal_button_disabled
   __internal_state="readying"
-  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 mt-4"
+  className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 dark:ut-allowed-content:text-white mt-4"
   content={{
     allowedContent: "Allowed content",
   }}
@@ -384,7 +384,7 @@ specific elements of component.
 <UploadButton
   __internal_state="ready"
   __internal_button_disabled
-  className="custom-class"
+  className="custom-class dark:ut-allowed-content:text-white"
   content={{
     allowedContent: "Allowed content",
     button: "Ready",
@@ -394,7 +394,7 @@ specific elements of component.
 <UploadButton
   __internal_state="readying"
   __internal_button_disabled
-  className="custom-class"
+  className="custom-class dark:ut-allowed-content:text-white"
   content={{
     allowedContent: "Allowed content",
     button: "Readying",
@@ -409,7 +409,7 @@ specific elements of component.
 <UploadButton
   __internal_state="uploading"
   __internal_button_disabled
-  className="custom-class"
+  className="custom-class dark:ut-allowed-content:text-white"
   content={{
     allowedContent: "Allowed content",
   }}
@@ -487,6 +487,7 @@ will return a string
 <UploadButton
   __internal_state="ready"
   __internal_button_disabled
+  className="dark:ut-allowed-content:text-white"
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
@@ -505,6 +506,7 @@ will return a string
 <UploadButton
   __internal_state="readying"
   __internal_button_disabled
+  className="dark:ut-allowed-content:text-white"
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
@@ -522,6 +524,7 @@ will return a string
 <UploadButton
   __internal_state="uploading"
   __internal_button_disabled
+  className="dark:ut-allowed-content:text-white"
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
