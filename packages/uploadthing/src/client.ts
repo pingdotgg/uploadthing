@@ -51,11 +51,7 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
       file: string;
       progress: number;
     }) => void;
-    onUploadBegin?: ({
-      file,
-    }: {
-      file: string;
-    }) => void;
+    onUploadBegin?: ({ file }: { file: string }) => void;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
@@ -145,8 +141,9 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw new UploadThingError({
         code: "NOT_FOUND",
         message: "No file found for presigned URL",
-        cause: `Expected file with name ${presigned.name
-          } but got '${opts.files.join(",")}'`,
+        cause: `Expected file with name ${
+          presigned.name
+        } but got '${opts.files.join(",")}'`,
       });
     }
     const { url, fields } = presigned.presignedUrl;
@@ -191,7 +188,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
           opts.onUploadBegin({
             file: file.name,
           });
-      }
+      },
     );
 
     if (upload.status > 299 || upload.status < 200) {

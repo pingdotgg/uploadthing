@@ -73,7 +73,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
               uploadProgress.current = averageProgress;
             }
           },
-          onUploadBegin({ file, }) {
+          onUploadBegin({ file }) {
             if (!opts?.onUploadBegin) return;
 
             opts.onUploadBegin(file);
