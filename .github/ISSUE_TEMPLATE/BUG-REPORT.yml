@@ -40,7 +40,7 @@ body:
   - type: input
     attributes:
       label: Link to reproduction
-      description: Please provide a link to a reproduction of the bug. This can be a link to a repository or a StackBlitz/CodeSandbox etc. Feel free to use our minimal reproduction template https://codesandbox.io/p/sandbox/interesting-blackburn-nws69h
+      description: Please provide a link to a reproduction of the bug. This can be a link to a repository or a StackBlitz/CodeSandbox etc. Feel free to use our minimal reproduction template https://codesandbox.io/p/sandbox/interesting-blackburn-nws69h. If your issue regards the Uploadthing dashboard, please provide a link to the relevant page, e.g. https://uploadthing.com/<APP_ID>/settings
       placeholder: https://codesandbox.io/p/sandbox/interesting-blackburn-nws69h
     validations:
       required: true
