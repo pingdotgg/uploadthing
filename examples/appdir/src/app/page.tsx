@@ -45,6 +45,9 @@ export default function Home() {
           //   },
           // }}
           className="ut-button:bg-red-400 ut-allowed-content:text-lg ut-button:ut-readying:bg-orange-300 rounded border p-3"
+          onUploadBegin={(name) => {
+            console.log("Uploading: ", name);
+          }}
         />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">

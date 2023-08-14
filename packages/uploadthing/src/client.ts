@@ -14,6 +14,7 @@ function fetchWithProgress(
     body?: string | FormData;
   } = {},
   onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
+  onUploadBegin?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
 ) {
   return new Promise<XMLHttpRequest>((res, rej) => {
     const xhr = new XMLHttpRequest();
@@ -29,6 +30,7 @@ function fetchWithProgress(
 
     xhr.onerror = rej;
     if (xhr.upload && onProgress) xhr.upload.onprogress = onProgress;
+    if (xhr.upload && onUploadBegin) xhr.upload.onloadstart = onUploadBegin;
     xhr.send(opts.body);
   });
 }
@@ -48,6 +50,11 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
     }: {
       file: string;
       progress: number;
+    }) => void;
+    onUploadBegin?: ({
+      file,
+    }: {
+      file: string;
     }) => void;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
@@ -138,9 +145,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw new UploadThingError({
         code: "NOT_FOUND",
         message: "No file found for presigned URL",
-        cause: `Expected file with name ${
-          presigned.name
-        } but got '${opts.files.join(",")}'`,
+        cause: `Expected file with name ${presigned.name
+          } but got '${opts.files.join(",")}'`,
       });
     }
     const { url, fields } = presigned.presignedUrl;
@@ -180,6 +186,12 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
+      () => {
+        opts.onUploadBegin &&
+          opts.onUploadBegin({
+            file: file.name,
+          });
+      }
     );
 
     if (upload.status > 299 || upload.status < 200) {
