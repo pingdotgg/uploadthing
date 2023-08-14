@@ -85,7 +85,6 @@ export const uploadFilesInternal = async (
         formData.append(key, value);
       });
       formData.append("file", file);
-      formData.set("Policy", "");
 
       // Do S3 upload
       const s3res = await fetch(presignedUrl, {
