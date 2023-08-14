@@ -98,7 +98,6 @@ export const uploadFilesInternal = async (
       if (!s3res.ok) {
         const text = await s3res.text();
         const parsed = maybeParseResponseXML(text);
-        console.log({ text, parsed });
         if (parsed?.message) {
           throw new UploadThingError({
             code: "UPLOAD_FAILED",
