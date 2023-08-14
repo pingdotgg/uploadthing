@@ -1,12 +1,20 @@
 import type { Json } from "./types";
 
 const ERROR_CODES = {
+  // Generic
   BAD_REQUEST: 400,
-  TOO_LARGE: 413,
   NOT_FOUND: 404,
-
+  FORBIDDEN: 403,
   INTERNAL_SERVER_ERROR: 500,
   INTERNAL_CLIENT_ERROR: 500,
+
+  // S3 specific
+  TOO_LARGE: 413,
+  TOO_SMALL: 400,
+  TOO_MANY_FILES: 400,
+  KEY_TOO_LONG: 400,
+
+  // UploadThing specific
   URL_GENERATION_FAILED: 500,
   UPLOAD_FAILED: 500,
   MISSING_ENV: 500,
