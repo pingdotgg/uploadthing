@@ -1,10 +1,7 @@
+import type { ErrorMessage, FileRouter } from "uploadthing/server";
+
 import { UploadButton } from "./components/button";
 import { UploadDropzone } from "./components/dropzone";
-
-import type {
-  ErrorMessage,
-  FileRouter,
-} from "uploadthing/server";
 import type { UploadthingComponentProps } from "./types";
 
 export function Uploader<TRouter extends FileRouter>(
@@ -32,8 +29,6 @@ export function Uploader<TRouter extends FileRouter>(
   );
 }
 
-
-
 export function generateComponents<TRouter extends FileRouter>() {
   return {
     UploadButton: UploadButton<TRouter>,
@@ -42,7 +37,4 @@ export function generateComponents<TRouter extends FileRouter>() {
   };
 }
 
-export {
-  UploadButton,
-  UploadDropzone,
-}
+export { UploadButton, UploadDropzone };

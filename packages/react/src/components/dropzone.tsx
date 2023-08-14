@@ -201,7 +201,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
           allowedContentTextLabelGenerator(permittedFileInfo?.config)}
       </div>
-      {($props.__internal_show_button || files.length > 0) && (
+      {($props.__internal_show_button ?? files.length > 0) && (
         <button
           className={twMerge(
             classNames(

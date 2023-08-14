@@ -1,10 +1,10 @@
 import type { UploadThingError } from "@uploadthing/shared";
+import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
 } from "uploadthing/server";
-import type { UploadFileResponse } from "uploadthing/client";
 
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
@@ -14,8 +14,9 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-    ? {}
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
     : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
+        input: inferEndpointInput<TRouter[TEndpoint]>;
+      });
 }[keyof TRouter];

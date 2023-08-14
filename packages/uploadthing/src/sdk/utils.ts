@@ -5,6 +5,8 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import { maybeParseResponseXML } from "../internal/s3-error-parser";
+
 export type FileEsque = Blob & { name: string };
 
 export type UploadData = {
@@ -94,6 +96,14 @@ export const uploadFilesInternal = async (
       });
 
       if (!s3res.ok) {
+        const text = await s3res.text();
+        const parsed = maybeParseResponseXML(text);
+        if (parsed?.message) {
+          throw new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: parsed.message,
+          });
+        }
         throw new UploadThingError({
           code: "UPLOAD_FAILED",
           message: "Failed to upload file to storage provider",
