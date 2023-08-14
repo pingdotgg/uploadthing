@@ -133,11 +133,11 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   };
 };
 
-const getHeader = (headers: RequestLike["headers"], key: string) => {
-  if (headers instanceof Headers) {
-    return headers.get(key);
+const getHeader = (req: RequestLike, key: string) => {
+  if (req.headers instanceof Headers) {
+    return req.headers.get(key);
   }
-  return headers[key];
+  return req.headers[key];
 };
 
 export const buildRequestHandler = <
@@ -157,8 +157,7 @@ export const buildRequestHandler = <
 
     // Get inputs from query and params
     const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
-    const uploadthingHook =
-      getHeader(req.headers, "uploadthing-hook") ?? undefined;
+    const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = params.get("actionType") ?? undefined;
 
