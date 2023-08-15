@@ -1,5 +1,14 @@
 # uploadthing
 
+## 5.3.3
+
+### Patch Changes
+
+- [#262](https://github.com/pingdotgg/uploadthing/pull/262)
+  [`1ad326d`](https://github.com/pingdotgg/uploadthing/commit/1ad326d2a2cdd49ee538bda002f392d1052815ef)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix invalid
+  `NextApiResponse` object for pages middleware
+
 ## 5.3.2
 
 ### Patch Changes
