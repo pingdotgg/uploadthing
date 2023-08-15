@@ -187,7 +187,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     );
 
     if (upload.status > 299 || upload.status < 200) {
-      // Upload failed, tell the server
+      // tell uploadthing infra server that upload failed
       await fetch(
         createRequestUrl({
           url: config?.url,
