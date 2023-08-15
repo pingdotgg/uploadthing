@@ -13,6 +13,9 @@ const Home: VoidComponent = () => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
         }}
+        onUploadBegin={() => {
+          console.log('upload begin')
+        }}
         multiple
       />
     </main>
