@@ -223,7 +223,7 @@ export const buildRequestHandler = <
       return { status: 200 };
     }
 
-    if (!actionType || ["upload", "failure"].includes(actionType)) {
+    if (!actionType || !["upload", "failure"].includes(actionType)) {
       // This would either be someone spamming or the AWS webhook
       return new UploadThingError({
         code: "BAD_REQUEST",
