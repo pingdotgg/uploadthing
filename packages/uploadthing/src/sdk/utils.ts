@@ -22,15 +22,6 @@ export type UploadError = {
   data: any;
 };
 
-const createRequestUrl = (config: {
-  url?: string;
-  slug: string;
-  actionType: "upload" | "failure";
-}) => {
-  const queryParams = `?actionType=${config.actionType}&slug=${config.slug}`;
-  return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
-};
-
 export const uploadFilesInternal = async (
   data: {
     files: FileEsque[];
@@ -106,19 +97,16 @@ export const uploadFilesInternal = async (
 
       if (!s3res.ok) {
         // tell uploadthing infra server that upload failed
-        await fetch(
-          createRequestUrl({
-            url: generateUploadThingURL("/"),
-            slug: "__server-uploaded",
-            actionType: "failure",
+        await fetch(generateUploadThingURL("/api/failureCallback"), {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: fields.key,
           }),
-          {
-            method: "POST",
-            body: JSON.stringify({
-              fileKey: fields.key,
-            }),
+          headers: {
+            "x-uploadthing-api-key": opts.apiKey,
+            "x-uploadthing-version": opts.utVersion,
           },
-        );
+        });
 
         const text = await s3res.text();
         const parsed = maybeParseResponseXML(text);

@@ -354,8 +354,6 @@ export const buildRequestHandler = <
             method: "POST",
             body: JSON.stringify({
               fileKey,
-              callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
-              callbackSlug: slug,
             }),
             headers: {
               "Content-Type": "application/json",
