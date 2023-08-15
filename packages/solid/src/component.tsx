@@ -76,8 +76,8 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     ? // eslint-disable-next-line @typescript-eslint/ban-types
       {}
     : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
+        input: inferEndpointInput<TRouter[TEndpoint]>;
+      });
 }[keyof TRouter];
 
 const progressHeights: Record<number, string> = {
@@ -136,8 +136,9 @@ export function UploadButton<TRouter extends FileRouter>(
         class={classNames(
           "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
           uploadedThing.isUploading()
-            ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress()]
-            }`
+            ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
+                progressHeights[uploadProgress()]
+              }`
             : "ut-bg-blue-600",
         )}
       >
@@ -259,8 +260,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
               class={classNames(
                 "ut-relative ut-flex ut-h-10 ut-w-36 ut-cursor-pointer ut-items-center ut-justify-center ut-overflow-hidden ut-rounded-md after:ut-transition-[width] after:ut-duration-500",
                 uploadedThing.isUploading()
-                  ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${progressHeights[uploadProgress()]
-                  }`
+                  ? `ut-bg-blue-400 after:ut-absolute after:ut-left-0 after:ut-h-full after:ut-bg-blue-600 ${
+                      progressHeights[uploadProgress()]
+                    }`
                   : "ut-bg-blue-600",
               )}
               onClick={(e) => {
@@ -276,7 +278,8 @@ export const UploadDropzone = <TRouter extends FileRouter>(
                 {uploadedThing.isUploading() ? (
                   <Spinner />
                 ) : (
-                  `Upload ${files().length} file${files().length === 1 ? "" : "s"
+                  `Upload ${files().length} file${
+                    files().length === 1 ? "" : "s"
                   }`
                 )}
               </span>

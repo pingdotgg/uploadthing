@@ -14,7 +14,7 @@ const Home: VoidComponent = () => {
           alert("Upload Completed");
         }}
         onUploadBegin={() => {
-          console.log('upload begin')
+          console.log("upload begin");
         }}
         multiple
       />
