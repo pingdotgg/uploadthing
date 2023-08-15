@@ -37,7 +37,8 @@
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.0"
+    "@uploadthing/shared": "^5.2.0",
+    "tailwind-merge": "^1.13.2"
   },
   "peerDependencies": {
     "react": "^17.0.2 || ^18.0.0",

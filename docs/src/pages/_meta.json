@@ -3,19 +3,20 @@
   "getting-started": "Getting Started",
   "nextjs": "Next.js Setup",
   "solid": "SolidStart Setup",
+  "theming": "Theming",
   "faq": {
     "title": "Frequently Asked Questions (FAQ)",
-    "theme": { "toc": false }
+    "theme": {
+      "toc": false
+    }
   },
   "api-reference": "API Reference",
   "errors": "Error Handling",
-
   "roadmap": {
     "title": "Roadmap",
     "href": "https://t3-tools.notion.site/776334c06d814dd08d450975bb983085?v=a04ee69d18a047859717b279df504a6b",
     "newWindow": true
   },
-
   "project-link": {
     "title": "Dashboard ↗",
     "type": "page",

@@ -20,6 +20,11 @@
     "./next-legacy": {
       "import": "./dist/next-legacy.mjs",
       "types": "./dist/next-legacy.d.ts"
+    },
+    "./tw": {
+      "types": "./dist/tw.d.ts",
+      "import": "./dist/tw.mjs",
+      "require": "./dist/tw.js"
     }
   },
   "files": [
@@ -41,6 +46,9 @@
       ],
       "next-legacy": [
         "dist/next-legacy.d.ts"
+      ],
+      "tw": [
+        "dist/tw.d.ts"
       ]
     }
   },
@@ -63,6 +71,7 @@
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",
     "next": "13.4.4",
+    "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
     "type-fest": "^3.11.1",
     "typescript": "^5.1.6",
