@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 5.3.0
+
+### Minor Changes
+
+- [#217](https://github.com/pingdotgg/uploadthing/pull/217)
+  [`0a92cf3`](https://github.com/pingdotgg/uploadthing/commit/0a92cf3d69452d933f84a4590ac9c24ca295a265)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat(react): content and
+  styling customisation
+
 ## 5.2.1
 
 ### Patch Changes
