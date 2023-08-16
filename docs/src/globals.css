@@ -4,72 +4,72 @@
 
 /* applied to container */
 .custom-class {
-    background-color: none;
-  }
-   
-  /* applied to button */
-  .custom-class > *[data-ut-element="button"] {
-    font-size: 1.6rem;
-    color: rgb(0 0 0 / 1);
-    background-color: rgb(239 68 68 / 1);
-  }
+  background-color: none;
+}
 
-  /* applied to button when uploading */
-  .custom-class > *[data-ut-element="button"][data-state="readying"] {
-    background-color: rgb(239 68 68 / 0.5);
-    color: rgb(0 0 0 / 0.5);
-    cursor: not-allowed;
-  }
-   
-  /* applied to button when uploading */
-  .custom-class > *[data-ut-element="button"][data-state="uploading"] {
-    background-color: rgb(239 68 68 / 0.5);
-    color: rgb(0 0 0 / 0.5);
-    cursor: not-allowed;
-  }
+/* applied to button */
+.custom-class > *[data-ut-element="button"] {
+  font-size: 1.6rem;
+  color: rgb(0 0 0 / 1);
+  background-color: rgb(239 68 68 / 1);
+}
 
-  /* applied to upload indicator when uploading */
-  .custom-class > *[data-ut-element="button"][data-state="uploading"]::after {
-    background-color: rgb(234 88 12 / 1);
-  }
+/* applied to button when uploading */
+.custom-class > *[data-ut-element="button"][data-state="readying"] {
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
+}
 
-  /* applied to container */
+/* applied to button when uploading */
+.custom-class > *[data-ut-element="button"][data-state="uploading"] {
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
+}
+
+/* applied to upload indicator when uploading */
+.custom-class > *[data-ut-element="button"][data-state="uploading"]::after {
+  background-color: rgb(234 88 12 / 1);
+}
+
+/* applied to container */
 .custom-container {
   background-color: none;
   margin-top: 1rem;
-  }
-   
-  /* applied to container when readying */
-  .custom-container[data-state="readying"] {
-    background-color: none;
-  }
-   
-  /* applied to button */
-  .custom-button {
-    font-size: 1.6rem;
-    color: rgb(0 0 0 / 1);
-    background-color: rgb(239 68 68 / 1);
-  }
-   
-  /* applied to button when uploading */
-  .custom-button-uploading {
-    background-color: rgb(239 68 68 / 0.5);
-    color: rgb(0 0 0 / 0.5);
-    cursor: not-allowed;
-  }
+}
 
-  .custom-button-uploading::after {
-    background-color: rgb(234 88 12 / 1) !important;
-  }
-   
-  /* applied to button when ready */
-  .custom-button-ready {
-    color: #ecfdf5;
-  }
-   
-  /* applied to button when not ready */
-  .custom-button-not-ready {
-    background-color: rgb(239 68 68 / 0.5);
-    color: rgb(0 0 0 / 0.5);
-    cursor: not-allowed;
-  }
+/* applied to container when readying */
+.custom-container[data-state="readying"] {
+  background-color: none;
+}
+
+/* applied to button */
+.custom-button {
+  font-size: 1.6rem;
+  color: rgb(0 0 0 / 1);
+  background-color: rgb(239 68 68 / 1);
+}
+
+/* applied to button when uploading */
+.custom-button-uploading {
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
+}
+
+.custom-button-uploading::after {
+  background-color: rgb(234 88 12 / 1) !important;
+}
+
+/* applied to button when ready */
+.custom-button-ready {
+  color: #ecfdf5;
+}
+
+/* applied to button when not ready */
+.custom-button-not-ready {
+  background-color: rgb(239 68 68 / 0.5);
+  color: rgb(0 0 0 / 0.5);
+  cursor: not-allowed;
+}
