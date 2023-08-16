@@ -97,6 +97,7 @@ export type UploadBuilderDef<TParams extends AnyParams> = {
   inputParser: JsonParser;
   middleware: MiddlewareFn<{}, TParams>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
+  onUploadError: (err: UploadThingError) => void;
 };
 
 export interface Uploader<TParams extends AnyParams> {

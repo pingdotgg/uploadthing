@@ -39,6 +39,9 @@ function internalCreateBuilder<
 
     errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    onUploadError: initDef.onUploadError ?? (() => {}),
+
     // Overload with properties passed in
     ...initDef,
   };
@@ -77,6 +80,7 @@ type InOut<
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {
   errorFormatter: (err: UploadThingError) => TErrorShape;
+  onUploadError: (err: UploadThingError) => void;
 };
 
 export function createBuilder<

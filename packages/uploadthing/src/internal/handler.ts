@@ -383,6 +383,14 @@ export const buildRequestHandler = <
           }
         }
 
+        // Run the onUploadError callback
+        uploadable._def.onUploadError(
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: `Upload failed for ${fileKey}`,
+          }),
+        );
+
         return { status: 200 };
       } else {
         return { message: "invalid actionType", status: 500 };
