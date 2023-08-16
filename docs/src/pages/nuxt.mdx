@@ -150,8 +150,8 @@ export default defineNuxtConfig({
 
 ### Use the FileRouter in your app
 
-The `@uploadthing/nuxt` package includes "useUploader" component that you can
-simply drop into your app, and start uploading files immediately.
+The `@uploadthing/nuxt` package includes "useUploader" builder that you can
+use to generate type-safe component, drop it into app and start uploading files.
 
 ```vue copy filename="components/Home.vue"
 <script setup lang="ts">
@@ -168,15 +168,15 @@ const Uploader = useUploader<OurFileRouter>();
   >
     <Uploader
       :config="{
-          endpoint: 'videoAndImage',
-          onClientUploadComplete={() => {
-            alert("Upload Completed");
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            alert(`ERROR! ${error.message}`);
-          }}
-        }"
+        endpoint: 'videoAndImage',
+        onClientUploadComplete={() => {
+          alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
+        }}
+      }"
     />
   </main>
 </template>
@@ -188,8 +188,8 @@ const Uploader = useUploader<OurFileRouter>();
 
 #### Uploader
 
-The `@uploadthing/nuxt` package includes an "Uploader" component that you can
-simply drop into your app, and start uploading files immediately.
+The `@uploadthing/nuxt` package includes "useUploader" builder that you can
+use to generate type-safe component, drop it into app and start uploading files.
 
 ```vue copy filename="components/Home.vue"
 <script setup lang="ts">
@@ -240,20 +240,18 @@ const UploadButton = useUploadButton<OurFileRouter>();
   <main
     class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
   >
-    <ClientOnly fallback-tag="div" fallback="Loading...">
-      <UploadButton
-        :config="{
-          endpoint: 'videoAndImage',
-          onClientUploadComplete={() => {
-            alert("Upload Completed");
-          }}
-          onUploadError={(error: Error) => {
-            // Do something with the error.
-            alert(`ERROR! ${error.message}`);
-          }}
-        }"
-      />
-    </ClientOnly>
+    <UploadButton
+      :config="{
+        endpoint: 'videoAndImage',
+        onClientUploadComplete={() => {
+          alert("Upload Completed");
+        }}
+        onUploadError={(error: Error) => {
+          // Do something with the error.
+          alert(`ERROR! ${error.message}`);
+        }}
+      }"
+    />
   </main>
 </template>
 ```
@@ -276,17 +274,16 @@ const UploadDropzone = useUploadDropzone<OurFileRouter>();
   <main
     class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
   >
-    <ClientOnly fallback-tag="div" fallback="Loading...">
-      <UploadDropzone
-       :config="{ 
+    <UploadDropzone
+      :config="{ 
         endpoint: 'videoAndImage',
         onClientUploadComplete={() => { alert("Upload Completed"); }}
         onUploadError={(error: Error) => { 
           // Do something with the error.
           alert(`ERROR! ${error.message}`); 
-        }} }" 
-      />
-    </ClientOnly>
+        }} 
+      }" 
+    />
   </main>
 </template>
 ```
