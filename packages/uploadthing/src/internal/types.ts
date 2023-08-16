@@ -47,6 +47,7 @@ export interface AnyParams {
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _runtime: any;
   _errorShape: any;
+  _error: any; // used for onUploadError
 }
 
 type MiddlewareFnArgs<TParams extends AnyParams> =
@@ -65,6 +66,11 @@ type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>,
 ) => MaybePromise<void>;
 
+type UploadErrorFn = (input: {
+  error: UploadThingError;
+  fileKey: string;
+}) => void;
+
 export type ErrorMessage<TError extends string> = TError;
 
 export interface UploadBuilder<TParams extends AnyParams> {
@@ -77,6 +83,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _metadata: TParams["_metadata"];
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
+    _error: TParams["_error"];
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
@@ -87,9 +94,21 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _metadata: TOutput;
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
+    _error: TParams["_error"];
   }>;
 
   onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
+  onUploadError: (
+    fn: TParams["_error"] extends UnsetMarker
+      ? UploadErrorFn
+      : ErrorMessage<"onUploadError is already set">,
+  ) => UploadBuilder<{
+    _input: TParams["_input"];
+    _metadata: TParams["_metadata"];
+    _runtime: TParams["_runtime"];
+    _errorShape: TParams["_errorShape"];
+    _error: UploadErrorFn;
+  }>;
 }
 
 export type UploadBuilderDef<TParams extends AnyParams> = {
@@ -97,7 +116,7 @@ export type UploadBuilderDef<TParams extends AnyParams> = {
   inputParser: JsonParser;
   middleware: MiddlewareFn<{}, TParams>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
-  onUploadError: (err: UploadThingError) => void;
+  onUploadError: UploadErrorFn;
 };
 
 export interface Uploader<TParams extends AnyParams> {

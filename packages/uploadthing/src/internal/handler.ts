@@ -384,12 +384,13 @@ export const buildRequestHandler = <
         }
 
         // Run the onUploadError callback
-        uploadable._def.onUploadError(
-          new UploadThingError({
+        uploadable._def.onUploadError({
+          error: new UploadThingError({
             code: "UPLOAD_FAILED",
             message: `Upload failed for ${fileKey}`,
           }),
-        );
+          fileKey,
+        });
 
         return { status: 200 };
       } else {
