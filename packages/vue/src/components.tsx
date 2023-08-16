@@ -10,7 +10,7 @@ import {
   progressHeights,
 } from "./shared";
 import type { UploadthingComponentProps } from "./types";
-import { INTERNAL_uploadthingHookGen } from "./useUploadThing";
+import { INTERNAL_uploadthingHookGen, UseUploadthingProps } from "./useUploadThing";
 
 const Spinner = defineComponent(() => {
   return () => {
@@ -38,31 +38,25 @@ export const UploadButton = <TRouter extends FileRouter>() =>
       const fileInputRef = ref<HTMLInputElement | null>(null);
       const uploadProgress = ref(0);
 
-      watch(
-        () => uploadProgress.value,
-        (value) => {
-          console.log("uploadProgress", value);
-        },
-      );
-
       const $props = props.config;
+      const useUploadthingProps: UseUploadthingProps<TRouter> = reactive({
+        onClientUploadComplete: (res) => {
+          if (fileInputRef.value) {
+            fileInputRef.value.value = "";
+          }
+          $props.onClientUploadComplete?.(res);
+          uploadProgress.value = 0;
+        },
+        onUploadProgress: (p) => {
+          uploadProgress.value = p;
+          $props.onUploadProgress?.(p);
+        },
+        onUploadError: $props.onUploadError,
+      })
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
-        {
-          onClientUploadComplete: (res) => {
-            if (fileInputRef.value) {
-              fileInputRef.value.value = "";
-            }
-            $props.onClientUploadComplete?.(res);
-            uploadProgress.value = 0;
-          },
-          onUploadProgress: (p) => {
-            uploadProgress.value = p;
-            $props.onUploadProgress?.(p);
-          },
-          onUploadError: $props.onUploadError,
-        },
+        useUploadthingProps
       );
 
       const generatedPermittedFileTypes = computed(() =>
@@ -86,12 +80,13 @@ export const UploadButton = <TRouter extends FileRouter>() =>
           getUploadButtonText(generatedPermittedFileTypes.value.fileTypes)
         ),
       );
+
       const fileTypesText = computed(() =>
-        generatedPermittedFileTypes.value.fileTypes ? (
-          <p class="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
-            {allowedContentTextLabelGenerator(permittedFileInfo.value?.config)}
-          </p>
-        ) : null,
+        generatedPermittedFileTypes.value.fileTypes.length > 0
+          ? allowedContentTextLabelGenerator(permittedFileInfo.value?.config)
+          // It contains whitespace because for some reason, if string is empty
+          // There will be error on FE
+          : ' ',
       );
 
       const handleFileChange = (e: Event) => {
@@ -137,7 +132,9 @@ export const UploadButton = <TRouter extends FileRouter>() =>
                 {uploadButtonText.value}
               </span>
             </label>
-            <div class="ut-h-[1.25rem]">{fileTypesText.value}</div>
+            <div class="ut-h-[1.25rem] ut-text-xs ut-leading-5 ut-text-gray-600">
+              {fileTypesText.value}
+            </div>
           </div>
         );
       };
@@ -159,21 +156,22 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
       const setFiles = (newFiles: File[]) => {
         files.value = newFiles;
       };
+      const useUploadthingProps: UseUploadthingProps<TRouter> = reactive({
+        onClientUploadComplete: (res) => {
+          setFiles([]);
+          $props.onClientUploadComplete?.(res);
+          uploadProgress.value = 0;
+        },
+        onUploadProgress: (p) => {
+          uploadProgress.value = p;
+          $props.onUploadProgress?.(p);
+        },
+        onUploadError: $props.onUploadError,
+      })
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
-        {
-          onClientUploadComplete: (res) => {
-            setFiles([]);
-            $props.onClientUploadComplete?.(res);
-            uploadProgress.value = 0;
-          },
-          onUploadProgress: (p) => {
-            uploadProgress.value = p;
-            $props.onUploadProgress?.(p);
-          },
-          onUploadError: $props.onUploadError,
-        },
+        useUploadthingProps,
       );
 
       const generatedPermittedFileTypes = computed(() =>
@@ -198,8 +196,6 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
 
       const dropzoneOptions = reactive<Partial<FileUploadOptions>>({
         onDrop: (acceptedFiles) => {
-          console.log(acceptedFiles);
-
           setFiles(acceptedFiles);
         },
         accept: acceptedFileTypes.value,
@@ -213,6 +209,14 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
       );
 
       const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
+
+      const fileTypesText = computed(() =>
+        generatedPermittedFileTypes.value.fileTypes.length > 0
+          ? allowedContentTextLabelGenerator(permittedFileInfo.value?.config)
+          // It contains whitespace because for some reason, if string is empty
+          // There will be error on FE
+          : ' ',
+      );
 
       return () => {
         return (
@@ -255,12 +259,8 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
                   />
                 </label>
               </div>
-              <div class="ut-h-[1.25rem]">
-                <p class="ut-m-0 ut-text-xs ut-leading-5 ut-text-gray-600">
-                  {allowedContentTextLabelGenerator(
-                    permittedFileInfo.value?.config,
-                  )}
-                </p>
+              <div class="ut-h-[1.25rem] ut-text-xs ut-leading-5 ut-text-gray-600">
+                {fileTypesText.value}
               </div>
               {files.value.length > 0 && (
                 <div class="ut-mt-4 ut-flex ut-items-center ut-justify-center">

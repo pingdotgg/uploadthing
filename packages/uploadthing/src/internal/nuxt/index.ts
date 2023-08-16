@@ -1,6 +1,7 @@
 import {
   createRouter,
   defineEventHandler,
+  getRequestHeaders,
   readBody,
   setResponseStatus,
   useBase,
@@ -22,32 +23,12 @@ export const createNuxtRouteHandler = <TRouter extends FileRouter>(
     const errorFormatter =
       opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
       defaultErrorFormatter;
+
     const response = await requestHandler({
       req: {
-        // Removing original headers property
-        ...(() => {
-          const { headers: _, ...rest } = event.node.req;
-
-          return rest;
-        })(),
+        ...event.node.req,
         json: () => readBody(event),
-        // Building custom headers property that will comply with type definitions
-        // of the `requestHandler` function
-        headers: {
-          get(name) {
-            const result = event.node.req.headers[name];
-
-            if (!result) {
-              return null;
-            }
-
-            if (Array.isArray(result)) {
-              return result.join(',');
-            }
-
-            return result;
-          },
-        }
+        headers: getRequestHeaders(event),
       },
       res: event.node.res,
     });

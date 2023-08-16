@@ -9,7 +9,6 @@ import {
 
 const UploadButton = useUploadButton<OurFileRouter>();
 const UploadDropzone = useUploadDropzone<OurFileRouter>();
-const Uploader = useUploader<OurFileRouter>();
 </script>
 
 <template>
@@ -21,25 +20,21 @@ const Uploader = useUploader<OurFileRouter>();
         Upload a file using a button:
       </span>
 
-      <ClientOnly fallback-tag="div" fallback="Loading...">
-        <UploadButton
-          :config="{
-            endpoint: 'videoAndImage',
-          }"
-        />
-      </ClientOnly>
+      <UploadButton
+        :config="{
+          endpoint: 'videoAndImage',
+        }"
+      />
     </div>
     <div className="flex flex-col items-center justify-center gap-4">
       <span className="text-center text-4xl font-bold">
         ...or using a dropzone:
       </span>
-      <ClientOnly fallback-tag="div" fallback="Loading...">
-        <UploadDropzone
-          :config="{
-            endpoint: 'withMdwr',
-          }"
-        />
-      </ClientOnly>
+      <UploadDropzone
+        :config="{
+          endpoint: 'withMdwr',
+        }"
+      />
     </div>
   </main>
 </template>

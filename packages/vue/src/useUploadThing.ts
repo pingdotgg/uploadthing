@@ -42,7 +42,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     const { data } = useEndpointMetadata();
 
     const permittedFileInfo = computed(() => {
-      if (!data.value) return undefined;
+      if (!data.value) return {} as EndpointMetadata;
 
       return (JSON.parse(data.value) as EndpointMetadata[]).find(
         (e) => e.slug === endpoint,
