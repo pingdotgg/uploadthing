@@ -10,7 +10,7 @@ export default defineConfig((opts) => [
       "./src/server.ts",
       "./src/next.ts",
       "./src/next-legacy.ts",
-      "./src/tw.ts"
+      "./src/tw.ts",
     ],
     clean: !opts.watch,
   },
@@ -20,4 +20,4 @@ export default defineConfig((opts) => [
     clean: !opts.watch,
     format: ["cjs", "esm"],
   },
-])
+]);
