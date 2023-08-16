@@ -6,4 +6,4 @@ export {
   Uploader,
   generateComponents,
 } from "./component";
-export type { UploadthingComponentProps } from "./component";
+export type { UploadthingComponentProps } from "./types";
