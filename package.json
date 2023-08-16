@@ -14,7 +14,8 @@
     "dev": "turbo run dev",
     "dev:pkgs": "turbo run dev --filter \"./packages/*\"",
     "lint": "turbo run lint && manypkg check",
-    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write . --list-different",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck"
