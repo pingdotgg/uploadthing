@@ -79,8 +79,8 @@ type InOut<
 }>;
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {
-  errorFormatter: (err: UploadThingError) => TErrorShape;
-  onUploadError: (err: UploadThingError) => void;
+  errorFormatter?: (err: UploadThingError) => TErrorShape;
+  onUploadError?: (err: UploadThingError) => void;
 };
 
 export function createBuilder<
