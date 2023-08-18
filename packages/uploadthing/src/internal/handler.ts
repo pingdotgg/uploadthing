@@ -206,7 +206,7 @@ export const buildRequestHandler = <
       });
     }
 
-    if (uploadthingHook && uploadthingHook === "callback") {
+    if (uploadthingHook === "callback")
       // This is when we receive the webhook from uploadthing
       const reqBody = (await req.json()) as {
         file: UploadedFile;
