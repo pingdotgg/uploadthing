@@ -1,0 +1,25 @@
+## createNextRouteHandler
+
+```tsx
+import { createNextRouteHandler } from "uploadthing/next";
+
+import { ourFileRouter } from "./uploadthing.ts";
+
+export const { GET, POST } = createNextRouteHandler({
+  router: ourFileRouter,
+  config: {
+    uploadthingId: "someId",
+    uploadthingSecret: "someSecret",
+  },
+});
+```
+
+### `config` Object
+
+This configuration is entirely optional, but may be useful if you would like to
+programmatically set your UploadThing credentials.
+
+|        Key        |  Type  | Required | Notes |             Description              |
+| :---------------: | :----: | :------: | :---: | :----------------------------------: |
+|   uploadthingId   | string |    No    |       | The App ID for your uploadthing app  |
+| uploadthingSecret | string |    No    |       | The API key for your uploadthing app |
