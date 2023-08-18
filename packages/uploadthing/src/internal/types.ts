@@ -136,3 +136,6 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
+
+export const VALID_ACTION_TYPES = ["upload", "failure"] as const;
+export type ActionType = (typeof VALID_ACTION_TYPES)[number];

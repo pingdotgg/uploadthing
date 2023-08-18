@@ -18,7 +18,8 @@ import type {
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
-import type { AnyRuntime, FileRouter, RequestLike } from "./types";
+import { VALID_ACTION_TYPES } from "./types";
+import type { ActionType, AnyRuntime, FileRouter, RequestLike } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -159,7 +160,7 @@ export const buildRequestHandler = <
     const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
     const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
-    const actionType = params.get("actionType") ?? undefined;
+    const actionType = (params.get("actionType") as ActionType) ?? undefined;
 
     // Validate inputs
     if (!slug)
@@ -206,7 +207,7 @@ export const buildRequestHandler = <
       });
     }
 
-    if (uploadthingHook === "callback")
+    if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       const reqBody = (await req.json()) as {
         file: UploadedFile;
@@ -223,178 +224,200 @@ export const buildRequestHandler = <
       return { status: 200 };
     }
 
-    if (!actionType || !["upload", "failure"].includes(actionType)) {
+    if (!actionType || !VALID_ACTION_TYPES.includes(actionType)) {
       // This would either be someone spamming or the AWS webhook
       return new UploadThingError({
         code: "BAD_REQUEST",
         cause: `Invalid action type ${actionType}`,
-        message: `Expected "upload" but got "${actionType}"`,
+        message: `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
+          .join(", ")
+          .replace(/,(?!.*,)/, " or")} but got "${"a"}"`,
       });
     }
 
     try {
-      if (actionType === "upload") {
-        const { files, input: userInput } = (await req.json()) as {
-          files: string[];
-          input: Json;
-        };
+      switch (actionType) {
+        case "upload": {
+          const { files, input: userInput } = (await req.json()) as {
+            files: string[];
+            input: Json;
+          };
 
-        let parsedInput: Json = {};
+          let parsedInput: Json = {};
 
-        // validate the input
-        try {
-          const inputParser = uploadable._def.inputParser;
-          parsedInput = await getParseFn(inputParser)(userInput);
-        } catch (error) {
-          console.error(error);
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid input",
-            cause: error,
-          });
-        }
-
-        const metadata = await uploadable._def.middleware({
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          req: req as any,
-          res,
-          input: parsedInput,
-        });
-
-        // Validate without Zod (for now)
-        if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Files must be a string array",
-            cause: `Expected files to be of type 'string[]', got '${JSON.stringify(
-              files,
-            )}'`,
-          });
-
-        // FILL THE ROUTE CONFIG so the server only has one happy path
-        const parsedConfig = parseAndExpandInputConfig(
-          uploadable._def.routerConfig,
-        );
-
-        const { limitHit, count, limit, type } = fileCountLimitHit(
-          files,
-          parsedConfig,
-        );
-
-        if (limitHit)
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "File limit exceeded",
-            cause: `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`,
-          });
-
-        const uploadthingApiResponse = await fetch(
-          generateUploadThingURL("/api/prepareUpload"),
-          {
-            method: "POST",
-            body: JSON.stringify({
-              files: files,
-
-              routeConfig: parsedConfig,
-
-              metadata,
-              callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
-              callbackSlug: slug,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-              "x-uploadthing-api-key": preferredOrEnvSecret,
-              "x-uploadthing-version": UPLOADTHING_VERSION,
-            },
-          },
-        );
-
-        if (!uploadthingApiResponse.ok) {
-          console.error("[UT] unable to get presigned urls");
+          // validate the input
           try {
-            const error = (await uploadthingApiResponse.json()) as unknown;
+            const inputParser = uploadable._def.inputParser;
+            parsedInput = await getParseFn(inputParser)(userInput);
+          } catch (error) {
             console.error(error);
             return new UploadThingError({
               code: "BAD_REQUEST",
+              message: "Invalid input",
               cause: error,
             });
-          } catch (cause) {
-            console.error("[UT] unable to parse response");
-            return new UploadThingError({
-              code: "URL_GENERATION_FAILED",
-              message: "Unable to get presigned urls",
-              cause,
-            });
           }
-        }
 
-        // This is when we send the response back to the user's form so they can submit the files
-        const parsedResponse = (await uploadthingApiResponse.json()) as {
-          presignedUrl: { url: string; fields: Record<string, string> }; // ripped type from S3 package
-          name: string;
-          key: string;
-        }[];
-
-        if (process.env.NODE_ENV === "development") {
-          for (const file of parsedResponse) {
-            void conditionalDevServer(file.key);
-          }
-        }
-
-        return { body: parsedResponse, status: 200 };
-      } else if (actionType === "failure") {
-        const { fileKey } = (await req.json()) as {
-          fileKey: string;
-        };
-
-        // Tell uploadthing to mark the upload as failed
-        const uploadthingApiResponse = await fetch(
-          generateUploadThingURL("/api/failureCallback"),
-          {
-            method: "POST",
-            body: JSON.stringify({
-              fileKey,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-              "x-uploadthing-api-key": preferredOrEnvSecret,
-              "x-uploadthing-version": UPLOADTHING_VERSION,
-            },
-          },
-        );
-
-        if (!uploadthingApiResponse.ok) {
-          console.error("[UT] failed to mark upload as failed");
           try {
-            const error = (await uploadthingApiResponse.json()) as unknown;
+            const metadata = await uploadable._def.middleware({
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              req: req as any,
+              res,
+              input: parsedInput,
+            });
+
+            // Validate without Zod (for now)
+            if (
+              !Array.isArray(files) ||
+              !files.every((f) => typeof f === "string")
+            )
+              return new UploadThingError({
+                code: "BAD_REQUEST",
+                message: "Files must be a string array",
+                cause: `Expected files to be of type 'string[]', got '${JSON.stringify(
+                  files,
+                )}'`,
+              });
+
+            // FILL THE ROUTE CONFIG so the server only has one happy path
+            const parsedConfig = parseAndExpandInputConfig(
+              uploadable._def.routerConfig,
+            );
+
+            const { limitHit, count, limit, type } = fileCountLimitHit(
+              files,
+              parsedConfig,
+            );
+
+            if (limitHit)
+              return new UploadThingError({
+                code: "BAD_REQUEST",
+                message: "File limit exceeded",
+                cause: `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`,
+              });
+
+            const uploadthingApiResponse = await fetch(
+              generateUploadThingURL("/api/prepareUpload"),
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  files: files,
+
+                  routeConfig: parsedConfig,
+
+                  metadata,
+                  callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
+                  callbackSlug: slug,
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-uploadthing-api-key": preferredOrEnvSecret,
+                  "x-uploadthing-version": UPLOADTHING_VERSION,
+                },
+              },
+            );
+
+            if (!uploadthingApiResponse.ok) {
+              console.error("[UT] unable to get presigned urls");
+              try {
+                const error = (await uploadthingApiResponse.json()) as unknown;
+                console.error(error);
+                return new UploadThingError({
+                  code: "BAD_REQUEST",
+                  cause: error,
+                });
+              } catch (cause) {
+                console.error("[UT] unable to parse response");
+                return new UploadThingError({
+                  code: "URL_GENERATION_FAILED",
+                  message: "Unable to get presigned urls",
+                  cause,
+                });
+              }
+            }
+
+            // This is when we send the response back to the user's form so they can submit the files
+            const parsedResponse = (await uploadthingApiResponse.json()) as {
+              presignedUrl: { url: string; fields: Record<string, string> }; // ripped type from S3 package
+              name: string;
+              key: string;
+            }[];
+
+            if (process.env.NODE_ENV === "development") {
+              for (const file of parsedResponse) {
+                void conditionalDevServer(file.key);
+              }
+            }
+
+            return { body: parsedResponse, status: 200 };
+          } catch (error) {
             console.error(error);
             return new UploadThingError({
-              message: "Failed to mark upload as failed",
-              code: "INTERNAL_SERVER_ERROR",
+              code: "BAD_REQUEST",
+              message: "Middleware failed",
               cause: error,
-            });
-          } catch (cause) {
-            console.error("[UT] unable to parse response");
-            return new UploadThingError({
-              code: "URL_GENERATION_FAILED",
-              message: "Unable to get presigned urls",
-              cause,
             });
           }
         }
+        case "failure": {
+          const { fileKey } = (await req.json()) as {
+            fileKey: string;
+          };
 
-        // Run the onUploadError callback
-        uploadable._def.onUploadError({
-          error: new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: `Upload failed for ${fileKey}`,
-          }),
-          fileKey,
-        });
+          // Tell uploadthing to mark the upload as failed
+          const uploadthingApiResponse = await fetch(
+            generateUploadThingURL("/api/failureCallback"),
+            {
+              method: "POST",
+              body: JSON.stringify({
+                fileKey,
+              }),
+              headers: {
+                "Content-Type": "application/json",
+                "x-uploadthing-api-key": preferredOrEnvSecret,
+                "x-uploadthing-version": UPLOADTHING_VERSION,
+              },
+            },
+          );
 
-        return { status: 200 };
-      } else {
-        return new UploadThingError({ ... })
+          if (!uploadthingApiResponse.ok) {
+            console.error("[UT] failed to mark upload as failed");
+            try {
+              const error = (await uploadthingApiResponse.json()) as unknown;
+              console.error(error);
+              return new UploadThingError({
+                message: "Failed to mark upload as failed",
+                code: "INTERNAL_SERVER_ERROR",
+                cause: error,
+              });
+            } catch (cause) {
+              console.error("[UT] unable to parse response");
+              return new UploadThingError({
+                code: "URL_GENERATION_FAILED",
+                message: "Unable to get presigned urls",
+                cause,
+              });
+            }
+          }
+
+          // Run the onUploadError callback
+          uploadable._def.onUploadError({
+            error: new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: `Upload failed for ${fileKey}`,
+            }),
+            fileKey,
+          });
+
+          return { status: 200 };
+        }
+        default: {
+          // This should never happen
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: `Invalid action type`,
+          });
+        }
       }
     } catch (cause) {
       console.error("[UT] middleware failed to run");

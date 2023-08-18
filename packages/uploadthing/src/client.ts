@@ -4,7 +4,11 @@
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
-import type { FileRouter, inferEndpointInput } from "./internal/types";
+import type {
+  ActionType,
+  FileRouter,
+  inferEndpointInput,
+} from "./internal/types";
 
 function fetchWithProgress(
   url: string,
@@ -36,7 +40,7 @@ function fetchWithProgress(
 const createRequestUrl = (config: {
   url?: string;
   slug: string;
-  actionType: "upload" | "failure";
+  actionType: ActionType;
 }) => {
   const queryParams = `?actionType=${config.actionType}&slug=${config.slug}`;
   return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
