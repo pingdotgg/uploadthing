@@ -253,17 +253,28 @@ export const buildRequestHandler = <
             console.error(error);
             return new UploadThingError({
               code: "BAD_REQUEST",
-              message: "Invalid input",
+              message: "Invalid input.",
               cause: error,
             });
           }
 
-          const metadata = await uploadable._def.middleware({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            req: req as any,
-            res,
-            input: parsedInput,
-          });
+          let metadata = {};
+
+          try {
+            metadata = await uploadable._def.middleware({
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              req: req as any,
+              res,
+              input: parsedInput,
+            });
+          } catch (error) {
+            console.error(error);
+            return new UploadThingError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to run middleware.",
+              cause: error,
+            });
+          }
 
           // Validate without Zod (for now)
           if (
@@ -411,11 +422,11 @@ export const buildRequestHandler = <
         }
       }
     } catch (cause) {
-      console.error("[UT] middleware failed to run");
+      console.error("[UT] Could not handle request");
       console.error(cause);
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: `An error occured when running the middleware for the ${slug} route`,
+        message: `An error occured when handling the request on the ${slug} route see the cause for more info`,
         cause,
       });
     }
