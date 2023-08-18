@@ -394,7 +394,7 @@ export const buildRequestHandler = <
 
         return { status: 200 };
       } else {
-        return { message: "invalid actionType", status: 500 };
+        return new UploadThingError({ ... })
       }
     } catch (cause) {
       console.error("[UT] middleware failed to run");
