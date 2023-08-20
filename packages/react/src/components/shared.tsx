@@ -66,7 +66,7 @@ export const progressWidths: Record<number, string> = {
 export function Spinner() {
   return (
     <svg
-      className="block h-5 w-5 animate-spin align-middle text-white"
+      className="block h-5 w-5 animate-spin align-middle text-white z-10"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 576 512"
