@@ -2,7 +2,7 @@ import type {
   FileRouterInputConfig,
   Json,
   UploadThingError,
-} from "@uploadthing/shared";
+} from "../shared";
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {

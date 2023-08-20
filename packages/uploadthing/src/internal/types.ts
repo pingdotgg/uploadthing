@@ -7,7 +7,7 @@ import type {
   FileRouterInputConfig,
   UploadedFile,
   UploadThingError,
-} from "@uploadthing/shared";
+} from "../shared";
 
 import type { JsonParser } from "./parser";
 

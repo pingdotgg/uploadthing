@@ -1,4 +1,4 @@
-import type { Json } from "@uploadthing/shared";
+import type { Json } from "./shared";
 
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";

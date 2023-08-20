@@ -1,5 +1,5 @@
-import type { Json } from "@uploadthing/shared";
-import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
+import type { Json } from "../shared";
+import { generateUploadThingURL, UploadThingError } from "../shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import type { FileEsque, UploadData, UploadError } from "./utils";

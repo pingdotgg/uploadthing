@@ -1,4 +1,4 @@
-import type { UploadThingError } from "@uploadthing/shared";
+import type { UploadThingError } from "../shared";
 
 export const maybeParseResponseXML = (maybeXml: string) => {
   const codeMatch = maybeXml.match(/<Code>(.*?)<\/Code>/s);

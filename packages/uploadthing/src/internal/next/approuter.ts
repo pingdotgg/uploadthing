@@ -1,4 +1,4 @@
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError, UploadThingError } from "../../shared";
 
 import { UPLOADTHING_VERSION } from "../../constants";
 import { defaultErrorFormatter } from "../error-formatter";

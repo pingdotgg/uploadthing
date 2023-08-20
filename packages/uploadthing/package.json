@@ -25,6 +25,10 @@
       "types": "./dist/tw.d.ts",
       "import": "./dist/tw.mjs",
       "require": "./dist/tw.js"
+    },
+    "./shared": {
+      "types": "./dist/shared.d.ts",
+      "import": "./dist/shared.mjs"
     }
   },
   "files": [
@@ -49,6 +53,9 @@
       ],
       "tw": [
         "dist/tw.d.ts"
+      ],
+      "shared": [
+        "dist/shared.d.ts"
       ]
     }
   },
@@ -62,8 +69,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/mime-types": "^0.2.0",
-    "@uploadthing/shared": "^5.2.0"
+    "@uploadthing/mime-types": "^0.2.0"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",

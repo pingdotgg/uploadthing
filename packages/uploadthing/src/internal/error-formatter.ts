@@ -1,4 +1,4 @@
-import type { UploadThingError } from "@uploadthing/shared";
+import type { UploadThingError } from "../shared";
 
 export function defaultErrorFormatter(error: UploadThingError) {
   return {

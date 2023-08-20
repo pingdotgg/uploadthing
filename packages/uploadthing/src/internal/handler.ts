@@ -7,14 +7,14 @@ import {
   fillInputRouteConfig as parseAndExpandInputConfig,
   pollForFileData,
   UploadThingError,
-} from "@uploadthing/shared";
+} from "../shared";
 import type {
   ExpandedRouteConfig,
   FileData,
   FileRouterInputKey,
   Json,
   UploadedFile,
-} from "@uploadthing/shared";
+} from "../shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";

@@ -1,9 +1,9 @@
-import type { Json } from "@uploadthing/shared";
+import type { Json } from "../shared";
 import {
   generateUploadThingURL,
   pollForFileData,
   UploadThingError,
-} from "@uploadthing/shared";
+} from "../shared";
 
 import { maybeParseResponseXML } from "../internal/s3-error-parser";
 
