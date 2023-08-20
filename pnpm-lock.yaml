@@ -352,7 +352,7 @@ importers:
         specifier: ^1.13.2
         version: 1.13.2
       uploadthing:
-        specifier: 5.3.3
+        specifier: ^5.0.0
         version: link:../uploadthing
     devDependencies:
       '@types/node':
@@ -410,7 +410,7 @@ importers:
   packages/solid:
     dependencies:
       uploadthing:
-        specifier: 5.3.3
+        specifier: ^5.0.0
         version: link:../uploadthing
     devDependencies:
       autoprefixer:
