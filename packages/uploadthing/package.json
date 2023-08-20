@@ -27,8 +27,8 @@
       "require": "./dist/tw.js"
     },
     "./shared": {
-      "types": "./dist/shared.d.ts",
-      "import": "./dist/shared.mjs"
+      "types": "./dist/shared/index.d.ts",
+      "import": "./dist/shared/index.mjs"
     }
   },
   "files": [
@@ -55,7 +55,7 @@
         "dist/tw.d.ts"
       ],
       "shared": [
-        "dist/shared.d.ts"
+        "dist/shared/index.d.ts"
       ]
     }
   },

@@ -85,9 +85,6 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@uploadthing/shared": "^5.2.0"
-  },
   "devDependencies": {
     "autoprefixer": "10.4.14",
     "postcss": "8.4.22",

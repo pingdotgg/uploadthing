@@ -1,4 +1,4 @@
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { ExpandedRouteConfig } from "uploadthing/shared";
 
 export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
   const fileTypes = config ? Object.keys(config) : [];

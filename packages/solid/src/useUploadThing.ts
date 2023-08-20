@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { ExpandedRouteConfig } from "uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
