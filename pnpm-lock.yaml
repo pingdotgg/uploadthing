@@ -351,6 +351,9 @@ importers:
       tailwind-merge:
         specifier: ^1.13.2
         version: 1.13.2
+      uploadthing:
+        specifier: 5.3.3
+        version: link:../uploadthing
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -394,9 +397,6 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
-      uploadthing:
-        specifier: 5.3.3
-        version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -408,6 +408,10 @@ importers:
         version: 3.21.4
 
   packages/solid:
+    dependencies:
+      uploadthing:
+        specifier: 5.3.3
+        version: link:../uploadthing
     devDependencies:
       autoprefixer:
         specifier: 10.4.14
@@ -433,9 +437,6 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
-      uploadthing:
-        specifier: 5.3.3
-        version: link:../uploadthing
 
   packages/uploadthing:
     dependencies:
