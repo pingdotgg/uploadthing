@@ -1,11 +1,10 @@
+import { maybeParseResponseXML } from "../internal/s3-error-parser";
 import type { Json } from "../shared";
 import {
   generateUploadThingURL,
   pollForFileData,
   UploadThingError,
 } from "../shared";
-
-import { maybeParseResponseXML } from "../internal/s3-error-parser";
 
 export type FileEsque = Blob & { name: string };
 

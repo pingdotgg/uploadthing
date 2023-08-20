@@ -1,5 +1,4 @@
 import type { Json } from "../shared";
-
 import type { MaybePromise } from "./types";
 
 // Don't want to use Zod cause it's an optional dependency

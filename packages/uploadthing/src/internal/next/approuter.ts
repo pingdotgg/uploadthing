@@ -1,6 +1,5 @@
-import { getStatusCodeFromError, UploadThingError } from "../../shared";
-
 import { UPLOADTHING_VERSION } from "../../constants";
+import { getStatusCodeFromError, UploadThingError } from "../../shared";
 import { defaultErrorFormatter } from "../error-formatter";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";

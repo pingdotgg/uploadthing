@@ -86,7 +86,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "uploadthing": "5.3.3"
+    "uploadthing": "^5.0.0"
   },
   "devDependencies": {
     "autoprefixer": "10.4.14",
@@ -100,8 +100,7 @@
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
-    "solidjs-dropzone": "^1.0.0",
-    "uploadthing": "^5.0.0"
+    "solidjs-dropzone": "^1.0.0"
   },
   "keywords": [
     "SolidJS",

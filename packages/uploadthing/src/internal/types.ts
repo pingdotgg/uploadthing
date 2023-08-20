@@ -8,7 +8,6 @@ import type {
   UploadedFile,
   UploadThingError,
 } from "../shared";
-
 import type { JsonParser } from "./parser";
 
 //

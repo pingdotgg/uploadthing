@@ -1,10 +1,10 @@
-import type { UploadThingError } from "uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
 } from "uploadthing/server";
+import type { UploadThingError } from "uploadthing/shared";
 
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {

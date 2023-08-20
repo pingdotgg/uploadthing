@@ -1,9 +1,4 @@
-import type {
-  FileRouterInputConfig,
-  Json,
-  UploadThingError,
-} from "../shared";
-
+import type { FileRouterInputConfig, Json, UploadThingError } from "../shared";
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
   AnyParams,

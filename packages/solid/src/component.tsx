@@ -2,7 +2,6 @@ import { createSignal } from "solid-js";
 import type { OnDropHandler } from "solidjs-dropzone";
 import { createDropzone } from "solidjs-dropzone";
 
-import type { ExpandedRouteConfig } from "uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import {
   classNames,
@@ -14,6 +13,7 @@ import type {
   FileRouter,
   inferEndpointInput,
 } from "uploadthing/server";
+import type { ExpandedRouteConfig } from "uploadthing/shared";
 
 import { INTERNAL_uploadthingHookGen } from "./useUploadThing";
 

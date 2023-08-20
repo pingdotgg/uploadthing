@@ -1,7 +1,6 @@
-import type { Json } from "./shared";
-
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import type { Json } from "./shared";
 
 export { createNextRouteHandler } from "./internal/next/approuter";
 export type { FileRouter } from "./internal/types";

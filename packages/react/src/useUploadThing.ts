@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
 
-import type { ExpandedRouteConfig } from "uploadthing/shared";
-import { UploadThingError } from "uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {
@@ -9,6 +7,8 @@ import type {
   inferEndpointInput,
   inferErrorShape,
 } from "uploadthing/server";
+import type { ExpandedRouteConfig } from "uploadthing/shared";
+import { UploadThingError } from "uploadthing/shared";
 
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";

@@ -11,7 +11,7 @@ export default defineConfig((opts) => [
       "./src/next.ts",
       "./src/next-legacy.ts",
       "./src/tw.ts",
-      "./src/shared/index.ts"
+      "./src/shared/index.ts",
     ],
     clean: !opts.watch,
   },

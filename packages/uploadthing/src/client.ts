@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { pollForFileData, UploadThingError } from "./shared";
-
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type { FileRouter, inferEndpointInput } from "./internal/types";
+import { pollForFileData, UploadThingError } from "./shared";
 
 function fetchWithProgress(
   url: string,

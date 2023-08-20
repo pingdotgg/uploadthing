@@ -1,5 +1,6 @@
 import type { NextApiResponse } from "next";
 
+import { UPLOADTHING_VERSION } from "../constants";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
@@ -15,8 +16,6 @@ import type {
   Json,
   UploadedFile,
 } from "../shared";
-
-import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
 import type { AnyRuntime, FileRouter, RequestLike } from "./types";
 
