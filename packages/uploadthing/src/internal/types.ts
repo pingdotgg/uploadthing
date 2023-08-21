@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import type { IncomingHttpHeaders, IncomingMessage, ServerResponse } from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
@@ -17,7 +18,7 @@ export const unsetMarker = "unsetMarker" as "unsetMarker" & {
 };
 export type UnsetMarker = typeof unsetMarker;
 
-export type Simplify<TType> = NonNullable<{ [TKey in keyof TType]: TType[TKey] }>;
+export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 
 export type MaybePromise<TType> = TType | Promise<TType>;
 
@@ -100,7 +101,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
   inputParser: JsonParser;
-  middleware: MiddlewareFn<NonNullable<unknown>, TParams>;
+  middleware: MiddlewareFn<{}, TParams>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
 };
 
