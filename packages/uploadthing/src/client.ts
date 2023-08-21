@@ -42,8 +42,14 @@ const createRequestUrl = (config: {
   slug: string;
   actionType: ActionType;
 }) => {
-  const queryParams = `?actionType=${config.actionType}&slug=${config.slug}`;
-  return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
+  const url = new URL(config.url ?? "/api/uploadthing");
+
+  const queryParams = new URLSearchParams(url.search);
+  queryParams.set("actionType", config.actionType);
+  queryParams.set("slug", config.slug);
+
+  url.search = queryParams.toString();
+  return url.toString();
 };
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
