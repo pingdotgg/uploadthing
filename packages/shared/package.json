@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "5.0.1",
+  "version": "5.2.0",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -12,6 +12,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "typesVersions": {
     "*": {
       "*": [
@@ -27,13 +30,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@uploadthing/eslint-config": "0.1.0",
+    "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/mime-types": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
-    "eslint": "^8.42.0",
+    "eslint": "^8.47.0",
     "tsup": "6.7.0",
-    "typescript": "5.1.3",
+    "typescript": "^5.1.6",
     "zod": "^3.21.4"
   },
   "peerDependencies": {
@@ -45,7 +48,10 @@
       "optional": true
     }
   },
-  "publishConfig": {
-    "access": "public"
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ]
   }
 }

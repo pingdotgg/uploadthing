@@ -1,7 +1,13 @@
+/* eslint-disable @typescript-eslint/ban-types */
+import type { IncomingHttpHeaders } from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
-import type { FileRouterInputConfig, UploadedFile } from "@uploadthing/shared";
+import type {
+  FileRouterInputConfig,
+  UploadedFile,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import type { JsonParser } from "./parser";
 
@@ -16,6 +22,15 @@ export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 
 export type MaybePromise<TType> = TType | Promise<TType>;
 
+export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type Overwrite<T, U> = Omit<T, keyof U> & U;
+
+export type RequestLike = Overwrite<
+  WithRequired<Partial<Request>, "json">,
+  {
+    headers: Headers | IncomingHttpHeaders;
+  }
+>;
 //
 // Package
 type ResolverOptions<TParams extends AnyParams> = {
@@ -31,6 +46,7 @@ export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _runtime: any;
+  _errorShape: any;
 }
 
 type MiddlewareFnArgs<TParams extends AnyParams> =
@@ -60,6 +76,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _input: TParser["_output"];
     _metadata: TParams["_metadata"];
     _runtime: TParams["_runtime"];
+    _errorShape: TParams["_errorShape"];
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
@@ -69,6 +86,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _input: TParams["_input"];
     _metadata: TOutput;
     _runtime: TParams["_runtime"];
+    _errorShape: TParams["_errorShape"];
   }>;
 
   onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
@@ -78,6 +96,7 @@ export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
   inputParser: JsonParser;
   middleware: MiddlewareFn<{}, TParams>;
+  errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
 };
 
 export interface Uploader<TParams extends AnyParams> {
@@ -94,3 +113,6 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
     ? undefined
     : TUploader["_def"]["_input"];
+
+export type inferErrorShape<TRouter extends FileRouter> =
+  TRouter[keyof TRouter]["_def"]["_errorShape"];

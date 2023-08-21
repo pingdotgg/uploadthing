@@ -6,24 +6,25 @@ import {
   getUploadthingUrl,
   fillInputRouteConfig as parseAndExpandInputConfig,
   pollForFileData,
+  UploadThingError,
 } from "@uploadthing/shared";
 import type {
   ExpandedRouteConfig,
   FileData,
   FileRouterInputKey,
+  Json,
   UploadedFile,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import type { Json } from "./parser";
 import { getParseFn } from "./parser";
-import type { AnyRuntime, FileRouter } from "./types";
+import type { AnyRuntime, FileRouter, RequestLike } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: { [k: string]: number } = {};
+  const counts: Record<string, number> = {};
 
   files.forEach((file) => {
     const type = getTypeFromFileName(
@@ -38,18 +39,26 @@ const fileCountLimitHit = (
     }
   });
 
-  return Object.keys(counts).some((key) => {
-    const count = counts[key as FileRouterInputKey];
-    if (count === 0) return false;
+  for (const _key in counts) {
+    const key = _key as FileRouterInputKey;
+    const count = counts[key];
+    const limit = routeConfig[key]?.maxFileCount;
 
-    const limit = routeConfig[key as FileRouterInputKey]?.maxFileCount;
     if (!limit) {
       console.error(routeConfig, key);
-      throw new Error("invalid config during file count");
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Invalid config during file count",
+        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`,
+      });
     }
 
-    return count > limit;
-  });
+    if (count > limit) {
+      return { limitHit: true, type: key, limit, count };
+    }
+  }
+
+  return { limitHit: false };
 };
 
 if (process.env.NODE_ENV === "development") {
@@ -109,7 +118,10 @@ const conditionalDevServer = async (fileKey: string) => {
   if (fileData !== null) return fileData;
 
   console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
-  throw new Error("File took too long to upload");
+  throw new UploadThingError({
+    code: "UPLOAD_FAILED",
+    message: "File took too long to upload",
+  });
 };
 
 export type RouterWithConfig<TRouter extends FileRouter> = {
@@ -121,6 +133,13 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   };
 };
 
+const getHeader = (req: RequestLike, key: string) => {
+  if (req.headers instanceof Headers) {
+    return req.headers.get(key);
+  }
+  return req.headers[key];
+};
+
 export const buildRequestHandler = <
   TRouter extends FileRouter,
   TRuntime extends AnyRuntime,
@@ -128,28 +147,63 @@ export const buildRequestHandler = <
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
-    uploadthingHook?: string;
-    slug?: string;
-    actionType?: string;
-    req: Partial<Request> & { json: Request["json"] };
+    req: RequestLike;
     res?: TRuntime extends "pages" ? NextApiResponse : undefined;
   }) => {
+    const { req, res } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
-    const { uploadthingHook, slug, req, res, actionType } = input;
 
-    if (!slug) throw new Error("we need a slug");
+    // Get inputs from query and params
+    const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
+    const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
+    const slug = params.get("slug") ?? undefined;
+    const actionType = params.get("actionType") ?? undefined;
+
+    // Validate inputs
+    if (!slug)
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "No slug provided",
+      });
+
+    if (slug && typeof slug !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`slug` must be a string",
+        cause: `Expected slug to be of type 'string', got '${typeof slug}'`,
+      });
+    }
+    if (actionType && typeof actionType !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`actionType` must be a string",
+        cause: `Expected actionType to be of type 'string', got '${typeof actionType}'`,
+      });
+    }
+    if (uploadthingHook && typeof uploadthingHook !== "string") {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`uploadthingHook` must be a string",
+        cause: `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`,
+      });
+    }
 
     if (!preferredOrEnvSecret) {
-      throw new Error(
-        `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
-      );
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
+        cause: "No secret provided",
+      });
     }
 
     const uploadable = router[slug];
     if (!uploadable) {
-      return { status: 404 };
+      return new UploadThingError({
+        code: "NOT_FOUND",
+        message: `No file route found for slug ${slug}`,
+      });
     }
 
     const reqBody = (await req.json()) as {
@@ -159,11 +213,10 @@ export const buildRequestHandler = <
       input?: Json;
     };
 
-    if (uploadthingHook && uploadthingHook === "callback") {
+    if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       await uploadable.resolver({
         file: reqBody.file,
-
         metadata: reqBody.metadata,
       });
 
@@ -171,10 +224,12 @@ export const buildRequestHandler = <
     }
 
     if (!actionType || actionType !== "upload") {
-      // This would either be someone spamming
-      // or the AWS webhook
-
-      return { status: 404 };
+      // This would either be someone spamming or the AWS webhook
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        cause: `Invalid action type ${actionType}`,
+        message: `Expected "upload" but got "${actionType}"`,
+      });
     }
 
     try {
@@ -189,29 +244,55 @@ export const buildRequestHandler = <
         const inputParser = uploadable._def.inputParser;
         parsedInput = await getParseFn(inputParser)(userInput);
       } catch (error) {
-        console.error(error);
-        return { status: 400, mesage: "Invalid input" };
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid input",
+          cause: error,
+        });
       }
 
-      const metadata = await uploadable._def.middleware({
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        req: req as any,
-        res,
-        input: parsedInput,
-      });
+      let metadata: Json = {};
+      try {
+        metadata = await uploadable._def.middleware({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          req: req as any,
+          res,
+          input: parsedInput,
+        });
+      } catch (error) {
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "An error occured in the upload middleware",
+          cause: error,
+        });
+      }
 
       // Validate without Zod (for now)
       if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
-        throw new Error("Need file array");
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Files must be a string array",
+          cause: `Expected files to be of type 'string[]', got '${JSON.stringify(
+            files,
+          )}'`,
+        });
 
       // FILL THE ROUTE CONFIG so the server only has one happy path
       const parsedConfig = parseAndExpandInputConfig(
         uploadable._def.routerConfig,
       );
 
-      const limitHit = fileCountLimitHit(files, parsedConfig);
+      const { limitHit, count, limit, type } = fileCountLimitHit(
+        files,
+        parsedConfig,
+      );
 
-      if (limitHit) throw new Error("Too many files");
+      if (limitHit)
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "File limit exceeded",
+          cause: `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`,
+        });
 
       const uploadthingApiResponse = await fetch(
         generateUploadThingURL("/api/prepareUpload"),
@@ -219,9 +300,7 @@ export const buildRequestHandler = <
           method: "POST",
           body: JSON.stringify({
             files: files,
-
             routeConfig: parsedConfig,
-
             metadata,
             callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
             callbackSlug: slug,
@@ -239,10 +318,18 @@ export const buildRequestHandler = <
         try {
           const error = (await uploadthingApiResponse.json()) as unknown;
           console.error(error);
-        } catch (e) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            cause: error,
+          });
+        } catch (cause) {
           console.error("[UT] unable to parse response");
+          return new UploadThingError({
+            code: "URL_GENERATION_FAILED",
+            message: "Unable to get presigned urls",
+            cause,
+          });
         }
-        throw new Error("ending upload");
       }
 
       // This is when we send the response back to the user's form so they can submit the files
@@ -259,11 +346,14 @@ export const buildRequestHandler = <
       }
 
       return { body: parsedResponse, status: 200 };
-    } catch (e) {
+    } catch (cause) {
       console.error("[UT] middleware failed to run");
-      console.error(e);
-
-      return { status: 400, message: (e as Error).toString() };
+      console.error(cause);
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `An error occured when running the middleware for the ${slug} route`,
+        cause,
+      });
     }
   };
 };

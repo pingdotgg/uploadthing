@@ -2,19 +2,23 @@
   "name": "uploadthing-turbo",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@8.6.12",
+  "engines": {
+    "node": ">=v18.17.1",
+    "pnpm": ">=8.6.0"
+  },
   "scripts": {
     "build": "turbo run build",
+    "build:pkgs": "turbo run build --filter \"./packages/*\"",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev": "turbo run dev",
     "dev:pkgs": "turbo run dev --filter \"./packages/*\"",
     "lint": "turbo run lint && manypkg check",
-    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "format": "prettier --write . --list-different",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "typecheck": "turbo run typecheck"
-  },
-  "engines": {
-    "node": ">=14.0.0"
   },
   "dependencies": {
     "@changesets/changelog-github": "^0.4.8",
@@ -22,12 +26,11 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
     "@manypkg/cli": "^0.20.0",
     "@types/node": "18.16.0",
-    "@uploadthing/eslint-config": "0.1.0",
+    "@uploadthing/eslint-config": "0.2.0",
     "dotenv": "latest",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
     "turbo": "^1.10.1",
-    "typescript": "5.1.3"
-  },
-  "packageManager": "pnpm@8.6.0"
+    "typescript": "^5.1.6"
+  }
 }

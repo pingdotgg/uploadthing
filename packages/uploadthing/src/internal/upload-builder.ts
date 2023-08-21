@@ -1,5 +1,10 @@
-import type { FileRouterInputConfig } from "@uploadthing/shared";
+import type {
+  FileRouterInputConfig,
+  Json,
+  UploadThingError,
+} from "@uploadthing/shared";
 
+import { defaultErrorFormatter } from "./error-formatter";
 import type {
   AnyParams,
   AnyRuntime,
@@ -10,12 +15,16 @@ import type {
   Uploader,
 } from "./types";
 
-function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
+function internalCreateBuilder<
+  TRuntime extends AnyRuntime = "web",
+  TErrorShape extends Json = { message: string },
+>(
   initDef: Partial<UploadBuilderDef<any>> = {},
 ): UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
   _runtime: TRuntime;
+  _errorShape: TErrorShape;
 }> {
   const _def: UploadBuilderDef<AnyParams> = {
     // Default router config
@@ -28,6 +37,8 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
     inputParser: { parse: () => ({}), _input: {}, _output: {} },
 
     middleware: () => ({}),
+
+    errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 
     // Overload with properties passed in
     ...initDef,
@@ -55,20 +66,32 @@ function internalCreateBuilder<TRuntime extends AnyRuntime = "web">(
   };
 }
 
-type InOut<TRuntime extends AnyRuntime = "web"> = {
-  (input: FileRouterInputConfig): UploadBuilder<{
-    _input: UnsetMarker;
-    _metadata: UnsetMarker;
-    _runtime: TRuntime;
-  }>;
-  router: <T extends FileRouter>(router: T) => T;
+type InOut<
+  TRuntime extends AnyRuntime = "web",
+  TErrorShape extends Json = { message: string },
+> = {
+    (input: FileRouterInputConfig) => UploadBuilder<{
+      _input: UnsetMarker;
+      _metadata: UnsetMarker;
+      _runtime: TRuntime;
+      _errorShape: TErrorShape;
+    }>;
+    router: <T extends FileRouter>(router: T) => T;
+}
+
+export type CreateBuilderOptions<TErrorShape extends Json> = {
+  errorFormatter: (err: UploadThingError) => TErrorShape;
 };
 
 export function createBuilder<
   TRuntime extends AnyRuntime = "web",
->(): InOut<TRuntime> {
-  const handler = (input: FileRouterInputConfig) => {
-    return internalCreateBuilder<TRuntime>({ routerConfig: input });
+  TErrorShape extends Json = { message: string },
+>(opts?: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
+  return (input: FileRouterInputConfig) => {
+    return internalCreateBuilder<TRuntime, TErrorShape>({
+      routerConfig: input,
+      ...opts,
+    });
   };
   return new Proxy(handler, {
     get(target, prop) {

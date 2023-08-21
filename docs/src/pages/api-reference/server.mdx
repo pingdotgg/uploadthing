@@ -77,8 +77,9 @@ export type OurFileRouter = typeof ourFileRouter;
 ### Input
 
 ```ts
-// Your file types can be any of the following
-type ValidFileTypes = "image" | "video" | "audio" | "blob";
+// Your file types can be any of the following types
+type MimeType = /** any web mime-type */
+type ValidFileTypes = "image" | "video" | "audio" | "blob" | "pdf" | "text" | MimeType;
 
 // The input to your f() function can be an array of file types OR an object of them w/ config
 type FileRouterInput =
@@ -101,6 +102,9 @@ All routes default to a max file count of 1. The file size defaults are below
 | video     | 16MB             |
 | audio     | 8MB              |
 | blob      | 8MB              |
+| pdf       | 4MB              |
+| text      | 64kB             |
+| MimeType  | 4MB              |
 
 ### `input`
 
@@ -149,7 +153,78 @@ accessible here
 The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
 API but better
 
+### `uploadFiles`
+
+> Added in `v5.3`
+
+Upload files directly from your server **without** using the file router. Useful
+for server-side file processing, uploading from a server action, and much more.
+
+```tsx
+import { utapi } from "uploadthing/server";
+
+async function uploadFiles(formData: FormData) {
+  "use server";
+  const files = fd.getAll("files");
+  const response = await utapi.uploadFiles(files);
+  //    ^? { key: string, url: string }[]
+}
+
+function MyForm() {
+  return (
+    <form action={uploadFiles}>
+      <input name="files" type="file" multiple />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+When uploading files using `uploadFiles`, the files must be present on your
+server. Then presigned URLs are generated on our servers before the files can be
+uploaded to the storage provider.
+
+| Arguments | Type                       | Required | Description                       |
+| :-------- | :------------------------- | :------- | :-------------------------------- |
+| files     | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload    |
+| metadata  | Json                       | No       | Metadata to attach to the file(s) |
+
+```ts
+// Edge / Node < 20 friendly File interface
+interface FileEsque extends Blob {
+  name: string;
+}
+```
+
+### `uploadFilesFromUrl`
+
+> Added in `v5.3`
+
+Have a file hosted somewhere else you want to upload on UploadThing? This is the
+function you're looking for.
+
+<Callout type="warning">
+  When uploading files from URL, the file is first downloaded on **your**
+  server, before presigned URLs are created and the file is uploaded to the
+  storage provider.
+</Callout>
+
+```tsx
+import { utapi } from "uploadthing/server";
+
+const fileUrl = "https://test.com/some.png";
+
+const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
+```
+
+| Arguments | Type            | Required | Description                            |
+| :-------- | :-------------- | :------- | :------------------------------------- |
+| url       | URL \|\| string | Yes      | The URL of the file you wish to upload |
+| metadata  | Json            | No       | Metadata to attach to the file(s)      |
+
 ### `deleteFiles`
+
+> Added in `v4.0`
 
 `deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
 the server.
@@ -164,11 +239,13 @@ await utapi.deleteFiles([
 ]);
 ```
 
-| Arguments | Type                 | Required | Description                                |
-| :-------- | :------------------- | :------- | :----------------------------------------- |
-| input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to delete |
+| Arguments | Type                 | Required | Notes           | Description                                |
+| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------- |
+| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to delete |
 
 ### `getFileUrls`
+
+> Added in `v4.0`
 
 `getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to
 access them.
@@ -185,6 +262,70 @@ const multipleUrls = await utapi.getFileUrls([
 ]);
 ```
 
-| Arguments | Type                 | Required | Description                                      |
-| :-------- | :------------------- | :------- | :----------------------------------------------- |
-| input     | string \|\| string[] | Yes      | The fileKey or fileKeys you want to get URLs for |
+| Arguments | Type                 | Required | Notes           | Description                                      |
+| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------------- |
+| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to get URLs for |
+
+### `listFiles`
+
+> Added in `v5.3`
+
+`listFiles` takes no input and returns an array of objects containing file ids
+and keys for all files that have been uploaded to the application your API key
+corresponds to.
+
+```ts
+import { utapi } from "uploadthing/server";
+
+const files = await utapi.listFiles();
+
+console.log(files);
+/*
+ * [
+ *  {
+ *    id: "2e0fdb64-9957-4262-8e45-f372ba903ac8",
+ *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"
+ *  }
+ * ]
+ */
+```
+
+### `renameFiles`
+
+> Added in `v5.3`
+
+`renameFiles` takes in a `Rename` or an array of `Rename`s and renames the
+appropriate files on the server.
+
+```ts
+import { utapi } from "uploadthing/server";
+
+await utapi.renameFiles({
+  fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  newName: "myImage.jpg",
+});
+
+await utapi.renameFiles([
+  {
+    fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    newName: "myImage.jpg",
+  },
+  {
+    fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+    newName: "myOtherImage.jpg",
+  },
+]);
+```
+
+#### `Rename` type definition
+
+```ts
+type Rename = {
+  fileKey: string;
+  newName: string; // should include file extension
+};
+```
+
+| Arguments | Type                 | Required | Description                                            |
+| :-------- | :------------------- | :------- | :----------------------------------------------------- |
+| renames   | Rename \|\| Rename[] | Yes      | Object specifying what file to rename and the new name |

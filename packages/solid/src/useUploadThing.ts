@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
@@ -20,9 +21,7 @@ const createEndpointMetadata = (endpoint: string, url?: string) => {
 
 export type UseUploadthingProps = {
   onUploadProgress?: (p: number) => void;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
+  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
   onUploadError?: (e: Error) => void;
   url?: string;
 };

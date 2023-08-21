@@ -7,7 +7,7 @@ interface State<T> {
   type: "fetched" | "error";
 }
 
-type Cache<T> = { [url: string]: T };
+type Cache<T> = Record<string, T>;
 
 export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
   const cache: Cache<T> = {};

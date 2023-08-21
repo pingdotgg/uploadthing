@@ -1,0 +1,61 @@
+# Error Handling
+
+## Error Formatting
+
+> Added in `v5.2`
+
+You can customize the server-side behavior in your API handler's options by
+using an error formatter.
+
+By default, only the error message is returned to the client, to avoid leaking
+any sensitive information. You can customize this behavior by specifying the
+`errorFormatter` option when you initialize your file route helper. An error
+formatter runs on the server and takes the original `UploadThingError`, and
+returns a JSON-serializable object. The error also includes a `cause` property
+which contains more information about the nature of the error and what caused
+the error to throw in the first place.
+
+For example, if you're using Zod as an input parser, you can return information
+of what fields failed validation by checking if the cause is a `ZodError`. Zod
+provides a `flatten` method that returns a JSON-serializable object which we can
+return to the client.
+
+```ts filename="server/uploadthing.ts"
+import * as z from "zod";
+
+import { createUploadthing } from "uploadthing/next";
+import type { FileRouter } from "uploadthing/next";
+
+const f = createUploadthing({
+  errorFormatter: (err) => {
+    return {
+      message: err.message,
+      zodError: err.cause instanceof z.ZodError ? err.cause.flatten() : null,
+    };
+  },
+});
+
+export const uploadRouter = {
+  withInput: f.input(z.object({ foo: z.string() })),
+  //  ...
+} satisfies FileRouter;
+```
+
+## Catching errors on the client
+
+You can catch errors on the client by using the `onUploadError` property on the
+premade components, or the `useUploadthing` hook. You can access the JSON object
+that you returned from your error formatter on the `data` property:
+
+```tsx
+<UploadButton
+  endpoint="withInput"
+  input={{ foo: userInput }}
+  onUploadError={(error) => {
+    console.log("Error: ", error);
+    const fieldErrors = error.data?.zodError?.fieldErrors;
+    //                              ^? typeToFlattenedError
+    setError(fieldErrors.foo[0] ?? "");
+  }}
+/>
+```

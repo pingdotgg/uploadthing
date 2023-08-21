@@ -1,5 +1,132 @@
 # uploadthing
 
+## 5.3.3
+
+### Patch Changes
+
+- [#262](https://github.com/pingdotgg/uploadthing/pull/262)
+  [`1ad326d`](https://github.com/pingdotgg/uploadthing/commit/1ad326d2a2cdd49ee538bda002f392d1052815ef)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix invalid
+  `NextApiResponse` object for pages middleware
+
+## 5.3.2
+
+### Patch Changes
+
+- [#251](https://github.com/pingdotgg/uploadthing/pull/251)
+  [`872c8a0`](https://github.com/pingdotgg/uploadthing/commit/872c8a08e01cd2c0f59a837b410bf4b0fc29ce9c)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: coherent
+  file info in all methods
+
+  all methods now receives a similarly shaped object as the serverside
+  `onUploadComplete` callback:
+
+  ```ts
+  export type UploadFileResponse = {
+    name: string;
+    size: number;
+    key: string;
+    url: string;
+  };
+  ```
+
+  Updated methods are:
+
+  - `onClientUploadComplete` in hooks as well as components (The old `fileName`,
+    `fileSize`, `fileUrl` and `fileKey` are retained but marked as deprecated
+    for backwards compatibility, and will be removed in the next major.)
+  - `utapi.uploadFiles` as well as `utapi.uploadFilesFromUrl`
+
+- Updated dependencies
+  [[`fe46b81`](https://github.com/pingdotgg/uploadthing/commit/fe46b814aa75646eac0694fdcb3889a3f7f5122b)]:
+  - @uploadthing/shared@5.2.0
+
+## 5.3.1
+
+### Patch Changes
+
+- [#247](https://github.com/pingdotgg/uploadthing/pull/247)
+  [`84a7b7d`](https://github.com/pingdotgg/uploadthing/commit/84a7b7d9bf3c3f7d7f716ea7506d86a6234dbafa)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: runtime
+  return type of `utapi.uploadFiles`
+
+## 5.3.0
+
+### Minor Changes
+
+- [#214](https://github.com/pingdotgg/uploadthing/pull/214)
+  [`4191e16`](https://github.com/pingdotgg/uploadthing/commit/4191e1638e911a98984676ae018faedcc7d2be0b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `uploadFilesFromUrl` to utapi for server side uploads via URl
+
+- [#214](https://github.com/pingdotgg/uploadthing/pull/214)
+  [`4191e16`](https://github.com/pingdotgg/uploadthing/commit/4191e1638e911a98984676ae018faedcc7d2be0b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `uploadFiles` to the utapi for serverside uplaods
+
+### Patch Changes
+
+- [#228](https://github.com/pingdotgg/uploadthing/pull/228)
+  [`e34d46b`](https://github.com/pingdotgg/uploadthing/commit/e34d46b28dc434969b7c642f13b48dc3f752d122)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore(utapi):
+  add server guard to listFiles
+
+- [#226](https://github.com/pingdotgg/uploadthing/pull/226)
+  [`a1e6e3c`](https://github.com/pingdotgg/uploadthing/commit/a1e6e3cf0536fc8a1f0401e13f07e4829a2735b3)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: add
+  server only guard
+
+- [#221](https://github.com/pingdotgg/uploadthing/pull/221)
+  [`090c8ed`](https://github.com/pingdotgg/uploadthing/commit/090c8edeeef88660b08a61733a47e826994860aa)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: errors
+  thrown in middleware causes entire request to throw
+
+- [#224](https://github.com/pingdotgg/uploadthing/pull/224)
+  [`c02e99a`](https://github.com/pingdotgg/uploadthing/commit/c02e99a40d20ae37c08564cf4985d74af2bb6495)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat(utapi):
+  Add listFiles to UTAPI
+
+## 5.2.1
+
+### Patch Changes
+
+- [#219](https://github.com/pingdotgg/uploadthing/pull/219)
+  [`a11a7f0`](https://github.com/pingdotgg/uploadthing/commit/a11a7f0f98585acf96220f9f454c74966e6c39b0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: make sure
+  url is absolute in pagedir
+
+## 5.2.0
+
+### Minor Changes
+
+- [#195](https://github.com/pingdotgg/uploadthing/pull/195)
+  [`a6c969e`](https://github.com/pingdotgg/uploadthing/commit/a6c969e67c85df490907b121d8e7df41779172b3)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: improve
+  errors and add `errorFormatter` option on the backend
+
+### Patch Changes
+
+- [#215](https://github.com/pingdotgg/uploadthing/pull/215)
+  [`e4f650c`](https://github.com/pingdotgg/uploadthing/commit/e4f650ca208f55074460d1eb20a70c15ab34f63b)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix(uploadthing): fixed
+  incorrect mapping of precise MIME types
+
+- [#205](https://github.com/pingdotgg/uploadthing/pull/205)
+  [`8658002`](https://github.com/pingdotgg/uploadthing/commit/8658002ca01e6502f06c2c56f90b353cf5db71df)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore(deps):
+  update dependency '@uploadthing/shared'
+
+- [#207](https://github.com/pingdotgg/uploadthing/pull/207)
+  [`f3640fb`](https://github.com/pingdotgg/uploadthing/commit/f3640fb0872a12fe0ad95e0ac604136113fa6ca4)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(shared):
+  Swap order of cases in `getUploadthingUrl()`
+
+- Updated dependencies
+  [[`c508868`](https://github.com/pingdotgg/uploadthing/commit/c508868690d3de48094c10a7facb880662d03b6a),
+  [`f3640fb`](https://github.com/pingdotgg/uploadthing/commit/f3640fb0872a12fe0ad95e0ac604136113fa6ca4),
+  [`a6c969e`](https://github.com/pingdotgg/uploadthing/commit/a6c969e67c85df490907b121d8e7df41779172b3)]:
+  - @uploadthing/shared@5.1.0
+
 ## 5.1.0
 
 ### Minor Changes
