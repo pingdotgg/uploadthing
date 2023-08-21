@@ -402,14 +402,27 @@ export const buildRequestHandler = <
             }
           }
 
-          // Run the onUploadError callback
-          uploadable._def.onUploadError({
-            error: new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Upload failed for ${fileKey}`,
-            }),
-            fileKey,
-          });
+          try {
+            // Run the onUploadError callback
+            uploadable._def.onUploadError({
+              error: new UploadThingError({
+                code: "UPLOAD_FAILED",
+                message: `Upload failed for ${fileKey}`,
+              }),
+              fileKey,
+            });
+          } catch (error) {
+            console.error(
+              "[UT] Failed to run onUploadError callback. You probably shouldn't be throwing errors in your callback.",
+            );
+            console.error(error);
+
+            return new UploadThingError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to run onUploadError callback",
+              cause: error,
+            });
+          }
 
           return { status: 200 };
         }
