@@ -21,4 +21,4 @@ export default defineConfig((opts) => [
     clean: !opts.watch,
     format: ["cjs", "esm"],
   },
-])
+]);
