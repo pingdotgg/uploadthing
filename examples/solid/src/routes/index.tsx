@@ -59,33 +59,33 @@ const Home: VoidComponent = () => {
             alert(`ERROR! ${error.message}`);
           }}
           class="ut-label:text-lg ut-label:text-cyan-900 ut-allowed-content:text-base ut-button:bg-orange-500"
-        // Uncomment this to see custom appearance in action
-        // appearance={{
-        //   container:
-        //     "bg-gray-100 border rounded border-2 border-cyan-300 p-4",
-        //   label: "text-orange-400",
-        //   allowedContent({ ready }) {
-        //     if (ready) return "border p-2 bg-gray-400 rounded text-red-600";
+          // Uncomment this to see custom appearance in action
+          // appearance={{
+          //   container:
+          //     "bg-gray-100 border rounded border-2 border-cyan-300 p-4",
+          //   label: "text-orange-400",
+          //   allowedContent({ ready }) {
+          //     if (ready) return "border p-2 bg-gray-400 rounded text-red-600";
 
-        //     return "";
-        //   },
-        //   button: "bg-yellow-400 hover:bg-yellow-500 text-blue-400",
-        // }}
+          //     return "";
+          //   },
+          //   button: "bg-yellow-400 hover:bg-yellow-500 text-blue-400",
+          // }}
 
-        // Uncomment this to see custom content in action
-        // content={{
-        //   label(props) {
-        //     return `${!props.ready
-        //       ? "We are waiting for answer from heaven"
-        //       : "Heaven have answered. Start bringing the goods"
-        //       }`;
-        //   },
-        //   allowedContent(props) {
-        //     if (props.ready) return "Depictions of the divine only, please";
+          // Uncomment this to see custom content in action
+          // content={{
+          //   label(props) {
+          //     return `${!props.ready
+          //       ? "We are waiting for answer from heaven"
+          //       : "Heaven have answered. Start bringing the goods"
+          //       }`;
+          //   },
+          //   allowedContent(props) {
+          //     if (props.ready) return "Depictions of the divine only, please";
 
-        //     return "";
-        //   },
-        // }}
+          //     return "";
+          //   },
+          // }}
         />
       </div>
     </main>
