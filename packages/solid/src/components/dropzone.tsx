@@ -208,7 +208,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
             (state() === "uploading" ? (
               <Spinner />
             ) : (
-              `Upload ${files.length} file${files.length === 1 ? "" : "s"}`
+              `Upload ${files().length} file${files().length === 1 ? "" : "s"}`
             ))}
         </button>
       )}
