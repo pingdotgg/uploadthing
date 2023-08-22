@@ -1,5 +1,4 @@
 ---
-"uploadthing": minor
 "@uploadthing/solid": minor
 ---
 
