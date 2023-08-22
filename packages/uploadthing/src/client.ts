@@ -37,7 +37,7 @@ function fetchWithProgress(
   });
 }
 
-const createRequestUrl = (config: {
+const createAPIRequestUrl = (config: {
   url?: string;
   slug: string;
   actionType: ActionType;
@@ -103,7 +103,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
-    createRequestUrl({
+    createAPIRequestUrl({
       url: config?.url,
       slug: String(opts.endpoint),
       actionType: "upload",
@@ -199,7 +199,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     if (upload.status > 299 || upload.status < 200) {
       // tell uploadthing infra server that upload failed
       await fetch(
-        createRequestUrl({
+        createAPIRequestUrl({
           url: config?.url,
           slug: String(opts.endpoint),
           actionType: "failure",
