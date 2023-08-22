@@ -70,14 +70,14 @@ type InOut<
   TRuntime extends AnyRuntime = "web",
   TErrorShape extends Json = { message: string },
 > = {
-    (input: FileRouterInputConfig) => UploadBuilder<{
-      _input: UnsetMarker;
-      _metadata: UnsetMarker;
-      _runtime: TRuntime;
-      _errorShape: TErrorShape;
-    }>;
-    router: <T extends FileRouter>(router: T) => T;
-}
+  (input: FileRouterInputConfig): UploadBuilder<{
+    _input: UnsetMarker;
+    _metadata: UnsetMarker;
+    _runtime: TRuntime;
+    _errorShape: TErrorShape;
+  }>;
+  router: <T extends FileRouter>(router: T) => T;
+};
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {
   errorFormatter: (err: UploadThingError) => TErrorShape;
@@ -87,12 +87,13 @@ export function createBuilder<
   TRuntime extends AnyRuntime = "web",
   TErrorShape extends Json = { message: string },
 >(opts?: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
-  return (input: FileRouterInputConfig) => {
+  const handler = (input: FileRouterInputConfig) => {
     return internalCreateBuilder<TRuntime, TErrorShape>({
       routerConfig: input,
       ...opts,
     });
   };
+
   return new Proxy(handler, {
     get(target, prop) {
       if (prop === "router") {
@@ -102,5 +103,5 @@ export function createBuilder<
       }
       return target[prop as keyof typeof handler];
     },
-  }) as InOut<TRuntime>;
+  }) as InOut<TRuntime, TErrorShape>;
 }
