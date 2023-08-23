@@ -46,13 +46,13 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
     };
     className?: string;
     config?:
-    | {
-      mode?: "auto" | "manual";
-    }
-    | {
-      mode?: "threshold";
-      threshold?: number;
-    };
+      | {
+          mode?: "auto" | "manual";
+        }
+      | {
+          mode?: "threshold";
+          threshold?: number;
+        };
   };
 
 export function UploadDropzone<TRouter extends FileRouter>(
