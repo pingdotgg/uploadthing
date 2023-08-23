@@ -7,7 +7,11 @@ export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
     ? Object.values(config).map((v) => v.maxFileCount)
     : [];
 
-  return { fileTypes, multiple: maxFileCount.some((v) => v && v > 1) };
+  return {
+    fileTypes,
+    multiple: maxFileCount.some((v) => v && v > 1),
+    maxFileCount: Math.max(...maxFileCount),
+  };
 };
 
 export const capitalizeStart = (str: string) => {
