@@ -19,6 +19,10 @@ export const OurUploadButton = () => (
       // Do something with the error.
       alert(`ERROR! ${error.message}`);
     }}
+    onUploadBegin={(name) => {
+      // Do something once upload begins
+      console.log("Uploading: ", name);
+    }}
   />
 );
 ```
@@ -33,6 +37,7 @@ export const OurUploadButton = () => (
 | onClientUploadComplete | function | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
 | onUploadError          | function | No                      |                 | callback function when upload fails                                                 |
 | onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
+| onUploadBegin          | function | No                      | Added in `v5.4` | callback function for upload begin                                                  |
 
 ## UploadDropzone
 
@@ -52,6 +57,10 @@ export const OurUploadDropzone = () => (
     onUploadError={(error: Error) => {
       alert(`ERROR! ${error.message}`);
     }}
+    onUploadBegin={(name) => {
+      // Do something once upload begins
+      console.log("Uploading: ", name);
+    }}
   />
 );
 ```
@@ -66,6 +75,7 @@ export const OurUploadDropzone = () => (
 | onClientUploadComplete | function | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
 | onUploadError          | function | No                      |                 | callback function when upload fails                                                 |
 | onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
+| onUploadBegin          | function | No                      | Added in `v5.4` | callback function for upload begin                                                  |
 
 ## generateReactHelpers
 
@@ -116,6 +126,9 @@ export function MultiUploader() {
     onUploadError: () => {
       alert("error occurred while uploading");
     },
+    onUploadBegin: () => {
+      alert("upload has begun");
+    },
   });
 
   return (
@@ -143,17 +156,19 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     onClientUploadComplete: ({fileKey: string, fileUrl: string}[]) => void
     onUploadError: (error: Error) => void
     onUploadProgress: (progress: number) => void
+    onUploadBegin: (fileName: string) => void
   },
 );
 ```
 
 - `endpoint`: The name of the route you want this button to upload to
 
-| Options                | Type     | Type            | Description                                                                       |
-| :--------------------- | :------- | :-------------- | :-------------------------------------------------------------------------------- |
-| onClientUploadComplete | function |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
-| onUploadError          | function |                 | callback function when upload fails                                               |
-| onUploadProgress       | function | Added in `v5.1` | callback function for upload progress                                             |
+| Option                 | Type     | Required | Notes           | Description                                                                       |
+| :--------------------- | :------- | :------- | :-------------- | --------------------------------------------------------------------------------- |
+| onClientUploadComplete | function | No       |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed |
+| onUploadError          | function | No       |                 | callback function when upload fails                                               |
+| onUploadProgress       | function | No       | Added in `v5.1` | callback function for upload progress                                             |
+| onUploadBegin          | function | No       | Added in `v5.4` | callback function for upload begin                                                |
 
 ### Returns
 

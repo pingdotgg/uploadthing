@@ -13,6 +13,7 @@ function fetchWithProgress(
     body?: string | FormData;
   } = {},
   onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
+  onUploadBegin?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
 ) {
   return new Promise<XMLHttpRequest>((res, rej) => {
     const xhr = new XMLHttpRequest();
@@ -28,6 +29,7 @@ function fetchWithProgress(
 
     xhr.onerror = rej;
     if (xhr.upload && onProgress) xhr.upload.onprogress = onProgress;
+    if (xhr.upload && onUploadBegin) xhr.upload.onloadstart = onUploadBegin;
     xhr.send(opts.body);
   });
 }
@@ -48,6 +50,7 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
       file: string;
       progress: number;
     }) => void;
+    onUploadBegin?: ({ file }: { file: string }) => void;
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
@@ -179,6 +182,12 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
+      () => {
+        opts.onUploadBegin &&
+          opts.onUploadBegin({
+            file: file.name,
+          });
+      },
     );
 
     if (upload.status > 299 || upload.status < 200) {
