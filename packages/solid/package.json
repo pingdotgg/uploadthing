@@ -85,9 +85,6 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "uploadthing": "^5.0.0"
-  },
   "devDependencies": {
     "autoprefixer": "10.4.14",
     "postcss": "8.4.22",
@@ -96,11 +93,13 @@
     "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "uploadthing": "5.3.3"
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
-    "solidjs-dropzone": "^1.0.0"
+    "solidjs-dropzone": "^1.0.0",
+    "uploadthing": "^5.0.0"
   },
   "keywords": [
     "SolidJS",
