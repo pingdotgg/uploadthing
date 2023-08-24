@@ -1,4 +1,5 @@
 import type { NextApiResponse } from "next";
+import type { Response as ExpressResponse } from "express";
 
 import {
   generateUploadThingURL,
@@ -148,7 +149,11 @@ export const buildRequestHandler = <
 ) => {
   return async (input: {
     req: RequestLike;
-    res?: TRuntime extends "pages" ? NextApiResponse : undefined;
+    res?: TRuntime extends "pages"
+      ? NextApiResponse
+      : TRuntime extends "express"
+      ? ExpressResponse
+      : undefined;
   }) => {
     const { req, res } = input;
     const { router, config } = opts;

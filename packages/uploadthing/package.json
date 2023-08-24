@@ -21,6 +21,11 @@
       "import": "./dist/next-legacy.mjs",
       "types": "./dist/next-legacy.d.ts"
     },
+    "./express": {
+      "import": "./dist/express.mjs",
+      "types": "./dist/express.d.ts",
+      "require": "./dist/express.js"
+    },
     "./tw": {
       "types": "./dist/tw.d.ts",
       "import": "./dist/tw.mjs",
@@ -49,6 +54,9 @@
       ],
       "tw": [
         "dist/tw.d.ts"
+      ],
+      "express": [
+        "dist/express.d.ts"
       ]
     }
   },
@@ -66,10 +74,12 @@
     "@uploadthing/shared": "^5.2.0"
   },
   "devDependencies": {
+    "@types/express": "^4.17.17",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",
+    "express": "^4.18.2",
     "next": "13.4.4",
     "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
