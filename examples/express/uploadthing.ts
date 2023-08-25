@@ -47,8 +47,10 @@ export const uploadRouter = {
       maxFileSize: "1MB",
     },
   })
-    .middleware(() => {
-      const h = "someProperty";
+    .middleware(({ req }) => {
+      const h = req.headers["someProperty"];
+
+      if (!h) throw new Error("someProperty is required");
 
       return {
         someProperty: h,
