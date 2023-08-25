@@ -14,6 +14,7 @@ export const createExpressRouter = <TRouter extends FileRouter>(
   const requestHandler = buildRequestHandler<TRouter, "express">(opts);
   const router = ExpressRouter();
 
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   router.post("/", async (req, res) => {
     const response = await requestHandler({
       req: {
