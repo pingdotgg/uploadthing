@@ -45,14 +45,9 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
       button?: ContentField<DropzoneStyleFieldCallbackArgs>;
     };
     className?: string;
-    config?:
-      | {
-          mode?: "auto" | "manual";
-        }
-      | {
-          mode?: "threshold";
-          threshold?: number;
-        };
+    config?: {
+      mode?: "auto" | "manual";
+    };
   };
 
 export function UploadDropzone<TRouter extends FileRouter>(
@@ -103,9 +98,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
     },
   );
 
-  const { fileTypes, maxFileCount } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
-  );
+  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
@@ -117,19 +110,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
         void startUpload(acceptedFiles, input);
         return;
       }
-
-      // If mode is threshold, start upload if threshold is reached
-      if ($props.config?.mode === "threshold") {
-        // if threshold is not provided in config, using maximum file count as fallback
-        const threshold = $props.config.threshold ?? maxFileCount;
-
-        if (acceptedFiles.length >= threshold) {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(acceptedFiles, input);
-        }
-      }
     },
-    [$props, startUpload, maxFileCount],
+    [$props, startUpload],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

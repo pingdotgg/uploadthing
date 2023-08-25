@@ -10,7 +10,6 @@ export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
   return {
     fileTypes,
     multiple: maxFileCount.some((v) => v && v > 1),
-    maxFileCount: Math.max(...maxFileCount),
   };
 };
 
