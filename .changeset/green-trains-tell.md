@@ -1,5 +1,4 @@
 ---
-"@example/express": major
 "uploadthing": minor
 ---
 
