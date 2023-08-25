@@ -144,6 +144,7 @@ export function UploadButton<TRouter extends FileRouter>(
       >
         <input
           class="ut-hidden"
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
           ref={inputRef!}
           type="file"
           multiple={fileInfo().multiple}
