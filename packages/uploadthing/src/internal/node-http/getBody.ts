@@ -4,10 +4,6 @@ export type BodyResult =
   | {
       ok: true;
       data: unknown;
-      /**
-       * If the HTTP handler has already parsed the body
-       */
-      preprocessed: boolean;
     }
   | { ok: false; error: Error };
 export type NodeHTTPRequest = IncomingMessage & {
@@ -20,11 +16,27 @@ export async function getPostBody(opts: {
   const { req, maxBodySize = Infinity } = opts;
   return new Promise((resolve) => {
     if ("body" in req) {
+      const isJsonType = req.headers["content-type"] === "application/json";
+
+      if (!isJsonType) {
+        resolve({
+          ok: false,
+          error: new Error("INVALID_CONTENT_TYPE"),
+        });
+        return;
+      }
+
+      if (typeof req.body !== "object") {
+        resolve({
+          ok: false,
+          error: new Error("INVALID_BODY"),
+        });
+        return;
+      }
+
       resolve({
         ok: true,
         data: req.body,
-        // If the request headers specifies a content-type, we assume that the body has been preprocessed
-        preprocessed: req.headers["content-type"] === "application/json",
       });
       return;
     }
@@ -56,7 +68,6 @@ export async function getPostBody(opts: {
       resolve({
         ok: true,
         data: hasBody ? parsedBody : undefined,
-        preprocessed: false,
       });
     });
   });

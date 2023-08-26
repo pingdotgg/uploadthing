@@ -1,5 +1,6 @@
 packages:
   - "packages/config/*"
   - "packages/*"
-  - "examples/**"
+  - "examples/*"
+  - "examples/express/client"
   - "docs"
