@@ -126,15 +126,13 @@ export type OurFileRouter = typeof uploadRouter;
 </Callout>
 
 ```ts copy filename="src/index.ts"
-import { createExpressRouter } from "uploadthing/express";
+import * as utExpress from "uploadthing/express";
 
 import { uploadRouter } from "./uploadthing";
 
-app.use(express.json());
-
 app.use(
   "/api/uploadthing",
-  createExpressRouter({
+  utExpress.createExpressRouter({
     router: uploadRouter,
   }),
 );

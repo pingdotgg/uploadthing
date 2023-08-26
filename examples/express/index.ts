@@ -3,7 +3,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 
-import { createExpressRouter } from "uploadthing/express";
+import * as utExpress from "uploadthing/express";
 
 import { uploadRouter } from "./uploadthing";
 
@@ -13,7 +13,7 @@ app.use(cors());
 
 app.use(
   "/api/uploadthing",
-  createExpressRouter({
+  utExpress.createExpressRouter({
     router: uploadRouter,
   }),
 );
