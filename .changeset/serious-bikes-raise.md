@@ -2,4 +2,4 @@
 "uploadthing": patch
 ---
 
-feat: f.router function to define uploadThing routers
+feat: introcude `f.router` helper to define routers without the `satisfies` keyword
