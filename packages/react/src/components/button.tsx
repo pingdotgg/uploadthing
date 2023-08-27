@@ -89,6 +89,7 @@ export function UploadButton<TRouter extends FileRouter>(
         $props.onUploadProgress?.(p);
       },
       onUploadError: $props.onUploadError,
+      onUploadBegin: $props.onUploadBegin,
     },
   );
 

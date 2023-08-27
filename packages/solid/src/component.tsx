@@ -67,6 +67,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     endpoint: TEndpoint;
 
     onUploadProgress?: (progress: number) => void;
+    onUploadBegin?: (fileName: string) => void;
     onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: Error) => void;
     url?: string;
@@ -122,6 +123,7 @@ export function UploadButton<TRouter extends FileRouter>(
       $props.onUploadProgress?.(p);
     },
     onUploadError: $props.onUploadError,
+    onUploadBegin: $props.onUploadBegin,
     url: $props.url,
   });
 
@@ -193,6 +195,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
       $props.onUploadProgress?.(p);
     },
     onUploadError: $props.onUploadError,
+    onUploadBegin: $props.onUploadBegin,
     url: $props.url,
   });
 
