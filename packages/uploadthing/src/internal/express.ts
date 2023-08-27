@@ -9,7 +9,7 @@ import { buildPermissionsInfoHandler, buildRequestHandler } from "./handler";
 import { getPostBody } from "./node-http/getBody";
 import type { FileRouter, inferErrorShape } from "./types";
 
-export const createExpressRouter = <TRouter extends FileRouter>(
+export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
   const requestHandler = buildRequestHandler<TRouter, "express">(opts);

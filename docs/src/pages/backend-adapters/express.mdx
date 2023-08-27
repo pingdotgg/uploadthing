@@ -10,27 +10,9 @@ import { Callout, Steps } from "nextra-theme-docs";
 
 import { Tab, Tabs } from "nextra-theme-docs";
 
-{/* prettier-ignore-start */}
-
-<Tabs items={["npm", "yarn", "pnpm"]}>
-  <Tab>
-    ```bash copy 
-    npm install uploadthing
-    ```
-  </Tab>
-  <Tab>
-    ```bash copy 
-    yarn add uploadthing
-    ```
-  </Tab>
-  <Tab>
-    ```bash copy 
-    pnpm install uploadthing
-    ```
-  </Tab>
-</Tabs>
-
-{/* prettier-ignore-end */}
+```sh npm2yarn
+npm install uploadthing
+```
 
 ### Add env variables
 
@@ -60,8 +42,7 @@ FileRoute similar to an endpoint, it has:
 - `onUploadComplete` callback for when uploads are completed
 
 ```ts copy filename="src/uploadthing.ts"
-import { createUploadthing } from "uploadthing/express";
-import type { FileRouter } from "uploadthing/express";
+import { createUploadthing, type FileRouter } from "uploadthing/express";
 
 const f = createUploadthing();
 
@@ -126,13 +107,13 @@ export type OurFileRouter = typeof uploadRouter;
 </Callout>
 
 ```ts copy filename="src/index.ts"
-import * as utExpress from "uploadthing/express";
+import { createUploadthingExpressHandler } from "uploadthing/express";
 
 import { uploadRouter } from "./uploadthing";
 
 app.use(
   "/api/uploadthing",
-  utExpress.createExpressRouter({
+  createUploadthingExpressHandler({
     router: uploadRouter,
   }),
 );

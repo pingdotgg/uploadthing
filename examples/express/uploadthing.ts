@@ -1,7 +1,6 @@
 import * as z from "zod";
 
-import { createUploadthing } from "uploadthing/express";
-import type { FileRouter } from "uploadthing/express";
+import { createUploadthing, type FileRouter } from "uploadthing/express";
 
 const f = createUploadthing({
   errorFormatter: (err) => {

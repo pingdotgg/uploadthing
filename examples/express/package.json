@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node index.ts",
-    "debug": "ts-node-dev --inspect -- index.ts"
+    "dev": "tsx index.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +19,6 @@
   "devDependencies": {
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
-    "ts-node": "^10.9.1",
-    "ts-node-dev": "^2.0.0"
+    "tsx": "^3.12.7"
   }
 }
