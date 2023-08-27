@@ -53,8 +53,7 @@ export type OurFileRouter = typeof ourFileRouter;
 
 #### Not using TypeScript V4.9 or above?
 
-Not using `v4.9` or above, meaning you won't get access to the `satisfies`
-keyword, therefore you should be using `f.router` to define a router.
+If you're not using TypeScript 4.9 or above, you can use the `f.router` helper to define a router and get full typesafety:
 
 ```ts copy filename="src/server/uploadthing.ts"
 import { createUploadthing } from "uploadthing/next";
