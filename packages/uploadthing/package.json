@@ -5,23 +5,23 @@
   "exports": {
     "./package.json": "./package.json",
     "./client": {
-      "import": "./dist/client.mjs",
       "types": "./dist/client.d.ts",
+      "import": "./dist/client.mjs",
       "require": "./dist/client.js"
     },
     "./server": {
-      "import": "./dist/server.mjs",
       "types": "./dist/server.d.ts",
+      "import": "./dist/server.mjs",
       "require": "./dist/server.js"
     },
     "./next": {
-      "import": "./dist/next.mjs",
       "types": "./dist/next.d.ts",
+      "import": "./dist/next.mjs",
       "require": "./dist/next.js"
     },
     "./next-legacy": {
-      "import": "./dist/next-legacy.mjs",
       "types": "./dist/next-legacy.d.ts",
+      "import": "./dist/next-legacy.mjs",
       "require": "./dist/next-legacy.js"
     },
     "./tw": {
