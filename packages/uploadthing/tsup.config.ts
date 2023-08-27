@@ -14,10 +14,4 @@ export default defineConfig((opts) => [
     ],
     clean: !opts.watch,
   },
-  {
-    ...config,
-    entry: ["./src/tw.ts"],
-    clean: !opts.watch,
-    format: ["cjs", "esm"],
-  },
 ]);
