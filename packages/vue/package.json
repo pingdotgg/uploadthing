@@ -28,7 +28,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/shared": "5.2.0",
+    "@uploadthing/shared": "*",
     "@vueuse/core": "^10.2.1",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0"
@@ -40,13 +40,13 @@
     "postcss": "8.4.22",
     "tailwindcss": "^3.3.2",
     "typescript": "^5.1.6",
-    "uploadthing": "5.1.0",
+    "uploadthing": "*",
     "vite": "4.4.9",
     "vue": "3.3.4",
     "vue-tsc": "1.8.8"
   },
   "peerDependencies": {
-    "uploadthing": "5.1.0",
+    "uploadthing": "^5.1.0",
     "vue": "^3.2.47"
   }
 }

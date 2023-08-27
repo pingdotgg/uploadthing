@@ -563,7 +563,7 @@ importers:
   packages/vue:
     dependencies:
       '@uploadthing/shared':
-        specifier: 5.2.0
+        specifier: '*'
         version: link:../shared
       '@vueuse/core':
         specifier: ^10.2.1
@@ -594,8 +594,8 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 5.1.0
-        version: 5.1.0(zod@3.21.4)
+        specifier: '*'
+        version: link:../uploadthing
       vite:
         specifier: 4.4.9
         version: 4.4.9(@types/node@18.16.0)
@@ -4384,23 +4384,6 @@ packages:
       hookable: 5.5.3
       unhead: 1.3.3
       vue: 3.3.4
-    dev: true
-
-  /@uploadthing/mime-types@0.2.0:
-    resolution: {integrity: sha512-nRcdyM622+GYT9SdaJIVLknqoc8i7krItinfuBPtvmPc+UNGDJ+pMkr4AatYp88cEc4iYtPlN8flJvZ3dNtgrg==}
-    dev: true
-
-  /@uploadthing/shared@5.2.0(@uploadthing/mime-types@0.2.0)(zod@3.21.4):
-    resolution: {integrity: sha512-Mn1oYFX1XIfpU0L69wwBwOUfWbCp7ixq+8kB9aFOqmvxey8crey4gEwgPEhixfR1h42XfD7dOHKY/nOs7kkGjw==}
-    peerDependencies:
-      '@uploadthing/mime-types': ^0.2.0
-      zod: ^3.21.4
-    peerDependenciesMeta:
-      '@uploadthing/mime-types':
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.0
-      zod: 3.21.4
     dev: true
 
   /@vercel/nft@0.22.6:
@@ -14360,15 +14343,6 @@ packages:
       browserslist: 4.21.10
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@5.1.0(zod@3.21.4):
-    resolution: {integrity: sha512-adWd3D0/r25EspS1s+p2RLvSpDPLOQC+AM+mH1JomsTdEDiderjxMeo6juZUWnq96O/Dsumh97SeFJXDLWI+Qw==}
-    dependencies:
-      '@uploadthing/mime-types': 0.2.0
-      '@uploadthing/shared': 5.2.0(@uploadthing/mime-types@0.2.0)(zod@3.21.4)
-    transitivePeerDependencies:
-      - zod
-    dev: true
 
   /uqr@0.1.1:
     resolution: {integrity: sha512-e/60fup+QLBkhvaJNa8fvwBT8Kjaib3VNOW52Y/CwSnobByeyEqpVN7BVofJNZEQ/hyNisxFd1Y5OYRuwJPS3Q==}
