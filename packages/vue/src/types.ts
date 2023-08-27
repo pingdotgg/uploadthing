@@ -1,8 +1,10 @@
+import type { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
-  UploadThingError,
-} from "@uploadthing/shared";
-import type { FileRouter, inferEndpointInput, inferErrorShape, } from "uploadthing/server";
+  FileRouter,
+  inferEndpointInput,
+  inferErrorShape,
+} from "uploadthing/server";
 
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
@@ -15,6 +17,6 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? {}
     : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
+        input: inferEndpointInput<TRouter[TEndpoint]>;
+      });
 }[keyof TRouter];

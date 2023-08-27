@@ -6,9 +6,11 @@ import {
   setResponseStatus,
   useBase,
 } from "h3";
+
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
-import { defaultErrorFormatter } from "../error-formatter";
+
 import { UPLOADTHING_VERSION } from "../../constants";
+import { defaultErrorFormatter } from "../error-formatter";
 import type { RouterWithConfig } from "../handler";
 import { buildPermissionsInfoHandler, buildRequestHandler } from "../handler";
 import type { FileRouter, inferErrorShape } from "../types";

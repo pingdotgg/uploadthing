@@ -2,9 +2,14 @@ import { useFetch } from "@vueuse/core";
 import { computed, ref } from "vue";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput, inferErrorShape } from "uploadthing/server";
 import { UploadThingError } from "@uploadthing/shared";
+import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import type {
+  FileRouter,
+  inferEndpointInput,
+  inferErrorShape,
+} from "uploadthing/server";
+
 import { useEvent } from "./utils/useEvent";
 
 type EndpointMetadata = {

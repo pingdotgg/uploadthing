@@ -8,10 +8,7 @@ Learn more: [docs.uploadthing.com](https://docs.uploadthing.com)
 <script setup lang="ts">
 import type { OurFileRouter } from "server/uploadthing";
 
-import {
-  useUploadButton,
-  useUploadDropzone,
-} from "@uploadthing/vue";
+import { useUploadButton, useUploadDropzone } from "@uploadthing/vue";
 
 const UploadButton = useUploadButton<OurFileRouter>();
 const UploadDropzone = useUploadDropzone<OurFileRouter>();

@@ -89,7 +89,9 @@
     "@uploadthing/shared": "^5.2.0"
   },
   "devDependencies": {
+    "@uploadthing/eslint-config": "0.2.0",
     "autoprefixer": "10.4.14",
+    "eslint": "^8.47.0",
     "postcss": "8.4.22",
     "solid-js": "^1.7.6",
     "solidjs-dropzone": "^1.0.0",
