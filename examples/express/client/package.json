@@ -1,0 +1,29 @@
+{
+  "name": "@examples/express-client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3001",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@uploadthing/react": "*",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.8",
+    "@types/react-dom": "18.2.4",
+    "@typescript-eslint/eslint-plugin": "6.4.1",
+    "@typescript-eslint/parser": "6.4.1",
+    "@vitejs/plugin-react-swc": "3.3.2",
+    "autoprefixer": "10.4.14",
+    "postcss": "8.4.22",
+    "tailwindcss": "^3.3.2",
+    "typescript": "^5.1.6",
+    "uploadthing": "*",
+    "vite": "4.4.9"
+  }
+}

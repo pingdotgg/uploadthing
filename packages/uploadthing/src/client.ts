@@ -103,6 +103,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         files: opts.files.map((f) => f.name),
         input: opts.input,
       }),
+      // Express requires Content-Type to be explicitly set to parse body properly
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
   ).then(async (res) => {
     // check for 200 response
