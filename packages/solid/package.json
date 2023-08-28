@@ -87,7 +87,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.0"
+    "@uploadthing/shared": "^5.2.0",
+    "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
     "autoprefixer": "10.4.14",

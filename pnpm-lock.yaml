@@ -442,6 +442,9 @@ importers:
       '@uploadthing/shared':
         specifier: ^5.2.0
         version: link:../shared
+      tailwind-merge:
+        specifier: ^1.13.2
+        version: 1.13.2
     devDependencies:
       autoprefixer:
         specifier: 10.4.14
