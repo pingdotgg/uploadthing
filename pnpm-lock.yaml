@@ -435,11 +435,11 @@ importers:
         specifier: 8.4.22
         version: 8.4.22
       solid-js:
-        specifier: ^1.7.6
-        version: 1.7.6
+        specifier: ^1.7.11
+        version: 1.7.11
       solidjs-dropzone:
         specifier: ^1.0.0
-        version: 1.0.0(solid-js@1.7.6)
+        version: 1.0.0(solid-js@1.7.11)
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
@@ -448,7 +448,7 @@ importers:
         version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
       tsup-preset-solid:
         specifier: 0.1.8
-        version: 0.1.8(esbuild@0.18.20)(solid-js@1.7.6)(tsup@6.7.0)
+        version: 0.1.8(esbuild@0.18.20)(solid-js@1.7.11)(tsup@6.7.0)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -4914,7 +4914,7 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
-  /esbuild-plugin-solid@0.5.0(esbuild@0.18.20)(solid-js@1.7.6):
+  /esbuild-plugin-solid@0.5.0(esbuild@0.18.20)(solid-js@1.7.11):
     resolution: {integrity: sha512-ITK6n+0ayGFeDVUZWNMxX+vLsasEN1ILrg4pISsNOQ+mq4ljlJJiuXotInd+HE0MzwTcA9wExT1yzDE2hsqPsg==}
     peerDependencies:
       esbuild: '>=0.12'
@@ -4924,7 +4924,7 @@ packages:
       '@babel/preset-typescript': 7.21.5(@babel/core@7.22.1)
       babel-preset-solid: 1.7.4(@babel/core@7.22.1)
       esbuild: 0.18.20
-      solid-js: 1.7.6
+      solid-js: 1.7.11
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -8811,13 +8811,6 @@ packages:
       csstype: 3.1.2
       seroval: 0.5.1
 
-  /solid-js@1.7.6:
-    resolution: {integrity: sha512-DXVOTjUh/bIAhE0fIqu3ezGLyQaez7v8EOw3uPLIi87DmLjg+hsuCAgKyNIZ+o4jUetOk3ZORccvJmE1yZUk8g==}
-    dependencies:
-      csstype: 3.1.2
-      seroval: 0.5.1
-    dev: true
-
   /solid-refresh@0.5.2(solid-js@1.7.11):
     resolution: {integrity: sha512-I69HmFj0LsGRJ3n8CEMVjyQFgVtuM2bSjznu2hCnsY+i5oOxh8ioWj00nnHBv0UYD3WpE/Sq4Q3TNw2IKmKN7A==}
     peerDependencies:
@@ -8931,17 +8924,6 @@ packages:
       attr-accept: 2.2.2
       file-selector: 0.6.0
       solid-js: 1.7.11
-    dev: false
-
-  /solidjs-dropzone@1.0.0(solid-js@1.7.6):
-    resolution: {integrity: sha512-X6YEua6clo6Xp07M/LuBpPaFzQrwE7bwRHB7UQQnAHpw1micZ8EpCRs0Dd3fdSzEmyZoHXAdZohFJw4Wkk3gWg==}
-    peerDependencies:
-      solid-js: ^1.5.3
-    dependencies:
-      attr-accept: 2.2.2
-      file-selector: 0.6.0
-      solid-js: 1.7.6
-    dev: true
 
   /sort-keys@5.0.0:
     resolution: {integrity: sha512-Pdz01AvCAottHTPQGzndktFNdbRA75BgOfeT1hH+AMnJFv8lynkPi42rfeEhpx1saTEI3YNMWxfqu0sFD1G8pw==}
@@ -9394,12 +9376,12 @@ packages:
   /tslib@2.5.3:
     resolution: {integrity: sha512-mSxlJJwl3BMEQCUNnxXBU9jP4JBktcEGhURcPR6VQVlnP0FdDEsIaz0C35dXNGLyRfrATNofF0F5p2KPxQgB+w==}
 
-  /tsup-preset-solid@0.1.8(esbuild@0.18.20)(solid-js@1.7.6)(tsup@6.7.0):
+  /tsup-preset-solid@0.1.8(esbuild@0.18.20)(solid-js@1.7.11)(tsup@6.7.0):
     resolution: {integrity: sha512-V5TZFEZY9emACO3AZvKyCRzdoyjUcuMEEbTGcJnCma7OVvGnSNVoewFff9g0CaveJ8cZcC3u2tW9gMaxmPZ71A==}
     peerDependencies:
       tsup: ^6.5.0
     dependencies:
-      esbuild-plugin-solid: 0.5.0(esbuild@0.18.20)(solid-js@1.7.6)
+      esbuild-plugin-solid: 0.5.0(esbuild@0.18.20)(solid-js@1.7.11)
       tsup: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
       type-fest: 3.11.1
     transitivePeerDependencies:

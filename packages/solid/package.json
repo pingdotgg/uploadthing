@@ -91,7 +91,7 @@
   "devDependencies": {
     "autoprefixer": "10.4.14",
     "postcss": "8.4.22",
-    "solid-js": "^1.7.6",
+    "solid-js": "^1.7.11",
     "solidjs-dropzone": "^1.0.0",
     "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
