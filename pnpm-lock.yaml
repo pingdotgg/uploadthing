@@ -470,6 +470,9 @@ importers:
       uploadthing:
         specifier: 5.3.3
         version: link:../uploadthing
+      wait-on:
+        specifier: ^7.0.1
+        version: 7.0.1
 
   packages/uploadthing:
     dependencies:
