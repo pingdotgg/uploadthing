@@ -98,7 +98,8 @@
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "^5.1.6",
-    "uploadthing": "5.3.3"
+    "uploadthing": "5.3.3",
+    "wait-on": "^7.0.1"
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
