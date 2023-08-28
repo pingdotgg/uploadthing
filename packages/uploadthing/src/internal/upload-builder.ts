@@ -24,7 +24,7 @@ function internalCreateBuilder<
   _metadata: UnsetMarker;
   _runtime: TRuntime;
   _errorShape: TErrorShape;
-  _error: UnsetMarker;
+  _errorFn: UnsetMarker;
 }> {
   const _def: UploadBuilderDef<AnyParams> = {
     // Default router config
@@ -81,7 +81,7 @@ type InOut<
   _metadata: UnsetMarker;
   _runtime: TRuntime;
   _errorShape: TErrorShape;
-  _error: UnsetMarker;
+  _errorFn: UnsetMarker;
 }>;
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {

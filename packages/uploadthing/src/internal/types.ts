@@ -47,7 +47,7 @@ export interface AnyParams {
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _runtime: any;
   _errorShape: any;
-  _error: any; // used for onUploadError
+  _errorFn: any; // used for onUploadError
 }
 
 type MiddlewareFnArgs<TParams extends AnyParams> =
@@ -83,7 +83,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _metadata: TParams["_metadata"];
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
-    _error: TParams["_error"];
+    _errorFn: TParams["_errorFn"];
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
@@ -94,12 +94,12 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _metadata: TOutput;
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
-    _error: TParams["_error"];
+    _errorFn: TParams["_errorFn"];
   }>;
 
   onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
   onUploadError: (
-    fn: TParams["_error"] extends UnsetMarker
+    fn: TParams["_errorFn"] extends UnsetMarker
       ? UploadErrorFn
       : ErrorMessage<"onUploadError is already set">,
   ) => UploadBuilder<{
@@ -107,7 +107,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _metadata: TParams["_metadata"];
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
-    _error: UploadErrorFn;
+    _errorFn: UploadErrorFn;
   }>;
 }
 
