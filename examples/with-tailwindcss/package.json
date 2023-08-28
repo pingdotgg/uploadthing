@@ -1,5 +1,5 @@
 {
-  "name": "@example/appdir-minimal",
+  "name": "@example/tailwindcss",
   "private": true,
   "scripts": {
     "dev": "next dev",
