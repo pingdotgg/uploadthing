@@ -45,6 +45,9 @@ export default function Home() {
           //   },
           // }}
           className="ut-button:bg-red-400 ut-allowed-content:text-lg ut-button:ut-readying:bg-orange-300 rounded border p-3"
+          onUploadBegin={(name) => {
+            console.log("onUploadBegin: ", name);
+          }}
         />
       </div>
       <div className="flex flex-col items-center justify-center gap-4">
@@ -62,34 +65,34 @@ export default function Home() {
             alert(`ERROR! ${error.message}`);
           }}
           className="ut-label:text-lg ut-label:text-cyan-900 ut-allowed-content:text-base ut-button:bg-orange-500"
-        // Uncomment this to see custom appearance in action
-        // appearance={{
-        //   container:
-        //     "bg-gray-100 border rounded border-2 border-cyan-300 p-4",
-        //   label: "text-orange-400",
-        //   allowedContent({ ready }) {
-        //     if (ready) return "border p-2 bg-gray-400 rounded text-red-600";
+          // Uncomment this to see custom appearance in action
+          // appearance={{
+          //   container:
+          //     "bg-gray-100 border rounded border-2 border-cyan-300 p-4",
+          //   label: "text-orange-400",
+          //   allowedContent({ ready }) {
+          //     if (ready) return "border p-2 bg-gray-400 rounded text-red-600";
 
-        //     return "";
-        //   },
-        //   button: "bg-yellow-400 hover:bg-yellow-500 text-blue-400",
-        // }}
+          //     return "";
+          //   },
+          //   button: "bg-yellow-400 hover:bg-yellow-500 text-blue-400",
+          // }}
 
-        // Uncomment this to see custom content in action
-        // content={{
-        //   label({ ready }) {
-        //     return `${
-        //       !ready
-        //         ? "We are waiting for answer from heaven"
-        //         : "Heaven have answered. Start bringing the goods"
-        //     }`;
-        //   },
-        //   allowedContent({ ready }) {
-        //     if (ready) return "Depictions of the divine only, please";
+          // Uncomment this to see custom content in action
+          // content={{
+          //   label({ ready }) {
+          //     return `${
+          //       !ready
+          //         ? "We are waiting for answer from heaven"
+          //         : "Heaven have answered. Start bringing the goods"
+          //     }`;
+          //   },
+          //   allowedContent({ ready }) {
+          //     if (ready) return "Depictions of the divine only, please";
 
-        //     return "";
-        //   },
-        // }}
+          //     return "";
+          //   },
+          // }}
         />
       </div>
     </main>

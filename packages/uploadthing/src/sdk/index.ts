@@ -146,6 +146,7 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
 
   const res = await fetch(generateUploadThingURL("/api/deleteFile"), {
     method: "POST",
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": getApiKeyOrThrow(),
@@ -180,6 +181,7 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
 
   const res = await fetch(generateUploadThingURL("/api/getFileUrl"), {
     method: "POST",
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": getApiKeyOrThrow(),
@@ -208,6 +210,7 @@ export const listFiles = async () => {
   // TODO: Implement filtering and pagination
   const res = await fetch(generateUploadThingURL("/api/listFiles"), {
     method: "POST",
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": getApiKeyOrThrow(),
@@ -257,6 +260,7 @@ export const renameFile = async (updates: Rename | Rename[]) => {
 
   const res = await fetch(generateUploadThingURL("/api/renameFile"), {
     method: "POST",
+    cache: "no-store",
     headers: {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": getApiKeyOrThrow(),

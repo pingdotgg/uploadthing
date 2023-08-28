@@ -72,10 +72,10 @@ export const { GET, POST } = createNextRouteHandler({
 
 ### Creating The UploadThing Components (optional)
 
-Generating components lets you pass your generic `FileRouter` once and then
-have typesafe components everywhere, instead of having to pass the generic
-everytime you mount a component, but you can also import the components
-individually from `@uploadthing/react`.
+Generating components lets you pass your generic `FileRouter` once and then have
+typesafe components everywhere, instead of having to pass the generic everytime
+you mount a component, but you can also import the components individually from
+`@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";
@@ -91,7 +91,7 @@ export const { UploadButton, UploadDropzone, Uploader } =
 The `@uploadthing/react` package includes an "UploadButton" component that you
 can simply drop into your app, and start uploading files immediately.
 
-```tsx copy filename="app/example-uploader.tsx"
+```tsx copy filename="app/example-uploader/page.tsx"
 "use client";
 
 // You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine

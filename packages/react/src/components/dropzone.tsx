@@ -57,17 +57,17 @@ export function UploadDropzone<TRouter extends FileRouter>(
   const $props = props as unknown as UploadDropzoneProps<TRouter> & {
     // props not exposed on public type
     // Allow to set internal state for testing
-    __internal_state?: "readying" | "ready" | "uploading",
+    __internal_state?: "readying" | "ready" | "uploading";
     // Allow to set upload progress for testing
-    __internal_upload_progress?: number,
+    __internal_upload_progress?: number;
     // Allow to set ready explicitly and independently of internal state
-    __internal_ready?: boolean,
+    __internal_ready?: boolean;
     // Allow to show the button even if no files were added
-    __internal_show_button?: boolean,
+    __internal_show_button?: boolean;
     // Allow to disable the button
-    __internal_button_disabled?: boolean,
+    __internal_button_disabled?: boolean;
     // Allow to disable the dropzone
-    __internal_dropzone_disabled?: boolean,
+    __internal_dropzone_disabled?: boolean;
   };
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
@@ -76,8 +76,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
     setFiles(acceptedFiles);
   }, []);
 
-  const [uploadProgressState, setUploadProgress] = useState($props.__internal_upload_progress ?? 0);
-  const uploadProgress = $props.__internal_upload_progress ?? uploadProgressState;
+  const [uploadProgressState, setUploadProgress] = useState(
+    $props.__internal_upload_progress ?? 0,
+  );
+  const uploadProgress =
+    $props.__internal_upload_progress ?? uploadProgressState;
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
@@ -90,7 +93,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
         setUploadProgress(p);
         $props.onUploadProgress?.(p);
       },
-      onUploadError: $props.onUploadError
+      onUploadError: $props.onUploadError,
+      onUploadBegin: $props.onUploadBegin,
     },
   );
 
@@ -99,10 +103,12 @@ export function UploadDropzone<TRouter extends FileRouter>(
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: $props.__internal_dropzone_disabled
+    disabled: $props.__internal_dropzone_disabled,
   });
 
-  const ready = $props.__internal_ready ?? ($props.__internal_state === "ready" || fileTypes.length > 0);
+  const ready =
+    $props.__internal_ready ??
+    ($props.__internal_state === "ready" || fileTypes.length > 0);
 
   const onUploadClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -206,7 +212,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
           className={twMerge(
             classNames(
               "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-              state === 'uploading'
+              state === "uploading"
                 ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`
                 : "bg-blue-600",
             ),
@@ -219,10 +225,10 @@ export function UploadDropzone<TRouter extends FileRouter>(
           onClick={onUploadClick}
           data-ut-element="button"
           data-state={state}
-          disabled={$props.__internal_button_disabled ?? state === 'uploading'}
+          disabled={$props.__internal_button_disabled ?? state === "uploading"}
         >
           {contentFieldToContent($props.content?.button, styleFieldArg) ??
-            (state === 'uploading' ? (
+            (state === "uploading" ? (
               <Spinner />
             ) : (
               `Upload ${files.length} file${files.length === 1 ? "" : "s"}`

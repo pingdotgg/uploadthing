@@ -4,7 +4,7 @@ const { execSync } = require("child_process");
 const config = {
   sourcemap: true,
   dts: true,
-  format: ["esm"],
+  format: ["esm", "cjs"],
   async onSuccess() {
     // emit dts and sourcemaps to enable jump to definition
     execSync("pnpm tsc --project tsconfig.sourcemap.json");
