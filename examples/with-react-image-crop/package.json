@@ -1,0 +1,37 @@
+{
+  "name": "@example/react-image-crop",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "clean": "git clean -xdf .next node_modules",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uploadthing/react": "5.3.0",
+    "next": "13.4.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-image-crop": "^10.1.5",
+    "uploadthing": "5.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "18.16.0",
+    "@types/react": "18.2.8",
+    "@types/react-dom": "18.2.4",
+    "@uploadthing/eslint-config": "0.2.0",
+    "@uploadthing/tsconfig": "0.1.0",
+    "eslint": "^8.47.0",
+    "typescript": "^5.1.6"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base",
+      "@uploadthing/eslint-config/nextjs",
+      "@uploadthing/eslint-config/react"
+    ]
+  }
+}
