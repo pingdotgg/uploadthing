@@ -1,12 +1,10 @@
-import type { VoidComponent } from "solid-js";
-
 import {
   UploadButton,
   UploadDropzone,
   useUploadThing,
 } from "~/utils/uploadthing";
 
-const Home: VoidComponent = () => {
+export default function Home() {
   const { startUpload } = useUploadThing("videoAndImage", {
     onClientUploadComplete: () => {
       alert("Upload Completed");
@@ -51,6 +49,4 @@ const Home: VoidComponent = () => {
       />
     </main>
   );
-};
-
-export default Home;
+}
