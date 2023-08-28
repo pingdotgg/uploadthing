@@ -7,11 +7,13 @@
     "./styles.css": "./dist/index.css",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
     "./hooks": {
       "types": "./dist/hooks.d.ts",
-      "import": "./dist/hooks.mjs"
+      "import": "./dist/hooks.mjs",
+      "require": "./dist/hooks.js"
     }
   },
   "files": [
