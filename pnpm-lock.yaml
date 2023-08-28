@@ -224,9 +224,6 @@ importers:
       attr-accept:
         specifier: ^2.2.2
         version: 2.2.2
-      file-selector:
-        specifier: ^0.6.0
-        version: 0.6.0
       solid-js:
         specifier: ^1.7.11
         version: 1.7.11
