@@ -1,8 +1,18 @@
 import type { VoidComponent } from "solid-js";
 
-import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
+import {
+  UploadButton,
+  UploadDropzone,
+  useUploadThing,
+} from "~/utils/uploadthing";
 
 const Home: VoidComponent = () => {
+  const { startUpload } = useUploadThing("videoAndImage", {
+    onClientUploadComplete: () => {
+      alert("Upload Completed");
+    },
+  });
+
   return (
     <main>
       <UploadButton
@@ -25,6 +35,18 @@ const Home: VoidComponent = () => {
         }}
         onUploadBegin={() => {
           console.log("upload begin");
+        }}
+      />
+      <input
+        type="file"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          // Do something with files
+
+          // Then start the upload
+          await startUpload([file]);
         }}
       />
     </main>

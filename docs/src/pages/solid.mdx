@@ -249,8 +249,7 @@ export default function Home() {
 
 #### Uploader
 
-The `@uploadthing/solid` package includes an "Uploader" component that you can
-simply drop into your app, and start uploading files immediately.
+A combination of the `UploadButton` and `UploadDropzone` components.
 
 ```tsx copy
 // Or import from your typed, generated components
@@ -274,4 +273,60 @@ export default function Home() {
 }
 ```
 
-#### Advanced usage: `useUploadThing`
+## Advanced usage: `useUploadThing`
+
+For advanced use cases, the premade components might not be flexible enough to
+suit your needs. In that case, you can use the `useUploadThing` hook to build
+your own components with a custom upload flow:
+
+<Steps>
+
+### Create the hook
+
+First, generate a typed hook using the `generateSolidHelpers` function from
+`@uploadthing/solid`:
+
+```tsx copy filename="src/utils/uploadthing.ts"
+import { generateSolidHelpers } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const { useUploadThing } = generateSolidHelpers<OurFileRouter>();
+```
+
+### Use the hook
+
+Then, use the hook in your component. By using the hook, you have full control
+of when and how to upload files.
+
+```tsx copy filename="src/routes/index.tsx"
+import { useUploadThing } from "~/utils/uploadthing";
+
+export default function Home() {
+  const { startUpload } = useUploadThing("profileImage", {
+    onClientUploadComplete: () => {
+      alert("Upload Completed");
+    },
+  });
+
+  return (
+    <main>
+      <input
+        type="file"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          // Do something with files
+          const compressed = await compress(file);
+
+          // Then start the upload of the compressed file
+          await startUpload([compressed]);
+        }}
+      />
+    </main>
+  );
+}
+```
+
+</Steps>
