@@ -252,9 +252,6 @@ importers:
       eslint-plugin-solid:
         specifier: ^0.13.0
         version: 0.13.0(eslint@8.47.0)(typescript@5.1.6)
-      postcss:
-        specifier: ^8.4.26
-        version: 8.4.28
       solid-start-node:
         specifier: ^0.3.4
         version: 0.3.4(solid-start@0.3.4)(vite@4.4.9)

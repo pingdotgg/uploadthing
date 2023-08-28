@@ -24,7 +24,6 @@
     "@uploadthing/eslint-config": "0.2.0",
     "eslint": "^8.47.0",
     "eslint-plugin-solid": "^0.13.0",
-    "postcss": "^8.4.26",
     "solid-start-node": "^0.3.4",
     "typescript": "^5.1.6",
     "vite": "^4.4.9"
