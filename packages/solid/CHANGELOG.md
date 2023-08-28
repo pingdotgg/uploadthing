@@ -1,5 +1,20 @@
 # @uploadthing/solid
 
+## 5.2.0
+
+### Minor Changes
+
+- [#264](https://github.com/pingdotgg/uploadthing/pull/264)
+  [`0ee8b2b`](https://github.com/pingdotgg/uploadthing/commit/0ee8b2b8f77f7b0e5d0d6fa4896adefe11d03929)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat(react;solid):
+  onUploadBegin prop
+
+### Patch Changes
+
+- Updated dependencies
+  [[`86d72be`](https://github.com/pingdotgg/uploadthing/commit/86d72be25c794aadcfe55a08095b487a782e2dc8)]:
+  - @uploadthing/shared@5.2.1
+
 ## 5.1.2
 
 ### Patch Changes
