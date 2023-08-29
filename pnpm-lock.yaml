@@ -154,9 +154,6 @@ importers:
       '@astrojs/react':
         specifier: ^2.3.2
         version: 2.3.2(@types/react-dom@18.2.7)(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)
-      '@astrojs/tailwind':
-        specifier: ^4.0.0
-        version: 4.0.0(astro@2.10.14)(tailwindcss@3.3.2)
       '@uploadthing/react':
         specifier: '*'
         version: link:../../packages/react
@@ -169,15 +166,9 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
-      tailwindcss:
-        specifier: ^3.3.2
-        version: 3.3.2
       uploadthing:
         specifier: '*'
         version: link:../../packages/uploadthing
-      zod:
-        specifier: ^3.21.4
-        version: 3.21.4
     devDependencies:
       '@types/react':
         specifier: 18.2.21
@@ -665,21 +656,6 @@ packages:
       ultrahtml: 1.4.0
     transitivePeerDependencies:
       - supports-color
-    dev: false
-
-  /@astrojs/tailwind@4.0.0(astro@2.10.14)(tailwindcss@3.3.2):
-    resolution: {integrity: sha512-HmCAXFFes7MUBt5ihdfH1goa8QyGkHejIpz6Z4XBKK9VNYY9G2E3brCn8+pNn5zAOzcwl3FYcuH2AiOa/NGoMQ==}
-    peerDependencies:
-      astro: ^2.6.5
-      tailwindcss: ^3.0.24
-    dependencies:
-      astro: 2.10.14(@types/node@18.16.0)
-      autoprefixer: 10.4.14(postcss@8.4.28)
-      postcss: 8.4.28
-      postcss-load-config: 4.0.1(postcss@8.4.28)
-      tailwindcss: 3.3.2
-    transitivePeerDependencies:
-      - ts-node
     dev: false
 
   /@astrojs/telemetry@2.1.1:
@@ -4064,22 +4040,6 @@ packages:
       picocolors: 1.0.0
       postcss: 8.4.22
       postcss-value-parser: 4.2.0
-
-  /autoprefixer@10.4.14(postcss@8.4.28):
-    resolution: {integrity: sha512-FQzyfOsTlwVzjHxKEqRIAdJx9niO6VCBCoEwax/VLSoQF29ggECcPuBqUMZ+u8jCZOPSy8b8/8KnuFbp0SaFZQ==}
-    engines: {node: ^10 || ^12 || >=14}
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.1.0
-    dependencies:
-      browserslist: 4.21.10
-      caniuse-lite: 1.0.30001524
-      fraction.js: 4.2.0
-      normalize-range: 0.1.2
-      picocolors: 1.0.0
-      postcss: 8.4.28
-      postcss-value-parser: 4.2.0
-    dev: false
 
   /available-typed-arrays@1.0.5:
     resolution: {integrity: sha512-DMD0KiN46eipeziST1LPP/STfDU0sufISXmjSgvVsoU2tqxctQeASejWcfNtxYKqETM1UxQ8sp2OrSBWpHY6sw==}
@@ -8593,23 +8553,6 @@ packages:
       lilconfig: 2.1.0
       postcss: 8.4.24
       yaml: 2.3.1
-
-  /postcss-load-config@4.0.1(postcss@8.4.28):
-    resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
-    engines: {node: '>= 14'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.1.0
-      postcss: 8.4.28
-      yaml: 2.3.1
-    dev: false
 
   /postcss-nested@6.0.1(postcss@8.4.24):
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
