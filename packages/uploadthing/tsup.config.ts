@@ -10,6 +10,7 @@ export default defineConfig((opts) => ({
     "./src/next.ts",
     "./src/next-legacy.ts",
     "./src/tw.ts",
+    "./src/astro.ts",
   ],
   clean: !opts.watch,
 }));

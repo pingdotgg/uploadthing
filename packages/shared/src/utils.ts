@@ -105,6 +105,15 @@ export function getTypeFromFileName(
 }
 
 export function generateUploadThingURL(path: `/${string}`) {
+  // Checking if environment using import.meta instead of process.env
+  // @ts-expect-error - this is fine
+  if (import.meta?.env) {
+    // @ts-expect-error - this is fine
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const host = import.meta.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
+    return `${host}${path}`;
+  }
+
   const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
   return `${host}${path}`;
 }
