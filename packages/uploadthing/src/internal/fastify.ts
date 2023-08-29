@@ -39,7 +39,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
         response,
       ) as inferErrorShape<TRouter>;
 
-      res
+      void res
         .status(getStatusCodeFromError(response))
         .headers({
           "x-uploadthing-version": UPLOADTHING_VERSION,
@@ -50,7 +50,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
 
     if (response.status !== 200) {
       // We messed up - this should never happen
-      res
+      void res
         .status(500)
         .headers({
           "x-uploadthing-version": UPLOADTHING_VERSION,
@@ -58,7 +58,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
         .send("An unknown error occured");
     }
 
-    res
+    void res
       .status(response.status)
       .headers({
         "x-uploadthing-version": UPLOADTHING_VERSION,
@@ -69,7 +69,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const GET: RouteHandlerMethod = (_, res) => {
-    res
+    void res
       .status(200)
       .headers({
         "x-uploadthing-version": UPLOADTHING_VERSION,
