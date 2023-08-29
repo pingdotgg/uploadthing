@@ -2,6 +2,9 @@
   "name": "@uploadthing/vue",
   "version": "5.1.0",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "exports": {
     "./package.json": "./package.json",
     "./style.css": "./dist/style.css",
