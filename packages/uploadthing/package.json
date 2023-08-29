@@ -28,6 +28,11 @@
       "types": "./dist/tw.d.ts",
       "import": "./dist/tw.mjs",
       "require": "./dist/tw.js"
+    },
+    "./astro": {
+      "types": "./dist/astro.d.ts",
+      "import": "./dist/astro.mjs",
+      "require": "./dist/astro.js"
     }
   },
   "files": [
@@ -52,6 +57,9 @@
       ],
       "tw": [
         "dist/tw.d.ts"
+      ],
+      "astro": [
+        "dist/astro.d.ts"
       ]
     }
   },
@@ -72,6 +80,7 @@
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
+    "astro": "^2.10.14",
     "eslint": "^8.47.0",
     "next": "13.4.4",
     "tailwindcss": "^3.3.2",
