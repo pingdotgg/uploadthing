@@ -2,6 +2,7 @@
 import type { IncomingHttpHeaders } from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type {
   FileRouterInputConfig,
@@ -25,8 +26,11 @@ export type MaybePromise<TType> = TType | Promise<TType>;
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 
+// Omitting body because it's not used and is represented
+// by different types in different implementations
+// Anyway, we use json() instead to get the body of the request
 export type RequestLike = Overwrite<
-  WithRequired<Partial<Request>, "json">,
+  Omit<WithRequired<Partial<Request>, "json">, "body">,
   {
     headers: Headers | IncomingHttpHeaders;
   }
@@ -41,7 +45,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web";
+export type AnyRuntime = "app" | "pages" | "web" | "fastify";
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -54,6 +58,8 @@ type MiddlewareFnArgs<TParams extends AnyParams> =
     ? { req: Request; res?: never; input: TParams["_input"] }
     : TParams["_runtime"] extends "app"
     ? { req: NextRequest; res?: never; input: TParams["_input"] }
+    : TParams["_runtime"] extends "fastify"
+    ? { req: FastifyRequest; res: FastifyReply; input: TParams["_input"] }
     : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
 
 type MiddlewareFn<
