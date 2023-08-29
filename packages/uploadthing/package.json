@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "5.3.3",
+  "version": "5.4.0",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -65,8 +65,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/mime-types": "^0.2.0",
-    "@uploadthing/shared": "^5.2.0"
+    "@uploadthing/mime-types": "^0.2.1",
+    "@uploadthing/shared": "^5.2.1"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
