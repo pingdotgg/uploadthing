@@ -13,12 +13,5 @@ const handlers = createServerHandler({
   },
 });
 
-export const get: APIRoute = async ({ request }) => {
-  const response = await handlers.GET({ request });
-  return response;
-};
-
-export const post: APIRoute = async ({ request }) => {
-  const response = await handlers.POST({ request });
-  return response;
-};
+export const get: APIRoute = async ({ request }) => handlers.GET({ request });
+export const post: APIRoute = async ({ request }) => handlers.POST({ request });
