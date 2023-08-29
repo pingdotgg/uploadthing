@@ -78,10 +78,11 @@ jobs:
               \`\`\`
 
               or, if you're using React:
-                \`\`\`sh
-                pnpm add uploadthing@${version} @uploadthing/react@${version}
-                \`\`\`
-                `,
+              
+              \`\`\`sh
+              pnpm add uploadthing@${version} @uploadthing/react@${version}
+              \`\`\`
+              `,
             })
 
             // Remove the label
