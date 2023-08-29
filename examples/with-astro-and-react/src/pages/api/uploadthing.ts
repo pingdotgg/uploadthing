@@ -1,16 +1,11 @@
-import { createAstroRouteHandler } from 'uploadthing/astro'
-import { uploadRouter } from '../../uploadthing'
+import { createAstroRouteHandler } from "uploadthing/astro";
 
-const {
-    get,
-    post
-} = createAstroRouteHandler({
-    router: uploadRouter
+import { uploadRouter } from "../../uploadthing";
+
+const { get, post } = createAstroRouteHandler({
+  router: uploadRouter,
 });
 
-export {
-    get,
-    post
-}
+export { get, post };
 
 export const prerender = false;

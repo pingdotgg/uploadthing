@@ -1,7 +1,5 @@
-import { withUt } from 'uploadthing/tw'
+import { withUt } from "uploadthing/tw";
 
 export default withUt({
-    content: [
-        "src/**/*.{astro,tsx}",
-    ]
-})
+  content: ["src/**/*.{astro,tsx}"],
+});

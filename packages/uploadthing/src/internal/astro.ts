@@ -1,4 +1,5 @@
-import type { APIRoute } from 'astro'
+import type { APIRoute } from "astro";
+
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
@@ -12,17 +13,17 @@ export const createAstroRouteHandler = <TRouter extends FileRouter>(
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "web">(opts);
 
-  const post: APIRoute = async ({
-    request: req,
-  }) => {
+  const post: APIRoute = async ({ request: req }) => {
     // Astro stores env vars in import.meta.env,
     // but library code expects them to be in process.env
     // @ts-expect-error - this is fine
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    process.env.UPLOADTHING_APP_ID = import.meta.env.UPLOADTHING_APP_ID ?? process.env.UPLOADTHING_APP_ID
+    process.env.UPLOADTHING_APP_ID =
+      import.meta.env.UPLOADTHING_APP_ID ?? process.env.UPLOADTHING_APP_ID;
     // @ts-expect-error - this is fine
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-    process.env.UPLOADTHING_SECRET = import.meta.env.UPLOADTHING_SECRET ?? process.env.UPLOADTHING_SECRET
+    process.env.UPLOADTHING_SECRET =
+      import.meta.env.UPLOADTHING_SECRET ?? process.env.UPLOADTHING_SECRET;
 
     const response = await requestHandler({ req });
     const errorFormatter =
