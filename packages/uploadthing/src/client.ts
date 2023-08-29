@@ -44,7 +44,9 @@ const createAPIRequestUrl = (config: {
   slug: string;
   actionType: ActionType;
 }) => {
-  const url = new URL(config.url ?? "/api/uploadthing");
+  const url = new URL(
+    config.url ?? `${window.location.origin}/api/uploadthing`,
+  );
 
   const queryParams = new URLSearchParams(url.search);
   queryParams.set("actionType", config.actionType);
