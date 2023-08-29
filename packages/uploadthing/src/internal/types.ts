@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { IncomingHttpHeaders } from "node:http";
+import type {
+  IncomingHttpHeaders,
+  IncomingMessage,
+  ServerResponse,
+} from "node:http";
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
@@ -41,7 +45,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web";
+export type AnyRuntime = "app" | "pages" | "web" | "nuxt";
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -54,6 +58,12 @@ type MiddlewareFnArgs<TParams extends AnyParams> =
     ? { req: Request; res?: never; input: TParams["_input"] }
     : TParams["_runtime"] extends "app"
     ? { req: NextRequest; res?: never; input: TParams["_input"] }
+    : TParams["_runtime"] extends "nuxt"
+    ? {
+        req: IncomingMessage;
+        res: ServerResponse<IncomingMessage>;
+        input: TParams["_input"];
+      }
     : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
 
 type MiddlewareFn<

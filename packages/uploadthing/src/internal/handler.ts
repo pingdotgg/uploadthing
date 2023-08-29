@@ -1,3 +1,4 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
 import type { NextApiResponse } from "next";
 
 import {
@@ -148,7 +149,11 @@ export const buildRequestHandler = <
 ) => {
   return async (input: {
     req: RequestLike;
-    res?: TRuntime extends "pages" ? NextApiResponse : undefined;
+    res?: TRuntime extends "pages"
+      ? NextApiResponse
+      : TRuntime extends "nuxt"
+      ? ServerResponse<IncomingMessage>
+      : undefined;
   }) => {
     const { req, res } = input;
     const { router, config } = opts;

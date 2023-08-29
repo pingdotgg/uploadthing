@@ -1,0 +1,257 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Getting Started with Nuxt
+
+Make sure you
+[install the packages and get your env variables first](/getting-started)
+
+## Package Setup
+
+<Steps>
+
+### Install the packages
+
+import { Tab, Tabs } from "nextra-theme-docs";
+
+{/* prettier-ignore-start */}
+
+<Tabs items={["npm", "yarn", "pnpm"]}>
+  <Tab>
+    ```bash copy 
+    npm install uploadthing @uploadthing/vue
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    yarn add uploadthing @uploadthing/vue
+    ```
+  </Tab>
+  <Tab>
+    ```bash copy 
+    pnpm install uploadthing @uploadthing/vue
+    ```
+  </Tab>
+</Tabs>
+
+{/* prettier-ignore-end */}
+
+### Add env variables
+
+```bash copy
+UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+UPLOADTHING_APP_ID=... # Your app id
+```
+
+<Callout type="warning">
+  If you don't already have a uploadthing secret key, [sign up](https://uploadthing.com/sign-in) and create one from
+  the [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+</Steps>
+
+## Set Up A FileRouter
+
+<Steps>
+### Creating your first FileRoute
+
+All files uploaded to uploadthing are associated with a FileRoute. Think of a
+FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+```ts copy filename="server/uploadthing.ts"
+import { createUploadthing } from "uploadthing/nuxt";
+import type { FileRouter } from "uploadthing/nuxt";
+
+const f = createUploadthing();
+
+export const uploadRouter = {
+  videoAndImage: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(() => ({}))
+    .onUploadComplete((data) => {
+      console.log("upload completed", data);
+    }),
+
+  withMdwr: f({
+    image: {
+      maxFileCount: 2,
+      maxFileSize: "1MB",
+    },
+  })
+    .middleware((opts) => {
+      const h = opts.req.headers["someProperty"];
+
+      if (!h) throw new Error("someProperty is required");
+
+      return {
+        someProperty: h,
+        otherProperty: "hello" as const,
+      };
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      console.log("uploaded with the following metadata:", metadata);
+      console.log("files successfully uploaded:", file);
+    }),
+
+  withoutMdwr: f({
+    image: {
+      maxFileCount: 2,
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(() => {
+      return { testMetadata: "lol" };
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      console.log("uploaded with the following metadata:", metadata);
+      console.log("files successfully uploaded:", file);
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof uploadRouter;
+```
+
+### Create an API route using the FileRouter
+
+<Callout type="warning">
+  Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
+  from `/api/uploadthing` on your application.
+</Callout>
+
+```ts copy filename="server/api/uploadthing.ts"
+import { createNuxtRouteHandler } from "uploadthing/nuxt";
+
+import { uploadRouter } from "../uploadthing";
+
+export default createNuxtRouteHandler({
+  router: uploadRouter,
+});
+```
+
+### Import CSS
+
+You need to import our styles for the button and dropzone to look right
+
+```ts copy filename="nuxt.config.ts"
+export default defineNuxtConfig({
+  css: ["@uploadthing/vue/style.css"],
+});
+```
+
+### Use the FileRouter in your app
+
+The `@uploadthing/nuxt` package includes "useUploader" builder that you can use
+to generate type-safe component, drop it into app and start uploading files.
+
+```vue copy filename="components/Home.vue"
+<script setup lang="ts">
+import type { OurFileRouter } from "server/uploadthing";
+
+import { useUploader } from "@uploadthing/vue";
+
+const Uploader = useUploader<OurFileRouter>();
+</script>
+
+<template>
+  <main
+    class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
+  >
+    <Uploader :config="{ endpoint: 'videoAndImage', onClientUploadComplete={()
+    => { alert("Upload Completed"); }} onUploadError={(error: Error) => { // Do
+    something with the error. alert(`ERROR! ${error.message}`); }} }" />
+  </main>
+</template>
+```
+
+</Steps>
+
+### Use the FileRouter in your app
+
+#### Uploader
+
+The `@uploadthing/nuxt` package includes "useUploader" builder that you can use
+to generate type-safe component, drop it into app and start uploading files.
+
+```vue copy filename="components/Home.vue"
+<script setup lang="ts">
+import type { OurFileRouter } from "server/uploadthing";
+
+import { useUploader } from "@uploadthing/vue";
+
+const Uploader = useUploader<OurFileRouter>();
+</script>
+
+<template>
+  <main
+    class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
+  >
+    <ClientOnly fallback-tag="div" fallback="Loading...">
+      <Uploader :config="{ endpoint: 'videoAndImage', onClientUploadComplete={()
+      => { alert("Upload Completed"); }} onUploadError={(error: Error) => { //
+      Do something with the error. alert(`ERROR! ${error.message}`); }} }" />
+    </ClientOnly>
+  </main>
+</template>
+```
+
+#### UploadButton
+
+This is a VueJS button component that will be used to upload files when clicking
+on it.
+
+```vue copy filename="components/Home.vue"
+<script setup lang="ts">
+import type { OurFileRouter } from "server/uploadthing";
+
+import { useUploadButton } from "@uploadthing/vue";
+
+const UploadButton = useUploadButton<OurFileRouter>();
+</script>
+
+<template>
+  <main
+    class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
+  >
+    <UploadButton :config="{ endpoint: 'videoAndImage',
+    onClientUploadComplete={() => { alert("Upload Completed"); }}
+    onUploadError={(error: Error) => { // Do something with the error.
+    alert(`ERROR! ${error.message}`); }} }" />
+  </main>
+</template>
+```
+
+#### UploadDropzone
+
+This is a VueJS dropzone component that you can use to upload files. You can
+smply drag files into it.
+
+```vue copy filename="components/Home.vue"
+<script setup lang="ts">
+import type { OurFileRouter } from "server/uploadthing";
+
+import { useUploadDropzone } from "@uploadthing/vue";
+
+const UploadDropzone = useUploadDropzone<OurFileRouter>();
+</script>
+
+<template>
+  <main
+    class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
+  >
+    <UploadDropzone :config="{ endpoint: 'videoAndImage',
+    onClientUploadComplete={() => { alert("Upload Completed"); }}
+    onUploadError={(error: Error) => { // Do something with the error.
+    alert(`ERROR! ${error.message}`); }} }" />
+  </main>
+</template>
+```

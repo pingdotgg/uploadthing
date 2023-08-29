@@ -36,3 +36,6 @@ yarn-error.log*
 
 dist
 .solid
+
+.output
+.nuxt
