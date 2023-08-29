@@ -19,6 +19,7 @@ import type {
 import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
 import type { AnyRuntime, FileRouter, RequestLike } from "./types";
+import type { FastifyReply } from "fastify";
 
 const fileCountLimitHit = (
   files: string[],
@@ -148,7 +149,9 @@ export const buildRequestHandler = <
 ) => {
   return async (input: {
     req: RequestLike;
-    res?: TRuntime extends "pages" ? NextApiResponse : undefined;
+    res?: TRuntime extends "pages"
+    ? NextApiResponse
+    : TRuntime extends "fastify" ? FastifyReply : undefined;
   }) => {
     const { req, res } = input;
     const { router, config } = opts;

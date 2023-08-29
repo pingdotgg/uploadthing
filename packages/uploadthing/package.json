@@ -28,6 +28,11 @@
       "types": "./dist/tw.d.ts",
       "import": "./dist/tw.mjs",
       "require": "./dist/tw.js"
+    },
+    "./fastify": {
+      "types": "./dist/fastify.d.ts",
+      "import": "./dist/fastify.mjs",
+      "require": "./dist/fastify.js"
     }
   },
   "files": [
@@ -52,6 +57,9 @@
       ],
       "tw": [
         "dist/tw.d.ts"
+      ],
+      "fastify": [
+        "dist/fastify.d.ts"
       ]
     }
   },
@@ -73,6 +81,7 @@
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",
+    "fastify": "^4.22.0",
     "next": "13.4.4",
     "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
