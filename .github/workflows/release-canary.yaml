@@ -77,12 +77,11 @@ jobs:
               pnpm add uploadthing@${version}
               \`\`\`
 
-              Other available packages:
-              \`\`\`sh
-              ${for package in $(jq -r '.name' packages/*/package.json | grep "^@"); do
-              echo pnpm add "${package}@${version}"
-            done}
-              
+              or, if you're using React:
+                \`\`\`sh
+                pnpm add uploadthing@${version} @uploadthing/react@${version}
+                \`\`\`
+                `,
             })
 
             // Remove the label
