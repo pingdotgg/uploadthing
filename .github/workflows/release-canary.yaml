@@ -50,10 +50,11 @@ jobs:
       - name: Authenticate to npm and publish
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          pnpm publish packages/uploadthing --access public --tag canary --no-git-checks
-          pnpm publish packages/mime-types --access public --tag canary --no-git-checks
-          pnpm publish packages/shared --access public --tag canary --no-git-checks
-          pnpm publish packages/react --access public --tag canary --no-git-checks
+          for dir in packages/*/; do
+            if [ "$dir" != "packages/config/" ]; then
+              pnpm publish "$dir" --access public --tag canary --no-git-checks
+            fi
+          done
 
       - name: Create a new comment notifying of the new canary version
         uses: actions/github-script@v6
@@ -76,12 +77,12 @@ jobs:
               pnpm add uploadthing@${version}
               \`\`\`
 
-              or, if you're using React:
-
+              Other available packages:
               \`\`\`sh
-              pnpm add uploadthing@${version} @uploadthing/react@${version}
-              \`\`\`
-              `,
+              ${for package in $(jq -r '.name' packages/*/package.json | grep "^@"); do
+              echo pnpm add "${package}@${version}"
+            done}
+              
             })
 
             // Remove the label
