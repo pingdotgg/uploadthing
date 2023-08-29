@@ -104,27 +104,15 @@ export function getTypeFromFileName(
   return type;
 }
 
-/**
- * Safely accesss env vars, both for `process` and `import.meta`
- */
-export function safeAccessEnv(key: string): string | undefined {
-  try {
-    return process.env[key];
-  } catch {
-    // do nothing
-  }
-  try {
-    // @ts-expect-error - import.meta is dumb
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
-    return import.meta.env[key];
-  } catch {
-    // do nothing
-  }
-  return undefined;
-}
-
 export function generateUploadThingURL(path: `/${string}`) {
-  const host = safeAccessEnv("CUSTOM_INFRA_URL") ?? "https://uploadthing.com";
+  let host = "https://uploadthing.com";
+  try {
+    host = process.env.CUSTOM_INFRA_URL ?? host;
+  } catch (e) {
+    // @ts-expect-error - import.meta is dumb
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    host = import.meta.env.CUSTOM_INFRA_URL ?? host;
+  }
   return `${host}${path}`;
 }
 
