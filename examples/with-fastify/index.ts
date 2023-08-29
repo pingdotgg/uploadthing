@@ -1,36 +1,43 @@
-import 'dotenv/config'
-import Fastify from 'fastify'
-import { FileRouter, createUploadthing, fastifyUploadthingPlugin } from 'uploadthing/fastify'
+import "dotenv/config";
+
+import Fastify from "fastify";
+
+import {
+  createUploadthing,
+  fastifyUploadthingPlugin,
+  FileRouter,
+} from "uploadthing/fastify";
 
 const f = createUploadthing();
 
 export const fileRouter = {
-    imageUploader: f({ image: { maxFileSize: "4MB" } })
-        .onUploadComplete(async ({ file }) => {
-            console.log("file url", file.url);
-        }),
+  imageUploader: f({ image: { maxFileSize: "4MB" } }).onUploadComplete(
+    async ({ file }) => {
+      console.log("file url", file.url);
+    },
+  ),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof fileRouter;
 
 const fastify = Fastify({
-    logger: true
-})
+  logger: true,
+});
 
 fastify
-    .get('/', async () => {
-        return { hello: 'world' }
-    })
-    .register(fastifyUploadthingPlugin, {
-        router: fileRouter,
-    })
+  .get("/", async () => {
+    return { hello: "world" };
+  })
+  .register(fastifyUploadthingPlugin, {
+    router: fileRouter,
+  });
 
 const start = async () => {
-    try {
-        await fastify.listen({ port: 3001 })
-    } catch (err) {
-        fastify.log.error(err)
-        process.exit(1)
-    }
-}
-start()
+  try {
+    await fastify.listen({ port: 3001 });
+  } catch (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+};
+start();
