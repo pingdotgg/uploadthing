@@ -2,7 +2,7 @@ import type { APIRoute } from "astro";
 
 import { createServerHandler } from "uploadthing/server";
 
-import { uploadRouter } from "../../uploadthing";
+import { uploadRouter } from "../../server/uploadthing";
 
 const handlers = createServerHandler({
   router: uploadRouter,

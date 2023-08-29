@@ -1,6 +1,7 @@
 {
   "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "module": "ESNext"
   }
 }

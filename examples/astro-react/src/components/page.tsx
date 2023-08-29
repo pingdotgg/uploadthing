@@ -1,8 +1,6 @@
-import React from "react";
-
 import { UploadButton } from "@uploadthing/react";
 
-import type { OurFileRouter } from "../uploadthing";
+import type { OurFileRouter } from "../server/uploadthing";
 
 export default function Page() {
   return (
