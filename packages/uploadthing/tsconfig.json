@@ -14,7 +14,8 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
+    "module": "ES2020"
   },
   "include": ["src/**/*", "*.ts", "test/**/*"],
   "exclude": ["node_modules"]
