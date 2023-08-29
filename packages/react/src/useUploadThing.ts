@@ -83,6 +83,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        console.log(e);
         const error = e instanceof UploadThingError ? e : fatalClientError;
         opts?.onUploadError?.(
           error as UploadThingError<inferErrorShape<TRouter>>,
