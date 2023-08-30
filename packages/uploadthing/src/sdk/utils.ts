@@ -96,6 +96,18 @@ export const uploadFilesInternal = async (
       });
 
       if (!s3res.ok) {
+        // tell uploadthing infra server that upload failed
+        await fetch(generateUploadThingURL("/api/failureCallback"), {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: fields.key,
+          }),
+          headers: {
+            "x-uploadthing-api-key": opts.apiKey,
+            "x-uploadthing-version": opts.utVersion,
+          },
+        });
+
         const text = await s3res.text();
         const parsed = maybeParseResponseXML(text);
         if (parsed?.message) {
