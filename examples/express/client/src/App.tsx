@@ -13,7 +13,7 @@ export function App() {
         </span>
 
         <UploadButton
-          endpoint="withoutMdwr"
+          endpoint="videoAndImage"
           onClientUploadComplete={(res) => {
             // Do something with the response
             console.log("Files: ", res);
@@ -57,7 +57,7 @@ export function App() {
           {`...or using a dropzone:`}
         </span>
         <UploadDropzone
-          endpoint="withoutMdwr"
+          endpoint="videoAndImage"
           onClientUploadComplete={(res) => {
             // Do something with the response
             console.log("Files: ", res);
