@@ -152,8 +152,8 @@ importers:
         specifier: 5.1.0
         version: link:../../packages/vue
       uploadthing:
-        specifier: 5.3.3
-        version: 5.3.3(zod@3.21.4)
+        specifier: 5.5.0
+        version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
         version: 3.21.4
@@ -4388,23 +4388,6 @@ packages:
       unhead: 1.3.3
       vue: 3.3.4
     dev: true
-
-  /@uploadthing/mime-types@0.2.1:
-    resolution: {integrity: sha512-UDySsPbdi7wp52WG7mp5CiZwaTvokDubqhm1xhFm73Bqhp0PsGbwSSF5PdCXH4fe8Y4EKGrMyWQ4i1fF9+DVVQ==}
-    dev: false
-
-  /@uploadthing/shared@5.2.1(@uploadthing/mime-types@0.2.1)(zod@3.21.4):
-    resolution: {integrity: sha512-ISb78wuHqU5F/7TVw/3eO0VHQdSx3qdN7I4R4knHynuWFjgJjfUsc+zAAAtpo0UZlwfjIQIv/WtSwxdlNxRPGw==}
-    peerDependencies:
-      '@uploadthing/mime-types': ^0.2.0
-      zod: ^3.21.4
-    peerDependenciesMeta:
-      '@uploadthing/mime-types':
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.1
-      zod: 3.21.4
-    dev: false
 
   /@vercel/nft@0.22.6:
     resolution: {integrity: sha512-gTsFnnT4mGxodr4AUlW3/urY+8JKKB452LwF3m477RFUJTAaDmcz2JqFuInzvdybYIeyIv1sSONEJxsxnbQ5JQ==}
@@ -14363,15 +14346,6 @@ packages:
       browserslist: 4.21.10
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@5.3.3(zod@3.21.4):
-    resolution: {integrity: sha512-tYg44gX7+4Tf5UBZTS0Cjx44l6DBI4kaPdFDH2jUuxDp1CyTxUBUaFNvsA1AqhxQsxi3ZR+pGD917tn6kbPp/w==}
-    dependencies:
-      '@uploadthing/mime-types': 0.2.1
-      '@uploadthing/shared': 5.2.1(@uploadthing/mime-types@0.2.1)(zod@3.21.4)
-    transitivePeerDependencies:
-      - zod
-    dev: false
 
   /uqr@0.1.1:
     resolution: {integrity: sha512-e/60fup+QLBkhvaJNa8fvwBT8Kjaib3VNOW52Y/CwSnobByeyEqpVN7BVofJNZEQ/hyNisxFd1Y5OYRuwJPS3Q==}

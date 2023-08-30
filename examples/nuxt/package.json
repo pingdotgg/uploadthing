@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@uploadthing/vue": "5.1.0",
-    "uploadthing": "5.3.3",
+    "uploadthing": "5.5.0",
     "zod": "^3.21.4"
   }
 }
