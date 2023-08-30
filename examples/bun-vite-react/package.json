@@ -5,14 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"bunx --bun vite\" \"bun src/server.ts\"",
-    "build": "tsc && vite build && bun build src/server.ts",
+    "_build": "tsc && bunx --bun vite build && bun build src/server.ts",
     "lint": "eslint src",
     "preview": "vite preview"
   },
   "dependencies": {
     "@uploadthing/react": "5.5.0",
+    "react-dropzone": "^14.2.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "zod": "^3.21.4",
     "uploadthing": "^5.5.0"
   },
   "devDependencies": {
