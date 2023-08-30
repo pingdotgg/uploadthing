@@ -25,6 +25,10 @@ jobs:
         with:
           node-version: 18
 
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
       - name: Get pnpm store directory
         id: pnpm-cache
         run: |
