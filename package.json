@@ -8,11 +8,11 @@
     "pnpm": ">=8.6.0"
   },
   "scripts": {
-    "build": "turbo run build",
-    "build:pkgs": "turbo run build --filter \"./packages/*\"",
+    "build:all": "turbo run build",
+    "build": "turbo run build --filter \"./packages/*\"",
     "clean": "turbo run clean && git clean -xdf node_modules",
-    "dev": "turbo run dev",
-    "dev:pkgs": "turbo run dev --filter \"./packages/*\"",
+    "dev:all": "turbo run dev",
+    "dev": "turbo run dev --filter \"./packages/*\"",
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",

@@ -45,6 +45,9 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
       button?: ContentField<DropzoneStyleFieldCallbackArgs>;
     };
     className?: string;
+    config?: {
+      mode?: "auto" | "manual";
+    };
   };
 
 export function UploadDropzone<TRouter extends FileRouter>(
@@ -72,9 +75,6 @@ export function UploadDropzone<TRouter extends FileRouter>(
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const [files, setFiles] = useState<File[]>([]);
-  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
-    setFiles(acceptedFiles);
-  }, []);
 
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
@@ -99,6 +99,20 @@ export function UploadDropzone<TRouter extends FileRouter>(
   );
 
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
+
+  const onDrop = useCallback(
+    (acceptedFiles: FileWithPath[]) => {
+      setFiles(acceptedFiles);
+
+      // If mode is auto, start upload immediately
+      if ($props.config?.mode === "auto") {
+        const input = "input" in $props ? $props.input : undefined;
+        void startUpload(acceptedFiles, input);
+        return;
+      }
+    },
+    [$props, startUpload],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

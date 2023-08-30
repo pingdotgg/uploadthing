@@ -11,12 +11,13 @@
   "dependencies": {
     "@solidjs/meta": "^0.28.6",
     "@solidjs/router": "^0.8.3",
-    "@uploadthing/solid": "5.1.2",
+    "@uploadthing/solid": "5.2.0",
     "attr-accept": "^2.2.2",
     "solid-js": "^1.7.11",
     "solid-start": "^0.3.4",
     "solidjs-dropzone": "^1.0.0",
-    "uploadthing": "5.3.3",
+    "undici": "5.20.0",
+    "uploadthing": "5.5.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {

@@ -36,7 +36,7 @@ const f = createUploadthing({
 });
 
 export const uploadRouter = {
-  withInput: f.input(z.object({ foo: z.string() })),
+  withInput: f(["image"]).input(z.object({ foo: z.string() })),
   //  ...
 } satisfies FileRouter;
 ```

@@ -65,6 +65,9 @@ export default function Home() {
             alert(`ERROR! ${error.message}`);
           }}
           className="ut-label:text-lg ut-label:text-cyan-900 ut-allowed-content:text-base ut-button:bg-orange-500"
+          config={{
+            mode: "manual", // change to 'auto' to upload files immediately on selection.
+          }}
           // Uncomment this to see custom appearance in action
           // appearance={{
           //   container:

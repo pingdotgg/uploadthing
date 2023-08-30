@@ -45,7 +45,7 @@ importers:
   docs:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.3.0
+        specifier: 5.5.0
         version: link:../packages/react
       next:
         specifier: 13.4.4
@@ -63,7 +63,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.3.3
+        specifier: 5.5.0
         version: link:../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -88,7 +88,7 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 5.3.0
+        specifier: 5.5.0
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -112,7 +112,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 5.3.3
+        specifier: 5.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -152,7 +152,7 @@ importers:
         specifier: ^4.29.12
         version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
       '@uploadthing/react':
-        specifier: 5.3.0
+        specifier: 5.5.0
         version: link:../../packages/react
       autoprefixer:
         specifier: 10.4.14
@@ -176,7 +176,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
       uploadthing:
-        specifier: 5.3.3
+        specifier: 5.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -219,7 +219,7 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3(solid-js@1.7.11)
       '@uploadthing/solid':
-        specifier: 5.1.2
+        specifier: 5.2.0
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -233,8 +233,11 @@ importers:
       solidjs-dropzone:
         specifier: ^1.0.0
         version: 1.0.0(solid-js@1.7.11)
+      undici:
+        specifier: 5.20.0
+        version: 5.20.0
       uploadthing:
-        specifier: 5.3.3
+        specifier: 5.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
@@ -334,7 +337,7 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^5.2.0
+        specifier: ^5.2.1
         version: link:../shared
       tailwind-merge:
         specifier: ^1.13.2
@@ -383,7 +386,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 5.3.3
+        specifier: 5.5.0
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -401,7 +404,7 @@ importers:
         specifier: 0.2.0
         version: link:../config/eslint
       '@uploadthing/mime-types':
-        specifier: 0.2.0
+        specifier: 0.2.1
         version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 0.1.0
@@ -425,7 +428,7 @@ importers:
   packages/solid:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^5.2.0
+        specifier: ^5.2.1
         version: link:../shared
     devDependencies:
       autoprefixer:
@@ -453,16 +456,19 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 5.3.3
+        specifier: 5.5.0
         version: link:../uploadthing
+      wait-on:
+        specifier: ^7.0.1
+        version: 7.0.1
 
   packages/uploadthing:
     dependencies:
       '@uploadthing/mime-types':
-        specifier: ^0.2.0
+        specifier: ^0.2.1
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: ^5.2.0
+        specifier: ^5.2.1
         version: link:../shared
     devDependencies:
       '@uploadthing/eslint-config':
@@ -9602,6 +9608,13 @@ packages:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
+
+  /undici@5.20.0:
+    resolution: {integrity: sha512-J3j60dYzuo6Eevbawwp1sdg16k5Tf768bxYK4TUJRH7cBM4kFCbf3mOnM/0E3vQYXvpxITbbWmBafaDbxLDz3g==}
+    engines: {node: '>=12.18'}
+    dependencies:
+      busboy: 1.6.0
+    dev: false
 
   /undici@5.23.0:
     resolution: {integrity: sha512-1D7w+fvRsqlQ9GscLBwcAJinqcZGHUKjbOmXdlE/v8BvEGXjeWAax+341q44EuTcHXXnfyKNbKRq4Lg7OzhMmg==}
