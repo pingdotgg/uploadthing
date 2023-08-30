@@ -30,12 +30,10 @@ export type UseUploadthingProps<TRouter extends FileRouter> = {
   onUploadBegin?: (fileName: string) => void;
 };
 
-const fatalClientError = (e: Error) =>
-  new UploadThingError({
-    code: "INTERNAL_CLIENT_ERROR",
-    message: "Something went wrong. Please report this to UploadThing.",
-    cause: e,
-  });
+const fatalClientError = new UploadThingError({
+  code: "INTERNAL_CLIENT_ERROR",
+  message: "Something went wrong. Please report this to UploadThing.",
+});
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
@@ -85,8 +83,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
-        const error =
-          e instanceof UploadThingError ? e : fatalClientError(e as Error);
+        const error = e instanceof UploadThingError ? e : fatalClientError;
         opts?.onUploadError?.(
           error as UploadThingError<inferErrorShape<TRouter>>,
         );
