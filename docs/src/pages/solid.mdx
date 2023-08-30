@@ -31,8 +31,8 @@ UPLOADTHING_APP_ID=... # Your app id
 ### Creating your first FileRoute
 
 <Callout>
-  For more details on how to create a file router, see the [router](/router)
-  docs
+  For more details on how to create a file router, see the
+  [router](/api-reference/server#file-routes) docs
 </Callout>
 
 All files uploaded to uploadthing are associated with a FileRoute. Think of a
@@ -302,6 +302,11 @@ of when and how to upload files.
 ```tsx copy filename="src/routes/index.tsx"
 import { useUploadThing } from "~/utils/uploadthing";
 
+async function compress(file: File) {
+  // Run some compression algorithm on the file
+  return file;
+}
+
 export default function Home() {
   const { startUpload } = useUploadThing("profileImage", {
     onClientUploadComplete: () => {
@@ -317,7 +322,7 @@ export default function Home() {
           const file = e.target.files?.[0];
           if (!file) return;
 
-          // Do something with files
+          // Do something with the file before uploading
           const compressed = await compress(file);
 
           // Then start the upload of the compressed file

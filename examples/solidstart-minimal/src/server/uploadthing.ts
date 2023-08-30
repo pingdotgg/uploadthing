@@ -5,7 +5,7 @@ const f = createUploadthing();
 
 /**
  * This is your Uploadthing file router. For more information:
- * @see https://docs.uploadthing.com/router
+ * @see https://docs.uploadthing.com/api-reference/server#file-routes
  */
 
 export const uploadRouter = {
