@@ -4,11 +4,7 @@
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
-import type {
-  ActionType,
-  FileRouter,
-  inferEndpointInput,
-} from "./internal/types";
+import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 function fetchWithProgress(
   url: string,
@@ -39,21 +35,10 @@ function fetchWithProgress(
   });
 }
 
-const createAPIRequestUrl = (config: {
-  url?: string;
-  slug: string;
-  actionType: ActionType;
-}) => {
-  const url = new URL(
-    config.url ?? `${window.location.origin}/api/uploadthing`,
-  );
+const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
+  const queryParams = `?actionType=upload&slug=${config.slug}`;
 
-  const queryParams = new URLSearchParams(url.search);
-  queryParams.set("actionType", config.actionType);
-  queryParams.set("slug", config.slug);
-
-  url.search = queryParams.toString();
-  return url.toString();
+  return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
 };
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
@@ -108,10 +93,9 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
-    createAPIRequestUrl({
+    createRequestPermsUrl({
       url: config?.url,
       slug: String(opts.endpoint),
-      actionType: "upload",
     }),
     {
       method: "POST",
@@ -208,25 +192,9 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     );
 
     if (upload.status > 299 || upload.status < 200) {
-      // tell uploadthing infra server that upload failed
-      await fetch(
-        createAPIRequestUrl({
-          url: config?.url,
-          slug: String(opts.endpoint),
-          actionType: "failure",
-        }),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: fields.key,
-          }),
-        },
-      );
-
       // Attempt to parse response as XML
       const parsed = maybeParseResponseXML(upload.responseText);
 
-      // Throw an error for the client
       if (parsed?.message) {
         throw new UploadThingError({
           code: parsed.code,
