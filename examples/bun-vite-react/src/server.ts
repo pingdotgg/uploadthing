@@ -41,7 +41,7 @@ export type OurFileRouter = typeof uploadRouter;
 const server = Bun.serve({
   port: 5174,
   fetch(request) {
-    let reqPath = new URL(request.url).pathname;
+    const reqPath = new URL(request.url).pathname;
 
     if (reqPath === "/api/uploadthing") {
       const handlers = createServerHandler({

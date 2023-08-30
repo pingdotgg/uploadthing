@@ -5,7 +5,7 @@ import "@uploadthing/react/styles.css";
 
 import { UploadButton } from "@uploadthing/react";
 
-import { OurFileRouter } from "./server";
+import type { OurFileRouter } from "./server";
 
 function App() {
   return (
@@ -35,6 +35,8 @@ function App() {
   );
 }
 
+// @ts-expect-error - Bun and Vite types clashes
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
