@@ -195,11 +195,9 @@ const Uploader = useUploader<OurFileRouter>();
   <main
     class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
   >
-    <ClientOnly fallback-tag="div" fallback="Loading...">
-      <Uploader :config="{ endpoint: 'videoAndImage', onClientUploadComplete={()
-      => { alert("Upload Completed"); }} onUploadError={(error: Error) => { //
-      Do something with the error. alert(`ERROR! ${error.message}`); }} }" />
-    </ClientOnly>
+    <Uploader :config="{ endpoint: 'videoAndImage', onClientUploadComplete={()
+    => { alert("Upload Completed"); }} onUploadError={(error: Error) => { // Do
+    something with the error. alert(`ERROR! ${error.message}`); }} }" />
   </main>
 </template>
 ```
