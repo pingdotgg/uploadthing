@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 5.5.0
+
+### Minor Changes
+
+- [#301](https://github.com/pingdotgg/uploadthing/pull/301)
+  [`e0ff7be`](https://github.com/pingdotgg/uploadthing/commit/e0ff7be182fbac5d30fbf3e6b9051e0e19e34a86)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: Handle
+  failed uploads (UPL-60)
+
 ## 5.4.0
 
 ### Minor Changes
