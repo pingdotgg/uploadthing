@@ -4,7 +4,7 @@
   "type": "module",
   "packageManager": "pnpm@8.7.0",
   "engines": {
-    "node": ">=v18.17.1",
+    "node": ">=v18.16.0",
     "pnpm": ">=8.7.0"
   },
   "scripts": {
@@ -25,7 +25,7 @@
     "@changesets/cli": "^2.26.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
     "@manypkg/cli": "^0.20.0",
-    "@types/node": "18.17.1",
+    "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.2.0",
     "dotenv": "latest",
     "prettier": "^2.8.8",

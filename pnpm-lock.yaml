@@ -21,8 +21,8 @@ importers:
         specifier: ^0.20.0
         version: 0.20.0
       '@types/node':
-        specifier: 18.17.1
-        version: 18.17.1
+        specifier: 18.16.0
+        version: 18.16.0
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:packages/config/eslint
@@ -125,8 +125,8 @@ importers:
         specifier: ^7.22.1
         version: 7.22.1
       '@types/node':
-        specifier: 18.17.1
-        version: 18.17.1
+        specifier: 18.16.0
+        version: 18.16.0
       '@types/react':
         specifier: 18.2.8
         version: 18.2.8
@@ -189,8 +189,8 @@ importers:
         specifier: ^7.22.1
         version: 7.22.1
       '@types/node':
-        specifier: 18.17.1
-        version: 18.17.1
+        specifier: 18.16.0
+        version: 18.16.0
       '@types/react':
         specifier: 18.2.8
         version: 18.2.8
@@ -356,8 +356,8 @@ importers:
         version: 1.13.2
     devDependencies:
       '@types/node':
-        specifier: 18.17.1
-        version: 18.17.1
+        specifier: 18.16.0
+        version: 18.16.0
       '@types/react':
         specifier: 18.2.8
         version: 18.2.8
@@ -2798,7 +2798,6 @@ packages:
 
   /@types/node@18.16.0:
     resolution: {integrity: sha512-BsAaKhB+7X+H4GnSjGhJG9Qi8Tw+inU9nJDwmD5CgOmBLEI6ArdhikpLX7DjbjDRDTbqZzU2LSQNZg8WGPiSZQ==}
-    dev: true
 
   /@types/node@18.17.1:
     resolution: {integrity: sha512-xlR1jahfizdplZYRU59JlUx9uzF1ARa8jbhM11ccpCJya8kvos5jwdm2ZAgxSCwOl0fq21svP18EVwPBXMQudw==}
