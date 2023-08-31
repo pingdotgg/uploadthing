@@ -82,7 +82,7 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
 
-  examples/nextjs-appdir-minimal:
+  examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
         specifier: 5.5.0
@@ -113,7 +113,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
-  examples/nextjs-pagedir-minimal:
+  examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
         specifier: 5.5.0
