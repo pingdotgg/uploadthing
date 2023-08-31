@@ -20,9 +20,9 @@ export const uploadRouter = {
   })
     .middleware(({ req }) => {
       // Check some condition based on the incoming requrest
-      if (!req.headers.get("x-some-header")) {
-        throw new Error("x-some-header is required");
-      }
+      // if (!req.headers.get("x-some-header")) {
+      //   throw new Error("x-some-header is required");
+      // }
 
       // Return some metadata to be stored with the file
       return { foo: "bar" as const };
