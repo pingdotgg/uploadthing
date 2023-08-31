@@ -1,5 +1,40 @@
 # uploadthing
 
+## 5.5.0
+
+### Minor Changes
+
+- [#301](https://github.com/pingdotgg/uploadthing/pull/301)
+  [`e0ff7be`](https://github.com/pingdotgg/uploadthing/commit/e0ff7be182fbac5d30fbf3e6b9051e0e19e34a86)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: Handle
+  failed uploads (UPL-60)
+
+## 5.4.0
+
+### Minor Changes
+
+- [#264](https://github.com/pingdotgg/uploadthing/pull/264)
+  [`0ee8b2b`](https://github.com/pingdotgg/uploadthing/commit/0ee8b2b8f77f7b0e5d0d6fa4896adefe11d03929)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat(react;solid):
+  onUploadBegin prop
+
+### Patch Changes
+
+- [#281](https://github.com/pingdotgg/uploadthing/pull/281)
+  [`86d72be`](https://github.com/pingdotgg/uploadthing/commit/86d72be25c794aadcfe55a08095b487a782e2dc8)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix: added settings to
+  support cjs imports
+
+- [#278](https://github.com/pingdotgg/uploadthing/pull/278)
+  [`a218357`](https://github.com/pingdotgg/uploadthing/commit/a21835750c91df1f30cbf92429c5ea8c3fa4e8b8)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(utapi): no
+  caching on utapi functions
+
+- Updated dependencies
+  [[`86d72be`](https://github.com/pingdotgg/uploadthing/commit/86d72be25c794aadcfe55a08095b487a782e2dc8)]:
+  - @uploadthing/mime-types@0.2.1
+  - @uploadthing/shared@5.2.1
+
 ## 5.3.3
 
 ### Patch Changes

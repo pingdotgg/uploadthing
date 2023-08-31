@@ -24,6 +24,7 @@ function internalCreateBuilder<
   _metadata: UnsetMarker;
   _runtime: TRuntime;
   _errorShape: TErrorShape;
+  _errorFn: UnsetMarker;
 }> {
   const _def: UploadBuilderDef<AnyParams> = {
     // Default router config
@@ -36,6 +37,7 @@ function internalCreateBuilder<
     inputParser: { parse: () => ({}), _input: {}, _output: {} },
 
     middleware: () => ({}),
+    onUploadError: () => ({}),
 
     errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 
@@ -62,6 +64,12 @@ function internalCreateBuilder<
         resolver: userUploadComplete,
       } as Uploader<any>;
     },
+    onUploadError(userOnUploadError) {
+      return internalCreateBuilder({
+        ..._def,
+        onUploadError: userOnUploadError,
+      }) as UploadBuilder<any>;
+    },
   };
 }
 
@@ -73,6 +81,7 @@ type InOut<
   _metadata: UnsetMarker;
   _runtime: TRuntime;
   _errorShape: TErrorShape;
+  _errorFn: UnsetMarker;
 }>;
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {
