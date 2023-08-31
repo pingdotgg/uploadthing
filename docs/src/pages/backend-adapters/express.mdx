@@ -16,15 +16,17 @@ npm install uploadthing
 
 ### Add env variables
 
+<Callout>
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+
 ```bash copy
 UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
 UPLOADTHING_APP_ID=... # Your app id
 ```
 
-<Callout type="warning">
-  If you don't already have a uploadthing secret key, [sign up](https://uploadthing.com/sign-in) and create one from
-  the [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
 </Steps>
 
 ## Set Up A FileRouter
@@ -36,7 +38,7 @@ UPLOADTHING_APP_ID=... # Your app id
 All files uploaded to uploadthing are associated with a FileRoute. Following
 example is very minimalistic. To get full insight into what you can do with the
 FileRoutes, please refer to the
-[File Router API](/api-reference/server#createuploadthing).
+[File Router API](/api-reference/server#file-routes).
 
 ```ts copy filename="src/uploadthing.ts"
 import { createUploadthing, type FileRouter } from "uploadthing/express";
@@ -52,8 +54,7 @@ export const uploadRouter = {
     video: {
       maxFileSize: "16MB",
     },
-  })
-  .onUploadComplete((data) => {
+  }).onUploadComplete((data) => {
     console.log("upload completed", data);
   }),
 } satisfies FileRouter;
@@ -68,9 +69,13 @@ export type OurFileRouter = typeof uploadRouter;
 </Callout>
 
 ```ts copy filename="src/index.ts"
+import express from "express";
+
 import { createUploadthingExpressHandler } from "uploadthing/express";
 
 import { uploadRouter } from "./uploadthing";
+
+const app = express();
 
 app.use(
   "/api/uploadthing",
