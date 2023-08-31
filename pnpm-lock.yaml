@@ -146,6 +146,61 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
+  examples/minimal-solidstart:
+    dependencies:
+      '@solidjs/meta':
+        specifier: ^0.28.6
+        version: 0.28.6(solid-js@1.7.11)
+      '@solidjs/router':
+        specifier: ^0.8.3
+        version: 0.8.3(solid-js@1.7.11)
+      '@uploadthing/solid':
+        specifier: 5.2.0
+        version: link:../../packages/solid
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      solid-js:
+        specifier: ^1.7.11
+        version: 1.7.11
+      solid-start:
+        specifier: ^0.3.4
+        version: 0.3.4(@solidjs/meta@0.28.6)(@solidjs/router@0.8.3)(solid-js@1.7.11)(solid-start-node@0.3.4)(vite@4.4.9)
+      solidjs-dropzone:
+        specifier: ^1.0.0
+        version: 1.0.0(solid-js@1.7.11)
+      undici:
+        specifier: 5.20.0
+        version: 5.20.0
+      uploadthing:
+        specifier: 5.5.0
+        version: link:../../packages/uploadthing
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@types/node':
+        specifier: 18.16.0
+        version: 18.16.0
+      '@uploadthing/eslint-config':
+        specifier: 0.2.0
+        version: link:../../packages/config/eslint
+      eslint:
+        specifier: ^8.47.0
+        version: 8.47.0
+      eslint-plugin-solid:
+        specifier: ^0.13.0
+        version: 0.13.0(eslint@8.47.0)(typescript@5.1.6)
+      solid-start-node:
+        specifier: ^0.3.4
+        version: 0.3.4(solid-start@0.3.4)(vite@4.4.9)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.16.0)
+
   examples/pagedir:
     dependencies:
       '@tanstack/react-query':
@@ -209,61 +264,6 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
-
-  examples/solidstart-minimal:
-    dependencies:
-      '@solidjs/meta':
-        specifier: ^0.28.6
-        version: 0.28.6(solid-js@1.7.11)
-      '@solidjs/router':
-        specifier: ^0.8.3
-        version: 0.8.3(solid-js@1.7.11)
-      '@uploadthing/solid':
-        specifier: 5.2.0
-        version: link:../../packages/solid
-      attr-accept:
-        specifier: ^2.2.2
-        version: 2.2.2
-      solid-js:
-        specifier: ^1.7.11
-        version: 1.7.11
-      solid-start:
-        specifier: ^0.3.4
-        version: 0.3.4(@solidjs/meta@0.28.6)(@solidjs/router@0.8.3)(solid-js@1.7.11)(solid-start-node@0.3.4)(vite@4.4.9)
-      solidjs-dropzone:
-        specifier: ^1.0.0
-        version: 1.0.0(solid-js@1.7.11)
-      undici:
-        specifier: 5.20.0
-        version: 5.20.0
-      uploadthing:
-        specifier: 5.5.0
-        version: link:../../packages/uploadthing
-      zod:
-        specifier: ^3.21.4
-        version: 3.21.4
-    devDependencies:
-      '@types/node':
-        specifier: 18.16.0
-        version: 18.16.0
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
-      eslint-plugin-solid:
-        specifier: ^0.13.0
-        version: 0.13.0(eslint@8.47.0)(typescript@5.1.6)
-      solid-start-node:
-        specifier: ^0.3.4
-        version: 0.3.4(solid-start@0.3.4)(vite@4.4.9)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.16.0)
 
   packages/config/eslint:
     dependencies:
@@ -1899,14 +1899,14 @@ packages:
     resolution: {integrity: sha512-Tn1pDsjIcI+JcLKq1AVlZEr4226gpuAQTsLMorsYg9tuS/kG7nuwwJ4AB8jfQuEgb/COBwR/DqJxmoiYFu5/rQ==}
     engines: {node: '>=6.9.0'}
     dependencies:
-      '@babel/code-frame': 7.21.4
-      '@babel/generator': 7.22.3
+      '@babel/code-frame': 7.22.10
+      '@babel/generator': 7.22.10
       '@babel/helper-environment-visitor': 7.22.1
       '@babel/helper-function-name': 7.21.0
       '@babel/helper-hoist-variables': 7.18.6
       '@babel/helper-split-export-declaration': 7.18.6
-      '@babel/parser': 7.22.4
-      '@babel/types': 7.22.4
+      '@babel/parser': 7.22.11
+      '@babel/types': 7.22.11
       debug: 4.3.4
       globals: 11.12.0
     transitivePeerDependencies:
