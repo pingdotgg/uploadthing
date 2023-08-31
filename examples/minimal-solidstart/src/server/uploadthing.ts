@@ -19,7 +19,7 @@ export const uploadRouter = {
     },
   })
     .middleware(({ req }) => {
-      // Check some condition based on the incoming requrest
+      // Check some condition based on the incoming request
       req;
       //^?
       // if (!req.headers.get("x-some-header")) {
