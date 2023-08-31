@@ -26,12 +26,10 @@ export type MaybePromise<TType> = TType | Promise<TType>;
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 
-// Omitting body because it's not used and is represented
-// by different types in different implementations
-// Anyway, we use json() instead to get the body of the request
 export type RequestLike = Overwrite<
-  Omit<WithRequired<Partial<Request>, "json">, "body">,
+  WithRequired<Partial<Request>, "json">,
   {
+    body?: never; // we only use `.json`, don't need `body`
     headers: Headers | IncomingHttpHeaders;
   }
 >;
