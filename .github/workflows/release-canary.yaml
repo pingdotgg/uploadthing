@@ -50,10 +50,11 @@ jobs:
       - name: Authenticate to npm and publish
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          pnpm publish packages/uploadthing --access public --tag canary --no-git-checks
-          pnpm publish packages/mime-types --access public --tag canary --no-git-checks
-          pnpm publish packages/shared --access public --tag canary --no-git-checks
-          pnpm publish packages/react --access public --tag canary --no-git-checks
+          for dir in packages/*/; do
+            if [ "$dir" != "packages/config/" ]; then
+              pnpm publish "$dir" --access public --tag canary --no-git-checks
+            fi
+          done
 
       - name: Create a new comment notifying of the new canary version
         uses: actions/github-script@v6
@@ -62,26 +63,26 @@ jobs:
           script: |
             // Get package version
             const fs = require("fs");
-            const packageJson = JSON.parse(fs.readFileSync("./packages/uploadthing/package.json"));
-            const version = packageJson.version;
+            let text = 'A new canary is available for testing. You can install this latest build in your project with:\n\n```sh\n'
+
+            const pkgJsonPaths = fs
+              .readdirSync("packages")
+              .filter((dir) => dir !== "config")
+              .map((dir) => `packages/${dir}/package.json`);
+
+            for (const pkgJsonPath of pkgJsonPaths) {
+              const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath));
+              const version = packageJson.version;
+              text += `pnpm add ${packageJson.name}@${version}\n`
+            }
+            text += '```\n\n'
 
             // Create a comment on the PR with the new canary version
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.payload.pull_request.number,
-              body: `A new canary is available for testing. You can install this latest build in your project with:
-
-              \`\`\`sh
-              pnpm add uploadthing@${version}
-              \`\`\`
-
-              or, if you're using React:
-
-              \`\`\`sh
-              pnpm add uploadthing@${version} @uploadthing/react@${version}
-              \`\`\`
-              `,
+              body: text,
             })
 
             // Remove the label
