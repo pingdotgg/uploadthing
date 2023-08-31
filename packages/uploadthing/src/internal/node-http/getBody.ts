@@ -1,5 +1,7 @@
 import type { IncomingMessage } from "node:http";
 
+import { UploadThingError } from "@uploadthing/shared";
+
 export type BodyResult =
   | {
       ok: true;
@@ -21,7 +23,10 @@ export async function getPostBody(opts: {
       if (!isJsonType) {
         resolve({
           ok: false,
-          error: new Error("INVALID_CONTENT_TYPE"),
+          error: new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "INVALID_CONTENT_TYPE",
+          }),
         });
         return;
       }
@@ -29,7 +34,10 @@ export async function getPostBody(opts: {
       if (typeof req.body !== "object") {
         resolve({
           ok: false,
-          error: new Error("INVALID_BODY"),
+          error: new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "INVALID_BODY",
+          }),
         });
         return;
       }
@@ -48,7 +56,10 @@ export async function getPostBody(opts: {
       if (body.length > maxBodySize) {
         resolve({
           ok: false,
-          error: new Error("PAYLOAD_TOO_LARGE"),
+          error: new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "PAYLOAD_TOO_LARGE",
+          }),
         });
         req.socket.destroy();
       }
@@ -60,7 +71,10 @@ export async function getPostBody(opts: {
       } catch (e) {
         resolve({
           ok: false,
-          error: new Error("INVALID_JSON"),
+          error: new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "INVALID_JSON",
+          }),
         });
         return;
       }
