@@ -109,15 +109,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      '@uploadthing/tsconfig':
-        specifier: 0.1.0
-        version: link:../../packages/config/tsconfig
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -149,15 +140,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      '@uploadthing/tsconfig':
-        specifier: 0.1.0
-        version: link:../../packages/config/tsconfig
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -259,15 +241,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      '@uploadthing/tsconfig':
-        specifier: 0.1.0
-        version: link:../../packages/config/tsconfig
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -296,15 +269,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      '@uploadthing/tsconfig':
-        specifier: 0.1.0
-        version: link:../../packages/config/tsconfig
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -336,18 +300,9 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      '@uploadthing/tsconfig':
-        specifier: 0.1.0
-        version: link:../../packages/config/tsconfig
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.22)
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
       postcss:
         specifier: 8.4.22
         version: 8.4.22
