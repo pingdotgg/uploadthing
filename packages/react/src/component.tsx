@@ -1,3 +1,5 @@
+import type { ComponentProps } from "react";
+
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import { UploadButton } from "./components/button";
@@ -29,11 +31,23 @@ export function Uploader<TRouter extends FileRouter>(
   );
 }
 
-export function generateComponents<TRouter extends FileRouter>() {
+export function generateComponents<TRouter extends FileRouter>(initOpts?: {
+  /**
+   * The URL where you expose your UploadThing router.
+   * @default `/api/uploadthing`
+   */
+  url: string;
+}) {
   return {
-    UploadButton: UploadButton<TRouter>,
-    UploadDropzone: UploadDropzone<TRouter>,
-    Uploader: Uploader<TRouter>,
+    UploadButton: (props: ComponentProps<typeof UploadButton<TRouter>>) => (
+      <UploadButton<TRouter> {...(props as any)} url={initOpts?.url} />
+    ),
+    UploadDropzone: (props: ComponentProps<typeof UploadDropzone<TRouter>>) => (
+      <UploadDropzone<TRouter> {...(props as any)} url={initOpts?.url} />
+    ),
+    Uploader: (props: ComponentProps<typeof Uploader<TRouter>>) => (
+      <Uploader<TRouter> {...(props as any)} url={initOpts?.url} />
+    ),
   };
 }
 

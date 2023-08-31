@@ -28,6 +28,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
 
     const response = await requestHandler({
       req: Object.assign(req, {
+        url: req.url!, // TODO: Check if this is ever undefined
         json: () =>
           Promise.resolve(
             JSON.parse(

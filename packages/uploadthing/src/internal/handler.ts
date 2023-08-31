@@ -128,6 +128,9 @@ const conditionalDevServer = async (fileKey: string) => {
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
+    /**
+     * @deprecated this option is deprecated and will be removed in a future version
+     */
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
@@ -327,6 +330,9 @@ export const buildRequestHandler = <
           });
         }
 
+        const url = new URL(req.url);
+        const callbackUrl = url.origin + url.pathname;
+
         const uploadthingApiResponse = await fetch(
           generateUploadThingURL("/api/prepareUpload"),
           {
@@ -337,7 +343,7 @@ export const buildRequestHandler = <
               routeConfig: parsedConfig,
 
               metadata,
-              callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
+              callbackUrl: config?.callbackUrl ?? callbackUrl,
               callbackSlug: slug,
             }),
             headers: {

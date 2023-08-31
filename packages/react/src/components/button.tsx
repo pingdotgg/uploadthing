@@ -66,7 +66,9 @@ export function UploadButton<TRouter extends FileRouter>(
     // Allow to disable the button
     __internal_button_disabled?: boolean;
   };
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>(
+    $props.url ? { url: $props.url } : undefined,
+  );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgressState, setUploadProgress] = useState(

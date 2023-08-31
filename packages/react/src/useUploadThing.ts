@@ -18,8 +18,8 @@ type EndpointMetadata = {
   config: ExpandedRouteConfig;
 }[];
 
-const useEndpointMetadata = (endpoint: string) => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+const useEndpointMetadata = (url: string, endpoint: string) => {
+  const { data } = useFetch<EndpointMetadata>(url);
   return data?.find((x) => x.slug === endpoint);
 };
 
@@ -37,7 +37,15 @@ const fatalClientError = (e: Error) =>
     cause: e,
   });
 
-export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
+export const INTERNAL_uploadthingHookGen = <
+  TRouter extends FileRouter,
+>(initOpts?: {
+  /**
+   * The URL where you expose your UploadThing router.
+   * @default `/api/uploadthing`
+   */
+  url: string;
+}) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter>,
@@ -46,7 +54,10 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     const uploadProgress = useRef(0);
     const fileProgress = useRef<Map<string, number>>(new Map());
 
-    const permittedFileInfo = useEndpointMetadata(endpoint as string);
+    const permittedFileInfo = useEndpointMetadata(
+      initOpts?.url ?? "/api/uploadthing",
+      endpoint as string,
+    );
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -57,30 +68,35 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       const [files, input] = args;
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles({
-          files,
-          endpoint: endpoint as string,
-          input,
-          onUploadProgress: (progress) => {
-            if (!opts?.onUploadProgress) return;
-            fileProgress.current.set(progress.file, progress.progress);
-            let sum = 0;
-            fileProgress.current.forEach((p) => {
-              sum += p;
-            });
-            const averageProgress =
-              Math.floor(sum / fileProgress.current.size / 10) * 10;
-            if (averageProgress !== uploadProgress.current) {
-              opts?.onUploadProgress?.(averageProgress);
-              uploadProgress.current = averageProgress;
-            }
-          },
-          onUploadBegin({ file }) {
-            if (!opts?.onUploadBegin) return;
+        const res = await DANGEROUS__uploadFiles(
+          {
+            files,
+            endpoint: endpoint as string,
+            input,
+            onUploadProgress: (progress) => {
+              if (!opts?.onUploadProgress) return;
+              fileProgress.current.set(progress.file, progress.progress);
+              let sum = 0;
+              fileProgress.current.forEach((p) => {
+                sum += p;
+              });
+              const averageProgress =
+                Math.floor(sum / fileProgress.current.size / 10) * 10;
+              if (averageProgress !== uploadProgress.current) {
+                opts?.onUploadProgress?.(averageProgress);
+                uploadProgress.current = averageProgress;
+              }
+            },
+            onUploadBegin({ file }) {
+              if (!opts?.onUploadBegin) return;
 
-            opts.onUploadBegin(file);
+              opts.onUploadBegin(file);
+            },
           },
-        });
+          {
+            url: initOpts?.url ?? "/api/uploadthing",
+          },
+        );
 
         opts?.onClientUploadComplete?.(res);
         return res;
@@ -107,10 +123,17 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   return useUploadThing;
 };
 
-export const generateReactHelpers = <TRouter extends FileRouter>() => {
+export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
+  /**
+   * The URL where you expose your UploadThing router.
+   * @default `/api/uploadthing`
+   */
+  url: string;
+}) => {
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(initOpts),
+    uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
+      DANGEROUS__uploadFiles<TRouter>(props, { url: initOpts?.url }),
   } as const;
 };
 

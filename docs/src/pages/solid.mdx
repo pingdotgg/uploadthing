@@ -123,11 +123,6 @@ export type OurFileRouter = typeof uploadRouter;
 
 ### Create an API route using the FileRouter
 
-<Callout type="warning">
-  Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
-  from `/api/uploadthing` on your application.
-</Callout>
-
 ```ts copy filename="src/api/uploadthing.ts"
 import { createServerHandler } from "uploadthing/server";
 
@@ -135,9 +130,6 @@ import { uploadRouter } from "~/server/uploadthing";
 
 export const { GET, POST } = createServerHandler({
   router: uploadRouter,
-  config: {
-    callbackUrl: `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`,
-  },
 });
 ```
 

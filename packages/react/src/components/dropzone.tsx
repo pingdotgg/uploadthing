@@ -72,7 +72,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // Allow to disable the dropzone
     __internal_dropzone_disabled?: boolean;
   };
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>(
+    $props.url ? { url: $props.url } : undefined,
+  );
 
   const [files, setFiles] = useState<File[]>([]);
 
