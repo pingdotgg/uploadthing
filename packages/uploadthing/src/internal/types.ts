@@ -29,7 +29,7 @@ export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type RequestLike = Overwrite<
   WithRequired<Partial<Request>, "json">,
   {
-    body?: never; // we only use `.json`, don't need `body`
+    body?: any; // we only use `.json`, don't care about `body`
     headers: Headers | IncomingHttpHeaders;
   }
 >;
