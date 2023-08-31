@@ -23,10 +23,18 @@ export const uploadRouter = {
     },
   })
     .middleware(() => ({}))
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+    .onUploadError((err) => {
+      console.log("upload error", err);
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      console.log("uploaded with the following metadata:", metadata);
+      metadata;
+      // ^?
 
+      console.log("files successfully uploaded:", file);
+      file;
+      // ^?
+    }),
   withInput: f(["image"])
     .input(
       z.object({

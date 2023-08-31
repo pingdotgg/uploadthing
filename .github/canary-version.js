@@ -1,12 +1,11 @@
 import { exec } from "child_process";
 import fs from "fs";
 
-const pkgJsonPaths = [
-  "packages/uploadthing/package.json",
-  "packages/shared/package.json",
-  "packages/mime-types/package.json",
-  "packages/react/package.json",
-];
+const pkgJsonPaths = fs
+  .readdirSync("packages")
+  .filter((dir) => dir !== "config")
+  .map((dir) => `packages/${dir}/package.json`);
+
 try {
   exec("git rev-parse --short HEAD", (err, stdout) => {
     if (err) {
