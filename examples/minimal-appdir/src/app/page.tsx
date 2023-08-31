@@ -8,6 +8,9 @@ import {
 
 export default function Home() {
   const { startUpload } = useUploadThing("videoAndImage", {
+    /**
+     * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
+     */
     onClientUploadComplete: () => {
       alert("Upload Completed");
     },
@@ -16,6 +19,9 @@ export default function Home() {
   return (
     <main>
       <UploadButton
+        /**
+         * @see https://docs.uploadthing.com/api-reference/react#uploadbutton
+         */
         endpoint="videoAndImage"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
@@ -26,6 +32,9 @@ export default function Home() {
         }}
       />
       <UploadDropzone
+        /**
+         * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
+         */
         endpoint="videoAndImage"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);

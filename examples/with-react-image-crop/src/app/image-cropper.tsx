@@ -11,6 +11,9 @@ import { useUploadThing } from "~/utils/uploadthing";
 
 export function ImageCropper(props: { src?: string }) {
   const { isUploading, startUpload } = useUploadThing("proileImage", {
+    /**
+     * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
+     */
     onClientUploadComplete(res) {
       console.log("Client upload complete", res);
       const fileUrl = res?.[0]?.url;

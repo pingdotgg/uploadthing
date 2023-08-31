@@ -1,23 +1,25 @@
-import { Inter } from "next/font/google";
-
 import {
   UploadButton,
   UploadDropzone,
   useUploadThing,
 } from "~/utils/uploadthing";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export default function Home() {
   const { startUpload } = useUploadThing("videoAndImage", {
+    /**
+     * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
+     */
     onClientUploadComplete: () => {
       alert("Upload Completed");
     },
   });
 
   return (
-    <main className={inter.className}>
+    <main>
       <UploadButton
+        /**
+         * @see https://docs.uploadthing.com/api-reference/react#uploadbutton
+         */
         endpoint="videoAndImage"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
@@ -28,6 +30,9 @@ export default function Home() {
         }}
       />
       <UploadDropzone
+        /**
+         * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
+         */
         endpoint="videoAndImage"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
