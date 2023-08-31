@@ -9,5 +9,4 @@ export default defineConfig((opts) => ({
   async onSuccess() {
     // void
   },
-  format: ["cjs", "esm"],
 }));
