@@ -44,6 +44,9 @@ const createAPIRequestUrl = (config: {
   slug: string;
   actionType: ActionType;
 }) => {
+  if (config.url && !config.url.startsWith("http")) {
+    config.url = `${window.location.origin}${config.url}`;
+  }
   const url = new URL(
     config.url ?? `${window.location.origin}/api/uploadthing`,
   );

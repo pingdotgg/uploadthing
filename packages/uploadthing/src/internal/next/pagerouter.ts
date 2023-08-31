@@ -26,9 +26,12 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       return;
     }
 
+    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
+    const url = proto + "://" + req.headers.host + req.url;
+
     const response = await requestHandler({
       req: Object.assign(req, {
-        url: req.url!, // TODO: Check if this is ever undefined
+        url: url,
         json: () =>
           Promise.resolve(
             JSON.parse(
