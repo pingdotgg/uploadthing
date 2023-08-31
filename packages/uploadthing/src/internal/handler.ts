@@ -5,12 +5,10 @@ import {
   getTypeFromFileName,
   getUploadthingUrl,
   fillInputRouteConfig as parseAndExpandInputConfig,
-  pollForFileData,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
   ExpandedRouteConfig,
-  FileData,
   FileRouterInputKey,
   Json,
   UploadedFile,
@@ -65,65 +63,6 @@ const fileCountLimitHit = (
 if (process.env.NODE_ENV === "development") {
   console.log("[UT] UploadThing dev server is now running!");
 }
-
-const isValidResponse = (response: Response) => {
-  if (!response.ok) return false;
-  if (response.status >= 400) return false;
-  if (!response.headers.has("x-uploadthing-version")) return false;
-
-  return true;
-};
-
-const conditionalDevServer = async (fileKey: string) => {
-  if (process.env.NODE_ENV !== "development") return;
-
-  const fileData = await pollForFileData(
-    fileKey,
-    async (json: { fileData: FileData }) => {
-      const file = json.fileData;
-
-      let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-      if (!callbackUrl.startsWith("http"))
-        callbackUrl = "http://" + callbackUrl;
-
-      console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
-
-      const response = await fetch(callbackUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
-          file: {
-            url: `https://uploadthing.com/f/${encodeURIComponent(fileKey)}`,
-            key: fileKey,
-            name: file.fileName,
-            size: file.fileSize,
-          },
-        }),
-        headers: {
-          "uploadthing-hook": "callback",
-        },
-      });
-      if (isValidResponse(response)) {
-        console.log("[UT] Successfully simulated callback for file", fileKey);
-      } else {
-        console.error(
-          "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-          fileKey,
-        );
-      }
-      return file;
-    },
-  );
-
-  if (fileData !== null) return fileData;
-
-  console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
-  throw new UploadThingError({
-    code: "UPLOAD_FAILED",
-    message: "File took too long to upload",
-  });
-};
 
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
@@ -370,12 +309,6 @@ export const buildRequestHandler = <
         // This is when we send the response back to the user's form so they can submit the files
         const parsedResponse =
           (await uploadthingApiResponse.json()) as UploadThingResponse;
-
-        if (process.env.NODE_ENV === "development") {
-          for (const file of parsedResponse) {
-            void conditionalDevServer(file.key);
-          }
-        }
 
         return { body: parsedResponse, status: 200 };
       }

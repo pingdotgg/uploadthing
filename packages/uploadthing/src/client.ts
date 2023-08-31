@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import type { FileData } from "@uploadthing/shared";
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
@@ -246,7 +247,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       "https://uploadthing.com/f/" + encodeURIComponent(fields.key);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData(presigned.key);
+    const fileData = await pollForFileData(presigned.key);
 
     // TODO: remove `file` prefix in next major version
     const ret: UploadFileResponse = {
@@ -259,10 +260,66 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       fileUrl: genUrl,
       url: genUrl,
     };
+
+    console.log("fileData", fileData);
+
+    if (!fileData) {
+      console.log("[UT] Could not receive file data from UT");
+    } else {
+      console.log("[UT] Trying to simulate the webhook");
+
+      await conditionalDevServer(fileData.fileData, presigned.key);
+    }
+
     return ret;
   });
 
   return Promise.all(fileUploadPromises);
+};
+
+const conditionalDevServer = async (file: FileData, fileKey: string) => {
+  if (process.env.NODE_ENV !== "development") return;
+
+  let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
+  if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
+
+  console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+
+  const response = await fetch(callbackUrl, {
+    method: "POST",
+    body: JSON.stringify({
+      status: "uploaded",
+      metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
+      file: {
+        url: `https://uploadthing.com/f/${encodeURIComponent(fileKey)}`,
+        key: fileKey,
+        name: file.fileName,
+        size: file.fileSize,
+      },
+    }),
+    headers: {
+      "uploadthing-hook": "callback",
+    },
+  });
+
+  if (isValidResponse(response)) {
+    console.log("[UT] Successfully simulated callback for file", fileKey);
+  } else {
+    console.error(
+      "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
+      fileKey,
+    );
+  }
+
+  return file;
+};
+
+const isValidResponse = (response: Response) => {
+  if (!response.ok) return false;
+  if (response.status >= 400) return false;
+  if (!response.headers.has("x-uploadthing-version")) return false;
+
+  return true;
 };
 
 export const genUploader = <

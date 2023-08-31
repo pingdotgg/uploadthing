@@ -156,6 +156,8 @@ export async function pollForFileData(
     if (json.status !== "done") return null;
 
     await callback?.(json);
+
+    return json;
   });
 }
 
