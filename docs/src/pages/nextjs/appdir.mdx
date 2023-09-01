@@ -69,20 +69,26 @@ export const { GET, POST } = createNextRouteHandler({
 });
 ```
 
-### Creating The UploadThing Components (optional)
+### Creating The UploadThing Components (recommended)
 
-Generating components lets you pass your generic `FileRouter` once and then have
-typesafe components everywhere, instead of having to pass the generic everytime
-you mount a component, but you can also import the components individually from
-`@uploadthing/react`.
+Generating components lets you pass your generic `FileRouter` and `url` once and
+then have typesafe components everywhere, instead of having to pass the generic
+and url everytime you mount a component, but you can also import the components
+individually from `@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
+// The **absolute** URL to the API handler you created above
+// The below example works for Vercel deployments and local development
+const url = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}/api/uploadthing`
+  : `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`;
+
 export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+  generateComponents<OurFileRouter>({ url });
 ```
 
 ### Use the FileRouter in your app

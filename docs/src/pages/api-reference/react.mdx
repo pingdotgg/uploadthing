@@ -6,10 +6,12 @@
 import { UploadButton } from "@uploadthing/react";
 
 import { OurFileRouter } from "./api/uploadthing/core";
+import { getBaseUrl } from "./utils/getBaseUrl";
 
 export const OurUploadButton = () => (
   <UploadButton<OurFileRouter>
     endpoint="imageUploader"
+    url={getBaseUrl() + "/api/uploadthing"}
     onClientUploadComplete={(res) => {
       // Do something with the response
       console.log("Files: ", res);
@@ -29,15 +31,16 @@ export const OurUploadButton = () => (
 
 ### Configuration
 
-| Prop                   | Type     | Required                | Notes           | Description                                                                         |
-| :--------------------- | :------- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic  | Yes                     |                 | The type from the FileRouter you defined in your backend                            |
-| endpoint               | string   | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to      |
-| input                  | string   | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
-| onClientUploadComplete | function | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
-| onUploadError          | function | No                      |                 | callback function when upload fails                                                 |
-| onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
-| onUploadBegin          | function | No                      | Added in `v5.4` | callback function for upload begin                                                  |
+| Prop                   | Type     | Required                                                                                | Notes           | Description                                                                         |
+| :--------------------- | :------- | :-------------------------------------------------------------------------------------- | :-------------- | :---------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes                                                                                     |                 | The type from the FileRouter you defined in your backend                            |
+| endpoint               | string   | Yes                                                                                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to      |
+| url                    | string   | Yes, if imported from `@uploadthing/react`. No, if generated using `generateComponents` | Added in `v6.0` | The **absolute** url to where you server your uploadthing file router.              |
+| input                  | string   | If set on the fileroute                                                                 | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
+| onClientUploadComplete | function | No                                                                                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
+| onUploadError          | function | No                                                                                      |                 | callback function when upload fails                                                 |
+| onUploadProgress       | function | No                                                                                      | Added in `v5.1` | callback function for upload progress                                               |
+| onUploadBegin          | function | No                                                                                      | Added in `v5.4` | callback function for upload begin                                                  |
 
 ## UploadDropzone
 
@@ -45,10 +48,12 @@ export const OurUploadButton = () => (
 import { UploadDropzone } from "@uploadthing/react";
 
 import { OurFileRouter } from "./api/uploadthing/core";
+import { getBaseUrl } from "./utils/getBaseUrl";
 
 export const OurUploadDropzone = () => (
   <UploadDropzone<OurFileRouter>
     endpoint="withoutMdwr"
+    url={getBaseUrl() + "/api/uploadthing"}
     onClientUploadComplete={(res) => {
       // Do something with the response
       console.log("Files: ", res);
@@ -67,17 +72,18 @@ export const OurUploadDropzone = () => (
 
 ### Configuration
 
-| Prop                   | Type               | Required                | Notes           | Description                                                                             |
-| :--------------------- | :----------------- | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic            | Yes                     |                 | The type from the FileRouter you defined in your backend                                |
-| endpoint               | string             | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to          |
-| input                  | string             | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router     |
-| onClientUploadComplete | function           | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed       |
-| onUploadError          | function           | No                      |                 | callback function when upload fails                                                     |
-| onUploadProgress       | function           | No                      | Added in `v5.1` | callback function for upload progress                                                   |
-| onUploadBegin          | function           | No                      | Added in `v5.4` | callback function for upload begin                                                      |
-| config                 | object             | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                    |
-| config.mode            | 'auto' \| 'manual' | No                      | Added in `v5.4` | mode of dropzone. 'manual' is default one. 'auto' triggers upload right after selection |
+| Prop                   | Type               | Required                                                                                | Notes           | Description                                                                             |
+| :--------------------- | :----------------- | :-------------------------------------------------------------------------------------- | :-------------- | :-------------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic            | Yes                                                                                     |                 | The type from the FileRouter you defined in your backend                                |
+| endpoint               | string             | Yes                                                                                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to          |
+| url                    | string             | Yes, if imported from `@uploadthing/react`. No, if generated using `generateComponents` | Added in `v6.0` | The **absolute** url to where you server your uploadthing file router.                  |
+| input                  | string             | If set on the fileroute                                                                 | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router     |
+| onClientUploadComplete | function           | No                                                                                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed       |
+| onUploadError          | function           | No                                                                                      |                 | callback function when upload fails                                                     |
+| onUploadProgress       | function           | No                                                                                      | Added in `v5.1` | callback function for upload progress                                                   |
+| onUploadBegin          | function           | No                                                                                      | Added in `v5.4` | callback function for upload begin                                                      |
+| config                 | object             | No                                                                                      | Added in `v5.4` | object to pass additional configuration for dropzone                                    |
+| config.mode            | 'auto' \| 'manual' | No                                                                                      | Added in `v5.4` | mode of dropzone. 'manual' is default one. 'auto' triggers upload right after selection |
 
 ## generateReactHelpers
 
@@ -89,10 +95,19 @@ components. It takes your File Router as a generic
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
+import { getBaseUrl } from "~/app/utils/getBaseUrl";
 
 export const { useUploadThing, uploadFiles } =
-  generateReactHelpers<OurFileRouter>();
+  generateReactHelpers<OurFileRouter>({
+    url: getBaseUrl() + "/api/uploadthing",
+  });
 ```
+
+### Configuration
+
+| Prop | Type   | Required | Notes           | Description                                               |
+| :--- | :----- | :------- | :-------------- | :-------------------------------------------------------- |
+| url  | string | Yes      | Added in `v6.0` | The **absolute** URL to the API handler you created above |
 
 ## useUploadThing
 
