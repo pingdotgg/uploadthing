@@ -12,15 +12,15 @@ export default function Page() {
       <div>
         <h1>Image Cropper</h1>
         <p>
-          This is a simple example of using the{" "}
+          {`This is a simple example of using the `}
           <a
             href="https://www.npmjs.com/package/react-image-crop"
             target="_blank"
             rel="noreferrer"
           >
             react-image-crop
-          </a>{" "}
-          package to crop an image before uploading it.
+          </a>
+          {` package to crop an image before uploading it.`}
         </p>
       </div>
 
