@@ -1,6 +1,6 @@
-# Minimal SolidStart example for UploadThing
+# Minimal Next.js Pages Router example for UploadThing
 
-<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-solidstart">
+<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-pagedir">
   <img height="64" src="https://github.com/pingdotgg/uploadthing/assets/51714798/45907a4e-aa64-401a-afb3-b6c6df6eb71f" />
 </a>
 
@@ -15,4 +15,4 @@
 
 ## Further reference
 
-Check out the docs at: https://docs.uploadthing.com/solid
+Check out the docs at: https://docs.uploadthing.com/nextjs/pagedir
