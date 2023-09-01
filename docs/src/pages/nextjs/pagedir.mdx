@@ -71,6 +71,11 @@ export type OurFileRouter = typeof ourFileRouter;
 
 ### Create a Next.js API route using the FileRouter
 
+<Callout>
+  File path here doesn't matter, you can server this from any route. We
+  recommend serving it from `/api/uploadthing`.
+</Callout>
+
 ```ts copy filename="pages/api/uploadthing.ts"
 import { createNextPageApiHandler } from "uploadthing/next-legacy";
 
