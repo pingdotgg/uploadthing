@@ -1,57 +1,39 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-# Getting Started with SolidStart
-
-Make sure you
-[install the packages and get your env variables first](/getting-started)
-
 ## Package Setup
 
 <Steps>
 
 ### Install the packages
 
-import { Tab, Tabs } from "nextra-theme-docs";
-
-{/* prettier-ignore-start */}
-
-<Tabs items={["npm", "yarn", "pnpm"]}>
-  <Tab>
-    ```bash copy 
-    npm install uploadthing @uploadthing/solid solidjs-dropzone
-    ```
-  </Tab>
-  <Tab>
-    ```bash copy 
-    yarn add uploadthing @uploadthing/solid solidjs-dropzone
-    ```
-  </Tab>
-  <Tab>
-    ```bash copy 
-    pnpm install uploadthing @uploadthing/solid solidjs-dropzone
-    ```
-  </Tab>
-</Tabs>
-
-{/* prettier-ignore-end */}
+```bash copy npm2yarn
+npm install uploadthing @uploadthing/solid solidjs-dropzone attr-accept
+```
 
 ### Add env variables
+
+<Callout>
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
 
 ```bash copy
 UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
 UPLOADTHING_APP_ID=... # Your app id
 ```
 
-<Callout type="warning">
-  If you don't already have a uploadthing secret key, [sign up](https://uploadthing.com/sign-in) and create one from
-  the [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
 </Steps>
 
 ## Set Up A FileRouter
 
 <Steps>
 ### Creating your first FileRoute
+
+<Callout>
+  For more details on how to create a file router, see the
+  [router](/api-reference/server#file-routes) docs
+</Callout>
 
 All files uploaded to uploadthing are associated with a FileRoute. Think of a
 FileRoute similar to an endpoint, it has:
@@ -62,59 +44,30 @@ FileRoute similar to an endpoint, it has:
 - `onUploadComplete` callback for when uploads are completed
 
 ```ts copy filename="src/server/uploadthing.ts"
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 const f = createUploadthing();
 
 export const uploadRouter = {
-  videoAndImage: f({
+  profileImage: f({
     image: {
       maxFileSize: "4MB",
-      maxFileCount: 4,
-    },
-    video: {
-      maxFileSize: "16MB",
     },
   })
-    .middleware(() => ({}))
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+    .middleware(({ req }) => {
+      // Check some condition based on the incoming requrest
+      if (!req.headers.get("x-some-header")) {
+        throw new Error("x-some-header is required");
+      }
 
-  withMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "1MB",
-    },
-  })
-    .middleware((opts) => {
-      const h = opts.req.headers.get("someProperty");
-
-      if (!h) throw new Error("someProperty is required");
-
-      return {
-        someProperty: h,
-        otherProperty: "hello" as const,
-      };
+      // Return some metadata to be stored with the file
+      return { foo: "bar" as const };
     })
-    .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      console.log("files successfully uploaded:", file);
-    }),
-
-  withoutMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "16MB",
-    },
-  })
-    .middleware(() => {
-      return { testMetadata: "lol" };
-    })
-    .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      console.log("files successfully uploaded:", file);
+    .onUploadComplete(({ file, metadata }) => {
+      metadata;
+      // ^?
+      console.log("upload completed", file);
     }),
 } satisfies FileRouter;
 
@@ -123,7 +76,7 @@ export type OurFileRouter = typeof uploadRouter;
 
 ### Create an API route using the FileRouter
 
-```ts copy filename="src/api/uploadthing.ts"
+```ts copy filename="src/routes/api/uploadthing.ts"
 import { createServerHandler } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
@@ -145,10 +98,24 @@ import { generateComponents } from "@uploadthing/solid";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
+// URL is only needed for server side rendering
 const url = `http://localhost:${process.env.PORT ?? 3000}`;
 
 export const { UploadButton, UploadDropzone, Uploader } =
   generateComponents<OurFileRouter>(url);
+```
+
+### Include our stylesheet
+
+You need to import our styles for the button to look right. Import this in the
+`root.tsx` makes it available everywhere.
+
+```tsx copy filename="src/root.tsx"
+import "@uploadthing/solid/styles.css";
+
+export default function Root() {
+  ...
+}
 ```
 
 ### Use the FileRouter in your app
@@ -157,17 +124,13 @@ The `@uploadthing/solid` package includes an "Uploader" component that you can
 simply drop into your app, and start uploading files immediately.
 
 ```tsx copy filename="src/routes/index.tsx"
-import type { VoidComponent } from "solid-js";
-
 import { Uploader } from "~/utils/uploadthing";
-// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
 
-const Home: VoidComponent = () => {
+export default function Home() {
   return (
-    <main class="flex min-h-screen flex-col items-center justify-center gap-16 p-24">
+    <main>
       <Uploader
-        endpoint="withoutMdwr"
+        endpoint="profileImage"
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
@@ -176,68 +139,47 @@ const Home: VoidComponent = () => {
       />
     </main>
   );
-};
-
-export default Home;
+}
 ```
 
 </Steps>
 
 ### Use the FileRouter in your app
 
-#### Uploader
-
-The `@uploadthing/solid` package includes an "Uploader" component that you can
-simply drop into your app, and start uploading files immediately.
-
-```tsx copy
-// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
-
-import { type VoidComponent } from "solid-js";
-
-import { Uploader } from "@uploadthing/solid";
-
-import type { OurFileRouter } from "~/server/uploadthing";
-
-const Home: VoidComponent = () => {
-  return (
-    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
-      <Uploader<OurFileRouter>
-        endpoint="imageUploader"
-        // needed when server side rendering
-        url="http://localhost:3000"
-        onClientUploadComplete={() => {
-          alert("Upload Completed");
-        }}
-      />
-    </main>
-  );
-};
-
-export default Home;
-```
+UploadThing provides a few premade components that you can use to upload files
+in your app. For component customization, see [Theming](/theming), and for even
+more advanced use cases check out the
+[hook usage](#advanced-usage-useuploadthing)
 
 #### UploadButton
 
-This is a SolidJS dropzone component that will be used to upload files when
-clicking on it.
+A simple button that opens the native file picker when clicked. It lists what
+files are allowed and how many files can be uploaded of that type.
+
+{/* using React package since Nextra can't mount Solid components, but they look the same */}
+
+import { UploadButton } from "@uploadthing/react";
+
+<UploadButton
+  __internal_button_disabled
+  __internal_state="ready"
+  content={{
+    allowedContent: "Allowed content",
+    button: "Ready",
+  }}
+/>
 
 ```tsx copy
-// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
-
-import { type VoidComponent } from "solid-js";
-
+// Or import from your typed, generated components
 import { UploadButton } from "@uploadthing/solid";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-const Home: VoidComponent = () => {
+export default function Home() {
   return (
-    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+    <main>
       <UploadButton<OurFileRouter>
-        endpoint="imageUploader"
+        endpoint="profileImage"
         // needed when server side rendering
         url="http://localhost:3000"
         onClientUploadComplete={() => {
@@ -250,9 +192,7 @@ const Home: VoidComponent = () => {
       />
     </main>
   );
-};
-
-export default Home;
+}
 ```
 
 #### UploadDropzone
@@ -260,21 +200,30 @@ export default Home;
 This is a SolidJS dropzone component that you can use to upload files, you can
 drag files into it.
 
+import { UploadDropzone } from "@uploadthing/react";
+
+<UploadDropzone
+  __internal_state="ready"
+  __internal_button_disabled
+  __internal_dropzone_disabled
+  __internal_show_button
+  content={{
+    allowedContent: "Allowed content",
+    button: "Ready",
+  }}
+/>
+
 ```tsx copy
-// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/solid/styles.css";
-
-import { type VoidComponent } from "solid-js";
-
+// Or import from your typed, generated components
 import { UploadDropzone } from "@uploadthing/solid";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-const Home: VoidComponent = () => {
+export default function Home() {
   return (
-    <main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+    <main>
       <UploadDropzone<OurFileRouter>
-        endpoint="imageUploader"
+        endpoint="profileImage"
         // needed when server side rendering
         url="http://localhost:3000"
         onClientUploadComplete={() => {
@@ -287,7 +236,94 @@ const Home: VoidComponent = () => {
       />
     </main>
   );
-};
-
-export default Home;
+}
 ```
+
+#### Uploader
+
+A combination of the `UploadButton` and `UploadDropzone` components.
+
+```tsx copy
+// Or import from your typed, generated components
+import { Uploader } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export default function Home() {
+  return (
+    <main>
+      <Uploader<OurFileRouter>
+        endpoint="profileImage"
+        // needed when server side rendering
+        url="http://localhost:3000"
+        onClientUploadComplete={() => {
+          alert("Upload Completed");
+        }}
+      />
+    </main>
+  );
+}
+```
+
+## Advanced usage: `useUploadThing`
+
+For advanced use cases, the premade components might not be flexible enough to
+suit your needs. In that case, you can use the `useUploadThing` hook to build
+your own components with a custom upload flow:
+
+<Steps>
+
+### Create the hook
+
+First, generate a typed hook using the `generateSolidHelpers` function from
+`@uploadthing/solid`:
+
+```tsx copy filename="src/utils/uploadthing.ts"
+import { generateSolidHelpers } from "@uploadthing/solid";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const { useUploadThing } = generateSolidHelpers<OurFileRouter>();
+```
+
+### Use the hook
+
+Then, use the hook in your component. By using the hook, you have full control
+of when and how to upload files.
+
+```tsx copy filename="src/routes/index.tsx"
+import { useUploadThing } from "~/utils/uploadthing";
+
+async function compress(file: File) {
+  // Run some compression algorithm on the file
+  return file;
+}
+
+export default function Home() {
+  const { startUpload } = useUploadThing("profileImage", {
+    onClientUploadComplete: () => {
+      alert("Upload Completed");
+    },
+  });
+
+  return (
+    <main>
+      <input
+        type="file"
+        onChange={async (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+
+          // Do something with the file before uploading
+          const compressed = await compress(file);
+
+          // Then start the upload of the compressed file
+          await startUpload([compressed]);
+        }}
+      />
+    </main>
+  );
+}
+```
+
+</Steps>
