@@ -65,12 +65,12 @@ const allowedContentTextLabelGenerator = (
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
+    url: string;
 
     onUploadProgress?: (progress: number) => void;
     onUploadBegin?: (fileName: string) => void;
     onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: Error) => void;
-    url?: string;
     multiple?: boolean;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? // eslint-disable-next-line @typescript-eslint/ban-types
@@ -109,7 +109,9 @@ export function UploadButton<TRouter extends FileRouter>(
   const [uploadProgress, setUploadProgress] = createSignal(0);
   let inputRef: HTMLInputElement;
   const $props = props as UploadthingComponentProps<TRouter>;
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url,
+  });
   const uploadedThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
       if (inputRef) {
@@ -124,7 +126,6 @@ export function UploadButton<TRouter extends FileRouter>(
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
-    url: $props.url,
   });
 
   const fileInfo = () =>
@@ -183,7 +184,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const $props = props as UploadthingComponentProps<TRouter>;
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url,
+  });
   const uploadedThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
       setFiles([]);
@@ -196,7 +199,6 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
-    url: $props.url,
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
@@ -334,16 +336,22 @@ function Spinner() {
   );
 }
 
-export function generateComponents<TRouter extends FileRouter>(url?: string) {
+export function generateComponents<TRouter extends FileRouter>(initOpts: {
+  /**
+   * The URL where you expose your UploadThing router.
+   * @default `/api/uploadthing`
+   */
+  url: string;
+}) {
   return {
     UploadButton: (props: UploadthingComponentProps<TRouter>) => (
-      <UploadButton<TRouter> {...(props as any)} url={props.url ?? url} />
+      <UploadButton<TRouter> {...(props as any)} url={initOpts.url} />
     ),
     UploadDropzone: (props: UploadthingComponentProps<TRouter>) => (
-      <UploadDropzone<TRouter> {...(props as any)} url={props.url ?? url} />
+      <UploadDropzone<TRouter> {...(props as any)} url={initOpts.url} />
     ),
     Uploader: (props: UploadthingComponentProps<TRouter>) => (
-      <Uploader<TRouter> {...(props as any)} url={props.url ?? url} />
+      <Uploader<TRouter> {...(props as any)} url={initOpts.url} />
     ),
   };
 }

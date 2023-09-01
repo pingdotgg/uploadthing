@@ -39,7 +39,7 @@ const fatalClientError = (e: Error) =>
 
 export const INTERNAL_uploadthingHookGen = <
   TRouter extends FileRouter,
->(initOpts?: {
+>(initOpts: {
   /**
    * The URL where you expose your UploadThing router.
    * @default `/api/uploadthing`
@@ -55,7 +55,7 @@ export const INTERNAL_uploadthingHookGen = <
     const fileProgress = useRef<Map<string, number>>(new Map());
 
     const permittedFileInfo = useEndpointMetadata(
-      initOpts?.url ?? "/api/uploadthing",
+      initOpts.url,
       endpoint as string,
     );
 
@@ -94,7 +94,7 @@ export const INTERNAL_uploadthingHookGen = <
             },
           },
           {
-            url: initOpts?.url ?? "/api/uploadthing",
+            url: initOpts.url,
           },
         );
 
@@ -123,17 +123,17 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
+export const generateReactHelpers = <TRouter extends FileRouter>(initOpts: {
   /**
-   * The URL where you expose your UploadThing router.
-   * @default `/api/uploadthing`
+   * Absolute URL where you expose your UploadThing router.
+   * @example `http://localhost:3000/api/uploadthing`
    */
   url: string;
 }) => {
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(initOpts),
     uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
-      DANGEROUS__uploadFiles<TRouter>(props, { url: initOpts?.url }),
+      DANGEROUS__uploadFiles<TRouter>(props, { url: initOpts.url }),
   } as const;
 };
 

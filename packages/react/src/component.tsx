@@ -31,7 +31,7 @@ export function Uploader<TRouter extends FileRouter>(
   );
 }
 
-export function generateComponents<TRouter extends FileRouter>(initOpts?: {
+export function generateComponents<TRouter extends FileRouter>(initOpts: {
   /**
    * The URL where you expose your UploadThing router.
    * @default `/api/uploadthing`
@@ -39,15 +39,15 @@ export function generateComponents<TRouter extends FileRouter>(initOpts?: {
   url: string;
 }) {
   return {
-    UploadButton: (props: ComponentProps<typeof UploadButton<TRouter>>) => (
-      <UploadButton<TRouter> {...(props as any)} url={initOpts?.url} />
-    ),
-    UploadDropzone: (props: ComponentProps<typeof UploadDropzone<TRouter>>) => (
-      <UploadDropzone<TRouter> {...(props as any)} url={initOpts?.url} />
-    ),
-    Uploader: (props: ComponentProps<typeof Uploader<TRouter>>) => (
-      <Uploader<TRouter> {...(props as any)} url={initOpts?.url} />
-    ),
+    UploadButton: (
+      props: Omit<ComponentProps<typeof UploadButton<TRouter>>, "url">,
+    ) => <UploadButton<TRouter> {...(props as any)} url={initOpts.url} />,
+    UploadDropzone: (
+      props: Omit<ComponentProps<typeof UploadDropzone<TRouter>>, "url">,
+    ) => <UploadDropzone<TRouter> {...(props as any)} url={initOpts.url} />,
+    Uploader: (
+      props: Omit<ComponentProps<typeof Uploader<TRouter>>, "url">,
+    ) => <Uploader<TRouter> {...(props as any)} url={initOpts.url} />,
   };
 }
 

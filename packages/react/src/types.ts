@@ -9,7 +9,7 @@ import type {
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
-    url?: string;
+    url: string;
 
     onUploadProgress?: (progress: number) => void;
     onUploadBegin?: (fileName: string) => void;

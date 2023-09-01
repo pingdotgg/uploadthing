@@ -40,16 +40,15 @@ function fetchWithProgress(
 }
 
 const createAPIRequestUrl = (config: {
-  url?: string;
+  /**
+   * Absolute URL to the UploadThing API endpoint
+   * @example http://localhost:3000/api/uploadthing
+   */
+  url: string;
   slug: string;
   actionType: ActionType;
 }) => {
-  if (config.url && !config.url.startsWith("http")) {
-    config.url = `${window.location.origin}${config.url}`;
-  }
-  const url = new URL(
-    config.url ?? `${window.location.origin}/api/uploadthing`,
-  );
+  const url = new URL(config.url);
 
   const queryParams = new URLSearchParams(url.search);
   queryParams.set("actionType", config.actionType);
@@ -105,14 +104,14 @@ export type UploadFileResponse = {
 
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
-  config?: {
-    url?: string;
+  config: {
+    url: string;
   },
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
-      url: config?.url,
+      url: config.url,
       slug: String(opts.endpoint),
       actionType: "upload",
     }),
