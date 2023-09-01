@@ -344,13 +344,13 @@ export function generateComponents<TRouter extends FileRouter>(initOpts: {
   url: string;
 }) {
   return {
-    UploadButton: (props: UploadthingComponentProps<TRouter>) => (
+    UploadButton: (props: Omit<UploadthingComponentProps<TRouter>, "url">) => (
       <UploadButton<TRouter> {...(props as any)} url={initOpts.url} />
     ),
-    UploadDropzone: (props: UploadthingComponentProps<TRouter>) => (
-      <UploadDropzone<TRouter> {...(props as any)} url={initOpts.url} />
-    ),
-    Uploader: (props: UploadthingComponentProps<TRouter>) => (
+    UploadDropzone: (
+      props: Omit<UploadthingComponentProps<TRouter>, "url">,
+    ) => <UploadDropzone<TRouter> {...(props as any)} url={initOpts.url} />,
+    Uploader: (props: Omit<UploadthingComponentProps<TRouter>, "url">) => (
       <Uploader<TRouter> {...(props as any)} url={initOpts.url} />
     ),
   };
