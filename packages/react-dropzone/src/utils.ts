@@ -1,11 +1,11 @@
-import accepts from "attr-accept";
+import attrAccepts from "attr-accept";
 
 import type { AcceptProp, DropEvent, FileError } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const attrAccepts: typeof accepts =
+const accepts: typeof attrAccepts =
   // @ts-expect-error - ESM interop
-  typeof accepts === "function" ? accepts : accepts.default;
+  typeof attrAccepts === "function" ? attrAccepts : attrAccepts.default;
 
 // Error codes
 export const FILE_INVALID_TYPE = "file-invalid-type";
@@ -61,7 +61,7 @@ export const TOO_MANY_FILES_REJECTION = {
 // that MIME type will always be accepted
 export function fileAccepted(file: File, accept: string | string[]) {
   const isAcceptable =
-    file.type === "application/x-moz-file" || attrAccepts(file, accept);
+    file.type === "application/x-moz-file" || accepts(file, accept);
   return [
     isAcceptable,
     isAcceptable ? null : getInvalidTypeRejectionErr(accept),
