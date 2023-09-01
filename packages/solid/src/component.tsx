@@ -65,6 +65,10 @@ const allowedContentTextLabelGenerator = (
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
+    /**
+     * Absolute URL to the UploadThing API endpoint
+     * @example http://localhost:3000/api/uploadthing
+     */
     url: string;
 
     onUploadProgress?: (progress: number) => void;
@@ -338,8 +342,8 @@ function Spinner() {
 
 export function generateComponents<TRouter extends FileRouter>(initOpts: {
   /**
-   * The URL where you expose your UploadThing router.
-   * @default `/api/uploadthing`
+   * Absolute URL to the UploadThing API endpoint
+   * @example http://localhost:3000/api/uploadthing
    */
   url: string;
 }) {
