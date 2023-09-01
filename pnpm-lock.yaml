@@ -87,6 +87,9 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
+      '@uploadthing/react-dropzone':
+        specifier: ^0.0.1
+        version: link:../../packages/react-dropzone
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -118,6 +121,9 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
+      '@uploadthing/react-dropzone':
+        specifier: ^0.0.1
+        version: link:../../packages/react-dropzone
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -266,6 +272,9 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
+      '@uploadthing/react-dropzone':
+        specifier: ^0.0.1
+        version: link:../../packages/react-dropzone
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -391,6 +400,9 @@ importers:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../config/eslint
+      '@uploadthing/react-dropzone':
+        specifier: ^0.0.1
+        version: link:../react-dropzone
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
@@ -409,9 +421,6 @@ importers:
       react:
         specifier: 18.2.0
         version: 18.2.0
-      react-dropzone:
-        specifier: ^14.2.3
-        version: 14.2.3(react@18.2.0)
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
@@ -433,6 +442,46 @@ importers:
       zod:
         specifier: ^3.21.4
         version: 3.21.4
+
+  packages/react-dropzone:
+    dependencies:
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: ^0.6.0
+        version: 0.6.0
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@uploadthing/eslint-config':
+        specifier: 0.2.0
+        version: link:../config/eslint
+      '@uploadthing/tsconfig':
+        specifier: 0.1.0
+        version: link:../config/tsconfig
+      '@uploadthing/tsup-config':
+        specifier: 0.1.0
+        version: link:../config/tsup
+      eslint:
+        specifier: ^8.47.0
+        version: 8.47.0
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vitest:
+        specifier: ^0.30.1
+        version: 0.30.1
 
   packages/shared:
     devDependencies:
@@ -8208,6 +8257,7 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
+    dev: false
 
   /property-information@6.2.0:
     resolution: {integrity: sha512-kma4U7AFCTwpqq5twzC1YVIDXSqg6qQK6JN0smOw8fgRy1OkMi0CYSzFmsy6dnqSenamAtj0CyXMUJ1Mf6oROg==}
@@ -8259,18 +8309,6 @@ packages:
       react: 18.2.0
       scheduler: 0.23.0
 
-  /react-dropzone@14.2.3(react@18.2.0):
-    resolution: {integrity: sha512-O3om8I+PkFKbxCukfIR3QAGftYXDZfOE2N1mr/7qebQJHs7U+/RSL/9xomJNpRg9kM5h9soQSdf0Gc7OHF5Fug==}
-    engines: {node: '>= 10.13'}
-    peerDependencies:
-      react: '>= 16.8 || 18.0.0'
-    dependencies:
-      attr-accept: 2.2.2
-      file-selector: 0.6.0
-      prop-types: 15.8.1
-      react: 18.2.0
-    dev: true
-
   /react-image-crop@10.1.5(react@18.2.0):
     resolution: {integrity: sha512-BL8Rd/UHCE4O5GcYQiWDKVh5JOJb0Ic/Gde2W171v5nY7RyQzFLM1cxIzlYfESLO/lNgBVhDHuEV9RHnqALMkA==}
     peerDependencies:
@@ -8282,6 +8320,7 @@ packages:
 
   /react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+    dev: false
 
   /react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}

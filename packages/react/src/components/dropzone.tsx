@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
-import type { FileWithPath } from "react-dropzone";
-import { useDropzone } from "react-dropzone";
 import { twMerge } from "tailwind-merge";
 
+import type { FileWithPath } from "@uploadthing/react-dropzone";
+import { useDropzone } from "@uploadthing/react-dropzone";
 import { classNames, generateClientDropzoneAccept } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
