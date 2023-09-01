@@ -213,7 +213,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       // tell uploadthing infra server that upload failed
       await fetch(
         createAPIRequestUrl({
-          url: config?.url,
+          url: config.url,
           slug: String(opts.endpoint),
           actionType: "failure",
         }),
