@@ -1,5 +1,14 @@
 # uploadthing
 
+## 5.5.2
+
+### Patch Changes
+
+- [#319](https://github.com/pingdotgg/uploadthing/pull/319)
+  [`8cfdade`](https://github.com/pingdotgg/uploadthing/commit/8cfdade9fee61a636fa1c88bc9380d4ac77e91d9)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fix: use correct url in
+  client file
+
 ## 5.5.1
 
 ### Patch Changes

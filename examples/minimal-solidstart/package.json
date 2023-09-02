@@ -17,7 +17,7 @@
     "solid-start": "^0.3.4",
     "solidjs-dropzone": "^1.0.0",
     "undici": "5.20.0",
-    "uploadthing": "5.5.1",
+    "uploadthing": "5.5.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {
