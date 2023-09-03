@@ -1,5 +1,23 @@
 # uploadthing
 
+## 5.5.2
+
+### Patch Changes
+
+- [#319](https://github.com/pingdotgg/uploadthing/pull/319)
+  [`8cfdade`](https://github.com/pingdotgg/uploadthing/commit/8cfdade9fee61a636fa1c88bc9380d4ac77e91d9)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fix: use correct url in
+  client file
+
+## 5.5.1
+
+### Patch Changes
+
+- [#318](https://github.com/pingdotgg/uploadthing/pull/318)
+  [`353f6d0`](https://github.com/pingdotgg/uploadthing/commit/353f6d026fbee7480573d735d0406477dcb9e0bc)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - [fix] use correct file host
+  on internal endpoint (utfs.io instead of uploadthing.com)
+
 ## 5.5.0
 
 ### Minor Changes
