@@ -51,6 +51,10 @@ export const uploadFilesInternal = async (
     }),
   });
 
+  if (!res.ok) {
+    throw UploadThingError.fromResponse(res);
+  }
+  
   const json = (await res.json()) as
     | {
         data: {
@@ -61,9 +65,9 @@ export const uploadFilesInternal = async (
         }[];
       }
     | { error: string };
-
-  if (!res.ok || "error" in json) {
-    throw UploadThingError.fromResponse(res);
+  
+  if ("error" in json) {
+    throw UploadThingError.toObject(json);
   }
 
   // Upload each file to S3
