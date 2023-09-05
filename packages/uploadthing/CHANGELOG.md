@@ -1,5 +1,14 @@
 # uploadthing
 
+## 5.5.3
+
+### Patch Changes
+
+- [#322](https://github.com/pingdotgg/uploadthing/pull/322)
+  [`2e8b410`](https://github.com/pingdotgg/uploadthing/commit/2e8b410bb15c2688e9b6938c4a2cd17cf6110289)
+  Thanks [@p6l-richard](https://github.com/p6l-richard)! - fix(sdk): prevent
+  `uploadFilesInternal` from consuming response body twice on bad response
+
 ## 5.5.2
 
 ### Patch Changes
