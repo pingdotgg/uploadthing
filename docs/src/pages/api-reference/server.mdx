@@ -118,6 +118,19 @@ pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
 the input in the middleware without returning it, the Uploadthing server won't
 have any knowledge of it.
 
+```ts
+import { z } from "zod";
+
+f(["image"])
+  .input(z.object({ foo: z.string() }))
+  .middleware(async ({ req, input }) => {
+    input;
+    // ^? { foo: string }
+    return {};
+  })
+  .onUploadComplete(async () => {});
+```
+
 ### `middleware`
 
 This is the function where you authorize a user to do an upload. You can also
@@ -167,7 +180,7 @@ async function uploadFiles(formData: FormData) {
   "use server";
   const files = fd.getAll("files");
   const response = await utapi.uploadFiles(files);
-  //    ^? { key: string, url: string }[]
+  //    ^? UploadedFileResponse[]
 }
 
 function MyForm() {
@@ -196,6 +209,29 @@ interface FileEsque extends Blob {
 }
 ```
 
+The returned `UploadedFileResponse` is an object with the following shape. If
+the `files` argument is an array, the returned value will be of type
+`UploadedFileResponse[]`.
+
+```ts
+type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
+
+type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
+
+type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+```
+
 ### `uploadFilesFromUrl`
 
 > Added in `v5.3`
@@ -213,14 +249,18 @@ function you're looking for.
 import { utapi } from "uploadthing/server";
 
 const fileUrl = "https://test.com/some.png";
+const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
+//    ^? UploadedFileResponse
 
-const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
+const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
+const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
+//    ^? UploadedFileResponse[]
 ```
 
-| Arguments | Type            | Required | Description                            |
-| :-------- | :-------------- | :------- | :------------------------------------- |
-| url       | URL \|\| string | Yes      | The URL of the file you wish to upload |
-| metadata  | Json            | No       | Metadata to attach to the file(s)      |
+| Arguments | Type                                     | Required | Description                                  |
+| :-------- | :--------------------------------------- | :------- | :------------------------------------------- |
+| urls      | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload |
+| metadata  | Json                                     | No       | Metadata to attach to the file(s)            |
 
 ### `deleteFiles`
 

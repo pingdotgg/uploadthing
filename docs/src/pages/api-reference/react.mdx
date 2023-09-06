@@ -174,11 +174,11 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 
 ### Returns
 
-| Prop              | Type     | Description                                               |
-| :---------------- | :------- | :-------------------------------------------------------- |
-| startUpload       | function | `(files: File[]) => void` function to start a file upload |
-| isUploading       | function | if file(s) are currently uploading                        |
-| permittedFileInfo | function | information on permitted file types, sizes, and counts    |
+| Prop              | Type     | Description                                                                                                                                                                                |
+| :---------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| startUpload       | function | `(files: File[], input?: TInput) => void` function to start a file upload. `TInput` is inferred from what you've defined on [the fileroute](/api-reference/server#input-1) on the backend. |
+| isUploading       | function | if file(s) are currently uploading                                                                                                                                                         |
+| permittedFileInfo | function | information on permitted file types, sizes, and counts                                                                                                                                     |
 
 ## uploadFiles
 

@@ -242,8 +242,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
-    const genUrl =
-      "https://uploadthing.com/f/" + encodeURIComponent(fields.key);
+    const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     const fileData = await pollForFileData(presigned.key);
