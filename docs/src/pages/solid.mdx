@@ -76,7 +76,7 @@ export type OurFileRouter = typeof uploadRouter;
 
 ### Create an API route using the FileRouter
 
-<Callout type ="info">
+<Callout type="info">
   File path here doesn't matter, you can serve this from any route. We recommend
   serving it from `/api/uploadthing`.
 </Callout>
@@ -94,8 +94,8 @@ export const { GET, POST } = createServerHandler({
 ### Creating The UploadThing Components (recommended)
 
 Generating components lets you pass your generic `FileRouter` and `url` once and
-then have typesafe components everywhere, instead of having to pass the generic
-and url everytime you mount a component, but you can also import the components
+then have typesafe components everywhere, instead of having to pass them
+everytime you mount a component, but you can also import the components
 individually from `@uploadthing/react`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
