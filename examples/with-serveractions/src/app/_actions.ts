@@ -1,5 +1,7 @@
 "use server";
 
+import { File as UndiciFile } from "undici";
+
 import { utapi } from "uploadthing/server";
 
 /**
@@ -7,7 +9,10 @@ import { utapi } from "uploadthing/server";
  */
 export async function uploadFiles(fd: FormData) {
   const files = fd.getAll("files") as File[];
-  const uploadedFiles = await utapi.uploadFiles(files);
+  // const uploadedFiles = await utapi.uploadFiles(files);
+  const uploadedFiles = await utapi.uploadFiles([
+    new UndiciFile(["foo"], "foo.txt"),
+  ]);
   return uploadedFiles;
 }
 

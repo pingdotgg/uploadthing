@@ -253,6 +253,9 @@ importers:
       react-dom:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
+      undici:
+        specifier: ^5.23.0
+        version: 5.23.0
       uploadthing:
         specifier: 5.5.3
         version: link:../../packages/uploadthing

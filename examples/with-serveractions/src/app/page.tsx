@@ -17,6 +17,7 @@ export default function Home() {
           const fd = new FormData(e.target as HTMLFormElement);
           const uploadedFiles = await uploadFiles(fd);
           alert(`Uploaded ${uploadedFiles.length} files`);
+          console.log(uploadedFiles);
 
           setIsUploading(false);
         }}
