@@ -174,8 +174,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0(solid-js@1.7.11)
       undici:
-        specifier: 5.20.0
-        version: 5.20.0
+        specifier: ^5.20.0
+        version: 5.23.0
       uploadthing:
         specifier: 5.5.3
         version: link:../../packages/uploadthing
@@ -9593,6 +9593,7 @@ packages:
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0
+    dev: true
 
   /undici@5.23.0:
     resolution: {integrity: sha512-1D7w+fvRsqlQ9GscLBwcAJinqcZGHUKjbOmXdlE/v8BvEGXjeWAax+341q44EuTcHXXnfyKNbKRq4Lg7OzhMmg==}
