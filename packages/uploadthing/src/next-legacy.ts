@@ -39,7 +39,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     }
 
     const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = proto + "://" + req.headers.host + req.url;
+    const url = `${proto}://${req.headers.host}${req.url}`;
 
     const response = await requestHandler({
       req: Object.assign(req, {
