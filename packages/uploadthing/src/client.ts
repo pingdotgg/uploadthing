@@ -158,9 +158,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw new UploadThingError({
         code: "NOT_FOUND",
         message: "No file found for presigned URL",
-        cause: `Expected file with name ${
-          presigned.name
-        } but got '${opts.files.join(",")}'`,
+        cause: `Expected file with name ${presigned.name
+          } but got '${opts.files.join(",")}'`,
       });
     }
     const { url, fields } = presigned.presignedUrl;
@@ -261,10 +260,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       url: genUrl,
     };
 
-    console.log("fileData", fileData);
-
     if (!fileData) {
-      console.log("[UT] Could not receive file data from UT");
+      console.log("[UT] Did not receive file data from UT");
     } else {
       console.log("[UT] Trying to simulate the webhook");
 
