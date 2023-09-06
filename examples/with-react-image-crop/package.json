@@ -15,7 +15,7 @@
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.3",
     "react-image-crop": "^10.1.5",
-    "uploadthing": "5.5.2"
+    "uploadthing": "5.5.3"
   },
   "devDependencies": {
     "@types/node": "18.16.0",
