@@ -180,7 +180,7 @@ async function uploadFiles(formData: FormData) {
   "use server";
   const files = fd.getAll("files");
   const response = await utapi.uploadFiles(files);
-  //    ^? { key: string, url: string }[]
+  //    ^? UploadedFileResponse[]
 }
 
 function MyForm() {
@@ -207,6 +207,29 @@ uploaded to the storage provider.
 interface FileEsque extends Blob {
   name: string;
 }
+```
+
+The returned `UploadedFileResponse` is an object with the following shape. If
+the `files` argument is an array, the returned value will be of type
+`UploadedFileResponse[]`.
+
+```ts
+type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
+
+type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
+
+type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
 ```
 
 ### `uploadFilesFromUrl`
