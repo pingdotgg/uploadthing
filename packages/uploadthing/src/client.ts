@@ -43,6 +43,7 @@ const createAPIRequestUrl = (config: {
   /**
    * Absolute URL to the UploadThing API endpoint
    * @example http://localhost:3000/api/uploadthing
+   * @example https://www.example.com/api/uploadthing
    */
   url: string;
   slug: string;

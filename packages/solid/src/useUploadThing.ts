@@ -32,6 +32,7 @@ export const INTERNAL_uploadthingHookGen = <
   /**
    * Absolute URL to the UploadThing API endpoint
    * @example http://localhost:3000/api/uploadthing
+   * @example https://www.example.com/api/uploadthing
    */
   url: string;
 }) => {
@@ -113,6 +114,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts: {
   /**
    * Absolute URL to the UploadThing API endpoint
    * @example http://localhost:3000/api/uploadthing
+   * @example https://www.example.com/api/uploadthing
    */
   url: string;
 }) => {
