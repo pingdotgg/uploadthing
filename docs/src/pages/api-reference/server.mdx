@@ -257,10 +257,10 @@ const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
 //    ^? UploadedFileResponse[]
 ```
 
-| Arguments | Type            | Required | Description                            |
-| :-------- | :-------------- | :------- | :------------------------------------- |
-| url       | URL \|\| string | Yes      | The URL of the file you wish to upload |
-| metadata  | Json            | No       | Metadata to attach to the file(s)      |
+| Arguments | Type                                     | Required | Description                            |
+| :-------- | :--------------------------------------- | :------- | :------------------------------------- |
+| urls      | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL of the file you wish to upload |
+| metadata  | Json                                     | No       | Metadata to attach to the file(s)      |
 
 ### `deleteFiles`
 
