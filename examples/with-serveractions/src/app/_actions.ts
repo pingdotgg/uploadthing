@@ -7,11 +7,7 @@ import { utapi } from "uploadthing/server";
  */
 export async function uploadFiles(fd: FormData) {
   const files = fd.getAll("files") as File[];
-  // const uploadedFiles = await utapi.uploadFiles(files);
-  const uploadedFiles = await utapi.uploadFiles([
-    new Blob(["foo", "bar"], { type: "text/plain" }),
-  ]);
-  console.log("uploadedFiles", uploadedFiles);
+  const uploadedFiles = await utapi.uploadFiles(files);
   return uploadedFiles;
 }
 
