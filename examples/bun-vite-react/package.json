@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"bunx --bun vite\" \"bun src/server.ts\"",
+    "dev": "concurrently \"bunx --bun vite\" \"bun --watch src/server.ts\"",
     "_build": "tsc && bunx --bun vite build && bun build src/server.ts --outdir dist",
     "lint": "eslint src",
     "preview": "vite preview"
