@@ -359,7 +359,7 @@ importers:
         version: 18.16.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
 
   packages/mime-types:
     devDependencies:
@@ -377,7 +377,7 @@ importers:
         version: 8.47.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -465,7 +465,7 @@ importers:
         version: 8.47.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -546,6 +546,9 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
+      undici:
+        specifier: 5.20.0
+        version: 5.20.0
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -9590,7 +9593,6 @@ packages:
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0
-    dev: false
 
   /undici@5.23.0:
     resolution: {integrity: sha512-1D7w+fvRsqlQ9GscLBwcAJinqcZGHUKjbOmXdlE/v8BvEGXjeWAax+341q44EuTcHXXnfyKNbKRq4Lg7OzhMmg==}
