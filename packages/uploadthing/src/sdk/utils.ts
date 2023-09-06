@@ -1,3 +1,5 @@
+import type { File as UndiciFile } from "undici";
+
 import type { Json } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
@@ -7,7 +9,7 @@ import {
 
 import { maybeParseResponseXML } from "../internal/s3-error-parser";
 
-export type FileEsque = Blob & { name: string };
+export type FileEsque = (Blob & { name: string }) | UndiciFile;
 
 export type UploadData = {
   key: string;
@@ -89,10 +91,13 @@ export const uploadFilesInternal = async (
       Object.entries(fields).forEach(([key, value]) => {
         formData.append(key, value);
       });
+
       formData.append(
         "file",
         // Handles case when there is no file name
-        file.name ? file : Object.assign(file, { name: "unnamed-blob" }),
+        file.name
+          ? (file as File)
+          : Object.assign(file as File, { name: "unnamed-blob" }),
       );
 
       // Do S3 upload
