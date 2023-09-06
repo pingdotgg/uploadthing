@@ -36,7 +36,7 @@ export const uploadFilesInternal = async (
 ) => {
   // Request presigned URLs for each file
   const fileData = data.files.map((file) => ({
-    name: file.name,
+    name: file.name ?? "unnamed-blob",
     type: file.type,
     size: file.size,
   }));
@@ -91,7 +91,14 @@ export const uploadFilesInternal = async (
       Object.entries(fields).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      formData.append("file", file as File);
+
+      formData.append(
+        "file",
+        // Handles case when there is no file name
+        file.name
+          ? (file as File)
+          : Object.assign(file as File, { name: "unnamed-blob" }),
+      );
 
       // Do S3 upload
       const s3res = await fetch(presignedUrl, {
