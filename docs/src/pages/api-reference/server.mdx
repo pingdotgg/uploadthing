@@ -226,8 +226,12 @@ function you're looking for.
 import { utapi } from "uploadthing/server";
 
 const fileUrl = "https://test.com/some.png";
+const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
+//    ^? UploadedFileResponse
 
-const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
+const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
+const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
+//    ^? UploadedFileResponse[]
 ```
 
 | Arguments | Type            | Required | Description                            |
