@@ -1,5 +1,67 @@
 # uploadthing
 
+## 5.5.3
+
+### Patch Changes
+
+- [#322](https://github.com/pingdotgg/uploadthing/pull/322)
+  [`2e8b410`](https://github.com/pingdotgg/uploadthing/commit/2e8b410bb15c2688e9b6938c4a2cd17cf6110289)
+  Thanks [@p6l-richard](https://github.com/p6l-richard)! - fix(sdk): prevent
+  `uploadFilesInternal` from consuming response body twice on bad response
+
+## 5.5.2
+
+### Patch Changes
+
+- [#319](https://github.com/pingdotgg/uploadthing/pull/319)
+  [`8cfdade`](https://github.com/pingdotgg/uploadthing/commit/8cfdade9fee61a636fa1c88bc9380d4ac77e91d9)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fix: use correct url in
+  client file
+
+## 5.5.1
+
+### Patch Changes
+
+- [#318](https://github.com/pingdotgg/uploadthing/pull/318)
+  [`353f6d0`](https://github.com/pingdotgg/uploadthing/commit/353f6d026fbee7480573d735d0406477dcb9e0bc)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - [fix] use correct file host
+  on internal endpoint (utfs.io instead of uploadthing.com)
+
+## 5.5.0
+
+### Minor Changes
+
+- [#301](https://github.com/pingdotgg/uploadthing/pull/301)
+  [`e0ff7be`](https://github.com/pingdotgg/uploadthing/commit/e0ff7be182fbac5d30fbf3e6b9051e0e19e34a86)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: Handle
+  failed uploads (UPL-60)
+
+## 5.4.0
+
+### Minor Changes
+
+- [#264](https://github.com/pingdotgg/uploadthing/pull/264)
+  [`0ee8b2b`](https://github.com/pingdotgg/uploadthing/commit/0ee8b2b8f77f7b0e5d0d6fa4896adefe11d03929)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat(react;solid):
+  onUploadBegin prop
+
+### Patch Changes
+
+- [#281](https://github.com/pingdotgg/uploadthing/pull/281)
+  [`86d72be`](https://github.com/pingdotgg/uploadthing/commit/86d72be25c794aadcfe55a08095b487a782e2dc8)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix: added settings to
+  support cjs imports
+
+- [#278](https://github.com/pingdotgg/uploadthing/pull/278)
+  [`a218357`](https://github.com/pingdotgg/uploadthing/commit/a21835750c91df1f30cbf92429c5ea8c3fa4e8b8)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(utapi): no
+  caching on utapi functions
+
+- Updated dependencies
+  [[`86d72be`](https://github.com/pingdotgg/uploadthing/commit/86d72be25c794aadcfe55a08095b487a782e2dc8)]:
+  - @uploadthing/mime-types@0.2.1
+  - @uploadthing/shared@5.2.1
+
 ## 5.3.3
 
 ### Patch Changes

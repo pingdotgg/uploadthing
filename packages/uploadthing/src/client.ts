@@ -4,7 +4,11 @@
 import { pollForFileData, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
-import type { FileRouter, inferEndpointInput } from "./internal/types";
+import type {
+  ActionType,
+  FileRouter,
+  inferEndpointInput,
+} from "./internal/types";
 
 function fetchWithProgress(
   url: string,
@@ -35,10 +39,21 @@ function fetchWithProgress(
   });
 }
 
-const createRequestPermsUrl = (config: { url?: string; slug: string }) => {
-  const queryParams = `?actionType=upload&slug=${config.slug}`;
+const createAPIRequestUrl = (config: {
+  url?: string;
+  slug: string;
+  actionType: ActionType;
+}) => {
+  const url = new URL(
+    config.url ?? `${window.location.origin}/api/uploadthing`,
+  );
 
-  return `${config?.url ?? "/api/uploadthing"}${queryParams}`;
+  const queryParams = new URLSearchParams(url.search);
+  queryParams.set("actionType", config.actionType);
+  queryParams.set("slug", config.slug);
+
+  url.search = queryParams.toString();
+  return url.toString();
 };
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
@@ -93,9 +108,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
-    createRequestPermsUrl({
+    createAPIRequestUrl({
       url: config?.url,
       slug: String(opts.endpoint),
+      actionType: "upload",
     }),
     {
       method: "POST",
@@ -192,9 +208,25 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     );
 
     if (upload.status > 299 || upload.status < 200) {
+      // tell uploadthing infra server that upload failed
+      await fetch(
+        createAPIRequestUrl({
+          url: config?.url,
+          slug: String(opts.endpoint),
+          actionType: "failure",
+        }),
+        {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: fields.key,
+          }),
+        },
+      );
+
       // Attempt to parse response as XML
       const parsed = maybeParseResponseXML(upload.responseText);
 
+      // Throw an error for the client
       if (parsed?.message) {
         throw new UploadThingError({
           code: parsed.code,
@@ -210,8 +242,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
-    const genUrl =
-      "https://uploadthing.com/f/" + encodeURIComponent(fields.key);
+    const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     await pollForFileData(presigned.key);

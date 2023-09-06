@@ -1,16 +1,18 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     },
     "./db": {
       "types": "./dist/db.d.ts",
-      "import": "./dist/db.mjs"
+      "import": "./dist/db.mjs",
+      "require": "./dist/db.js"
     }
   },
   "typesVersions": {

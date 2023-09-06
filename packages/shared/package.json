@@ -1,12 +1,13 @@
 {
   "name": "@uploadthing/shared",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
     }
   },
   "files": [
@@ -31,7 +32,7 @@
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/mime-types": "0.2.0",
+    "@uploadthing/mime-types": "0.2.1",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",

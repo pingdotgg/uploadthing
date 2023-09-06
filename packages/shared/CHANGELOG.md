@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 5.2.1
+
+### Patch Changes
+
+- [#281](https://github.com/pingdotgg/uploadthing/pull/281)
+  [`86d72be`](https://github.com/pingdotgg/uploadthing/commit/86d72be25c794aadcfe55a08095b487a782e2dc8)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix: added settings to
+  support cjs imports
+
 ## 5.2.0
 
 ### Minor Changes

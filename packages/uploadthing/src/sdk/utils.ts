@@ -51,6 +51,11 @@ export const uploadFilesInternal = async (
     }),
   });
 
+  if (!res.ok) {
+    throw UploadThingError.fromResponse(res);
+  }
+
+  const clonedRes = res.clone(); // so that `UploadThingError.fromResponse()` can consume the body again
   const json = (await res.json()) as
     | {
         data: {
@@ -62,8 +67,8 @@ export const uploadFilesInternal = async (
       }
     | { error: string };
 
-  if (!res.ok || "error" in json) {
-    throw UploadThingError.fromResponse(res);
+  if ("error" in json) {
+    throw UploadThingError.fromResponse(clonedRes);
   }
 
   // Upload each file to S3
@@ -96,6 +101,18 @@ export const uploadFilesInternal = async (
       });
 
       if (!s3res.ok) {
+        // tell uploadthing infra server that upload failed
+        await fetch(generateUploadThingURL("/api/failureCallback"), {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: fields.key,
+          }),
+          headers: {
+            "x-uploadthing-api-key": opts.apiKey,
+            "x-uploadthing-version": opts.utVersion,
+          },
+        });
+
         const text = await s3res.text();
         const parsed = maybeParseResponseXML(text);
         if (parsed?.message) {
