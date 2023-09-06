@@ -118,6 +118,19 @@ pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
 the input in the middleware without returning it, the Uploadthing server won't
 have any knowledge of it.
 
+```ts
+import { z } from "zod";
+
+f(["image"])
+  .input(z.object({ foo: z.string() }))
+  .middleware(async ({ req, input }) => {
+    input;
+    // ^? { foo: string }
+    return {};
+  })
+  .onUploadComplete(async () => {});
+```
+
 ### `middleware`
 
 This is the function where you authorize a user to do an upload. You can also

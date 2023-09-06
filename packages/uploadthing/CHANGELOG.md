@@ -1,5 +1,32 @@
 # uploadthing
 
+## 5.5.3
+
+### Patch Changes
+
+- [#322](https://github.com/pingdotgg/uploadthing/pull/322)
+  [`2e8b410`](https://github.com/pingdotgg/uploadthing/commit/2e8b410bb15c2688e9b6938c4a2cd17cf6110289)
+  Thanks [@p6l-richard](https://github.com/p6l-richard)! - fix(sdk): prevent
+  `uploadFilesInternal` from consuming response body twice on bad response
+
+## 5.5.2
+
+### Patch Changes
+
+- [#319](https://github.com/pingdotgg/uploadthing/pull/319)
+  [`8cfdade`](https://github.com/pingdotgg/uploadthing/commit/8cfdade9fee61a636fa1c88bc9380d4ac77e91d9)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fix: use correct url in
+  client file
+
+## 5.5.1
+
+### Patch Changes
+
+- [#318](https://github.com/pingdotgg/uploadthing/pull/318)
+  [`353f6d0`](https://github.com/pingdotgg/uploadthing/commit/353f6d026fbee7480573d735d0406477dcb9e0bc)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - [fix] use correct file host
+  on internal endpoint (utfs.io instead of uploadthing.com)
+
 ## 5.5.0
 
 ### Minor Changes
