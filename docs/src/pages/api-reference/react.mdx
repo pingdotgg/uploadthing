@@ -31,16 +31,20 @@ export const OurUploadButton = () => (
 
 ### Configuration
 
-| Prop                   | Type     | Required                                                                                | Notes           | Description                                                                         |
-| :--------------------- | :------- | :-------------------------------------------------------------------------------------- | :-------------- | :---------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic  | Yes                                                                                     |                 | The type from the FileRouter you defined in your backend                            |
-| endpoint               | string   | Yes                                                                                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to      |
-| url                    | string   | Yes, if imported from `@uploadthing/react`. No, if generated using `generateComponents` | Added in `v6.0` | The **absolute** url to where you server your uploadthing file router.              |
-| input                  | string   | If set on the fileroute                                                                 | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
-| onClientUploadComplete | function | No                                                                                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
-| onUploadError          | function | No                                                                                      |                 | callback function when upload fails                                                 |
-| onUploadProgress       | function | No                                                                                      | Added in `v5.1` | callback function for upload progress                                               |
-| onUploadBegin          | function | No                                                                                      | Added in `v5.4` | callback function for upload begin                                                  |
+| Prop                   | Type     | Required                | Notes           | Description                                                                         |
+| :--------------------- | :------- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic  | Yes                     |                 | The type from the FileRouter you defined in your backend                            |
+| endpoint               | string   | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to      |
+| url                    | string   | Yes¹                    | Added in `v6.0` | The **absolute** url to where you are serving your uploadthing file router.         |
+| input                  | string   | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |
+| onClientUploadComplete | function | No                      |                 | `{fileKey: string, fileUrl: string}[]` callback function when upload is completed   |
+| onUploadError          | function | No                      |                 | callback function when upload fails                                                 |
+| onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
+| onUploadBegin          | function | No                      | Added in `v5.4` | callback function for upload begin                                                  |
+
+> ¹ If you're
+> [generating the components](/nextjs/appdir#creating-the-uploadthing-components-recommended)
+> you only pass the URL there, and not for individual components.
 
 ## UploadDropzone
 
