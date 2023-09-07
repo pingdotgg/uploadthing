@@ -133,7 +133,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadDropzoneProps<TRouter> & {
+  const $props = props as UploadDropzoneProps<TRouter> & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";
@@ -148,6 +148,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // Allow to disable the dropzone
     __internal_dropzone_disabled?: boolean;
   };
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const [files, setFiles] = useState<File[]>([]);
@@ -239,7 +240,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state}
     >
-      {$props.config?.preview && files.length > 0
+      {$props.config?.preview !== false && files.length > 0
         ? null
         : contentFieldToContent($props.content?.uploadIcon, styleFieldArg) ?? (
             <svg
@@ -282,7 +283,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       >
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
           (ready ? (
-            files.length > 0 ? (
+            $props.config?.preview !== false && files.length > 0 ? (
               <FilesPreview files={files} updateFiles={setFiles} />
             ) : (
               `Choose files or drag and drop`
@@ -292,7 +293,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
           ))}
         <input className="sr-only" {...getInputProps()} />
       </label>
-      {$props.config?.preview && files.length > 0 ? null : (
+      {$props.config?.preview !== false && files.length > 0 ? null : (
         <div
           className={twMerge(
             "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",

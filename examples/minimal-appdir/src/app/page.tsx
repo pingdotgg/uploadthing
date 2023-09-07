@@ -45,7 +45,6 @@ export default function Home() {
         }}
         config={{
           mode: "manual",
-          preview: true,
         }}
       />
       <input
