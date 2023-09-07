@@ -203,3 +203,63 @@ export const fileSizeToBytes = (input: string) => {
   const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
   return Math.floor(bytes);
 };
+
+// This is absolutely horrendous, but we need some way to resole environment
+// variables regardless of build tooling. If you have a better idea, please
+// fix this.
+export const DANGEROUS__checkEnvironmentVariable = (variable: string) => {
+  // We need to check all of the places where environment variables can be set
+  // eg process.env, process.env.NEXT_PUBLIC_, import.meta.env, etc.
+
+  // first check if process is defined
+  if (typeof process !== "undefined") {
+    if (process.env[variable]) return process.env[variable];
+    if (process.env[`NEXT_PUBLIC_${variable}`])
+      return process.env[`NEXT_PUBLIC_${variable}`];
+    if (process.env[`PUBLIC_${variable}`])
+      return process.env[`PUBLIC_${variable}`];
+  }
+
+  // we havent found it yet, so check import.meta.env
+
+  // @ts-expect-error - whatever
+  if (typeof import.meta.env !== "undefined") {
+    // @ts-expect-error - whatever
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+    if (import.meta.env[variable]) return import.meta.env[variable];
+
+    // @ts-expect-error - whatever
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (import.meta.env[`VITE_${variable}`]) {
+      // @ts-expect-error - whatever
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      return import.meta.env[`VITE_${variable}`];
+    }
+
+    // @ts-expect-error - whatever
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (import.meta.env[`ASTRO_${variable}`]) {
+      // @ts-expect-error - whatever
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      return import.meta.env[`ASTRO_${variable}`];
+    }
+
+    // @ts-expect-error - whatever
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (import.meta.env[`PUBLIC_${variable}`]) {
+      // @ts-expect-error - whatever
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      return import.meta.env[`PUBLIC_${variable}`];
+    }
+  }
+
+  // last resort, check window... yolo?
+  if (typeof window !== "undefined") {
+    // @ts-expect-error - whatever
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    if (window[variable]) return window[variable];
+  }
+
+  // throw an error if we still havent found it
+  throw new Error("Could not find environment variable");
+};
