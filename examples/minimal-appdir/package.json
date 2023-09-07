@@ -1,5 +1,5 @@
 {
-  "name": "@example/appdir-minimal",
+  "name": "@example/minimal-appdir",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -1,5 +1,5 @@
 {
-  "name": "@example/pagedir-minimal",
+  "name": "@example/minimal-pagedir",
   "private": true,
   "scripts": {
     "dev": "next dev",

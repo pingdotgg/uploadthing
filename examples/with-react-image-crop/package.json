@@ -1,5 +1,5 @@
 {
-  "name": "@example/react-image-crop",
+  "name": "@example/image-cropping",
   "private": true,
   "scripts": {
     "dev": "next dev",
