@@ -1,5 +1,5 @@
 {
-  "name": "@example/solidstart",
+  "name": "@example/minimal-solidstart",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@example/tailwindcss",
+  "name": "@example/with-tailwindcss",
   "private": true,
   "scripts": {
     "dev": "next dev",
