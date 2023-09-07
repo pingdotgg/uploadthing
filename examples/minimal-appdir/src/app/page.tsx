@@ -43,6 +43,9 @@ export default function Home() {
         onUploadBegin={() => {
           console.log("upload begin");
         }}
+        config={{
+          mode: "manual",
+        }}
       />
       <input
         type="file"

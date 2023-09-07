@@ -46,9 +46,59 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
     };
     className?: string;
     config?: {
+      preview?: boolean;
       mode?: "auto" | "manual";
     };
   };
+
+const FilesPreview = ({ files }: { files: FileWithPath[] }) => {
+  return (
+    <div className="flex flex-row gap-2">
+      {files.map((file) =>
+        file.type.startsWith("image/") ? (
+          <div
+            key={file.name}
+            className="flex h-24 w-24 flex-col items-center justify-center rounded-lg bg-gray-200 p-1"
+          >
+            <img
+              src={URL.createObjectURL(file)}
+              className="h-16 w-full flex-shrink-0 rounded-lg object-cover"
+              alt={file.name}
+            />
+            <span className="mt-1 w-full truncate text-xs font-light text-black">
+              {file.name}
+            </span>
+          </div>
+        ) : (
+          <div
+            key={file.name}
+            className="flex h-24 w-24 flex-col items-center justify-center rounded-lg border-2 bg-gray-200 p-1"
+          >
+            <div className="flex h-16 w-full flex-col items-center justify-center border border-red-600 text-gray-600">
+              <span className="text-xl font-semibold">
+                {file.name.split(".").pop()?.toUpperCase()}
+              </span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="32"
+                viewBox="0 0 384 512"
+              >
+                <path
+                  fill="currentColor"
+                  d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
+                />
+              </svg>
+            </div>
+            <span className="mt-1 w-full truncate text-xs font-light text-black">
+              {file.name}
+            </span>
+          </div>
+        ),
+      )}
+    </div>
+  );
+};
 
 export function UploadDropzone<TRouter extends FileRouter>(
   props: FileRouter extends TRouter
@@ -200,7 +250,15 @@ export function UploadDropzone<TRouter extends FileRouter>(
         data-state={state}
       >
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready ? `Choose files or drag and drop` : `Loading...`)}
+          (ready ? (
+            files.length > 0 ? (
+              <FilesPreview files={files} />
+            ) : (
+              `Choose files or drag and drop`
+            )
+          ) : (
+            `Loading...`
+          ))}
         <input className="sr-only" {...getInputProps()} />
       </label>
       <div
