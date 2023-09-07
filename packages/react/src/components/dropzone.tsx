@@ -51,51 +51,77 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
     };
   };
 
-const FilesPreview = ({ files }: { files: FileWithPath[] }) => {
+const FilesPreview = ({
+  files,
+  updateFiles,
+}: {
+  files: File[];
+  updateFiles: React.Dispatch<React.SetStateAction<File[]>>;
+}) => {
   return (
     <div className="flex flex-row gap-2">
-      {files.map((file) =>
-        file.type.startsWith("image/") ? (
-          <div
-            key={file.name}
-            className="flex h-24 w-24 flex-col items-center justify-center rounded-lg bg-gray-200 p-1"
-          >
-            <img
-              src={URL.createObjectURL(file)}
-              className="h-16 w-full flex-shrink-0 rounded-lg object-cover"
-              alt={file.name}
-            />
-            <span className="mt-1 w-full truncate text-xs font-light text-black">
-              {file.name}
-            </span>
+      {files.map((file) => (
+        <div
+          key={file.name}
+          className="group relative flex h-24 w-24 flex-col items-center justify-center rounded-lg bg-gray-200 p-1"
+          onClick={(e) => {
+            e.stopPropagation();
+            updateFiles(
+              files.filter((f) => f.name !== file.name && f.size !== file.size),
+            );
+          }}
+        >
+          <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-lg bg-red-600/60 text-white opacity-0 group-hover:opacity-100">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill="currentColor"
+                fillRule="evenodd"
+                d="M4.28 3.22a.75.75 0 0 0-1.06 1.06L8.94 10l-5.72 5.72a.75.75 0 1 0 1.06 1.06L10 11.06l5.72 5.72a.75.75 0 1 0 1.06-1.06L11.06 10l5.72-5.72a.75.75 0 0 0-1.06-1.06L10 8.94L4.28 3.22Z"
+                clipRule="evenodd"
+              />
+            </svg>
           </div>
-        ) : (
-          <div
-            key={file.name}
-            className="flex h-24 w-24 flex-col items-center justify-center rounded-lg border-2 bg-gray-200 p-1"
-          >
-            <div className="flex h-16 w-full flex-col items-center justify-center border border-red-600 text-gray-600">
-              <span className="text-xl font-semibold">
-                {file.name.split(".").pop()?.toUpperCase()}
+          {file.type.startsWith("image/") ? (
+            <>
+              <img
+                src={URL.createObjectURL(file)}
+                className="h-16 w-full flex-shrink-0 rounded-lg object-cover "
+                alt={file.name}
+              />
+              <span className="mt-1 w-full truncate text-xs font-light text-black ">
+                {file.name}
               </span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="32"
-                viewBox="0 0 384 512"
-              >
-                <path
-                  fill="currentColor"
-                  d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
-                />
-              </svg>
-            </div>
-            <span className="mt-1 w-full truncate text-xs font-light text-black">
-              {file.name}
-            </span>
-          </div>
-        ),
-      )}
+            </>
+          ) : (
+            <>
+              <div className="flex h-16 w-full flex-col items-center justify-center border border-red-600 text-gray-600">
+                <span className="text-xl font-semibold">
+                  {file.name.split(".").pop()?.toUpperCase()}
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="32"
+                  viewBox="0 0 384 512"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
+                  />
+                </svg>
+              </div>
+              <span className="mt-1 w-full truncate text-xs font-light text-black">
+                {file.name}
+              </span>
+            </>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
@@ -213,29 +239,34 @@ export function UploadDropzone<TRouter extends FileRouter>(
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state}
     >
-      {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) ?? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          className={twMerge(
-            "mx-auto block h-12 w-12 align-middle text-gray-400",
-            styleFieldToClassName($props.appearance?.uploadIcon, styleFieldArg),
+      {$props.config?.preview && files.length > 0
+        ? null
+        : contentFieldToContent($props.content?.uploadIcon, styleFieldArg) ?? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              className={twMerge(
+                "mx-auto block h-12 w-12 align-middle text-gray-400",
+                styleFieldToClassName(
+                  $props.appearance?.uploadIcon,
+                  styleFieldArg,
+                ),
+              )}
+              style={styleFieldToCssObject(
+                $props.appearance?.uploadIcon,
+                styleFieldArg,
+              )}
+              data-ut-element="upload-icon"
+              data-state={state}
+            >
+              <path
+                fill="currentColor"
+                fillRule="evenodd"
+                d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+                clipRule="evenodd"
+              ></path>
+            </svg>
           )}
-          style={styleFieldToCssObject(
-            $props.appearance?.uploadIcon,
-            styleFieldArg,
-          )}
-          data-ut-element="upload-icon"
-          data-state={state}
-        >
-          <path
-            fill="currentColor"
-            fillRule="evenodd"
-            d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
-            clipRule="evenodd"
-          ></path>
-        </svg>
-      )}
       <label
         htmlFor="file-upload"
         className={twMerge(
@@ -252,7 +283,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
           (ready ? (
             files.length > 0 ? (
-              <FilesPreview files={files} />
+              <FilesPreview files={files} updateFiles={setFiles} />
             ) : (
               `Choose files or drag and drop`
             )
@@ -261,24 +292,28 @@ export function UploadDropzone<TRouter extends FileRouter>(
           ))}
         <input className="sr-only" {...getInputProps()} />
       </label>
-      <div
-        className={twMerge(
-          "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
+      {$props.config?.preview && files.length > 0 ? null : (
+        <div
+          className={twMerge(
+            "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
+            styleFieldToClassName(
+              $props.appearance?.allowedContent,
+              styleFieldArg,
+            ),
+          )}
+          style={styleFieldToCssObject(
             $props.appearance?.allowedContent,
             styleFieldArg,
-          ),
-        )}
-        style={styleFieldToCssObject(
-          $props.appearance?.allowedContent,
-          styleFieldArg,
-        )}
-        data-ut-element="allowed-content"
-        data-state={state}
-      >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
-      </div>
+          )}
+          data-ut-element="allowed-content"
+          data-state={state}
+        >
+          {contentFieldToContent(
+            $props.content?.allowedContent,
+            styleFieldArg,
+          ) ?? allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+        </div>
+      )}
       {($props.__internal_show_button ?? files.length > 0) && (
         <button
           className={twMerge(
