@@ -1,20 +1,13 @@
 import { useId } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
-
 import type { EndpointMetadata } from "./types";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-export function NextSSRPlugin(props: {
-  routerConfig: {
-    slug: string;
-    config: ExpandedRouteConfig;
-  }[];
-}) {
+export function NextSSRPlugin(props: { routerConfig: EndpointMetadata }) {
   const id = useId();
 
   // Set routerConfig on server globalThis
