@@ -49,8 +49,14 @@
   },
   "peerDependencies": {
     "react": "^17.0.2 || ^18.0.0",
+    "next": "*",
     "react-dropzone": "^14.2.3",
     "uploadthing": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "18.16.0",
