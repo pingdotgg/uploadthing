@@ -24,19 +24,16 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: () => string[];
 };
 
-type SolidStyleField<CallbackArg> = StyleField<CallbackArg, "solid">;
-type SolidContentField<CallbackArg> = ContentField<CallbackArg, "solid">;
-
 export type UploadButtonProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
     appearance?: {
-      container?: SolidStyleField<ButtonStyleFieldCallbackArgs>;
-      button?: SolidStyleField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: SolidStyleField<ButtonStyleFieldCallbackArgs>;
+      container?: StyleField<ButtonStyleFieldCallbackArgs>;
+      button?: StyleField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
     };
     content?: {
-      button?: SolidContentField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: SolidContentField<ButtonStyleFieldCallbackArgs>;
+      button?: ContentField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
     class?: string;
   };
@@ -102,15 +99,9 @@ export function UploadButton<TRouter extends FileRouter>(
       class={twMerge(
         "flex flex-col items-center justify-center gap-1",
         $props.class,
-        styleFieldToClassName<"solid", ButtonStyleFieldCallbackArgs>(
-          $props.appearance?.container,
-          styleFieldArg,
-        ),
+        styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
-      style={styleFieldToCssObject<"solid", ButtonStyleFieldCallbackArgs>(
-        $props.appearance?.container,
-        styleFieldArg,
-      )}
+      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state()}
     >
       <label
@@ -122,15 +113,9 @@ export function UploadButton<TRouter extends FileRouter>(
               progressWidths[uploadProgress()]
             }`,
           state() === "ready" && "bg-blue-600",
-          styleFieldToClassName<"solid", ButtonStyleFieldCallbackArgs>(
-            $props.appearance?.button,
-            styleFieldArg,
-          ),
+          styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
-        style={styleFieldToCssObject<"solid", ButtonStyleFieldCallbackArgs>(
-          $props.appearance?.button,
-          styleFieldArg,
-        )}
+        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state()}
         data-ut-element="button"
       >
@@ -147,10 +132,7 @@ export function UploadButton<TRouter extends FileRouter>(
             void uploadedThing.startUpload(files, input);
           }}
         />
-        {contentFieldToContent<"solid", ButtonStyleFieldCallbackArgs>(
-          $props.content?.button,
-          styleFieldArg,
-        ) ??
+        {contentFieldToContent($props.content?.button, styleFieldArg) ??
           (state() === "uploading" ? (
             <Spinner />
           ) : (
@@ -160,22 +142,19 @@ export function UploadButton<TRouter extends FileRouter>(
       <div
         class={twMerge(
           "h-[1.25rem]  text-xs leading-5 text-gray-600",
-          styleFieldToClassName<"solid", ButtonStyleFieldCallbackArgs>(
+          styleFieldToClassName(
             $props.appearance?.allowedContent,
             styleFieldArg,
           ),
         )}
-        style={styleFieldToCssObject<"solid", ButtonStyleFieldCallbackArgs>(
+        style={styleFieldToCssObject(
           $props.appearance?.allowedContent,
           styleFieldArg,
         )}
         data-state={state()}
         data-ut-element="allowed-content"
       >
-        {contentFieldToContent<"solid", ButtonStyleFieldCallbackArgs>(
-          $props.content?.allowedContent,
-          styleFieldArg,
-        ) ??
+        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
           allowedContentTextLabelGenerator(
             uploadedThing.permittedFileInfo()?.config,
           )}

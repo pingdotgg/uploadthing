@@ -24,19 +24,16 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
-type ReactStyleField<CallbackArg> = StyleField<CallbackArg, "react">;
-type ReactContentField<CallbackArg> = ContentField<CallbackArg, "react">;
-
 export type UploadButtonProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
     appearance?: {
-      container?: ReactStyleField<ButtonStyleFieldCallbackArgs>;
-      button?: ReactStyleField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: ReactStyleField<ButtonStyleFieldCallbackArgs>;
+      container?: StyleField<ButtonStyleFieldCallbackArgs>;
+      button?: StyleField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
     };
     content?: {
-      button?: ReactContentField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: ReactContentField<ButtonStyleFieldCallbackArgs>;
+      button?: ContentField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
     className?: string;
   };
@@ -142,15 +139,9 @@ export function UploadButton<TRouter extends FileRouter>(
       className={twMerge(
         "flex flex-col items-center justify-center gap-1",
         $props.className,
-        styleFieldToClassName<"react", ButtonStyleFieldCallbackArgs>(
-          $props.appearance?.container,
-          styleFieldArg,
-        ),
+        styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
-      style={styleFieldToCssObject<"react", ButtonStyleFieldCallbackArgs>(
-        $props.appearance?.container,
-        styleFieldArg,
-      )}
+      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state}
     >
       <label
@@ -160,23 +151,14 @@ export function UploadButton<TRouter extends FileRouter>(
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
           state === "ready" && "bg-blue-600",
-          styleFieldToClassName<"react", ButtonStyleFieldCallbackArgs>(
-            $props.appearance?.button,
-            styleFieldArg,
-          ),
+          styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
-        style={styleFieldToCssObject<"react", ButtonStyleFieldCallbackArgs>(
-          $props.appearance?.button,
-          styleFieldArg,
-        )}
+        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
       >
         <input {...getInputProps()} />
-        {contentFieldToContent<"react", ButtonStyleFieldCallbackArgs>(
-          $props.content?.button,
-          styleFieldArg,
-        ) ??
+        {contentFieldToContent($props.content?.button, styleFieldArg) ??
           (state === "uploading" ? (
             <Spinner />
           ) : (
@@ -186,22 +168,20 @@ export function UploadButton<TRouter extends FileRouter>(
       <div
         className={twMerge(
           "h-[1.25rem]  text-xs leading-5 text-gray-600",
-          styleFieldToClassName<"react", ButtonStyleFieldCallbackArgs>(
+          styleFieldToClassName(
             $props.appearance?.allowedContent,
             styleFieldArg,
           ),
         )}
-        style={styleFieldToCssObject<"react", ButtonStyleFieldCallbackArgs>(
+        style={styleFieldToCssObject(
           $props.appearance?.allowedContent,
           styleFieldArg,
         )}
         data-state={state}
         data-ut-element="allowed-content"
       >
-        {contentFieldToContent<"react", ButtonStyleFieldCallbackArgs>(
-          $props.content?.allowedContent,
-          styleFieldArg,
-        ) ?? allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
+          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
       </div>
     </div>
   );

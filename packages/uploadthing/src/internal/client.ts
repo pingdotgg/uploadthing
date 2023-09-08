@@ -63,6 +63,11 @@ export const progressWidths: Record<number, string> = {
   100: "after:w-[100%]",
 };
 
+type MinCallbackArg = { ready: boolean | (() => boolean) };
+type inferRuntime<T extends MinCallbackArg> = T["ready"] extends boolean
+  ? "react"
+  : "solid";
+
 type AnyRuntime = "react" | "solid";
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? ReactNode
@@ -71,16 +76,21 @@ type CSSPropertiesEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? CSSProperties
   : JSX.CSSProperties;
 
-export type StyleField<CallbackArg, TRuntime extends AnyRuntime> =
+export type StyleField<
+  CallbackArg extends MinCallbackArg,
+  TRuntime extends AnyRuntime = inferRuntime<CallbackArg>,
+> =
   | string
   | CSSPropertiesEsque<TRuntime>
   | ((arg: CallbackArg) => string | CSSPropertiesEsque<TRuntime>);
-export type ContentField<CallbackArg, TRuntime extends AnyRuntime> =
-  | ElementEsque<TRuntime>
-  | ((arg: CallbackArg) => ElementEsque<TRuntime>);
 
-export const styleFieldToClassName = <TRuntime extends AnyRuntime, T>(
-  styleField: StyleField<T, TRuntime> | undefined,
+export type ContentField<
+  CallbackArg extends MinCallbackArg,
+  TRuntime extends AnyRuntime = inferRuntime<CallbackArg>,
+> = ElementEsque<TRuntime> | ((arg: CallbackArg) => ElementEsque<TRuntime>);
+
+export const styleFieldToClassName = <T extends MinCallbackArg>(
+  styleField: StyleField<T> | undefined,
   args: T,
 ) => {
   if (typeof styleField === "string") return styleField;
@@ -93,8 +103,8 @@ export const styleFieldToClassName = <TRuntime extends AnyRuntime, T>(
   return "";
 };
 
-export const styleFieldToCssObject = <TRuntime extends AnyRuntime, T>(
-  styleField: StyleField<T, TRuntime> | undefined,
+export const styleFieldToCssObject = <T extends MinCallbackArg>(
+  styleField: StyleField<T> | undefined,
   args: T,
 ) => {
   if (typeof styleField === "object") return styleField;
@@ -107,8 +117,8 @@ export const styleFieldToCssObject = <TRuntime extends AnyRuntime, T>(
   return {};
 };
 
-export const contentFieldToContent = <TRuntime extends AnyRuntime, T>(
-  contentField: ContentField<T, TRuntime> | undefined,
+export const contentFieldToContent = <T extends MinCallbackArg>(
+  contentField: ContentField<T> | undefined,
   arg: T,
 ) => {
   if (!contentField) return null;
