@@ -36,7 +36,7 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
  * ["image"] => { image: { maxFileSize: "4MB", limit: 1 } }
  * ```
  */
-export function fillInputRouteConfig(
+export function parseAndFillRouteInputConfig(
   routeConfig: UploadRouteConfigFromUser,
 ): ExpandedRouteConfig {
   // If array, apply defaults
@@ -69,7 +69,7 @@ export function fillInputRouteConfig(
   return newConfig;
 }
 
-export const fillFullRouter = (router: UploadRouterConfigFromUser) => {
+export const fillEntireRouter = (router: UploadRouterConfigFromUser) => {
   const keys = Object.keys(router);
 
   const filledRouter: ExpandedRouterConfig = {};
@@ -77,7 +77,7 @@ export const fillFullRouter = (router: UploadRouterConfigFromUser) => {
     const routeConfig = router[key]?._def?.routerConfig;
     if (!routeConfig) throw new Error("Invalid config during fill");
 
-    filledRouter[key] = fillInputRouteConfig(routeConfig);
+    filledRouter[key] = parseAndFillRouteInputConfig(routeConfig);
   });
 
   return filledRouter;
@@ -86,7 +86,7 @@ export const fillFullRouter = (router: UploadRouterConfigFromUser) => {
 export const eagerSetupUploadThingSSR = (
   config: UploadRouterConfigFromUser,
 ) => {
-  const filledRouter = fillFullRouter(config);
+  const filledRouter = fillEntireRouter(config);
 
   // @ts-ignore
   globalThis.__UPLOADTHING = {

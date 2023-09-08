@@ -13,7 +13,6 @@ export const UTHead = (props: { router: FileRouter }) => {
   return (
     <Script strategy="beforeInteractive">{`globalThis.__UPLOADTHING = { parsedConfig: ${JSON.stringify(
       utConfig,
-    )}};
-    console.log("did this even run?");`}</Script>
+    )}}`}</Script>
   );
 };

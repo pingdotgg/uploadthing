@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { fillInputRouteConfig, UploadThingError } from "@uploadthing/shared";
+import {
+  parseAndFillRouteInputConfig,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {

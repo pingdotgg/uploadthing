@@ -4,7 +4,7 @@ import {
   generateUploadThingURL,
   getTypeFromFileName,
   getUploadthingUrl,
-  fillInputRouteConfig as parseAndExpandInputConfig,
+  parseAndFillRouteInputConfig as parseAndExpandInputConfig,
   pollForFileData,
   UploadThingError,
 } from "@uploadthing/shared";
