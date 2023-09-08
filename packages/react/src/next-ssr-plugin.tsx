@@ -17,11 +17,13 @@ export function NextSSRPlugin(props: {
 }) {
   const id = useId();
 
-  globalThis.__UPLOADTHING ||= props.routerConfig;
+  // Set routerConfig on server globalThis
+  globalThis.__UPLOADTHING ??= props.routerConfig;
 
   useServerInsertedHTML(() => {
     const html = [
-      `globalThis.__UPLOADTHING ||= ${JSON.stringify(props.routerConfig)};`,
+      // Hydrate routerConfig on client globalThis
+      `globalThis.__UPLOADTHING ??= ${JSON.stringify(props.routerConfig)};`,
     ];
 
     return (
