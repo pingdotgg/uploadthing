@@ -59,11 +59,11 @@ const FilesPreview = ({
   updateFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) => {
   return (
-    <div className="flex flex-row gap-2">
+    <div className="flex flex-row flex-wrap items-center justify-center gap-2">
       {files.map((file) => (
         <div
           key={file.name}
-          className="group relative flex h-24 w-24 flex-col items-center justify-center rounded-lg bg-gray-200 p-1"
+          className="group relative flex h-24 w-24 flex-col items-center justify-center rounded-lg  p-1 ring-1 ring-gray-200 sm:h-32 sm:w-32"
           onClick={(e) => {
             e.stopPropagation();
             updateFiles(
@@ -71,12 +71,12 @@ const FilesPreview = ({
             );
           }}
         >
+          {/* Hover delete overlay */}
           <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-lg bg-red-600/60 text-white opacity-0 group-hover:opacity-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
               viewBox="0 0 20 20"
+              className="h-6 w-6 sm:h-8 sm:w-8"
             >
               <path
                 fill="currentColor"
@@ -86,40 +86,36 @@ const FilesPreview = ({
               />
             </svg>
           </div>
-          {file.type.startsWith("image/") ? (
-            <>
+          <div className="flex h-16 w-full flex-col items-center justify-center text-gray-600">
+            {file.type.startsWith("image/") ? (
               <img
                 src={URL.createObjectURL(file)}
-                className="h-16 w-full flex-shrink-0 rounded-lg object-cover "
+                className="h-16 sm:h-24"
                 alt={file.name}
               />
-              <span className="mt-1 w-full truncate text-xs font-light text-black ">
-                {file.name}
-              </span>
-            </>
-          ) : (
-            <>
-              <div className="flex h-16 w-full flex-col items-center justify-center border border-red-600 text-gray-600">
-                <span className="text-xl font-semibold">
-                  {file.name.split(".").pop()?.toUpperCase()}
-                </span>
+            ) : (
+              <>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="32"
                   viewBox="0 0 384 512"
+                  className="h-12 w-12 sm:h-16 sm:w-16"
                 >
                   <path
                     fill="currentColor"
                     d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
                   />
                 </svg>
-              </div>
-              <span className="mt-1 w-full truncate text-xs font-light text-black">
-                {file.name}
-              </span>
-            </>
-          )}
+                <span className="text-xl font-semibold">
+                  {file.name.split(".").pop()?.toUpperCase()}
+                </span>
+              </>
+            )}
+          </div>
+          <div className="absolute bottom-1 flex w-full items-center justify-center">
+            <span className="truncate px-2 text-xs font-light text-black">
+              {file.name}
+            </span>
+          </div>
         </div>
       ))}
     </div>
@@ -268,31 +264,28 @@ export function UploadDropzone<TRouter extends FileRouter>(
               ></path>
             </svg>
           )}
-      <label
-        htmlFor="file-upload"
-        className={twMerge(
-          classNames(
-            "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-            ready ? "text-blue-600" : "text-gray-500",
-          ),
-          styleFieldToClassName($props.appearance?.label, styleFieldArg),
-        )}
-        style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
-        data-ut-element="label"
-        data-state={state}
-      >
-        {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready ? (
-            $props.config?.preview !== false && files.length > 0 ? (
-              <FilesPreview files={files} updateFiles={setFiles} />
-            ) : (
-              `Choose files or drag and drop`
-            )
-          ) : (
-            `Loading...`
-          ))}
-        <input className="sr-only" {...getInputProps()} />
-      </label>
+
+      {$props.config?.preview !== false && files.length > 0 ? (
+        <FilesPreview files={files} updateFiles={setFiles} />
+      ) : (
+        <label
+          htmlFor="file-upload"
+          className={twMerge(
+            classNames(
+              "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+              ready ? "text-blue-600" : "text-gray-500",
+            ),
+            styleFieldToClassName($props.appearance?.label, styleFieldArg),
+          )}
+          style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
+          data-ut-element="label"
+          data-state={state}
+        >
+          {contentFieldToContent($props.content?.label, styleFieldArg) ??
+            (ready ? `Choose files or drag and drop` : `Loading...`)}
+          <input className="sr-only" {...getInputProps()} />
+        </label>
+      )}
       {$props.config?.preview !== false && files.length > 0 ? null : (
         <div
           className={twMerge(
