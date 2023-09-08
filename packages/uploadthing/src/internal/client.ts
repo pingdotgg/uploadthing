@@ -63,12 +63,12 @@ export const progressWidths: Record<number, string> = {
   100: "after:w-[100%]",
 };
 
-type MinCallbackArg = { ready: boolean | (() => boolean) };
-type inferRuntime<T extends MinCallbackArg> = T["ready"] extends boolean
+type AnyRuntime = "react" | "solid";
+type MinCallbackArg = { __runtime: AnyRuntime };
+type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"
   : "solid";
 
-type AnyRuntime = "react" | "solid";
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? ReactNode
   : JSX.Element;
@@ -82,12 +82,16 @@ export type StyleField<
 > =
   | string
   | CSSPropertiesEsque<TRuntime>
-  | ((arg: CallbackArg) => string | CSSPropertiesEsque<TRuntime>);
+  | ((
+      arg: Omit<CallbackArg, "__runtime">,
+    ) => string | CSSPropertiesEsque<TRuntime>);
 
 export type ContentField<
   CallbackArg extends MinCallbackArg,
   TRuntime extends AnyRuntime = inferRuntime<CallbackArg>,
-> = ElementEsque<TRuntime> | ((arg: CallbackArg) => ElementEsque<TRuntime>);
+> =
+  | ElementEsque<TRuntime>
+  | ((arg: Omit<CallbackArg, "__runtime">) => ElementEsque<TRuntime>);
 
 export const styleFieldToClassName = <T extends MinCallbackArg>(
   styleField: StyleField<T> | undefined,

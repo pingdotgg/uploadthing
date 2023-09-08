@@ -18,6 +18,7 @@ import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
+  __runtime: "react";
   ready: boolean;
   isUploading: boolean;
   uploadProgress: number;
@@ -119,12 +120,12 @@ export function UploadButton<TRouter extends FileRouter>(
     disabled: $props.__internal_button_disabled ?? !ready,
   });
 
-  const styleFieldArg: ButtonStyleFieldCallbackArgs = {
+  const styleFieldArg = {
     ready: ready,
     isUploading: $props.__internal_state === "uploading" || isUploading,
     uploadProgress,
     fileTypes,
-  };
+  } as ButtonStyleFieldCallbackArgs;
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;

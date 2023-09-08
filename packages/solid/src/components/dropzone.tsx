@@ -21,6 +21,7 @@ import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
+  __runtime: "solid";
   ready: () => boolean;
   isUploading: () => boolean;
   uploadProgress: () => number;
@@ -87,13 +88,13 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
-  const styleFieldArg: DropzoneStyleFieldCallbackArgs = {
+  const styleFieldArg = {
     ready: ready,
     isUploading: uploadedThing.isUploading,
     uploadProgress: uploadProgress,
     fileTypes: () => fileInfo().fileTypes,
     isDragActive: () => isDragActive,
-  };
+  } as DropzoneStyleFieldCallbackArgs;
 
   const state = () => {
     if (!ready()) return "readying";
