@@ -139,6 +139,8 @@ example, take a look at
 import { useDropzone } from "react-dropzone";
 import type { FileWithPath } from "react-dropzone";
 
+import { generateClientDropzoneAccept } from "uploadthing/client";
+
 import { useUploadThing } from "~/utils/uploadthing";
 
 export function MultiUploader() {
@@ -147,21 +149,28 @@ export function MultiUploader() {
     setFiles(acceptedFiles);
   }, []);
 
+  const { startUpload, permittedFileInfo } = useUploadThing(
+    "myUploadEndpoint",
+    {
+      onClientUploadComplete: () => {
+        alert("uploaded successfully!");
+      },
+      onUploadError: () => {
+        alert("error occurred while uploading");
+      },
+      onUploadBegin: () => {
+        alert("upload has begun");
+      },
+    },
+  );
+
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-  });
-
-  const { startUpload } = useUploadThing("myUploadEndpoint", {
-    onClientUploadComplete: () => {
-      alert("uploaded successfully!");
-    },
-    onUploadError: () => {
-      alert("error occurred while uploading");
-    },
-    onUploadBegin: () => {
-      alert("upload has begun");
-    },
   });
 
   return (
