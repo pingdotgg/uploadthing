@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
@@ -10,17 +9,21 @@ import type {
   inferErrorShape,
 } from "uploadthing/server";
 
+import type { EndpointMetadata } from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
 
-type EndpointMetadata = {
-  slug: string;
-  config: ExpandedRouteConfig;
-}[];
+declare const globalThis: {
+  __UPLOADTHING?: EndpointMetadata;
+};
 
 const useEndpointMetadata = (endpoint: string) => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
-  return data?.find((x) => x.slug === endpoint);
+  const maybeServerData = globalThis.__UPLOADTHING;
+  const { data } = useFetch<EndpointMetadata>(
+    // Don't fetch if we already have the data
+    maybeServerData ? undefined : "/api/uploadthing",
+  );
+  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
 };
 
 export type UseUploadthingProps<TRouter extends FileRouter> = {
