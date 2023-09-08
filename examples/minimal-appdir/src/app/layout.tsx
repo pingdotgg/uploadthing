@@ -17,8 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        {children}
         <NextSSRPlugin routerConfig={shapeRouteConfig(uploadRouter)} />
+        {children}
       </body>
     </html>
   );
