@@ -11,10 +11,6 @@ export const uploadRouter = {
   videoAndImage: f({
     image: {
       maxFileSize: "4MB",
-      maxFileCount: 4,
-    },
-    video: {
-      maxFileSize: "16MB",
     },
   })
     .middleware(({ req }) => {

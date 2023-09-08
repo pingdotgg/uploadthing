@@ -3,14 +3,16 @@ import { lookup } from "@uploadthing/mime-types";
 import type { AllowedFileType } from "./file-types";
 import type {
   ExpandedRouteConfig,
+  ExpandedRouterConfig,
   FileData,
-  FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  UploadRouteConfigFromUser,
+  UploadRouterConfigFromUser,
 } from "./types";
 
 export function isRouteArray(
-  routeConfig: FileRouterInputConfig,
+  routeConfig: UploadRouteConfigFromUser,
 ): routeConfig is FileRouterInputKey[] {
   return Array.isArray(routeConfig);
 }
@@ -35,7 +37,7 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
  * ```
  */
 export function fillInputRouteConfig(
-  routeConfig: FileRouterInputConfig,
+  routeConfig: UploadRouteConfigFromUser,
 ): ExpandedRouteConfig {
   // If array, apply defaults
   if (isRouteArray(routeConfig)) {
@@ -66,6 +68,35 @@ export function fillInputRouteConfig(
 
   return newConfig;
 }
+
+export const fillFullRouter = (router: UploadRouterConfigFromUser) => {
+  const keys = Object.keys(router);
+
+  const filledRouter: ExpandedRouterConfig = {};
+  keys.forEach((key) => {
+    const routeConfig = router[key]?._def?.routerConfig;
+    if (!routeConfig) throw new Error("Invalid config during fill");
+
+    filledRouter[key] = fillInputRouteConfig(routeConfig);
+  });
+
+  return filledRouter;
+};
+
+export const eagerSetupUploadThingSSR = (
+  config: UploadRouterConfigFromUser,
+) => {
+  const filledRouter = fillFullRouter(config);
+
+  // @ts-ignore
+  globalThis.__UPLOADTHING = {
+    // @ts-ignore
+    ...globalThis.__UPLOADTHING,
+    parsedConfig: filledRouter,
+  };
+
+  return filledRouter;
+};
 
 export function getTypeFromFileName(
   fileName: string,

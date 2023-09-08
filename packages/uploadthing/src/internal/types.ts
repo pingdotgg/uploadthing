@@ -4,8 +4,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
 
 import type {
-  FileRouterInputConfig,
   UploadedFile,
+  UploadRouteConfigFromUser,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -112,7 +112,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 }
 
 export type UploadBuilderDef<TParams extends AnyParams> = {
-  routerConfig: FileRouterInputConfig;
+  routerConfig: UploadRouteConfigFromUser;
   inputParser: JsonParser;
   middleware: MiddlewareFn<{}, TParams>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];

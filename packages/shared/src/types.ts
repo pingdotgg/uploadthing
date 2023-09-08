@@ -43,8 +43,25 @@ export type ExpandedRouteConfig = Partial<{
   [key in FileRouterInputKey]: RouteConfig;
 }>;
 
+export type ExpandedRouterConfig = Record<string, ExpandedRouteConfig>;
+
 type PartialRouteConfig = Partial<
   Record<FileRouterInputKey, Partial<RouteConfig>>
 >;
 
-export type FileRouterInputConfig = FileRouterInputKey[] | PartialRouteConfig;
+/**
+ * Valid file route inputs
+ *
+ * @example
+ * const router = {
+ *  "uploadProfilePicture": UploadRouteConfigFromUser;
+ * } satisfies FileRouter
+ */
+export type UploadRouteConfigFromUser =
+  | FileRouterInputKey[]
+  | PartialRouteConfig;
+
+export type UploadRouterConfigFromUser = Record<
+  string,
+  { _def: { routerConfig: UploadRouteConfigFromUser } }
+>;

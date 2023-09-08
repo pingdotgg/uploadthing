@@ -87,6 +87,9 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
+      '@uploadthing/shared':
+        specifier: ^5.2.1
+        version: link:../../packages/shared
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)

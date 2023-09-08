@@ -1,6 +1,6 @@
 import type {
-  FileRouterInputConfig,
   Json,
+  UploadRouteConfigFromUser,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -76,7 +76,7 @@ function internalCreateBuilder<
 type InOut<
   TRuntime extends AnyRuntime = "web",
   TErrorShape extends Json = { message: string },
-> = (input: FileRouterInputConfig) => UploadBuilder<{
+> = (input: UploadRouteConfigFromUser) => UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
   _runtime: TRuntime;
@@ -92,7 +92,7 @@ export function createBuilder<
   TRuntime extends AnyRuntime = "web",
   TErrorShape extends Json = { message: string },
 >(opts?: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
-  return (input: FileRouterInputConfig) => {
+  return (input: UploadRouteConfigFromUser) => {
     return internalCreateBuilder<TRuntime, TErrorShape>({
       routerConfig: input,
       ...opts,

@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import { fillInputRouteConfig, UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {
@@ -20,6 +20,24 @@ type EndpointMetadata = {
 
 const useEndpointMetadata = (endpoint: string) => {
   const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
+
+  // @ts-ignore
+  const fromGlobal = globalThis?.__UPLOADTHING?.parsedConfig?.[endpoint];
+
+  // @ts-ignore
+  console.log("fromGlobal?", fromGlobal);
+
+  if (fromGlobal) {
+    const fakeFetch = {
+      slug: endpoint,
+      config: fromGlobal as ExpandedRouteConfig,
+    };
+
+    console.log("returning this", fakeFetch);
+    console.log("returning now\n\n\n\n");
+    return fakeFetch;
+  }
+
   return data?.find((x) => x.slug === endpoint);
 };
 
