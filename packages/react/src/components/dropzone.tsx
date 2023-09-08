@@ -3,23 +3,22 @@ import type { FileWithPath } from "react-dropzone";
 import { useDropzone } from "react-dropzone";
 import { twMerge } from "tailwind-merge";
 
-import { classNames, generateClientDropzoneAccept } from "uploadthing/client";
+import {
+  allowedContentTextLabelGenerator,
+  classNames,
+  contentFieldToContent,
+  generateClientDropzoneAccept,
+  generatePermittedFileTypes,
+  progressWidths,
+  styleFieldToClassName,
+  styleFieldToCssObject,
+} from "uploadthing/client";
+import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import type { ContentField, StyleField } from "../utils/styles";
-import {
-  contentFieldToContent,
-  styleFieldToClassName,
-  styleFieldToCssObject,
-} from "../utils/styles";
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressWidths,
-  Spinner,
-} from "./shared";
+import { Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   ready: boolean;
@@ -29,20 +28,23 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: boolean;
 };
 
+type ReactStyleField<CallbackArg> = StyleField<CallbackArg, "react">;
+type ReactContentField<CallbackArg> = ContentField<CallbackArg, "react">;
+
 export type UploadDropzoneProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
     appearance?: {
-      container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      button?: StyleField<DropzoneStyleFieldCallbackArgs>;
+      container?: ReactStyleField<DropzoneStyleFieldCallbackArgs>;
+      uploadIcon?: ReactStyleField<DropzoneStyleFieldCallbackArgs>;
+      label?: ReactStyleField<DropzoneStyleFieldCallbackArgs>;
+      allowedContent?: ReactStyleField<DropzoneStyleFieldCallbackArgs>;
+      button?: ReactStyleField<DropzoneStyleFieldCallbackArgs>;
     };
     content?: {
-      uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+      uploadIcon?: ReactContentField<DropzoneStyleFieldCallbackArgs>;
+      label?: ReactContentField<DropzoneStyleFieldCallbackArgs>;
+      allowedContent?: ReactContentField<DropzoneStyleFieldCallbackArgs>;
+      button?: ReactContentField<DropzoneStyleFieldCallbackArgs>;
     };
     className?: string;
     config?: {
@@ -157,21 +159,33 @@ export function UploadDropzone<TRouter extends FileRouter>(
         "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
         isDragActive && "bg-blue-600/10",
         $props.className,
-        styleFieldToClassName($props.appearance?.container, styleFieldArg),
+        styleFieldToClassName<"react", DropzoneStyleFieldCallbackArgs>(
+          $props.appearance?.container,
+          styleFieldArg,
+        ),
       )}
       {...getRootProps()}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
+      style={styleFieldToCssObject<"react", DropzoneStyleFieldCallbackArgs>(
+        $props.appearance?.container,
+        styleFieldArg,
+      )}
       data-state={state}
     >
-      {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) ?? (
+      {contentFieldToContent<"react", DropzoneStyleFieldCallbackArgs>(
+        $props.content?.uploadIcon,
+        styleFieldArg,
+      ) ?? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
           className={twMerge(
             "mx-auto block h-12 w-12 align-middle text-gray-400",
-            styleFieldToClassName($props.appearance?.uploadIcon, styleFieldArg),
+            styleFieldToClassName<"react", DropzoneStyleFieldCallbackArgs>(
+              $props.appearance?.uploadIcon,
+              styleFieldArg,
+            ),
           )}
-          style={styleFieldToCssObject(
+          style={styleFieldToCssObject<"react", DropzoneStyleFieldCallbackArgs>(
             $props.appearance?.uploadIcon,
             styleFieldArg,
           )}
@@ -193,33 +207,43 @@ export function UploadDropzone<TRouter extends FileRouter>(
             "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
             ready ? "text-blue-600" : "text-gray-500",
           ),
-          styleFieldToClassName($props.appearance?.label, styleFieldArg),
+          styleFieldToClassName<"react", DropzoneStyleFieldCallbackArgs>(
+            $props.appearance?.label,
+            styleFieldArg,
+          ),
         )}
-        style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
+        style={styleFieldToCssObject<"react", DropzoneStyleFieldCallbackArgs>(
+          $props.appearance?.label,
+          styleFieldArg,
+        )}
         data-ut-element="label"
         data-state={state}
       >
-        {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready ? `Choose files or drag and drop` : `Loading...`)}
+        {contentFieldToContent<"react", DropzoneStyleFieldCallbackArgs>(
+          $props.content?.label,
+          styleFieldArg,
+        ) ?? (ready ? `Choose files or drag and drop` : `Loading...`)}
         <input className="sr-only" {...getInputProps()} />
       </label>
       <div
         className={twMerge(
           "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
+          styleFieldToClassName<"react", DropzoneStyleFieldCallbackArgs>(
             $props.appearance?.allowedContent,
             styleFieldArg,
           ),
         )}
-        style={styleFieldToCssObject(
+        style={styleFieldToCssObject<"react", DropzoneStyleFieldCallbackArgs>(
           $props.appearance?.allowedContent,
           styleFieldArg,
         )}
         data-ut-element="allowed-content"
         data-state={state}
       >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+        {contentFieldToContent<"react", DropzoneStyleFieldCallbackArgs>(
+          $props.content?.allowedContent,
+          styleFieldArg,
+        ) ?? allowedContentTextLabelGenerator(permittedFileInfo?.config)}
       </div>
       {($props.__internal_show_button ?? files.length > 0) && (
         <button
@@ -230,9 +254,12 @@ export function UploadDropzone<TRouter extends FileRouter>(
                 ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`
                 : "bg-blue-600",
             ),
-            styleFieldToClassName($props.appearance?.button, styleFieldArg),
+            styleFieldToClassName<"react", DropzoneStyleFieldCallbackArgs>(
+              $props.appearance?.button,
+              styleFieldArg,
+            ),
           )}
-          style={styleFieldToCssObject(
+          style={styleFieldToCssObject<"react", DropzoneStyleFieldCallbackArgs>(
             $props.appearance?.button,
             styleFieldArg,
           )}
@@ -241,7 +268,10 @@ export function UploadDropzone<TRouter extends FileRouter>(
           data-state={state}
           disabled={$props.__internal_button_disabled ?? state === "uploading"}
         >
-          {contentFieldToContent($props.content?.button, styleFieldArg) ??
+          {contentFieldToContent<"react", DropzoneStyleFieldCallbackArgs>(
+            $props.content?.button,
+            styleFieldArg,
+          ) ??
             (state === "uploading" ? (
               <Spinner />
             ) : (

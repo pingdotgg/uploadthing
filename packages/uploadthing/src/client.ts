@@ -10,6 +10,11 @@ import type {
   inferEndpointInput,
 } from "./internal/types";
 
+/**
+ * @internal
+ */
+export * from "./internal/client";
+
 function fetchWithProgress(
   url: string,
   opts: {

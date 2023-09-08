@@ -1,23 +1,21 @@
 import { useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { generateMimeTypes } from "uploadthing/client";
+import {
+  allowedContentTextLabelGenerator,
+  contentFieldToContent,
+  generateMimeTypes,
+  generatePermittedFileTypes,
+  progressWidths,
+  styleFieldToClassName,
+  styleFieldToCssObject,
+} from "uploadthing/client";
+import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import type { ContentField, StyleField } from "../utils/styles";
-import {
-  contentFieldToContent,
-  styleFieldToClassName,
-  styleFieldToCssObject,
-} from "../utils/styles";
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressWidths,
-  Spinner,
-} from "./shared";
+import { Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   ready: boolean;
@@ -26,16 +24,19 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
+type ReactStyleField<CallbackArg> = StyleField<CallbackArg, "react">;
+type ReactContentField<CallbackArg> = ContentField<CallbackArg, "react">;
+
 export type UploadButtonProps<TRouter extends FileRouter> =
   UploadthingComponentProps<TRouter> & {
     appearance?: {
-      container?: StyleField<ButtonStyleFieldCallbackArgs>;
-      button?: StyleField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+      container?: ReactStyleField<ButtonStyleFieldCallbackArgs>;
+      button?: ReactStyleField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: ReactStyleField<ButtonStyleFieldCallbackArgs>;
     };
     content?: {
-      button?: ContentField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+      button?: ReactContentField<ButtonStyleFieldCallbackArgs>;
+      allowedContent?: ReactContentField<ButtonStyleFieldCallbackArgs>;
     };
     className?: string;
   };
@@ -141,9 +142,15 @@ export function UploadButton<TRouter extends FileRouter>(
       className={twMerge(
         "flex flex-col items-center justify-center gap-1",
         $props.className,
-        styleFieldToClassName($props.appearance?.container, styleFieldArg),
+        styleFieldToClassName<"react", ButtonStyleFieldCallbackArgs>(
+          $props.appearance?.container,
+          styleFieldArg,
+        ),
       )}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
+      style={styleFieldToCssObject<"react", ButtonStyleFieldCallbackArgs>(
+        $props.appearance?.container,
+        styleFieldArg,
+      )}
       data-state={state}
     >
       <label
@@ -153,14 +160,23 @@ export function UploadButton<TRouter extends FileRouter>(
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
           state === "ready" && "bg-blue-600",
-          styleFieldToClassName($props.appearance?.button, styleFieldArg),
+          styleFieldToClassName<"react", ButtonStyleFieldCallbackArgs>(
+            $props.appearance?.button,
+            styleFieldArg,
+          ),
         )}
-        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        style={styleFieldToCssObject<"react", ButtonStyleFieldCallbackArgs>(
+          $props.appearance?.button,
+          styleFieldArg,
+        )}
         data-state={state}
         data-ut-element="button"
       >
         <input {...getInputProps()} />
-        {contentFieldToContent($props.content?.button, styleFieldArg) ??
+        {contentFieldToContent<"react", ButtonStyleFieldCallbackArgs>(
+          $props.content?.button,
+          styleFieldArg,
+        ) ??
           (state === "uploading" ? (
             <Spinner />
           ) : (
@@ -170,20 +186,22 @@ export function UploadButton<TRouter extends FileRouter>(
       <div
         className={twMerge(
           "h-[1.25rem]  text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
+          styleFieldToClassName<"react", ButtonStyleFieldCallbackArgs>(
             $props.appearance?.allowedContent,
             styleFieldArg,
           ),
         )}
-        style={styleFieldToCssObject(
+        style={styleFieldToCssObject<"react", ButtonStyleFieldCallbackArgs>(
           $props.appearance?.allowedContent,
           styleFieldArg,
         )}
         data-state={state}
         data-ut-element="allowed-content"
       >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+        {contentFieldToContent<"react", ButtonStyleFieldCallbackArgs>(
+          $props.content?.allowedContent,
+          styleFieldArg,
+        ) ?? allowedContentTextLabelGenerator(permittedFileInfo?.config)}
       </div>
     </div>
   );

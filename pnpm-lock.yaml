@@ -359,7 +359,7 @@ importers:
         version: 18.16.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
 
   packages/mime-types:
     devDependencies:
@@ -377,7 +377,7 @@ importers:
         version: 8.47.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -465,7 +465,7 @@ importers:
         version: 8.47.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -522,6 +522,9 @@ importers:
         specifier: ^5.2.1
         version: link:../shared
     devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../config/eslint
@@ -537,6 +540,9 @@ importers:
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
+      solid-js:
+        specifier: ^1.7.11
+        version: 1.7.11
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
