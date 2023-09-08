@@ -275,7 +275,16 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 };
 
 const conditionalDevServer = async (file: FileData, fileKey: string) => {
-  if (process.env.NODE_ENV !== "development") return;
+  let isDev = true;
+
+  if (typeof process !== "undefined") {
+    isDev = process.env.NODE_ENV === "development";
+  } else {
+    // @ts-expect-error - import.meta is dumb
+    isDev = import.meta.env.MODE === "development";
+  }
+
+  if (!isDev) return;
 
   let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
   if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
