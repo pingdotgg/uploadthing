@@ -138,8 +138,8 @@ example, take a look at
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
 import { useDropzone } from "react-dropzone";
 import type { FileWithPath } from "react-dropzone";
-import { generateClientDropzoneAccept } from "uploadthing/client";
 
+import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";
 
@@ -149,19 +149,24 @@ export function MultiUploader() {
     setFiles(acceptedFiles);
   }, []);
 
-  const { startUpload, permittedFileInfo } = useUploadThing("myUploadEndpoint", {
-    onClientUploadComplete: () => {
-      alert("uploaded successfully!");
+  const { startUpload, permittedFileInfo } = useUploadThing(
+    "myUploadEndpoint",
+    {
+      onClientUploadComplete: () => {
+        alert("uploaded successfully!");
+      },
+      onUploadError: () => {
+        alert("error occurred while uploading");
+      },
+      onUploadBegin: () => {
+        alert("upload has begun");
+      },
     },
-    onUploadError: () => {
-      alert("error occurred while uploading");
-    },
-    onUploadBegin: () => {
-      alert("upload has begun");
-    },
-  });
+  );
 
-  const fileTypes = permittedFileInfo?.config ? Object.keys(permittedFileInfo?.config) : [];
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
