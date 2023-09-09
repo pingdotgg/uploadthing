@@ -59,11 +59,11 @@ const FilesPreview = ({
   updateFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) => {
   return (
-    <div className="flex flex-row flex-wrap items-center justify-center gap-2">
+    <div className="flex h-36 w-full flex-row gap-2 overflow-x-auto">
       {files.map((file) => (
         <div
           key={file.name}
-          className="group relative flex h-24 w-24 flex-col items-center justify-center rounded-lg  p-1 ring-1 ring-gray-200 sm:h-32 sm:w-32"
+          className="group relative flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center rounded-lg ring-1 ring-gray-200 sm:h-32  sm:w-32"
           onClick={(e) => {
             e.stopPropagation();
             updateFiles(
@@ -72,11 +72,11 @@ const FilesPreview = ({
           }}
         >
           {/* Hover delete overlay */}
-          <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-lg bg-red-600/60 text-white opacity-0 group-hover:opacity-100">
+          <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 20 20"
-              className="h-6 w-6 sm:h-8 sm:w-8"
+              className="h-8 w-8 sm:h-12 sm:w-12"
             >
               <path
                 fill="currentColor"
@@ -85,37 +85,35 @@ const FilesPreview = ({
                 clipRule="evenodd"
               />
             </svg>
+            <div className="absolute bottom-1 flex w-full items-center justify-center">
+              <span className="truncate px-2 text-xs font-light">
+                {file.name}
+              </span>
+            </div>
           </div>
-          <div className="flex h-16 w-full flex-col items-center justify-center text-gray-600">
-            {file.type.startsWith("image/") ? (
-              <img
-                src={URL.createObjectURL(file)}
-                className="h-16 sm:h-24"
-                alt={file.name}
-              />
-            ) : (
-              <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 384 512"
-                  className="h-12 w-12 sm:h-16 sm:w-16"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
-                  />
-                </svg>
-                <span className="text-xl font-semibold">
-                  {file.name.split(".").pop()?.toUpperCase()}
-                </span>
-              </>
-            )}
-          </div>
-          <div className="absolute bottom-1 flex w-full items-center justify-center">
-            <span className="truncate px-2 text-xs font-light text-black">
-              {file.name}
-            </span>
-          </div>
+          {file.type.startsWith("image/") ? (
+            <img
+              src={URL.createObjectURL(file)}
+              className="h-full w-full rounded-lg object-cover"
+              alt={file.name}
+            />
+          ) : (
+            <div className="flex h-16 w-full flex-col items-center justify-center text-gray-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 384 512"
+                className="h-12 w-12 sm:h-16 sm:w-16"
+              >
+                <path
+                  fill="currentColor"
+                  d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
+                />
+              </svg>
+              <span className="text-xl font-semibold">
+                {file.name.split(".").pop()?.toUpperCase()}
+              </span>
+            </div>
+          )}
         </div>
       ))}
     </div>
