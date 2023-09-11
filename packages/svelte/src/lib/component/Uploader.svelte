@@ -1,10 +1,12 @@
-<script lang="ts" generics="TRouter extends FileRouter">
-  // This eslint comment is because eslint-plugin-svelte does not support component generics as of yet:
+<script lang="ts" context="module">
+  // Workaround for eslint-plugin-svelte issue regarding generics:
   // https://github.com/sveltejs/svelte-eslint-parser/issues/306
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   import type { FileRouter } from "uploadthing/server";
 
+  type TRouter = FileRouter;
+</script>
+
+<script lang="ts" generics="TRouter extends FileRouter">
   import type { UploadthingComponentProps } from "./shared";
   import UploadButton from "./UploadButton.svelte";
   import UploadDropzone from "./UploadDropzone.svelte";

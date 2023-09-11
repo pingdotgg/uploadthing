@@ -1,10 +1,13 @@
-<script lang="ts" generics="TRouter extends FileRouter">
-  // The bunch of eslint comments are because eslint-plugin-svelte does not support component generics as of yet:
+<script lang="ts" context="module">
+  // Workaround for eslint-plugin-svelte issue regarding generics:
   // https://github.com/sveltejs/svelte-eslint-parser/issues/306
-
-  import { classNames, generateMimeTypes } from "uploadthing/client";
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   import type { FileRouter } from "uploadthing/server";
+
+  type TRouter = FileRouter;
+</script>
+
+<script lang="ts" generics="TRouter extends FileRouter">
+  import { classNames, generateMimeTypes } from "uploadthing/client";
 
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
   import {
@@ -22,23 +25,19 @@
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     uploader.endpoint,
     {
       onClientUploadComplete: (res) => {
         if (fileInputRef) {
           fileInputRef.value = "";
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
       },
       onUploadProgress: (p) => {
         uploadProgress = p;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
         uploader.onUploadProgress?.(p);
       },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       onUploadError: uploader.onUploadError,
     },
   );
@@ -81,10 +80,8 @@ Example:
       {multiple}
       on:change={(e) => {
         if (!e.currentTarget?.files) return;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         const input = "input" in uploader ? uploader.input : undefined;
         const files = Array.from(e.currentTarget.files);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         void startUpload(files, input);
       }}
     />

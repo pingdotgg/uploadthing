@@ -1,19 +1,13 @@
 import accepts from "attr-accept";
 import type { FileWithPath, fromEvent } from "file-selector";
 
-export type FileAccept =
-  | string
-  | string[]
-  | {
-      [key: string]: string[];
-    };
+export type FileAccept = string | string[] | Record<string, string[]>;
 
 type FileErrorCode =
   | "file-invalid-type"
   | "file-too-large"
   | "file-too-small"
-  | "too-many-files"
-  | string;
+  | "too-many-files";
 
 type FileRejectionError =
   | { code: FileErrorCode; message: string }
@@ -120,7 +114,7 @@ export function getInvalidTypeRejectionErr(
   accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
   const messageSuffix = Array.isArray(accept)
     ? `one of ${accept.join(", ")}`
-    : accept;
+    : (accept as string);
   return {
     code: FILE_INVALID_TYPE,
     message: `File type must be ${messageSuffix}`,

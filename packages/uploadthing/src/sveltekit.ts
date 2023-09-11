@@ -3,10 +3,10 @@ import type { Handle } from "@sveltejs/kit";
 import type { Json } from "@uploadthing/shared";
 
 import type { RouterWithConfig } from "./internal/handler";
-import { createNextRouteHandler } from "./internal/next/approuter";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import { createNextRouteHandler } from "./next";
 
 export type { FileRouter } from "./internal/types";
 
