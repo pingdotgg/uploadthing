@@ -119,4 +119,43 @@ export default function Home() {
 }
 ```
 
+### Configure automatic hydration during SSR (recommended)
+
+> Added in `v5.x`
+
+By default, `useUploadThing` (and thus also the premade components) will fetch
+your server for the route endpoint permissions which will show a loading state.
+By utilizing server components, we can perform automatic hydration of this data
+instead to avoid the loading state and show the route permissions immediately.
+
+```tsx copy filename="app/layout.tsx"
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { shapeRouteConfig } from "uploadthing/server";
+
+import { uploadRouter } from "~/server/uploadthing";
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        <NextSSRPlugin
+          /**
+           * The `shapeRouteConfig` will extract **only** the route configs
+           * from the router to prevent additional information from being
+           * leaked to the client. The data passed to the client is the same
+           * as if you were to fetch `/api/uploadthing` directly.
+           */
+          routerConfig={shapeRouteConfig(uploadRouter)}
+        />
+        {children}
+      </body>
+    </html>
+  );
+}
+```
+
 </Steps>
