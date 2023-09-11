@@ -1,5 +1,5 @@
 {
-  "name": "@example/sveltekit",
+  "name": "@example/minimal-sveltekit",
   "version": "0.0.1",
   "private": true,
   "scripts": {
