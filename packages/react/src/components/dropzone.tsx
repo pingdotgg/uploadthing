@@ -59,61 +59,51 @@ const FilesPreview = ({
   updateFiles: React.Dispatch<React.SetStateAction<File[]>>;
 }) => {
   return (
-    <div className="flex h-36 w-full flex-row gap-2 overflow-x-auto">
-      {files.map((file) => (
+    <div className="flex h-14 w-full flex-col items-center justify-start gap-2 divide-y overflow-y-auto p-4">
+      {files.map((file, i) => (
         <div
-          key={file.name}
-          className="group relative flex h-24 w-24 flex-shrink-0 flex-col items-center justify-center rounded-lg ring-1 ring-gray-200 sm:h-32  sm:w-32"
+          key={file.name + i}
+          className="group flex w-full items-center justify-between gap-2 rounded-full bg-gray-100 p-1 ring-1 ring-gray-200"
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
-            updateFiles(
-              files.filter((f) => f.name !== file.name && f.size !== file.size),
-            );
+            updateFiles((prev) => prev.filter((f) => f !== file));
           }}
         >
-          {/* Hover delete overlay */}
-          <div className="absolute left-0 top-0 flex h-full w-full items-center justify-center rounded-lg bg-black/60 text-white opacity-0 group-hover:opacity-100">
+          <div className="flex flex-row items-center gap-2 truncate">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              className="h-8 w-8 sm:h-12 sm:w-12"
+              viewBox="0 0 36 36"
+              className="ml-2 h-4 w-4 min-w-min text-gray-600"
             >
               <path
                 fill="currentColor"
-                fillRule="evenodd"
-                d="M4.28 3.22a.75.75 0 0 0-1.06 1.06L8.94 10l-5.72 5.72a.75.75 0 1 0 1.06 1.06L10 11.06l5.72 5.72a.75.75 0 1 0 1.06-1.06L11.06 10l5.72-5.72a.75.75 0 0 0-1.06-1.06L10 8.94L4.28 3.22Z"
-                clipRule="evenodd"
+                d="M8.42 32.6A6.3 6.3 0 0 1 4 30.79l-.13-.13A6.2 6.2 0 0 1 2 26.22a6.77 6.77 0 0 1 2-4.82L19.5 6.07a8.67 8.67 0 0 1 12.15-.35A8 8 0 0 1 34 11.44a9 9 0 0 1-2.7 6.36L17.37 31.6A1 1 0 1 1 16 30.18l13.89-13.8A7 7 0 0 0 32 11.44a6 6 0 0 0-1.76-4.3a6.67 6.67 0 0 0-9.34.35L5.45 22.82A4.78 4.78 0 0 0 4 26.22a4.21 4.21 0 0 0 1.24 3l.13.13a4.64 4.64 0 0 0 6.5-.21l13.35-13.2A2.7 2.7 0 0 0 26 14a2.35 2.35 0 0 0-.69-1.68a2.61 2.61 0 0 0-3.66.13l-9.2 9.12a1 1 0 1 1-1.41-1.42L20.28 11a4.62 4.62 0 0 1 6.48-.13A4.33 4.33 0 0 1 28 14a4.68 4.68 0 0 1-1.41 3.34L13.28 30.58a6.91 6.91 0 0 1-4.86 2.02Z"
               />
+              <path fill="none" d="M0 0h36v36H0z" />
             </svg>
-            <div className="absolute bottom-1 flex w-full items-center justify-center">
-              <span className="truncate px-2 text-xs font-light">
-                {file.name}
-              </span>
+            {file.type.startsWith("image/") ? (
+              <img
+                src={URL.createObjectURL(file)}
+                className="h-3 w-4 object-contain"
+              />
+            ) : null}
+            <div className="truncate text-sm font-semibold leading-6 text-gray-600 group-hover:text-red-500">
+              {file.name}
             </div>
           </div>
-          {file.type.startsWith("image/") ? (
-            <img
-              src={URL.createObjectURL(file)}
-              className="h-full w-full rounded-lg object-cover"
-              alt={file.name}
-            />
-          ) : (
-            <div className="flex h-16 w-full flex-col items-center justify-center text-gray-600">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 384 512"
-                className="h-12 w-12 sm:h-16 sm:w-16"
-              >
-                <path
-                  fill="currentColor"
-                  d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
-                />
-              </svg>
-              <span className="text-xl font-semibold">
-                {file.name.split(".").pop()?.toUpperCase()}
-              </span>
-            </div>
-          )}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            className="mr-2 hidden h-4 w-4 min-w-min text-red-500 group-hover:block"
+          >
+            <path
+              fill="currentColor"
+              fillRule="evenodd"
+              d="M4.28 3.22a.75.75 0 0 0-1.06 1.06L8.94 10l-5.72 5.72a.75.75 0 1 0 1.06 1.06L10 11.06l5.72 5.72a.75.75 0 1 0 1.06-1.06L11.06 10l5.72-5.72a.75.75 0 0 0-1.06-1.06L10 8.94L4.28 3.22Z"
+              clipRule="evenodd"
+            ></path>
+          </svg>
         </div>
       ))}
     </div>
@@ -284,28 +274,25 @@ export function UploadDropzone<TRouter extends FileRouter>(
           <input className="sr-only" {...getInputProps()} />
         </label>
       )}
-      {$props.config?.preview !== false && files.length > 0 ? null : (
-        <div
-          className={twMerge(
-            "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
-            styleFieldToClassName(
-              $props.appearance?.allowedContent,
-              styleFieldArg,
-            ),
-          )}
-          style={styleFieldToCssObject(
+      <div
+        className={twMerge(
+          "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
+          styleFieldToClassName(
             $props.appearance?.allowedContent,
             styleFieldArg,
-          )}
-          data-ut-element="allowed-content"
-          data-state={state}
-        >
-          {contentFieldToContent(
-            $props.content?.allowedContent,
-            styleFieldArg,
-          ) ?? allowedContentTextLabelGenerator(permittedFileInfo?.config)}
-        </div>
-      )}
+          ),
+        )}
+        style={styleFieldToCssObject(
+          $props.appearance?.allowedContent,
+          styleFieldArg,
+        )}
+        data-ut-element="allowed-content"
+        data-state={state}
+      >
+        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
+          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+      </div>
+
       {($props.__internal_show_button ?? files.length > 0) && (
         <button
           className={twMerge(
