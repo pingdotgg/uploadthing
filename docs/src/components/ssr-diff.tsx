@@ -11,28 +11,34 @@ export function WithoutSSR() {
   }, []);
 
   return (
-    // @ts-expect-error - using non-public props
-    <UploadButton
-      __internal_button_disabled
-      __internal_state={loading ? "readying" : "ready"}
-      content={{
-        allowedContent: loading ? "" : "Allowed content",
-        button: loading ? "Loading..." : "Ready",
-      }}
-    />
+    <div className="flex flex-col items-center gap-2">
+      <span className="font-semibold">Without SSR</span>
+      {/* @ts-expect-error - using non-public props */}
+      <UploadButton
+        __internal_button_disabled
+        __internal_state={loading ? "readying" : "ready"}
+        content={{
+          allowedContent: loading ? "" : "Allowed content",
+          button: loading ? "Loading..." : "Ready",
+        }}
+      />
+    </div>
   );
 }
 
 export function WithSSR() {
   return (
-    // @ts-expect-error - using non-public props
-    <UploadButton
-      __internal_button_disabled
-      __internal_state={"ready"}
-      content={{
-        allowedContent: "Allowed content",
-        button: "Ready",
-      }}
-    />
+    <div className="flex flex-col items-center gap-2">
+      <span className="font-semibold">With SSR</span>
+      {/* @ts-expect-error - using non-public props */}
+      <UploadButton
+        __internal_button_disabled
+        __internal_state={"ready"}
+        content={{
+          allowedContent: "Allowed content",
+          button: "Ready",
+        }}
+      />
+    </div>
   );
 }
