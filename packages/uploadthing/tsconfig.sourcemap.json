@@ -7,5 +7,5 @@
     "emitDeclarationOnly": true,
     "declarationDir": "dist"
   },
-  "exclude": ["tsup.config.ts", "test"]
+  "exclude": ["tsup.config.ts", "test", "**/*.test.ts", "**/*.test.tsx"]
 }

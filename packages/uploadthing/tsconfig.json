@@ -16,6 +16,6 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["src/**/*", "*.ts", "test/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*", "*.ts"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
 }

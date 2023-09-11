@@ -2,7 +2,8 @@
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { NextRequest } from "next/server";
-import { expect, expectTypeOf, it } from "vitest";
+import { expect, it } from "bun:test";
+import { expectTypeOf } from "expect-type";
 import { z } from "zod";
 
 import type { UnsetMarker } from "../src/internal/types";

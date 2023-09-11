@@ -1,4 +1,5 @@
-import { expectTypeOf, it } from "vitest";
+import { it } from "bun:test";
+import { expectTypeOf } from "expect-type";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";

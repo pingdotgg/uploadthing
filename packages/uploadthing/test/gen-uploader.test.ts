@@ -1,4 +1,4 @@
-import { it } from "vitest";
+import { it } from "bun:test";
 
 import { genUploader } from "../src/client";
 import type { FileRouter } from "../src/internal/types";
