@@ -1,18 +1,13 @@
-import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 import { db } from "~/server/db";
 import * as schema from "~/server/db/schema";
 import { Uploader } from "./uploader";
 
+const getFiles = cache(() => db.select().from(schema.files));
+
 export default async function Home() {
-  const files = await unstable_cache(
-    () => {
-      return db.select().from(schema.files);
-    },
-    [],
-    // We revalidate this tag when an upload completes
-    { tags: ["files"] },
-  )();
+  const files = await getFiles();
 
   return (
     <main>

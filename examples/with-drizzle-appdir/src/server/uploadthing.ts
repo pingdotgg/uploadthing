@@ -41,8 +41,6 @@ export const uploadRouter = {
         url: file.url,
         uploadedBy: metadata.uploaderId,
       });
-
-      revalidateTag("files");
     }),
 } satisfies FileRouter;
 
