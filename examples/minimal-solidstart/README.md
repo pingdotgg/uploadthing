@@ -1,5 +1,9 @@
 # Minimal SolidStart example for UploadThing
 
+<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-solidstart">
+  <img height="64" src="https://github.com/pingdotgg/uploadthing/assets/51714798/45907a4e-aa64-401a-afb3-b6c6df6eb71f" />
+</a>
+
 ## QuickStart
 
 1. Grab an API key from the UploadThing dashboard:
