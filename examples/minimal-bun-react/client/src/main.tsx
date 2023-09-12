@@ -1,5 +1,3 @@
-import "@uploadthing/react/styles.css";
-
 import React from "react";
 import ReactDOM from "react-dom/client";
 
@@ -7,15 +5,8 @@ import { UploadButton } from "./uploadthing";
 
 function App() {
   return (
-    <main
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        alignItems: "center",
-      }}
-    >
-      <h1>Bun + Vite + Uploadthing</h1>
+    <main className="flex flex-col items-center gap-4 py-8">
+      <h1 className="text-xl font-bold">Bun + Vite + Uploadthing</h1>
       <div>
         <UploadButton
           endpoint="videoAndImage"
