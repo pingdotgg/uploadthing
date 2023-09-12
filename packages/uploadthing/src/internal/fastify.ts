@@ -54,6 +54,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
           "x-uploadthing-version": UPLOADTHING_VERSION,
         })
         .send("An unknown error occured");
+      return;
     }
 
     void res
