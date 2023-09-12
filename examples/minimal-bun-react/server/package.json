@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir dist"
+    "build": "bun build src/index.ts --outdir dist",
+    "start": "bun dist/index.js"
   },
   "dependencies": {
     "uploadthing": "^5.5.0"

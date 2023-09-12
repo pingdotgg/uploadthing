@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "bunx --bun vite",
     "build": "bunx --bun vite build",
-    "preview": "vite preview"
+    "start": "bunx --bun vite preview"
   },
   "dependencies": {
     "@uploadthing/react": "5.5.0",
