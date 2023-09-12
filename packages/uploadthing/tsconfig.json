@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Default",
   "compilerOptions": {
-    "composite": false,
+    "composite": true,
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "strict": true
   },
+  "files": [],
   "references": [{ "path": "./tsconfig.test.json" }],
   "include": ["src/**/*", "*.ts"],
   "exclude": ["node_modules", "test", "**/*.test.ts", "**/*.test.tsx"]
