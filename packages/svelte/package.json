@@ -36,7 +36,8 @@
   "dependencies": {
     "@uploadthing/shared": "^5.2.1",
     "attr-accept": "^2.2.2",
-    "file-selector": "^0.6.0"
+    "file-selector": "^0.6.0",
+    "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^2.1.0",

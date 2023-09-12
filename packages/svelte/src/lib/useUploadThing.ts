@@ -2,6 +2,7 @@ import { derived, readonly, writable } from "svelte/store";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
+import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {
   FileRouter,
@@ -24,17 +25,18 @@ const createEndpointMetadata = (endpoint: string) => {
 };
 
 export type UseUploadthingProps<TRouter extends FileRouter> = {
+  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
   onUploadProgress?: (p: number) => void;
-  onClientUploadComplete?: (
-    res?: Awaited<ReturnType<typeof DANGEROUS__uploadFiles>>,
-  ) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
+  onUploadBegin?: (fileName: string) => void;
 };
 
-const fatalClientError = new UploadThingError({
-  code: "INTERNAL_CLIENT_ERROR",
-  message: "Something went wrong. Please report this to UploadThing.",
-});
+const fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });
 
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
@@ -72,6 +74,11 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
               opts?.onUploadProgress?.(averageProgress);
               uploadProgress = averageProgress;
             }
+          },
+          onUploadBegin({ file }) {
+            if (!opts?.onUploadBegin) return;
+
+            opts.onUploadBegin(file);
           },
         });
         opts?.onClientUploadComplete?.(res);

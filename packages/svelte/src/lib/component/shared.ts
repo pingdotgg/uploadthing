@@ -75,18 +75,18 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
       });
 }[keyof TRouter];
 
-export const progressHeights: Record<number, string> = {
-  0: "after:ut-w-0",
-  10: "after:ut-w-[10%]",
-  20: "after:ut-w-[20%]",
-  30: "after:ut-w-[30%]",
-  40: "after:ut-w-[40%]",
-  50: "after:ut-w-[50%]",
-  60: "after:ut-w-[60%]",
-  70: "after:ut-w-[70%]",
-  80: "after:ut-w-[80%]",
-  90: "after:ut-w-[90%]",
-  100: "after:ut-w-[100%]",
+export const progressWidths: Record<number, string> = {
+  0: "after:w-0",
+  10: "after:w-[10%]",
+  20: "after:w-[20%]",
+  30: "after:w-[30%]",
+  40: "after:w-[40%]",
+  50: "after:w-[50%]",
+  60: "after:w-[60%]",
+  70: "after:w-[70%]",
+  80: "after:w-[80%]",
+  90: "after:w-[90%]",
+  100: "after:w-[100%]",
 };
 
 /**

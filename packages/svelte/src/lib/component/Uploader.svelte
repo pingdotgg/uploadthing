@@ -14,14 +14,14 @@
   export let uploader: UploadthingComponentProps<TRouter>;
 </script>
 
-<div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
-  <span class="ut-text-center ut-text-4xl ut-font-bold">
+<div class="flex flex-col items-center justify-center gap-4">
+  <span class="text-center text-4xl font-bold">
     {`Upload a file using a button:`}
   </span>
   <UploadButton {uploader} />
 </div>
-<div class="ut-flex ut-flex-col ut-items-center ut-justify-center ut-gap-4">
-  <span class="ut-text-center ut-text-4xl ut-font-bold">
+<div class="flex flex-col items-center justify-center gap-4">
+  <span class="text-center text-4xl font-bold">
     {`...or using a dropzone:`}
   </span>
   <UploadDropzone {uploader} />
