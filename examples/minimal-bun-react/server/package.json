@@ -1,0 +1,17 @@
+{
+  "name": "@examples/bun-react-server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch index.ts",
+    "build": "bun build index.ts --outdir dist"
+  },
+  "dependencies": {
+    "uploadthing": "^5.5.0"
+  },
+  "devDependencies": {
+    "bun-types": "canary",
+    "typescript": "^5.1.6"
+  }
+}

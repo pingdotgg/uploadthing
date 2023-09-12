@@ -1,0 +1,20 @@
+{
+  "name": "@examples/bun-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev\"",
+    "build": "bun --cwd client build && bun --cwd server build",
+    "lint": "eslint --ext .ts,.tsx ."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1",
+    "eslint": "^8.47.0",
+    "typescript": "^5.1.6"
+  }
+}

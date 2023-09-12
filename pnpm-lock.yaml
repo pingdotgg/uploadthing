@@ -82,55 +82,6 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
 
-  examples/bun-vite-react:
-    dependencies:
-      '@uploadthing/react':
-        specifier: 5.5.0
-        version: link:../../packages/react
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
-      react-dropzone:
-        specifier: ^14.2.3
-        version: 14.2.3(react@18.2.0)
-      uploadthing:
-        specifier: ^5.5.0
-        version: link:../../packages/uploadthing
-      zod:
-        specifier: ^3.21.4
-        version: 3.22.2
-    devDependencies:
-      '@types/react':
-        specifier: 18.2.8
-        version: 18.2.8
-      '@types/react-dom':
-        specifier: 18.2.4
-        version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../../packages/config/eslint
-      '@vitejs/plugin-react':
-        specifier: ^4.0.3
-        version: 4.0.4(vite@4.4.9)
-      bun-types:
-        specifier: canary
-        version: 1.0.0-canary.20230908T153034
-      concurrently:
-        specifier: ^8.2.1
-        version: 8.2.1
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.16.0)
-
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
@@ -195,6 +146,65 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
+
+  examples/minimal-bun-react:
+    devDependencies:
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
+      eslint:
+        specifier: ^8.47.0
+        version: 8.47.0
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
+  examples/minimal-bun-react/client:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 5.5.0
+        version: link:../../../packages/react
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      react-dropzone:
+        specifier: ^14.2.3
+        version: 14.2.3(react@18.2.0)
+      uploadthing:
+        specifier: ^5.5.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@vitejs/plugin-react':
+        specifier: ^4.0.3
+        version: 4.0.4(vite@4.4.9)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.16.0)
+
+  examples/minimal-bun-react/server:
+    dependencies:
+      uploadthing:
+        specifier: ^5.5.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      bun-types:
+        specifier: canary
+        version: 1.0.0-canary.20230908T153034
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
 
   examples/minimal-pagedir:
     dependencies:
