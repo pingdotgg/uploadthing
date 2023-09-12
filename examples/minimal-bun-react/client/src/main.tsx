@@ -1,11 +1,9 @@
+import "@uploadthing/react/styles.css";
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import "@uploadthing/react/styles.css";
-
-import { UploadButton } from "@uploadthing/react";
-
-import type { OurFileRouter } from "../server";
+import { UploadButton } from "./uploadthing";
 
 function App() {
   return (
@@ -19,7 +17,7 @@ function App() {
     >
       <h1>Bun + Vite + Uploadthing</h1>
       <div>
-        <UploadButton<OurFileRouter>
+        <UploadButton
           endpoint="videoAndImage"
           onClientUploadComplete={(file) => {
             console.log("uploaded", file);
