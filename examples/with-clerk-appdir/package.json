@@ -1,5 +1,5 @@
 {
-  "name": "with-clerk",
+  "name": "@example/with-clerk-appdir",
   "version": "0.1.0",
   "private": true,
   "scripts": {
