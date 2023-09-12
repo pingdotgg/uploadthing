@@ -1,63 +1,30 @@
-"use client";
+import { unstable_cache } from "next/cache";
 
-import { useState } from "react";
+import { db } from "~/server/db";
+import * as schema from "~/server/db/schema";
+import { Uploader } from "./uploader";
 
-import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
-
-export default function Home() {
-  const [files, setFiles] = useState([]);
-
-  const fetchFiles = () => {
-    fetch("/api/files")
-      .then((res) => res.json())
-      .then((res) => setFiles(res.files));
-  };
+export default async function Home() {
+  const files = await unstable_cache(
+    async () => {
+      return await db.select().from(schema.files);
+    },
+    [],
+    // We revalidate this tag when an upload completes
+    { tags: ["files"] },
+  )();
 
   return (
     <main>
-      <UploadButton
-        /**
-         * @see https://docs.uploadthing.com/api-reference/react#uploadbutton
-         */
-        endpoint="videoAndImage"
-        onClientUploadComplete={(res) => {
-          console.log(`onClientUploadComplete`, res);
-          alert("Upload Completed");
-
-          setTimeout(() => fetchFiles(), 300);
-        }}
-        onUploadBegin={() => {
-          console.log("upload begin");
-        }}
-      />
-      <UploadDropzone
-        /**
-         * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
-         */
-        endpoint="videoAndImage"
-        onClientUploadComplete={(res) => {
-          console.log(`onClientUploadComplete`, res);
-          alert("Upload Completed");
-        }}
-        onUploadBegin={() => {
-          console.log("upload begin");
-        }}
-      />
+      <Uploader />
+      <h1>Your files</h1>
       <div>
-        {files.map(({ name }) => (
-          <div
-            style={{
-              display: "flex",
-            }}
-          >
-            <div>Name:</div>
-            <div
-              style={{
-                marginLeft: "1rem",
-              }}
-            >
-              {name}
-            </div>
+        {files.map((file) => (
+          <div style={{ display: "flex", gap: 8 }}>
+            <div>Name: {file.name}</div>
+            <a href={file.url} target="_blank">
+              View
+            </a>
           </div>
         ))}
       </div>

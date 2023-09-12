@@ -1,3 +1,5 @@
+import { revalidateTag } from "next/cache";
+
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
 
@@ -39,6 +41,8 @@ export const uploadRouter = {
         url: file.url,
         uploadedBy: metadata.uploaderId,
       });
+
+      revalidateTag("files");
     }),
 } satisfies FileRouter;
 
