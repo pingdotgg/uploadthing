@@ -152,9 +152,6 @@ importers:
       concurrently:
         specifier: ^8.2.1
         version: 8.2.1
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
