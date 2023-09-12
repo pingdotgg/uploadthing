@@ -1,9 +1,20 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    // add Bun type definitions
     "types": ["bun-types"],
-    "noEmit": true
+
+    // enable latest features
+    "lib": ["esnext"],
+    "module": "esnext",
+    "target": "esnext",
+
+    // if TS 5.x+
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "moduleDetection": "force"
   },
-  "include": ["test/**/*", "**/*.test.ts", "**/*.test.tsx"],
+  "include": ["test", "**/*.test.ts", "**/*.test.tsx"],
   "exclude": ["node_modules"]
 }

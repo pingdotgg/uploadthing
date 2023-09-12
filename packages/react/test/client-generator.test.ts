@@ -6,13 +6,7 @@ import { createUploadthing } from "uploadthing/server";
 
 import { generateReactHelpers } from "../src/hooks";
 
-function ignoreErrors(fn: () => void) {
-  try {
-    fn();
-  } catch {
-    // no-op
-  }
-}
+const doNotExecute = (_func: () => void) => true;
 
 const f = createUploadthing();
 
@@ -43,12 +37,12 @@ const { useUploadThing } = generateReactHelpers<typeof router>();
 const files = [new Blob([""], { type: "image/png" }) as File];
 
 it("typeerrors for invalid input", () => {
-  ignoreErrors(() => {
+  doNotExecute(() => {
     // @ts-expect-error - Argument of type '"bad route"' is not assignable to parameter of type '"exampleRoute"'.ts(2345)
     useUploadThing({ endpoint: "bad route" });
   });
 
-  ignoreErrors(() => {
+  doNotExecute(() => {
     // Type should be good here since this is the route name
     const { startUpload } = useUploadThing("exampleRoute");
 
@@ -56,7 +50,7 @@ it("typeerrors for invalid input", () => {
     void startUpload(files, { foo: "bar" });
   });
 
-  ignoreErrors(() => {
+  doNotExecute(() => {
     const { startUpload } = useUploadThing("withFooInput");
 
     // @ts-expect-error - input should be required
@@ -71,7 +65,7 @@ it("typeerrors for invalid input", () => {
 });
 
 it("infers the input correctly", () => {
-  ignoreErrors(() => {
+  doNotExecute(() => {
     const { startUpload } = useUploadThing("exampleRoute");
 
     // we must allow undefined here to avoid weird types in other places
@@ -82,14 +76,14 @@ it("infers the input correctly", () => {
     void startUpload(files, undefined);
   });
 
-  ignoreErrors(() => {
+  doNotExecute(() => {
     const { startUpload } = useUploadThing("withFooInput");
     type Input = Parameters<typeof startUpload>[1];
     expectTypeOf<Input>().toEqualTypeOf<{ foo: string }>();
     void startUpload(files, { foo: "bar" });
   });
 
-  ignoreErrors(() => {
+  doNotExecute(() => {
     const { startUpload } = useUploadThing("withBarInput");
     type Input = Parameters<typeof startUpload>[1];
     expectTypeOf<Input>().toEqualTypeOf<{ bar: number }>();

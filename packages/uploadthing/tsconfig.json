@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "strict": true
   },
+  "references": [{ "path": "./tsconfig.test.json" }],
   "include": ["src/**/*", "*.ts"],
-  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
+  "exclude": ["node_modules", "test", "**/*.test.ts", "**/*.test.tsx"]
 }
