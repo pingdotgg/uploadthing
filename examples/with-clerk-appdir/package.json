@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "SKIP_ENV_VALIDATION=true next lint",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@clerk/nextjs": "^4.23.5",
