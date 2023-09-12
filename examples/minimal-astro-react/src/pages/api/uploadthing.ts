@@ -1,10 +1,8 @@
-import type { APIRoute } from "astro";
-
 import { createServerHandler } from "uploadthing/server";
 
 import { uploadRouter } from "../../server/uploadthing";
 
-const handlers = createServerHandler({
+export const { GET: get, POST: post } = createServerHandler({
   router: uploadRouter,
   config: {
     uploadthingId: import.meta.env.UPLOADTHING_APPID,
@@ -12,6 +10,3 @@ const handlers = createServerHandler({
     callbackUrl: "http://localhost:3000/api/uploadthing",
   },
 });
-
-export const get: APIRoute = async ({ request }) => handlers.GET({ request });
-export const post: APIRoute = async ({ request }) => handlers.POST({ request });

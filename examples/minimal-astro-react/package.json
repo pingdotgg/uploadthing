@@ -1,5 +1,5 @@
 {
-  "name": "astro-react",
+  "name": "@example/minimal-astro-react",
   "type": "module",
   "private": true,
   "scripts": {
