@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { db } from "~/server/db";
-import { files as filesTable } from "~/server/db/schema";
+import * as schema from "~/server/db/schema";
 
-export const GET = () => {
-  const files = db.select().from(filesTable).all();
+export const GET = async () => {
+  const files = await db.select().from(schema.files);
 
   return NextResponse.json({
     files,
