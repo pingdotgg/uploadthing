@@ -8,9 +8,9 @@ export const env = createEnv({
    */
   server: {
     NODE_ENV: z.enum(["development", "test", "production"]),
-    CLERK_SECRET_KEY: z.string().min(1),
-    UPLOADTHING_APP_ID: z.string().min(1),
-    UPLOADTHING_SECRET: z.string().min(1),
+    CLERK_SECRET_KEY: z.string(),
+    UPLOADTHING_APP_ID: z.string(),
+    UPLOADTHING_SECRET: z.string(),
   },
 
   /**
@@ -19,12 +19,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z
-      .string()
-      .min(
-        1,
-        "Please provide NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY environment variable",
-      ),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
   },
 
   /**
