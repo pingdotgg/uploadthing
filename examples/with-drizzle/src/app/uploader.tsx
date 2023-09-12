@@ -30,6 +30,7 @@ export function Uploader() {
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
+          setTimeout(router.refresh, 500);
         }}
         onUploadBegin={() => {
           console.log("upload begin");
