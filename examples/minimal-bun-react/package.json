@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "dev": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev\"",
-    "build": "bun --cwd client build && bun --cwd server build",
+    "FIXME": "Something seems off with build script in our monorepo. It works standalone...",
+    "_build": "bun --cwd client build && bun --cwd server build",
     "start": "concurrently \"bun --cwd client start\" \"bun --cwd server start\""
   },
   "devDependencies": {
