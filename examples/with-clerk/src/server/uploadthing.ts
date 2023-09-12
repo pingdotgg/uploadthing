@@ -26,7 +26,7 @@ export const uploadRouter = {
         throw new Error("Please sign in");
       }
 
-      return {};
+      return { userId };
     })
     .onUploadComplete(({ file, metadata }) => {
       metadata;
