@@ -15,8 +15,6 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
 ) => {
   const requestHandler = buildRequestHandler<TRouter, "fastify">(opts);
 
-  fastify.register;
-
   const POST: RouteHandlerMethod = async (req, res) => {
     const response = await requestHandler({
       req: {
