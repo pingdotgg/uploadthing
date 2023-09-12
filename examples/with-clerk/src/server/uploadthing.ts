@@ -1,6 +1,7 @@
+import { auth } from "@clerk/nextjs";
+
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
-import { auth } from "@clerk/nextjs";
 
 const f = createUploadthing();
 /**
@@ -19,12 +20,10 @@ export const uploadRouter = {
     },
   })
     .middleware(({ req }) => {
-      const {
-        userId
-      } = auth();
+      const { userId } = auth();
 
       if (!userId) {
-        throw new Error('Please sign in');
+        throw new Error("Please sign in");
       }
 
       return {};

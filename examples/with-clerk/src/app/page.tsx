@@ -1,15 +1,11 @@
 "use client";
 
-import {
-  UploadButton,
-  UploadDropzone,
-} from "~/utils/uploadthing";
 import { SignIn, useAuth } from "@clerk/nextjs";
 
+import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
+
 export default function Home() {
-  const {
-    isSignedIn
-  } = useAuth()
+  const { isSignedIn } = useAuth();
 
   return (
     <main>
@@ -39,34 +35,28 @@ export default function Home() {
           console.log("upload begin");
         }}
       />
-      {
-        !isSignedIn
-          ? (
-            <div
-              style={{
-                marginTop: '1rem',
-                width: '100%',
-                display: 'flex',
-                justifyContent: 'center'
-              }}
-            >
-              <SignIn
-                redirectUrl="/"
-              />
-            </div>
-          )
-          : (
-            <div
-              style={{
-                marginTop: '1rem',
-                width: '100%',
-                textAlign: 'center'
-              }}
-            >
-              You are signed in!
-            </div>
-          )
-      }
+      {!isSignedIn ? (
+        <div
+          style={{
+            marginTop: "1rem",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <SignIn redirectUrl="/" />
+        </div>
+      ) : (
+        <div
+          style={{
+            marginTop: "1rem",
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          You are signed in!
+        </div>
+      )}
     </main>
   );
 }
