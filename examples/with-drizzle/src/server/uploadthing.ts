@@ -9,7 +9,6 @@ const f = createUploadthing();
  * This is your Uploadthing file router. For more information:
  * @see https://docs.uploadthing.com/api-reference/server#file-routes
  */
-
 export const uploadRouter = {
   videoAndImage: f({
     image: {
@@ -28,15 +27,18 @@ export const uploadRouter = {
       //   throw new Error("x-some-header is required");
       // }
 
-      // Return some metadata to be stored with the file
-      return { foo: "bar" as const };
+      // Return some metadata to be stored with the file, e.g. who uploaded the file
+      const userId = 1;
+      return { uploaderId: userId };
     })
-    .onUploadComplete(({ file, metadata }) => {
-      db.insert(files)
-        .values({
-          name: file.name,
-        })
-        .execute();
+    .onUploadComplete(async ({ file, metadata }) => {
+      // Persist the file data to your database
+      await db.insert(files).values({
+        name: file.name,
+        key: file.key,
+        url: file.url,
+        uploadedBy: metadata.uploaderId,
+      });
     }),
 } satisfies FileRouter;
 

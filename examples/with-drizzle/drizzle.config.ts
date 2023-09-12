@@ -6,4 +6,5 @@ export default {
   dbCredentials: {
     url: "./.data/sqlite.db",
   },
+  tablesFilter: ["with-drizzle_*"],
 } satisfies Config;
