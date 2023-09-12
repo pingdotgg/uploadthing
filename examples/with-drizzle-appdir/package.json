@@ -1,5 +1,5 @@
 {
-  "name": "with-drizzle",
+  "name": "@example/with-drizzle-appdir",
   "version": "0.1.0",
   "private": true,
   "scripts": {
