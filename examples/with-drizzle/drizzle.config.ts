@@ -1,12 +1,9 @@
 import { type Config } from "drizzle-kit";
 
-import { env } from "~/env.mjs";
-
 export default {
   schema: "./src/server/db/schema.ts",
-  driver: "mysql2",
+  driver: "better-sqlite",
   dbCredentials: {
-    connectionString: env.DATABASE_URL,
+    url: "./.data/sqlite.db",
   },
-  tablesFilter: ["with-drizzle_*"],
 } satisfies Config;
