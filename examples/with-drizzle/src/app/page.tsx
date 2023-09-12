@@ -6,8 +6,8 @@ import { Uploader } from "./uploader";
 
 export default async function Home() {
   const files = await unstable_cache(
-    async () => {
-      return await db.select().from(schema.files);
+    () => {
+      return db.select().from(schema.files);
     },
     [],
     // We revalidate this tag when an upload completes
