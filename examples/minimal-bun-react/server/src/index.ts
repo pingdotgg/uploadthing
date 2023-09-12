@@ -2,21 +2,21 @@ import { createServerHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./router";
 
+const utHandlers = createServerHandler({
+  router: uploadRouter,
+});
+
 const server = Bun.serve({
   port: 5174,
   fetch(request) {
     const reqPath = new URL(request.url).pathname;
 
     if (reqPath === "/api/uploadthing") {
-      const handlers = createServerHandler({
-        router: uploadRouter,
-      });
-
       try {
         if (request.method === "GET") {
-          return handlers.GET({ request });
+          return utHandlers.GET({ request });
         } else if (request.method === "POST") {
-          return handlers.POST({ request });
+          return utHandlers.POST({ request });
         } else {
           return new Response("Method not allowed", {
             status: 405,
