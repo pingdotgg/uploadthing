@@ -1,3 +1,5 @@
+import type { File as UndiciFile } from "undici";
+
 import type { Json } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
@@ -7,7 +9,7 @@ import {
 
 import { maybeParseResponseXML } from "../internal/s3-error-parser";
 
-export type FileEsque = Blob & { name: string };
+export type FileEsque = (Blob & { name: string }) | UndiciFile;
 
 export type UploadData = {
   key: string;
@@ -34,7 +36,7 @@ export const uploadFilesInternal = async (
 ) => {
   // Request presigned URLs for each file
   const fileData = data.files.map((file) => ({
-    name: file.name,
+    name: file.name ?? "unnamed-blob",
     type: file.type,
     size: file.size,
   }));
@@ -51,6 +53,11 @@ export const uploadFilesInternal = async (
     }),
   });
 
+  if (!res.ok) {
+    throw UploadThingError.fromResponse(res);
+  }
+
+  const clonedRes = res.clone(); // so that `UploadThingError.fromResponse()` can consume the body again
   const json = (await res.json()) as
     | {
         data: {
@@ -62,8 +69,8 @@ export const uploadFilesInternal = async (
       }
     | { error: string };
 
-  if (!res.ok || "error" in json) {
-    throw UploadThingError.fromResponse(res);
+  if ("error" in json) {
+    throw UploadThingError.fromResponse(clonedRes);
   }
 
   // Upload each file to S3
@@ -84,7 +91,14 @@ export const uploadFilesInternal = async (
       Object.entries(fields).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      formData.append("file", file);
+
+      formData.append(
+        "file",
+        // Handles case when there is no file name
+        file.name
+          ? (file as File)
+          : Object.assign(file as File, { name: "unnamed-blob" }),
+      );
 
       // Do S3 upload
       const s3res = await fetch(presignedUrl, {
