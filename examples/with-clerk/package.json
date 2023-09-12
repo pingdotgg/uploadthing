@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "SKIP_ENV_VALIDATION=true next build",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"
