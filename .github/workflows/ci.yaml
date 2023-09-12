@@ -7,17 +7,8 @@ on:
   pull_request:
 
 env:
-  DATABASE_URL: "https://fake.com"
-  AWS_REGION: "fake"
-  AWS_ID: "fake"
-  AWS_SECRET: "fake"
-  DATABASE_HOST: "fake"
-  DATABASE_PORT: "fake"
-  DATABASE_NAME: "fake"
-  DATABASE_USERNAME: "fake"
-  DATABASE_PASSWORD: "fake"
-  DB_PUSH_URL: "fake"
-  PING_SIGNING_SECRET: "fake"
+  UPLOADTHING_SECRET: 'sk_live_xxx'
+  UPLOADTHING_APP_ID: 'xxx'
 
 jobs:
   build:
