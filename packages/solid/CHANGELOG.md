@@ -1,5 +1,14 @@
 # @uploadthing/solid
 
+## 5.2.1
+
+### Patch Changes
+
+- [#286](https://github.com/pingdotgg/uploadthing/pull/286)
+  [`a22d74f`](https://github.com/pingdotgg/uploadthing/commit/a22d74fec2c1236b65816a3e95640f9fccb70bca)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix:
+  generateComponents return correct components
+
 ## 5.2.0
 
 ### Minor Changes
