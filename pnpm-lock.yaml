@@ -263,7 +263,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
-  examples/with-drizzle:
+  examples/with-drizzle-appdir:
     dependencies:
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0
@@ -10495,7 +10495,7 @@ packages:
   /tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
     dependencies:
-      safe-buffer: 5.1.2
+      safe-buffer: 5.2.1
     dev: false
 
   /turbo-darwin-64@1.10.1:
