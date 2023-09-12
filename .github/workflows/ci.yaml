@@ -5,11 +5,7 @@ on:
     branches:
       - main
   pull_request:
-
-env:
-  UPLOADTHING_SECRET='sk_live_xxx'
-  UPLOADTHING_APP_ID='xxx'
-
+    
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,6 +32,9 @@ jobs:
 
       - name: Install deps (with cache)
         run: pnpm install
+
+      - name: Copy .env.example files 
+        run: find ./examples -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
 
       - name: Build, lint, test, and typecheck
         run: pnpm turbo build lint test typecheck
