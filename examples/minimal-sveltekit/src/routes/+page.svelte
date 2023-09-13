@@ -1,10 +1,13 @@
 <script lang="ts">
-  import type { OurFileRouter } from "$lib/server/uploadthing";
-  import { useUploadThing } from "$lib/utils/uploadthing";
+  import { createUploader, useUploadThing } from "$lib/utils/uploadthing";
 
-  import { createUploader, Uploader } from "@uploadthing/svelte";
+  import { Uploader } from "@uploadthing/svelte";
 
-  const uploader = createUploader<OurFileRouter>({
+  import "@fontsource-variable/inter";
+
+  // Using createUploader directly needs the generic
+  // const uploader = createUploader<OurFileRouter>({
+  const uploader = createUploader({
     endpoint: "withoutMdwr",
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
@@ -40,3 +43,9 @@
     }}
   />
 </main>
+
+<style>
+  :global(body) {
+    font-family: "Inter Variable", sans-serif;
+  }
+</style>
