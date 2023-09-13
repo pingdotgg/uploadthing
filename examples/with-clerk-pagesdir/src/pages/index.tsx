@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import { SignIn, useAuth } from "@clerk/nextjs";
+
 import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -8,9 +9,7 @@ export default function Home() {
   const { isSignedIn } = useAuth();
 
   return (
-    <main
-      className={inter.className}
-    >
+    <main className={inter.className}>
       <UploadButton
         /**
          * @see https://docs.uploadthing.com/api-reference/react#uploadbutton

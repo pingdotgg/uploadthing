@@ -1,4 +1,5 @@
 import { getAuth } from "@clerk/nextjs/server";
+
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
 
