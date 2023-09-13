@@ -41,6 +41,9 @@ export const uploadRouter = {
         url: file.url,
         uploadedBy: metadata.uploaderId,
       });
+
+      // Revalidate the route that can be used for polling
+      revalidateTag(`/api/file/${file.key}`);
     }),
 } satisfies FileRouter;
 

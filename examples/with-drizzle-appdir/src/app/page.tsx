@@ -14,6 +14,7 @@ export default async function Home() {
       <Uploader />
       <h1>Your files</h1>
       <div>
+        {files.length === 0 && <i>No files uploaded yet</i>}
         {files.map((file) => (
           <div style={{ display: "flex", gap: 8 }}>
             <div>Name: {file.name}</div>

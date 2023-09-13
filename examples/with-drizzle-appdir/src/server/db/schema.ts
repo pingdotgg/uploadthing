@@ -2,7 +2,7 @@
 // https://orm.drizzle.team/docs/sql-schema-declaration
 // https://orm.drizzle.team/docs/column-types/sqlite
 
-import { sql } from "drizzle-orm";
+import { InferSelectModel, sql } from "drizzle-orm";
 import { int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 export const sqliteTable = sqliteTableCreator((name) => `with-drizzle_${name}`);
@@ -17,3 +17,5 @@ export const files = sqliteTable("files", {
     .default(sql`CURRENT_TIMESTAMP`),
   uploadedBy: int("uploaded_by").notNull(),
 });
+
+export type File = InferSelectModel<typeof files>;
