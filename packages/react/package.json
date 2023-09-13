@@ -39,9 +39,9 @@
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
   "dependencies": {
+    "@uploadthing/shared": "^5.2.1",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
-    "@uploadthing/shared": "^5.2.1",
     "tailwind-merge": "^1.13.2"
   },
   "peerDependencies": {
