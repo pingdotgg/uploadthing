@@ -5,11 +5,14 @@ import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {
+  ErrorMessage,
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
 } from "uploadthing/server";
 
+import { createUploader } from "./component";
+import type { UploadthingComponentProps } from "./component/shared";
 import { createFetch } from "./utils/createFetch";
 
 type EndpointMetadata = {
@@ -103,10 +106,19 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   return useUploadThing;
 };
 
+const generateUploader = <TRouter extends FileRouter>() => {
+  return (
+    props: FileRouter extends TRouter
+      ? ErrorMessage<"You forgot to pass the generic">
+      : UploadthingComponentProps<TRouter>,
+  ) => createUploader<TRouter>(props);
+};
+
 export const generateSvelteHelpers = <TRouter extends FileRouter>() => {
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
     uploadFiles: DANGEROUS__uploadFiles<TRouter>,
+    createUploader: generateUploader<TRouter>(),
   } as const;
 };
 
