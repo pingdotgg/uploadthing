@@ -54,7 +54,8 @@ export const uploadFilesInternal = async (
   });
 
   if (!res.ok) {
-    throw UploadThingError.fromResponse(res);
+    const error = await UploadThingError.fromResponse(res);
+    throw error;
   }
 
   const clonedRes = res.clone(); // so that `UploadThingError.fromResponse()` can consume the body again
@@ -70,7 +71,8 @@ export const uploadFilesInternal = async (
     | { error: string };
 
   if ("error" in json) {
-    throw UploadThingError.fromResponse(clonedRes);
+    const error = await UploadThingError.fromResponse(clonedRes);
+    throw error;
   }
 
   // Upload each file to S3
