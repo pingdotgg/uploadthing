@@ -1,6 +1,6 @@
 # Example of NextJS with UploadThing and Clerk
 
-<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/with-clerk">
+<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/with-clerk-pagesdir">
   <img height="64" src="https://github.com/pingdotgg/uploadthing/assets/51714798/45907a4e-aa64-401a-afb3-b6c6df6eb71f" />
 </a>
 
