@@ -43,13 +43,14 @@ UPLOADTHING_APP_ID=... # Your app id
 ```
 
 <Callout type="warning">
-  If you don't already have a uploadthing secret key, [sign up](/create-account)
-  and create one from the [dashboard!](https://uploadthing.com/dashboard)
+  If you don't already have an UploadThing secret key, [sign
+  up](/create-account) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
 </Callout>
 
 ### Define process in vite.config
 
-Uploadthing internals use process.env which is not defined in vite, so it is
+UploadThing internals use process.env which is not defined in vite, so it is
 necessary to add the following to your vite.config.
 
 ```ts copy filename="vite.config.ts"
@@ -71,7 +72,7 @@ export default defineConfig({
 <Steps>
 ### Creating your first FileRoute
 
-All files uploaded to uploadthing are associated with a FileRoute. Think of a
+All files uploaded to UploadThing are associated with a FileRoute. Think of a
 FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
@@ -171,20 +172,23 @@ If you need multiple handle hooks in your application take a look at the
 [sequence](https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks-sequence)
 helper function from SvelteKit.
 
-### Creating The UploadThing Components (optional)
+### Creating the UploadThing Helpers (optional)
 
-Generating components let's you pass your generic `FileRouter` once and then
-have typesafe components everywhere, instead of having to pass the generic
-everytime you mount a component, but you can also import the components
-individually from `@uploadthing/svelte`.
+Generating the `createUploader` helper lets you pass your generic `FileRouter`
+once and then have typesafe uploaders everywhere, instead of having to pass the
+generic everytime you call `createUploader`, but you can also import it directly
+from `@uploadthing/svelte`.
+
+Generating the `useUploadThing` helper function lets you create your own
+components.
 
 ```ts copy filename="src/lib/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/svelte";
+import { generateSvelteHelpers } from "@uploadthing/svelte";
 
 import type { OurFileRouter } from "../server/uploadthing";
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+export const { createUploader, useUploadThing } =
+  generateSvelteHelpers<OurFileRouter>();
 ```
 
 ### Use the FileRouter in your app
@@ -192,15 +196,16 @@ export const { UploadButton, UploadDropzone, Uploader } =
 The `@uploadthing/svelte` package includes an "Uploader" component that you can
 simply drop into your app, and start uploading files immediately. To create the
 "Uploader" props you can use the "createUploader" helper. Make sure to pass your
-generic `FileRouter` to this function.
+generic `FileRouter` to this function if you're importing it directly from
+`@uploadthing/svelte`.
 
 ```svelte copy filename="src/routes/+page.svelte"
 <script lang="ts">
-  import type { OurFileRouter } from "$lib/server/uploadthing";
+  import { createUploader } from "$lib/utils/uploadthing";
 
-  import { createUploader, Uploader } from "@uploadthing/svelte";
+  import { Uploader } from "@uploadthing/svelte";
 
-  const uploader = createUploader<OurFileRouter>({
+  const uploader = createUploader({
     endpoint: "withoutMdwr",
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
@@ -224,11 +229,11 @@ separately. Both are included in the `@uploadthing/svelte` package.
 
 ```svelte copy filename="src/routes/+page.svelte"
 <script lang="ts">
-  import type { OurFileRouter } from "$lib/server/uploadthing";
+  import { createUploader } from "$lib/utils/uploadthing";
 
-  import { createUploader, Uploader } from "@uploadthing/svelte";
+  import { Uploader } from "@uploadthing/svelte";
 
-  const uploader = createUploader<OurFileRouter>({
+  const uploader = createUploader({
     endpoint: "withoutMdwr",
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
@@ -254,4 +259,73 @@ separately. Both are included in the `@uploadthing/svelte` package.
 </div>
 ```
 
+Or you can create your own components using the `useUploadThing` helper
+function.
+
+```svelte copy filename="src/routes/+page.svelte"
+<script lang="ts">
+  import { useUploadThing } from "$lib/utils/uploadthing";
+
+  const { startUpload } = useUploadThing("videoAndImage", {
+    onClientUploadComplete: () => {
+      alert("Upload Completed");
+    },
+  });
+</script>
+
+<input
+  type="file"
+  on:change={async (e) => {
+    const file = e.currentTarget.files?.[0];
+    if (!file) return;
+
+    // Do something with files
+
+    // Then start the upload
+    await startUpload([file]);
+  }}
+/>
+```
+
 </Steps>
+
+## Theming Svelte components
+
+Check out our [theming guide](/theming) to know the basics about
+[components anatomy](/theming#components-anatomy) and
+[theming props](/theming#theming-props) as they still apply to
+`@uploadthing/svelte`. However,
+[content customization](/theming#content-customization) makes use of Svelte's
+named slots and slot props.
+
+### UploadButton content customization
+
+```svelte
+<UploadButton {uploader}>
+  <span slot="button-content" let:state>
+    {state.isUploading ? "Uploading..." : "Pick a file"}
+  </span>
+  <span slot="allowed-content" let:state>
+    You can choose between {state.fileTypes.join(", ")} files
+  </span>
+</UploadButton>
+```
+
+### UploadDropzone content customization
+
+```svelte
+<UploadDropzone {uploader}>
+  <i slot="upload-icon" let:state>
+    <!-- some custom icon -->
+  </i>
+  <span slot="button-content" let:state>
+    {state.isUploading ? "Uploading..." : "Pick a file"}
+  </span>
+  <span slot="label" let:state>
+    {state.ready ? "Ready to upload" : "Loading..."}
+  </span>
+  <span slot="allowed-content" let:state>
+    You can choose between {state.fileTypes.join(", ")} files
+  </span>
+</UploadDropzone>
+```
