@@ -87,9 +87,6 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
-      '@uploadthing/react-dropzone':
-        specifier: ^0.0.1
-        version: link:../../packages/react-dropzone
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -152,9 +149,6 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
-      '@uploadthing/react-dropzone':
-        specifier: ^0.0.1
-        version: link:../../packages/react-dropzone
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -428,9 +422,6 @@ importers:
       '@uploadthing/react':
         specifier: 5.5.0
         version: link:../../packages/react
-      '@uploadthing/react-dropzone':
-        specifier: ^0.0.1
-        version: link:../../packages/react-dropzone
       next:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
@@ -568,6 +559,12 @@ importers:
       '@uploadthing/shared':
         specifier: ^5.2.1
         version: link:../shared
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: ^0.6.0
+        version: 0.6.0
       tailwind-merge:
         specifier: ^1.13.2
         version: 1.13.2
@@ -584,9 +581,6 @@ importers:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../config/eslint-config
-      '@uploadthing/react-dropzone':
-        specifier: ^0.0.1
-        version: link:../react-dropzone
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
@@ -626,46 +620,6 @@ importers:
       zod:
         specifier: ^3.21.4
         version: 3.21.4
-
-  packages/react-dropzone:
-    dependencies:
-      attr-accept:
-        specifier: ^2.2.2
-        version: 2.2.2
-      file-selector:
-        specifier: ^0.6.0
-        version: 0.6.0
-    devDependencies:
-      '@types/react':
-        specifier: 18.2.8
-        version: 18.2.8
-      '@types/react-dom':
-        specifier: 18.2.4
-        version: 18.2.4
-      '@uploadthing/eslint-config':
-        specifier: 0.2.0
-        version: link:../config/eslint-config
-      '@uploadthing/tsconfig':
-        specifier: 0.1.0
-        version: link:../config/tsconfig
-      '@uploadthing/tsup-config':
-        specifier: 0.1.0
-        version: link:../config/tsup
-      eslint:
-        specifier: ^8.47.0
-        version: 8.47.0
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      tsup:
-        specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vitest:
-        specifier: ^0.30.1
-        version: 0.30.1
 
   packages/shared:
     devDependencies:

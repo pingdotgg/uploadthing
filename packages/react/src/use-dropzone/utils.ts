@@ -7,21 +7,13 @@ const accepts: typeof attrAccepts =
   // @ts-expect-error - ESM interop
   typeof attrAccepts === "function" ? attrAccepts : attrAccepts.default;
 
-// Error codes
-export const FILE_INVALID_TYPE = "file-invalid-type";
-export const FILE_TOO_LARGE = "file-too-large";
-export const FILE_TOO_SMALL = "file-too-small";
-export const TOO_MANY_FILES = "too-many-files";
-
 export const ErrorCode = {
-  FileInvalidType: FILE_INVALID_TYPE,
-  FileTooLarge: FILE_TOO_LARGE,
-  FileTooSmall: FILE_TOO_SMALL,
-  TooManyFiles: TOO_MANY_FILES,
+  FILE_INVALID_TYPE: "FILE_INVALID_TYPE",
+  FILE_TOO_LARGE: "FILE_TOO_LARGE",
+  FILE_TOO_SMALL: "FILE_TOO_SMALL",
+  TOO_MANY_FILES: "TOO_MANY_FILES",
 } as const;
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
-
-// File Errors
 
 export const getInvalidTypeRejectionErr = (accept: string | string[]) => {
   accept = Array.isArray(accept) && accept.length === 1 ? accept[0] : accept;
@@ -29,14 +21,14 @@ export const getInvalidTypeRejectionErr = (accept: string | string[]) => {
     ? `one of ${accept.join(", ")}`
     : accept;
   return {
-    code: FILE_INVALID_TYPE,
+    code: ErrorCode.FILE_INVALID_TYPE,
     message: `File type must be ${messageSuffix}`,
   };
 };
 
 export const getTooLargeRejectionErr = (maxSize: number) => {
   return {
-    code: FILE_TOO_LARGE,
+    code: ErrorCode.FILE_TOO_LARGE,
     message: `File is larger than ${maxSize} ${
       maxSize === 1 ? "byte" : "bytes"
     }`,
@@ -45,16 +37,11 @@ export const getTooLargeRejectionErr = (maxSize: number) => {
 
 export const getTooSmallRejectionErr = (minSize: number) => {
   return {
-    code: FILE_TOO_SMALL,
+    code: ErrorCode.FILE_TOO_SMALL,
     message: `File is smaller than ${minSize} ${
       minSize === 1 ? "byte" : "bytes"
     }`,
   };
-};
-
-export const TOO_MANY_FILES_REJECTION = {
-  code: TOO_MANY_FILES,
-  message: "Too many files",
 };
 
 // Firefox versions prior to 53 return a bogus MIME type for every file drag, so dragovers with

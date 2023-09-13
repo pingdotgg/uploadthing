@@ -39,11 +39,12 @@
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
   "dependencies": {
+    "attr-accept": "^2.2.2",
+    "file-selector": "^0.6.0",
     "@uploadthing/shared": "^5.2.1",
     "tailwind-merge": "^1.13.2"
   },
   "peerDependencies": {
-    "@uploadthing/react-dropzone": "^0.0.1",
     "react": "^17.0.2 || ^18.0.0",
     "uploadthing": "^5.0.0"
   },
@@ -52,7 +53,6 @@
     "@types/react": "18.2.8",
     "@types/react-dom": "18.2.4",
     "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/react-dropzone": "^0.0.1",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "autoprefixer": "10.4.14",

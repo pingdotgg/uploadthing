@@ -14,6 +14,7 @@ import type {
   DropzoneMethods,
   DropzoneOptions,
   DropzoneState,
+  FileError,
   FileRejection,
 } from "./types";
 import {
@@ -21,6 +22,7 @@ import {
   allFilesAccepted,
   canUseFileSystemAccessAPI,
   composeEventHandlers,
+  ErrorCode,
   fileAccepted,
   fileMatchSize,
   isAbort,
@@ -30,7 +32,6 @@ import {
   isSecurityError,
   onDocumentDragOver,
   pickerOptionsFromAccept,
-  TOO_MANY_FILES_REJECTION,
 } from "./utils";
 
 export * from "./types";
@@ -329,14 +330,16 @@ export function useDropzone(
         if (accepted && sizeMatch && !customErrors) {
           acceptedFiles.push(file);
         } else {
-          let errors = [acceptError, sizeError];
+          let errors: (FileError | null | boolean)[] = [acceptError, sizeError];
 
           if (customErrors) {
             errors = errors.concat(customErrors);
           }
 
-          // @ts-expect-error FIXME LATER
-          fileRejections.push({ file, errors: errors.filter((e) => e) });
+          fileRejections.push({
+            file,
+            errors: errors.filter((e): e is FileError => !!e),
+          });
         }
       });
 
@@ -346,7 +349,12 @@ export function useDropzone(
       ) {
         // Reject everything and empty accepted files
         acceptedFiles.forEach((file) => {
-          fileRejections.push({ file, errors: [TOO_MANY_FILES_REJECTION] });
+          fileRejections.push({
+            file,
+            errors: [
+              { code: ErrorCode.TOO_MANY_FILES, message: "Too many files" },
+            ],
+          });
         });
         acceptedFiles.splice(0);
       }
@@ -440,8 +448,7 @@ export function useDropzone(
             // CORS, so cannot use this API
             // Try using the input
             if (inputRef.current) {
-              // @ts-expect-error FIXME LATER
-              inputRef.current.value = null;
+              inputRef.current.value = "";
               inputRef.current.click();
             } else {
               onErrCb(
@@ -460,8 +467,7 @@ export function useDropzone(
     if (inputRef.current) {
       dispatch({ type: "openDialog" });
       onFileDialogOpenCb();
-      // @ts-expect-error FIXME LATER
-      inputRef.current.value = null;
+      inputRef.current.value = "";
       inputRef.current.click();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

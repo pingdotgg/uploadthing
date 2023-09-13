@@ -130,14 +130,14 @@ export const { useUploadThing, uploadFiles } =
 This hook provides a function to start uploading, an `isUploading` state, and
 the `permittedFileInfo` which gives information about what file types, sizes and
 counts are allowed by the endpoint. See example below for a simple dropzone
-using `react-dropzone` and the `useUploadThing` hook. For a more complete
+using the `useUploadThing` hook. For a more complete
 example, take a look at
 [our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
 
 ```tsx copy filename="app/example-custom-uploader.tsx"
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import { useDropzone } from "react-dropzone";
-import type { FileWithPath } from "react-dropzone";
+import { useDropzone } from "@uploadthing/react/hooks";
+import type { FileWithPath } from "@uploadthing/react";
 
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
