@@ -1,5 +1,5 @@
 <svg
-  class="ut-block ut-h-5 ut-w-5 ut-animate-spin ut-align-middle ut-text-white"
+  class="block h-5 w-5 animate-spin align-middle text-white"
   xmlns="http://www.w3.org/2000/svg"
   fill="none"
   viewBox="0 0 576 512"

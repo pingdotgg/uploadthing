@@ -37,6 +37,7 @@
   export let isFocused = false;
   export let isDragActive = false;
   export let draggedFiles: InputFile[] = [];
+  export let state: "readying" | "ready" | "uploading";
   export let inputRef: HTMLInputElement | null;
 
   let rootRef: HTMLElement;
@@ -341,6 +342,8 @@ Example:
     ? 0
     : undefined}
   class={$$props.class}
+  style={$$props.style}
+  data-state={state}
   on:keydown={composeKeyboardHandler(onKeyDownCb)}
   on:focus={composeKeyboardHandler(onFocusCb)}
   on:blur={composeKeyboardHandler(onBlurCb)}
