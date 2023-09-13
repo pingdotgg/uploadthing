@@ -25,7 +25,7 @@ importers:
         version: 18.16.0
       '@uploadthing/eslint-config':
         specifier: 0.2.0
-        version: link:packages/config/eslint
+        version: link:packages/config/eslint-config
       dotenv:
         specifier: latest
         version: 16.3.1
@@ -469,11 +469,11 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
-  packages/config/eslint:
+  packages/config/eslint-config:
     dependencies:
       '@next/eslint-plugin-next':
         specifier: ^13.4.13
-        version: 13.4.13
+        version: 13.4.19
       '@types/eslint':
         specifier: ^8.44.2
         version: 8.44.2
@@ -549,7 +549,7 @@ importers:
     devDependencies:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
-        version: link:../config/eslint
+        version: link:../config/eslint-config
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
@@ -586,7 +586,7 @@ importers:
         version: 18.2.4
       '@uploadthing/eslint-config':
         specifier: 0.2.0
-        version: link:../config/eslint
+        version: link:../config/eslint-config
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
@@ -634,7 +634,7 @@ importers:
     devDependencies:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
-        version: link:../config/eslint
+        version: link:../config/eslint-config
       '@uploadthing/mime-types':
         specifier: 0.2.1
         version: link:../mime-types
@@ -705,7 +705,7 @@ importers:
     devDependencies:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
-        version: link:../config/eslint
+        version: link:../config/eslint-config
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
@@ -3329,17 +3329,10 @@ packages:
   /@next/env@13.4.4:
     resolution: {integrity: sha512-q/y7VZj/9YpgzDe64Zi6rY1xPizx80JjlU2BTevlajtaE3w1LqweH1gGgxou2N7hdFosXHjGrI4OUvtFXXhGLg==}
 
-  /@next/eslint-plugin-next@13.4.13:
-    resolution: {integrity: sha512-RpZeXlPxQ9FLeYN84XHDqRN20XxmVNclYCraLYdifRsmibtcWUWdwE/ANp2C8kgesFRsvwfsw6eOkYNl9sLJ3A==}
-    dependencies:
-      glob: 7.1.7
-    dev: false
-
   /@next/eslint-plugin-next@13.4.19:
     resolution: {integrity: sha512-N/O+zGb6wZQdwu6atMZHbR7T9Np5SUFUjZqCbj0sXm+MwQO35M8TazVB4otm87GkXYs2l6OPwARd3/PUWhZBVQ==}
     dependencies:
       glob: 7.1.7
-    dev: true
 
   /@next/swc-darwin-arm64@13.4.4:
     resolution: {integrity: sha512-xfjgXvp4KalNUKZMHmsFxr1Ug+aGmmO6NWP0uoh4G3WFqP/mJ1xxfww0gMOeMeSq/Jyr5k7DvoZ2Pv+XOITTtw==}
@@ -3992,7 +3985,7 @@ packages:
       '@typescript-eslint/utils': 6.3.0(eslint@8.47.0)(typescript@5.1.6)
       debug: 4.3.4
       eslint: 8.47.0
-      ts-api-utils: 1.0.1(typescript@5.1.6)
+      ts-api-utils: 1.0.3(typescript@5.1.6)
       typescript: 5.1.6
     transitivePeerDependencies:
       - supports-color
@@ -6273,7 +6266,7 @@ packages:
       eslint-import-resolver-node: 0.3.7
       eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.3.0)(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.6.0)(eslint@8.47.0)
       has: 1.0.3
-      is-core-module: 2.12.1
+      is-core-module: 2.13.0
       is-glob: 4.0.3
       minimatch: 3.1.2
       object.fromentries: 2.0.6
@@ -7511,11 +7504,6 @@ packages:
     dependencies:
       ci-info: 3.8.0
     dev: false
-
-  /is-core-module@2.12.1:
-    resolution: {integrity: sha512-Q4ZuBAe2FUsKtyQJoQHlvP8OvBERxO3jEmy1I7hcRXcJBGGHFh/aJBswbXuS9sgrDH2QUO8ilkwNPHvHMd8clg==}
-    dependencies:
-      has: 1.0.3
 
   /is-core-module@2.13.0:
     resolution: {integrity: sha512-Z7dk6Qo8pOCp3l4tsX2C5ZVas4V+UxwQodwZhLopL91TX8UyyHEXafPcyoeeWuLrwzHcr3igO78wNLwHJHsMCQ==}
