@@ -54,7 +54,7 @@ export const uploadFilesInternal = async (
   });
 
   if (!res.ok) {
-    const error = UploadThingError.fromResponse(res);
+    const error = await UploadThingError.fromResponse(res);
     throw error;
   }
 
@@ -71,7 +71,7 @@ export const uploadFilesInternal = async (
     | { error: string };
 
   if ("error" in json) {
-    const error = UploadThingError.fromResponse(clonedRes);
+    const error = await UploadThingError.fromResponse(clonedRes);
     throw error;
   }
 
