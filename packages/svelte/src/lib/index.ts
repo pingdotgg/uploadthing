@@ -1,4 +1,4 @@
-import "./app.css";
+import "./styles.css";
 
 export * from "./useUploadThing";
 export * from "./component";
