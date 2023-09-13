@@ -1,5 +1,5 @@
 {
-  "name": "@example/solidstart",
+  "name": "@example/minimal-solidstart",
   "private": true,
   "type": "module",
   "scripts": {
@@ -16,8 +16,8 @@
     "solid-js": "^1.7.11",
     "solid-start": "^0.3.4",
     "solidjs-dropzone": "^1.0.0",
-    "undici": "5.20.0",
-    "uploadthing": "5.5.2",
+    "undici": "^5.20.0",
+    "uploadthing": "5.5.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {
@@ -35,6 +35,5 @@
       "eslint:recommended",
       "plugin:solid/typescript"
     ]
-  },
-  "version": null
+  }
 }

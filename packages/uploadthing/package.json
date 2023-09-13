@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "5.5.2",
+  "version": "5.5.3",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -78,6 +78,7 @@
     "tsup": "6.7.0",
     "type-fest": "^3.11.1",
     "typescript": "^5.1.6",
+    "undici": "^5.20.0",
     "vitest": "^0.30.1",
     "zod": "^3.21.4"
   },

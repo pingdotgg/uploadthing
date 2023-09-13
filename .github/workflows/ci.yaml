@@ -6,19 +6,6 @@ on:
       - main
   pull_request:
 
-env:
-  DATABASE_URL: "https://fake.com"
-  AWS_REGION: "fake"
-  AWS_ID: "fake"
-  AWS_SECRET: "fake"
-  DATABASE_HOST: "fake"
-  DATABASE_PORT: "fake"
-  DATABASE_NAME: "fake"
-  DATABASE_USERNAME: "fake"
-  DATABASE_PASSWORD: "fake"
-  DB_PUSH_URL: "fake"
-  PING_SIGNING_SECRET: "fake"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,6 +32,9 @@ jobs:
 
       - name: Install deps (with cache)
         run: pnpm install
+
+      - name: Copy .env.example files 
+        run: find ./examples -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
 
       - name: Build, lint, test, and typecheck
         run: pnpm turbo build lint test typecheck
