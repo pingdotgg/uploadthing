@@ -483,6 +483,9 @@ importers:
       '@typescript-eslint/parser':
         specifier: ^6.3.0
         version: 6.3.0(eslint@8.47.0)(typescript@5.1.6)
+      '@uploadthing/eslint-plugin':
+        specifier: ^0.1.0
+        version: link:../eslint-plugin
       eslint-config-prettier:
         specifier: ^9.0.0
         version: 9.0.0(eslint@8.47.0)
@@ -498,6 +501,9 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.0(eslint@8.47.0)
+      modern-module-resolution:
+        specifier: link:@rushstack/eslint-patch/modern-module-resolution
+        version: link:@rushstack/eslint-patch/modern-module-resolution
     devDependencies:
       eslint:
         specifier: ^8.47.0
@@ -629,9 +635,6 @@ importers:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../config/eslint
-      '@uploadthing/eslint-plugin':
-        specifier: 0.1.0
-        version: link:../config/eslint-plugin
       '@uploadthing/mime-types':
         specifier: 0.2.1
         version: link:../mime-types
@@ -703,9 +706,6 @@ importers:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../config/eslint
-      '@uploadthing/eslint-plugin':
-        specifier: 0.1.0
-        version: link:../config/eslint-plugin
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig

@@ -70,7 +70,6 @@
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/eslint-plugin": "0.1.0",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",
@@ -86,8 +85,7 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "@uploadthing/eslint-config/base",
-      "plugin:@uploadthing/recommended"
+      "@uploadthing/eslint-config/base"
     ]
   }
 }
