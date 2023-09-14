@@ -83,10 +83,18 @@ const FilesPreview = ({
               <path fill="none" d="M0 0h36v36H0z" />
             </svg>
             {file.type.startsWith("image/") ? (
-              <img
-                src={URL.createObjectURL(file)}
-                className="h-3 w-4 object-contain"
-              />
+              <div className="group/imagetip">
+                <img
+                  src={URL.createObjectURL(file)}
+                  className="h-3 w-4 object-contain"
+                />
+                <div className="absolute z-10 hidden rounded-lg shadow-md group-hover/imagetip:block">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    className="max-h-28 rounded-lg"
+                  />
+                </div>
+              </div>
             ) : null}
             <div className="truncate text-sm font-semibold leading-6 text-gray-600 group-hover:text-red-500">
               {file.name}
@@ -163,7 +171,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      setFiles(acceptedFiles);
+      setFiles((f) => [...f, ...acceptedFiles]);
 
       // If mode is auto, start upload immediately
       if ($props.config?.mode === "auto") {
