@@ -102,9 +102,6 @@ importers:
       uploadthing:
         specifier: 5.5.3
         version: link:../../packages/uploadthing
-      zod:
-        specifier: ^3.21.4
-        version: 3.22.2
     devDependencies:
       '@types/node':
         specifier: 18.16.0
