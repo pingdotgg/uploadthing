@@ -1,7 +1,7 @@
 ---
 "@uploadthing/react": major
 "@uploadthing/solid": major
-"uploadthing": minor
+"uploadthing": major
 ---
 
 feat: support returning data from the serverside `onUploadComplete` callback to
