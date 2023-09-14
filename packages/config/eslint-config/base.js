@@ -1,3 +1,6 @@
+// https://github.com/microsoft/rushstack/tree/main/eslint/eslint-patch
+require("@rushstack/eslint-patch/modern-module-resolution");
+
 /** @type {import("eslint").Linter.Config} */
 const config = {
   extends: [
@@ -6,6 +9,7 @@ const config = {
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
     "prettier",
+    "plugin:@uploadthing/recommended",
   ],
   env: {
     es2022: true,
