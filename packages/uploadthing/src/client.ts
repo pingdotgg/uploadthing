@@ -69,10 +69,14 @@ type UploadFilesOptions<
     progress: number;
   }) => void;
   onUploadBegin?: ({ file }: { file: string }) => void;
-  input?: inferEndpointInput<TRouter[TEndpoint]>;
 
   files: File[];
-};
+} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
+  ? // eslint-disable-next-line @typescript-eslint/ban-types
+    {}
+  : {
+      input: inferEndpointInput<TRouter[TEndpoint]>;
+    });
 
 export type UploadFileResponse<TServerOutput> = {
   /**
@@ -106,7 +110,7 @@ export type UploadFileResponse<TServerOutput> = {
 
 export const DANGEROUS__uploadFiles = async <
   TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter = keyof TRouter,
+  TEndpoint extends keyof TRouter,
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
@@ -125,7 +129,7 @@ export const DANGEROUS__uploadFiles = async <
       method: "POST",
       body: JSON.stringify({
         files: opts.files.map((f) => f.name),
-        input: opts.input,
+        input: "input" in opts ? opts.input : null,
       }),
     },
   ).then(async (res) => {
@@ -274,10 +278,10 @@ export const DANGEROUS__uploadFiles = async <
   return Promise.all(fileUploadPromises);
 };
 
-export const genUploader = <
-  TRouter extends FileRouter,
->(): typeof DANGEROUS__uploadFiles<TRouter> => {
-  return DANGEROUS__uploadFiles;
+export const genUploader = <TRouter extends FileRouter>() => {
+  return <TEndpoint extends keyof TRouter>(
+    ...args: Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>
+  ) => DANGEROUS__uploadFiles<TRouter, TEndpoint>(...args);
 };
 
 export const classNames = (...classes: (string | boolean)[]) => {

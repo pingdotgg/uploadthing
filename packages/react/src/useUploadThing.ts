@@ -63,7 +63,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       const [files, input] = args;
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles(endpoint, {
+        const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
           files,
           input,
           onUploadProgress: (progress) => {
@@ -115,7 +115,9 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
 export const generateReactHelpers = <TRouter extends FileRouter>() => {
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
+    uploadFiles: <TEndpoint extends keyof TRouter>(
+      ...args: Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>
+    ) => DANGEROUS__uploadFiles<TRouter, TEndpoint>(...args),
   } as const;
 };
 
