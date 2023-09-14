@@ -7,14 +7,18 @@ import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Page() {
-  const { isLoading, data } = useSWR(
+  const {
+    isLoading,
+    data: files,
+    mutate,
+  } = useSWR(
     "files",
-    () => {
-      return fetch("/api/files").then((res) => res.json()) as Promise<{
-        files: File[];
-      }>;
+    async () => {
+      const res = await fetch("/api/files");
+      const files = (await res.json()).files as File[];
+      return files;
     },
-    { refreshInterval: 300 },
+    { refreshInterval: 800 },
   );
 
   return (
@@ -34,6 +38,7 @@ export default function Page() {
         endpoint="videoAndImage"
         onClientUploadComplete={async (res) => {
           console.log(`onClientUploadComplete`, res);
+          mutate(); // force refresh
         }}
         onUploadBegin={() => {
           console.log("upload begin");
@@ -53,20 +58,16 @@ export default function Page() {
       />
       <h1>Your files</h1>
       <div>
-        {isLoading ? (
-          <div>Waiting for files</div>
-        ) : data?.files.length ? (
-          data?.files.map((file) => (
-            <div style={{ display: "flex", gap: 8 }}>
-              <div>Name: {file.name}</div>
-              <a href={file.url} target="_blank">
-                View
-              </a>
-            </div>
-          ))
-        ) : (
-          <i>No files uploaded yet</i>
-        )}
+        {isLoading && <div>Waiting for files...</div>}
+        {files?.length === 0 && <i>No files uploaded yet</i>}
+        {files?.map((file) => (
+          <div style={{ display: "flex", gap: 8 }}>
+            <div>Name: {file.name}</div>
+            <a href={file.url} target="_blank">
+              View
+            </a>
+          </div>
+        ))}
       </div>
     </main>
   );
