@@ -1,3 +1,9 @@
+/**
+ * This is a forked version of the react-dropzone package.
+ * See original source here: https://github.com/react-dropzone/react-dropzone
+ * The original package is licensed under the MIT license.
+ */
+
 import type React from "react";
 import {
   createRef,
