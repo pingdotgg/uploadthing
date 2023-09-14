@@ -1,15 +1,14 @@
 import type { AppProps } from "next/app";
-import "@uploadthing/react/styles.css"
+
+import "@uploadthing/react/styles.css";
 
 function MyApp({ Component, pageProps }: AppProps) {
-    return (
-        <Component {...pageProps} />
-    );
+  return <Component {...pageProps} />;
 }
 
 // Opt out of prerendering
 MyApp.getInitialProps = async () => {
-    return {};
-}
+  return {};
+};
 
 export default MyApp;
