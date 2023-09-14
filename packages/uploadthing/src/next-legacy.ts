@@ -1,6 +1,6 @@
 // This node import should be fine since it's available in both node and edge runtimes
 // https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
