@@ -116,5 +116,5 @@ it("infers output properly", () => {
     const { startUpload } = useUploadThing("withBarInput");
     const res = await startUpload(files, { bar: 1 });
     expectTypeOf<UploadFileResponse<void>[] | undefined>(res);
-  })
+  });
 });
