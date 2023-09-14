@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { pollForFileData, UploadThingError } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type {
   ActionType,
   FileRouter,
   inferEndpointInput,
+  inferEndpointOutput,
 } from "./internal/types";
 
 function fetchWithProgress(
@@ -56,24 +57,24 @@ const createAPIRequestUrl = (config: {
   return url.toString();
 };
 
-type UploadFilesOptions<TRouter extends FileRouter> = {
-  [TEndpoint in keyof TRouter]: {
-    endpoint: TEndpoint;
-    onUploadProgress?: ({
-      file,
-      progress,
-    }: {
-      file: string;
-      progress: number;
-    }) => void;
-    onUploadBegin?: ({ file }: { file: string }) => void;
-    input?: inferEndpointInput<TRouter[TEndpoint]>;
+type UploadFilesOptions<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
+  onUploadProgress?: ({
+    file,
+    progress,
+  }: {
+    file: string;
+    progress: number;
+  }) => void;
+  onUploadBegin?: ({ file }: { file: string }) => void;
+  input?: inferEndpointInput<TRouter[TEndpoint]>;
 
-    files: File[];
-  };
-}[keyof TRouter];
+  files: File[];
+};
 
-export type UploadFileResponse = {
+export type UploadFileResponse<TServerOutput> = {
   /**
    * @deprecated
    * use `name` instead
@@ -98,10 +99,17 @@ export type UploadFileResponse = {
    */
   fileUrl: string;
   url: string;
+
+  // Matches what's returned from the serverside `onUploadComplete` callback
+  serverdata: TServerOutput;
 };
 
-export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
-  opts: UploadFilesOptions<TRouter>,
+export const DANGEROUS__uploadFiles = async <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter = keyof TRouter,
+>(
+  endpoint: TEndpoint,
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
   config?: {
     url?: string;
   },
@@ -110,7 +118,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
       url: config?.url,
-      slug: String(opts.endpoint),
+      slug: String(endpoint),
       actionType: "upload",
     }),
     {
@@ -194,16 +202,14 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         }),
       },
       (progressEvent) =>
-        opts.onUploadProgress &&
-        opts.onUploadProgress({
+        opts.onUploadProgress?.({
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
       () => {
-        opts.onUploadBegin &&
-          opts.onUploadBegin({
-            file: file.name,
-          });
+        opts.onUploadBegin?.({
+          file: file.name,
+        });
       },
     );
 
@@ -212,7 +218,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       await fetch(
         createAPIRequestUrl({
           url: config?.url,
-          slug: String(opts.endpoint),
+          slug: String(endpoint),
           actionType: "failure",
         }),
         {
@@ -244,11 +250,12 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
 
-    // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData(presigned.key);
+    const serverdata = await fetch("/api/uploadthing", {
+      headers: { "x-uploadthing-polling-key": fields.key },
+    }).then((res) => res.json());
 
     // TODO: remove `file` prefix in next major version
-    const ret: UploadFileResponse = {
+    const ret: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>> = {
       fileName: file.name,
       name: file.name,
       fileSize: file.size,
@@ -257,7 +264,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       key: presigned.key,
       fileUrl: genUrl,
       url: genUrl,
+
+      serverdata,
     };
+
     return ret;
   });
 

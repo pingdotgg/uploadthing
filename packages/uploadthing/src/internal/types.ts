@@ -48,6 +48,7 @@ export interface AnyParams {
   _runtime: any;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
+  _output: any;
 }
 
 type MiddlewareFnArgs<TParams extends AnyParams> =
@@ -62,9 +63,10 @@ type MiddlewareFn<
   TParams extends AnyParams,
 > = (opts: MiddlewareFnArgs<TParams>) => MaybePromise<TOutput>;
 
-type ResolverFn<TParams extends AnyParams> = (
-  opts: ResolverOptions<TParams>,
-) => MaybePromise<void>;
+type ResolverFn<
+  TOutput extends Record<string, unknown> | void,
+  TParams extends AnyParams,
+> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
 
 type UploadErrorFn = (input: {
   error: UploadThingError;
@@ -84,6 +86,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
+    _output: UnsetMarker;
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
@@ -95,9 +98,8 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
+    _output: UnsetMarker;
   }>;
-
-  onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
   onUploadError: (
     fn: TParams["_errorFn"] extends UnsetMarker
       ? UploadErrorFn
@@ -108,6 +110,17 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _runtime: TParams["_runtime"];
     _errorShape: TParams["_errorShape"];
     _errorFn: UploadErrorFn;
+    _output: UnsetMarker;
+  }>;
+  onUploadComplete: <TOutput extends Record<string, unknown> | void>(
+    fn: ResolverFn<TOutput, TParams>,
+  ) => Uploader<{
+    _errorFn: TParams["_errorFn"];
+    _errorShape: TParams["_errorShape"];
+    _input: TParams["_input"];
+    _metadata: TParams["_metadata"];
+    _runtime: TParams["_runtime"];
+    _output: TOutput;
   }>;
 }
 
@@ -121,7 +134,7 @@ export type UploadBuilderDef<TParams extends AnyParams> = {
 
 export interface Uploader<TParams extends AnyParams> {
   _def: TParams & UploadBuilderDef<TParams>;
-  resolver: ResolverFn<TParams>;
+  resolver: ResolverFn<TParams["_output"], TParams>;
 }
 
 export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
@@ -133,6 +146,11 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
     ? undefined
     : TUploader["_def"]["_input"];
+
+export type inferEndpointOutput<TUploader extends Uploader<any>> =
+  TUploader["_def"]["_output"] extends UnsetMarker
+    ? undefined
+    : TUploader["_def"]["_output"];
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];

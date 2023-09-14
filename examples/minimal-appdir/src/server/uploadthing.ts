@@ -32,6 +32,9 @@ export const uploadRouter = {
       metadata;
       // ^?
       console.log("upload completed", file);
+
+      // Return some data which will be available in `onClientUploadComplete`
+      return { bar: "baz" as const };
     }),
 } satisfies FileRouter;
 

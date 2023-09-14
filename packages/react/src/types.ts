@@ -3,6 +3,7 @@ import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
+  inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
 
@@ -12,7 +13,9 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
 
     onUploadProgress?: (progress: number) => void;
     onUploadBegin?: (fileName: string) => void;
-    onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
+    onClientUploadComplete?: (
+      res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
+    ) => void;
     onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? // eslint-disable-next-line @typescript-eslint/ban-types

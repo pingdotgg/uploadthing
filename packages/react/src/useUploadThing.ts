@@ -7,6 +7,7 @@ import { DANGEROUS__uploadFiles } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
+  inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
 
@@ -23,8 +24,13 @@ const useEndpointMetadata = (endpoint: string) => {
   return data?.find((x) => x.slug === endpoint);
 };
 
-export type UseUploadthingProps<TRouter extends FileRouter> = {
-  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
+export type UseUploadthingProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
+  onClientUploadComplete?: (
+    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
+  ) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
@@ -40,7 +46,7 @@ const fatalClientError = (e: Error) =>
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
@@ -57,9 +63,8 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       const [files, input] = args;
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles({
+        const res = await DANGEROUS__uploadFiles(endpoint, {
           files,
-          endpoint: endpoint as string,
           input,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;

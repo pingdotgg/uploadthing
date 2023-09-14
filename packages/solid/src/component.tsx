@@ -13,6 +13,7 @@ import type {
   ErrorMessage,
   FileRouter,
   inferEndpointInput,
+  inferEndpointOutput,
 } from "uploadthing/server";
 
 import { INTERNAL_uploadthingHookGen } from "./useUploadThing";
@@ -68,7 +69,9 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
 
     onUploadProgress?: (progress: number) => void;
     onUploadBegin?: (fileName: string) => void;
-    onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
+    onClientUploadComplete?: (
+      res?: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
+    ) => void;
     onUploadError?: (error: Error) => void;
     url?: string;
     multiple?: boolean;

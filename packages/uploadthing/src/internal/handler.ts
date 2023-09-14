@@ -1,3 +1,4 @@
+import type EventEmitter from "events";
 import type { NextApiResponse } from "next";
 
 import {
@@ -152,6 +153,7 @@ export const buildRequestHandler = <
   TRuntime extends AnyRuntime,
 >(
   opts: RouterWithConfig<TRouter>,
+  ee?: EventEmitter,
 ) => {
   return async (input: {
     req: RequestLike;
@@ -224,10 +226,12 @@ export const buildRequestHandler = <
         input?: Json;
       };
 
-      await uploadable.resolver({
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const res = await uploadable.resolver({
         file: reqBody.file,
         metadata: reqBody.metadata,
       });
+      ee?.emit("callbackDone", res);
 
       return { status: 200 };
     }

@@ -3,7 +3,11 @@ import { createSignal } from "solid-js";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+import type {
+  FileRouter,
+  inferEndpointInput,
+  inferEndpointOutput,
+} from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
 
@@ -19,10 +23,15 @@ const createEndpointMetadata = (endpoint: string, url?: string) => {
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
-export type UseUploadthingProps = {
+export type UseUploadthingProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
-  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
+  onClientUploadComplete?: (
+    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
+  ) => void;
   onUploadError?: (e: Error) => void;
   url?: string;
 };
@@ -30,7 +39,7 @@ export type UseUploadthingProps = {
 export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
@@ -49,9 +58,8 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       const [files, input] = args;
       setUploading(true);
       try {
-        const res = await DANGEROUS__uploadFiles({
+        const res = await DANGEROUS__uploadFiles(endpoint, {
           files,
-          endpoint: endpoint as string,
           input,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;

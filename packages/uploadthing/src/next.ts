@@ -1,3 +1,7 @@
+// This node import should be fine since it's available in both node and edge runtimes
+// https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
+import EventEmitter from "events";
+
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
@@ -21,7 +25,9 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, "app">(opts);
+  const ee = new EventEmitter();
+
+  const requestHandler = buildRequestHandler<TRouter, "app">(opts, ee);
 
   const POST = async (req: Request) => {
     const response = await requestHandler({ req });
@@ -60,7 +66,22 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const GET = () => {
+  const GET = async (req: Request) => {
+    const clientPollingKey = req.headers.get("x-uploadthing-polling-key");
+    if (clientPollingKey) {
+      const eventData = await new Promise((resolve) => {
+        ee.addListener("callbackDone", resolve);
+      });
+      ee.removeAllListeners("callbackDone");
+
+      return new Response(JSON.stringify(eventData), {
+        status: 200,
+        headers: {
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+        },
+      });
+    }
+
     return new Response(JSON.stringify(getBuildPerms()), {
       status: 200,
       headers: {

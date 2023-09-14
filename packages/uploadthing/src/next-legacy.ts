@@ -1,3 +1,6 @@
+// This node import should be fine since it's available in both node and edge runtimes
+// https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
+import EventEmitter from "events";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
@@ -23,7 +26,9 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
+  const ee = new EventEmitter();
+
+  const requestHandler = buildRequestHandler<TRouter, "pages">(opts, ee);
   const errorFormatter =
     opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
     defaultErrorFormatter;
@@ -33,6 +38,21 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // Return valid endpoints
     if (req.method === "GET") {
+      const clientPollingKey = req.headers["x-uploadthing-polling-key"];
+      if (clientPollingKey) {
+        const eventData = await new Promise((resolve) => {
+          ee.addListener("callbackDone", resolve);
+        });
+        ee.removeAllListeners("callbackDone");
+
+        return new Response(JSON.stringify(eventData), {
+          status: 200,
+          headers: {
+            "x-uploadthing-version": UPLOADTHING_VERSION,
+          },
+        });
+      }
+
       const perms = getBuildPerms();
       res.status(200).json(perms);
       return;
