@@ -125,12 +125,23 @@ export const { useUploadThing, uploadFiles } =
   generateReactHelpers<OurFileRouter>();
 ```
 
+## useDropzone
+
+> Added in `v5.6`
+
+This hook is currently a 1:1 fork of
+[react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
+ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
+
+You can import the hook from `@uploadthing/react/hooks`.
+
 ## useUploadThing
 
 This hook provides a function to start uploading, an `isUploading` state, and
 the `permittedFileInfo` which gives information about what file types, sizes and
 counts are allowed by the endpoint. See example below for a simple dropzone
-using the `useUploadThing` hook. For a more complete example, take a look at
+using the `useDropzone` and `useUploadThing` hooks. For a more complete example,
+take a look at
 [our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
 
 ```tsx copy filename="app/example-custom-uploader.tsx"
