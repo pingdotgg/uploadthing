@@ -9001,7 +9001,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       scroll-into-view-if-needed: 3.0.10
-      zod: 3.22.2
+      zod: 3.21.4
     dev: false
 
   /nextra@2.12.3(next@13.4.4)(react-dom@18.2.0)(react@18.2.0):
