@@ -1,4 +1,4 @@
-name: Lint the PR
+name: Lint the PR Title & Add Labels
 
 on:
   pull_request_target:
