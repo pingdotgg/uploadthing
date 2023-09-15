@@ -125,7 +125,7 @@ export default function Home() {
 
 By default, `useUploadThing` (and thus also the premade components) will fetch
 your server for the route endpoint permissions which will show a loading state.
-By utilizing server components, we can perform automatic hydration of this data
+By utilizing server components, we can pre-hydrate this data on the server
 instead to avoid the loading state and show the route permissions immediately.
 
 To add automatic SSR hydration, simply render the `<NextSSRPlugin />` hydration
