@@ -9,7 +9,4 @@ export default defineConfig({
       "/api": "http://localhost:3000",
     },
   },
-  define: {
-    "process.env": process.env,
-  },
 });
