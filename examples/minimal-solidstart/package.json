@@ -35,6 +35,5 @@
       "eslint:recommended",
       "plugin:solid/typescript"
     ]
-  },
-  "version": null
+  }
 }
