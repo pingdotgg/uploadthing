@@ -1,5 +1,7 @@
 import Fastify from "fastify";
 
+import "dotenv/config";
+
 import { fastifyUploadthingPlugin } from "uploadthing/fastify";
 
 import { uploadRouter } from "./router";
