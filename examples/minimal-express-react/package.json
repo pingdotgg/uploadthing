@@ -1,5 +1,5 @@
 {
-  "name": "@examples/minimal-express-react",
+  "name": "@example/minimal-express-react",
   "private": true,
   "version": "0.0.0",
   "type": "module",
