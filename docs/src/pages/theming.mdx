@@ -103,109 +103,59 @@ accepts an object with keys that correspond to elements of component. The
 interfaces for the `appearance` prop for `UploadButton` and `UploadDropzone`
 are:
 
-<Tabs items={['ReactJS', 'SolidJS']}>
-  <Tab>
-    ```ts
-    type StyleField =
-      | string
-      | CSSProperties
-      | ((args: CallbackArguments) => string | CSSProperties);
+```ts
+type StyleField =
+  | string
+  | CSSProperties
+  | ((args: CallbackArguments) => string | CSSProperties);
 
-    type UploadButtonProps = {
-      /* rest of props */
-      appearance?: {
-        container?: StyleField;
-        button?: StyleField;
-        allowedContent?: StyleField;
-      };
-    };
+type UploadButtonProps = {
+  /* rest of props */
+  appearance?: {
+    container?: StyleField;
+    button?: StyleField;
+    allowedContent?: StyleField;
+  };
+};
 
-    type UploadDropzoneProps = {
-      /* rest of props */
-      appearance?: {
-        container?: StyleField;
-        uploadIcon?: StyleField;
-        label?: StyleField;
-        allowedContent?: StyleField;
-        button?: StyleField;
-      };
-    };
-    ```
-
-  </Tab>
-  <Tab>
-    ```ts
-    type StyleField =
-      | string
-      | JSX.CSSProperties
-      | ((args: CallbackArguments) => string | JSX.CSSProperties);
-
-    type UploadButtonProps = {
-      /* rest of props */
-      appearance?: {
-        container?: StyleField;
-        button?: StyleField;
-        allowedContent?: StyleField;
-      };
-    };
-
-    type UploadDropzoneProps = {
-      /* rest of props */
-      appearance?: {
-        container?: StyleField;
-        uploadIcon?: StyleField;
-        label?: StyleField;
-        allowedContent?: StyleField;
-        button?: StyleField;
-      };
-    };
-    ```
-
-  </Tab>
-</Tabs>
+type UploadDropzoneProps = {
+  /* rest of props */
+  appearance?: {
+    container?: StyleField;
+    uploadIcon?: StyleField;
+    label?: StyleField;
+    allowedContent?: StyleField;
+    button?: StyleField;
+  };
+};
+```
 
 where the `CallbackArguments` is defined as (depending on the component):
 
-<Tabs items={['ReactJS', 'SolidJS']}>
-  <Tab>
-    ```ts
-    type ButtonCallbackArguments = {
-      ready: boolean;
-      isUploading: boolean;
-      uploadProgress: number;
-      fileTypes: string[];
-    };
+<Callout type="info">
+  For `Signal`-based frameworks, such as
+  [Solid.js](https://www.solidjs.com/tutorial/introduction_signals), the
+  attributes of the interfaces are getter-methods. For example, the
+  `ButtonCallbackArguments.ready: boolean` property is a getter-method
+  `ButtonCallbackArguments.ready(): boolean` in Solid.js.
+</Callout>
 
-    type DropzoneCallbackArguments = {
-      ready: boolean;
-      isUploading: boolean;
-      uploadProgress: number;
-      fileTypes: string[];
-      isDragActive: boolean;
-    };
-    ```
+```ts
+type ButtonCallbackArguments = {
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+};
 
-  </Tab>
-  <Tab>
-    ```ts
-    type ButtonCallbackArguments = {
-      ready: () => boolean;
-      isUploading: () => boolean;
-      uploadProgress: () => number;
-      fileTypes: () => string[];
-    };
-
-    type DropzoneCallbackArguments = {
-      ready: () => boolean;
-      isUploading: () => boolean;
-      uploadProgress: () => number;
-      fileTypes: () => string[];
-      isDragActive: () => boolean;
-    };
-    ```
-
-  </Tab>
-</Tabs>
+type DropzoneCallbackArguments = {
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+  isDragActive: boolean;
+};
+```
 
 ## How to theme
 
@@ -485,38 +435,19 @@ If you need, you can pass classes directly to specific elements of component or
 provide a callback that will be called with current state of the component and
 will return a string
 
-<Tabs items={["ReactJS", "SolidJS"]}>
-  <Tab>
-    ```jsx
-    <UploadButton
-      appearance={{
-        button({ ready, isUploading }) {
-          return `custom-button ${
-            ready ? "custom-button-ready" : "custom-button-not-ready"
-          } ${isUploading ? "custom-button-uploading" : ""}`;
-        },
-        container: "custom-container",
-        allowedContent: "custom-allowed-content",
-      }}
-    />
-    ```
-  </Tab>
-  <Tab>
-    ```jsx
-    <UploadButton
-      appearance={{
-        button({ ready, isUploading }) {
-          return `custom-button ${
-            ready() ? "custom-button-ready" : "custom-button-not-ready"
-          } ${isUploading() ? "custom-button-uploading" : ""}`;
-        },
-        container: "custom-container",
-        allowedContent: "custom-allowed-content",
-      }}
-    />
-    ```
-  </Tab>
-</Tabs>
+```jsx
+<UploadButton
+  appearance={{
+    button({ ready, isUploading }) {
+      return `custom-button ${
+        ready ? "custom-button-ready" : "custom-button-not-ready"
+      } ${isUploading ? "custom-button-uploading" : ""}`;
+    },
+    container: "custom-container",
+    allowedContent: "custom-allowed-content",
+  }}
+/>
+```
 
 ```css
 /* applied to container */
@@ -625,52 +556,26 @@ If you need, you can pass inline styles directly to specific elements of
 component or provide a callback that will be called with current state of the
 component and will return a `CSSProperties` object
 
-<Tabs items={["ReactJS", "SolidJS"]}>
-  <Tab>
-    ```jsx
-    <UploadButton
-      appearance={{
-        button({ ready, isUploading }) {
-          return {
-            fontSize: "1.6rem",
-            color: "black",
-            ...(ready && { color: "#ecfdf5" }),
-            ...(isUploading && { color: "#d1d5db" }),
-          };
-        },
-        container: {
-          marginTop: "1rem",
-        },
-        allowedContent: {
-          color: "#a1a1aa",
-        },
-      }}
-    />
-    ```
-  </Tab>
-  <Tab>
-    ```jsx
-    <UploadButton
-      appearance={{
-        button({ ready, isUploading }) {
-          return {
-            fontSize: "1.6rem",
-            color: "black",
-            ...(ready() && { color: "#ecfdf5" }),
-            ...(isUploading() && { color: "#d1d5db" }),
-          };
-        },
-        container: {
-          "margin-top": "1rem",
-        },
-        allowedContent: {
-          color: "#a1a1aa",
-        },
-      }}
-    />
-    ```
-  </Tab>
-</Tabs>
+```jsx
+<UploadButton
+  appearance={{
+    button({ ready, isUploading }) {
+      return {
+        fontSize: "1.6rem",
+        color: "black",
+        ...(ready && { color: "#ecfdf5" }),
+        ...(isUploading && { color: "#d1d5db" }),
+      };
+    },
+    container: {
+      marginTop: "1rem",
+    },
+    allowedContent: {
+      color: "#a1a1aa",
+    },
+  }}
+/>
+```
 
 <UploadButton
   __internal_button_disabled
@@ -749,56 +654,30 @@ component and will return a `CSSProperties` object
 To customise content of `UploadButton` and `UploadDropzone`, you can use the
 `content` prop that accepts an object with following shape:
 
-<Tabs items={['ReactJS', 'SolidJS']}>
-  <Tab>
-    ```ts
-    type ContentField = ReactNode | ((args: CallbackArguments) => ReactNode);
+> `ReactNode` in the type definitions below will be the equivalent depending on
+> the framework you use, e.g. `JSX.Element` in Solid.js.
 
-    type UploadButtonProps = {
-      /* rest of props */
-      content?: {
-        button?: ContentField;
-        allowedContent?: ContentField;
-      };
-    };
+```ts
+type ContentField = ReactNode | ((args: CallbackArguments) => ReactNode);
 
-    type UploadDropzoneProps = {
-      /* rest of props */
-      content?: {
-        uploadIcon?: ContentField;
-        label?: ContentField;
-        allowedContent?: ContentField;
-        button?: ContentField;
-      };
-    };
-    ```
+type UploadButtonProps = {
+  /* rest of props */
+  content?: {
+    button?: ContentField;
+    allowedContent?: ContentField;
+  };
+};
 
-  </Tab>
-  <Tab>
-    ```ts
-    type ContentField = JSX.Element | ((args: CallbackArguments) => JSX.Element);
-
-    type UploadButtonProps = {
-      /* rest of props */
-      content?: {
-        button?: ContentField;
-        allowedContent?: ContentField;
-      };
-    };
-
-    type UploadDropzoneProps = {
-      /* rest of props */
-      content?: {
-        uploadIcon?: ContentField;
-        label?: ContentField;
-        allowedContent?: ContentField;
-        button?: ContentField;
-      };
-    };
-    ```
-
-  </Tab>
-</Tabs>
+type UploadDropzoneProps = {
+  /* rest of props */
+  content?: {
+    uploadIcon?: ContentField;
+    label?: ContentField;
+    allowedContent?: ContentField;
+    button?: ContentField;
+  };
+};
+```
 
 <Callout type="info">
   When you take over the `content` of an element, you get full responsibility to
@@ -809,46 +688,22 @@ To customise content of `UploadButton` and `UploadDropzone`, you can use the
 
 ### Example
 
-<Tabs items={['ReactJS', 'SolidJS']}>
-  <Tab>
-    ```jsx
-    <UploadButton
-      content={{
-        button({ ready }) {
-          if (ready) return <div>Upload stuff</div>;
+```jsx
+<UploadButton
+  content={{
+    button({ ready }) {
+      if (ready) return <div>Upload stuff</div>;
 
-          return "Getting ready...";
-        },
-        allowedContent({ ready, fileTypes, isUploading }) {
-          if (!ready) return "Checking what you allow";
-          if (isUploading) return "Seems like stuff is uploading";
-          return `Stuff you can upload: ${fileTypes.join(", ")}`;
-        },
-      }}
-    />
-    ```
-
-  </Tab>
-  <Tab>
-    ```jsx
-    <UploadButton
-      content={{
-        button({ ready }) {
-          if (ready()) return <div>Upload stuff</div>;
-
-          return "Getting ready...";
-        },
-        allowedContent({ ready, fileTypes, isUploading }) {
-          if (!ready()) return "Checking what you allow";
-          if (isUploading()) return "Seems like stuff is uploading";
-          return `Stuff you can upload: ${fileTypes().join(", ")}`;
-        },
-      }}
-    />
-    ```
-
-  </Tab>
-</Tabs>
+      return "Getting ready...";
+    },
+    allowedContent({ ready, fileTypes, isUploading }) {
+      if (!ready) return "Checking what you allow";
+      if (isUploading) return "Seems like stuff is uploading";
+      return `Stuff you can upload: ${fileTypes.join(", ")}`;
+    },
+  }}
+/>
+```
 
 <UploadButton
   __internal_button_disabled
