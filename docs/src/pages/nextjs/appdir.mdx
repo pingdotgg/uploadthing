@@ -128,9 +128,10 @@ your server for the route endpoint permissions which will show a loading state.
 By utilizing server components, we can pre-hydrate this data on the server
 instead to avoid the loading state and show the route permissions immediately.
 
-To add SSR hydration for all uploadthing components, simply render the `<NextSSRPlugin />` hydration
-helper in the body of your root layout **before** the children. The before and
-after is shown below (refresh page to see the difference):
+To add SSR hydration for all uploadthing components, simply render the
+`<NextSSRPlugin />` hydration helper in the body of your root layout **before**
+the children. The before and after is shown below (refresh page to see the
+difference):
 
 import { WithoutSSR, WithSSR } from "../../components/ssr-diff";
 
