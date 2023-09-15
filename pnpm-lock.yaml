@@ -863,6 +863,9 @@ importers:
       eslint:
         specifier: ^8.47.0
         version: 8.47.0
+      next:
+        specifier: 13.4.4
+        version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
       postcss:
         specifier: 8.4.22
         version: 8.4.22
