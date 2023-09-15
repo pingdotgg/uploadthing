@@ -2,7 +2,7 @@
   "name": "@example/minimal-express-react-server",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx index.ts",
+    "dev": "tsx src/index.ts",
     "start": "node dist/index.js"
   },
   "keywords": [],
