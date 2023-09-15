@@ -288,6 +288,64 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
+  examples/with-clerk-pagesdir:
+    dependencies:
+      '@clerk/nextjs':
+        specifier: ^4.23.5
+        version: 4.23.5(next@13.4.4)(react-dom@18.2.0)(react@18.2.0)
+      '@t3-oss/env-nextjs':
+        specifier: ^0.6.0
+        version: 0.6.1(typescript@5.1.6)(zod@3.22.2)
+      '@uploadthing/react':
+        specifier: 5.5.0
+        version: link:../../packages/react
+      next:
+        specifier: 13.4.4
+        version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: 5.5.3
+        version: link:../../packages/uploadthing
+      zod:
+        specifier: ^3.21.4
+        version: 3.22.2
+    devDependencies:
+      '@types/eslint':
+        specifier: ^8.44.2
+        version: 8.44.2
+      '@types/node':
+        specifier: 18.16.0
+        version: 18.16.0
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^6.3.0
+        version: 6.3.0(@typescript-eslint/parser@6.3.0)(eslint@8.47.0)(typescript@5.1.6)
+      '@typescript-eslint/parser':
+        specifier: ^6.3.0
+        version: 6.3.0(eslint@8.47.0)(typescript@5.1.6)
+      autoprefixer:
+        specifier: 10.4.14
+        version: 10.4.14(postcss@8.4.22)
+      eslint:
+        specifier: ^8.47.0
+        version: 8.47.0
+      eslint-config-next:
+        specifier: ^13.4.19
+        version: 13.4.19(eslint@8.47.0)(typescript@5.1.6)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   examples/with-drizzle-appdir:
     dependencies:
       '@t3-oss/env-nextjs':
