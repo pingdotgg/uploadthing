@@ -1,5 +1,44 @@
 # uploadthing
 
+## 5.6.0
+
+### Minor Changes
+
+- [#297](https://github.com/pingdotgg/uploadthing/pull/297)
+  [`4411aa0`](https://github.com/pingdotgg/uploadthing/commit/4411aa0608ab19eeceaf58ddad1e07769f367715)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: Fastify adapter
+
+- [#296](https://github.com/pingdotgg/uploadthing/pull/296)
+  [`4dff08c`](https://github.com/pingdotgg/uploadthing/commit/4dff08cb5ec042bb192e607b00cdb90393149b78)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: express support
+
+- [#335](https://github.com/pingdotgg/uploadthing/pull/335)
+  [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
+  ssr hydration helper for next.js appdir. 📚
+  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+
+### Patch Changes
+
+- [#325](https://github.com/pingdotgg/uploadthing/pull/325)
+  [`da11434`](https://github.com/pingdotgg/uploadthing/commit/da11434d6b7ce72fedea7a7d81a86e21da487994)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: accept
+  Undici File type in utapi
+
+- [#345](https://github.com/pingdotgg/uploadthing/pull/345)
+  [`92c69d5`](https://github.com/pingdotgg/uploadthing/commit/92c69d51325658a9d0a92dd045d13f9c24ca1ced)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(sdk): await
+  error before throwing
+
+- [#327](https://github.com/pingdotgg/uploadthing/pull/327)
+  [`b848579`](https://github.com/pingdotgg/uploadthing/commit/b848579eadf1657be3215b9392cae126e53323fb)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add
+  default name to blobs for server uploads
+
+- Updated dependencies
+  [[`92fac44`](https://github.com/pingdotgg/uploadthing/commit/92fac447f525be027125004f8cc0607b32375997)]:
+  - @uploadthing/shared@5.2.2
+
 ## 5.5.3
 
 ### Patch Changes
