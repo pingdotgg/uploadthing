@@ -13,5 +13,5 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) => createBuilder<"web", TErrorShape>(opts);
 
-export const shapeRouterConfig = (router: FileRouter) =>
+export const extractRouterConfig = (router: FileRouter) =>
   buildPermissionsInfoHandler({ router })();
