@@ -2,4 +2,6 @@ packages:
   - "packages/config/*"
   - "packages/*"
   - "examples/*"
+  - "examples/minimal-express-react/*"
+  - "examples/minimal-fastify-react/*"
   - "docs"

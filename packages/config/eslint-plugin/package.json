@@ -11,8 +11,8 @@
     "clean": "git clean -xdf dist node_modules"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^6.3.0",
-    "@typescript-eslint/utils": "^6.3.0"
+    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/utils": "^6.7.0"
   },
   "devDependencies": {
     "@types/eslint": "^8.44.2",
