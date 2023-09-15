@@ -17,15 +17,9 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
 
   const POST: RouteHandlerMethod = async (req, res) => {
     const response = await requestHandler({
-      req: {
-        ...req,
-        headers: req.headers,
-        url: req.url,
-        json: () =>
-          new Promise((resolve) => {
-            resolve(req.body);
-          }),
-      },
+      req: Object.assign(req, {
+        json: () => Promise.resolve(req.body),
+      }),
       res,
     });
     const errorFormatter =
