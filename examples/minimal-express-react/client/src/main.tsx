@@ -6,7 +6,7 @@ import { UploadButton } from "./uploadthing";
 function App() {
   return (
     <main className="flex flex-col items-center gap-4 py-8">
-      <h1 className="text-xl font-bold">Bun + Vite + Uploadthing</h1>
+      <h1 className="text-xl font-bold">Express + Vite + Uploadthing</h1>
       <div>
         <UploadButton
           endpoint="videoAndImage"
