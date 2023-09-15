@@ -221,6 +221,77 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
+  examples/minimal-fastify-react:
+    devDependencies:
+      '@uploadthing/react':
+        specifier: 5.5.0
+        version: link:../../packages/react
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      uploadthing:
+        specifier: ^5.5.0
+        version: link:../../packages/uploadthing
+
+  examples/minimal-fastify-react/client:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 5.5.0
+        version: link:../../../packages/react
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: ^5.5.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.3.2
+        version: 3.3.2(vite@4.4.9)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.16.0)
+
+  examples/minimal-fastify-react/server:
+    dependencies:
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
+      fastify:
+        specifier: ^4.22.0
+        version: 4.23.2
+      uploadthing:
+        specifier: ^5.5.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/cors':
+        specifier: ^2.8.13
+        version: 2.8.14
+      tsx:
+        specifier: ^3.12.7
+        version: 3.12.10
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
