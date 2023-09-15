@@ -3,6 +3,10 @@ import type { JSX } from "solid-js/jsx-runtime";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 
+/**
+ * Shared helpers for our premade components that's reusable by multiple frameworks
+ */
+
 export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
   const fileTypes = config ? Object.keys(config) : [];
 
