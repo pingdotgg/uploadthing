@@ -17,9 +17,7 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   router.post("/", async (req, res) => {
-    const bodyResult = await getPostBody({
-      req,
-    });
+    const bodyResult = await getPostBody({ req });
 
     if (!bodyResult.ok) {
       res.status(400);
@@ -34,16 +32,10 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const { data } = bodyResult;
-
     const response = await requestHandler({
-      req: {
-        ...req,
-        // Explicitly passing headers since
-        // without that they are being lost for some reason
-        headers: req.headers,
-        json: () => new Promise((resolve) => resolve(data)),
-      },
+      req: Object.assign(req, {
+        json: () => Promise.resolve(bodyResult.data),
+      }),
       res,
     });
     const errorFormatter =
