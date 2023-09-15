@@ -1,4 +1,4 @@
-name: Validate PR Title
+name: Lint the PR
 
 on:
   pull_request_target:
@@ -11,9 +11,20 @@ permissions:
   pull-requests: read
 
 jobs:
-  main:
+  check-title:
     runs-on: ubuntu-latest
     steps:
       - uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: 'Pull Request Labeler'
+
+  add-labels:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v4
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
