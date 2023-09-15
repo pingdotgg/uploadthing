@@ -3,7 +3,7 @@ import "@uploadthing/react/styles.css";
 import { Inter } from "next/font/google";
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { shapeRouteConfig } from "uploadthing/server";
+import { shapeRouterConfig } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
@@ -20,7 +20,7 @@ export default function RootLayout({
         className={inter.className}
         style={{ maxWidth: 640, margin: "0 auto", paddingTop: 32 }}
       >
-        <NextSSRPlugin routerConfig={shapeRouteConfig(uploadRouter)} />
+        <NextSSRPlugin routerConfig={shapeRouterConfig(uploadRouter)} />
         {children}
       </body>
     </html>

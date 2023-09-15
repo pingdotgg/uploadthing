@@ -4,7 +4,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import { Inter } from "next/font/google";
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { shapeRouteConfig } from "uploadthing/server";
+import { shapeRouterConfig } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextSSRPlugin routerConfig={shapeRouteConfig(uploadRouter)} />
+        <NextSSRPlugin routerConfig={shapeRouterConfig(uploadRouter)} />
         {children}
       </body>
     </html>

@@ -141,7 +141,7 @@ import { WithoutSSR, WithSSR } from "../../components/ssr-diff";
 
 ```tsx copy filename="app/layout.tsx"
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { shapeRouteConfig } from "uploadthing/server";
+import { shapeRouterConfig } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
@@ -155,12 +155,12 @@ export default function RootLayout({
       <body>
         <NextSSRPlugin
           /**
-           * The `shapeRouteConfig` will extract **only** the route configs
+           * The `shapeRouterConfig` will extract **only** the route configs
            * from the router to prevent additional information from being
            * leaked to the client. The data passed to the client is the same
            * as if you were to fetch `/api/uploadthing` directly.
            */
-          routerConfig={shapeRouteConfig(uploadRouter)}
+          routerConfig={shapeRouterConfig(uploadRouter)}
         />
         {children}
       </body>
