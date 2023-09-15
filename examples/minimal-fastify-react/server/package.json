@@ -2,7 +2,7 @@
   "name": "@example/minimal-fastify-react-server",
   "scripts": {
     "build": "tsc",
-    "dev": "tsx src/index.ts",
+    "dev": "NODE_ENV=development tsx src/index.ts",
     "start": "node dist/index.js"
   },
   "keywords": [],
