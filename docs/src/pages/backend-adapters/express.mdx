@@ -1,0 +1,96 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+# Getting started with Express
+
+## Package Setup
+
+<Steps>
+
+### Install the package
+
+import { Tab, Tabs } from "nextra-theme-docs";
+
+```sh npm2yarn
+npm install uploadthing
+```
+
+### Add env variables
+
+<Callout>
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+
+```bash copy
+UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+UPLOADTHING_APP_ID=... # Your app id
+```
+
+</Steps>
+
+## Set Up A FileRouter
+
+<Steps>
+
+### Creating your first FileRoute
+
+All files uploaded to uploadthing are associated with a FileRoute. Following
+example is very minimalistic. To get full insight into what you can do with the
+FileRoutes, please refer to the
+[File Router API](/api-reference/server#file-routes).
+
+```ts copy filename="src/uploadthing.ts"
+import { createUploadthing, type FileRouter } from "uploadthing/express";
+
+const f = createUploadthing();
+
+export const uploadRouter = {
+  videoAndImage: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+  }).onUploadComplete((data) => {
+    console.log("upload completed", data);
+  }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof uploadRouter;
+```
+
+### Create an API route using the FileRouter
+
+<Callout type="warning">
+  Note: You need to serve this API from `/api/uploadthing` on your application.
+</Callout>
+
+```ts copy filename="src/index.ts"
+import express from "express";
+
+import { createUploadthingExpressHandler } from "uploadthing/express";
+
+import { uploadRouter } from "./uploadthing";
+
+const app = express();
+
+app.use(
+  "/api/uploadthing",
+  createUploadthingExpressHandler({
+    router: uploadRouter,
+  }),
+);
+```
+
+### Use the FileRouter in your app
+
+Please refer to client side examples:
+
+- [NextJS App directory](/nextjs/appdir#creating-the-uploadthing-components-optional)
+- [NextJS Pages directory](/nextjs/appdir#creating-the-uploadthing-components-optional)
+- [SolidStart](/solid#use-the-filerouter-in-your-app-1)
+
+</Steps>

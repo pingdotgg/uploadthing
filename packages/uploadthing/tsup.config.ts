@@ -6,6 +6,7 @@ export default defineConfig((opts) => ({
   ...config,
   entry: [
     "./src/client.ts",
+    "./src/express.ts",
     "./src/server.ts",
     "./src/next.ts",
     "./src/next-legacy.ts",

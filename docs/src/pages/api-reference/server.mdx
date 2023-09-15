@@ -5,7 +5,7 @@ import { Callout, Tab, Tabs } from "nextra-theme-docs";
 The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
 FROM THE RIGHT PLACE
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express"]}>
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing/next";
@@ -27,6 +27,16 @@ FROM THE RIGHT PLACE
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/express";
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
