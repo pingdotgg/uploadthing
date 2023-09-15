@@ -1,5 +1,6 @@
 import type { NextApiResponse } from "next";
 import type { Response as ExpressResponse } from "express";
+import type { FastifyReply } from "fastify";
 
 import {
   generateUploadThingURL,
@@ -160,6 +161,8 @@ export const buildRequestHandler = <
       ? NextApiResponse
       : TRuntime extends "express"
       ? ExpressResponse
+      : TRuntime extends "fastify"
+      ? FastifyReply
       : undefined;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }

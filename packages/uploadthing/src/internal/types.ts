@@ -6,6 +6,7 @@ import type {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from "express";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type {
   FileRouterInputConfig,
@@ -32,6 +33,7 @@ export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type RequestLike = Overwrite<
   WithRequired<Partial<Request>, "json">,
   {
+    body?: any; // we only use `.json`, don't care about `body`
     headers: Headers | IncomingHttpHeaders;
   }
 >;
@@ -45,7 +47,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web" | "express";
+export type AnyRuntime = "app" | "pages" | "web" | "express" | "fastify";
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -61,7 +63,11 @@ type MiddlewareFnArgs<TParams extends AnyParams> =
     ? { req: NextRequest; res?: never; input: TParams["_input"] }
     : TParams["_runtime"] extends "express"
     ? { req: ExpressRequest; res: ExpressResponse; input: TParams["_input"] }
-    : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
+    : TParams["_runtime"] extends "fastify"
+    ? { req: FastifyRequest; res: FastifyReply; input: TParams["_input"] }
+    : TParams["_runtime"] extends "pages"
+    ? { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] }
+    : never;
 
 type MiddlewareFn<
   TOutput extends Record<string, unknown>,
