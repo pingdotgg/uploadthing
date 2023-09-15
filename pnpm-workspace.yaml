@@ -2,6 +2,5 @@ packages:
   - "packages/config/*"
   - "packages/*"
   - "examples/*"
-  - "examples/*/*"
-  - "!examples/*/.next"
+  - "examples/minimal-express-react/*"
   - "docs"

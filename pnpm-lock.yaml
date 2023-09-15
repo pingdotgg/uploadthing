@@ -146,12 +146,18 @@ importers:
 
   examples/minimal-express-react:
     devDependencies:
+      '@uploadthing/react':
+        specifier: 5.5.0
+        version: link:../../packages/react
       concurrently:
         specifier: ^8.2.1
         version: 8.2.1
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
+      uploadthing:
+        specifier: ^5.5.0
+        version: link:../../packages/uploadthing
 
   examples/minimal-express-react/client:
     dependencies:
