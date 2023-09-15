@@ -17,9 +17,9 @@
 
 This repository contains the packages, docs and examples for uploadthing
 
-- [Next.js App Directory](https://github.com/pingdotgg/uploadthing/tree/main/examples/appdir) -
+- [Next.js App Directory](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-appdir) -
   A simple example using the Next.js app directory
-- [Next.js Pages Directory](https://github.com/pingdotgg/uploadthing/tree/main/examples/pagedir) -
+- [Next.js Pages Directory](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-pagedir) -
   A simple example using the Next.js pages directory
 - [SolidStart SSR](https://github.com/pingdotgg/uploadthing/tree/main/examples/solid) -
   A simple example using SSR with SolidStart

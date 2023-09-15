@@ -1,0 +1,37 @@
+{
+  "name": "@example/with-clerk-pagesdir",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "SKIP_ENV_VALIDATION=true next lint",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clerk/nextjs": "^4.23.5",
+    "@t3-oss/env-nextjs": "^0.6.0",
+    "@uploadthing/react": "5.5.0",
+    "next": "13.4.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "uploadthing": "5.5.3",
+    "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.44.2",
+    "@types/node": "18.16.0",
+    "@types/react": "18.2.8",
+    "@types/react-dom": "18.2.4",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "autoprefixer": "10.4.14",
+    "eslint": "^8.47.0",
+    "eslint-config-next": "^13.4.19",
+    "typescript": "^5.1.6"
+  },
+  "ct3aMetadata": {
+    "initVersion": "7.20.0"
+  }
+}
