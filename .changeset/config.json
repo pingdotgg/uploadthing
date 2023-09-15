@@ -12,6 +12,7 @@
     "onlyUpdatePeerDependentsWhenOutOfRange": true
   },
   "ignore": [
-    "docs"
+    "docs",
+    "@example/*"
   ]
 }
