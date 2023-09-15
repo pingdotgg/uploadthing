@@ -6,7 +6,8 @@
     "dev": "solid-start dev --port 9898",
     "start": "solid-start start --port 9898",
     "build": "solid-start build",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@solidjs/meta": "^0.28.6",
