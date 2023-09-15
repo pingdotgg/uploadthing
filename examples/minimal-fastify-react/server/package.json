@@ -1,5 +1,6 @@
 {
   "name": "@example/minimal-fastify-react-server",
+  "private": true,
   "scripts": {
     "build": "tsc",
     "dev": "NODE_ENV=development tsx src/index.ts",

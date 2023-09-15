@@ -1,5 +1,6 @@
 {
   "name": "@example/minimal-express-react-server",
+  "private": true,
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
