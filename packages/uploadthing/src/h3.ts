@@ -49,7 +49,7 @@ export const createH3RouteHandler = <TRouter extends FileRouter>(
       const errorFormatter =
         opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
         defaultErrorFormatter;
-      return errorFormatter(response);
+      return errorFormatter(response) as unknown;
     }
 
     if (response.status !== 200) {

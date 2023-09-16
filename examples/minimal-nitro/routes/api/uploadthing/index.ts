@@ -18,6 +18,8 @@ export const uploadRouter = {
   })
     .middleware(({ event }) => {
       console.log("event", event);
+      event;
+      // ^?
       return {};
     })
     .onUploadComplete((data) => {
