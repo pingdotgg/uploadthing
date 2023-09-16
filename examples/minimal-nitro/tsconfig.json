@@ -1,3 +1,4 @@
 {
-  "extends": "./.nitro/types/tsconfig.json"
+  "extends": "./.nitro/types/tsconfig.json",
+  "compilerOptions": { "skipLibCheck": true }
 }

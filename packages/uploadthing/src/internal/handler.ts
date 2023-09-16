@@ -1,6 +1,7 @@
 import type { NextApiResponse } from "next";
 import type { Response as ExpressResponse } from "express";
 import type { FastifyReply } from "fastify";
+import type { H3Event } from "h3";
 
 import {
   generateUploadThingURL,
@@ -22,7 +23,6 @@ import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
 import type { ActionType, AnyRuntime, FileRouter, RequestLike } from "./types";
-import type { H3Event } from "h3";
 
 const fileCountLimitHit = (
   files: string[],
@@ -64,10 +64,6 @@ const fileCountLimitHit = (
 
   return { limitHit: false };
 };
-
-if (process.env.NODE_ENV === "development") {
-  console.log("[UT] UploadThing dev server is now running!");
-}
 
 const isValidResponse = (response: Response) => {
   if (!response.ok) return false;
@@ -165,10 +161,14 @@ export const buildRequestHandler = <
       : TRuntime extends "fastify"
       ? FastifyReply
       : undefined;
-      event?: TRuntime extends "h3" ? H3Event : undefined;
+    event?: TRuntime extends "h3" ? H3Event : undefined;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[UT] UploadThing dev server is now running!");
+    }
+
     const { req, res, event } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
