@@ -8,6 +8,7 @@ import {
   setResponseStatus,
 } from "h3";
 
+import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -18,6 +19,14 @@ import {
 } from "./internal/handler";
 import type { RouterWithConfig } from "./internal/handler";
 import type { FileRouter } from "./internal/types";
+import type { CreateBuilderOptions } from "./internal/upload-builder";
+import { createBuilder } from "./internal/upload-builder";
+
+export type { FileRouter } from "./internal/types";
+
+export const createUploadthing = <TErrorShape extends Json>(
+  opts?: CreateBuilderOptions<TErrorShape>,
+) => createBuilder<"h3", TErrorShape>(opts);
 
 export const createH3RouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
@@ -30,7 +39,7 @@ export const createH3RouteHandler = <TRouter extends FileRouter>(
         headers: getRequestHeaders(event),
         json: () => Promise.resolve(readBody(event)),
       },
-      //   res: event.node.res, // <-- DO WE NEED THIS?
+      event,
     });
 
     setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });

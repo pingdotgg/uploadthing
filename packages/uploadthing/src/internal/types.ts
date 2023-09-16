@@ -7,6 +7,7 @@ import type {
   Response as ExpressResponse,
 } from "express";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import type { H3Event } from "h3";
 
 import type {
   FileRouterInputConfig,
@@ -47,7 +48,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web" | "express" | "fastify";
+export type AnyRuntime = "app" | "pages" | "web" | "express" | "h3" | "fastify";
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -67,6 +68,8 @@ type MiddlewareFnArgs<TParams extends AnyParams> =
     ? { req: FastifyRequest; res: FastifyReply; input: TParams["_input"] }
     : TParams["_runtime"] extends "pages"
     ? { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] }
+    : TParams["_runtime"] extends "h3"
+    ? { event: H3Event }
     : never;
 
 type MiddlewareFn<

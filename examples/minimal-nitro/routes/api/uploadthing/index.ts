@@ -1,5 +1,8 @@
-import { createH3RouteHandler } from "uploadthing/h3";
-import { createUploadthing, FileRouter } from "uploadthing/server";
+import {
+  createH3RouteHandler,
+  createUploadthing,
+  FileRouter,
+} from "uploadthing/h3";
 
 const f = createUploadthing();
 
@@ -13,8 +16,8 @@ export const uploadRouter = {
       maxFileSize: "16MB",
     },
   })
-    .middleware(({ req, res }) => {
-      console.log("req,res", req, res);
+    .middleware(({ event }) => {
+      console.log("event", event);
       return {};
     })
     .onUploadComplete((data) => {

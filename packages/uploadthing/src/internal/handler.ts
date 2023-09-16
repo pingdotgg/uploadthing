@@ -22,6 +22,7 @@ import { UPLOADTHING_VERSION } from "../constants";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
 import type { ActionType, AnyRuntime, FileRouter, RequestLike } from "./types";
+import type { H3Event } from "h3";
 
 const fileCountLimitHit = (
   files: string[],
@@ -164,10 +165,11 @@ export const buildRequestHandler = <
       : TRuntime extends "fastify"
       ? FastifyReply
       : undefined;
+      event?: TRuntime extends "h3" ? H3Event : undefined;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
-    const { req, res } = input;
+    const { req, res, event } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
@@ -278,6 +280,7 @@ export const buildRequestHandler = <
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             req: req as any,
             res,
+            event,
             input: parsedInput,
           });
         } catch (error) {
