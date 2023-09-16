@@ -105,7 +105,7 @@ export type UploadFileResponse<TServerOutput> = {
   url: string;
 
   // Matches what's returned from the serverside `onUploadComplete` callback
-  serverdata: TServerOutput;
+  serverData: TServerOutput;
 };
 
 export const DANGEROUS__uploadFiles = async <
@@ -254,7 +254,7 @@ export const DANGEROUS__uploadFiles = async <
     // Generate a URL for the uploaded image since AWS won't give me one
     const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
 
-    const serverdata = await fetch("/api/uploadthing", {
+    const serverData = await fetch("/api/uploadthing", {
       headers: { "x-uploadthing-polling-key": fields.key },
     }).then((res) => res.json());
 
@@ -269,7 +269,7 @@ export const DANGEROUS__uploadFiles = async <
       fileUrl: genUrl,
       url: genUrl,
 
-      serverdata,
+      serverData,
     };
 
     return ret;
