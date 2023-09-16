@@ -1,11 +1,8 @@
-'📚 documentation / examples':
-  - any:
-      [
-        'docs/**',
-        '!docs/**/package.json',
-        'examples/**',
-        '!examples/**/package.json',
-      ]
+'📚 documentation':
+  - any: ['docs/**', '!docs/**/package.json']
+
+'examples':
+  - any: ['examples/**', '!examples/**/package.json']
 
 '@uploadthing/react':
   - any: ['packages/react/**', '!packages/react/package.json']
@@ -17,11 +14,7 @@
   - any: ['packages/uploadthing/src/next.ts', 'packages/uploadthing/src/next-legacy.ts']
 
 'backend adapters':
-  - any:
-      [
-        'packages/uploadthing/src/express.ts',
-        'packages/uploadthing/src/fastify.ts'
-      ]
+  - any: ['packages/uploadthing/src/express.ts', 'packages/uploadthing/src/fastify.ts']
 
 'sdk':
   - any: ['packages/uploadthing/src/sdk/**']
