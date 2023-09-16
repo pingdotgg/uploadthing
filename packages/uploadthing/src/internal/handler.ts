@@ -64,10 +64,6 @@ const fileCountLimitHit = (
   return { limitHit: false };
 };
 
-if (process.env.NODE_ENV === "development") {
-  console.log("[UT] UploadThing dev server is now running!");
-}
-
 const isValidResponse = (response: Response) => {
   if (!response.ok) return false;
   if (response.status >= 400) return false;
@@ -167,6 +163,10 @@ export const buildRequestHandler = <
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[UT] UploadThing dev server is now running!");
+    }
+
     const { req, res } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
