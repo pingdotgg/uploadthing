@@ -1,4 +1,8 @@
 import { Router as ExpressRouter } from "express";
+import type {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
@@ -19,7 +23,10 @@ export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"express", TErrorShape>(opts);
+) =>
+  createBuilder<{ req: ExpressRequest; res: ExpressResponse }, TErrorShape>(
+    opts,
+  );
 
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

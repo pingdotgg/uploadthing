@@ -11,7 +11,7 @@ export { createServerHandler } from "./internal/edge";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"web", TErrorShape>(opts);
+) => createBuilder<{ req: Request; res: undefined }, TErrorShape>(opts);
 
 export const extractRouterConfig = (router: FileRouter) =>
   buildPermissionsInfoHandler({ router })();

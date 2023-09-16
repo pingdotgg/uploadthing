@@ -1,4 +1,9 @@
-import type { FastifyInstance, RouteHandlerMethod } from "fastify";
+import type {
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+  RouteHandlerMethod,
+} from "fastify";
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
@@ -18,7 +23,8 @@ export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"fastify", TErrorShape>(opts);
+) =>
+  createBuilder<{ req: FastifyRequest; res: FastifyReply }, TErrorShape>(opts);
 
 export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   fastify: FastifyInstance,
