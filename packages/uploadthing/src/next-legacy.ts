@@ -38,8 +38,6 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    console.log("req.body", typeof req.body, req.body);
-
     const response = await requestHandler({
       req: Object.assign(req, {
         json: () =>
