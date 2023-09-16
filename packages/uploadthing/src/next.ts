@@ -1,16 +1,12 @@
-import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import type { NextRequest } from "next/server";
 
-import { UPLOADTHING_VERSION } from "./constants";
-import { defaultErrorFormatter } from "./internal/error-formatter";
+import type { Json } from "@uploadthing/shared";
+
 import type { RouterWithConfig } from "./internal/handler";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-} from "./internal/handler";
-import type { FileRouter, inferErrorShape } from "./internal/types";
+import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import { createServerHandler } from "./server";
 
 export type { FileRouter } from "./internal/types";
 
@@ -21,52 +17,14 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, "app">(opts);
+  const handlers = createServerHandler(opts);
 
-  const POST = async (req: Request) => {
-    const response = await requestHandler({ req });
-    const errorFormatter =
-      opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
-      defaultErrorFormatter;
-
-    if (response instanceof UploadThingError) {
-      const formattedError = errorFormatter(
-        response,
-      ) as inferErrorShape<TRouter>;
-      return new Response(JSON.stringify(formattedError), {
-        status: getStatusCodeFromError(response),
-        headers: {
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        },
-      });
-    }
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      return new Response("An unknown error occured", {
-        status: 500,
-        headers: {
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        },
-      });
-    }
-
-    return new Response(JSON.stringify(response.body), {
-      status: response.status,
-      headers: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      },
-    });
+  const POST = async (req: NextRequest) => {
+    return handlers.POST(req);
   };
 
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
-
-  const GET = () => {
-    return new Response(JSON.stringify(getBuildPerms()), {
-      status: 200,
-      headers: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      },
-    });
+  const GET = (req: NextRequest) => {
+    return handlers.GET(req);
   };
 
   return { GET, POST };

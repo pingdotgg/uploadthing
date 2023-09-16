@@ -23,7 +23,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, "pages">(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts);
   const errorFormatter =
     opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
     defaultErrorFormatter;

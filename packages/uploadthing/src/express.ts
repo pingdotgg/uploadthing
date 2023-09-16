@@ -24,7 +24,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
-  const requestHandler = buildRequestHandler<TRouter, "express">(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts);
   const router = ExpressRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
