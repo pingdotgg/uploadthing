@@ -22,7 +22,7 @@ function internalCreateBuilder<
 ): UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
-  _mdwrArgs: TMiddlewareArgs;
+  _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
 }> {
@@ -79,7 +79,7 @@ type InOut<
 > = (input: FileRouterInputConfig) => UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
-  _mdwrArgs: TMiddlewareArgs;
+  _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
 }>;

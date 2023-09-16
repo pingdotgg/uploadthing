@@ -49,7 +49,7 @@ export type MiddlewareFnArgs<TRequest, TResponse> = {
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
-  _mdwrArgs: MiddlewareFnArgs<any, any>;
+  _middlewareArgs: MiddlewareFnArgs<any, any>;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
 }
@@ -81,18 +81,18 @@ export interface UploadBuilder<TParams extends AnyParams> {
   ) => UploadBuilder<{
     _input: TParser["_output"];
     _metadata: TParams["_metadata"];
-    _mdwrArgs: TParams["_mdwrArgs"];
+    _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
-      ? MiddlewareFn<TParams["_input"], TOutput, TParams["_mdwrArgs"]>
+      ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
       : ErrorMessage<"middleware is already set">,
   ) => UploadBuilder<{
     _input: TParams["_input"];
     _metadata: TOutput;
-    _mdwrArgs: TParams["_mdwrArgs"];
+    _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
   }>;
@@ -105,7 +105,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
   ) => UploadBuilder<{
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
-    _mdwrArgs: TParams["_mdwrArgs"];
+    _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: UploadErrorFn;
   }>;
@@ -114,7 +114,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
   inputParser: JsonParser;
-  middleware: MiddlewareFn<TParams["_input"], {}, TParams["_mdwrArgs"]>;
+  middleware: MiddlewareFn<TParams["_input"], {}, TParams["_middlewareArgs"]>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
   onUploadError: UploadErrorFn;
 };
