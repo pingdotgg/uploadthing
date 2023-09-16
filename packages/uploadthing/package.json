@@ -38,6 +38,11 @@
       "types": "./dist/fastify.d.ts",
       "import": "./dist/fastify.mjs",
       "require": "./dist/fastify.js"
+    },
+    "./h3": {
+      "types": "./dist/h3.d.ts",
+      "import": "./dist/h3.mjs",
+      "require": "./dist/h3.js"
     }
   },
   "files": [
@@ -68,6 +73,9 @@
       ],
       "fastify": [
         "dist/fastify.d.ts"
+      ],
+      "h3": [
+        "dist/h3.d.ts"
       ]
     }
   },

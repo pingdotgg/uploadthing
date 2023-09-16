@@ -1,0 +1,14 @@
+{
+  "name": "@example/minimal-nitro",
+  "private": true,
+  "scripts": {
+    "prepare": "nitropack prepare",
+    "dev": "nitropack dev",
+    "build": "nitropack build",
+    "preview": "node .output/server/index.mjs"
+  },
+  "dependencies": {
+    "nitropack": "^2.6.3",
+    "uploadthing": "^5.6.0"
+  }
+}
