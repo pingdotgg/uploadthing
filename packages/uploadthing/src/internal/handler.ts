@@ -59,10 +59,6 @@ const fileCountLimitHit = (
   return { limitHit: false };
 };
 
-if (process.env.NODE_ENV === "development") {
-  console.log("[UT] UploadThing dev server is now running!");
-}
-
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
@@ -94,6 +90,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[UT] UploadThing dev server is now running!");
+    }
+
     const { req, res } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
