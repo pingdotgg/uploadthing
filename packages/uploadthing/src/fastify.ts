@@ -4,13 +4,13 @@ import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
-import { defaultErrorFormatter } from "./internal/error-formatter";
+import { formatError } from "./internal/error-formatter";
 import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import type { FileRouter, inferErrorShape } from "./internal/types";
+import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -34,21 +34,14 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
       }),
       res,
     });
-    const errorFormatter =
-      opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
-      defaultErrorFormatter;
 
     if (response instanceof UploadThingError) {
-      const formattedError = errorFormatter(
-        response,
-      ) as inferErrorShape<TRouter>;
-
       void res
         .status(getStatusCodeFromError(response))
         .headers({
           "x-uploadthing-version": UPLOADTHING_VERSION,
         })
-        .send(formattedError);
+        .send(formatError(response, opts.router));
       return;
     }
 

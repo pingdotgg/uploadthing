@@ -2,7 +2,7 @@ import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
-import { defaultErrorFormatter } from "./internal/error-formatter";
+import { formatError } from "./internal/error-formatter";
 import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
@@ -29,11 +29,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
     const response = await requestHandler({ req });
 
     if (response instanceof UploadThingError) {
-      const errorFormatter =
-        opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
-        defaultErrorFormatter;
-
-      return new Response(JSON.stringify(errorFormatter(response)), {
+      return new Response(JSON.stringify(formatError(response, opts.router)), {
         status: getStatusCodeFromError(response),
         headers: {
           "x-uploadthing-version": UPLOADTHING_VERSION,
