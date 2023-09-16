@@ -49,7 +49,7 @@ export const createH3RouteHandler = <TRouter extends FileRouter>(
       const errorFormatter =
         opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
         defaultErrorFormatter;
-      return JSON.stringify(errorFormatter(response));
+      return errorFormatter(response);
     }
 
     if (response.status !== 200) {
@@ -59,14 +59,14 @@ export const createH3RouteHandler = <TRouter extends FileRouter>(
     }
 
     setResponseStatus(event, 200);
-    return JSON.stringify(response);
+    return response.body;
   });
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
   const GET = defineEventHandler((event) => {
     setResponseStatus(event, 200);
     setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
-    return JSON.stringify(getBuildPerms());
+    return getBuildPerms();
   });
 
   const router = createRouter()
