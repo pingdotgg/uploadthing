@@ -38,14 +38,13 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       return;
     }
 
+    console.log("req.body", typeof req.body, req.body);
+
     const response = await requestHandler({
       req: Object.assign(req, {
         json: () =>
           Promise.resolve(
-            JSON.parse(
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              req.body,
-            ),
+            typeof req.body === "string" ? JSON.parse(req.body) : req.body,
           ),
       }),
       res,
