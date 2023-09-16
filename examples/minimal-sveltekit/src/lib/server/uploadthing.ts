@@ -1,5 +1,5 @@
-import { createUploadthing } from "uploadthing/sveltekit";
-import type { FileRouter } from "uploadthing/sveltekit";
+import { createUploadthing } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
 const f = createUploadthing();
 
