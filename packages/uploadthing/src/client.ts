@@ -133,7 +133,11 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
 
     // attempt to parse response
     try {
-      return res.json();
+      const json = await res.json();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return typeof json === "object" && json != null && "body" in json
+        ? json.body
+        : json;
     } catch (e) {
       // response is not JSON
       console.error(e);
