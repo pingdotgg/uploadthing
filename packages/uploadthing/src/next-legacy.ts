@@ -42,10 +42,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       req: Object.assign(req, {
         json: () =>
           Promise.resolve(
-            JSON.parse(
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-              req.body,
-            ),
+            typeof req.body === "string" ? JSON.parse(req.body) : req.body,
           ),
       }),
       res,
