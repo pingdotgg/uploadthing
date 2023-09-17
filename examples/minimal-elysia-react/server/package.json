@@ -2,6 +2,7 @@
   "name": "@example/minimal-elysia-react-server",
   "private": true,
   "scripts": {
+    "build": "bun build src/index.ts",
     "dev": "NODE_ENV=development bun run src/index.ts",
     "start": "bun run src/index.ts"
   },
