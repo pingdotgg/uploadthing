@@ -12,7 +12,7 @@ export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"app", TErrorShape>(opts);
+) => createBuilder<{ req: NextRequest; res: undefined }, TErrorShape>(opts);
 
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

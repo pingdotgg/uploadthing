@@ -18,7 +18,10 @@ export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"pages", TErrorShape>(opts);
+) =>
+  createBuilder<{ req: NextApiRequest; res: NextApiResponse }, TErrorShape>(
+    opts,
+  );
 
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

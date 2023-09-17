@@ -7,7 +7,7 @@ import type {
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
   AnyParams,
-  AnyRuntime,
+  MiddlewareFnArgs,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
@@ -15,14 +15,14 @@ import type {
 } from "./types";
 
 function internalCreateBuilder<
-  TRuntime extends AnyRuntime = "web",
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any>,
   TErrorShape extends Json = { message: string },
 >(
   initDef: Partial<UploadBuilderDef<any>> = {},
 ): UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
-  _runtime: TRuntime;
+  _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
 }> {
@@ -74,12 +74,12 @@ function internalCreateBuilder<
 }
 
 type InOut<
-  TRuntime extends AnyRuntime = "web",
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any>,
   TErrorShape extends Json = { message: string },
 > = (input: FileRouterInputConfig) => UploadBuilder<{
   _input: UnsetMarker;
   _metadata: UnsetMarker;
-  _runtime: TRuntime;
+  _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
 }>;
@@ -89,11 +89,13 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
 };
 
 export function createBuilder<
-  TRuntime extends AnyRuntime = "web",
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any>,
   TErrorShape extends Json = { message: string },
->(opts?: CreateBuilderOptions<TErrorShape>): InOut<TRuntime, TErrorShape> {
+>(
+  opts?: CreateBuilderOptions<TErrorShape>,
+): InOut<TMiddlewareArgs, TErrorShape> {
   return (input: FileRouterInputConfig) => {
-    return internalCreateBuilder<TRuntime, TErrorShape>({
+    return internalCreateBuilder<TMiddlewareArgs, TErrorShape>({
       routerConfig: input,
       ...opts,
     });
