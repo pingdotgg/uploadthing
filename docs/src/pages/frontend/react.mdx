@@ -1,4 +1,34 @@
-## UploadButton
+# Usage with React
+
+The `@uploadthing/react` package provides a set of premade React components that
+you can use to upload files to your server. It also provides a set of hooks that
+you can use to build your own custom components.
+
+## Creating The UploadThing Components (recommended)
+
+While you can import the components directly from `@uploadthing/react`, we
+recommend generating your own components using the `generateComponents`
+function. This lets you pass your generic `FileRouter` once and then have
+typesafe components everywhere, instead of having to pass the generic everytime
+you mount a component.
+
+```ts copy filename="src/utils/uploadthing.ts"
+import { generateComponents } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { UploadButton, UploadDropzone, Uploader } =
+  generateComponents<OurFileRouter>();
+```
+
+## Use the FileRouter in your app
+
+UploadThing provides a few premade components that you can use to upload files
+in your app. For component customization, see [Theming](/theming), and for even
+more advanced use cases check out the
+[hook usage](#advanced-usage-useuploadthing)
+
+### UploadButton
 
 A simple button that opens the native file picker and uploads the selected
 files. The default button is shown below. See [Theming](/theming) on how to
@@ -41,7 +71,7 @@ export const OurUploadButton = () => (
 );
 ```
 
-### Configuration
+#### Configuration
 
 | Prop                   | Type     | Required                | Notes           | Description                                                                         |
 | :--------------------- | :------- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
@@ -53,7 +83,7 @@ export const OurUploadButton = () => (
 | onUploadProgress       | function | No                      | Added in `v5.1` | callback function for upload progress                                               |
 | onUploadBegin          | function | No                      | Added in `v5.4` | callback function for upload begin                                                  |
 
-## UploadDropzone
+### UploadDropzone
 
 A `react-dropzone` powered dropzone that let's you drag and drop files to
 upload. The default dropzone is shown below. See [Theming](/theming) on how to
@@ -96,7 +126,7 @@ export const OurUploadDropzone = () => (
 );
 ```
 
-### Configuration
+#### Configuration
 
 | Prop                   | Type               | Required                | Notes           | Description                                                                             |
 | :--------------------- | :----------------- | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------- |
@@ -110,7 +140,7 @@ export const OurUploadDropzone = () => (
 | config                 | object             | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                    |
 | config.mode            | 'auto' \| 'manual' | No                      | Added in `v5.4` | mode of dropzone. 'manual' is default one. 'auto' triggers upload right after selection |
 
-## generateReactHelpers
+### generateReactHelpers
 
 The `generateReactHelpers` function is used to generate the useUploadThing hook
 and the uploadFiles functions you use to interact with UploadThing in custom
@@ -125,7 +155,7 @@ export const { useUploadThing, uploadFiles } =
   generateReactHelpers<OurFileRouter>();
 ```
 
-## useDropzone
+### useDropzone
 
 > Added in `v5.6`
 
@@ -143,7 +173,7 @@ import { Callout } from "nextra-theme-docs";
   if this happens.
 </Callout>
 
-## useUploadThing
+### useUploadThing
 
 This hook provides a function to start uploading, an `isUploading` state, and
 the `permittedFileInfo` which gives information about what file types, sizes and
@@ -206,7 +236,7 @@ export function MultiUploader() {
 }
 ```
 
-### Configuration
+#### Configuration
 
 ```tsx
 const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
@@ -237,7 +267,7 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 | isUploading       | function | if file(s) are currently uploading                                                                                                                                                         |
 | permittedFileInfo | function | information on permitted file types, sizes, and counts                                                                                                                                     |
 
-## uploadFiles
+### uploadFiles
 
 ```tsx copy
 // Note: this is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
@@ -258,7 +288,7 @@ const uploadSomeFiles = async () => {
 };
 ```
 
-### Configuration
+#### Configuration
 
 ```tsx
 uploadFiles(opts: {

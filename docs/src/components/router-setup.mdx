@@ -1,0 +1,12 @@
+## Set Up A FileRouter
+
+All files uploaded to UploadThing are associated with a FileRoute. To get full
+insight into what you can do with the FileRoutes, please refer to the
+[File Router API](/api-reference/server#file-routes).
+
+The router below has a single file route, allowing users to upload an image up
+to 4MB. We run an auth check in our middleware, meaning only authenticated users
+can upload files. After the upload has completed, we update our users profile
+image to the newly uploaded file.
+
+{props.children}

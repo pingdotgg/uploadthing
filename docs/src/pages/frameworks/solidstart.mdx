@@ -1,17 +1,14 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-import FrontendLinks from "../../components/frontend-links.mdx";
 import PackageSetup from "../../components/package-setup.mdx";
 import FileRouterSetup from "../../components/router-setup.mdx";
 
-# Getting started with Fastify
-
-> Added in `v5.6`
+# Usage with SolidStart
 
 <PackageSetup>
 
 ```bash npm2yarn copy
-npm install uploadthing
+npm install uploadthing @uploadthing/solid solidjs-dropzone attr-accept
 ```
 
 </PackageSetup>
@@ -19,7 +16,7 @@ npm install uploadthing
 <FileRouterSetup>
 
 ```ts copy filename="server/uploadthing.ts"
-import { createUploadthing, type FileRouter } from "uploadthing/fastify";
+import { createUploadthing, type FileRouter } from "uploadthing/server";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -28,10 +25,10 @@ const f = createUploadthing();
 
 export const uploadRouter = {
   imageUploader: f({ image: { maxFileSize: "4MB" } })
-    .middleware(async ({ req, res }) => {
+    .middleware(async ({ req }) => {
       // This code runs on your server before upload
       // If the request isn't authenticated, we throw and cancel the upload
-      const user = await auth(req, res);
+      const user = await auth(req);
       if (!user) throw new Error("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
@@ -52,25 +49,28 @@ export type OurFileRouter = typeof uploadRouter;
 
 </FileRouterSetup>
 
-### Register the UploadThing plugin
+## Expose the FileRouter as HTTP endpoints
 
-To expose the FileRouter as HTTP endpoints, register the
-`fastifyUploadthingPlugin` plugin on your Fastify instance.
+<Callout type="warning">
+  **Note:** This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this
+  API from `/api/uploadthing` on your application.
+</Callout>
 
-```ts copy filename="src/index.ts"
-import Fastify from "fastify";
+```ts copy filename="src/routes/api/uploadthing.ts"
+import { createServerHandler } from "uploadthing/server";
 
-import { fastifyUploadthingPlugin } from "uploadthing/fastify";
+import { uploadRouter } from "~/server/uploadthing";
 
-import { uploadRouter } from "./router";
-
-const fastify = Fastify({ logger: true });
-
-fastify
-  /** ... */
-  .register(fastifyUploadthingPlugin, {
-    router: uploadRouter,
-  });
+export const { GET, POST } = createServerHandler({
+  router: uploadRouter,
+  config: {
+    callbackUrl: `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`,
+  },
+});
 ```
 
-<FrontendLinks />
+## Setup UploadThing for Solid.js
+
+UploadThing provides premade components, as well as a powerful hook that let's
+you upload files in your Solid.js application. See the
+[Solid.js docs](/frontend/solid) for more information.

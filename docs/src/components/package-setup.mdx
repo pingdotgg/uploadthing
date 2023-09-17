@@ -1,0 +1,34 @@
+import { Callout, Steps } from "nextra-theme-docs";
+
+## Package Setup
+
+Let's get started by installing the dependencies and setting up your environment
+
+<Steps>
+
+### Install the package
+
+{props.children}
+
+### Add env variables
+
+<Callout>
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+
+```bash copy
+UPLOADTHING_SECRET="sk_live_xxx" # A secret key for your app
+UPLOADTHING_APP_ID='xxx' # Your app id
+```
+
+<Callout type="info">
+  If you're not deploying through Vercel, you also need to add a
+  `UPLOADTHING_URL` environment variable that points to your app, e.g.
+  `https://myapp.com`. This variable can also be used to override the default
+  URL in development which is `http://localhost:3000` unless specified
+  otherwise.
+</Callout>
+
+</Steps>

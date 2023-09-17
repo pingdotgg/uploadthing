@@ -1,9 +1,9 @@
 {
   "index": "Introduction",
   "getting-started": "Getting Started",
-  "nextjs": "Next.js Setup",
-  "solid": "SolidStart Setup",
+  "frameworks": "Usage with Fullstack Frameworks",
   "backend-adapters": "Backend Adapters",
+  "frontend": "Frontend Usage",
   "theming": "Theming",
   "faq": {
     "title": "Frequently Asked Questions (FAQ)",

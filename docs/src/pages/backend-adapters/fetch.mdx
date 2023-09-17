@@ -1,67 +1,59 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
+import FrontendLinks from "../../components/frontend-links.mdx";
+import PackageSetup from "../../components/package-setup.mdx";
+import FileRouterSetup from "../../components/router-setup.mdx";
+
 # Getting started with Fetch / Edge Runtimes
 
 UploadThing is compatible with any runtime that follow the
-[WinterCG](https://wintercg.org/).
+[WinterCG](https://wintercg.org/) specification, meaning your server is using
+the Web Standard APIs Request and Response. Below are some examples of how to
+use UploadThing with some popular runtimes.
 
-## Common setup
+<PackageSetup>
 
-### Package Setup
-
-<Steps>
-
-### Install the package
-
-import { Tab, Tabs } from "nextra-theme-docs";
-
-```sh npm2yarn
+```bash npm2yarn copy
 npm install uploadthing
 ```
 
-#### Add env variables
+</PackageSetup>
 
-<Callout>
-  If you don't already have a uploadthing secret key, [sign
-  up](https://uploadthing.com/sign-in) and create one from the
-  [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
+<FileRouterSetup>
 
-```bash copy
-UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
-UPLOADTHING_APP_ID=... # Your app id
-```
-
-### Set Up A FileRouter
-
-All files uploaded to uploadthing are associated with a FileRoute. Following
-example is very minimalistic. To get full insight into what you can do with the
-FileRoutes, please refer to the
-[File Router API](/api-reference/server#file-routes).
-
-```ts copy filename="uploadthing.ts"
+```ts copy filename="server/uploadthing.ts"
 import { createUploadthing, type FileRouter } from "uploadthing/server";
+
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 
 const f = createUploadthing();
 
 export const uploadRouter = {
-  videoAndImage: f({
-    image: {
-      maxFileSize: "4MB",
-      maxFileCount: 4,
-    },
-    video: {
-      maxFileSize: "16MB",
-    },
-  }).onUploadComplete((data) => {
-    console.log("upload completed", data);
-  }),
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    .middleware(async ({ req }) => {
+      // This code runs on your server before upload
+      // If the request isn't authenticated, we throw and cancel the upload
+      const user = await auth(req);
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      await db.users
+        .update({ imageUrl: file.url })
+        .where({ id: metadata.userId });
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof uploadRouter;
 ```
 
-</Steps>
+</FileRouterSetup>
 
 ## Runtimes-specific setup
 
@@ -70,7 +62,7 @@ export type OurFileRouter = typeof uploadRouter;
 ```ts filename="pages/api/uploadthing.ts"
 import { createServerHandler } from "uploadthing/server";
 
-import { uploadRouter } from "../../server/uploadthing";
+import { uploadRouter } from "~/server/uploadthing";
 
 export const { GET, POST } = createServerHandler({
   router: uploadRouter,
@@ -86,9 +78,10 @@ export const { GET, POST } = createServerHandler({
 
 ```ts filename="src/index.ts"
 import { Elysia } from "elysia";
-import { uploadRouter } from "uploadthing.ts";
 
 import { createServerHandler } from "uploadthing/server";
+
+import { uploadRouter } from "~/server/uploadthing.ts";
 
 const { GET, POST } = createServerHandler({
   router: uploadRouter,
@@ -112,7 +105,7 @@ import { Hono } from "hono";
 
 import { createServerHandler } from "uploadthing/server";
 
-import { uploadRouter } from "./uploadthing.ts";
+import { uploadRouter } from "~/server/uploadthing.ts";
 
 const { GET, POST } = createServerHandler({
   router: uploadRouter,
@@ -129,10 +122,4 @@ app.route("/api/uploadthing", ut);
 export default app;
 ```
 
-## Use the FileRouter in your app
-
-Please refer to client side examples:
-
-- [NextJS App directory](/nextjs/appdir#creating-the-uploadthing-components-optional)
-- [NextJS Pages directory](/nextjs/appdir#creating-the-uploadthing-components-optional)
-- [SolidStart](/solid#use-the-filerouter-in-your-app-1)
+<FrontendLinks />

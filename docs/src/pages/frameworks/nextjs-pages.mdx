@@ -1,25 +1,22 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-import FrontendLinks from "../../components/frontend-links.mdx";
 import PackageSetup from "../../components/package-setup.mdx";
 import FileRouterSetup from "../../components/router-setup.mdx";
 
-# Getting started with Fastify
-
-> Added in `v5.6`
+# Usage with Next.js Pages Router
 
 <PackageSetup>
 
 ```bash npm2yarn copy
-npm install uploadthing
+npm install uploadthing @uploadthing/react
 ```
 
 </PackageSetup>
 
 <FileRouterSetup>
 
-```ts copy filename="server/uploadthing.ts"
-import { createUploadthing, type FileRouter } from "uploadthing/fastify";
+```tsx copy filename="server/uploadthing.ts"
+import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
 
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
@@ -52,25 +49,30 @@ export type OurFileRouter = typeof uploadRouter;
 
 </FileRouterSetup>
 
-### Register the UploadThing plugin
+## Expose the FileRouter as HTTP endpoints
 
-To expose the FileRouter as HTTP endpoints, register the
-`fastifyUploadthingPlugin` plugin on your Fastify instance.
+To expose the FileRouter as HTTP endpoints, create a new API route and pass in
+your FileRouter:
 
-```ts copy filename="src/index.ts"
-import Fastify from "fastify";
+<Callout type="warning">
+  Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
+  from `/api/uploadthing` as it is called via webhook to trigger
+  `onUploadComplete`.
+</Callout>
 
-import { fastifyUploadthingPlugin } from "uploadthing/fastify";
+```ts copy filename="pages/api/uploadthing.ts"
+import { createNextPageApiHandler } from "uploadthing/next-legacy";
 
-import { uploadRouter } from "./router";
+import { ourFileRouter } from "~/server/uploadthing";
 
-const fastify = Fastify({ logger: true });
-
-fastify
-  /** ... */
-  .register(fastifyUploadthingPlugin, {
-    router: uploadRouter,
-  });
+// Export routes for Next Pages Router
+export default createNextPageApiHandler({
+  router: ourFileRouter,
+});
 ```
 
-<FrontendLinks />
+## Setup UploadThing for React
+
+UploadThing provides premade components, as well as a powerful hook that let's
+you upload files in your React application. See the
+[React docs](/frontend/react) for more information.

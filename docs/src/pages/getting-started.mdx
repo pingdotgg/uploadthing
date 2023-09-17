@@ -1,47 +1,27 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import FrontendLinks from "../components/frontend-links.mdx";
+import PackageSetup from "../components/package-setup.mdx";
 
 # Getting Started
 
-> These docs assume you're using Next.js - docs for other frameworks coming
-> soon!
+UploadThing works with a lot of backend libraries, fullstack frameworks as well
+as a few frontend UI libraries. Start out by selecting the backend framework
+your app is using.
 
-## Package Setup
+## Full Stack Frameworks
 
-<Steps>
+- [Next.js App Router](/frameworks/nextjs-app)
+- [Next.js Pages Router](/frameworks/nextjs-pages)
+- [SolidStart](/frameworks/solidstart)
 
-### Install the packages
+## Standalone Backend Libraries
 
-import { Tab, Tabs } from "nextra-theme-docs";
+- [Express](/backend-adapters/express)
+- [Fastify](/backend-adapters/fastify)
+- [H3 / Nitro](/backend-adapters/h3)
 
-```bash copy npm2yarn
-npm install uploadthing @uploadthing/react
-```
+We also support any server compliant with the [WinterCG](https://wintercg.org/)
+specification, meaning your framework is based on the Web Standard APIs Request
+and Response, e.g. Astro, Deno Deploy, Cloudflare Workers, Edge Runtime, Elysia,
+Hono etc. [See examples here](/backend-adapters/fetch).
 
-### Add env variables
-
-```bash
-UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
-```
-
-<Callout type="info">
-  If you're not deploying through Vercel, you also need to add a
-  `UPLOADTHING_URL` environment variable that points to your app, e.g.
-  `https://myapp.com`. This variable can also be used to override the default
-  URL in development which is `http://localhost:3000` unless specified
-  otherwise.
-</Callout>
-
-<Callout type="warning">
-  If you don't already have a uploadthing secret key, [sign up](https://uploadthing.com/sign-in) and create one from
-  the [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
-</Steps>
-
-## Set up in your Next.js application
-
-Continue setting up with either the [App Router](/nextjs/appdir) or
-[Pages Router (default)](/nextjs/pagedir)
-
-## Set up in your SolidStart application
-
-Continue setting up with the [SolidStart guide](/solid)
+<FrontendLinks />

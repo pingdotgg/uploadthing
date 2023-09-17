@@ -1,70 +1,61 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
+import FrontendLinks from "../../components/frontend-links.mdx";
+import PackageSetup from "../../components/package-setup.mdx";
+import FileRouterSetup from "../../components/router-setup.mdx";
+
 # Getting started with Express
 
 > Added in `v5.6`
 
-## Package Setup
+<PackageSetup>
 
-<Steps>
-
-### Install the package
-
-import { Tab, Tabs } from "nextra-theme-docs";
-
-```sh npm2yarn
+```bash npm2yarn copy
 npm install uploadthing
 ```
 
-### Add env variables
+</PackageSetup>
 
-<Callout>
-  If you don't already have a uploadthing secret key, [sign
-  up](https://uploadthing.com/sign-in) and create one from the
-  [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
+<FileRouterSetup>
 
-```bash copy
-UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
-UPLOADTHING_APP_ID=... # Your app id
-```
-
-</Steps>
-
-## Set Up A FileRouter
-
-<Steps>
-
-### Creating your first FileRoute
-
-All files uploaded to uploadthing are associated with a FileRoute. Following
-example is very minimalistic. To get full insight into what you can do with the
-FileRoutes, please refer to the
-[File Router API](/api-reference/server#file-routes).
-
-```ts copy filename="src/uploadthing.ts"
+```ts copy filename="server/uploadthing.ts"
 import { createUploadthing, type FileRouter } from "uploadthing/express";
+
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 
 const f = createUploadthing();
 
 export const uploadRouter = {
-  videoAndImage: f({
-    image: {
-      maxFileSize: "4MB",
-      maxFileCount: 4,
-    },
-    video: {
-      maxFileSize: "16MB",
-    },
-  }).onUploadComplete((data) => {
-    console.log("upload completed", data);
-  }),
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    .middleware(async ({ req, res }) => {
+      // This code runs on your server before upload
+      // If the request isn't authenticated, we throw and cancel the upload
+      const user = await auth(req, res);
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      await db.users
+        .update({ imageUrl: file.url })
+        .where({ id: metadata.userId });
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof uploadRouter;
 ```
 
-### Create an API route using the FileRouter
+</FileRouterSetup>
+
+## Register the UploadThing middleware
+
+To expose the FileRouter as HTTP endpoints, register the
+`createUploadthingExpressHandler` middleware on your Express app.
 
 <Callout type="warning">
   Note: You need to serve this API from `/api/uploadthing` on your application.
@@ -87,12 +78,4 @@ app.use(
 );
 ```
 
-### Use the FileRouter in your app
-
-Please refer to client side examples:
-
-- [NextJS App directory](/nextjs/appdir#creating-the-uploadthing-components-optional)
-- [NextJS Pages directory](/nextjs/appdir#creating-the-uploadthing-components-optional)
-- [SolidStart](/solid#use-the-filerouter-in-your-app-1)
-
-</Steps>
+<FrontendLinks />
