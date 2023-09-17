@@ -192,9 +192,6 @@ importers:
 
   examples/minimal-elysia-react/server:
     dependencies:
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.3.1
       elysia:
         specifier: ^0.6.23
         version: 0.6.23(typescript@5.1.6)
@@ -205,9 +202,6 @@ importers:
       bun-types:
         specifier: 1.0.2
         version: 1.0.2
-      tsx:
-        specifier: ^3.12.7
-        version: 3.12.10
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
