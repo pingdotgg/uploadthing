@@ -1,4 +1,4 @@
-import type { H3Error } from "h3";
+import type { H3Event } from "h3";
 import {
   createRouter,
   defineEventHandler,
@@ -29,7 +29,7 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) =>
   createBuilder<
-    { req: undefined; res: undefined; event: H3Error },
+    { req: undefined; res: undefined; event: H3Event },
     TErrorShape
   >(opts);
 
