@@ -1,3 +1,4 @@
+import type { H3Error } from "h3";
 import {
   createRouter,
   defineEventHandler,
@@ -26,7 +27,11 @@ export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"h3", TErrorShape>(opts);
+) =>
+  createBuilder<
+    { req: undefined; res: undefined; event: H3Error },
+    TErrorShape
+  >(opts);
 
 export const createH3RouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

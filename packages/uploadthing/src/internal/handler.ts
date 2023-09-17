@@ -1,28 +1,22 @@
-import type { NextApiResponse } from "next";
-import type { Response as ExpressResponse } from "express";
-import type { FastifyReply } from "fastify";
-import type { H3Event } from "h3";
-
 import {
   generateUploadThingURL,
   getTypeFromFileName,
   getUploadthingUrl,
   fillInputRouteConfig as parseAndExpandInputConfig,
-  pollForFileData,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
   ExpandedRouteConfig,
-  FileData,
   FileRouterInputKey,
   Json,
   UploadedFile,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { conditionalDevServer } from "./dev-hook";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, AnyRuntime, FileRouter, RequestLike } from "./types";
+import type { ActionType, FileRouter, RequestLike } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -65,65 +59,6 @@ const fileCountLimitHit = (
   return { limitHit: false };
 };
 
-const isValidResponse = (response: Response) => {
-  if (!response.ok) return false;
-  if (response.status >= 400) return false;
-  if (!response.headers.has("x-uploadthing-version")) return false;
-
-  return true;
-};
-
-const conditionalDevServer = async (fileKey: string) => {
-  if (process.env.NODE_ENV !== "development") return;
-
-  const fileData = await pollForFileData(
-    fileKey,
-    async (json: { fileData: FileData }) => {
-      const file = json.fileData;
-
-      let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-      if (!callbackUrl.startsWith("http"))
-        callbackUrl = "http://" + callbackUrl;
-
-      console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
-
-      const response = await fetch(callbackUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
-          file: {
-            url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
-            key: fileKey,
-            name: file.fileName,
-            size: file.fileSize,
-          },
-        }),
-        headers: {
-          "uploadthing-hook": "callback",
-        },
-      });
-      if (isValidResponse(response)) {
-        console.log("[UT] Successfully simulated callback for file", fileKey);
-      } else {
-        console.error(
-          "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-          fileKey,
-        );
-      }
-      return file;
-    },
-  );
-
-  if (fileData !== null) return fileData;
-
-  console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
-  throw new UploadThingError({
-    code: "UPLOAD_FAILED",
-    message: "File took too long to upload",
-  });
-};
-
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
@@ -146,22 +81,13 @@ type UploadThingResponse = {
   key: string;
 }[];
 
-export const buildRequestHandler = <
-  TRouter extends FileRouter,
-  TRuntime extends AnyRuntime,
->(
+export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
     req: RequestLike;
-    res?: TRuntime extends "pages"
-      ? NextApiResponse
-      : TRuntime extends "express"
-      ? ExpressResponse
-      : TRuntime extends "fastify"
-      ? FastifyReply
-      : undefined;
-    event?: TRuntime extends "h3" ? H3Event : undefined;
+    res?: unknown;
+    event?: unknown;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
@@ -279,7 +205,8 @@ export const buildRequestHandler = <
           metadata = await uploadable._def.middleware({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             req: req as any,
-            res,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            res: res as any,
             event,
             input: parsedInput,
           });

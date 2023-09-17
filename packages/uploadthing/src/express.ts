@@ -1,17 +1,21 @@
 import { Router as ExpressRouter } from "express";
+import type {
+  Request as ExpressRequest,
+  Response as ExpressResponse,
+} from "express";
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
-import { defaultErrorFormatter } from "./internal/error-formatter";
+import { formatError } from "./internal/error-formatter";
 import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
 import { getPostBody } from "./internal/node-http/getBody";
-import type { FileRouter, inferErrorShape } from "./internal/types";
+import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -19,12 +23,16 @@ export type { FileRouter } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<"express", TErrorShape>(opts);
+) =>
+  createBuilder<
+    { req: ExpressRequest; res: ExpressResponse; event: undefined },
+    TErrorShape
+  >(opts);
 
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
-  const requestHandler = buildRequestHandler<TRouter, "express">(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts);
   const router = ExpressRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -50,19 +58,11 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       }),
       res,
     });
-    const errorFormatter =
-      opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
-      defaultErrorFormatter;
 
     if (response instanceof UploadThingError) {
-      const formattedError = errorFormatter(
-        response,
-      ) as inferErrorShape<TRouter>;
-
       res.status(getStatusCodeFromError(response));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(JSON.stringify(formattedError));
-
+      res.send(JSON.stringify(formatError(response, opts.router)));
       return;
     }
 
