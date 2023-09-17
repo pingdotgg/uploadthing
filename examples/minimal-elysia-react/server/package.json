@@ -1,0 +1,21 @@
+{
+  "name": "@example/minimal-elysia-react-server",
+  "private": true,
+  "scripts": {
+    "dev": "NODE_ENV=development bun run src/index.ts",
+    "start": "bun run src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hono/node-server": "^1.1.1",
+    "dotenv": "^16.3.1",
+    "elysia": "^0.6.23",
+    "uploadthing": "^5.6.0"
+  },
+  "devDependencies": {
+    "tsx": "^3.12.7",
+    "typescript": "^5.1.6"
+  }
+}
