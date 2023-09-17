@@ -192,9 +192,6 @@ importers:
 
   examples/minimal-elysia-react/server:
     dependencies:
-      '@hono/node-server':
-        specifier: ^1.1.1
-        version: 1.1.1
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -205,6 +202,9 @@ importers:
         specifier: ^5.6.0
         version: link:../../../packages/uploadthing
     devDependencies:
+      bun-types:
+        specifier: 1.0.2
+        version: 1.0.2
       tsx:
         specifier: ^3.12.7
         version: 3.12.10
@@ -5338,6 +5338,10 @@ packages:
   /builtins@1.0.3:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
+
+  /bun-types@1.0.2:
+    resolution: {integrity: sha512-yqBp2SX9cqr5/GReb56uCfM+YP+Hntx3XPjbqX1VJXqOBu+Yqw8iWRFLKFIsz9uEfykLgflhramQ8a5Jgo+Tlg==}
+    dev: true
 
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}
