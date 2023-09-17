@@ -1,5 +1,5 @@
 import {
-  createH3RouteHandler,
+  createH3EventHandler,
   createUploadthing,
   FileRouter,
 } from "uploadthing/h3";
@@ -29,4 +29,4 @@ export const uploadRouter = {
 
 export type UploadRouter = typeof uploadRouter;
 
-export default eventHandler(createH3RouteHandler({ router: uploadRouter }));
+export default eventHandler(createH3EventHandler({ router: uploadRouter }));

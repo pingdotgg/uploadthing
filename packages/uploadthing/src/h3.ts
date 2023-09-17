@@ -33,7 +33,7 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-export const createH3RouteHandler = <TRouter extends FileRouter>(
+export const createH3EventHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler(opts);
