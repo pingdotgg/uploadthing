@@ -12,14 +12,10 @@ const { GET, POST } = createServerHandler({
 });
 
 const app = new Hono();
-const ut = new Hono();
 
-ut.get("/", (c) => {
-  return GET(c.req.raw);
-}).post("/", (c) => {
-  return POST(c.req.raw);
-});
-
+const ut = new Hono()
+  .get("/", (c) => GET(c.req.raw))
+  .post("/", (c) => POST(c.req.raw));
 app.route("/api/uploadthing", ut);
 
 serve({

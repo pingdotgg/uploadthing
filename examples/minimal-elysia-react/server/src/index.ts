@@ -12,12 +12,8 @@ const app = new Elysia();
 
 app.group("/api/uploadthing", (app) =>
   app
-    .post("/", (context) => {
-      return POST(context.request);
-    })
-    .get("/", (context) => {
-      return GET(context.request);
-    }),
+    .post("/", (context) => POST(context.request))
+    .get("/", (context) => GET(context.request)),
 );
 
 app.listen(3000);
