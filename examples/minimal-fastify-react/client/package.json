@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "start": "vite preview"
+    "dev": "bunx --bun vite",
+    "build": "tsc && bunx --bun vite build",
+    "start": "bunx --bun vite preview"
   },
   "dependencies": {
     "@uploadthing/react": "5.6.0",

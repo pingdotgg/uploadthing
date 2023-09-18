@@ -1,6 +1,3 @@
-import "dotenv/config";
-
-import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 
 import { createServerHandler } from "uploadthing/server";
@@ -18,8 +15,4 @@ const ut = new Hono()
   .post("/", (c) => POST(c.req.raw));
 app.route("/api/uploadthing", ut);
 
-serve({
-  port: 3000,
-  hostname: "localhost",
-  fetch: app.fetch,
-});
+export default app;

@@ -2,9 +2,9 @@
   "name": "@example/minimal-elysia-react-server",
   "private": true,
   "scripts": {
-    "build": "echo 'bun build works weirdly in monorepos'",
-    "dev": "NODE_ENV=development bun run src/index.ts",
-    "start": "bun run src/index.ts"
+    "build": "bun build src/index.ts --outdir dist",
+    "dev": "NODE_ENV=development bun run --hot src/index.ts",
+    "start": "bun run dist/index.js"
   },
   "keywords": [],
   "author": "",
