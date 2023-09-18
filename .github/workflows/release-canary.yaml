@@ -17,9 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use PNPM
-        uses: pnpm/action-setup@v2.2.4
-
       - name: Use Node.js 18
         uses: actions/setup-node@v3
         with:
@@ -30,28 +27,16 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
       - name: Install deps (with cache)
-        run: pnpm install
+        run: bun install
 
       - name: Check packages for common errors
-        run: pnpm turbo --filter "./packages/*" build
+        run: bun turbo --filter "./packages/*" build
 
       - name: Bump version to canary
-        run: node .github/canary-version.js
+        run: bun run .github/canary-version.js
 
+      - uses: pnpm/action-setup@v2.2.4
       - name: Authenticate to npm and publish
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
@@ -78,7 +63,7 @@ jobs:
             for (const pkgJsonPath of pkgJsonPaths) {
               const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath));
               const version = packageJson.version;
-              text += `pnpm add ${packageJson.name}@${version}\n`
+              text += `bun add ${packageJson.name}@${version}\n`
             }
             text += '```\n\n'
 

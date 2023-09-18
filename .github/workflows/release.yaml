@@ -18,9 +18,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Use PNPM
-        uses: pnpm/action-setup@v2.2.4
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -31,24 +28,11 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
       - name: Install deps (with cache)
-        run: pnpm install
+        run: bun install
 
       - name: Check packages for common errors
-        run: pnpm turbo --filter "./packages/*" build lint test typecheck
+        run: bun turbo --filter "./packages/*" build lint test typecheck
 
       # Using custom token `MY_GITHUB_TOKEN` with more access to avoid rate limiting
       - name: Create Release
@@ -57,7 +41,7 @@ jobs:
         with:
           commit: "chore(release): 📦 version packages"
           title: "chore(release): 📦  version packages"
-          publish: npx changeset publish
+          publish: bunx changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -67,7 +51,7 @@ jobs:
         if: steps.changeset.outputs.hasChangesets == 'true'
         run: |
           git checkout changeset-release/main
-          pnpm install --no-frozen-lockfile
+          bun install
           git add .
           git commit -m "chore(release): 📦 sync lockfile"
           git push origin changeset-release/main

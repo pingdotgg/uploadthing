@@ -7,7 +7,7 @@ const config = {
   format: ["esm", "cjs"],
   async onSuccess() {
     // emit dts and sourcemaps to enable jump to definition
-    execSync("pnpm tsc --project tsconfig.sourcemap.json");
+    execSync("bun tsc --project tsconfig.sourcemap.json");
   },
 };
 

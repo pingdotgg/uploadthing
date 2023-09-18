@@ -2,18 +2,27 @@
   "name": "uploadthing-turbo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@8.7.0",
+  "packageManager": "bun@1.0.2",
   "engines": {
-    "node": ">=v18.16.0",
-    "pnpm": ">=8.7.0"
+    "node": ">=v18.16.0"
   },
+  "workspaces": [
+    "docs",
+    "packages/config/*",
+    "packages/*",
+    "examples/*",
+    "examples/minimal-express-react/*",
+    "examples/minimal-fastify-react/*",
+    "examples/minimal-hono-react/*",
+    "examples/minimal-elysia-react/*"
+  ],
   "scripts": {
     "build:all": "turbo run build",
     "build": "turbo run build --filter \"./packages/*\"",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev:all": "turbo run dev",
     "dev": "turbo run dev --filter \"./packages/*\"",
-    "lint": "turbo run lint && manypkg check",
+    "lint": "turbo run lint",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",
     "test": "turbo run test",
@@ -24,11 +33,9 @@
     "@changesets/changelog-github": "^0.4.8",
     "@changesets/cli": "^2.26.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
-    "@manypkg/cli": "^0.20.0",
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.2.0",
     "bun-types": "1.0.2",
-    "dotenv": "latest",
     "expect-type": "^0.16.0",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",

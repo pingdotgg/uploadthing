@@ -8,9 +8,9 @@
     "server"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run -w client dev\" \"npm run -w server dev\"",
-    "build": "npm run -w client build && npm run -w server build",
-    "start": "concurrently \"npm run -w client start\" \"npm run -w server start\""
+    "dev": "concurrently \"bun run --cwd client dev\" \"bun run --cwd server dev\"",
+    "build": "bun run --cwd client build && bun run --cwd server build",
+    "start": "concurrently \"bun run --cwd client start\" \"bun run --cwd server start\""
   },
   "devDependencies": {
     "@uploadthing/react": "5.6.0",
