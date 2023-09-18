@@ -1,64 +1,33 @@
 import { Callout, Steps } from "nextra-theme-docs";
 
-import PackageSetup from "../../components/package-setup.mdx";
-import FileRouterSetup from "../../components/router-setup.mdx";
-
 # Usage with Next.js App Router
 
-<PackageSetup>
-
-```bash npm2yarn copy
-npm install uploadthing @uploadthing/react
-```
-
-</PackageSetup>
-
-<FileRouterSetup>
-
-```ts copy filename="server/uploadthing.ts"
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-
-import { auth } from "~/server/auth";
-import { db } from "~/server/db";
-
-const f = createUploadthing();
-
-export const uploadRouter = {
-  imageUploader: f({ image: { maxFileSize: "4MB" } })
-    .middleware(async ({ req }) => {
-      // This code runs on your server before upload
-      // If the request isn't authenticated, we throw and cancel the upload
-      const user = await auth(req);
-      if (!user) throw new Error("Unauthorized");
-
-      // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
-
-      await db.users
-        .update({ imageUrl: file.url })
-        .where({ id: metadata.userId });
-    }),
-} satisfies FileRouter;
-
-export type OurFileRouter = typeof uploadRouter;
-```
-
-</FileRouterSetup>
-
-## Expose the FileRouter as HTTP endpoints
-
-To expose the FileRouter as HTTP endpoints, create a new route handler and pass
-in your FileRouter:
-
-<Callout type="warning">
-  Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
-  from `/api/uploadthing` as it is called via webhook to trigger
-  `onUploadComplete`.
+<Callout type="info">
+  Make sure you've gone through the [getting started](/getting-started) before
+  continuing.
 </Callout>
+
+<Steps>
+
+### Update import in `~/server/uploadthing.ts`
+
+Next.js provides a few helpers over the regular `Request` type. To get the
+correct type in our `middleware` function, update the import to use the `/next`
+entrypoint:
+
+```diff filename="server/uploadthing.ts"
+- import { createUploadthing, type FileRouter } from "uploadthing/server";
++ import { createUploadthing, type FileRouter } from "uploadthing/next";
+```
+
+You should now see that the type of `req` is `NextRequest` and you'll have
+access to helpers such as `req.nextUrl`.
+
+### Create a route handler
+
+Once you've created your file router, it's time to expose it as a new route
+handler. Create a new file `/app/api/uploadthing/route.ts` and add the
+following:
 
 ```ts copy filename="app/api/uploadthing/route.ts"
 import { createNextRouteHandler } from "uploadthing/next";
@@ -71,15 +40,27 @@ export const { GET, POST } = createNextRouteHandler({
 });
 ```
 
-## Setup UploadThing for React
+<Callout type="warning">
+  Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
+  from `/api/uploadthing` as it is called via webhook to trigger
+  `onUploadComplete`.
+</Callout>
 
-UploadThing provides premade components, as well as a powerful hook that let's
-you upload files in your React application. See the
+### Setup UploadThing for React
+
+Install the React package:
+
+```bash copy npm2yarn
+npm install @uploadthing/react
+```
+
+`@uploadthing/react` provides premade components, as well as a powerful hook
+that let's you upload files in your React application. See the
 [React docs](/frontend/react) for more information.
 
-## Configure automatic hydration during SSR (recommended)
+### Configure automatic hydration during SSR (recommended)
 
-> Added in `v5.6`
+<Callout type="info">Added in `v5.6`</Callout>
 
 By default, `useUploadThing` (and thus also the premade components) will fetch
 your server for the route endpoint permissions which will show a loading state.
@@ -128,3 +109,5 @@ export default function RootLayout({
   );
 }
 ```
+
+</Steps>

@@ -1,19 +1,103 @@
-import FrontendLinks from "../components/frontend-links.mdx";
-import PackageSetup from "../components/package-setup.mdx";
+import { Callout, Steps } from "nextra-theme-docs";
 
 # Getting Started
 
 UploadThing works with a lot of backend libraries, fullstack frameworks as well
-as a few frontend UI libraries. Start out by selecting the backend framework
-your app is using.
+as a few frontend UI libraries. While there are some differences for each,
+setting up UploadThing is very similar no matter what framework you are using.
+The main thing to keep in mind is the entrypoint that you import the
+`createUploadthing` function from in order to get the correct types for the
+request and response objects in the middleware function.
 
-## Full Stack Frameworks
+We'll discuss any framework specific differences in each framework's
+documentation page, but let's start with using the main `/server` entrypoint
+which is the entrypoint you'll use if your framework is based on the Web
+Standard APIs Request and Response.
+
+<Steps>
+
+### Install the UploadThing package
+
+```bash npm2yarn copy
+npm install uploadthing
+```
+
+### Add env variables
+
+<Callout>
+  If you don't already have am UploadThing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard](https://uploadthing.com/dashboard)!
+</Callout>
+
+```bash copy filename=".env.local"
+UPLOADTHING_SECRET="sk_live_xxx" # A secret key for your app
+UPLOADTHING_APP_ID='xxx' # Your app id
+```
+
+<Callout type="info">
+  If you're not deploying through Vercel, you also need to add a
+  `UPLOADTHING_URL` environment variable that points to your app, e.g.
+  `https://myapp.com`. This variable can also be used to override the default
+  URL in development which is `http://localhost:3000` unless specified
+  otherwise.
+</Callout>
+
+### Create your first file route
+
+All files uploaded to UploadThing are associated with a FileRoute. To get full
+insight into what you can do with the FileRoutes, please refer to the
+[File Router API](/api-reference/server#file-routes).
+
+The router below has a single file route, allowing users to upload an image up
+to 4MB. We run an auth check in our middleware, meaning only authenticated users
+can upload files. After the upload has completed, we update our users profile
+image to the newly uploaded file.
+
+```ts copy filename="server/uploadthing.ts"
+import { createUploadthing, type FileRouter } from "uploadthing/server";
+
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
+
+const f = createUploadthing();
+
+export const uploadRouter = {
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    .middleware(async ({ req }) => {
+      // This code runs on your server before upload
+      // If the request isn't authenticated, we throw and cancel the upload
+      const user = await auth(req);
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      await db.users
+        .update({ imageUrl: file.url })
+        .where({ id: metadata.userId });
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof uploadRouter;
+```
+
+### Expose the router over HTTP with your framework
+
+Now that we have our router, we need to expose it over HTTP. This step is
+framework specific, so continue by selecting your framework below.
+
+#### Full Stack Frameworks
 
 - [Next.js App Router](/frameworks/nextjs-app)
 - [Next.js Pages Router](/frameworks/nextjs-pages)
 - [SolidStart](/frameworks/solidstart)
 
-## Standalone Backend Libraries
+#### Standalone Backend Libraries
 
 - [Express](/backend-adapters/express)
 - [Fastify](/backend-adapters/fastify)
@@ -24,4 +108,17 @@ specification, meaning your framework is based on the Web Standard APIs Request
 and Response, e.g. Astro, Deno Deploy, Cloudflare Workers, Edge Runtime, Elysia,
 Hono etc. [See examples here](/backend-adapters/fetch).
 
-<FrontendLinks />
+### Upload files from your application
+
+Once you've configured your backend, checkout the frontend specific guides
+below.
+
+- [React](/frontend/react)
+- [Solid.js](/frontend/solid)
+- [Svelte](/frontend/svelte)
+- [Vue](/frontend/vue)
+
+Not using a UI library? No problem, we also support
+[vanilla JavaScript](/frontend/vanilla).
+
+</Steps>
