@@ -41,7 +41,7 @@ jobs:
           for dir in packages/*/; do
             if [ "$dir" != "packages/config/" ]; then
               cd "$dir" &&
-              echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc &&
+              echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc && ls -la &&
               npm publish --access public --tag canary
             fi  
           done
