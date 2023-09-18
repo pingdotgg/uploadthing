@@ -39,9 +39,10 @@ jobs:
       - name: Authenticate to npm and publish
         run: |
           for dir in packages/*/; do
-          if [ "$dir" != "packages/config/" ]; then
-              echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > "$dir/.npmrc"
-              cd "$dir" && npm publish --access public --tag canary
+            if [ "$dir" != "packages/config/" ]; then
+              cd "$dir" &&
+              echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc &&
+              npm publish --access public --tag canary
             fi  
           done
 
