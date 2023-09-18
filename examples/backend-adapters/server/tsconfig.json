@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "strict": true,
     "moduleResolution": "node",
+    "skipLibCheck": true,
     "outDir": "dist"
   },
   "include": ["src"],
