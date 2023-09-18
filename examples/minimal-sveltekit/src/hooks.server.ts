@@ -1,20 +1,14 @@
 import type { Handle } from "@sveltejs/kit";
+import { env } from "$env/dynamic/private";
 import { uploadRouter } from "$lib/server/uploadthing";
 
-import { createServerHandler } from "uploadthing/server";
+import { createUploadthingHandle } from "@uploadthing/svelte";
 
-const utHandlers = createServerHandler({
+export const handle: Handle = createUploadthingHandle({
   router: uploadRouter,
+  config: {
+    // callbackUrl: `http://localhost:${env.PORT ?? 5173}/api/uploadthing`,
+    uploadthingId: env.UPLOADTHING_APP_ID,
+    uploadthingSecret: env.UPLOADTHING_SECRET,
+  },
 });
-
-export const handle: Handle = ({ event, resolve }) => {
-  if (event.url.pathname.startsWith("/api/uploadthing")) {
-    if (event.request.method === "POST") {
-      return utHandlers.POST(event);
-    }
-    if (event.request.method === "GET") {
-      return utHandlers.GET(event);
-    }
-  }
-  return resolve(event);
-};

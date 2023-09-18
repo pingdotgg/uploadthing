@@ -86,25 +86,18 @@ export type OurFileRouter = typeof ourFileRouter;
 
 ```ts copy filename="src/hooks.server.ts"
 import type { Handle } from "@sveltejs/kit";
+import { UPLOADTHING_APP_ID, UPLOADTHING_SECRET } from "$env/static/private";
 import { uploadRouter } from "$lib/server/uploadthing";
 
-import { createServerHandler } from "uploadthing/server";
+import { createUploadthingHandle } from "@uploadthing/svelte";
 
-const utHandlers = createServerHandler({
+export const handle: Handle = createUploadthingHandle({
   router: uploadRouter,
+  config: {
+    uploadthingId: UPLOADTHING_APP_ID,
+    uploadthingSecret: UPLOADTHING_SECRET,
+  },
 });
-
-export const handle: Handle = ({ event, resolve }) => {
-  if (event.url.pathname.startsWith("/api/uploadthing")) {
-    if (event.request.method === "POST") {
-      return utHandlers.POST(event);
-    }
-    if (event.request.method === "GET") {
-      return utHandlers.GET(event);
-    }
-  }
-  return resolve(event);
-};
 ```
 
 If you need multiple handle hooks in your application take a look at the
