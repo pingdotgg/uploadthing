@@ -20,13 +20,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
       - name: Setup bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
 
       - name: Install deps (with cache)
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Copy .env.example files 
         run: find ./examples -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
