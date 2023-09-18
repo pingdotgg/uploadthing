@@ -36,16 +36,13 @@ jobs:
       - name: Bump version to canary
         run: bun run .github/canary-version.js
 
-      - uses: pnpm/action-setup@v2.4.0
-        with:
-          version: 8.7.0
       - name: Authenticate to npm and publish
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           for dir in packages/*/; do
             if [ "$dir" != "packages/config/" ]; then
-              pnpm publish "$dir" --access public --tag canary --no-git-checks
-            fi
+              cd "$dir" && npm publish --access public --tag canary
+            fi  
           done
 
       - name: Create a new comment notifying of the new canary version
