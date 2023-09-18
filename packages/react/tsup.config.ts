@@ -17,5 +17,5 @@ export default defineConfig((opts) => [
     ...config,
     entry: ["./src/next-ssr-plugin.tsx"],
     clean: !opts.watch,
-  }
+  },
 ]);

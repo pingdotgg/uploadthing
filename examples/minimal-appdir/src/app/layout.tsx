@@ -3,7 +3,6 @@ import "@uploadthing/react/styles.css";
 import { Inter } from "next/font/google";
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
@@ -17,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NextSSRPlugin routerConfig={extractRouterConfig(uploadRouter)} />
+        <NextSSRPlugin fileRouter={uploadRouter} />
         {children}
       </body>
     </html>
