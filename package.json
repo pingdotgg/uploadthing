@@ -27,7 +27,7 @@
     "@manypkg/cli": "^0.20.0",
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.2.0",
-    "bun-types": "^1.0.1",
+    "bun-types": "1.0.2",
     "dotenv": "latest",
     "expect-type": "^0.16.0",
     "prettier": "^2.8.8",

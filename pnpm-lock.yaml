@@ -27,7 +27,7 @@ importers:
         specifier: 0.2.0
         version: link:packages/config/eslint-config
       bun-types:
-        specifier: ^1.0.1
+        specifier: 1.0.2
         version: 1.0.2
       dotenv:
         specifier: latest
