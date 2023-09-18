@@ -1,5 +1,40 @@
 # uploadthing
 
+## 5.6.1
+
+### Patch Changes
+
+- [#359](https://github.com/pingdotgg/uploadthing/pull/359)
+  [`842f3bd`](https://github.com/pingdotgg/uploadthing/commit/842f3bd0f25f7289234f31e80f8d2b6d1599534f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: don't
+  reference external types in internal functions, only in the specific
+  entrypoints
+
+- [#360](https://github.com/pingdotgg/uploadthing/pull/360)
+  [`a0e1bf9`](https://github.com/pingdotgg/uploadthing/commit/a0e1bf937472b6909530dedd692c98af49470541)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor:
+  remove internal indirection for exporting adapers
+
+- [#363](https://github.com/pingdotgg/uploadthing/pull/363)
+  [`0612800`](https://github.com/pingdotgg/uploadthing/commit/06128000e90fe7080ebb8cbec1cacbb49c709aeb)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: only run
+  JSON.parse if body is a string
+
+- [#361](https://github.com/pingdotgg/uploadthing/pull/361)
+  [`4f6949d`](https://github.com/pingdotgg/uploadthing/commit/4f6949db22b36f27d59f2c3dcfc8588f7d033009)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: move
+  dev-log into function scope to prevent spam
+
+- [#298](https://github.com/pingdotgg/uploadthing/pull/298)
+  [`5e8016b`](https://github.com/pingdotgg/uploadthing/commit/5e8016b32fc7709dcd855da33dbc2ecf18eac0b5)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - refactor: extract some
+  theming-related code for easy sharing across frameworks
+
+- [#354](https://github.com/pingdotgg/uploadthing/pull/354)
+  [`0a2b1c1`](https://github.com/pingdotgg/uploadthing/commit/0a2b1c16c379271a70742e8ed1917f41d9a4d0d0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor to
+  remove indirection for express package
+
 ## 5.6.0
 
 ### Minor Changes

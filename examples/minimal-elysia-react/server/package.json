@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "elysia": "^0.6.23",
-    "uploadthing": "^5.6.0"
+    "uploadthing": "^5.6.1"
   },
   "devDependencies": {
     "bun-types": "1.0.2",

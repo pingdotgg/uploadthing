@@ -1,5 +1,14 @@
 # @uploadthing/solid
 
+## 5.3.0
+
+### Minor Changes
+
+- [#298](https://github.com/pingdotgg/uploadthing/pull/298)
+  [`5e8016b`](https://github.com/pingdotgg/uploadthing/commit/5e8016b32fc7709dcd855da33dbc2ecf18eac0b5)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: support theming
+  components
+
 ## 5.2.1
 
 ### Patch Changes

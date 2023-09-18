@@ -12,7 +12,7 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "fastify": "^4.22.0",
-    "uploadthing": "^5.6.0"
+    "uploadthing": "^5.6.1"
   },
   "devDependencies": {
     "tsx": "^3.12.7",
