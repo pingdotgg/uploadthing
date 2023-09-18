@@ -40,7 +40,7 @@
     "build": "tsup",
     "test": "bun test",
     "test:watch": "bun test --watch",
-    "typecheck": "tsc --noEmit && tsc --project tsconfig.test.json",
+    "typecheck": "tsc --noEmit",
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
   "dependencies": {

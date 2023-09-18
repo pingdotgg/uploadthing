@@ -1,12 +1,21 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "NodeNext",
-    "allowSyntheticDefaultImports": true
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "types": ["bun-types", "../../dom-types.d.ts"]
   },
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.build.json" },
-    { "path": "./tsconfig.test.json" },
-    { "path": "./tsconfig.sourcemap.json" }
-  ]
+  "include": ["src", "test", "*.ts"],
+  "exclude": ["node_modules"]
 }
