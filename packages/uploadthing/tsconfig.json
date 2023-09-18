@@ -1,7 +1,6 @@
 {
-  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "composite": true,
+    "composite": false,
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
@@ -16,6 +15,6 @@
     "strict": true,
     "types": ["bun-types", "../../dom-types.d.ts"]
   },
-  "include": ["src", "test", "*.ts"],
+  "include": ["src/**/*", "*.ts", "test"],
   "exclude": ["node_modules"]
 }

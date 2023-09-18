@@ -43,9 +43,6 @@ const config = {
     "**/*.config.js",
     "**/*.config.cjs",
     "packages/config/**",
-    // FIXME: Temporary disabling linting on tests due to conflicts with types
-    "**/*.test.ts",
-    "**/*.test.tsx",
     ".next",
     "dist",
     "pnpm-lock.yaml",
