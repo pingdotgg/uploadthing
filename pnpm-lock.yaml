@@ -84,17 +84,23 @@ importers:
 
   examples/backend-adapters:
     dependencies:
+      '@uploadthing/react':
+        specifier: ^5.6.1
+        version: link:../../packages/react
       concurrently:
         specifier: ^8.2.1
         version: 8.2.1
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
+      uploadthing:
+        specifier: ^5.6.1
+        version: link:../../packages/uploadthing
 
   examples/backend-adapters/client:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: ^5.6.1
         version: link:../../../packages/react
       react:
         specifier: 18.2.0
@@ -924,7 +930,7 @@ importers:
         specifier: ^4.18.2
         version: 4.18.2
       fastify:
-        specifier: ^4.22.0
+        specifier: ^4.23.2
         version: 4.23.2
       next:
         specifier: 13.4.4
