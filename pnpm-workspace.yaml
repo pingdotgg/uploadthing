@@ -4,4 +4,6 @@ packages:
   - "examples/*"
   - "examples/minimal-express-react/*"
   - "examples/minimal-fastify-react/*"
+  - "examples/minimal-hono-react/*"
+  - "examples/minimal-elysia-react/*"
   - "docs"

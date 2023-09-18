@@ -1,4 +1,5 @@
 {
   "express": "Express",
-  "fastify": "Fastify"
+  "fastify": "Fastify",
+  "fetch": "Fetch / Edge Runtimes"
 }

@@ -144,6 +144,68 @@ importers:
         specifier: 18.2.4
         version: 18.2.4
 
+  examples/minimal-elysia-react:
+    devDependencies:
+      '@uploadthing/react':
+        specifier: 5.6.0
+        version: link:../../packages/react
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../packages/uploadthing
+
+  examples/minimal-elysia-react/client:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 5.6.0
+        version: link:../../../packages/react
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.3.2
+        version: 3.3.2(vite@4.4.9)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.16.0)
+
+  examples/minimal-elysia-react/server:
+    dependencies:
+      elysia:
+        specifier: ^0.6.23
+        version: 0.6.23(typescript@5.1.6)
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      bun-types:
+        specifier: 1.0.2
+        version: 1.0.2
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   examples/minimal-express-react:
     devDependencies:
       '@uploadthing/react':
@@ -275,6 +337,74 @@ importers:
       fastify:
         specifier: ^4.22.0
         version: 4.23.2
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      tsx:
+        specifier: ^3.12.7
+        version: 3.12.10
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
+  examples/minimal-hono-react:
+    devDependencies:
+      '@uploadthing/react':
+        specifier: 5.6.0
+        version: link:../../packages/react
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../packages/uploadthing
+
+  examples/minimal-hono-react/client:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 5.6.0
+        version: link:../../../packages/react
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.3.2
+        version: 3.3.2(vite@4.4.9)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.16.0)
+
+  examples/minimal-hono-react/server:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.1.1
+        version: 1.1.1
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
+      hono:
+        specifier: ^3.6.3
+        version: 3.6.3
       uploadthing:
         specifier: ^5.6.0
         version: link:../../../packages/uploadthing
@@ -3360,6 +3490,11 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /@hono/node-server@1.1.1:
+    resolution: {integrity: sha512-0ZfrcW8Y+TAGNzKGoDB1iQ7Gv7uGsGDOYlz7nckXcHRpK60Oxuz1ttiFmdHYmI6kGO+/VJ8Iy58LDhoTPqkiow==}
+    engines: {node: '>=18.0.0'}
+    dev: false
+
   /@humanwhocodes/config-array@0.11.10:
     resolution: {integrity: sha512-KVVjQmNUepDVGXNuoRRdmmEjruj0KfiGSbS8LVc12LMsWDQzRXJ0qdhN8L8uUigKpfEHRhlaQFY0ib1tnUbNeQ==}
     engines: {node: '>=10.10.0'}
@@ -3877,6 +4012,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     dev: false
     bundledDependencies:
       - napi-wasm
@@ -5629,6 +5765,10 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
+  /bun-types@1.0.2:
+    resolution: {integrity: sha512-yqBp2SX9cqr5/GReb56uCfM+YP+Hntx3XPjbqX1VJXqOBu+Yqw8iWRFLKFIsz9uEfykLgflhramQ8a5Jgo+Tlg==}
+    dev: true
+
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}
     engines: {node: '>=12'}
@@ -6953,6 +7093,29 @@ packages:
 
   /elkjs@0.8.2:
     resolution: {integrity: sha512-L6uRgvZTH+4OF5NE/MBbzQx/WYpru1xCBE9respNj6qznEewGUIfhzmm7horWWxbNO2M0WckQypGctR8lH79xQ==}
+    dev: false
+
+  /elysia@0.6.23(typescript@5.1.6):
+    resolution: {integrity: sha512-Pg4imIefGhHZsGGhfGQm6zX2fiRsN6DVoYp8gyjPQ1hvmjXBamVM5S9kAKuB6TP+E6b/KzRH+y+76PWYQpvVyQ==}
+    peerDependencies:
+      '@elysiajs/fn': '*'
+      '@sinclair/typebox': '>= 0.28.10'
+      openapi-types: '>= 12.0.0'
+      typescript: '>= 5.0.0'
+    peerDependenciesMeta:
+      '@elysiajs/fn':
+        optional: true
+      '@sinclair/typebox':
+        optional: true
+      openapi-types:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      fast-querystring: 1.1.2
+      memoirist: 0.1.4
+      mergician: 1.1.0
+      typescript: 5.1.6
     dev: false
 
   /emoji-regex@10.2.1:
@@ -8606,6 +8769,11 @@ packages:
   /heap@0.2.7:
     resolution: {integrity: sha512-2bsegYkkHO+h/9MGbn6KWcE45cHZgPANo5LXF7EvWdT0yT2EguSVO1nDgU5c8+ZOPwp2vMNa7YFsJhVcDR9Sdg==}
 
+  /hono@3.6.3:
+    resolution: {integrity: sha512-8WszeHGzUm45qJy2JcCXkEFXMsAysciGGQs+fbpdUYPO2bRMbjJznZE3LX8tCXBqR4f/3e6225B3YOX6pQZWvA==}
+    engines: {node: '>=16.0.0'}
+    dev: false
+
   /hookable@5.5.3:
     resolution: {integrity: sha512-Yc+BQe8SvoXH1643Qez1zqLRmbA5rCL+sSmk6TVos0LWVfNIB7PGncdlId77WzLGSIB5KaWgTaNTs2lNVEI6VQ==}
     dev: false
@@ -9735,6 +9903,10 @@ packages:
     resolution: {integrity: sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ==}
     engines: {node: '>= 0.6'}
 
+  /memoirist@0.1.4:
+    resolution: {integrity: sha512-D6GbPSqO2nUVOmm7VZjJc5tC60pkOVUPzLwkKl1vCiYP+2b1cG8N9q1O3P0JmNM68u8vsgefPbxRUCSGxSXD+g==}
+    dev: false
+
   /memoizee@0.4.15:
     resolution: {integrity: sha512-UBWmJpLZd5STPm7PMUlOw/TSy972M+z8gcyQ5veOnSDRREz/0bmpyTfKt3/51DhEBqCZQn1udM/5flcSPYhkdQ==}
     dependencies:
@@ -9780,6 +9952,11 @@ packages:
   /merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
+
+  /mergician@1.1.0:
+    resolution: {integrity: sha512-FXbxzU6BBhGkV8XtUr8Sk015ZRaAALviit8Lle6OEgd1udX8wlu6tBeUMLGQGdz1MfHpAVNNQkXowyDnJuhXpA==}
+    engines: {node: '>=10.0.0'}
+    dev: false
 
   /mermaid@10.4.0:
     resolution: {integrity: sha512-4QCQLp79lvz7UZxow5HUX7uWTPJOaQBVExduo91tliXC7v78i6kssZOPHxLL+Xs30KU72cpPn3g3imw/xm/gaw==}
@@ -10346,6 +10523,10 @@ packages:
   /napi-build-utils@1.0.2:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
     requiresBuild: true
+    dev: false
+
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
     dev: false
 
   /natural-compare@1.4.0:
