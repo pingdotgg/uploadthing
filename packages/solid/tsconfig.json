@@ -17,6 +17,7 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "esModuleInterop": true,
-    "target": "ES2017"
+    "target": "ES2017",
+    "skipLibCheck": true
   }
 }
