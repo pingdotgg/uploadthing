@@ -6,7 +6,8 @@
     "dev": "solid-start dev --port 9898",
     "start": "solid-start start --port 9898",
     "build": "solid-start build",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@solidjs/meta": "^0.28.6",
@@ -14,7 +15,7 @@
     "@uploadthing/solid": "5.2.1",
     "attr-accept": "^2.2.2",
     "solid-js": "^1.7.11",
-    "solid-start": "^0.3.4",
+    "solid-start": "^0.3.5",
     "solidjs-dropzone": "^1.0.0",
     "undici": "^5.20.0",
     "uploadthing": "5.6.0",
