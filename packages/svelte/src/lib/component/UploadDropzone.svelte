@@ -10,18 +10,19 @@
   import type { FileWithPath } from "file-selector";
   import { twMerge } from "tailwind-merge";
 
-  import { classNames, generateClientDropzoneAccept } from "uploadthing/client";
+  import {
+    allowedContentTextLabelGenerator,
+    classNames,
+    generateClientDropzoneAccept,
+    generatePermittedFileTypes,
+    progressWidths,
+  } from "uploadthing/client";
 
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
   import type { DropEvent } from "../utils/dropzone";
   import { styleFieldToString } from "../utils/styles";
   import type { StyleField } from "../utils/styles";
   import Dropzone from "./Dropzone.svelte";
-  import {
-    allowedContentTextLabelGenerator,
-    generatePermittedFileTypes,
-    progressWidths,
-  } from "./shared";
   import type { UploadthingComponentProps } from "./shared";
   import Spinner from "./Spinner.svelte";
 

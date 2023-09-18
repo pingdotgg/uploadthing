@@ -9,16 +9,16 @@
 <script lang="ts" generics="TRouter extends FileRouter">
   import { twMerge } from "tailwind-merge";
 
-  import { generateMimeTypes } from "uploadthing/client";
+  import {
+    allowedContentTextLabelGenerator,
+    generateMimeTypes,
+    generatePermittedFileTypes,
+    progressWidths,
+  } from "uploadthing/client";
 
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
   import { styleFieldToString } from "../utils/styles";
   import type { StyleField } from "../utils/styles";
-  import {
-    allowedContentTextLabelGenerator,
-    generatePermittedFileTypes,
-    progressWidths,
-  } from "./shared";
   import type { UploadthingComponentProps } from "./shared";
   import Spinner from "./Spinner.svelte";
 

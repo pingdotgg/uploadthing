@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/svelte",
-  "version": "5.5.0",
+  "version": "5.6.1",
   "license": "MIT",
   "scripts": {
     "dev": "vite dev",
@@ -32,7 +32,7 @@
     "uploadthing": "^5.0.0"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.1",
+    "@uploadthing/shared": "^5.2.2",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
     "tailwind-merge": "^1.13.2"
@@ -50,7 +50,7 @@
     "tailwindcss": "^3.3.2",
     "tslib": "^2.4.1",
     "typescript": "^5.1.6",
-    "uploadthing": "5.6.0",
+    "uploadthing": "5.6.1",
     "vite": "^4.4.9"
   },
   "svelte": "./dist/index.js",
