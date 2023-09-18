@@ -9,7 +9,6 @@ try {
   const commitHash = (await new Response(
     Bun.spawn(["git", "rev-parse", "--short", "HEAD"]).stdout
   ).text()).trim();
-  console.log(commitHash);
 
   for (const pkgJsonPath of pkgJsonPaths) {
     const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
