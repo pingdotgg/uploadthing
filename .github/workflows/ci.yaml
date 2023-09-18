@@ -31,7 +31,7 @@ jobs:
           bun-version: latest
 
       - name: Install deps (with cache)
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Copy .env.example files 
         run: find ./examples -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
