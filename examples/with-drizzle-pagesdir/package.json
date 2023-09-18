@@ -35,6 +35,9 @@
     "eslint-config-next": "^13.4.19",
     "typescript": "^5.1.6"
   },
+  "trustedDependencies": [
+    "better-sqlite3"
+  ],
   "ct3aMetadata": {
     "initVersion": "7.20.1"
   },
