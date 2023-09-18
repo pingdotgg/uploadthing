@@ -87,7 +87,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.2",
+    "@uploadthing/shared": "workspace:*",
     "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
