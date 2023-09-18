@@ -1,25 +1,24 @@
 import { useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { generateMimeTypes } from "uploadthing/client";
+import {
+  allowedContentTextLabelGenerator,
+  contentFieldToContent,
+  generateMimeTypes,
+  generatePermittedFileTypes,
+  progressWidths,
+  styleFieldToClassName,
+  styleFieldToCssObject,
+} from "uploadthing/client";
+import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import type { ContentField, StyleField } from "../utils/styles";
-import {
-  contentFieldToContent,
-  styleFieldToClassName,
-  styleFieldToCssObject,
-} from "../utils/styles";
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressWidths,
-  Spinner,
-} from "./shared";
+import { Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
+  __runtime: "react";
   ready: boolean;
   isUploading: boolean;
   uploadProgress: number;
@@ -121,12 +120,12 @@ export function UploadButton<TRouter extends FileRouter>(
     disabled: $props.__internal_button_disabled ?? !ready,
   });
 
-  const styleFieldArg: ButtonStyleFieldCallbackArgs = {
+  const styleFieldArg = {
     ready: ready,
     isUploading: $props.__internal_state === "uploading" || isUploading,
     uploadProgress,
     fileTypes,
-  };
+  } as ButtonStyleFieldCallbackArgs;
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
