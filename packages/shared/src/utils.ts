@@ -105,7 +105,15 @@ export function getTypeFromFileName(
 }
 
 export function generateUploadThingURL(path: `/${string}`) {
-  const host = process.env.CUSTOM_INFRA_URL ?? "https://uploadthing.com";
+  let host = "https://uploadthing.com";
+
+  if (typeof process !== "undefined") {
+    host = process.env.CUSTOM_INFRA_URL ?? host;
+  } else {
+    // @ts-expect-error - import.meta is dumb
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+    host = import.meta.env.CUSTOM_INFRA_URL ?? host;
+  }
   return `${host}${path}`;
 }
 

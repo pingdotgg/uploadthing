@@ -1,5 +1,29 @@
 # @uploadthing/react
 
+## 5.6.0
+
+### Minor Changes
+
+- [#315](https://github.com/pingdotgg/uploadthing/pull/315)
+  [`c331135`](https://github.com/pingdotgg/uploadthing/commit/c3311355e0a0deeecf628eab18d854c44e578b6b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: esm
+  support by inhousing useDropzone code. You can now remove the `react-dropzone`
+  dependency as it's no longer being used by UploadThing. If you're using a
+  custom uploader component, the hook can be imported from
+  `@uploadthing/react/hooks`.
+
+- [#335](https://github.com/pingdotgg/uploadthing/pull/335)
+  [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
+  ssr hydration helper for next.js appdir. 📚
+  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+
+### Patch Changes
+
+- Updated dependencies
+  [[`92fac44`](https://github.com/pingdotgg/uploadthing/commit/92fac447f525be027125004f8cc0607b32375997)]:
+  - @uploadthing/shared@5.2.2
+
 ## 5.5.0
 
 ### Minor Changes

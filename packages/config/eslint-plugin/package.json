@@ -1,0 +1,23 @@
+{
+  "name": "@uploadthing/eslint-plugin",
+  "version": "0.1.0",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "git clean -xdf dist node_modules"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^6.7.0",
+    "@typescript-eslint/utils": "^6.7.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8.44.2",
+    "@uploadthing/tsconfig": "^0.1.0",
+    "tsup": "6.7.0",
+    "typescript": "^5.1.6"
+  }
+}

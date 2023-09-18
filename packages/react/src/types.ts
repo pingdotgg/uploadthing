@@ -1,4 +1,7 @@
-import type { UploadThingError } from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
@@ -21,3 +24,8 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
         input: inferEndpointInput<TRouter[TEndpoint]>;
       });
 }[keyof TRouter];
+
+export type EndpointMetadata = {
+  slug: string;
+  config: ExpandedRouteConfig;
+}[];

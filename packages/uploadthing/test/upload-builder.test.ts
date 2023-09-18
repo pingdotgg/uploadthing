@@ -6,7 +6,6 @@ import { expect, it } from "bun:test";
 import { expectTypeOf } from "expect-type";
 import { z } from "zod";
 
-import type { UnsetMarker } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
 
 const badReqMock = {
@@ -19,7 +18,7 @@ const badReqMock = {
 } as unknown as Request;
 
 it("typeerrors for invalid input", () => {
-  const f = createBuilder();
+  const f = createBuilder<{ req: Request; res: undefined }>();
 
   // @ts-expect-error - invalid file type
   f(["png"]);
@@ -79,7 +78,7 @@ it("typeerrors for invalid input", () => {
 });
 
 it("uses defaults for not-chained", async () => {
-  const f = createBuilder();
+  const f = createBuilder<{ req: Request; res: undefined }>();
 
   const uploadable = f(["image"]).onUploadComplete(() => {});
 
@@ -87,14 +86,14 @@ it("uses defaults for not-chained", async () => {
 
   const metadata = await uploadable._def.middleware({
     req: badReqMock,
-    input: {} as UnsetMarker,
+    res: undefined as never,
   });
   expect(metadata).toEqual({});
   expectTypeOf<Record<string, never>>(metadata);
 });
 
 it("passes `Request` by default", () => {
-  const f = createBuilder();
+  const f = createBuilder<{ req: Request; res: undefined }>();
 
   f(["image"]).middleware((opts) => {
     expectTypeOf<Request>(opts.req);
@@ -104,7 +103,7 @@ it("passes `Request` by default", () => {
 });
 
 it("allows async middleware", () => {
-  const f = createBuilder();
+  const f = createBuilder<{ req: Request; res: undefined }>();
 
   f(["image"])
     .middleware((opts) => {
@@ -118,7 +117,7 @@ it("allows async middleware", () => {
 });
 
 it("passes `NextRequest` for /app", () => {
-  const f = createBuilder<"app">();
+  const f = createBuilder<{ req: NextRequest; res: never }>();
 
   f(["image"]).middleware((opts) => {
     expectTypeOf<NextRequest>(opts.req);
@@ -127,7 +126,7 @@ it("passes `NextRequest` for /app", () => {
 });
 
 it("passes `res` for /pages", () => {
-  const f = createBuilder<"pages">();
+  const f = createBuilder<{ req: NextApiRequest; res: NextApiResponse }>();
 
   f(["image"]).middleware((opts) => {
     expectTypeOf<NextApiRequest>(opts.req);
@@ -138,7 +137,7 @@ it("passes `res` for /pages", () => {
 });
 
 it("with input", () => {
-  const f = createBuilder();
+  const f = createBuilder<{ req: Request; res: undefined }>();
   f(["image"])
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => {
@@ -147,8 +146,18 @@ it("with input", () => {
     });
 });
 
+it("with optional input", () => {
+  const f = createBuilder<{ req: Request; res: undefined }>();
+  f(["image"])
+    .input(z.object({ foo: z.string() }).optional())
+    .middleware((opts) => {
+      expectTypeOf<{ foo?: string } | undefined>(opts.input);
+      return {};
+    });
+});
+
 it("smoke", async () => {
-  const f = createBuilder();
+  const f = createBuilder<{ req: Request; res: undefined }>();
 
   const uploadable = f(["image", "video"])
     .input(z.object({ foo: z.string() }))
@@ -176,6 +185,7 @@ it("smoke", async () => {
   const metadata = await uploadable._def.middleware({
     req: badReqMock,
     input: { foo: "bar" },
+    res: undefined as never,
   });
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
 });
