@@ -1,5 +1,4 @@
-import { useId } from "react";
-import { useServerInsertedHTML } from "next/navigation";
+import Script from 'next/script'
 
 import type { EndpointMetadata } from "./types";
 
@@ -8,21 +7,17 @@ declare const globalThis: {
 };
 
 export function NextSSRPlugin(props: { routerConfig: EndpointMetadata }) {
-  const id = useId();
+  const id = 'UPLOADTHING_CONFIG';
 
   // Set routerConfig on server globalThis
   globalThis.__UPLOADTHING ??= props.routerConfig;
 
-  useServerInsertedHTML(() => {
-    const html = [
-      // Hydrate routerConfig on client globalThis
-      `globalThis.__UPLOADTHING ??= ${JSON.stringify(props.routerConfig)};`,
-    ];
-
-    return (
-      <script key={id} dangerouslySetInnerHTML={{ __html: html.join("") }} />
-    );
-  });
-
-  return null;
+  return (
+    <Script
+      strategy="beforeInteractive"
+      id={id}
+    >
+      {`globalThis.__UPLOADTHING ??= ${JSON.stringify(props.routerConfig)};`}
+    </Script>
+  );
 }
