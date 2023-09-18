@@ -34,13 +34,13 @@ jobs:
         run: bun turbo --filter "./packages/*" build
 
       - name: Bump version to canary
-        run: bun run .github/canary-version.js
+        run: bun run .github/canary-version.ts
 
       - name: Authenticate to npm and publish
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           for dir in packages/*/; do
-            if [ "$dir" != "packages/config/" ]; then
+          if [ "$dir" != "packages/config/" ]; then
+              echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > "$dir/.npmrc"
               cd "$dir" && npm publish --access public --tag canary
             fi  
           done
