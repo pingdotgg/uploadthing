@@ -278,3 +278,36 @@ export const renameFile = async (updates: Rename | Rename[]) => {
 
   return json;
 };
+
+export const getUsageInfo = async () => {
+  guardServerOnly();
+
+  const res = await fetch(generateUploadThingURL("/api/getUsageInfo"), {
+    method: "POST",
+    cache: "no-store",
+    headers: {
+      "Content-Type": "application/json",
+      "x-uploadthing-api-key": getApiKeyOrThrow(),
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    },
+  });
+
+  const json = (await res.json()) as
+    | { error: string }
+    | {
+        totalBytes: number;
+        totalReadable: string;
+        appTotalBytes: number;
+        appTotalReadable: string;
+        filesUploaded: number;
+        limitBytes: number;
+        limitReadable: string;
+      };
+
+  if (!res.ok || "error" in json) {
+    const message = "error" in json ? json.error : "Unknown error";
+    throw new Error(message);
+  }
+
+  return json;
+};
