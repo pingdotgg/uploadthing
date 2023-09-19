@@ -1,7 +1,7 @@
-name: Bug Report
-description: File a bug report
+name: 🐞 Bug Report (dashboard)
+description: File a bug report for the Uploadthing dashboard
 title: "[Bug]: "
-labels: ["unconfirmed_bug"]
+labels: ['🐛 bug: unconfirmed', 'area:dashboard']
 body:
   - type: markdown
     attributes:
@@ -37,13 +37,6 @@ body:
       label: Reproduction Steps
       description: How can we reproduce the issue?
       placeholder: "Please provide step-by-step instructions on how to reproduce the issue."
-  - type: input
-    attributes:
-      label: Link to reproduction
-      description: Please provide a link to a reproduction of the bug. This can be a link to a repository or a StackBlitz/CodeSandbox etc. Feel free to use our minimal reproduction template https://codesandbox.io/p/sandbox/interesting-blackburn-nws69h. If your issue regards the Uploadthing dashboard, please provide a link to the relevant page, e.g. https://uploadthing.com/dashboard/<APP_ID>/settings
-      placeholder: https://codesandbox.io/p/sandbox/interesting-blackburn-nws69h
-    validations:
-      required: true
   - type: textarea
     id: logs
     attributes:
