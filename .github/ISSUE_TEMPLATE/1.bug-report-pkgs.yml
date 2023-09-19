@@ -1,0 +1,58 @@
+name: 🐞 Bug Report (packages)
+description: File a bug report for the Uploadthing packages
+title: '[bug]: '
+labels: ['🐛 bug: unconfirmed', 'area:packages']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
+        Note that the more precise you are, the quicker we will be able to investigate the bug.
+  - type: textarea
+    attributes:
+      label: Provide environment information
+      render: bash
+      description: |
+        Please, run this command in your project root and paste the results:
+
+        ```terminal
+        npx envinfo --system --binaries --browsers --npmPackages "typescript,uploadthing,@uploadthing/react,@uploadthing/solid"
+        ```
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: Please describe the bug as clear and concise as possible, as well as the behavior you were expecting whilst encountering the bug.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Link to reproduction
+      description: Please provide a link to a reproduction of the bug. This can be a link to a repository or a StackBlitz/CodeSandbox etc. Feel free to use our minimal reproduction template https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-appdir. You can also clone down any of our examples and use that as a starting point. You can do so by using `degit`, e.g. `npx degit pingdotgg/degit/examples/minimal-appdir`
+      placeholder: https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-appdir
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: To reproduce
+      description: Describe how to reproduce your bug. Given the reproduction link above, what steps should we take to reproduce the bug?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Add any other information related to the bug here.
+  - type: checkboxes
+    attributes:
+      label: 👨‍👧‍👦 Contributing
+      description: We love contributors in any shape or form. Would you be willing to implement a fix?
+      options:
+        - label: 🙋‍♂️ Yes, I'd be down to file a PR fixing this bug!
+  - type: checkboxes
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/pingdotgg/uploadthing/blob/main/.github/ISSUE_TEMPLATE/code-of-conduct.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
