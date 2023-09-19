@@ -29,7 +29,7 @@ body:
   - type: input
     attributes:
       label: Link to reproduction
-      description: Please provide a link to a reproduction of the bug. This can be a link to a repository or a StackBlitz/CodeSandbox etc. Feel free to use our minimal reproduction template https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-appdir. You can also clone down any of our examples and use that as a starting point. You can do so by using `degit`, e.g. `npx degit pingdotgg/degit/examples/minimal-appdir`
+      description: Please provide a link to a reproduction of the bug. This can be a link to a repository or a StackBlitz/CodeSandbox etc. Feel free to use our minimal reproduction template https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-appdir. You can also clone down any of our examples and use that as a starting point. You can do so by using `degit`, e.g. `npx degit pingdotgg/uploadthing/examples/minimal-appdir`
       placeholder: https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-appdir
     validations:
       required: true
