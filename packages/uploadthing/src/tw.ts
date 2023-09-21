@@ -3,8 +3,8 @@ import plugin from "tailwindcss/plugin";
 
 export function withUt(twConfig: Config) {
   const contentPaths = [
-    "./node_modules/@uploadthing/react/src/**",
-    "./node_modules/@uploadthing/solid/src/**",
+    "./node_modules/@uploadthing/react/dist/**",
+    "./node_modules/@uploadthing/solid/dist/**",
   ];
 
   if (Array.isArray(twConfig.content)) {
