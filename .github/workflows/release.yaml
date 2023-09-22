@@ -70,10 +70,12 @@ jobs:
       - name: Send a discord notification
         if: steps.changeset.outputs.hasChangesets == 'true'
         uses: actions/github-script@v6
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         with:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
-            fetch(${{ secrets.DISCORD_WEBHOOK_URL }}, {
+            fetch(process.env.DISCORD_WEBHOOK_URL, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
