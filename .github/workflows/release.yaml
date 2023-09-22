@@ -68,7 +68,7 @@ jobs:
           git push origin changeset-release/main
 
       - name: Send a discord notification
-        if: steps.changeset.outputs.hasChangesets == 'true'
+        if: steps.changeset.outputs.published == 'true'
         uses: actions/github-script@v6
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
