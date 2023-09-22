@@ -2,9 +2,9 @@ import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { warnIfIncompatibleNode } from "../internal/incompat-node-warning";
 import type { FileEsque, UploadData, UploadError } from "./utils";
 import { uploadFilesInternal } from "./utils";
-import { warnIfIncompatibleNode } from "../internal/incompat-node-warning";
 
 function guardServerOnly() {
   if (typeof window !== "undefined") {

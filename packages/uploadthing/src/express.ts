@@ -14,11 +14,11 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
+import { warnIfIncompatibleNode } from "./internal/incompat-node-warning";
 import { getPostBody } from "./internal/node-http/getBody";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
-import { warnIfIncompatibleNode } from "./internal/incompat-node-warning";
 
 export type { FileRouter } from "./internal/types";
 
