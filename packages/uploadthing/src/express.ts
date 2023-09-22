@@ -18,6 +18,7 @@ import { getPostBody } from "./internal/node-http/getBody";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import { warnIfIncompatibleNode } from "./internal/incompat-node-warning";
 
 export type { FileRouter } from "./internal/types";
 
@@ -31,6 +32,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
+  warnIfIncompatibleNode();
   const requestHandler = buildRequestHandler<TRouter>(opts);
   const router = ExpressRouter();
 
