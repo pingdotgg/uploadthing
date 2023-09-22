@@ -2,7 +2,7 @@ import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import { warnIfIncompatibleNode } from "../internal/incompat-node-warning";
+import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { FileEsque, UploadData, UploadError } from "./utils";
 import { uploadFilesInternal } from "./utils";
 
@@ -47,7 +47,7 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
   metadata: Json = {},
 ) => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
 
@@ -88,7 +88,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   metadata: Json = {},
 ) => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
 
@@ -144,7 +144,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
  */
 export const deleteFiles = async (fileKeys: string[] | string) => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
@@ -180,7 +180,7 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
  */
 export const getFileUrls = async (fileKeys: string[] | string) => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
@@ -211,7 +211,7 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
  */
 export const listFiles = async () => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   // TODO: Implement filtering and pagination
   const res = await fetch(generateUploadThingURL("/api/listFiles"), {
@@ -261,7 +261,7 @@ type Rename = {
 
 export const renameFile = async (updates: Rename | Rename[]) => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   if (!Array.isArray(updates)) updates = [updates];
 
@@ -288,7 +288,7 @@ export const renameFile = async (updates: Rename | Rename[]) => {
 
 export const getUsageInfo = async () => {
   guardServerOnly();
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
 
   const res = await fetch(generateUploadThingURL("/api/getUsageInfo"), {
     method: "POST",

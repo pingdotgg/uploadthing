@@ -1,4 +1,4 @@
-export function warnIfIncompatibleNode() {
+export function incompatibleNodeGuard() {
   if (typeof process === "undefined") return;
 
   let major: number | undefined;
@@ -20,8 +20,8 @@ export function warnIfIncompatibleNode() {
   }
 
   if (major && major < 18) {
-    console.warn(
-      `[UT] WARNING: YOU ARE USING A LEGACY (${major}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE 18+.`,
+    throw new Error(
+      `[UT]: YOU ARE USING A LEGACY (${major}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE 18+.`,
     );
   }
 }

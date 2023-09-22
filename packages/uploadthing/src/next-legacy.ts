@@ -10,7 +10,7 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import type { RouterWithConfig } from "./internal/handler";
-import { warnIfIncompatibleNode } from "./internal/incompat-node-warning";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -27,7 +27,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
   const requestHandler = buildRequestHandler<TRouter>(opts);
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);

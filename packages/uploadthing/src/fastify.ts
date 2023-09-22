@@ -15,7 +15,7 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import { warnIfIncompatibleNode } from "./internal/incompat-node-warning";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -32,7 +32,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
   done: (err?: Error) => void,
 ) => {
-  warnIfIncompatibleNode();
+  incompatibleNodeGuard();
   const requestHandler = buildRequestHandler<TRouter>(opts);
 
   const POST: RouteHandlerMethod = async (req, res) => {
