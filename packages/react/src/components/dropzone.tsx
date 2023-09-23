@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -114,7 +114,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
     [$props, startUpload],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: $props.__internal_dropzone_disabled,
@@ -134,6 +134,46 @@ export function UploadDropzone<TRouter extends FileRouter>(
     const input = "input" in $props ? $props.input : undefined;
     void startUpload(files, input);
   };
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      if ((event.target as HTMLElement).tagName === "INPUT") {
+        // Don't override the default paste behavior in inputs
+        return;
+      }
+
+      if (document.activeElement !== rootRef.current) {
+        // Upload from clipboard can be triggered only if button is focused
+        return;
+      }
+
+      const dataTransferItems = event.clipboardData?.items;
+
+      if (!dataTransferItems) return;
+
+      const files = Array.from(dataTransferItems).reduce((acc, curr) => {
+        const f = curr.getAsFile();
+
+        if (f) {
+          return [...acc, f];
+        }
+
+        return acc;
+      }, [] as File[]);
+
+      setFiles(files);
+
+      if ($props.config?.mode === "auto") {
+        const input = "input" in $props ? $props.input : undefined;
+        void startUpload(files, input);
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [startUpload, $props, fileTypes, rootRef]);
 
   const styleFieldArg = {
     fileTypes,

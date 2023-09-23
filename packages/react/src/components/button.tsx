@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -68,6 +68,7 @@ export function UploadButton<TRouter extends FileRouter>(
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const labelRef = useRef<HTMLLabelElement>(null);
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
@@ -99,6 +100,42 @@ export function UploadButton<TRouter extends FileRouter>(
   const ready =
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      if ((event.target as HTMLElement).tagName === "INPUT") {
+        // Don't override the default paste behavior in inputs
+        return;
+      }
+
+      if (document.activeElement !== labelRef.current) {
+        // Upload from clipboard can be triggered only if button is focused
+        return;
+      }
+
+      const dataTransferItems = event.clipboardData?.items;
+
+      if (!dataTransferItems) return;
+
+      const files = Array.from(dataTransferItems).reduce((acc, curr) => {
+        const f = curr.getAsFile();
+
+        if (f) {
+          return [...acc, f];
+        }
+
+        return acc;
+      }, [] as File[]);
+
+      const input = "input" in $props ? $props.input : undefined;
+      void startUpload(files, input);
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [startUpload, $props, fileTypes]);
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (fileTypes.length === 0) return "Loading...";
@@ -147,7 +184,7 @@ export function UploadButton<TRouter extends FileRouter>(
     >
       <label
         className={twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus:outline focus:outline-2 focus:outline-blue-700",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
@@ -157,6 +194,8 @@ export function UploadButton<TRouter extends FileRouter>(
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
+        tabIndex={0}
+        ref={labelRef}
       >
         <input {...getInputProps()} />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
