@@ -156,6 +156,7 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
   });
 
   if (!res.ok) {
+    console.error("[UT] Error: deleteFiles", await res.text());
     throw new Error("Failed to delete files");
   }
 
@@ -191,6 +192,7 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
   });
 
   if (!res.ok) {
+    console.error("[UT] Error: getFileUrls", await res.text());
     throw new Error("Failed to get file urls");
   }
 
