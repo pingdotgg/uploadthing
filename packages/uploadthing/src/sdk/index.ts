@@ -83,7 +83,10 @@ export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
 type Url = string | URL;
 export const uploadFilesFromUrl = async <T extends Url | Url[]>(
   urls: T,
-  metadata: Json = {},
+  metadata: Json = {}, 
+  options?: { 
+    fetch?: typeof fetch;
+  }
 ) => {
   guardServerOnly();
 
@@ -98,7 +101,7 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
       const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
       // Download the file on the user's server to avoid egress charges
-      const fileResponse = await fetch(url);
+      const fileResponse = await (options?.fetch ?? fetch)(url);
       if (!fileResponse.ok) {
         throw new UploadThingError({
           code: "BAD_REQUEST",
@@ -139,12 +142,14 @@ export const uploadFilesFromUrl = async <T extends Url | Url[]>(
  * @example
  * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
  */
-export const deleteFiles = async (fileKeys: string[] | string) => {
+export const deleteFiles = async (fileKeys: string[] | string, options?: { 
+  fetch?: typeof fetch;
+}) => {
   guardServerOnly();
 
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
-  const res = await fetch(generateUploadThingURL("/api/deleteFile"), {
+  const res = await (options?.fetch ?? fetch)(generateUploadThingURL("/api/deleteFile"), {
     method: "POST",
     cache: "no-store",
     headers: {
@@ -174,12 +179,14 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
  * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
  * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
  */
-export const getFileUrls = async (fileKeys: string[] | string) => {
+export const getFileUrls = async (fileKeys: string[] | string, options?: { 
+  fetch?: typeof fetch;
+}) => {
   guardServerOnly();
 
   if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
-  const res = await fetch(generateUploadThingURL("/api/getFileUrl"), {
+  const res = await (options?.fetch ?? fetch)(generateUploadThingURL("/api/getFileUrl"), {
     method: "POST",
     cache: "no-store",
     headers: {
@@ -204,11 +211,13 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
  * const data = await listFiles();
  * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
  */
-export const listFiles = async () => {
+export const listFiles = async (options?: { 
+  fetch?: typeof fetch;
+}) => {
   guardServerOnly();
 
   // TODO: Implement filtering and pagination
-  const res = await fetch(generateUploadThingURL("/api/listFiles"), {
+  const res = await (options?.fetch ?? fetch)(generateUploadThingURL("/api/listFiles"), {
     method: "POST",
     cache: "no-store",
     headers: {
@@ -253,12 +262,14 @@ type Rename = {
   newName: string;
 };
 
-export const renameFile = async (updates: Rename | Rename[]) => {
+export const renameFile = async (updates: Rename | Rename[], options?: { 
+  fetch?: typeof fetch;
+}) => {
   guardServerOnly();
 
   if (!Array.isArray(updates)) updates = [updates];
 
-  const res = await fetch(generateUploadThingURL("/api/renameFile"), {
+  const res = await (options?.fetch ?? fetch)(generateUploadThingURL("/api/renameFile"), {
     method: "POST",
     cache: "no-store",
     headers: {
@@ -279,10 +290,12 @@ export const renameFile = async (updates: Rename | Rename[]) => {
   return json;
 };
 
-export const getUsageInfo = async () => {
+export const getUsageInfo = async (options?: { 
+  fetch?: typeof fetch;
+}) => {
   guardServerOnly();
 
-  const res = await fetch(generateUploadThingURL("/api/getUsageInfo"), {
+  const res = await (options?.fetch ?? fetch)(generateUploadThingURL("/api/getUsageInfo"), {
     method: "POST",
     cache: "no-store",
     headers: {
