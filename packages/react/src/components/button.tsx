@@ -6,7 +6,6 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  progressWidths,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -15,7 +14,7 @@ import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { Spinner } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -150,7 +149,7 @@ export function UploadButton<TRouter extends FileRouter>(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
           state === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
