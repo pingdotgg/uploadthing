@@ -18,7 +18,7 @@ import type { UploadthingComponentProps } from "../types";
 import type { FileWithPath } from "../use-dropzone";
 import { useDropzone } from "../use-dropzone";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { Spinner } from "./shared";
+import { getFilesFromClipboardEvent, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -137,29 +137,12 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if ((event.target as HTMLElement).tagName === "INPUT") {
-        // Don't override the default paste behavior in inputs
-        return;
-      }
-
       if (document.activeElement !== rootRef.current) {
         // Upload from clipboard can be triggered only if button is focused
         return;
       }
-
-      const dataTransferItems = event.clipboardData?.items;
-
-      if (!dataTransferItems) return;
-
-      const files = Array.from(dataTransferItems).reduce((acc, curr) => {
-        const f = curr.getAsFile();
-
-        if (f) {
-          return [...acc, f];
-        }
-
-        return acc;
-      }, [] as File[]);
+      const files = getFilesFromClipboardEvent(event);
+      if (!files) return;
 
       setFiles(files);
 

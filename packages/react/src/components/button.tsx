@@ -15,7 +15,7 @@ import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { Spinner } from "./shared";
+import { getFilesFromClipboardEvent, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -103,29 +103,13 @@ export function UploadButton<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if ((event.target as HTMLElement).tagName === "INPUT") {
-        // Don't override the default paste behavior in inputs
-        return;
-      }
-
       if (document.activeElement !== labelRef.current) {
         // Upload from clipboard can be triggered only if button is focused
         return;
       }
 
-      const dataTransferItems = event.clipboardData?.items;
-
-      if (!dataTransferItems) return;
-
-      const files = Array.from(dataTransferItems).reduce((acc, curr) => {
-        const f = curr.getAsFile();
-
-        if (f) {
-          return [...acc, f];
-        }
-
-        return acc;
-      }, [] as File[]);
+      const files = getFilesFromClipboardEvent(event);
+      if (!files) return;
 
       const input = "input" in $props ? $props.input : undefined;
       void startUpload(files, input);
