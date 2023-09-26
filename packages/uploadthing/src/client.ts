@@ -204,14 +204,12 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         }),
       },
       (progressEvent) =>
-        opts.onUploadProgress &&
-        opts.onUploadProgress({
+        opts.onUploadProgress?.({
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
       () => {
-        opts.onUploadBegin &&
-          opts.onUploadBegin({
+          opts.onUploadBegin?.({
             file: file.name,
           });
       },
