@@ -47,6 +47,7 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
     className?: string;
     config?: {
       mode?: "auto" | "manual";
+      disablePaste?: boolean;
     };
   };
 
@@ -137,6 +138,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
+      if ($props.config?.disablePaste) {
+        // User decided to disable paste-from-clipboard functionality
+        return;
+      }
+
       if (document.activeElement !== rootRef.current) {
         // Upload from clipboard can be triggered only if button is focused
         return;
@@ -144,7 +150,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       const files = getFilesFromClipboardEvent(event);
       if (!files) return;
 
-      setFiles(files);
+      setFiles([...files, ...pastedFiles]);
 
       if ($props.config?.mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
