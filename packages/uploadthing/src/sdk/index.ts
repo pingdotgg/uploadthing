@@ -57,7 +57,9 @@ export class UTApi {
       throw new UploadThingError({
         code: "INTERNAL_SERVER_ERROR",
         message:
-          "error" in json ? (json.error as string) : fallbackErrorMessage,
+          "error" in json && typeof json.error === "string"
+            ? json.error
+            : fallbackErrorMessage,
       });
     }
 
