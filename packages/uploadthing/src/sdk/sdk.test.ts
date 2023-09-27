@@ -3,9 +3,7 @@ import { describe, expectTypeOf, test } from "vitest";
 import { UTApi } from ".";
 import type { UploadError } from "./utils";
 
-const utapi = new UTApi({
-  apiKey: "sk_live_xxx",
-});
+const utapi = new UTApi();
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {

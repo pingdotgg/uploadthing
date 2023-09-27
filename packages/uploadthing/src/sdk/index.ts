@@ -26,15 +26,15 @@ export interface UTApiOptions {
 
 export class UTApi {
   private fetch: FetchEsque;
-  private apiKey: string;
+  private apiKey: string | undefined;
   private defaultHeaders: Record<string, string>;
 
   constructor(opts?: UTApiOptions) {
     this.fetch = opts?.fetch ?? globalThis.fetch;
-    this.apiKey = getApiKeyOrThrow(opts?.apiKey);
+    this.apiKey = opts?.apiKey ?? process.env.UPLOADTHING_SECRET;
     this.defaultHeaders = {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": this.apiKey,
+      "x-uploadthing-api-key": this.apiKey!,
       "x-uploadthing-version": UPLOADTHING_VERSION,
     };
   }
@@ -44,6 +44,13 @@ export class UTApi {
     body: Record<string, unknown>,
     fallbackErrorMessage: string,
   ) {
+    // Force API key to be set before requesting.
+    // Ideally we'd just throw in the constructor but since we need to export
+    // a `utapi` object we can't throw in the constructor because it would
+    // be a breaking change.
+    // FIXME: In next major
+    getApiKeyOrThrow();
+
     const res = await this.fetch(generateUploadThingURL(pathname), {
       method: "POST",
       cache: "no-store",
