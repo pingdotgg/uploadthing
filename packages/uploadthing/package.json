@@ -1,6 +1,9 @@
 {
   "name": "uploadthing",
   "version": "5.6.1",
+  "engines": {
+    "node": ">=18.13.0"
+  },
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
