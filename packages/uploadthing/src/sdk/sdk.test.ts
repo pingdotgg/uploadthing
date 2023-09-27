@@ -1,7 +1,11 @@
 import { describe, expectTypeOf, test } from "vitest";
 
-import { utapi } from ".";
+import { UTApi } from ".";
 import type { UploadError } from "./utils";
+
+const utapi = new UTApi({
+  apiKey: "sk_live_xxx",
+});
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
