@@ -77,32 +77,30 @@ export const ourFileRouter = {
 export type OurFileRouter = typeof ourFileRouter;
 ```
 
-### Create a handle hook using the FileRouter
+### Create an API route using the FileRouter
 
 <Callout type="warning">
-  Note: This exposes the API route `/api/uploadthing`. Make sure not to create
-  an endpoint with the same path.
+  **Note:** This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this
+  API from `/api/uploadthing` on your application.
 </Callout>
 
 ```ts copy filename="src/hooks.server.ts"
-import type { Handle } from "@sveltejs/kit";
 import { UPLOADTHING_APP_ID, UPLOADTHING_SECRET } from "$env/static/private";
 import { uploadRouter } from "$lib/server/uploadthing";
 
-import { createUploadthingHandle } from "@uploadthing/svelte";
+import { createServerHandler } from "uploadthing/server";
 
-export const handle: Handle = createUploadthingHandle({
+// The Svelte extension complains if you export the handlers directly
+const { GET, POST } = createServerHandler({
   router: uploadRouter,
   config: {
     uploadthingId: UPLOADTHING_APP_ID,
     uploadthingSecret: UPLOADTHING_SECRET,
   },
 });
-```
 
-If you need multiple handle hooks in your application take a look at the
-[sequence](https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks-sequence)
-helper function from SvelteKit.
+export { GET, POST };
+```
 
 ### Creating the UploadThing Helpers (optional)
 

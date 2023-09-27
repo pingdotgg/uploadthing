@@ -1,10 +1,10 @@
-import type { Handle } from "@sveltejs/kit";
 import { env } from "$env/dynamic/private";
 import { uploadRouter } from "$lib/server/uploadthing";
 
-import { createUploadthingHandle } from "@uploadthing/svelte";
+import { createServerHandler } from "uploadthing/server";
 
-export const handle: Handle = createUploadthingHandle({
+// The Svelte extension complains if you export the handlers directly
+const { GET, POST } = createServerHandler({
   router: uploadRouter,
   config: {
     // callbackUrl: `http://localhost:${env.PORT ?? 5173}/api/uploadthing`,
@@ -12,3 +12,5 @@ export const handle: Handle = createUploadthingHandle({
     uploadthingSecret: env.UPLOADTHING_SECRET,
   },
 });
+
+export { GET, POST };
