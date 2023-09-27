@@ -6,7 +6,6 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  progressWidths,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -15,7 +14,7 @@ import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { Spinner } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "solid";
