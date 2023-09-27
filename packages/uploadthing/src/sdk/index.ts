@@ -39,6 +39,31 @@ export class UTApi {
     };
   }
 
+  private async requestUploadThing<T extends Record<string, unknown>>(
+    pathname: `/${string}`,
+    body: Record<string, unknown>,
+    fallbackErrorMessage: string,
+  ) {
+    const res = await this.fetch(generateUploadThingURL(pathname), {
+      method: "POST",
+      cache: "no-store",
+      headers: this.defaultHeaders,
+      body: JSON.stringify(body),
+    });
+
+    const json = await res.json<T | { error: string }>();
+    if (!res.ok || "error" in json) {
+      console.error("[UT] Error:", json);
+      throw new UploadThingError({
+        code: "INTERNAL_SERVER_ERROR",
+        message:
+          "error" in json ? (json.error as string) : fallbackErrorMessage,
+      });
+    }
+
+    return json;
+  }
+
   /**
    * @param {FileEsque | FileEsque[]} files The file(s) to upload
    * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
@@ -155,26 +180,11 @@ export class UTApi {
 
     if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
-    const res = await this.fetch(generateUploadThingURL("/api/deleteFile"), {
-      method: "POST",
-      cache: "no-store",
-      headers: this.defaultHeaders,
-      body: JSON.stringify({ fileKeys }),
-    });
-
-    const json = await res.json<{ success: boolean } | { error: string }>();
-    if (!res.ok || "error" in json) {
-      console.error("[UT] Error: deleteFiles", json);
-      throw new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message:
-          "error" in json
-            ? json.error
-            : "An unknown error occured while deleting files.",
-      });
-    }
-
-    return json;
+    return this.requestUploadThing<{ success: boolean }>(
+      "/api/deleteFile",
+      { fileKeys },
+      "An unknown error occured while deleting files.",
+    );
   }
 
   /**
@@ -195,27 +205,13 @@ export class UTApi {
 
     if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
-    const res = await this.fetch(generateUploadThingURL("/api/getFileUrl"), {
-      method: "POST",
-      cache: "no-store",
-      headers: this.defaultHeaders,
-      body: JSON.stringify({ fileKeys }),
-    });
-
-    const json = await res.json<
-      { data: { key: string; url: string }[] } | { error: string }
-    >();
-
-    if (!res.ok || "error" in json) {
-      console.error("[UT] Error: getFileUrls", json);
-      throw new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message:
-          "error" in json
-            ? json.error
-            : "An unknown error occured while retrieving file URLs.",
-      });
-    }
+    const json = await this.requestUploadThing<{
+      data: { key: string; url: string }[];
+    }>(
+      "/api/getFileUrl",
+      { fileKeys },
+      "An unknown error occured while retrieving file URLs.",
+    );
 
     return json.data;
   }
@@ -232,26 +228,9 @@ export class UTApi {
     incompatibleNodeGuard();
 
     // TODO: Implement filtering and pagination
-    const res = await this.fetch(generateUploadThingURL("/api/listFiles"), {
-      method: "POST",
-      cache: "no-store",
-      headers: this.defaultHeaders,
-    });
-
-    const json = await res.json<
-      { files: { key: string; id: string }[] } | { error: string }
-    >();
-
-    if (!res.ok || "error" in json) {
-      console.log("[UT] Error: listFiles", json);
-      throw new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message:
-          "error" in json
-            ? json.error
-            : "An unknown error occured while listing files.",
-      });
-    }
+    const json = await this.requestUploadThing<{
+      files: { key: string; id: string }[];
+    }>("/api/listFiles", {}, "An unknown error occured while listing files.");
 
     return json.files;
   }
@@ -272,64 +251,30 @@ export class UTApi {
 
     if (!Array.isArray(updates)) updates = [updates];
 
-    const res = await this.fetch(generateUploadThingURL("/api/renameFile"), {
-      method: "POST",
-      cache: "no-store",
-      headers: this.defaultHeaders,
-      body: JSON.stringify({ updates }),
-    });
-
-    const json = await res.json<{ success: true } | { error: string }>();
-
-    if (!res.ok || "error" in json) {
-      console.error("[UT] Error: renameFile", json);
-      throw new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message:
-          "error" in json
-            ? json.error
-            : "An unknown error occured while renaming files.",
-      });
-    }
-
-    return json;
+    return this.requestUploadThing<{ success: true }>(
+      "/api/renameFile",
+      { updates },
+      "An unknown error occured while renaming files.",
+    );
   }
 
   async getUsageInfo() {
     guardServerOnly();
     incompatibleNodeGuard();
 
-    const res = await this.fetch(generateUploadThingURL("/api/getUsageInfo"), {
-      method: "POST",
-      cache: "no-store",
-      headers: this.defaultHeaders,
-    });
-
-    const json = await res.json<
-      | { error: string }
-      | {
-          totalBytes: number;
-          totalReadable: string;
-          appTotalBytes: number;
-          appTotalReadable: string;
-          filesUploaded: number;
-          limitBytes: number;
-          limitReadable: string;
-        }
-    >();
-
-    if (!res.ok || "error" in json) {
-      console.error("[UT] Error: getUsageInfo", json);
-      throw new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message:
-          "error" in json
-            ? json.error
-            : "An unknown error occured while retrieving usage info.",
-      });
-    }
-
-    return json;
+    return this.requestUploadThing<{
+      totalBytes: number;
+      totalReadable: string;
+      appTotalBytes: number;
+      appTotalReadable: string;
+      filesUploaded: number;
+      limitBytes: number;
+      limitReadable: string;
+    }>(
+      "/api/getUsageInfo",
+      {},
+      "An unknown error occured while getting usage info.",
+    );
   }
 }
 
