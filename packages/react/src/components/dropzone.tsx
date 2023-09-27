@@ -147,8 +147,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
         // Upload from clipboard can be triggered only if button is focused
         return;
       }
-      const files = getFilesFromClipboardEvent(event);
-      if (!files) return;
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
 
       setFiles([...files, ...pastedFiles]);
 
