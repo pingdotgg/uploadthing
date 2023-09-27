@@ -2,7 +2,7 @@
   "name": "uploadthing",
   "version": "5.6.1",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.13.0"
   },
   "license": "MIT",
   "exports": {
