@@ -2,6 +2,7 @@ import type { Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { FetchEsque, MaybeUrl } from "./types";
 import type { FileEsque, UploadFileResponse } from "./utils";
 import {
@@ -56,6 +57,7 @@ export class UTApi {
     metadata: Json = {},
   ) {
     guardServerOnly();
+    incompatibleNodeGuard();
 
     const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
 
@@ -189,6 +191,7 @@ export class UTApi {
    */
   async getFileUrls(fileKeys: string[] | string) {
     guardServerOnly();
+    incompatibleNodeGuard();
 
     if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
@@ -226,6 +229,7 @@ export class UTApi {
    */
   async listFiles() {
     guardServerOnly();
+    incompatibleNodeGuard();
 
     // TODO: Implement filtering and pagination
     const res = await this.fetch(generateUploadThingURL("/api/listFiles"), {
@@ -264,6 +268,7 @@ export class UTApi {
         }[],
   ) {
     guardServerOnly();
+    incompatibleNodeGuard();
 
     if (!Array.isArray(updates)) updates = [updates];
 
@@ -292,6 +297,7 @@ export class UTApi {
 
   async getUsageInfo() {
     guardServerOnly();
+    incompatibleNodeGuard();
 
     const res = await this.fetch(generateUploadThingURL("/api/getUsageInfo"), {
       method: "POST",
