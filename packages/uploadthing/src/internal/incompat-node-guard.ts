@@ -23,5 +23,6 @@ export function incompatibleNodeGuard() {
     throw new Error(
       `[UT]: YOU ARE USING A LEGACY (${major}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE 18+.`,
     );
+    process.exit(1);  // Kill the process if it isn't going to work correctly anyway
   }
 }
