@@ -7,7 +7,6 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
-  progressWidths,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -18,7 +17,7 @@ import type { UploadthingComponentProps } from "../types";
 import type { FileWithPath } from "../use-dropzone";
 import { useDropzone } from "../use-dropzone";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { getFilesFromClipboardEvent, Spinner } from "./shared";
+import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";

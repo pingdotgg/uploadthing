@@ -82,6 +82,92 @@ importers:
         specifier: ^3.3.2
         version: 3.3.2
 
+  examples/backend-adapters:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 5.6.1
+        version: link:../../packages/react
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      uploadthing:
+        specifier: ^5.6.1
+        version: link:../../packages/uploadthing
+
+  examples/backend-adapters/client:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 5.6.1
+        version: link:../../../packages/react
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: ^5.6.1
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.8
+        version: 18.2.8
+      '@types/react-dom':
+        specifier: 18.2.4
+        version: 18.2.4
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.3.2
+        version: 3.3.2(vite@4.4.9)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+      vite:
+        specifier: ^4.4.9
+        version: 4.4.9(@types/node@18.16.0)
+
+  examples/backend-adapters/server:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.1.1
+        version: 1.1.1
+      cors:
+        specifier: ^2.8.5
+        version: 2.8.5
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
+      elysia:
+        specifier: ^0.6.24
+        version: 0.6.24(typescript@5.1.6)
+      express:
+        specifier: ^4.18.2
+        version: 4.18.2
+      fastify:
+        specifier: ^4.23.2
+        version: 4.23.2
+      hono:
+        specifier: ^3.6.3
+        version: 3.6.3
+      uploadthing:
+        specifier: ^5.6.1
+        version: link:../../../packages/uploadthing
+    devDependencies:
+      '@types/cors':
+        specifier: ^2.8.14
+        version: 2.8.14
+      '@types/express':
+        specifier: ^4.17.17
+        version: 4.17.17
+      tsx:
+        specifier: ^3.12.7
+        version: 3.12.10
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
@@ -143,278 +229,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-
-  examples/minimal-elysia-react:
-    devDependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../packages/react
-      concurrently:
-        specifier: ^8.2.1
-        version: 8.2.1
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../packages/uploadthing
-
-  examples/minimal-elysia-react/client:
-    dependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../../packages/react
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      '@types/react':
-        specifier: 18.2.8
-        version: 18.2.8
-      '@types/react-dom':
-        specifier: 18.2.4
-        version: 18.2.4
-      '@vitejs/plugin-react-swc':
-        specifier: ^3.3.2
-        version: 3.3.2(vite@4.4.9)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.16.0)
-
-  examples/minimal-elysia-react/server:
-    dependencies:
-      elysia:
-        specifier: ^0.6.23
-        version: 0.6.23(typescript@5.1.6)
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      bun-types:
-        specifier: 1.0.2
-        version: 1.0.2
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-
-  examples/minimal-express-react:
-    devDependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../packages/react
-      concurrently:
-        specifier: ^8.2.1
-        version: 8.2.1
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../packages/uploadthing
-
-  examples/minimal-express-react/client:
-    dependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../../packages/react
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      '@types/react':
-        specifier: 18.2.8
-        version: 18.2.8
-      '@types/react-dom':
-        specifier: 18.2.4
-        version: 18.2.4
-      '@vitejs/plugin-react-swc':
-        specifier: ^3.3.2
-        version: 3.3.2(vite@4.4.9)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.16.0)
-
-  examples/minimal-express-react/server:
-    dependencies:
-      cors:
-        specifier: ^2.8.5
-        version: 2.8.5
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.3.1
-      express:
-        specifier: ^4.18.2
-        version: 4.18.2
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-      zod:
-        specifier: ^3.21.4
-        version: 3.22.2
-    devDependencies:
-      '@types/cors':
-        specifier: ^2.8.13
-        version: 2.8.14
-      '@types/express':
-        specifier: ^4.17.17
-        version: 4.17.17
-      tsx:
-        specifier: ^3.12.7
-        version: 3.12.10
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-
-  examples/minimal-fastify-react:
-    devDependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../packages/react
-      concurrently:
-        specifier: ^8.2.1
-        version: 8.2.1
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../packages/uploadthing
-
-  examples/minimal-fastify-react/client:
-    dependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../../packages/react
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      '@types/react':
-        specifier: 18.2.8
-        version: 18.2.8
-      '@types/react-dom':
-        specifier: 18.2.4
-        version: 18.2.4
-      '@vitejs/plugin-react-swc':
-        specifier: ^3.3.2
-        version: 3.3.2(vite@4.4.9)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.16.0)
-
-  examples/minimal-fastify-react/server:
-    dependencies:
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.3.1
-      fastify:
-        specifier: ^4.22.0
-        version: 4.23.2
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      tsx:
-        specifier: ^3.12.7
-        version: 3.12.10
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-
-  examples/minimal-hono-react:
-    devDependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../packages/react
-      concurrently:
-        specifier: ^8.2.1
-        version: 8.2.1
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../packages/uploadthing
-
-  examples/minimal-hono-react/client:
-    dependencies:
-      '@uploadthing/react':
-        specifier: 5.6.1
-        version: link:../../../packages/react
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      '@types/react':
-        specifier: 18.2.8
-        version: 18.2.8
-      '@types/react-dom':
-        specifier: 18.2.4
-        version: 18.2.4
-      '@vitejs/plugin-react-swc':
-        specifier: ^3.3.2
-        version: 3.3.2(vite@4.4.9)
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
-      vite:
-        specifier: ^4.4.9
-        version: 4.4.9(@types/node@18.16.0)
-
-  examples/minimal-hono-react/server:
-    dependencies:
-      '@hono/node-server':
-        specifier: ^1.1.1
-        version: 1.1.1
-      dotenv:
-        specifier: ^16.3.1
-        version: 16.3.1
-      hono:
-        specifier: ^3.6.3
-        version: 3.6.3
-      uploadthing:
-        specifier: ^5.6.1
-        version: link:../../../packages/uploadthing
-    devDependencies:
-      tsx:
-        specifier: ^3.12.7
-        version: 3.12.10
-      typescript:
-        specifier: ^5.1.6
-        version: 5.1.6
 
   examples/minimal-pagedir:
     dependencies:
@@ -1122,7 +936,7 @@ importers:
         specifier: ^4.18.2
         version: 4.18.2
       fastify:
-        specifier: ^4.22.0
+        specifier: ^4.23.2
         version: 4.23.2
       next:
         specifier: 13.4.4
@@ -2787,6 +2601,13 @@ packages:
       source-map-support: 0.5.21
     dev: true
 
+  /@esbuild-kit/core-utils@3.3.2:
+    resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
+    dependencies:
+      esbuild: 0.18.20
+      source-map-support: 0.5.21
+    dev: true
+
   /@esbuild-kit/esm-loader@2.6.1:
     resolution: {integrity: sha512-NJT43EF+rJ/KCU/9VlBWS9HByN1FvbWdNmtNxdZNLYcxwxF+MASIjRsH9/f6FRa3Eml+Fr8TNujB6uzNTAPZfQ==}
     dependencies:
@@ -2794,10 +2615,10 @@ packages:
       get-tsconfig: 4.7.0
     dev: true
 
-  /@esbuild-kit/esm-loader@2.6.4:
-    resolution: {integrity: sha512-xcbyhN97xFFFEdDw6IC4EuzX9Ali3aV3cj2FIYragOQpbPM4X6QA2R5qaP3h7Tr0tuyI6dmJJdMw7oBHxBSXQA==}
+  /@esbuild-kit/esm-loader@2.6.5:
+    resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
     dependencies:
-      '@esbuild-kit/core-utils': 3.3.0
+      '@esbuild-kit/core-utils': 3.3.2
       get-tsconfig: 4.7.0
     dev: true
 
@@ -5261,10 +5082,6 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bun-types@1.0.2:
-    resolution: {integrity: sha512-yqBp2SX9cqr5/GReb56uCfM+YP+Hntx3XPjbqX1VJXqOBu+Yqw8iWRFLKFIsz9uEfykLgflhramQ8a5Jgo+Tlg==}
-    dev: true
-
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}
     engines: {node: '>=12'}
@@ -5653,7 +5470,7 @@ packages:
       supports-color: 8.1.1
       tree-kill: 1.2.2
       yargs: 17.7.2
-    dev: true
+    dev: false
 
   /connect@3.7.0:
     resolution: {integrity: sha512-ZqRXc+tZukToSNmh5C2iWMSoV3X1YUcPbqEM4DkEG5tNQXrQUZCNVGGv3IuicnkMtPfGf3Xtp8WCXs295iQ1pQ==}
@@ -6086,7 +5903,7 @@ packages:
     engines: {node: '>=0.11'}
     dependencies:
       '@babel/runtime': 7.22.3
-    dev: true
+    dev: false
 
   /date-time@3.1.0:
     resolution: {integrity: sha512-uqCUKXE5q1PNBXjPqvwhwJf9SwMoAHBgWJ6DcrnS5o+W2JOiIILl0JEdVD8SGujrNS02GGxgwAg2PN2zONgtjg==}
@@ -6468,8 +6285,8 @@ packages:
     resolution: {integrity: sha512-L6uRgvZTH+4OF5NE/MBbzQx/WYpru1xCBE9respNj6qznEewGUIfhzmm7horWWxbNO2M0WckQypGctR8lH79xQ==}
     dev: false
 
-  /elysia@0.6.23(typescript@5.1.6):
-    resolution: {integrity: sha512-Pg4imIefGhHZsGGhfGQm6zX2fiRsN6DVoYp8gyjPQ1hvmjXBamVM5S9kAKuB6TP+E6b/KzRH+y+76PWYQpvVyQ==}
+  /elysia@0.6.24(typescript@5.1.6):
+    resolution: {integrity: sha512-qaN8b816tSecNIsgNwFCMOMlayOaChme9i/VHxCRZyPTgtdAAnrYDZaUQfatyt1jcHUdkf3IT4ny5GuS7NB26w==}
     peerDependencies:
       '@elysiajs/fn': '*'
       '@sinclair/typebox': '>= 0.28.10'
@@ -11367,7 +11184,7 @@ packages:
 
   /shell-quote@1.8.1:
     resolution: {integrity: sha512-6j1W9l1iAs/4xYBI1SYOVZyFcCis9b4KCLQ8fgAGG07QvzaRLVVRQvAy85yNmmZSjYjg4MWh4gNvlPujU/5LpA==}
-    dev: true
+    dev: false
 
   /shiki@0.14.3:
     resolution: {integrity: sha512-U3S/a+b0KS+UkTyMjoNojvTgrBHjgp7L6ovhFVZsXmBGnVdQ4K4U9oK0z63w538S91ATngv1vXigHCSWOwnr+g==}
@@ -11634,7 +11451,7 @@ packages:
 
   /spawn-command@0.0.2:
     resolution: {integrity: sha512-zC8zGoGkmc8J9ndvml8Xksr1Amk9qBujgbF0JAIWO7kXr43w0h/0GJNM/Vustixu+YE8N/MTrQ7N31FvHUACxQ==}
-    dev: true
+    dev: false
 
   /spawndamnit@2.0.0:
     resolution: {integrity: sha512-j4JKEcncSjFlqIwU5L/rp2N5SIPsdxaRsIv678+TZxZ0SRDJTm8JrxJMjE/XuiEZNEir3S8l0Fa3Ke339WI4qA==}
@@ -11920,7 +11737,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       has-flag: 4.0.0
-    dev: true
+    dev: false
 
   /supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
@@ -12171,7 +11988,6 @@ packages:
   /tree-kill@1.2.2:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
-    dev: true
 
   /trim-lines@3.0.1:
     resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
@@ -12329,7 +12145,7 @@ packages:
     dependencies:
       '@esbuild-kit/cjs-loader': 2.4.4
       '@esbuild-kit/core-utils': 3.3.0
-      '@esbuild-kit/esm-loader': 2.6.4
+      '@esbuild-kit/esm-loader': 2.6.5
     optionalDependencies:
       fsevents: 2.3.2
     dev: true
