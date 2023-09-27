@@ -155,12 +155,19 @@ export const deleteFiles = async (fileKeys: string[] | string) => {
     body: JSON.stringify({ fileKeys }),
   });
 
-  if (!res.ok) {
-    console.error("[UT] Error: deleteFiles", await res.text());
-    throw new Error("Failed to delete files");
+  const json = (await res.json()) as { success: boolean } | { error: string };
+  if (!res.ok || "error" in json) {
+    console.error("[UT] Error: deleteFiles", json);
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "error" in json
+          ? json.error
+          : "An unknown error occured while deleting files.",
+    });
   }
 
-  return res.json() as Promise<{ success: boolean }>;
+  return json;
 };
 
 /**
@@ -191,12 +198,22 @@ export const getFileUrls = async (fileKeys: string[] | string) => {
     body: JSON.stringify({ fileKeys }),
   });
 
-  if (!res.ok) {
-    console.error("[UT] Error: getFileUrls", await res.text());
-    throw new Error("Failed to get file urls");
+  const json = (await res.json()) as
+    | { data: { key: string; url: string }[] }
+    | { error: string };
+
+  if (!res.ok || "error" in json) {
+    console.error("[UT] Error: getFileUrls", json);
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "error" in json
+          ? json.error
+          : "An unknown error occured while retrieving file URLs.",
+    });
   }
 
-  return res.json().then(({ data }) => data as { key: string; url: string }[]);
+  return json.data;
 };
 
 /**
@@ -225,8 +242,14 @@ export const listFiles = async () => {
     | { error: string };
 
   if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
+    console.log("[UT] Error: listFiles", json);
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "error" in json
+          ? json.error
+          : "An unknown error occured while listing files.",
+    });
   }
 
   return json.files;
@@ -274,8 +297,14 @@ export const renameFile = async (updates: Rename | Rename[]) => {
   const json = (await res.json()) as { success: true } | { error: string };
 
   if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
+    console.error("[UT] Error: renameFile", json);
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "error" in json
+          ? json.error
+          : "An unknown error occured while renaming files.",
+    });
   }
 
   return json;
@@ -307,8 +336,14 @@ export const getUsageInfo = async () => {
       };
 
   if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
+    console.error("[UT] Error: getUsageInfo", json);
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message:
+        "error" in json
+          ? json.error
+          : "An unknown error occured while retrieving usage info.",
+    });
   }
 
   return json;
