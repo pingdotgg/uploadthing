@@ -1,5 +1,5 @@
 {
-  "name": "@example/minimal-nitro",
+  "name": "@example/backend-adapters-nitro",
   "private": true,
   "scripts": {
     "prepare": "nitropack prepare",

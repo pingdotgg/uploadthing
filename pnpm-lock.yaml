@@ -128,6 +128,15 @@ importers:
         specifier: ^4.4.9
         version: 4.4.9(@types/node@18.16.0)
 
+  examples/backend-adapters/nitro:
+    dependencies:
+      nitropack:
+        specifier: ^2.6.3
+        version: 2.6.3
+      uploadthing:
+        specifier: ^5.6.0
+        version: link:../../../packages/uploadthing
+
   examples/backend-adapters/server:
     dependencies:
       '@hono/node-server':
@@ -229,15 +238,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.4
         version: 18.2.4
-
-  examples/minimal-nitro:
-    dependencies:
-      nitropack:
-        specifier: ^2.6.3
-        version: 2.6.3
-      uploadthing:
-        specifier: ^5.6.0
-        version: link:../../packages/uploadthing
 
   examples/minimal-pagedir:
     dependencies:

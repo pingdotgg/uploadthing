@@ -29,4 +29,7 @@ export const uploadRouter = {
 
 export type UploadRouter = typeof uploadRouter;
 
-export default eventHandler(createH3EventHandler({ router: uploadRouter }));
+export default useBase(
+  "/api/uploadthing",
+  createH3EventHandler({ router: uploadRouter }),
+);

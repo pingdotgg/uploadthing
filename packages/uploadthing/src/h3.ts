@@ -74,8 +74,5 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
     return getBuildPerms();
   });
 
-  const router = createRouter()
-    .post("/api/uploadthing", POST)
-    .get("/api/uploadthing", GET);
-  return router.handler;
+  return createRouter().post("/", POST).get("/", GET).handler;
 };
