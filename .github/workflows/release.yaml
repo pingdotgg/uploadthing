@@ -66,3 +66,27 @@ jobs:
           git add .
           git commit -m "chore(release): 📦 sync lockfile"
           git push origin changeset-release/main
+
+      - name: Send a discord notification
+        if: steps.changeset.outputs.published == 'true'
+        uses: actions/github-script@v6
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        with:
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
+          script: |
+            fetch(process.env.DISCORD_WEBHOOK_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                content: `New release available. [Read the changelog](https://github.com/pingdotgg/uploadthing/releases/latest)`
+              }),
+            })
+            .then((res) => {
+              console.log('Sent discord notification', res)
+            })
+            .catch((err) => {
+              console.error('Error sending discord notification', err)
+            })

@@ -1,27 +1,26 @@
 import { useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { classNames, generateClientDropzoneAccept } from "uploadthing/client";
+import {
+  allowedContentTextLabelGenerator,
+  classNames,
+  contentFieldToContent,
+  generateClientDropzoneAccept,
+  generatePermittedFileTypes,
+  styleFieldToClassName,
+  styleFieldToCssObject,
+} from "uploadthing/client";
+import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import type { FileWithPath } from "../use-dropzone";
 import { useDropzone } from "../use-dropzone";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import type { ContentField, StyleField } from "../utils/styles";
-import {
-  contentFieldToContent,
-  styleFieldToClassName,
-  styleFieldToCssObject,
-} from "../utils/styles";
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressWidths,
-  Spinner,
-} from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
+  __runtime: "react";
   ready: boolean;
   isUploading: boolean;
   uploadProgress: number;
@@ -135,13 +134,13 @@ export function UploadDropzone<TRouter extends FileRouter>(
     void startUpload(files, input);
   };
 
-  const styleFieldArg: DropzoneStyleFieldCallbackArgs = {
+  const styleFieldArg = {
     fileTypes,
     isDragActive,
     isUploading,
     ready,
     uploadProgress,
-  };
+  } as DropzoneStyleFieldCallbackArgs;
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;

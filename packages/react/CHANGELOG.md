@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 5.6.1
+
+### Patch Changes
+
+- [#298](https://github.com/pingdotgg/uploadthing/pull/298)
+  [`5e8016b`](https://github.com/pingdotgg/uploadthing/commit/5e8016b32fc7709dcd855da33dbc2ecf18eac0b5)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - refactor: extract some
+  theming-related code for easy sharing across frameworks
+
 ## 5.6.0
 
 ### Minor Changes

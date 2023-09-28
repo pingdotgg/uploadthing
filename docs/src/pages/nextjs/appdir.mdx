@@ -144,7 +144,7 @@ import { WithoutSSR, WithSSR } from "../../components/ssr-diff";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 
-import { uploadRouter } from "~/server/uploadthing";
+import { OurFileRouter } from "~/app/api/uploadthing/core";
 
 export default function RootLayout({
   children,
@@ -161,7 +161,7 @@ export default function RootLayout({
            * leaked to the client. The data passed to the client is the same
            * as if you were to fetch `/api/uploadthing` directly.
            */
-          routerConfig={extractRouterConfig(uploadRouter)}
+          routerConfig={extractRouterConfig(OurFileRouter)}
         />
         {children}
       </body>

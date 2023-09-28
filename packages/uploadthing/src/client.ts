@@ -10,6 +10,12 @@ import type {
   inferEndpointInput,
 } from "./internal/types";
 
+/**
+ * @internal
+ * Shared helpers for our premade components that's reusable by multiple frameworks
+ */
+export * from "./internal/component-theming";
+
 function fetchWithProgress(
   url: string,
   opts: {

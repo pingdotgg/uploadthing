@@ -14,6 +14,7 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { getPostBody } from "./internal/node-http/getBody";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -32,6 +33,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
+  incompatibleNodeGuard();
   const requestHandler = buildRequestHandler<TRouter>(opts);
   const router = ExpressRouter();
 
