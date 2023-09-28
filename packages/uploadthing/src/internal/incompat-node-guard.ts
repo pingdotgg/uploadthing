@@ -23,7 +23,7 @@ export function incompatibleNodeGuard() {
   if (!major || !minor) return;
 
   // Require ^18.13.0
-  if (!(major >= 18 && minor >= 13)) {
+  if (!((major === 18 && minor >= 13) || major >= 19)) {
     console.error(
       `[UT]: YOU ARE USING A LEGACY (${major}.${minor}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE ^18.13.`,
     );
