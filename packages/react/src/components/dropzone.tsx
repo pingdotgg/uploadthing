@@ -161,7 +161,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
     return () => {
       window.removeEventListener("paste", handlePaste);
     };
-  }, [startUpload, $props, fileTypes, rootRef]);
+  }, [startUpload, $props, fileTypes, rootRef, files]);
 
   const styleFieldArg = {
     fileTypes,
