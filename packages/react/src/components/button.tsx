@@ -36,6 +36,9 @@ export type UploadButtonProps<TRouter extends FileRouter> =
       allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
     className?: string;
+    config?: {
+      mode?: "auto" | "manual";
+    };
   };
 
 /**
@@ -70,6 +73,9 @@ export function UploadButton<TRouter extends FileRouter>(
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
+  const [files, setFiles] = useState<File[]>([]);
+  const [isManualTriggerDisplayed, setIsManualTriggerDisplayed] =
+    useState(false);
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
@@ -79,6 +85,8 @@ export function UploadButton<TRouter extends FileRouter>(
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
+        setIsManualTriggerDisplayed(false);
+        setFiles([]);
         $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
@@ -100,6 +108,8 @@ export function UploadButton<TRouter extends FileRouter>(
     ($props.__internal_state === "ready" || fileTypes.length > 0);
 
   const getUploadButtonText = (fileTypes: string[]) => {
+    if (isManualTriggerDisplayed)
+      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
     if (fileTypes.length === 0) return "Loading...";
     return `Choose File${multiple ? `(s)` : ``}`;
   };
@@ -111,9 +121,16 @@ export function UploadButton<TRouter extends FileRouter>(
     accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
+      const selectedFiles = Array.from(e.target.files);
+
+      if ($props.config?.mode === "manual") {
+        setFiles(selectedFiles);
+        setIsManualTriggerDisplayed(true);
+        return;
+      }
+
       const input = "input" in $props ? $props.input : undefined;
-      const files = Array.from(e.target.files);
-      void startUpload(files, input);
+      void startUpload(selectedFiles, input);
     },
     disabled: $props.__internal_button_disabled ?? !ready,
     ...(!($props.__internal_button_disabled ?? !ready) ? { tabIndex: 0 } : {}),
@@ -156,6 +173,14 @@ export function UploadButton<TRouter extends FileRouter>(
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
+        onClick={(e) => {
+          if (isManualTriggerDisplayed) {
+            e.preventDefault();
+            e.stopPropagation();
+            const input = "input" in $props ? $props.input : undefined;
+            void startUpload(files, input);
+          }
+        }}
       >
         <input {...getInputProps()} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
