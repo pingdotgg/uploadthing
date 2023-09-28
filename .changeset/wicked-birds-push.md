@@ -2,4 +2,4 @@
 "uploadthing": patch
 ---
 
-include more logs when server uploads fails
+include more logs for failed `utapi` functions

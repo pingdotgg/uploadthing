@@ -287,4 +287,13 @@ export class UTApi {
   }
 }
 
+/**
+ * @deprecated
+ *
+ * Import `UTApi` and instantiate it yourself:
+ * ```ts
+ * import { UTApi } from "@uploadthing/server";
+ * const utapi = new UTApi({ ... });
+ * ```
+ */
 export const utapi = new UTApi();
