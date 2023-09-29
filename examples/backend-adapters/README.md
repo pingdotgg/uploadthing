@@ -5,14 +5,14 @@
 </a>
 
 This example contains a vite-react app in the [/client](./client/) directory, as
-well as multiple backend servers in the [/server](./server/) and
-[/nitro](./nitro/) directories. Servers that are included here are:
+well as multiple backend servers in the [/server](./server/) directory. Servers
+that are included here are:
 
 - [Elysia](./server/src/elysia.ts)
 - [Express](./server/src/express.ts)
 - [Fastify](./server/src/fastify.ts)
 - [Hono](./server/src/hono.ts)
-- [Nitro](./nitro)
+- [H3](./server/src/h3.ts)
 
 You can start the Vite frontend as well as any of your preferred server using
 the `pnpm dev:<your-server>` command. The Vite app will then be available on
