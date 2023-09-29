@@ -41,11 +41,11 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
   return defineEventHandler(async (event) => {
     assertMethod(event, ["GET", "POST"]);
+    setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
 
     // GET
     if (event.method === "GET") {
       setResponseStatus(event, 200);
-      setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
       return getBuildPerms();
     }
 
@@ -58,8 +58,6 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
       },
       event,
     });
-
-    setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
 
     if (response instanceof UploadThingError) {
       setResponseStatus(event, getStatusCodeFromError(response));
