@@ -12,6 +12,7 @@
     "dev:express": "concurrently \"npm run -w client dev\" \"npm run -w server dev:express\"",
     "dev:fastify": "concurrently \"npm run -w client dev\" \"npm run -w server dev:fastify\"",
     "dev:hono": "concurrently \"npm run -w client dev\" \"npm run -w server dev:hono\"",
+    "dev:h3": "concurrently \"npm run -w client dev\" \"npm run -w server dev:h3\"",
     "build": "npm run -w client build && npm run -w server build",
     "start": "concurrently \"npm run -w client start\" \"npm run -w server start\""
   },

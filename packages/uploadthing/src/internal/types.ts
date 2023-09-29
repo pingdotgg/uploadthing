@@ -40,16 +40,17 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web" | "express" | "fastify";
+export type AnyRuntime = "app" | "pages" | "web" | "express" | "fastify" | "h3";
 
-export type MiddlewareFnArgs<TRequest, TResponse> = {
+export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
   req: TRequest;
   res: TResponse;
+  event: TEvent;
 };
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
-  _middlewareArgs: MiddlewareFnArgs<any, any>;
+  _middlewareArgs: MiddlewareFnArgs<any, any, any>;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
 }
@@ -57,7 +58,7 @@ export interface AnyParams {
 type MiddlewareFn<
   TInput extends JSON | UnsetMarker,
   TOutput extends Record<string, unknown>,
-  TArgs extends MiddlewareFnArgs<any, any>,
+  TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
   opts: TArgs & (TInput extends UnsetMarker ? {} : { input: TInput }),
 ) => MaybePromise<TOutput>;

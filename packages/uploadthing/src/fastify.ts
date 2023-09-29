@@ -25,7 +25,10 @@ export type { FileRouter } from "./internal/types";
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) =>
-  createBuilder<{ req: FastifyRequest; res: FastifyReply }, TErrorShape>(opts);
+  createBuilder<
+    { req: FastifyRequest; res: FastifyReply; event: undefined },
+    TErrorShape
+  >(opts);
 
 export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   fastify: FastifyInstance,

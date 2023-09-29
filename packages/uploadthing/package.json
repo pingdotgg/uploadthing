@@ -41,6 +41,11 @@
       "types": "./dist/fastify.d.ts",
       "import": "./dist/fastify.mjs",
       "require": "./dist/fastify.js"
+    },
+    "./h3": {
+      "types": "./dist/h3.d.ts",
+      "import": "./dist/h3.mjs",
+      "require": "./dist/h3.js"
     }
   },
   "files": [
@@ -71,6 +76,9 @@
       ],
       "fastify": [
         "dist/fastify.d.ts"
+      ],
+      "h3": [
+        "dist/h3.d.ts"
       ]
     }
   },
@@ -96,6 +104,7 @@
     "eslint": "^8.47.0",
     "express": "^4.18.2",
     "fastify": "^4.23.2",
+    "h3": "^1.8.1",
     "next": "13.4.4",
     "solid-js": "^1.7.11",
     "tailwindcss": "^3.3.2",
