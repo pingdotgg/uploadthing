@@ -1,6 +1,6 @@
 import type { H3Event } from "h3";
 import {
-  createRouter,
+  assertMethod,
   defineEventHandler,
   getRequestHeaders,
   getRequestURL,
@@ -37,7 +37,19 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler(opts);
-  const POST = defineEventHandler(async (event) => {
+  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
+
+  return defineEventHandler(async (event) => {
+    assertMethod(event, ["GET", "POST"]);
+
+    // GET
+    if (event.method === "GET") {
+      setResponseStatus(event, 200);
+      setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
+      return getBuildPerms();
+    }
+
+    // POST
     const response = await requestHandler({
       req: {
         url: getRequestURL(event).href,
@@ -66,13 +78,4 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
     setResponseStatus(event, 200);
     return response.body;
   });
-
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
-  const GET = defineEventHandler((event) => {
-    setResponseStatus(event, 200);
-    setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
-    return getBuildPerms();
-  });
-
-  return createRouter().post("/", POST).get("/", GET).handler;
 };
