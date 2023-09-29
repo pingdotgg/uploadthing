@@ -1,5 +1,9 @@
 import { createUploadthing, type FileRouter } from "uploadthing/server";
 
+/**
+ * Any Request / Response based framework can use the /server module.
+ * You'll get a typed `Request` in your middleware function.
+ */
 const f = createUploadthing();
 
 export const uploadRouter = {
@@ -11,9 +15,15 @@ export const uploadRouter = {
     video: {
       maxFileSize: "16MB",
     },
-  }).onUploadComplete((data) => {
-    console.log("upload completed", data);
-  }),
+  })
+    .middleware(({ req }) => {
+      req;
+      //^?
+      return {}
+    })
+    .onUploadComplete((data) => {
+      console.log("upload completed", data);
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof uploadRouter;
