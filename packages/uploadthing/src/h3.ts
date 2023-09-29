@@ -45,7 +45,6 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
     // GET
     if (event.method === "GET") {
-      setResponseStatus(event, 200);
       return getBuildPerms();
     }
 
@@ -73,7 +72,6 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
       return "An unknown error occurred";
     }
 
-    setResponseStatus(event, 200);
     return response.body;
   });
 };
