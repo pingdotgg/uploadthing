@@ -1,0 +1,48 @@
+{
+  "name": "nuxt-uploadthing",
+  "version": "1.0.0",
+  "description": "My new Nuxt module",
+  "repository": "your-org/my-module",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/module.mjs",
+      "require": "./dist/module.cjs"
+    }
+  },
+  "main": "./dist/module.cjs",
+  "types": "./dist/types.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepack": "nuxt-module-build",
+    "dev": "nuxi dev playground",
+    "dev:build": "nuxi build playground",
+    "dev:prepare": "nuxt-module-build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "dependencies": {
+    "@nuxt/kit": "^3.7.4",
+    "@uploadthing/vue": "^5.1.0",
+    "uploadthing": "^5.0.0"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@nuxt/eslint-config": "^0.2.0",
+    "@nuxt/module-builder": "^0.5.2",
+    "@nuxt/schema": "^3.7.4",
+    "@nuxt/test-utils": "^3.7.4",
+    "@types/node": "18.16.0",
+    "changelogen": "^0.5.5",
+    "eslint": "^8.47.0",
+    "h3": "^1.8.1",
+    "nuxt": "^3.8.1",
+    "vitest": "^0.30.1"
+  }
+}
