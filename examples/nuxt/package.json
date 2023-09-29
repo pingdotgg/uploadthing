@@ -13,7 +13,7 @@
     "@nuxtjs/tailwindcss": "^6.8.0",
     "@types/node": "18.16.0",
     "autoprefixer": "10.4.14",
-    "nuxt": "^3.6.1",
+    "nuxt": "^3.7.4",
     "postcss": "8.4.22",
     "tailwindcss": "^3.3.2"
   },

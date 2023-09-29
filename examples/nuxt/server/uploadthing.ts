@@ -1,9 +1,11 @@
-import * as z from "zod";
-
 import { createUploadthing } from "uploadthing/h3";
 import type { FileRouter } from "uploadthing/h3";
 
 const f = createUploadthing();
+/**
+ * This is your Uploadthing file router. For more information:
+ * @see https://docs.uploadthing.com/api-reference/server#file-routes
+ */
 
 export const uploadRouter = {
   videoAndImage: f({
@@ -15,66 +17,17 @@ export const uploadRouter = {
       maxFileSize: "16MB",
     },
   })
-    .middleware(() => ({}))
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+    .middleware(({ event }) => {
+      event;
+      //^?
 
-  withInput: f(["image"])
-    .input(
-      z.object({
-        foo: z.string().min(5),
-      }),
-    )
-    .middleware((opts) => {
-      console.log("input", opts.input);
-      return {};
+      // Return some metadata to be stored with the file
+      return { foo: "bar" as const };
     })
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
-
-  withMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "1MB",
-    },
-  })
-    .middleware(({ req }) => {
-      return {
-        someProperty: "goodbye" as const,
-        otherProperty: "hello" as const,
-      };
-    })
-    .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      metadata.someProperty;
-      //       ^?
-      metadata.otherProperty;
-      //       ^?
-
-      console.log("files successfully uploaded:", file);
-      file;
-      // ^?
-    }),
-
-  withoutMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "16MB",
-    },
-  })
-    .middleware(() => {
-      return { testMetadata: "lol" };
-    })
-    .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
+    .onUploadComplete(({ file, metadata }) => {
       metadata;
       // ^?
-
-      console.log("files successfully uploaded:", file);
-      file;
-      // ^?
+      console.log("upload completed", file);
     }),
 } satisfies FileRouter;
 
