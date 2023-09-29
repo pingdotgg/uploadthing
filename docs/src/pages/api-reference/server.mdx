@@ -171,10 +171,34 @@ This is the function you use to do something with the uploaded file, such as
 persisting it to your database. Whatever you returned in the middleware will be
 accessible here
 
-## `utapi`
+## `UTApi`
 
 The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
-API but better
+API but better.
+
+To get started, initialize an instance of `UTApi`.
+
+<Callout type="info">
+  Prior to `v5.7`, this was exported as a regular object called `utapi` without
+  any custom intialization support.
+</Callout>
+
+```ts filename="~/server/uploadthing.ts"
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
+```
+
+The constructor takes some optional arguments that you can pass to override the
+defaults. Below are shown the available options, the default values, and the
+types of the values.
+
+```ts
+{
+  fetch: FetchEsque = globalThis.fetch; // subset of standard fetch required for uploadthing
+  apiKey: string = process.env.UPLOADTHING_SECRET;
+}
+```
 
 ### `uploadFiles`
 
@@ -184,7 +208,7 @@ Upload files directly from your server **without** using the file router. Useful
 for server-side file processing, uploading from a server action, and much more.
 
 ```tsx
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 async function uploadFiles(formData: FormData) {
   "use server";
@@ -256,7 +280,7 @@ function you're looking for.
 </Callout>
 
 ```tsx
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 const fileUrl = "https://test.com/some.png";
 const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
@@ -280,7 +304,7 @@ const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
 the server.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
 await utapi.deleteFiles([
@@ -301,7 +325,7 @@ await utapi.deleteFiles([
 access them.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 const oneUrl = await utapi.getFileUrls(
   "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
@@ -325,7 +349,7 @@ and keys for all files that have been uploaded to the application your API key
 corresponds to.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 const files = await utapi.listFiles();
 
@@ -348,7 +372,7 @@ console.log(files);
 appropriate files on the server.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 await utapi.renameFiles({
   fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
