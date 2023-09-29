@@ -1,7 +1,9 @@
 import { describe, expectTypeOf, test } from "vitest";
 
-import * as utapi from ".";
+import { UTApi } from ".";
 import type { UploadError } from "./utils";
+
+const utapi = new UTApi();
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
