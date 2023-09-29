@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type {
-  IncomingHttpHeaders,
-  IncomingMessage,
-  ServerResponse,
-} from "node:http";
-import type { NextApiRequest, NextApiResponse } from "next";
-import type { NextRequest } from "next/server";
+import type { IncomingHttpHeaders } from "node:http";
 
 import type {
   FileRouterInputConfig,
@@ -32,6 +26,7 @@ export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type RequestLike = Overwrite<
   WithRequired<Partial<Request>, "json">,
   {
+    body?: any; // we only use `.json`, don't care about `body`
     headers: Headers | IncomingHttpHeaders;
   }
 >;
@@ -45,32 +40,28 @@ type ResolverOptions<TParams extends AnyParams> = {
   file: UploadedFile;
 };
 
-export type AnyRuntime = "app" | "pages" | "web" | "nuxt";
+export type AnyRuntime = "app" | "pages" | "web" | "express" | "fastify" | "h3";
+
+export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
+  req: TRequest;
+  res: TResponse;
+  event: TEvent;
+};
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
-  _runtime: any;
+  _middlewareArgs: MiddlewareFnArgs<any, any, any>;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
 }
 
-type MiddlewareFnArgs<TParams extends AnyParams> =
-  TParams["_runtime"] extends "web"
-    ? { req: Request; res?: never; input: TParams["_input"] }
-    : TParams["_runtime"] extends "app"
-    ? { req: NextRequest; res?: never; input: TParams["_input"] }
-    : TParams["_runtime"] extends "nuxt"
-    ? {
-        req: IncomingMessage;
-        res: ServerResponse<IncomingMessage>;
-        input: TParams["_input"];
-      }
-    : { req: NextApiRequest; res: NextApiResponse; input: TParams["_input"] };
-
 type MiddlewareFn<
+  TInput extends JSON | UnsetMarker,
   TOutput extends Record<string, unknown>,
-  TParams extends AnyParams,
-> = (opts: MiddlewareFnArgs<TParams>) => MaybePromise<TOutput>;
+  TArgs extends MiddlewareFnArgs<any, any, any>,
+> = (
+  opts: TArgs & (TInput extends UnsetMarker ? {} : { input: TInput }),
+) => MaybePromise<TOutput>;
 
 type ResolverFn<TParams extends AnyParams> = (
   opts: ResolverOptions<TParams>,
@@ -91,18 +82,18 @@ export interface UploadBuilder<TParams extends AnyParams> {
   ) => UploadBuilder<{
     _input: TParser["_output"];
     _metadata: TParams["_metadata"];
-    _runtime: TParams["_runtime"];
+    _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
-      ? MiddlewareFn<TOutput, TParams>
+      ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
       : ErrorMessage<"middleware is already set">,
   ) => UploadBuilder<{
     _input: TParams["_input"];
     _metadata: TOutput;
-    _runtime: TParams["_runtime"];
+    _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
   }>;
@@ -115,7 +106,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
   ) => UploadBuilder<{
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
-    _runtime: TParams["_runtime"];
+    _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: UploadErrorFn;
   }>;
@@ -124,7 +115,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
   inputParser: JsonParser;
-  middleware: MiddlewareFn<{}, TParams>;
+  middleware: MiddlewareFn<TParams["_input"], {}, TParams["_middlewareArgs"]>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
   onUploadError: UploadErrorFn;
 };

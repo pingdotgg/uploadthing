@@ -1,7 +1,5 @@
-import { createNuxtRouteHandler } from "uploadthing/nuxt";
+import { createH3EventHandler } from "uploadthing/h3";
 
 import { uploadRouter } from "../uploadthing";
 
-export default createNuxtRouteHandler({
-  router: uploadRouter,
-});
+export default createH3EventHandler({ router: uploadRouter });

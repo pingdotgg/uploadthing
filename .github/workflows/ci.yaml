@@ -1,23 +1,16 @@
 name: CI
 
+# You can leverage Vercel Remote Caching with Turbo to speed up your builds
+# @link https://turborepo.org/docs/core-concepts/remote-caching#remote-caching-on-vercel-builds
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 on:
   push:
     branches:
       - main
   pull_request:
-
-env:
-  DATABASE_URL: "https://fake.com"
-  AWS_REGION: "fake"
-  AWS_ID: "fake"
-  AWS_SECRET: "fake"
-  DATABASE_HOST: "fake"
-  DATABASE_PORT: "fake"
-  DATABASE_NAME: "fake"
-  DATABASE_USERNAME: "fake"
-  DATABASE_PASSWORD: "fake"
-  DB_PUSH_URL: "fake"
-  PING_SIGNING_SECRET: "fake"
 
 jobs:
   build:
@@ -29,6 +22,11 @@ jobs:
 
       - name: Use PNPM
         uses: pnpm/action-setup@v2.2.4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -45,6 +43,9 @@ jobs:
 
       - name: Install deps (with cache)
         run: pnpm install
+
+      - name: Copy .env.example files 
+        run: find ./examples -type f -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}"' _ {} \;
 
       - name: Build, lint, test, and typecheck
         run: pnpm turbo build lint test typecheck

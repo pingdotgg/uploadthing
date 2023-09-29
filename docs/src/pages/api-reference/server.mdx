@@ -5,7 +5,7 @@ import { Callout, Tab, Tabs } from "nextra-theme-docs";
 The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
 FROM THE RIGHT PLACE
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express"]}>
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing/next";
@@ -27,6 +27,16 @@ FROM THE RIGHT PLACE
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/express";
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
@@ -118,6 +128,19 @@ pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
 the input in the middleware without returning it, the Uploadthing server won't
 have any knowledge of it.
 
+```ts
+import { z } from "zod";
+
+f(["image"])
+  .input(z.object({ foo: z.string() }))
+  .middleware(async ({ req, input }) => {
+    input;
+    // ^? { foo: string }
+    return {};
+  })
+  .onUploadComplete(async () => {});
+```
+
 ### `middleware`
 
 This is the function where you authorize a user to do an upload. You can also
@@ -148,10 +171,34 @@ This is the function you use to do something with the uploaded file, such as
 persisting it to your database. Whatever you returned in the middleware will be
 accessible here
 
-## `utapi`
+## `UTApi`
 
 The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
-API but better
+API but better.
+
+To get started, initialize an instance of `UTApi`.
+
+<Callout type="info">
+  Prior to `v5.7`, this was exported as a regular object called `utapi` without
+  any custom intialization support.
+</Callout>
+
+```ts filename="~/server/uploadthing.ts"
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
+```
+
+The constructor takes some optional arguments that you can pass to override the
+defaults. Below are shown the available options, the default values, and the
+types of the values.
+
+```ts
+{
+  fetch: FetchEsque = globalThis.fetch; // subset of standard fetch required for uploadthing
+  apiKey: string = process.env.UPLOADTHING_SECRET;
+}
+```
 
 ### `uploadFiles`
 
@@ -161,13 +208,13 @@ Upload files directly from your server **without** using the file router. Useful
 for server-side file processing, uploading from a server action, and much more.
 
 ```tsx
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 async function uploadFiles(formData: FormData) {
   "use server";
   const files = fd.getAll("files");
   const response = await utapi.uploadFiles(files);
-  //    ^? { key: string, url: string }[]
+  //    ^? UploadedFileResponse[]
 }
 
 function MyForm() {
@@ -196,6 +243,29 @@ interface FileEsque extends Blob {
 }
 ```
 
+The returned `UploadedFileResponse` is an object with the following shape. If
+the `files` argument is an array, the returned value will be of type
+`UploadedFileResponse[]`.
+
+```ts
+type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
+
+type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
+
+type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+```
+
 ### `uploadFilesFromUrl`
 
 > Added in `v5.3`
@@ -210,17 +280,21 @@ function you're looking for.
 </Callout>
 
 ```tsx
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 const fileUrl = "https://test.com/some.png";
+const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
+//    ^? UploadedFileResponse
 
-const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
+const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
+const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
+//    ^? UploadedFileResponse[]
 ```
 
-| Arguments | Type            | Required | Description                            |
-| :-------- | :-------------- | :------- | :------------------------------------- |
-| url       | URL \|\| string | Yes      | The URL of the file you wish to upload |
-| metadata  | Json            | No       | Metadata to attach to the file(s)      |
+| Arguments | Type                                     | Required | Description                                  |
+| :-------- | :--------------------------------------- | :------- | :------------------------------------------- |
+| urls      | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload |
+| metadata  | Json                                     | No       | Metadata to attach to the file(s)            |
 
 ### `deleteFiles`
 
@@ -230,7 +304,7 @@ const uploadedFile = await utapi.uploadFileFromUrl(fileUrl);
 the server.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
 await utapi.deleteFiles([
@@ -251,7 +325,7 @@ await utapi.deleteFiles([
 access them.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 const oneUrl = await utapi.getFileUrls(
   "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
@@ -275,7 +349,7 @@ and keys for all files that have been uploaded to the application your API key
 corresponds to.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 const files = await utapi.listFiles();
 
@@ -298,7 +372,7 @@ console.log(files);
 appropriate files on the server.
 
 ```ts
-import { utapi } from "uploadthing/server";
+import { utapi } from "~/server/uploadthing.ts";
 
 await utapi.renameFiles({
   fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",

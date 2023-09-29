@@ -2,4 +2,5 @@ packages:
   - "packages/config/*"
   - "packages/*"
   - "examples/*"
+  - "examples/backend-adapters/*"
   - "docs"

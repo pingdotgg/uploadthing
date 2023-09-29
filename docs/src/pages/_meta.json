@@ -4,6 +4,7 @@
   "nextjs": "Next.js Setup",
   "solid": "SolidStart Setup",
   "nuxt": "Nuxt Setup",
+  "backend-adapters": "Backend Adapters",
   "theming": "Theming",
   "faq": {
     "title": "Frequently Asked Questions (FAQ)",

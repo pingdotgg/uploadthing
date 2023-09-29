@@ -1,25 +1,23 @@
 import { useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { generateMimeTypes } from "uploadthing/client";
+import {
+  allowedContentTextLabelGenerator,
+  contentFieldToContent,
+  generateMimeTypes,
+  generatePermittedFileTypes,
+  styleFieldToClassName,
+  styleFieldToCssObject,
+} from "uploadthing/client";
+import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import type { ContentField, StyleField } from "../utils/styles";
-import {
-  contentFieldToContent,
-  styleFieldToClassName,
-  styleFieldToCssObject,
-} from "../utils/styles";
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressWidths,
-  Spinner,
-} from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
+  __runtime: "react";
   ready: boolean;
   isUploading: boolean;
   uploadProgress: number;
@@ -107,7 +105,6 @@ export function UploadButton<TRouter extends FileRouter>(
   };
 
   const getInputProps = () => ({
-    className: "hidden",
     type: "file",
     ref: fileInputRef,
     multiple,
@@ -119,14 +116,15 @@ export function UploadButton<TRouter extends FileRouter>(
       void startUpload(files, input);
     },
     disabled: $props.__internal_button_disabled ?? !ready,
+    ...(!($props.__internal_button_disabled ?? !ready) ? { tabIndex: 0 } : {}),
   });
 
-  const styleFieldArg: ButtonStyleFieldCallbackArgs = {
+  const styleFieldArg = {
     ready: ready,
     isUploading: $props.__internal_state === "uploading" || isUploading,
     uploadProgress,
     fileTypes,
-  };
+  } as ButtonStyleFieldCallbackArgs;
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
@@ -148,10 +146,10 @@ export function UploadButton<TRouter extends FileRouter>(
     >
       <label
         className={twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
           state === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
@@ -159,7 +157,7 @@ export function UploadButton<TRouter extends FileRouter>(
         data-state={state}
         data-ut-element="button"
       >
-        <input {...getInputProps()} />
+        <input {...getInputProps()} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
           (state === "uploading" ? (
             <Spinner />

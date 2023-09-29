@@ -1,5 +1,106 @@
 # uploadthing
 
+## 5.6.1
+
+### Patch Changes
+
+- [#359](https://github.com/pingdotgg/uploadthing/pull/359)
+  [`842f3bd`](https://github.com/pingdotgg/uploadthing/commit/842f3bd0f25f7289234f31e80f8d2b6d1599534f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: don't
+  reference external types in internal functions, only in the specific
+  entrypoints
+
+- [#360](https://github.com/pingdotgg/uploadthing/pull/360)
+  [`a0e1bf9`](https://github.com/pingdotgg/uploadthing/commit/a0e1bf937472b6909530dedd692c98af49470541)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor:
+  remove internal indirection for exporting adapers
+
+- [#363](https://github.com/pingdotgg/uploadthing/pull/363)
+  [`0612800`](https://github.com/pingdotgg/uploadthing/commit/06128000e90fe7080ebb8cbec1cacbb49c709aeb)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: only run
+  JSON.parse if body is a string
+
+- [#361](https://github.com/pingdotgg/uploadthing/pull/361)
+  [`4f6949d`](https://github.com/pingdotgg/uploadthing/commit/4f6949db22b36f27d59f2c3dcfc8588f7d033009)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: move
+  dev-log into function scope to prevent spam
+
+- [#298](https://github.com/pingdotgg/uploadthing/pull/298)
+  [`5e8016b`](https://github.com/pingdotgg/uploadthing/commit/5e8016b32fc7709dcd855da33dbc2ecf18eac0b5)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - refactor: extract some
+  theming-related code for easy sharing across frameworks
+
+- [#354](https://github.com/pingdotgg/uploadthing/pull/354)
+  [`0a2b1c1`](https://github.com/pingdotgg/uploadthing/commit/0a2b1c16c379271a70742e8ed1917f41d9a4d0d0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor to
+  remove indirection for express package
+
+## 5.6.0
+
+### Minor Changes
+
+- [#297](https://github.com/pingdotgg/uploadthing/pull/297)
+  [`4411aa0`](https://github.com/pingdotgg/uploadthing/commit/4411aa0608ab19eeceaf58ddad1e07769f367715)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: Fastify adapter
+
+- [#296](https://github.com/pingdotgg/uploadthing/pull/296)
+  [`4dff08c`](https://github.com/pingdotgg/uploadthing/commit/4dff08cb5ec042bb192e607b00cdb90393149b78)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: express support
+
+- [#335](https://github.com/pingdotgg/uploadthing/pull/335)
+  [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
+  ssr hydration helper for next.js appdir. 📚
+  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+
+### Patch Changes
+
+- [#325](https://github.com/pingdotgg/uploadthing/pull/325)
+  [`da11434`](https://github.com/pingdotgg/uploadthing/commit/da11434d6b7ce72fedea7a7d81a86e21da487994)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: accept
+  Undici File type in utapi
+
+- [#345](https://github.com/pingdotgg/uploadthing/pull/345)
+  [`92c69d5`](https://github.com/pingdotgg/uploadthing/commit/92c69d51325658a9d0a92dd045d13f9c24ca1ced)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(sdk): await
+  error before throwing
+
+- [#327](https://github.com/pingdotgg/uploadthing/pull/327)
+  [`b848579`](https://github.com/pingdotgg/uploadthing/commit/b848579eadf1657be3215b9392cae126e53323fb)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add
+  default name to blobs for server uploads
+
+- Updated dependencies
+  [[`92fac44`](https://github.com/pingdotgg/uploadthing/commit/92fac447f525be027125004f8cc0607b32375997)]:
+  - @uploadthing/shared@5.2.2
+
+## 5.5.3
+
+### Patch Changes
+
+- [#322](https://github.com/pingdotgg/uploadthing/pull/322)
+  [`2e8b410`](https://github.com/pingdotgg/uploadthing/commit/2e8b410bb15c2688e9b6938c4a2cd17cf6110289)
+  Thanks [@p6l-richard](https://github.com/p6l-richard)! - fix(sdk): prevent
+  `uploadFilesInternal` from consuming response body twice on bad response
+
+## 5.5.2
+
+### Patch Changes
+
+- [#319](https://github.com/pingdotgg/uploadthing/pull/319)
+  [`8cfdade`](https://github.com/pingdotgg/uploadthing/commit/8cfdade9fee61a636fa1c88bc9380d4ac77e91d9)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - Fix: use correct url in
+  client file
+
+## 5.5.1
+
+### Patch Changes
+
+- [#318](https://github.com/pingdotgg/uploadthing/pull/318)
+  [`353f6d0`](https://github.com/pingdotgg/uploadthing/commit/353f6d026fbee7480573d735d0406477dcb9e0bc)
+  Thanks [@t3dotgg](https://github.com/t3dotgg)! - [fix] use correct file host
+  on internal endpoint (utfs.io instead of uploadthing.com)
+
 ## 5.5.0
 
 ### Minor Changes

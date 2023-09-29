@@ -2,11 +2,16 @@ import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
 export function withUt(twConfig: Config) {
+  const contentPaths = [
+    "./node_modules/@uploadthing/react/dist/**",
+    "./node_modules/@uploadthing/solid/dist/**",
+  ];
+
   if (Array.isArray(twConfig.content)) {
-    twConfig.content.push("./node_modules/@uploadthing/react/src/**");
+    twConfig.content.push(...contentPaths);
   } else {
     // content can be an object too with `files` property
-    twConfig.content.files.push("./node_modules/@uploadthing/react/src/**");
+    twConfig.content.files.push(...contentPaths);
   }
 
   const utPlugin = plugin(({ addVariant }) => {

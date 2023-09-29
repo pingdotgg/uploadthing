@@ -1,5 +1,15 @@
 # @uploadthing/shared
 
+## 5.2.2
+
+### Patch Changes
+
+- [#292](https://github.com/pingdotgg/uploadthing/pull/292)
+  [`92fac44`](https://github.com/pingdotgg/uploadthing/commit/92fac447f525be027125004f8cc0607b32375997)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: code path
+  that prefers process.env is now safely accessed and falls back to checking
+  import.meta.env
+
 ## 5.2.1
 
 ### Patch Changes

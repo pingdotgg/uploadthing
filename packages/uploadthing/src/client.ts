@@ -10,6 +10,12 @@ import type {
   inferEndpointInput,
 } from "./internal/types";
 
+/**
+ * @internal
+ * Shared helpers for our premade components that's reusable by multiple frameworks
+ */
+export * from "./internal/component-theming";
+
 function fetchWithProgress(
   url: string,
   opts: {
@@ -119,6 +125,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         files: opts.files.map((f) => f.name),
         input: opts.input,
       }),
+      // Express requires Content-Type to be explicitly set to parse body properly
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
   ).then(async (res) => {
     // check for 200 response
@@ -194,16 +204,14 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         }),
       },
       (progressEvent) =>
-        opts.onUploadProgress &&
-        opts.onUploadProgress({
+        opts.onUploadProgress?.({
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
       () => {
-        opts.onUploadBegin &&
-          opts.onUploadBegin({
-            file: file.name,
-          });
+        opts.onUploadBegin?.({
+          file: file.name,
+        });
       },
     );
 
@@ -242,8 +250,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
-    const genUrl =
-      "https://uploadthing.com/f/" + encodeURIComponent(fields.key);
+    const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     await pollForFileData(presigned.key);

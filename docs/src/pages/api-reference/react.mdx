@@ -1,6 +1,20 @@
 ## UploadButton
 
-{/* TODO: add a picture */}
+A simple button that opens the native file picker and uploads the selected
+files. The default button is shown below. See [Theming](/theming) on how to
+customize it.
+
+import { UploadButton } from "@uploadthing/react";
+
+<UploadButton
+  className="mt-5"
+  __internal_button_disabled
+  __internal_state="ready"
+  content={{
+    allowedContent: "Allowed content",
+    button: "Choose file(s)",
+  }}
+/>
 
 ```tsx copy filename="app/example-uploader.tsx"
 import { UploadButton } from "@uploadthing/react";
@@ -40,6 +54,23 @@ export const OurUploadButton = () => (
 | onUploadBegin          | function | No                      | Added in `v5.4` | callback function for upload begin                                                  |
 
 ## UploadDropzone
+
+A `react-dropzone` powered dropzone that let's you drag and drop files to
+upload. The default dropzone is shown below. See [Theming](/theming) on how to
+customize it.
+
+import { UploadDropzone } from "@uploadthing/react";
+
+<UploadDropzone
+  __internal_state="ready"
+  __internal_button_disabled
+  __internal_dropzone_disabled
+  __internal_show_button
+  content={{
+    allowedContent: "Allowed content",
+    button: "Ready",
+  }}
+/>
 
 ```tsx copy filename="app/example-uploader.tsx"
 import { UploadDropzone } from "@uploadthing/react";
@@ -94,19 +125,38 @@ export const { useUploadThing, uploadFiles } =
   generateReactHelpers<OurFileRouter>();
 ```
 
+## useDropzone
+
+> Added in `v5.6`
+
+This hook is currently a 1:1 fork of
+[react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
+ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
+
+You can import the hook from `@uploadthing/react/hooks`.
+
+import { Callout } from "nextra-theme-docs";
+
+<Callout type="info">
+  This hook isn't strictly covered by semver as we might make changes to taylor
+  it to our needs in a future minor release. Migration guides will be provided
+  if this happens.
+</Callout>
+
 ## useUploadThing
 
 This hook provides a function to start uploading, an `isUploading` state, and
 the `permittedFileInfo` which gives information about what file types, sizes and
 counts are allowed by the endpoint. See example below for a simple dropzone
-using `react-dropzone` and the `useUploadThing` hook. For a more complete
-example, take a look at
+using the `useDropzone` and `useUploadThing` hooks. For a more complete example,
+take a look at
 [our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
 
 ```tsx copy filename="app/example-custom-uploader.tsx"
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import { useDropzone } from "react-dropzone";
-import type { FileWithPath } from "react-dropzone";
+import type { FileWithPath } from "@uploadthing/react";
+import { useDropzone } from "@uploadthing/react/hooks";
+import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";
 
@@ -116,21 +166,28 @@ export function MultiUploader() {
     setFiles(acceptedFiles);
   }, []);
 
+  const { startUpload, permittedFileInfo } = useUploadThing(
+    "myUploadEndpoint",
+    {
+      onClientUploadComplete: () => {
+        alert("uploaded successfully!");
+      },
+      onUploadError: () => {
+        alert("error occurred while uploading");
+      },
+      onUploadBegin: () => {
+        alert("upload has begun");
+      },
+    },
+  );
+
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
+
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-  });
-
-  const { startUpload } = useUploadThing("myUploadEndpoint", {
-    onClientUploadComplete: () => {
-      alert("uploaded successfully!");
-    },
-    onUploadError: () => {
-      alert("error occurred while uploading");
-    },
-    onUploadBegin: () => {
-      alert("upload has begun");
-    },
   });
 
   return (
@@ -174,11 +231,11 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 
 ### Returns
 
-| Prop              | Type     | Description                                               |
-| :---------------- | :------- | :-------------------------------------------------------- |
-| startUpload       | function | `(files: File[]) => void` function to start a file upload |
-| isUploading       | function | if file(s) are currently uploading                        |
-| permittedFileInfo | function | information on permitted file types, sizes, and counts    |
+| Prop              | Type     | Description                                                                                                                                                                                |
+| :---------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| startUpload       | function | `(files: File[], input?: TInput) => void` function to start a file upload. `TInput` is inferred from what you've defined on [the fileroute](/api-reference/server#input-1) on the backend. |
+| isUploading       | function | if file(s) are currently uploading                                                                                                                                                         |
+| permittedFileInfo | function | information on permitted file types, sizes, and counts                                                                                                                                     |
 
 ## uploadFiles
 

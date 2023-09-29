@@ -12,9 +12,7 @@
     "onlyUpdatePeerDependentsWhenOutOfRange": true
   },
   "ignore": [
-    "@example/appdir",
-    "@example/pagedir",
-    "@example/solidstart",
-    "docs"
+    "docs",
+    "@example/*"
   ]
 }

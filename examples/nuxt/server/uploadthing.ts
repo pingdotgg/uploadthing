@@ -1,7 +1,7 @@
 import * as z from "zod";
 
-import { createUploadthing } from "uploadthing/nuxt";
-import type { FileRouter } from "uploadthing/nuxt";
+import { createUploadthing } from "uploadthing/h3";
+import type { FileRouter } from "uploadthing/h3";
 
 const f = createUploadthing();
 
