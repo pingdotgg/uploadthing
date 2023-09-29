@@ -96,10 +96,7 @@ export type OurFileRouter = typeof uploadRouter;
 
     import { uploadRouter } from "./router";
 
-    export default useBase(
-      "/api/uploadthing",
-      createH3EventHandler({ router: uploadRouter }),
-    );
+    export default createH3EventHandler({ router: uploadRouter });
     ```
 
   </Tabs.Tab>
@@ -109,10 +106,7 @@ export type OurFileRouter = typeof uploadRouter;
 
     import { uploadRouter } from "./router";
 
-    export default useBase(
-      "/api/uploadthing",
-      createH3EventHandler({ router: uploadRouter }),
-    );
+    export default createH3EventHandler({ router: uploadRouter });
     ```
 
   </Tabs.Tab>
