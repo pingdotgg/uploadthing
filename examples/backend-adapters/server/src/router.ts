@@ -11,15 +11,9 @@ export const uploadRouter = {
     video: {
       maxFileSize: "16MB",
     },
-  })
-    .middleware(({ req }) => {
-      req;
-      //^?
-      return {};
-    })
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+  }).onUploadComplete((data) => {
+    console.log("upload completed", data);
+  }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof uploadRouter;
