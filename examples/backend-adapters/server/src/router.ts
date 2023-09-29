@@ -1,9 +1,5 @@
 import { createUploadthing, type FileRouter } from "uploadthing/server";
 
-/**
- * Any Request / Response based framework can use the /server module.
- * You'll get a typed `Request` in your middleware function.
- */
 const f = createUploadthing();
 
 export const uploadRouter = {
@@ -19,7 +15,7 @@ export const uploadRouter = {
     .middleware(({ req }) => {
       req;
       //^?
-      return {}
+      return {};
     })
     .onUploadComplete((data) => {
       console.log("upload completed", data);
