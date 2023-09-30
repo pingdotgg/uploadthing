@@ -37,7 +37,7 @@ export default defineNuxtModule<ModuleOptions<FileRouter>>({
       filePath: "@uploadthing/vue",
     });
     // FIXME: Use Tailwind Wrapper if the user has Tailwind installed
-    nuxt.options.css.push(resolve("@uploadthing/vue/styles.css"));
+    nuxt.options.css.push("@uploadthing/vue/styles.css");
 
     addImports({
       name: "useUploadThing",

@@ -845,6 +845,12 @@ importers:
         specifier: ^0.33.0
         version: 0.33.0
 
+  packages/nuxt/playground:
+    devDependencies:
+      nuxt:
+        specifier: latest
+        version: 3.7.4(@types/node@18.16.0)(typescript@5.2.2)(vue-tsc@1.8.8)
+
   packages/react:
     dependencies:
       '@uploadthing/shared':
