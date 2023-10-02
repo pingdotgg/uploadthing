@@ -4,8 +4,8 @@
 
 ### Patch Changes
 
-- [#394](https://github.com/pingdotgg/uploadthing/pull/394)
-  [`90ad64b`](https://github.com/pingdotgg/uploadthing/commit/90ad64bc9c67fb5e98f3e8bb310c0d3214fcc7f1)
+- [#392](https://github.com/pingdotgg/uploadthing/pull/392)
+  [`d4492d9`](https://github.com/pingdotgg/uploadthing/commit/d4492d941d174d8f2fb4647d97ae4a2d21e5d199)
   Thanks [@markflorkowski](https://github.com/markflorkowski)! -
   fix(components): Allow upload button to be focusable via keyboard
 
