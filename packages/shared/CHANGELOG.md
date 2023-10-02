@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 5.2.3
+
+### Patch Changes
+
+- [#403](https://github.com/pingdotgg/uploadthing/pull/403)
+  [`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrap
+  response.json in try-catch block
+
 ## 5.2.2
 
 ### Patch Changes

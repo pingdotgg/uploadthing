@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
