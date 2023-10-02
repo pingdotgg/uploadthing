@@ -1,6 +1,8 @@
 // Ripped from https://usehooks-ts.com/react-hook/use-fetch
 import { useEffect, useReducer, useRef } from "react";
 
+import { safeParseJSON } from "@uploadthing/shared";
+
 interface State<T> {
   data?: T;
   error?: Error;
@@ -62,11 +64,15 @@ function useFetch<T = unknown>(url?: string, options?: RequestInit): State<T> {
           throw new Error(response.statusText);
         }
 
-        const data = (await response.json()) as T;
-        cache.current[url] = data;
+        const dataOrError = await safeParseJSON<T>(response);
+        if (dataOrError instanceof Error) {
+          throw dataOrError;
+        }
+
+        cache.current[url] = dataOrError;
         if (cancelRequest.current) return;
 
-        dispatch({ type: "fetched", payload: data });
+        dispatch({ type: "fetched", payload: dataOrError });
       } catch (error) {
         if (cancelRequest.current) return;
 

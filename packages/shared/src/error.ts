@@ -1,4 +1,5 @@
 import type { Json } from "./types";
+import { safeParseJSON } from "./utils";
 
 const ERROR_CODES = {
   // Generic
@@ -74,33 +75,32 @@ export class UploadThingError<
   }
 
   public static async fromResponse(response: Response) {
-    let json: Json | null = null;
-    try {
-      json = (await response.json()) as Json;
-    } catch (err) {
-      console.error(
-        "[FATAL] Failed to parse response body as JSON, got",
-        await response.text(),
-      );
+    const jsonOrError = await safeParseJSON<Json>(await response.text());
+    if (jsonOrError instanceof Error) {
       return new UploadThingError({
-        message: `Failed to parse response body: ${(err as Error).message}`,
+        message: jsonOrError.message,
         code: getErrorTypeFromStatusCode(response.status),
         cause: response,
       });
     }
+
     let message: string | undefined = undefined;
-    if (json !== null && typeof json === "object" && !Array.isArray(json)) {
-      if (typeof json.message === "string") {
-        message = json.message;
-      } else if (typeof json.error === "string") {
-        message = json.error;
+    if (
+      jsonOrError !== null &&
+      typeof jsonOrError === "object" &&
+      !Array.isArray(jsonOrError)
+    ) {
+      if (typeof jsonOrError.message === "string") {
+        message = jsonOrError.message;
+      } else if (typeof jsonOrError.error === "string") {
+        message = jsonOrError.error;
       }
     }
     return new UploadThingError({
       message,
       code: getErrorTypeFromStatusCode(response.status),
       cause: response,
-      data: json,
+      data: jsonOrError,
     });
   }
 

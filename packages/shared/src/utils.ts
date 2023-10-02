@@ -157,13 +157,19 @@ export async function pollForFileData(
 
   return withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
-    const json = (await res.json()) as
-      | { status: "done"; fileData: FileData }
-      | { status: "something else" };
+    const maybeJson = await safeParseJSON<
+      { status: "done"; fileData: FileData } | { status: "something else" }
+    >(res);
 
-    if (json.status !== "done") return null;
+    if (maybeJson instanceof Error) {
+      console.error(
+        `[UT] Error polling for file data for ${fileKey}: ${maybeJson.message}`,
+      );
+      return null;
+    }
 
-    await callback?.(json);
+    if (maybeJson.status !== "done") return null;
+    await callback?.(maybeJson);
   });
 }
 
@@ -211,3 +217,15 @@ export const fileSizeToBytes = (input: string) => {
   const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
   return Math.floor(bytes);
 };
+
+export async function safeParseJSON<T>(
+  input: string | { text: () => Promise<string> },
+): Promise<T | Error> {
+  const text = typeof input === "object" ? await input.text() : input;
+  try {
+    return JSON.parse(text) as T;
+  } catch (err) {
+    console.error(`Error parsing JSON, got '${text}'`);
+    return new Error(`Error parsing JSON, got '${text}'`);
+  }
+}

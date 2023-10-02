@@ -24,9 +24,9 @@ export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 
 export type RequestLike = Overwrite<
-  WithRequired<Partial<Request>, "json">,
+  WithRequired<Partial<Request>, "text">,
   {
-    body?: any; // we only use `.json`, don't care about `body`
+    body?: any; // we only use `.text`, don't care about `body`
     headers: Headers | IncomingHttpHeaders;
   }
 >;

@@ -3,6 +3,7 @@ import {
   getTypeFromFileName,
   getUploadthingUrl,
   fillInputRouteConfig as parseAndExpandInputConfig,
+  safeParseJSON,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
@@ -153,16 +154,24 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
-      const reqBody = (await req.json()) as {
+      const maybeReqBody = await safeParseJSON<{
         file: UploadedFile;
         files: unknown;
         metadata: Record<string, unknown>;
         input?: Json;
-      };
+      }>(req);
+
+      if (maybeReqBody instanceof Error) {
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid request body",
+          cause: maybeReqBody,
+        });
+      }
 
       await uploadable.resolver({
-        file: reqBody.file,
-        metadata: reqBody.metadata,
+        file: maybeReqBody.file,
+        metadata: maybeReqBody.metadata,
       });
 
       return { status: 200 };
@@ -181,10 +190,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
     switch (actionType) {
       case "upload": {
-        const { files, input: userInput } = (await req.json()) as {
+        const maybeInput = await safeParseJSON<{
           files: string[];
           input: Json;
-        };
+        }>(req);
+
+        if (maybeInput instanceof Error) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid request body",
+            cause: maybeInput,
+          });
+        }
+        const { files, input: userInput } = maybeInput;
 
         // validate the input
         let parsedInput: Json = {};
@@ -286,28 +304,21 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           },
         );
 
-        if (!uploadthingApiResponse.ok) {
+        // This is when we send the response back to the user's form so they can submit the files
+        const parsedResponse = await safeParseJSON<UploadThingResponse>(
+          uploadthingApiResponse,
+        );
+
+        if (!uploadthingApiResponse.ok || parsedResponse instanceof Error) {
           console.error("[UT] unable to get presigned urls");
-          try {
-            const error = (await uploadthingApiResponse.json()) as unknown;
-            console.error(error);
-            return new UploadThingError({
-              code: "BAD_REQUEST",
-              cause: error,
-            });
-          } catch (cause) {
-            console.error("[UT] unable to parse response");
-            return new UploadThingError({
-              code: "URL_GENERATION_FAILED",
-              message: "Unable to get presigned urls",
-              cause,
-            });
-          }
+          return new UploadThingError({
+            code: "URL_GENERATION_FAILED",
+            message: "Unable to get presigned urls",
+            cause: parsedResponse,
+          });
         }
 
         // This is when we send the response back to the user's form so they can submit the files
-        const parsedResponse =
-          (await uploadthingApiResponse.json()) as UploadThingResponse;
 
         if (process.env.NODE_ENV === "development") {
           for (const file of parsedResponse) {
@@ -318,9 +329,17 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         return { body: parsedResponse, status: 200 };
       }
       case "failure": {
-        const { fileKey } = (await req.json()) as {
+        const maybeReqBody = await safeParseJSON<{
           fileKey: string;
-        };
+        }>(req);
+        if (maybeReqBody instanceof Error) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid request body",
+            cause: maybeReqBody,
+          });
+        }
+        const { fileKey } = maybeReqBody;
 
         // Tell uploadthing to mark the upload as failed
         const uploadthingApiResponse = await fetch(
@@ -340,22 +359,14 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         if (!uploadthingApiResponse.ok) {
           console.error("[UT] failed to mark upload as failed");
-          try {
-            const error = (await uploadthingApiResponse.json()) as unknown;
-            console.error(error);
-            return new UploadThingError({
-              message: "Failed to mark upload as failed",
-              code: "INTERNAL_SERVER_ERROR",
-              cause: error,
-            });
-          } catch (cause) {
-            console.error("[UT] unable to parse response");
-            return new UploadThingError({
-              code: "URL_GENERATION_FAILED",
-              message: "Unable to get presigned urls",
-              cause,
-            });
-          }
+          const parsedResponse = await safeParseJSON<UploadThingResponse>(
+            uploadthingApiResponse,
+          );
+          return new UploadThingError({
+            code: "URL_GENERATION_FAILED",
+            message: "Unable to get presigned urls",
+            cause: parsedResponse,
+          });
         }
 
         try {
