@@ -208,6 +208,8 @@ export const fileSizeToBytes = (input: string) => {
   if (!FILESIZE_UNITS.includes(sizeUnit)) {
     throw new Error("Invalid file size unit");
   }
-  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
-  return Math.floor(bytes);
+  const bytes =
+    BigInt(sizeValue) * 1024n ** BigInt(FILESIZE_UNITS.indexOf(sizeUnit));
+
+  return bytes;
 };

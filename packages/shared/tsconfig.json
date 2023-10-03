@@ -1,4 +1,7 @@
 {
   "extends": "@uploadthing/tsconfig/base.json",
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts"],
+  "compilerOptions": {
+    "target": "ES2020"
+  }
 }
