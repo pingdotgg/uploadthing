@@ -112,7 +112,7 @@ export function generateUploadThingURL(path: `/${string}`) {
   } else {
     // @ts-expect-error - import.meta is dumb
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-    host = import.meta.env.CUSTOM_INFRA_URL ?? host;
+    host = import.meta.env?.CUSTOM_INFRA_URL ?? host;
   }
   return `${host}${path}`;
 }
