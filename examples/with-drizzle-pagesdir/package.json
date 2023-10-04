@@ -19,7 +19,7 @@
     "react-dom": "18.2.0",
     "swr": "^2.2.2",
     "uploadthing": "5.7.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
