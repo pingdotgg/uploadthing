@@ -1,5 +1,18 @@
 # uploadthing
 
+## 5.7.1
+
+### Patch Changes
+
+- [#410](https://github.com/pingdotgg/uploadthing/pull/410)
+  [`1df596a`](https://github.com/pingdotgg/uploadthing/commit/1df596a2507abb9047fd5ad5d4355e3ab52d5044)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrong env
+  check for sdk
+
+- Updated dependencies
+  [[`fd24c9d`](https://github.com/pingdotgg/uploadthing/commit/fd24c9d2b4e8be089bae2c9cb78d8f1b1fa80c16)]:
+  - @uploadthing/shared@5.2.4
+
 ## 5.7.0
 
 ### Minor Changes

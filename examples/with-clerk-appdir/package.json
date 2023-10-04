@@ -15,7 +15,7 @@
     "next": "13.4.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "5.7.0",
+    "uploadthing": "5.7.1",
     "zod": "^3.22.3"
   },
   "devDependencies": {
