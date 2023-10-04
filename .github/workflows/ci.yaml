@@ -54,7 +54,7 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Lint
+      - name: Format
         run: pnpm format:check
 
   typecheck:
@@ -67,6 +67,6 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Lint
+      - name: Typecheck
         run: pnpm typecheck
 
