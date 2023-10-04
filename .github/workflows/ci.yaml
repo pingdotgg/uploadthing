@@ -29,7 +29,9 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Build & test
-        run: pnpm build && pnpm test
+        run: |
+          pnpm turbo turbo build --filter "./packages/*"
+          pnpm turbo turbo test --filter "./packages/*"
 
   lint:
     runs-on: ubuntu-latest

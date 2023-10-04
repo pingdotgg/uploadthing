@@ -1,0 +1,39 @@
+name: Examples E2E
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  e2e-node:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dir:
+          [
+            minimal-appdir,
+            minimal-pagedir
+          ]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "pnpm"
+
+      - name: Install necessary deps
+        run: pnpm --filter "./examples/${{ matrix.dir }}/**"  --filter "@uploadthing/*" --filter "uploadthing" --filter "uploadthing-turbo" install
+
+      - name: Build UT packages
+        run: pnpm build
+
+      - name: Run build
+        run: pnpm turbo --filter ./examples/${{ matrix.dir }} build
