@@ -30,10 +30,12 @@ export type UploadButtonProps<TRouter extends FileRouter> =
       container?: StyleField<ButtonStyleFieldCallbackArgs>;
       button?: StyleField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+      clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
     };
     content?: {
       button?: ContentField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+      clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
     className?: string;
     config?: {
@@ -151,6 +153,43 @@ export function UploadButton<TRouter extends FileRouter>(
     return "uploading";
   })();
 
+  const renderClearButton = () => (
+    <button
+      onClick={() => {
+        setFiles([]);
+        setIsManualTriggerDisplayed(false);
+      }}
+      className={twMerge(
+        "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
+        styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
+      )}
+      style={styleFieldToCssObject($props.appearance?.clearBtn, styleFieldArg)}
+      data-state={state}
+      data-ut-element="clear-btn"
+    >
+      {contentFieldToContent($props.content?.clearBtn, styleFieldArg) ??
+        "Clear"}
+    </button>
+  );
+
+  const renderAllowedContent = () => (
+    <div
+      className={twMerge(
+        "h-[1.25rem]  text-xs leading-5 text-gray-600",
+        styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
+      )}
+      style={styleFieldToCssObject(
+        $props.appearance?.allowedContent,
+        styleFieldArg,
+      )}
+      data-state={state}
+      data-ut-element="allowed-content"
+    >
+      {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
+        allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+    </div>
+  );
+
   return (
     <div
       className={twMerge(
@@ -190,24 +229,9 @@ export function UploadButton<TRouter extends FileRouter>(
             getUploadButtonText(fileTypes)
           ))}
       </label>
-      <div
-        className={twMerge(
-          "h-[1.25rem]  text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
-            $props.appearance?.allowedContent,
-            styleFieldArg,
-          ),
-        )}
-        style={styleFieldToCssObject(
-          $props.appearance?.allowedContent,
-          styleFieldArg,
-        )}
-        data-state={state}
-        data-ut-element="allowed-content"
-      >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
-      </div>
+      {$props.config?.mode === "manual" && files.length > 0
+        ? renderClearButton()
+        : renderAllowedContent()}
     </div>
   );
 }
