@@ -19,6 +19,7 @@ runs:
       run: pnpm install
 
     - name: Copy .env.example files
+      shell: bash
       run:
         find ./examples -type f -name ".env.example" -exec sh -c 'cp "$1"
         "${1%.example}"' _ {} \;
