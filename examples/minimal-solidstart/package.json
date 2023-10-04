@@ -19,7 +19,7 @@
     "solidjs-dropzone": "^1.0.0",
     "undici": "^5.20.0",
     "uploadthing": "5.7.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/node": "18.16.0",
