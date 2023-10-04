@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup
-        uses: ./.github/gh-actions/setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Build & test
         run: pnpm build && pnpm test
@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup
-        uses: ./.github/gh-actions/setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Lint
         run: pnpm lint
@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup
-        uses: ./.github/gh-actions/setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Lint
         run: pnpm format:check
@@ -65,7 +65,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup
-        uses: ./.github/gh-actions/setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Lint
         run: pnpm typecheck
