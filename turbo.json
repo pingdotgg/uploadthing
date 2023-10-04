@@ -10,7 +10,7 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "lint": {
-      "dependsOn": ["^topo"],
+      "dependsOn": ["^topo", "^build"],
       "outputs": []
     },
     "dev": {
@@ -21,7 +21,7 @@
       "cache": false
     },
     "typecheck": {
-      "dependsOn": ["^topo"]
+      "dependsOn": ["^topo", "^build"]
     },
     "test": {
       "dependsOn": ["build"]
