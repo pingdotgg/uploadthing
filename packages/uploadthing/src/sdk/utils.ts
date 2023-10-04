@@ -21,7 +21,7 @@ export function guardServerOnly() {
 
 export function getApiKeyOrThrow(apiKey?: string) {
   if (apiKey) return apiKey;
-  if (process.env.UPLOADTHING_API_KEY) return process.env.UPLOADTHING_API_KEY;
+  if (process.env.UPLOADTHING_SECRET) return process.env.UPLOADTHING_SECRET;
 
   throw new UploadThingError({
     code: "MISSING_ENV",
