@@ -10,7 +10,6 @@ coverage
 
 # next.js
 .next/
-**/next-env.d.ts
 out/
 build
 
