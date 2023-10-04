@@ -46,7 +46,7 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
     className?: string;
     config?: {
       mode?: "auto" | "manual";
-      disablePaste?: boolean;
+      appendOnPaste?: boolean;
     };
   };
 
@@ -137,8 +137,8 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if ($props.config?.disablePaste) {
-        // User decided to disable paste-from-clipboard functionality
+      if (!$props.config?.appendOnPaste) {
+        // User did not enable this functionality
         return;
       }
 

@@ -37,7 +37,7 @@ export type UploadButtonProps<TRouter extends FileRouter> =
     };
     className?: string;
     config?: {
-      disablePaste?: boolean;
+      appendOnPaste?: boolean;
     };
   };
 
@@ -105,8 +105,8 @@ export function UploadButton<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if ($props.config?.disablePaste) {
-        // User decided to disable paste-from-clipboard functionality
+      if (!$props.config?.appendOnPaste) {
+        // User did not enable this functionality
         return;
       }
 
