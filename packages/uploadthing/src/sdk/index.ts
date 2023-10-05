@@ -1,4 +1,4 @@
-import type { Json } from "@uploadthing/shared";
+import type { ContentDisposition, Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
@@ -89,6 +89,7 @@ export class UTApi {
   async uploadFiles<T extends FileEsque | FileEsque[]>(
     files: T,
     metadata: Json = {},
+    contentDisposition: ContentDisposition = "inline",
   ) {
     guardServerOnly();
     incompatibleNodeGuard();
@@ -99,6 +100,7 @@ export class UTApi {
       {
         files: filesToUpload,
         metadata,
+        contentDisposition,
       },
       {
         fetch: this.fetch,
@@ -129,6 +131,7 @@ export class UTApi {
   async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
     urls: T,
     metadata: Json = {},
+    contentDisposition: ContentDisposition = "inline",
   ) {
     guardServerOnly();
 
@@ -160,6 +163,7 @@ export class UTApi {
       {
         files: filesToUpload,
         metadata,
+        contentDisposition,
       },
       {
         fetch: this.fetch,
