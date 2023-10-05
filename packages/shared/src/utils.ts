@@ -8,6 +8,7 @@ import type {
   FileRouterInputKey,
   FileSize,
   RequestLike,
+  ResponseEsque,
 } from "./types";
 
 export function isRouteArray(
@@ -220,7 +221,7 @@ export const fileSizeToBytes = (input: string) => {
 };
 
 export async function safeParseJSON<T>(
-  input: string | Response | RequestLike,
+  input: string | ResponseEsque | RequestLike,
 ): Promise<T | Error> {
   if (typeof input === "string") {
     try {

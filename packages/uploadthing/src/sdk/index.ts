@@ -1,9 +1,8 @@
-import type { Json } from "@uploadthing/shared";
+import type { FetchEsque, Json, MaybeUrl } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { FetchEsque, MaybeUrl } from "./types";
 import type { FileEsque, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,

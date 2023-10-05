@@ -1,6 +1,6 @@
 import type { File as UndiciFile } from "undici";
 
-import type { Json } from "@uploadthing/shared";
+import type { FetchEsque, Json } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -8,7 +8,6 @@ import {
 } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "../internal/s3-error-parser";
-import type { FetchEsque } from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
