@@ -1,5 +1,21 @@
 # @uploadthing/solid
 
+## 5.4.0
+
+### Minor Changes
+
+- [#397](https://github.com/pingdotgg/uploadthing/pull/397)
+  [`7f0c474`](https://github.com/pingdotgg/uploadthing/commit/7f0c4746cf8ed7bac6da3475e0de3a6fe58cf35e)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: auto upload mode for
+  dropzone component
+
+### Patch Changes
+
+- [#397](https://github.com/pingdotgg/uploadthing/pull/397)
+  [`7f0c474`](https://github.com/pingdotgg/uploadthing/commit/7f0c4746cf8ed7bac6da3475e0de3a6fe58cf35e)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix: remove unused prefix
+  in tw config to ensure correct css output
+
 ## 5.3.1
 
 ### Patch Changes
