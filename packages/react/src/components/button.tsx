@@ -158,6 +158,10 @@ export function UploadButton<TRouter extends FileRouter>(
       onClick={() => {
         setFiles([]);
         setIsManualTriggerDisplayed(false);
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
       }}
       className={twMerge(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
