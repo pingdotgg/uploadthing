@@ -1,5 +1,23 @@
 # @uploadthing/react
 
+## 5.6.2
+
+### Patch Changes
+
+- [#392](https://github.com/pingdotgg/uploadthing/pull/392)
+  [`d4492d9`](https://github.com/pingdotgg/uploadthing/commit/d4492d941d174d8f2fb4647d97ae4a2d21e5d199)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! -
+  fix(components): Allow upload button to be focusable via keyboard
+
+- [#384](https://github.com/pingdotgg/uploadthing/pull/384)
+  [`8c01e98`](https://github.com/pingdotgg/uploadthing/commit/8c01e980cf5b695165101b11c741ce6c1b396bdd)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix bug where progress bar
+  styles was not included in the compiled stylesheet
+
+- Updated dependencies
+  [[`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)]:
+  - @uploadthing/shared@5.2.3
+
 ## 5.6.1
 
 ### Patch Changes
