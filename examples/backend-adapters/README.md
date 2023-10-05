@@ -12,6 +12,7 @@ that are included here are:
 - [Express](./server/src/express.ts)
 - [Fastify](./server/src/fastify.ts)
 - [Hono](./server/src/hono.ts)
+- [H3](./server/src/h3.ts)
 
 You can start the Vite frontend as well as any of your preferred server using
 the `pnpm dev:<your-server>` command. The Vite app will then be available on

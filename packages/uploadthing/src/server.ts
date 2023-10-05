@@ -18,7 +18,11 @@ export { utapi, UTApi } from "./sdk";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<{ req: Request; res: undefined }, TErrorShape>(opts);
+) =>
+  createBuilder<
+    { req: Request; res: undefined; event: undefined },
+    TErrorShape
+  >(opts);
 
 export const createServerHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

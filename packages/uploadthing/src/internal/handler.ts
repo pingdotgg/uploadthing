@@ -87,6 +87,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
   return async (input: {
     req: RequestLike;
     res?: unknown;
+    event?: unknown;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
@@ -94,7 +95,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       console.log("[UT] UploadThing dev server is now running!");
     }
 
-    const { req, res } = input;
+    const { req, res, event } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
@@ -206,6 +207,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             req: req as any,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             res: res as any,
+            event,
             input: parsedInput,
           });
         } catch (error) {
