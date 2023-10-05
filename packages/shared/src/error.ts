@@ -74,13 +74,14 @@ export class UploadThingError<
   }
 
   public static async fromResponse(response: Response) {
+    const clonedResponse = response.clone();
     let json: Json | null = null;
     try {
       json = (await response.json()) as Json;
     } catch (err) {
       console.error(
         "[FATAL] Failed to parse response body as JSON, got",
-        await response.text(),
+        await clonedResponse.text(),
       );
       return new UploadThingError({
         message: `Failed to parse response body: ${(err as Error).message}`,

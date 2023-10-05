@@ -137,7 +137,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw error;
     }
 
-    // attempt to parse response
+    // attempt to parse response, clone in case .json fails and we need to read the response again
+    const clonedRes = res.clone();
     try {
       return res.json();
     } catch (e) {
@@ -145,7 +146,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       console.error(e);
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Failed to parse response as JSON. Got: ${await res.text()}`,
+        message: `Failed to parse response as JSON. Got: ${await clonedRes.text()}`,
         cause: e,
       });
     }
