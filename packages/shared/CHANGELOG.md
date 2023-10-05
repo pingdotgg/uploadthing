@@ -1,5 +1,23 @@
 # @uploadthing/shared
 
+## 5.2.4
+
+### Patch Changes
+
+- [#406](https://github.com/pingdotgg/uploadthing/pull/406)
+  [`fd24c9d`](https://github.com/pingdotgg/uploadthing/commit/fd24c9d2b4e8be089bae2c9cb78d8f1b1fa80c16)
+  Thanks [@daalvarado](https://github.com/daalvarado)! - fix: Add optional to
+  import.meta.env call for better Remix support
+
+## 5.2.3
+
+### Patch Changes
+
+- [#403](https://github.com/pingdotgg/uploadthing/pull/403)
+  [`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrap
+  response.json in try-catch block
+
 ## 5.2.2
 
 ### Patch Changes

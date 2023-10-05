@@ -45,7 +45,7 @@ importers:
   docs:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../packages/react
       next:
         specifier: 13.4.4
@@ -63,7 +63,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -85,7 +85,7 @@ importers:
   examples/backend-adapters:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       concurrently:
         specifier: ^8.2.1
@@ -94,13 +94,13 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: ^5.6.1
+        specifier: ^5.7.1
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../../packages/react
       react:
         specifier: 18.2.0
@@ -109,7 +109,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: ^5.6.1
+        specifier: ^5.7.1
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -158,7 +158,7 @@ importers:
         specifier: ^1.5.5
         version: 1.5.5
       uploadthing:
-        specifier: ^5.6.1
+        specifier: ^5.7.1
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/cors':
@@ -177,7 +177,7 @@ importers:
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       next:
         specifier: 13.4.4
@@ -189,7 +189,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -239,7 +239,7 @@ importers:
   examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       next:
         specifier: 13.4.4
@@ -251,7 +251,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -276,7 +276,7 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3(solid-js@1.7.11)
       '@uploadthing/solid':
-        specifier: 5.3.0
+        specifier: 5.4.0
         version: link:../../packages/solid
       attr-accept:
         specifier: ^2.2.2
@@ -294,11 +294,11 @@ importers:
         specifier: ^5.20.0
         version: 5.23.0
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
       zod:
-        specifier: ^3.21.4
-        version: 3.21.4
+        specifier: ^3.22.3
+        version: 3.22.3
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -329,9 +329,9 @@ importers:
         version: 4.23.5(next@13.4.4)(react-dom@18.2.0)(react@18.2.0)
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0
-        version: 0.6.1(typescript@5.1.6)(zod@3.22.2)
+        version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       next:
         specifier: 13.4.4
@@ -343,11 +343,11 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
       zod:
-        specifier: ^3.21.4
-        version: 3.22.2
+        specifier: ^3.22.3
+        version: 3.22.3
     devDependencies:
       '@types/eslint':
         specifier: ^8.44.2
@@ -387,9 +387,9 @@ importers:
         version: 4.23.5(next@13.4.4)(react-dom@18.2.0)(react@18.2.0)
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0
-        version: 0.6.1(typescript@5.1.6)(zod@3.22.2)
+        version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       next:
         specifier: 13.4.4
@@ -401,11 +401,11 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
       zod:
-        specifier: ^3.21.4
-        version: 3.22.2
+        specifier: ^3.22.3
+        version: 3.22.3
     devDependencies:
       '@types/eslint':
         specifier: ^8.44.2
@@ -442,9 +442,9 @@ importers:
     dependencies:
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0
-        version: 0.6.1(typescript@5.1.6)(zod@3.22.2)
+        version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -462,11 +462,11 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
       zod:
-        specifier: ^3.21.4
-        version: 3.22.2
+        specifier: ^3.22.3
+        version: 3.22.3
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.4
@@ -509,9 +509,9 @@ importers:
     dependencies:
       '@t3-oss/env-nextjs':
         specifier: ^0.6.0
-        version: 0.6.1(typescript@5.1.6)(zod@3.22.2)
+        version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -532,11 +532,11 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
       zod:
-        specifier: ^3.21.4
-        version: 3.22.2
+        specifier: ^3.22.3
+        version: 3.22.3
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.4
@@ -578,7 +578,7 @@ importers:
   examples/with-react-image-crop:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       next:
         specifier: 13.4.4
@@ -593,7 +593,7 @@ importers:
         specifier: ^10.1.5
         version: 10.1.5(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -621,7 +621,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -640,7 +640,7 @@ importers:
   examples/with-tailwindcss:
     dependencies:
       '@uploadthing/react':
-        specifier: 5.6.1
+        specifier: 5.6.2
         version: link:../../packages/react
       next:
         specifier: 13.4.4
@@ -652,7 +652,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -777,7 +777,7 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^5.2.2
+        specifier: ^5.2.4
         version: link:../shared
       attr-accept:
         specifier: ^2.2.2
@@ -832,7 +832,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -841,8 +841,8 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1
       zod:
-        specifier: ^3.21.4
-        version: 3.21.4
+        specifier: ^3.22.3
+        version: 3.22.3
 
   packages/shared:
     devDependencies:
@@ -868,13 +868,13 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       zod:
-        specifier: ^3.21.4
-        version: 3.21.4
+        specifier: ^3.22.3
+        version: 3.22.3
 
   packages/solid:
     dependencies:
       '@uploadthing/shared':
-        specifier: ^5.2.2
+        specifier: ^5.2.4
         version: link:../shared
       tailwind-merge:
         specifier: ^1.13.2
@@ -905,7 +905,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 5.6.1
+        specifier: 5.7.1
         version: link:../uploadthing
       wait-on:
         specifier: ^7.0.1
@@ -917,7 +917,7 @@ importers:
         specifier: ^0.2.1
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: ^5.2.2
+        specifier: ^5.2.4
         version: link:../shared
     devDependencies:
       '@types/express':
@@ -972,8 +972,8 @@ importers:
         specifier: ^0.30.1
         version: 0.30.1
       zod:
-        specifier: ^3.21.4
-        version: 3.21.4
+        specifier: ^3.22.3
+        version: 3.22.3
 
 packages:
 
@@ -4021,25 +4021,25 @@ packages:
       defer-to-connect: 1.1.3
     dev: false
 
-  /@t3-oss/env-core@0.6.1(typescript@5.1.6)(zod@3.22.2):
+  /@t3-oss/env-core@0.6.1(typescript@5.1.6)(zod@3.22.3):
     resolution: {integrity: sha512-KQD7qEDJtkWIWWmTVjNvk0wnHpkvAQ6CRbUxbWMFNG/fiosBQDQvtRpBNu6USxBscJCoC4z6y7P9MN52/mLOzw==}
     peerDependencies:
       typescript: '>=4.7.2'
       zod: ^3.0.0
     dependencies:
       typescript: 5.1.6
-      zod: 3.22.2
+      zod: 3.22.3
     dev: false
 
-  /@t3-oss/env-nextjs@0.6.1(typescript@5.1.6)(zod@3.22.2):
+  /@t3-oss/env-nextjs@0.6.1(typescript@5.1.6)(zod@3.22.3):
     resolution: {integrity: sha512-z1dIC++Vxj9kmzX5nSPfcrCSkszy3dTEPC4Ssx7Ap5AqR3c2Qa7S0xf8axn6coy7D/vCXDAAnHYnCMDhtcY3SQ==}
     peerDependencies:
       typescript: '>=4.7.2'
       zod: ^3.0.0
     dependencies:
-      '@t3-oss/env-core': 0.6.1(typescript@5.1.6)(zod@3.22.2)
+      '@t3-oss/env-core': 0.6.1(typescript@5.1.6)(zod@3.22.3)
       typescript: 5.1.6
-      zod: 3.22.2
+      zod: 3.22.3
     dev: false
 
   /@theguild/remark-mermaid@0.0.4(react@18.2.0):
@@ -6372,7 +6372,7 @@ packages:
       hanji: 0.0.5
       json-diff: 0.9.0
       minimatch: 7.4.6
-      zod: 3.22.2
+      zod: 3.22.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -9849,7 +9849,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       scroll-into-view-if-needed: 3.0.10
-      zod: 3.21.4
+      zod: 3.22.2
     dev: false
 
   /nextra@2.12.3(next@13.4.4)(react-dom@18.2.0)(react@18.2.0):
@@ -13384,6 +13384,10 @@ packages:
 
   /zod@3.22.2:
     resolution: {integrity: sha512-wvWkphh5WQsJbVk1tbx1l1Ly4yg+XecD+Mq280uBGt9wa5BKSWf4Mhp6GmrkPixhMxmabYY7RbzlwVP32pbGCg==}
+    dev: false
+
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
