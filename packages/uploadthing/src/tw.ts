@@ -20,6 +20,7 @@ export function withUt(twConfig: Config) {
     addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
     addVariant("ut-label", '&>*[data-ut-element="label"]');
     addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+    addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
 
     // Variants to select specific state
     addVariant("ut-readying", '&[data-state="readying"]');
