@@ -10,8 +10,8 @@ import type {
   ExpandedRouteConfig,
   FileRouterInputKey,
   Json,
+  RequestLike,
   UploadedFile,
-  RequestLike
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
