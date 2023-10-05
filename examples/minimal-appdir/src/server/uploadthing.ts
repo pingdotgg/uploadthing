@@ -12,6 +12,7 @@ export const uploadRouter = {
     image: {
       maxFileSize: "4MB",
       maxFileCount: 4,
+      contentDisposition: "attachment",
     },
     video: {
       maxFileSize: "16MB",

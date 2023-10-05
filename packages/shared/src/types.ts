@@ -35,6 +35,7 @@ export type FileSize = `${PowOf2}${SizeUnit}`;
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;
+  contentDisposition: "inline" | "attachment";
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
