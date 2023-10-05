@@ -88,6 +88,7 @@ export class UTApi {
    */
   async uploadFiles<T extends FileEsque | FileEsque[]>(
     files: T,
+    // FIXME: config option in v6 instead of positional args
     metadata: Json = {},
     contentDisposition: ContentDisposition = "inline",
   ) {
@@ -130,6 +131,7 @@ export class UTApi {
    */
   async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
     urls: T,
+    // FIXME: config option in v6 instead of positional args
     metadata: Json = {},
     contentDisposition: ContentDisposition = "inline",
   ) {
