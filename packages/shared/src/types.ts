@@ -1,3 +1,5 @@
+import type { IncomingHttpHeaders } from "node:http";
+
 import type { MimeType } from "@uploadthing/mime-types/db";
 
 import type { AllowedFileType } from "./file-types";
@@ -6,6 +8,17 @@ export type JsonValue = string | number | boolean | null | undefined;
 export type JsonArray = JsonValue[];
 export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
 export type Json = JsonValue | JsonObject | JsonArray;
+
+export type Overwrite<T, U> = Omit<T, keyof U> & U;
+export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+export type RequestLike = Overwrite<
+  WithRequired<Partial<Request>, "json">,
+  {
+    body?: any; // we only use `.json`, don't care about `body`
+    headers: Headers | IncomingHttpHeaders;
+  }
+>;
 
 /** This matches the return type from the infra */
 export interface FileData {

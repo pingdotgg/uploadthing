@@ -11,13 +11,14 @@ import type {
   FileRouterInputKey,
   Json,
   UploadedFile,
+  RequestLike
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter, RequestLike } from "./types";
+import type { ActionType, FileRouter } from "./types";
 
 const fileCountLimitHit = (
   files: string[],

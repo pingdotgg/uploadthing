@@ -75,7 +75,7 @@ export class UploadThingError<
   }
 
   public static async fromResponse(response: Response) {
-    const jsonOrError = await safeParseJSON<Json>(await response.text());
+    const jsonOrError = await safeParseJSON<Json>(response);
     if (jsonOrError instanceof Error) {
       return new UploadThingError({
         message: jsonOrError.message,

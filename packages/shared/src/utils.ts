@@ -7,6 +7,7 @@ import type {
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  RequestLike,
 } from "./types";
 
 export function isRouteArray(
@@ -219,12 +220,22 @@ export const fileSizeToBytes = (input: string) => {
 };
 
 export async function safeParseJSON<T>(
-  input: string | { text: () => Promise<string> },
+  input: string | Response | RequestLike,
 ): Promise<T | Error> {
-  const text = typeof input === "object" ? await input.text() : input;
+  if (typeof input === "string") {
+    try {
+      return JSON.parse(input) as T;
+    } catch (err) {
+      console.error(`Error parsing JSON, got '${input}'`);
+      return new Error(`Error parsing JSON, got '${input}'`);
+    }
+  }
+
+  const clonedRes = input.clone?.();
   try {
-    return JSON.parse(text) as T;
+    return (await input.json()) as T;
   } catch (err) {
+    const text = (await clonedRes?.text()) ?? "unknown";
     console.error(`Error parsing JSON, got '${text}'`);
     return new Error(`Error parsing JSON, got '${text}'`);
   }
