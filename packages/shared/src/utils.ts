@@ -46,6 +46,7 @@ export function fillInputRouteConfig(
         // Apply defaults
         maxFileSize: getDefaultSizeForType(fileType),
         maxFileCount: 1,
+        contentDisposition: "inline",
       };
       return acc;
     }, {});
@@ -61,6 +62,7 @@ export function fillInputRouteConfig(
     const defaultValues = {
       maxFileSize: getDefaultSizeForType(key),
       maxFileCount: 1,
+      contentDisposition: "inline" as const,
     };
 
     newConfig[key] = { ...defaultValues, ...value };
