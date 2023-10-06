@@ -327,7 +327,7 @@ export function getFullApiUrl(maybeUrl?: string): URL {
     // @ts-expect-error - import meta is not defined in node
     if (import.meta.env?.VERCEL_URL) {
       // @ts-expect-error - import meta is not defined in node
-       
+
       return `https://${import.meta.env.VERCEL_URL}`;
     }
 
