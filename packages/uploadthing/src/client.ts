@@ -324,8 +324,8 @@ export function getBaseUrl(): string {
   }
 
   // @ts-expect-error - import meta is not defined in node
-  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-  if (typeof import.meta !== "undefined" && import.meta?.env?.VERCEL_URL) {
+
+  if (import.meta?.env?.VERCEL_URL) {
     // @ts-expect-error - import meta is not defined in node
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return import.meta.env.VERCEL_URL;
