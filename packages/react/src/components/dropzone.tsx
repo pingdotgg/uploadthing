@@ -146,7 +146,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       const pastedFiles = getFilesFromClipboardEvent(event);
       if (!pastedFiles) return;
 
-      setFiles([...files, ...pastedFiles]);
+      setFiles((prev) => [...prev, ...pastedFiles]);
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
