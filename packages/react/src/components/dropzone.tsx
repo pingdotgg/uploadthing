@@ -137,15 +137,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if (!$props.config?.appendOnPaste) {
-        // User did not enable this functionality
-        return;
-      }
+      if (!$props.config?.appendOnPaste) return;
+      if (document.activeElement !== rootRef.current) return;
 
-      if (document.activeElement !== rootRef.current) {
-        // Upload from clipboard can be triggered only if button is focused
-        return;
-      }
       const pastedFiles = getFilesFromClipboardEvent(event);
       if (!pastedFiles) return;
 

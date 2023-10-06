@@ -113,15 +113,8 @@ export function UploadButton<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if (!$props.config?.appendOnPaste) {
-        // User did not enable this functionality
-        return;
-      }
-
-      if (document.activeElement !== labelRef.current) {
-        // Upload from clipboard can be triggered only if button is focused
-        return;
-      }
+      if (!$props.config?.appendOnPaste) return;
+      if (document.activeElement !== labelRef.current) return;
 
       const files = getFilesFromClipboardEvent(event);
       if (!files) return;
