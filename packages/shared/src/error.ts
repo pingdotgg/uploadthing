@@ -1,5 +1,5 @@
 import type { Json, ResponseEsque } from "./types";
-import { isObject, safeParseJSON } from "./utils";
+import { safeParseJSON } from "./utils";
 
 const ERROR_CODES = {
   // Generic
@@ -85,7 +85,11 @@ export class UploadThingError<
     }
 
     let message: string | undefined = undefined;
-    if (isObject(jsonOrError)) {
+    if (
+      jsonOrError !== null &&
+      typeof jsonOrError === "object" &&
+      !Array.isArray(jsonOrError)
+    ) {
       if (typeof jsonOrError.message === "string") {
         message = jsonOrError.message;
       } else if (typeof jsonOrError.error === "string") {

@@ -222,10 +222,6 @@ export const fileSizeToBytes = (input: string) => {
   return Math.floor(bytes);
 };
 
-export function isObject(val: unknown): val is Record<string, unknown> {
-  return val !== null && typeof val === "object" && !Array.isArray(val);
-}
-
 export async function safeParseJSON<T>(
   input: string | ResponseEsque | RequestLike,
 ): Promise<T | Error> {
