@@ -1,4 +1,9 @@
-import type { ContentDisposition, FetchEsque, Json, MaybeUrl } from "@uploadthing/shared";
+import type {
+  ContentDisposition,
+  FetchEsque,
+  Json,
+  MaybeUrl,
+} from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
