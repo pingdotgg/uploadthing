@@ -53,7 +53,9 @@ export function UploadButton<TRouter extends FileRouter>(
   const [uploadProgress, setUploadProgress] = createSignal(0);
   let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter>;
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url,
+  });
   const uploadedThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
       if (inputRef) {
@@ -68,7 +70,6 @@ export function UploadButton<TRouter extends FileRouter>(
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
-    url: $props.url,
   });
 
   const fileInfo = () =>

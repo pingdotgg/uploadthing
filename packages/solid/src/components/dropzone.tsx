@@ -59,7 +59,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 
   const { mode = "manual" } = $props.config ?? {};
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url,
+  });
   const uploadThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
       setFiles([]);
@@ -72,7 +74,6 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
-    url: $props.url,
   });
 
   const [files, setFiles] = createSignal<File[]>([]);

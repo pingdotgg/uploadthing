@@ -64,7 +64,7 @@ export type FetchEsque = (
 ) => Promise<ResponseEsque>;
 
 export type RequestLike = Overwrite<
-  WithRequired<Partial<Request>, "json">,
+  WithRequired<Partial<Request>, "json" | "url">,
   {
     body?: any; // we only use `.json`, don't care about `body`
     headers: Headers | IncomingHttpHeaders;
