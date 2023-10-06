@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -14,7 +14,7 @@ import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -39,6 +39,7 @@ export type UploadButtonProps<TRouter extends FileRouter> =
     };
     className?: string;
     config?: {
+      appendOnPaste?: boolean;
       mode?: "auto" | "manual";
     };
   };
@@ -69,9 +70,13 @@ export function UploadButton<TRouter extends FileRouter>(
     // Allow to disable the button
     __internal_button_disabled?: boolean;
   };
+
+  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const labelRef = useRef<HTMLLabelElement>(null);
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
@@ -80,6 +85,7 @@ export function UploadButton<TRouter extends FileRouter>(
     useState(false);
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
+
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
@@ -109,6 +115,28 @@ export function UploadButton<TRouter extends FileRouter>(
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
 
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      if (!appendOnPaste) return;
+      if (document.activeElement !== labelRef.current) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
+
+      setFiles((prev) => [...prev, ...pastedFiles]);
+
+      if (mode === "auto") {
+        const input = "input" in $props ? $props.input : undefined;
+        void startUpload(files, input);
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [startUpload, appendOnPaste, $props, files, mode, fileTypes]);
+
   const getUploadButtonText = (fileTypes: string[]) => {
     if (isManualTriggerDisplayed)
       return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
@@ -125,7 +153,7 @@ export function UploadButton<TRouter extends FileRouter>(
       if (!e.target.files) return;
       const selectedFiles = Array.from(e.target.files);
 
-      if ($props.config?.mode === "manual") {
+      if (mode === "manual") {
         setFiles(selectedFiles);
         setIsManualTriggerDisplayed(true);
         return;
@@ -216,6 +244,8 @@ export function UploadButton<TRouter extends FileRouter>(
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
+        tabIndex={0}
+        ref={labelRef}
         onClick={(e) => {
           if (isManualTriggerDisplayed) {
             e.preventDefault();
@@ -233,7 +263,7 @@ export function UploadButton<TRouter extends FileRouter>(
             getUploadButtonText(fileTypes)
           ))}
       </label>
-      {$props.config?.mode === "manual" && files.length > 0
+      {mode === "manual" && files.length > 0
         ? renderClearButton()
         : renderAllowedContent()}
     </div>

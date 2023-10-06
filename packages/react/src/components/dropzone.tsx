@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -17,7 +17,7 @@ import type { UploadthingComponentProps } from "../types";
 import type { FileWithPath } from "../use-dropzone";
 import { useDropzone } from "../use-dropzone";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -46,6 +46,7 @@ export type UploadDropzoneProps<TRouter extends FileRouter> =
     className?: string;
     config?: {
       mode?: "auto" | "manual";
+      appendOnPaste?: boolean;
     };
   };
 
@@ -71,6 +72,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // Allow to disable the dropzone
     __internal_dropzone_disabled?: boolean;
   };
+
+  const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const [files, setFiles] = useState<File[]>([]);
@@ -104,16 +108,16 @@ export function UploadDropzone<TRouter extends FileRouter>(
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if ($props.config?.mode === "auto") {
+      if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
         void startUpload(acceptedFiles, input);
         return;
       }
     },
-    [$props, startUpload],
+    [$props, mode, startUpload],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: $props.__internal_dropzone_disabled,
@@ -133,6 +137,28 @@ export function UploadDropzone<TRouter extends FileRouter>(
     const input = "input" in $props ? $props.input : undefined;
     void startUpload(files, input);
   };
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      if (!appendOnPaste) return;
+      if (document.activeElement !== rootRef.current) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
+
+      setFiles((prev) => [...prev, ...pastedFiles]);
+
+      if (mode === "auto") {
+        const input = "input" in $props ? $props.input : undefined;
+        void startUpload(files, input);
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [startUpload, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
   const styleFieldArg = {
     fileTypes,
