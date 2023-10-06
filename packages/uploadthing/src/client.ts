@@ -315,7 +315,8 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 // Returns the base URL for the current environment
 export function getBaseUrl(): string {
   if (typeof window !== "undefined") {
-    return window.location.host;
+    console.log(window.location);
+    return window.location.origin;
   }
 
   // eslint-disable-next-line @typescript-eslint/prefer-optional-chain

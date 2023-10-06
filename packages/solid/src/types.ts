@@ -14,9 +14,9 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
      * @example "/api/uploadthing"
      * @example "https://www.example.com/api/uploadthing"
      *
-     * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.host`
+     * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
      *
-     * @default (VERCEL_URL ?? window.location.host) + "/api/uploadthing"
+     * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
      */
     url?: string;
     multiple?: boolean;

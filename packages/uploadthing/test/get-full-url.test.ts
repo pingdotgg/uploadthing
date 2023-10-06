@@ -8,7 +8,7 @@ describe("getFullUrl", () => {
     expect(getFullUrl(url)).toBe(url);
   });
 
-  it("should add `window.location.host` if the url is relative and request is clientside", () => {
+  it("should add `window.location.origin` if the url is relative and request is clientside", () => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     globalThis.window = {
       location: {
