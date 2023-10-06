@@ -90,7 +90,6 @@ import { getBaseUrl } from "./utils/getBaseUrl";
 export const OurUploadDropzone = () => (
   <UploadDropzone<OurFileRouter>
     endpoint="withoutMdwr"
-    url={getBaseUrl() + "/api/uploadthing"}
     onClientUploadComplete={(res) => {
       // Do something with the response
       console.log("Files: ", res);
