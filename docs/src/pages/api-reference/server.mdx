@@ -90,6 +90,7 @@ export type OurFileRouter = typeof ourFileRouter;
 // Your file types can be any of the following types
 type MimeType = /** any web mime-type */
 type ValidFileTypes = "image" | "video" | "audio" | "blob" | "pdf" | "text" | MimeType;
+type ContentDisposition = "inline" | "attachment";
 
 // The input to your f() function can be an array of file types OR an object of them w/ config
 type FileRouterInput =
@@ -98,10 +99,16 @@ type FileRouterInput =
       [key: ValidFileTypes]: {
         maxFileSize?: string;
         maxFileCount?: number;
-        contentDisposition?: "inline" | "attachment" = "inline";
+        contentDisposition?: ContentDisposition = "inline";
       };
     };
 ```
+
+The `contentDisposition` option can be used to override the default `inline`
+disposition set at the storage provider. This is useful if you want your files
+downloaded instead of previewed in the browser. You can read more about content
+disposition on
+[MDN ↗](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
 
 ### Defaults
 
@@ -232,11 +239,11 @@ When uploading files using `uploadFiles`, the files must be present on your
 server. Then presigned URLs are generated on our servers before the files can be
 uploaded to the storage provider.
 
-| Arguments          | Type                       | Required | Description                                         |
-| :----------------- | :------------------------- | :------- | :-------------------------------------------------- |
-| files              | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload                      |
-| metadata           | Json                       | No       | Metadata to attach to the file(s)                   |
-| contentDisposition | "inline" \| "attachment"   | No       | How the file should be served. Defaults to `inline` |
+| Arguments          | Type                       | Required | Description                                                                                                                                                           |
+| :----------------- | :------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| files              | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload                                                                                                                                        |
+| metadata           | Json                       | No       | Metadata to attach to the file(s)                                                                                                                                     |
+| contentDisposition | "inline" \| "attachment"   | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline` |
 
 ```ts
 // Edge / Node < 20 friendly File interface
@@ -293,11 +300,11 @@ const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
 //    ^? UploadedFileResponse[]
 ```
 
-| Arguments          | Type                                     | Required | Description                                         |
-| :----------------- | :--------------------------------------- | :------- | :-------------------------------------------------- |
-| urls               | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload        |
-| metadata           | Json                                     | No       | Metadata to attach to the file(s)                   |
-| contentDisposition | "inline" \| "attachment"                 | No       | How the file should be served. Defaults to `inline` |
+| Arguments          | Type                                     | Required | Description                                                                                                                                                           |
+| :----------------- | :--------------------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| urls               | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload                                                                                                                          |
+| metadata           | Json                                     | No       | Metadata to attach to the file(s)                                                                                                                                     |
+| contentDisposition | "inline" \| "attachment"                 | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline` |
 
 ### `deleteFiles`
 
