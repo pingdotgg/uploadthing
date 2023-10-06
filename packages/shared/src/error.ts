@@ -1,4 +1,4 @@
-import type { Json } from "./types";
+import type { Json, ResponseEsque } from "./types";
 import { safeParseJSON } from "./utils";
 
 const ERROR_CODES = {
@@ -74,7 +74,7 @@ export class UploadThingError<
     }
   }
 
-  public static async fromResponse(response: Response) {
+  public static async fromResponse(response: ResponseEsque) {
     const jsonOrError = await safeParseJSON<Json>(response);
     if (jsonOrError instanceof Error) {
       return new UploadThingError({

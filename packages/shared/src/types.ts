@@ -38,6 +38,7 @@ export interface RequestInitEsque {
  * @see Response from lib.dom.d.ts
  */
 export interface ResponseEsque {
+  status: number;
   ok: boolean;
   /**
    * @remarks
