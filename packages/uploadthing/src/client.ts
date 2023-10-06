@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { pollForFileData, UploadThingError } from "@uploadthing/shared";
+import {
+  pollForFileData,
+  safeParseJSON,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type {
@@ -137,19 +141,15 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw error;
     }
 
-    // attempt to parse response, clone in case .json fails and we need to read the response again
-    const clonedRes = res.clone();
-    try {
-      return res.json();
-    } catch (e) {
-      // response is not JSON
-      console.error(e);
+    const jsonOrError = await safeParseJSON(res);
+    if (jsonOrError instanceof Error) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Failed to parse response as JSON. Got: ${await clonedRes.text()}`,
-        cause: e,
+        message: jsonOrError.message,
+        cause: res,
       });
     }
+    return jsonOrError;
   });
 
   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {

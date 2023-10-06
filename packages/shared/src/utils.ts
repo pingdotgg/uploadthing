@@ -7,6 +7,8 @@ import type {
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  RequestLike,
+  ResponseEsque,
 } from "./types";
 
 export function isRouteArray(
@@ -159,13 +161,19 @@ export async function pollForFileData(
 
   return withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
-    const json = (await res.json()) as
-      | { status: "done"; fileData: FileData }
-      | { status: "something else" };
+    const maybeJson = await safeParseJSON<
+      { status: "done"; fileData: FileData } | { status: "something else" }
+    >(res);
 
-    if (json.status !== "done") return null;
+    if (maybeJson instanceof Error) {
+      console.error(
+        `[UT] Error polling for file data for ${fileKey}: ${maybeJson.message}`,
+      );
+      return null;
+    }
 
-    await callback?.(json);
+    if (maybeJson.status !== "done") return null;
+    await callback?.(maybeJson);
   });
 }
 
@@ -214,12 +222,36 @@ export const fileSizeToBytes = (input: string) => {
   return Math.floor(bytes);
 };
 
+export async function safeParseJSON<T>(
+  input: string | ResponseEsque | RequestLike,
+): Promise<T | Error> {
+  if (typeof input === "string") {
+    try {
+      return JSON.parse(input) as T;
+    } catch (err) {
+      console.error(`Error parsing JSON, got '${input}'`);
+      return new Error(`Error parsing JSON, got '${input}'`);
+    }
+  }
+
+  const clonedRes = input.clone?.();
+  try {
+    return (await input.json()) as T;
+  } catch (err) {
+    const text = (await clonedRes?.text()) ?? "unknown";
+    console.error(`Error parsing JSON, got '${text}'`);
+    return new Error(`Error parsing JSON, got '${text}'`);
+  }
+}
+
+/** typesafe Object.keys */
 export function objectKeys<T extends Record<string, unknown>>(
   obj: T,
 ): (keyof T)[] {
   return Object.keys(obj) as (keyof T)[];
 }
 
+/** checks if obj is a valid, non-null object */
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && obj !== null && !Array.isArray(obj);
 }
