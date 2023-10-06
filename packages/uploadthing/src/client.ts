@@ -334,7 +334,9 @@ export function getFullApiUrl(maybeUrl?: string): URL {
     return "http://localhost:3000";
   })();
 
-  return maybeUrl?.startsWith("http")
-    ? new URL(maybeUrl)
-    : new URL(maybeUrl ?? "/api/uploadthing", base);
+  const url = new URL(maybeUrl ?? "/api/uploadthing", base);
+  if (url.pathname === "/") {
+    url.pathname = "/api/uploadthing";
+  }
+  return url;
 }
