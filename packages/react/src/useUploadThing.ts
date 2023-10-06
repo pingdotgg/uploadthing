@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getFullUrl } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
@@ -128,18 +128,24 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateReactHelpers = <TRouter extends FileRouter>(initOpts: {
+export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
   /**
-   * Absolute URL to the UploadThing API endpoint
-   * @example http://localhost:3000/api/uploadthing
-   * @example https://www.example.com/api/uploadthing
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.host`
+   *
+   * @default (VERCEL_URL ?? window.location.host) + "/api/uploadthing"
    */
-  url: string;
+  url?: string;
 }) => {
+  const url = getFullUrl(initOpts?.url);
+
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(initOpts),
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
-      DANGEROUS__uploadFiles<TRouter>(props, { url: initOpts.url }),
+      DANGEROUS__uploadFiles<TRouter>(props, { url }),
   } as const;
 };
 

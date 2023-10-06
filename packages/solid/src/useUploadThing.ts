@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getFullUrl } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
@@ -13,9 +13,7 @@ type EndpointMetadata = {
 }[];
 
 const createEndpointMetadata = (url: string, endpoint: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(
-    `${url ?? ""}/api/uploadthing`,
-  );
+  const dataGetter = createFetch<EndpointMetadata>(url);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
@@ -42,7 +40,7 @@ export const INTERNAL_uploadthingHookGen = <
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
-      initOpts.url,
+      getFullUrl(initOpts.url),
       endpoint as string,
     );
     let uploadProgress = 0;
@@ -111,18 +109,24 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts: {
+export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
   /**
-   * Absolute URL to the UploadThing API endpoint
-   * @example http://localhost:3000/api/uploadthing
-   * @example https://www.example.com/api/uploadthing
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.host`
+   *
+   * @default (VERCEL_URL ?? window.location.host) + "/api/uploadthing"
    */
-  url: string;
+  url?: string;
 }) => {
+  const url = getFullUrl(initOpts?.url);
+
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(initOpts),
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
-      DANGEROUS__uploadFiles<TRouter>(props, { url: initOpts.url }),
+      DANGEROUS__uploadFiles<TRouter>(props, { url }),
   } as const;
 };
 

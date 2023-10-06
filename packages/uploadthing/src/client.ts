@@ -307,3 +307,34 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+// Returns the base URL for the current environment
+export function getBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    return window.location.host;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+  if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
+    return process.env.VERCEL_URL;
+  }
+
+  // @ts-expect-error - import meta is not defined in node
+  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+  if (typeof import.meta !== "undefined" && import.meta?.env?.VERCEL_URL) {
+    // @ts-expect-error - import meta is not defined in node
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return import.meta.env.VERCEL_URL;
+  }
+
+  return "http://localhost:3000";
+}
+
+// Returns a full URL to the dev's uploadthing endpoint
+export function getFullUrl(maybeUrl?: string) {
+  if (maybeUrl) {
+    if (maybeUrl.startsWith("http")) return maybeUrl;
+    return getBaseUrl() + maybeUrl;
+  }
+  return getBaseUrl() + "/api/uploadthing";
+}
