@@ -18,7 +18,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
      *
      * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
      */
-    url?: string;
+    url?: string | URL;
     multiple?: boolean;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? // eslint-disable-next-line @typescript-eslint/ban-types

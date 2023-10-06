@@ -61,7 +61,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
   const { mode = "manual" } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: getFullApiUrl($props.url),
+    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
   });
   const uploadThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {

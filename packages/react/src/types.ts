@@ -21,7 +21,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
      *
      * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
      */
-    url?: string;
+    url?: string | URL;
 
     onUploadProgress?: (progress: number) => void;
     onUploadBegin?: (fileName: string) => void;

@@ -75,7 +75,7 @@ export function UploadButton<TRouter extends FileRouter>(
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: getFullApiUrl($props.url),
+    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);

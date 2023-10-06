@@ -44,9 +44,10 @@ export function generateComponents<TRouter extends FileRouter>(initOpts?: {
    *
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
-  url?: string;
+  url?: string | URL;
 }) {
-  const url = getFullApiUrl(initOpts?.url);
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
 
   return {
     UploadButton: (
