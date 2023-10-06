@@ -137,12 +137,9 @@ components. It takes your File Router as a generic
 import { generateReactHelpers } from "@uploadthing/react/hooks";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
-import { getBaseUrl } from "~/app/utils/getBaseUrl";
 
 export const { useUploadThing, uploadFiles } =
-  generateReactHelpers<OurFileRouter>({
-    url: getBaseUrl() + "/api/uploadthing",
-  });
+  generateReactHelpers<OurFileRouter>();
 ```
 
 ### Configuration
