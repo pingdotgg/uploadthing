@@ -14,11 +14,15 @@ import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
 export * from "./internal/types";
-export * as utapi from "./sdk";
+export { utapi, UTApi } from "./sdk";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<{ req: Request; res: undefined }, TErrorShape>(opts);
+) =>
+  createBuilder<
+    { req: Request; res: undefined; event: undefined },
+    TErrorShape
+  >(opts);
 
 export const createServerHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,

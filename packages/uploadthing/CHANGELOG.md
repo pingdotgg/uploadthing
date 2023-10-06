@@ -1,5 +1,70 @@
 # uploadthing
 
+## 5.7.1
+
+### Patch Changes
+
+- [#410](https://github.com/pingdotgg/uploadthing/pull/410)
+  [`1df596a`](https://github.com/pingdotgg/uploadthing/commit/1df596a2507abb9047fd5ad5d4355e3ab52d5044)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrong env
+  check for sdk
+
+- Updated dependencies
+  [[`fd24c9d`](https://github.com/pingdotgg/uploadthing/commit/fd24c9d2b4e8be089bae2c9cb78d8f1b1fa80c16)]:
+  - @uploadthing/shared@5.2.4
+
+## 5.7.0
+
+### Minor Changes
+
+- [#388](https://github.com/pingdotgg/uploadthing/pull/388)
+  [`440ae1b`](https://github.com/pingdotgg/uploadthing/commit/440ae1bb9de8887b6676b2566413f9e49575304a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - migrate utapi
+  to a class which allows for (optional) custom initialization options to be
+  passed in. Below are shown the available options and their default values:
+
+  ```ts
+  import { UTApi } from "uploadthing/server";
+
+  const utapi = new UTApi({
+    fetch: globalThis.fetch,
+    apiKey: process.env.UPLOADTHING_SECRET,
+  });
+
+  utapi.deleteFiles;
+  utapi.listFiles;
+  // ...
+  ```
+
+  `utapi` is still exported from `uploadthing/server` for backwards
+  compatibility, but will be removed in a future major release.
+
+### Patch Changes
+
+- [#380](https://github.com/pingdotgg/uploadthing/pull/380)
+  [`2803c5b`](https://github.com/pingdotgg/uploadthing/commit/2803c5b18962abc1884fe565fa0a3f60c04f2717)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: include
+  patterns of withUt now points to existing files
+
+- [#373](https://github.com/pingdotgg/uploadthing/pull/373)
+  [`33c67af`](https://github.com/pingdotgg/uploadthing/commit/33c67af34d57e2ea3091ba7d7cdc1ddfaf1bbf97)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat(sdk): add
+  usage endpoint to sdk
+
+- [#382](https://github.com/pingdotgg/uploadthing/pull/382)
+  [`3b04a8c`](https://github.com/pingdotgg/uploadthing/commit/3b04a8c52cd048bd7ea9e4150787ceb8180ed84a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add warning log
+  if node < 18
+
+- [#388](https://github.com/pingdotgg/uploadthing/pull/388)
+  [`440ae1b`](https://github.com/pingdotgg/uploadthing/commit/440ae1bb9de8887b6676b2566413f9e49575304a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - include more
+  logs for failed `utapi` functions
+
+- Updated dependencies
+  [[`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)]:
+  - @uploadthing/shared@5.2.3
+
 ## 5.6.1
 
 ### Patch Changes

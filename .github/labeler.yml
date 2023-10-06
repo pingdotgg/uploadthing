@@ -14,7 +14,11 @@
   - any: ['packages/uploadthing/src/next.ts', 'packages/uploadthing/src/next-legacy.ts']
 
 'backend adapters':
-  - any: ['packages/uploadthing/src/express.ts', 'packages/uploadthing/src/fastify.ts']
+  - any: [
+    'packages/uploadthing/src/express.ts',
+    'packages/uploadthing/src/h3.ts', 
+    'packages/uploadthing/src/fastify.ts'
+  ]
 
 'sdk':
   - any: ['packages/uploadthing/src/sdk/**']

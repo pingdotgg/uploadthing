@@ -30,14 +30,17 @@ export type UploadButtonProps<TRouter extends FileRouter> =
       container?: StyleField<ButtonStyleFieldCallbackArgs>;
       button?: StyleField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+      clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
     };
     content?: {
       button?: ContentField<ButtonStyleFieldCallbackArgs>;
       allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+      clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
     };
     className?: string;
     config?: {
       appendOnPaste?: boolean;
+      mode?: "auto" | "manual";
     };
   };
 
@@ -74,6 +77,9 @@ export function UploadButton<TRouter extends FileRouter>(
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
+  const [files, setFiles] = useState<File[]>([]);
+  const [isManualTriggerDisplayed, setIsManualTriggerDisplayed] =
+    useState(false);
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
@@ -83,6 +89,8 @@ export function UploadButton<TRouter extends FileRouter>(
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
+        setIsManualTriggerDisplayed(false);
+        setFiles([]);
         $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
@@ -129,6 +137,8 @@ export function UploadButton<TRouter extends FileRouter>(
   }, [startUpload, $props, fileTypes]);
 
   const getUploadButtonText = (fileTypes: string[]) => {
+    if (isManualTriggerDisplayed)
+      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
     if (fileTypes.length === 0) return "Loading...";
     return `Choose File${multiple ? `(s)` : ``}`;
   };
@@ -140,9 +150,16 @@ export function UploadButton<TRouter extends FileRouter>(
     accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
+      const selectedFiles = Array.from(e.target.files);
+
+      if ($props.config?.mode === "manual") {
+        setFiles(selectedFiles);
+        setIsManualTriggerDisplayed(true);
+        return;
+      }
+
       const input = "input" in $props ? $props.input : undefined;
-      const files = Array.from(e.target.files);
-      void startUpload(files, input);
+      void startUpload(selectedFiles, input);
     },
     disabled: $props.__internal_button_disabled ?? !ready,
     ...(!($props.__internal_button_disabled ?? !ready) ? { tabIndex: 0 } : {}),
@@ -162,6 +179,47 @@ export function UploadButton<TRouter extends FileRouter>(
 
     return "uploading";
   })();
+
+  const renderClearButton = () => (
+    <button
+      onClick={() => {
+        setFiles([]);
+        setIsManualTriggerDisplayed(false);
+
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }}
+      className={twMerge(
+        "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
+        styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
+      )}
+      style={styleFieldToCssObject($props.appearance?.clearBtn, styleFieldArg)}
+      data-state={state}
+      data-ut-element="clear-btn"
+    >
+      {contentFieldToContent($props.content?.clearBtn, styleFieldArg) ??
+        "Clear"}
+    </button>
+  );
+
+  const renderAllowedContent = () => (
+    <div
+      className={twMerge(
+        "h-[1.25rem]  text-xs leading-5 text-gray-600",
+        styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
+      )}
+      style={styleFieldToCssObject(
+        $props.appearance?.allowedContent,
+        styleFieldArg,
+      )}
+      data-state={state}
+      data-ut-element="allowed-content"
+    >
+      {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
+        allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+    </div>
+  );
 
   return (
     <div
@@ -187,6 +245,14 @@ export function UploadButton<TRouter extends FileRouter>(
         data-ut-element="button"
         tabIndex={0}
         ref={labelRef}
+        onClick={(e) => {
+          if (isManualTriggerDisplayed) {
+            e.preventDefault();
+            e.stopPropagation();
+            const input = "input" in $props ? $props.input : undefined;
+            void startUpload(files, input);
+          }
+        }}
       >
         <input {...getInputProps()} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
@@ -196,24 +262,9 @@ export function UploadButton<TRouter extends FileRouter>(
             getUploadButtonText(fileTypes)
           ))}
       </label>
-      <div
-        className={twMerge(
-          "h-[1.25rem]  text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
-            $props.appearance?.allowedContent,
-            styleFieldArg,
-          ),
-        )}
-        style={styleFieldToCssObject(
-          $props.appearance?.allowedContent,
-          styleFieldArg,
-        )}
-        data-state={state}
-        data-ut-element="allowed-content"
-      >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
-      </div>
+      {$props.config?.mode === "manual" && files.length > 0
+        ? renderClearButton()
+        : renderAllowedContent()}
     </div>
   );
 }

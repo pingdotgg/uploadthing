@@ -44,6 +44,7 @@ export function fillInputRouteConfig(
         // Apply defaults
         maxFileSize: getDefaultSizeForType(fileType),
         maxFileCount: 1,
+        contentDisposition: "inline",
       };
       return acc;
     }, {});
@@ -59,6 +60,7 @@ export function fillInputRouteConfig(
     const defaultValues = {
       maxFileSize: getDefaultSizeForType(key),
       maxFileCount: 1,
+      contentDisposition: "inline" as const,
     };
 
     newConfig[key] = { ...defaultValues, ...value };
@@ -112,7 +114,7 @@ export function generateUploadThingURL(path: `/${string}`) {
   } else {
     // @ts-expect-error - import.meta is dumb
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-    host = import.meta.env.CUSTOM_INFRA_URL ?? host;
+    host = import.meta.env?.CUSTOM_INFRA_URL ?? host;
   }
   return `${host}${path}`;
 }

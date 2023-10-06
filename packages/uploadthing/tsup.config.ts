@@ -12,6 +12,7 @@ export default defineConfig((opts) => ({
     "./src/next-legacy.ts",
     "./src/tw.ts",
     "./src/fastify.ts",
+    "./src/h3.ts",
   ],
   clean: !opts.watch,
 }));

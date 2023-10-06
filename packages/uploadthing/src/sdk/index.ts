@@ -1,321 +1,305 @@
-import type { Json } from "@uploadthing/shared";
+import type { ContentDisposition, Json } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { FileEsque, UploadData, UploadError } from "./utils";
-import { uploadFilesInternal } from "./utils";
+import type { FetchEsque, MaybeUrl } from "./types";
+import type { FileEsque, UploadFileResponse } from "./utils";
+import {
+  getApiKeyOrThrow,
+  guardServerOnly,
+  uploadFilesInternal,
+} from "./utils";
 
-function guardServerOnly() {
-  if (typeof window !== "undefined") {
-    throw new UploadThingError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "The `utapi` can only be used on the server.",
+export interface UTApiOptions {
+  /**
+   * Provide a custom fetch function.
+   * @default globalThis.fetch
+   */
+  fetch?: FetchEsque;
+  /**
+   * Provide a custom UploadThing API key.
+   * @default process.env.UPLOADTHING_SECRET
+   */
+  apiKey?: string;
+}
+
+export class UTApi {
+  private fetch: FetchEsque;
+  private apiKey: string | undefined;
+  private defaultHeaders: Record<string, string>;
+
+  constructor(opts?: UTApiOptions) {
+    this.fetch = opts?.fetch ?? globalThis.fetch;
+    this.apiKey = opts?.apiKey ?? process.env.UPLOADTHING_SECRET;
+    this.defaultHeaders = {
+      "Content-Type": "application/json",
+      "x-uploadthing-api-key": this.apiKey!,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    };
+  }
+
+  private async requestUploadThing<T extends Record<string, unknown>>(
+    pathname: `/${string}`,
+    body: Record<string, unknown>,
+    fallbackErrorMessage: string,
+  ) {
+    // Force API key to be set before requesting.
+    // Ideally we'd just throw in the constructor but since we need to export
+    // a `utapi` object we can't throw in the constructor because it would
+    // be a breaking change.
+    // FIXME: In next major
+    getApiKeyOrThrow();
+
+    const res = await this.fetch(generateUploadThingURL(pathname), {
+      method: "POST",
+      cache: "no-store",
+      headers: this.defaultHeaders,
+      body: JSON.stringify(body),
     });
+
+    const json = await res.json<T | { error: string }>();
+    if (!res.ok || "error" in json) {
+      console.error("[UT] Error:", json);
+      throw new UploadThingError({
+        code: "INTERNAL_SERVER_ERROR",
+        message:
+          "error" in json && typeof json.error === "string"
+            ? json.error
+            : fallbackErrorMessage,
+      });
+    }
+
+    return json;
+  }
+
+  /**
+   * @param {FileEsque | FileEsque[]} files The file(s) to upload
+   * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+   *
+   * @example
+   * await uploadFiles(new File(["foo"], "foo.txt"));
+   *
+   * @example
+   * await uploadFiles([
+   *   new File(["foo"], "foo.txt"),
+   *   new File(["bar"], "bar.txt"),
+   * ]);
+   */
+  async uploadFiles<T extends FileEsque | FileEsque[]>(
+    files: T,
+    // FIXME: config option in v6 instead of positional args
+    metadata: Json = {},
+    contentDisposition: ContentDisposition = "inline",
+  ) {
+    guardServerOnly();
+    incompatibleNodeGuard();
+
+    const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
+
+    const uploads = await uploadFilesInternal(
+      {
+        files: filesToUpload,
+        metadata,
+        contentDisposition,
+      },
+      {
+        fetch: this.fetch,
+        utRequestHeaders: this.defaultHeaders,
+      },
+    );
+
+    const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
+
+    return uploadFileResponse as T extends FileEsque[]
+      ? UploadFileResponse[]
+      : UploadFileResponse;
+  }
+
+  /**
+   * @param {string} url The URL of the file to upload
+   * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+   *
+   * @example
+   * await uploadFileFromUrl("https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+   *
+   * @example
+   * await uploadFileFromUrl([
+   *   "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+   *   "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"
+   * ])
+   */
+  async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
+    urls: T,
+    // FIXME: config option in v6 instead of positional args
+    metadata: Json = {},
+    contentDisposition: ContentDisposition = "inline",
+  ) {
+    guardServerOnly();
+
+    const fileUrls: MaybeUrl[] = Array.isArray(urls) ? urls : [urls];
+
+    const formData = new FormData();
+    formData.append("metadata", JSON.stringify(metadata));
+
+    const filesToUpload = await Promise.all(
+      fileUrls.map(async (url) => {
+        if (typeof url === "string") url = new URL(url);
+        const filename = url.pathname.split("/").pop() ?? "unknown-filename";
+
+        // Download the file on the user's server to avoid egress charges
+        const fileResponse = await fetch(url);
+        if (!fileResponse.ok) {
+          throw new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Failed to download requested file.",
+            cause: fileResponse,
+          });
+        }
+        const blob = await fileResponse.blob();
+        return Object.assign(blob, { name: filename });
+      }),
+    );
+
+    const uploads = await uploadFilesInternal(
+      {
+        files: filesToUpload,
+        metadata,
+        contentDisposition,
+      },
+      {
+        fetch: this.fetch,
+        utRequestHeaders: this.defaultHeaders,
+      },
+    );
+
+    const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
+
+    return uploadFileResponse as T extends MaybeUrl[]
+      ? UploadFileResponse[]
+      : UploadFileResponse;
+  }
+
+  /**
+   * Request to delete files from UploadThing storage.
+   * @param {string | string[]} fileKeys
+   *
+   * @example
+   * await deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+   *
+   * @example
+   * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
+   */
+  async deleteFiles(fileKeys: string[] | string) {
+    guardServerOnly();
+
+    if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
+
+    return this.requestUploadThing<{ success: boolean }>(
+      "/api/deleteFile",
+      { fileKeys },
+      "An unknown error occured while deleting files.",
+    );
+  }
+
+  /**
+   * Request file URLs from UploadThing storage.
+   * @param {string | string[]} fileKeys
+   *
+   * @example
+   * const data = await getFileUrls("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+   * console.log(data); // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"}]
+   *
+   * @example
+   * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
+   * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
+   */
+  async getFileUrls(fileKeys: string[] | string) {
+    guardServerOnly();
+    incompatibleNodeGuard();
+
+    if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
+
+    const json = await this.requestUploadThing<{
+      data: { key: string; url: string }[];
+    }>(
+      "/api/getFileUrl",
+      { fileKeys },
+      "An unknown error occured while retrieving file URLs.",
+    );
+
+    return json.data;
+  }
+
+  /**
+   * Request file list from UploadThing storage.
+   *
+   * @example
+   * const data = await listFiles();
+   * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
+   */
+  async listFiles() {
+    guardServerOnly();
+    incompatibleNodeGuard();
+
+    // TODO: Implement filtering and pagination
+    const json = await this.requestUploadThing<{
+      files: { key: string; id: string }[];
+    }>("/api/listFiles", {}, "An unknown error occured while listing files.");
+
+    return json.files;
+  }
+
+  async renameFile(
+    updates:
+      | {
+          fileKey: string;
+          newName: string;
+        }
+      | {
+          fileKey: string;
+          newName: string;
+        }[],
+  ) {
+    guardServerOnly();
+    incompatibleNodeGuard();
+
+    if (!Array.isArray(updates)) updates = [updates];
+
+    return this.requestUploadThing<{ success: true }>(
+      "/api/renameFile",
+      { updates },
+      "An unknown error occured while renaming files.",
+    );
+  }
+
+  async getUsageInfo() {
+    guardServerOnly();
+    incompatibleNodeGuard();
+
+    return this.requestUploadThing<{
+      totalBytes: number;
+      totalReadable: string;
+      appTotalBytes: number;
+      appTotalReadable: string;
+      filesUploaded: number;
+      limitBytes: number;
+      limitReadable: string;
+    }>(
+      "/api/getUsageInfo",
+      {},
+      "An unknown error occured while getting usage info.",
+    );
   }
 }
 
-function getApiKeyOrThrow() {
-  if (!process.env.UPLOADTHING_SECRET) {
-    throw new UploadThingError({
-      code: "MISSING_ENV",
-      message: "Missing `UPLOADTHING_SECRET` env variable.",
-    });
-  }
-  return process.env.UPLOADTHING_SECRET;
-}
-
-type UploadFileResponse =
-  | { data: UploadData; error: null }
-  | { data: null; error: UploadError };
-
 /**
- * @param {FileEsque | FileEsque[]} files The file(s) to upload
- * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+ * @deprecated
  *
- * @example
- * await uploadFiles(new File(["foo"], "foo.txt"));
- *
- * @example
- * await uploadFiles([
- *   new File(["foo"], "foo.txt"),
- *   new File(["bar"], "bar.txt"),
- * ]);
+ * Import `UTApi` and instantiate it yourself:
+ * ```ts
+ * import { UTApi } from "@uploadthing/server";
+ * const utapi = new UTApi({ ... });
+ * ```
  */
-export const uploadFiles = async <T extends FileEsque | FileEsque[]>(
-  files: T,
-  metadata: Json = {},
-) => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
-
-  const uploads = await uploadFilesInternal(
-    {
-      files: filesToUpload,
-      metadata,
-    },
-    {
-      apiKey: getApiKeyOrThrow(),
-      utVersion: UPLOADTHING_VERSION,
-    },
-  );
-
-  const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
-
-  return uploadFileResponse as T extends FileEsque[]
-    ? UploadFileResponse[]
-    : UploadFileResponse;
-};
-
-/**
- * @param {string} url The URL of the file to upload
- * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
- *
- * @example
- * await uploadFileFromUrl("https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
- *
- * @example
- * await uploadFileFromUrl([
- *   "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
- *   "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"
- * ])
- */
-type Url = string | URL;
-export const uploadFilesFromUrl = async <T extends Url | Url[]>(
-  urls: T,
-  metadata: Json = {},
-) => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  const fileUrls: Url[] = Array.isArray(urls) ? urls : [urls];
-
-  const formData = new FormData();
-  formData.append("metadata", JSON.stringify(metadata));
-
-  const filesToUpload = await Promise.all(
-    fileUrls.map(async (url) => {
-      if (typeof url === "string") url = new URL(url);
-      const filename = url.pathname.split("/").pop() ?? "unknown-filename";
-
-      // Download the file on the user's server to avoid egress charges
-      const fileResponse = await fetch(url);
-      if (!fileResponse.ok) {
-        throw new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "Failed to download requested file.",
-          cause: fileResponse,
-        });
-      }
-      const blob = await fileResponse.blob();
-      return Object.assign(blob, { name: filename });
-    }),
-  );
-
-  const uploads = await uploadFilesInternal(
-    {
-      files: filesToUpload,
-      metadata,
-    },
-    {
-      apiKey: getApiKeyOrThrow(),
-      utVersion: UPLOADTHING_VERSION,
-    },
-  );
-
-  const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
-
-  return uploadFileResponse as T extends Url[]
-    ? UploadFileResponse[]
-    : UploadFileResponse;
-};
-
-/**
- * Request to delete files from UploadThing storage.
- * @param {string | string[]} fileKeys
- *
- * @example
- * await deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
- *
- * @example
- * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
- */
-export const deleteFiles = async (fileKeys: string[] | string) => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
-
-  const res = await fetch(generateUploadThingURL("/api/deleteFile"), {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": getApiKeyOrThrow(),
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-    },
-    body: JSON.stringify({ fileKeys }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete files");
-  }
-
-  return res.json() as Promise<{ success: boolean }>;
-};
-
-/**
- * Request file URLs from UploadThing storage.
- * @param {string | string[]} fileKeys
- *
- * @example
- * const data = await getFileUrls("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
- * console.log(data); // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"}]
- *
- * @example
- * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
- * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
- */
-export const getFileUrls = async (fileKeys: string[] | string) => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
-
-  const res = await fetch(generateUploadThingURL("/api/getFileUrl"), {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": getApiKeyOrThrow(),
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-    },
-    body: JSON.stringify({ fileKeys }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to get file urls");
-  }
-
-  return res.json().then(({ data }) => data as { key: string; url: string }[]);
-};
-
-/**
- * Request file list from UploadThing storage.
- *
- * @example
- * const data = await listFiles();
- * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
- */
-export const listFiles = async () => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  // TODO: Implement filtering and pagination
-  const res = await fetch(generateUploadThingURL("/api/listFiles"), {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": getApiKeyOrThrow(),
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-    },
-  });
-
-  const json = (await res.json()) as
-    | { files: { key: string; id: string }[] }
-    | { error: string };
-
-  if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
-  }
-
-  return json.files;
-};
-
-/**
- * Rename a file in UploadThing storage.
- *
- * type Rename = {
- *   fileKey: string;
- *   newName: string; // Should include file extension
- * };
- *
- * @param {Rename | Rename[]} updates
- *
- * @example
- * await renameFile({ fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", newName: "new_image.jpg" });
- *
- * @example
- * await renameFile([{ fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", newName: "new_image.jpg" }, { fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", newName: "new_image2.jpg" }]);
- *
- */
-
-type Rename = {
-  fileKey: string;
-  newName: string;
-};
-
-export const renameFile = async (updates: Rename | Rename[]) => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  if (!Array.isArray(updates)) updates = [updates];
-
-  const res = await fetch(generateUploadThingURL("/api/renameFile"), {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": getApiKeyOrThrow(),
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-    },
-    body: JSON.stringify({ updates }),
-  });
-
-  const json = (await res.json()) as { success: true } | { error: string };
-
-  if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
-  }
-
-  return json;
-};
-
-export const getUsageInfo = async () => {
-  guardServerOnly();
-  incompatibleNodeGuard();
-
-  const res = await fetch(generateUploadThingURL("/api/getUsageInfo"), {
-    method: "POST",
-    cache: "no-store",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": getApiKeyOrThrow(),
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-    },
-  });
-
-  const json = (await res.json()) as
-    | { error: string }
-    | {
-        totalBytes: number;
-        totalReadable: string;
-        appTotalBytes: number;
-        appTotalReadable: string;
-        filesUploaded: number;
-        limitBytes: number;
-        limitReadable: string;
-      };
-
-  if (!res.ok || "error" in json) {
-    const message = "error" in json ? json.error : "Unknown error";
-    throw new Error(message);
-  }
-
-  return json;
-};
+export const utapi = new UTApi();
