@@ -1,7 +1,7 @@
 ---
-"uploadthing": minor
-"@uploadthing/react": minor
-"@uploadthing/solid": minor
+"uploadthing": major
+"@uploadthing/react": major
+"@uploadthing/solid": major
 ---
 
 feat: support arbitrary callback URLs (serving router from any endpoint). To use a different endpoint than `/api/uploadthing`,
