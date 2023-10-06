@@ -56,6 +56,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const $props = props as UploadDropzoneProps<TRouter>;
+
+  const { mode = "manual" } = $props.config ?? {};
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
   const uploadThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
@@ -77,7 +80,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
-    if ($props.config?.mode === "auto") {
+    if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
       void uploadThing.startUpload(acceptedFiles, input);
       return;

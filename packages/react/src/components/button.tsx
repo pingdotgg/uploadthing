@@ -70,6 +70,9 @@ export function UploadButton<TRouter extends FileRouter>(
     // Allow to disable the button
     __internal_button_disabled?: boolean;
   };
+
+  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,6 +85,7 @@ export function UploadButton<TRouter extends FileRouter>(
     useState(false);
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
+
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
@@ -113,21 +117,25 @@ export function UploadButton<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if (!$props.config?.appendOnPaste) return;
+      if (!appendOnPaste) return;
       if (document.activeElement !== labelRef.current) return;
 
-      const files = getFilesFromClipboardEvent(event);
-      if (!files) return;
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
 
-      const input = "input" in $props ? $props.input : undefined;
-      void startUpload(files, input);
+      setFiles((prev) => [...prev, ...pastedFiles]);
+
+      if (mode === "auto") {
+        const input = "input" in $props ? $props.input : undefined;
+        void startUpload(files, input);
+      }
     };
 
     window.addEventListener("paste", handlePaste);
     return () => {
       window.removeEventListener("paste", handlePaste);
     };
-  }, [startUpload, $props, fileTypes]);
+  }, [startUpload, appendOnPaste, $props, files, mode, fileTypes]);
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (isManualTriggerDisplayed)
@@ -145,7 +153,7 @@ export function UploadButton<TRouter extends FileRouter>(
       if (!e.target.files) return;
       const selectedFiles = Array.from(e.target.files);
 
-      if ($props.config?.mode === "manual") {
+      if (mode === "manual") {
         setFiles(selectedFiles);
         setIsManualTriggerDisplayed(true);
         return;
@@ -255,7 +263,7 @@ export function UploadButton<TRouter extends FileRouter>(
             getUploadButtonText(fileTypes)
           ))}
       </label>
-      {$props.config?.mode === "manual" && files.length > 0
+      {mode === "manual" && files.length > 0
         ? renderClearButton()
         : renderAllowedContent()}
     </div>

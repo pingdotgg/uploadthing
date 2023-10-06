@@ -72,6 +72,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // Allow to disable the dropzone
     __internal_dropzone_disabled?: boolean;
   };
+
+  const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
 
   const [files, setFiles] = useState<File[]>([]);
@@ -105,13 +108,13 @@ export function UploadDropzone<TRouter extends FileRouter>(
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if ($props.config?.mode === "auto") {
+      if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
         void startUpload(acceptedFiles, input);
         return;
       }
     },
-    [$props, startUpload],
+    [$props, mode, startUpload],
   );
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
@@ -137,7 +140,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
-      if (!$props.config?.appendOnPaste) return;
+      if (!appendOnPaste) return;
       if (document.activeElement !== rootRef.current) return;
 
       const pastedFiles = getFilesFromClipboardEvent(event);
@@ -145,7 +148,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
       setFiles([...files, ...pastedFiles]);
 
-      if ($props.config?.mode === "auto") {
+      if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
         void startUpload(files, input);
       }
@@ -155,7 +158,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
     return () => {
       window.removeEventListener("paste", handlePaste);
     };
-  }, [startUpload, $props, fileTypes, rootRef, files]);
+  }, [startUpload, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
   const styleFieldArg = {
     fileTypes,
