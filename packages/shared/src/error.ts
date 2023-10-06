@@ -1,4 +1,5 @@
 import type { Json } from "./types";
+import { isObject } from "./utils";
 
 const ERROR_CODES = {
   // Generic
@@ -90,7 +91,7 @@ export class UploadThingError<
       });
     }
     let message: string | undefined = undefined;
-    if (json !== null && typeof json === "object" && !Array.isArray(json)) {
+    if (isObject(json)) {
       if (typeof json.message === "string") {
         message = json.message;
       } else if (typeof json.error === "string") {

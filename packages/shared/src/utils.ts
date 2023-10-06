@@ -213,3 +213,13 @@ export const fileSizeToBytes = (input: string) => {
   const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
   return Math.floor(bytes);
 };
+
+export function objectKeys<T extends Record<string, unknown>>(
+  obj: T,
+): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
+}
+
+export function isObject(obj: unknown): obj is Record<string, unknown> {
+  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+}

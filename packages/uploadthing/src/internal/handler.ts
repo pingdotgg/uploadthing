@@ -2,6 +2,7 @@ import {
   generateUploadThingURL,
   getTypeFromFileName,
   getUploadthingUrl,
+  objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -25,10 +26,7 @@ const fileCountLimitHit = (
   const counts: Record<string, number> = {};
 
   files.forEach((file) => {
-    const type = getTypeFromFileName(
-      file,
-      Object.keys(routeConfig) as FileRouterInputKey[],
-    ) as FileRouterInputKey;
+    const type = getTypeFromFileName(file, objectKeys(routeConfig));
 
     if (!counts[type]) {
       counts[type] = 1;
