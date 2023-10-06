@@ -108,8 +108,8 @@ export const INTERNAL_uploadthingHookGen = <
 export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
   /**
    * URL to the UploadThing API endpoint
-   * @example "/api/uploadthing"
-   * @example "https://www.example.com/api/uploadthing"
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
    *
    * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
    *
