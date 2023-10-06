@@ -51,8 +51,8 @@ function fetchWithProgress(
 
 const createAPIRequestUrl = (config: {
   /**
-   * Absolute URL to the UploadThing API endpoint
-   * @example http://localhost:3000/api/uploadthing
+   * URL to the UploadThing API endpoint
+   * @example /api/uploadthing
    * @example https://www.example.com/api/uploadthing
    */
   url: string;
@@ -83,6 +83,13 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
+
+    /**
+     * Absolute URL to the UploadThing API endpoint
+     * @example http://localhost:3000/api/uploadthing
+     * @example "https://www.example.com/api/uploadthing"
+     */
+    url: string;
   };
 }[keyof TRouter];
 
@@ -115,14 +122,11 @@ export type UploadFileResponse = {
 
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
-  config: {
-    url: string;
-  },
 ) => {
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
-      url: config.url,
+      url: opts.url,
       slug: String(opts.endpoint),
       actionType: "upload",
     }),
@@ -223,7 +227,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       // tell uploadthing infra server that upload failed
       await fetch(
         createAPIRequestUrl({
-          url: config.url,
+          url: opts.url,
           slug: String(opts.endpoint),
           actionType: "failure",
         }),

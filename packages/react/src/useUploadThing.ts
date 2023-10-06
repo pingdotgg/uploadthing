@@ -73,35 +73,31 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles(
-          {
-            files,
-            endpoint: endpoint as string,
-            input,
-            onUploadProgress: (progress) => {
-              if (!opts?.onUploadProgress) return;
-              fileProgress.current.set(progress.file, progress.progress);
-              let sum = 0;
-              fileProgress.current.forEach((p) => {
-                sum += p;
-              });
-              const averageProgress =
-                Math.floor(sum / fileProgress.current.size / 10) * 10;
-              if (averageProgress !== uploadProgress.current) {
-                opts?.onUploadProgress?.(averageProgress);
-                uploadProgress.current = averageProgress;
-              }
-            },
-            onUploadBegin({ file }) {
-              if (!opts?.onUploadBegin) return;
+        const res = await DANGEROUS__uploadFiles({
+          files,
+          endpoint: endpoint as string,
+          input,
+          onUploadProgress: (progress) => {
+            if (!opts?.onUploadProgress) return;
+            fileProgress.current.set(progress.file, progress.progress);
+            let sum = 0;
+            fileProgress.current.forEach((p) => {
+              sum += p;
+            });
+            const averageProgress =
+              Math.floor(sum / fileProgress.current.size / 10) * 10;
+            if (averageProgress !== uploadProgress.current) {
+              opts?.onUploadProgress?.(averageProgress);
+              uploadProgress.current = averageProgress;
+            }
+          },
+          onUploadBegin({ file }) {
+            if (!opts?.onUploadBegin) return;
 
-              opts.onUploadBegin(file);
-            },
+            opts.onUploadBegin(file);
           },
-          {
-            url: initOpts.url,
-          },
-        );
+          url: initOpts.url,
+        });
 
         opts?.onClientUploadComplete?.(res);
         return res;
@@ -145,7 +141,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
-      DANGEROUS__uploadFiles<TRouter>(props, { url }),
+      DANGEROUS__uploadFiles<TRouter>({ ...props, url }),
   } as const;
 };
 
