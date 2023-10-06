@@ -1,6 +1,6 @@
 import type { ComponentProps } from "solid-js";
 
-import { getFullUrl } from "uploadthing/client";
+import { getFullApiUrl } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import { UploadButton } from "./components/button";
@@ -46,7 +46,7 @@ export function generateComponents<TRouter extends FileRouter>(initOpts?: {
    */
   url?: string;
 }) {
-  const url = getFullUrl(initOpts?.url);
+  const url = getFullApiUrl(initOpts?.url);
 
   return {
     UploadButton: (

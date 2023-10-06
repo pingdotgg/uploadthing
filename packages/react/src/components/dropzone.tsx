@@ -7,7 +7,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
-  getFullUrl,
+  getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -76,7 +76,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: getFullUrl($props.url),
+    url: getFullApiUrl($props.url),
   });
 
   const [files, setFiles] = useState<File[]>([]);

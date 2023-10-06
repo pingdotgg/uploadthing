@@ -52,10 +52,10 @@ function fetchWithProgress(
 const createAPIRequestUrl = (config: {
   /**
    * URL to the UploadThing API endpoint
-   * @example /api/uploadthing
-   * @example https://www.example.com/api/uploadthing
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
    */
-  url: string;
+  url: URL;
   slug: string;
   actionType: ActionType;
 }) => {
@@ -66,7 +66,7 @@ const createAPIRequestUrl = (config: {
   queryParams.set("slug", config.slug);
 
   url.search = queryParams.toString();
-  return url.toString();
+  return url;
 };
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
@@ -85,11 +85,11 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
     files: File[];
 
     /**
-     * Absolute URL to the UploadThing API endpoint
-     * @example http://localhost:3000/api/uploadthing
-     * @example "https://www.example.com/api/uploadthing"
+     * URL to the UploadThing API endpoint
+     * @example URL { http://localhost:3000/api/uploadthing }
+     * @example URL { https://www.example.com/api/uploadthing }
      */
-    url: string;
+    url: URL;
   };
 }[keyof TRouter];
 
@@ -312,34 +312,29 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
-// Returns the base URL for the current environment
-export function getBaseUrl(): string {
-  if (typeof window !== "undefined") {
-    console.log(window.location);
-    return window.location.origin;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-  if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
-    return process.env.VERCEL_URL;
-  }
-
-  // @ts-expect-error - import meta is not defined in node
-
-  if (import.meta.env?.VERCEL_URL) {
-    // @ts-expect-error - import meta is not defined in node
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return import.meta.env.VERCEL_URL;
-  }
-
-  return "http://localhost:3000";
-}
-
 // Returns a full URL to the dev's uploadthing endpoint
-export function getFullUrl(maybeUrl?: string) {
-  if (maybeUrl) {
-    if (maybeUrl.startsWith("http")) return maybeUrl;
-    return getBaseUrl() + maybeUrl;
-  }
-  return getBaseUrl() + "/api/uploadthing";
+export function getFullApiUrl(maybeUrl?: string): URL {
+  const base = (() => {
+    if (typeof window !== "undefined") {
+      return window.location.origin;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
+      return process.env.VERCEL_URL;
+    }
+
+    // @ts-expect-error - import meta is not defined in node
+    if (import.meta.env?.VERCEL_URL) {
+      // @ts-expect-error - import meta is not defined in node
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return import.meta.env.VERCEL_URL;
+    }
+
+    return "http://localhost:3000";
+  })();
+
+  return maybeUrl?.startsWith("http")
+    ? new URL(maybeUrl)
+    : new URL(maybeUrl ?? "/api/uploadthing", base);
 }

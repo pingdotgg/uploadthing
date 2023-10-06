@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles, getFullUrl } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
@@ -12,8 +12,8 @@ type EndpointMetadata = {
   config: ExpandedRouteConfig;
 }[];
 
-const createEndpointMetadata = (url: string, endpoint: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(url);
+const createEndpointMetadata = (url: URL, endpoint: string) => {
+  const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
@@ -28,11 +28,11 @@ export const INTERNAL_uploadthingHookGen = <
   TRouter extends FileRouter,
 >(initOpts: {
   /**
-   * Absolute URL to the UploadThing API endpoint
-   * @example http://localhost:3000/api/uploadthing
-   * @example https://www.example.com/api/uploadthing
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
    */
-  url: string;
+  url: URL;
 }) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
@@ -40,7 +40,7 @@ export const INTERNAL_uploadthingHookGen = <
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
-      getFullUrl(initOpts.url),
+      initOpts.url,
       endpoint as string,
     );
     let uploadProgress = 0;
@@ -117,7 +117,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
    */
   url?: string;
 }) => {
-  const url = getFullUrl(initOpts?.url);
+  const url = getFullApiUrl(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),

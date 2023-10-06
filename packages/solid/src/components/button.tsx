@@ -6,7 +6,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  getFullUrl,
+  getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -55,7 +55,7 @@ export function UploadButton<TRouter extends FileRouter>(
   let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: getFullUrl($props.url),
+    url: getFullApiUrl($props.url),
   });
   const uploadedThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {

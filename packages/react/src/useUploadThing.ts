@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles, getFullUrl } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
@@ -17,11 +17,11 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-const useEndpointMetadata = (url: string, endpoint: string) => {
+const useEndpointMetadata = (url: URL, endpoint: string) => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
-    maybeServerData ? undefined : url,
+    maybeServerData ? undefined : url.href,
   );
   return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
 };
@@ -44,11 +44,11 @@ export const INTERNAL_uploadthingHookGen = <
   TRouter extends FileRouter,
 >(initOpts: {
   /**
-   * Absolute URL to the UploadThing API endpoint
-   * @example http://localhost:3000/api/uploadthing
-   * @example https://www.example.com/api/uploadthing
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
    */
-  url: string;
+  url: URL;
 }) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
@@ -136,7 +136,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
    */
   url?: string;
 }) => {
-  const url = getFullUrl(initOpts?.url);
+  const url = getFullApiUrl(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
