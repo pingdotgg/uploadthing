@@ -56,6 +56,7 @@ export const INTERNAL_uploadthingHookGen = <
     const startUpload = async (...args: FuncInput) => {
       const [files, input] = args;
       setUploading(true);
+      opts?.onUploadProgress?.(0);
       try {
         const res = await DANGEROUS__uploadFiles(
           {

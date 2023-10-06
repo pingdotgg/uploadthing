@@ -1,5 +1,56 @@
 # @uploadthing/react
 
+## 5.6.2
+
+### Patch Changes
+
+- [#392](https://github.com/pingdotgg/uploadthing/pull/392)
+  [`d4492d9`](https://github.com/pingdotgg/uploadthing/commit/d4492d941d174d8f2fb4647d97ae4a2d21e5d199)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! -
+  fix(components): Allow upload button to be focusable via keyboard
+
+- [#384](https://github.com/pingdotgg/uploadthing/pull/384)
+  [`8c01e98`](https://github.com/pingdotgg/uploadthing/commit/8c01e980cf5b695165101b11c741ce6c1b396bdd)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix bug where progress bar
+  styles was not included in the compiled stylesheet
+
+- Updated dependencies
+  [[`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)]:
+  - @uploadthing/shared@5.2.3
+
+## 5.6.1
+
+### Patch Changes
+
+- [#298](https://github.com/pingdotgg/uploadthing/pull/298)
+  [`5e8016b`](https://github.com/pingdotgg/uploadthing/commit/5e8016b32fc7709dcd855da33dbc2ecf18eac0b5)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - refactor: extract some
+  theming-related code for easy sharing across frameworks
+
+## 5.6.0
+
+### Minor Changes
+
+- [#315](https://github.com/pingdotgg/uploadthing/pull/315)
+  [`c331135`](https://github.com/pingdotgg/uploadthing/commit/c3311355e0a0deeecf628eab18d854c44e578b6b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: esm
+  support by inhousing useDropzone code. You can now remove the `react-dropzone`
+  dependency as it's no longer being used by UploadThing. If you're using a
+  custom uploader component, the hook can be imported from
+  `@uploadthing/react/hooks`.
+
+- [#335](https://github.com/pingdotgg/uploadthing/pull/335)
+  [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
+  ssr hydration helper for next.js appdir. 📚
+  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+
+### Patch Changes
+
+- Updated dependencies
+  [[`92fac44`](https://github.com/pingdotgg/uploadthing/commit/92fac447f525be027125004f8cc0607b32375997)]:
+  - @uploadthing/shared@5.2.2
+
 ## 5.5.0
 
 ### Minor Changes

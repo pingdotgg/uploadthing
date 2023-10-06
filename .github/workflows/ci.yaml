@@ -1,23 +1,21 @@
 name: CI
 
+# You can leverage Vercel Remote Caching with Turbo to speed up your builds
+# @link https://turborepo.org/docs/core-concepts/remote-caching#remote-caching-on-vercel-builds
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 on:
   push:
     branches:
       - main
   pull_request:
 
-env:
-  DATABASE_URL: "https://fake.com"
-  AWS_REGION: "fake"
-  AWS_ID: "fake"
-  AWS_SECRET: "fake"
-  DATABASE_HOST: "fake"
-  DATABASE_PORT: "fake"
-  DATABASE_NAME: "fake"
-  DATABASE_USERNAME: "fake"
-  DATABASE_PASSWORD: "fake"
-  DB_PUSH_URL: "fake"
-  PING_SIGNING_SECRET: "fake"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   build:
@@ -25,32 +23,50 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Use PNPM
-        uses: pnpm/action-setup@v2.2.4
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
 
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - name: Build & test
+        run: pnpm turbo build test --filter "./packages/*"
 
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+  lint:
+    runs-on: ubuntu-latest
 
-      - name: Install deps (with cache)
-        run: pnpm install
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Build, lint, test, and typecheck
-        run: pnpm turbo build lint test typecheck
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
 
-      - name: Check formatting
+      - name: Lint
+        run: pnpm lint
+
+  format:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+
+      - name: Format
         run: pnpm format:check
 
-      - name: Check workspaces
-        run: pnpm manypkg check
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+
+      - name: Typecheck
+        run: pnpm typecheck
+

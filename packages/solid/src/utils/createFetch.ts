@@ -1,6 +1,8 @@
 import type { Resource } from "solid-js";
 import { createResource } from "solid-js";
 
+import { safeParseJSON } from "@uploadthing/shared";
+
 interface State<T> {
   data?: T;
   error?: Error;
@@ -25,12 +27,14 @@ export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
       if (!response.ok) {
         throw new Error(response.statusText);
       }
-      const data = (await response.json()) as T;
-      cache[url] = data;
-      return {
-        data,
-        type: "fetched",
-      };
+
+      const dataOrError = await safeParseJSON<T>(response);
+      if (dataOrError instanceof Error) {
+        throw dataOrError;
+      }
+
+      cache[url] = dataOrError;
+      return { data: dataOrError, type: "fetched" };
     } catch (error) {
       return {
         error: error as Error,

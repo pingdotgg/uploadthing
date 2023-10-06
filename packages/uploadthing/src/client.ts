@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { pollForFileData, UploadThingError } from "@uploadthing/shared";
+import {
+  pollForFileData,
+  safeParseJSON,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type {
@@ -9,6 +13,12 @@ import type {
   FileRouter,
   inferEndpointInput,
 } from "./internal/types";
+
+/**
+ * @internal
+ * Shared helpers for our premade components that's reusable by multiple frameworks
+ */
+export * from "./internal/component-theming";
 
 function fetchWithProgress(
   url: string,
@@ -122,6 +132,10 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         files: opts.files.map((f) => f.name),
         input: opts.input,
       }),
+      // Express requires Content-Type to be explicitly set to parse body properly
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
   ).then(async (res) => {
     // check for 200 response
@@ -130,18 +144,15 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       throw error;
     }
 
-    // attempt to parse response
-    try {
-      return res.json();
-    } catch (e) {
-      // response is not JSON
-      console.error(e);
+    const jsonOrError = await safeParseJSON(res);
+    if (jsonOrError instanceof Error) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Failed to parse response as JSON. Got: ${await res.text()}`,
-        cause: e,
+        message: jsonOrError.message,
+        cause: res,
       });
     }
+    return jsonOrError;
   });
 
   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
@@ -197,16 +208,14 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
         }),
       },
       (progressEvent) =>
-        opts.onUploadProgress &&
-        opts.onUploadProgress({
+        opts.onUploadProgress?.({
           file: file.name,
           progress: (progressEvent.loaded / progressEvent.total) * 100,
         }),
       () => {
-        opts.onUploadBegin &&
-          opts.onUploadBegin({
-            file: file.name,
-          });
+        opts.onUploadBegin?.({
+          file: file.name,
+        });
       },
     );
 
@@ -245,8 +254,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     }
 
     // Generate a URL for the uploaded image since AWS won't give me one
-    const genUrl =
-      "https://uploadthing.com/f/" + encodeURIComponent(fields.key);
+    const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
     await pollForFileData(presigned.key);

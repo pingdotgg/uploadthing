@@ -10,13 +10,13 @@ coverage
 
 # next.js
 .next/
-**/next-env.d.ts
 out/
 build
 
 # misc
 .DS_Store
 *.pem
+.data
 
 # debug
 npm-debug.log*
@@ -36,3 +36,4 @@ yarn-error.log*
 
 dist
 .solid
+.vercel

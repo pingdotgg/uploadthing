@@ -1,4 +1,6 @@
-import type { Json } from "@uploadthing/shared";
+import type { File as UndiciFile } from "undici";
+
+import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -7,7 +9,26 @@ import {
 
 import { maybeParseResponseXML } from "../internal/s3-error-parser";
 
-export type FileEsque = Blob & { name: string };
+export function guardServerOnly() {
+  if (typeof window !== "undefined") {
+    throw new UploadThingError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "The `utapi` can only be used on the server.",
+    });
+  }
+}
+
+export function getApiKeyOrThrow(apiKey?: string) {
+  if (apiKey) return apiKey;
+  if (process.env.UPLOADTHING_SECRET) return process.env.UPLOADTHING_SECRET;
+
+  throw new UploadThingError({
+    code: "MISSING_ENV",
+    message: "Missing `UPLOADTHING_SECRET` env variable.",
+  });
+}
+
+export type FileEsque = (Blob & { name: string }) | UndiciFile;
 
 export type UploadData = {
   key: string;
@@ -22,36 +43,45 @@ export type UploadError = {
   data: any;
 };
 
+export type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
+
 export const uploadFilesInternal = async (
   data: {
     files: FileEsque[];
     metadata: Json;
+    contentDisposition: ContentDisposition;
   },
   opts: {
-    apiKey: string;
-    utVersion: string;
+    fetch: FetchEsque;
+    utRequestHeaders: Record<string, string>;
   },
 ) => {
   // Request presigned URLs for each file
   const fileData = data.files.map((file) => ({
-    name: file.name,
+    name: file.name ?? "unnamed-blob",
     type: file.type,
     size: file.size,
   }));
-  const res = await fetch(generateUploadThingURL("/api/uploadFiles"), {
+  const res = await opts.fetch(generateUploadThingURL("/api/uploadFiles"), {
     method: "POST",
-    headers: {
-      "x-uploadthing-api-key": opts.apiKey,
-      "x-uploadthing-version": opts.utVersion,
-    },
+    headers: opts.utRequestHeaders,
     cache: "no-store",
     body: JSON.stringify({
       files: fileData,
       metadata: data.metadata,
+      contentDisposition: data.contentDisposition,
     }),
   });
 
-  const json = (await res.json()) as
+  if (!res.ok) {
+    const error = await UploadThingError.fromResponse(res as Response);
+    throw error;
+  }
+
+  const clonedRes = res.clone(); // so that `UploadThingError.fromResponse()` can consume the body again
+  const json = await res.json<
     | {
         data: {
           presignedUrl: string; // url to post to
@@ -60,10 +90,12 @@ export const uploadFilesInternal = async (
           fileUrl: string; // the final url of the file after upload
         }[];
       }
-    | { error: string };
+    | { error: string }
+  >();
 
-  if (!res.ok || "error" in json) {
-    throw UploadThingError.fromResponse(res);
+  if ("error" in json) {
+    const error = await UploadThingError.fromResponse(clonedRes as Response);
+    throw error;
   }
 
   // Upload each file to S3
@@ -84,10 +116,17 @@ export const uploadFilesInternal = async (
       Object.entries(fields).forEach(([key, value]) => {
         formData.append(key, value);
       });
-      formData.append("file", file);
+
+      formData.append(
+        "file",
+        // Handles case when there is no file name
+        file.name
+          ? (file as File)
+          : Object.assign(file as File, { name: "unnamed-blob" }),
+      );
 
       // Do S3 upload
-      const s3res = await fetch(presignedUrl, {
+      const s3res = await opts.fetch(presignedUrl, {
         method: "POST",
         body: formData,
         headers: new Headers({
@@ -97,15 +136,12 @@ export const uploadFilesInternal = async (
 
       if (!s3res.ok) {
         // tell uploadthing infra server that upload failed
-        await fetch(generateUploadThingURL("/api/failureCallback"), {
+        await opts.fetch(generateUploadThingURL("/api/failureCallback"), {
           method: "POST",
           body: JSON.stringify({
             fileKey: fields.key,
           }),
-          headers: {
-            "x-uploadthing-api-key": opts.apiKey,
-            "x-uploadthing-version": opts.utVersion,
-          },
+          headers: opts.utRequestHeaders,
         });
 
         const text = await s3res.text();

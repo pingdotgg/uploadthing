@@ -2,11 +2,16 @@ import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
 export function withUt(twConfig: Config) {
+  const contentPaths = [
+    "./node_modules/@uploadthing/react/dist/**",
+    "./node_modules/@uploadthing/solid/dist/**",
+  ];
+
   if (Array.isArray(twConfig.content)) {
-    twConfig.content.push("./node_modules/@uploadthing/react/src/**");
+    twConfig.content.push(...contentPaths);
   } else {
     // content can be an object too with `files` property
-    twConfig.content.files.push("./node_modules/@uploadthing/react/src/**");
+    twConfig.content.files.push(...contentPaths);
   }
 
   const utPlugin = plugin(({ addVariant }) => {
@@ -15,6 +20,7 @@ export function withUt(twConfig: Config) {
     addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
     addVariant("ut-label", '&>*[data-ut-element="label"]');
     addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+    addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
 
     // Variants to select specific state
     addVariant("ut-readying", '&[data-state="readying"]');

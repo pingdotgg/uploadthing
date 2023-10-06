@@ -6,4 +6,6 @@ export {
   Uploader,
   generateComponents,
 } from "./component";
-export type { UploadthingComponentProps } from "./types";
+
+export type * from "./types";
+export type * from "./use-dropzone/types";
