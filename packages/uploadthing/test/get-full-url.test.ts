@@ -23,7 +23,7 @@ describe("getFullApiUrl", () => {
   });
 
   it("should take VERCEL_URL if present and url is relative", () => {
-    process.env.VERCEL_URL = "https://example.com";
+    process.env.VERCEL_URL = "example.com";
 
     expect(getFullApiUrl("/foo/bar").href).toBe("https://example.com/foo/bar");
 
