@@ -243,3 +243,15 @@ export async function safeParseJSON<T>(
     return new Error(`Error parsing JSON, got '${text}'`);
   }
 }
+
+/** typesafe Object.keys */
+export function objectKeys<T extends Record<string, unknown>>(
+  obj: T,
+): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
+}
+
+/** checks if obj is a valid, non-null object */
+export function isObject(obj: unknown): obj is Record<string, unknown> {
+  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+}
