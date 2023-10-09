@@ -220,7 +220,7 @@ import { utapi } from "~/server/uploadthing.ts";
 
 async function uploadFiles(formData: FormData) {
   "use server";
-  const files = fd.getAll("files");
+  const files = formData.getAll("files");
   const response = await utapi.uploadFiles(files);
   //    ^? UploadedFileResponse[]
 }
