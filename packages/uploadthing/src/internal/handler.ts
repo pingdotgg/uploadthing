@@ -89,6 +89,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 ) => {
   return async (input: {
     req: RequestLike;
+    // Allow for overriding request URL since some req.url are read-only
+    // If the adapter doesn't give a full url on `req.url`, this should be set
+    url?: URL;
     res?: unknown;
     event?: unknown;
   }): Promise<
@@ -104,7 +107,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
     // Get inputs from query and params
-    const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
+    const params = new URL(input.url ?? req.url ?? "", getUploadthingUrl())
+      .searchParams;
     const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
@@ -285,7 +289,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const url = new URL(req.url);
+        const url = new URL(input.url ?? req.url);
         const callbackUrl = url.origin + url.pathname;
 
         const uploadthingApiResponse = await fetch(
