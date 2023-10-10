@@ -289,7 +289,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const url = new URL(input.url ?? req.url);
+        const url = new URL(input.url ?? req.url ?? "");
         const callbackUrl = url.origin + url.pathname;
 
         const uploadthingApiResponse = await fetch(
