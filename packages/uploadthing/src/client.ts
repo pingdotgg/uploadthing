@@ -333,9 +333,15 @@ export function getFullApiUrl(maybeUrl?: string): URL {
     return "http://localhost:3000";
   })();
 
-  const url = new URL(maybeUrl ?? "/api/uploadthing", base);
-  if (url.pathname === "/") {
-    url.pathname = "/api/uploadthing";
+  try {
+    const url = new URL(maybeUrl ?? "/api/uploadthing", base);
+    if (url.pathname === "/") {
+      url.pathname = "/api/uploadthing";
+    }
+    return url;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse '${maybeUrl}' as a URL. Make sure it's a valid URL or path`,
+    );
   }
-  return url;
 }
