@@ -158,6 +158,13 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
+    if (!input.url || !req.url) {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "No url provided",
+      });
+    }
+
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       const maybeReqBody = await safeParseJSON<{
@@ -289,8 +296,18 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const url = new URL(input.url ?? req.url ?? "");
-        const callbackUrl = url.origin + url.pathname;
+        let callbackUrl: string;
+        try {
+          const url = new URL(input.url ?? req.url);
+          callbackUrl = url.origin + url.pathname;
+        } catch (error) {
+          console.error(error);
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: `Invalid url '${input.url?.href ?? req.url}'`,
+            cause: error,
+          });
+        }
 
         const uploadthingApiResponse = await fetch(
           generateUploadThingURL("/api/prepareUpload"),
