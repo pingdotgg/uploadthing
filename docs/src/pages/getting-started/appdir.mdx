@@ -1,6 +1,7 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Callout, Steps, Tab, Tabs } from "nextra-theme-docs";
 
 import EnvSetup from "./_shared/env-setup.mdx";
+import TailwindSetup from "./_shared/tailwind-setup.mdx";
 
 # Next.js App Router Setup
 
@@ -74,12 +75,27 @@ export const { GET, POST } = createNextRouteHandler({
 });
 ```
 
-### Creating The UploadThing Components (optional)
+### Add UploadThing's Styles
 
-Generating components lets you pass your generic `FileRouter` once and then have
-typesafe components everywhere, instead of having to pass the generic everytime
-you mount a component, but you can also import the components individually from
-`@uploadthing/react`.
+<Tabs items={["Tailwind", "Not Tailwind"]}>
+  <Tab>
+    <TailwindSetup />
+  </Tab>
+  <Tab>
+    Include our CSS file in the root layout to make sure the components look right!
+
+    ```tsx copy filename="app/layout.tsx"
+    import "@uploadthing/react/styles.css";
+    ```
+
+  </Tab>
+</Tabs>
+
+### Create The UploadThing Components (Optional)
+
+We provide components to make uploading easier. We **highly recommend
+re-exporting them with the types assigned**, but you CAN import the components
+individually from `@uploadthing/react` instead.
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";
@@ -90,16 +106,10 @@ export const { UploadButton, UploadDropzone, Uploader } =
   generateComponents<OurFileRouter>();
 ```
 
-### Use the FileRouter in your app
-
-The `@uploadthing/react` package includes an "UploadButton" component that you
-can simply drop into your app, and start uploading files immediately.
+### Mount A Button And Upload!
 
 ```tsx copy filename="app/example-uploader/page.tsx"
 "use client";
-
-// You need to import our styles for the button to look right. Best to import in the root /layout.tsx but this is fine
-import "@uploadthing/react/styles.css";
 
 import { UploadButton } from "~/utils/uploadthing";
 
@@ -123,19 +133,10 @@ export default function Home() {
 }
 ```
 
-### Configure automatic hydration during SSR (recommended)
+### (Optional) UploadThing SSR Plugin
 
-> Added in `v5.6`
-
-By default, `useUploadThing` (and thus also the premade components) will fetch
-your server for the route endpoint permissions which will show a loading state.
-By utilizing server components, we can pre-hydrate this data on the server
-instead to avoid the loading state and show the route permissions immediately.
-
-To add SSR hydration for all uploadthing components, simply render the
-`<NextSSRPlugin />` hydration helper in the body of your root layout **before**
-the children. The before and after is shown below (refresh page to see the
-difference):
+UploadThing needs to get info from your server to get permissions info. Normally
+this means a loading state. We built an optional plugin to prevent that
 
 import { WithoutSSR, WithSSR } from "../../components/ssr-diff";
 
@@ -143,6 +144,10 @@ import { WithoutSSR, WithSSR } from "../../components/ssr-diff";
   <WithoutSSR />
   <WithSSR />
 </div>
+
+To add SSR hydration and avoid that loading state, simply render the
+`<NextSSRPlugin />` hydration helper in the body of your root layout **before**
+the children.
 
 ```tsx copy filename="app/layout.tsx"
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -175,3 +180,12 @@ export default function RootLayout({
 ```
 
 </Steps>
+
+---
+
+### 🎉 You're Done!
+
+Want to customize the components? Check out the ["Theming" page](/theming)
+
+Want to make your own components? Check out our
+[useUploadThing hook](/api-reference/react#useuploadthing)

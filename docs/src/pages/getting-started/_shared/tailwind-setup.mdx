@@ -1,0 +1,12 @@
+Wrap your Tailwind config with the `withUt` helper. You can learn more about our
+Tailwind helper in the ["Theming" page](/theming#with-tailwindcss)
+
+```tsx copy filename="tailwind.config.ts"
+import { withUt } from "uploadthing/tw";
+
+export default withUt({
+  // Your existing Tailwind config
+  content: ["./src/**/*.{ts,tsx,mdx}"],
+  ...
+});
+```
