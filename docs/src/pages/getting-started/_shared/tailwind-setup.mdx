@@ -4,11 +4,9 @@ Tailwind helper in the ["Theming" page](/theming#with-tailwindcss)
 ```tsx copy filename="tailwind.config.ts"
 import { withUt } from "uploadthing/tw";
 
-// Your existing Tailwind config
-const tailwindConfig = {
+export default withUt({
+  // Your existing Tailwind config
   content: ["./src/**/*.{ts,tsx,mdx}"],
   ...
-};
-
-export default withUt(tailwindConfig);
+});
 ```
