@@ -116,7 +116,7 @@
   [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
   Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
   ssr hydration helper for next.js appdir. 📚
-  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+  [See docs for how to add to your app](https://docs.uploadthing.com/getting-started/appdir#configure-automatic-hydration-during-ssr-recommended)
 
 ### Patch Changes
 
