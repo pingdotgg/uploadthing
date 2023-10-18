@@ -76,7 +76,7 @@ export const uploadFilesInternal = async (
   });
 
   if (!res.ok) {
-    const error = await UploadThingError.fromResponse(res as Response);
+    const error = await UploadThingError.fromResponse(res);
     throw error;
   }
 
@@ -84,26 +84,29 @@ export const uploadFilesInternal = async (
   const json = await res.json<
     | {
         data: {
-          presignedUrl: string; // url to post to
-          fields: Record<string, string>;
+          presignedUrls: string[];
           key: string;
-          fileUrl: string; // the final url of the file after upload
+          fileUrl: string;
+          fileType: string;
+          uploadId: string;
+          chunkSize: number;
+          chunkCount: number;
         }[];
       }
     | { error: string }
   >();
 
   if ("error" in json) {
-    const error = await UploadThingError.fromResponse(clonedRes as Response);
+    const error = await UploadThingError.fromResponse(clonedRes);
     throw error;
   }
 
-  // Upload each file to S3
+  // Upload each file to S3 in chunks using multi-part uploads
   const uploads = await Promise.allSettled(
     data.files.map(async (file, i) => {
-      const { presignedUrl, fields, key, fileUrl } = json.data[i];
+      const { presignedUrls, key, fileUrl, uploadId, chunkSize } = json.data[i];
 
-      if (!presignedUrl || !fields) {
+      if (!presignedUrls || !Array.isArray(presignedUrls)) {
         throw new UploadThingError({
           code: "URL_GENERATION_FAILED",
           message: "Failed to generate presigned URL",
@@ -111,53 +114,97 @@ export const uploadFilesInternal = async (
         });
       }
 
-      const formData = new FormData();
-      formData.append("Content-Type", file.type);
-      Object.entries(fields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
+      const maxRetries = 10;
+      const etags = await Promise.all(
+        presignedUrls.map(async (url, partNumber) => {
+          let retryCount = 0;
 
-      formData.append(
-        "file",
-        // Handles case when there is no file name
-        file.name
-          ? (file as File)
-          : Object.assign(file as File, { name: "unnamed-blob" }),
+          const offset = chunkSize * partNumber;
+          const end = Math.min(offset + chunkSize, file.size);
+          const chunk = file.slice(offset, end);
+
+          async function makeRequest() {
+            const s3Res = await opts.fetch(url, {
+              method: "PUT",
+              body: chunk as Blob, // omit weird union of different blobs
+              headers: {
+                "Content-Type": file.type,
+                "Content-Disposition": [
+                  data.contentDisposition,
+                  `filename="${file.name}"`,
+                  `filename*=UTF-8''${file.name}`,
+                ].join("; "),
+              },
+            });
+
+            if (s3Res.ok) {
+              const etag = s3Res.headers.get("Etag");
+              if (!etag) {
+                throw new UploadThingError({
+                  code: "UPLOAD_FAILED",
+                  message: "Missing Etag header from uploaded part",
+                });
+              }
+
+              console.log(`Uploaded part ${partNumber} with etag ${etag}`);
+              return etag.replace(/"/g, "");
+            }
+
+            if (retryCount < maxRetries) {
+              retryCount++;
+              // Retry after exponential backoff
+              const delay = 2 ** retryCount * 1000;
+              await new Promise((r) => setTimeout(r, delay));
+              console.log(
+                `Retrying part ${partNumber} after ${delay}ms, attempt ${
+                  retryCount + 1
+                }/${maxRetries}`,
+              );
+              return makeRequest();
+            }
+
+            // Max retries exceeded, tell UT server that upload failed
+            await opts.fetch(generateUploadThingURL("/api/failureCallback"), {
+              method: "POST",
+              body: JSON.stringify({
+                fileKey: key,
+              }),
+              headers: opts.utRequestHeaders,
+            });
+
+            const text = await s3Res.text();
+            const parsed = maybeParseResponseXML(text);
+            if (parsed?.message) {
+              throw new UploadThingError({
+                code: "UPLOAD_FAILED",
+                message: parsed.message,
+              });
+            }
+            throw new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: "Failed to upload file to storage provider",
+              cause: s3Res,
+            });
+          }
+
+          return { tag: await makeRequest(), partNumber: partNumber + 1 };
+        }),
       );
 
-      // Do S3 upload
-      const s3res = await opts.fetch(presignedUrl, {
-        method: "POST",
-        body: formData,
-        headers: new Headers({
-          Accept: "application/xml",
-        }),
-      });
-
-      if (!s3res.ok) {
-        // tell uploadthing infra server that upload failed
-        await opts.fetch(generateUploadThingURL("/api/failureCallback"), {
+      // Complete multipart upload
+      const completeRes = await opts.fetch(
+        generateUploadThingURL("/api/completeMultipart"),
+        {
           method: "POST",
           body: JSON.stringify({
-            fileKey: fields.key,
+            key,
+            uploadId,
+            etags,
           }),
           headers: opts.utRequestHeaders,
-        });
-
-        const text = await s3res.text();
-        const parsed = maybeParseResponseXML(text);
-        if (parsed?.message) {
-          throw new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: parsed.message,
-          });
-        }
-        throw new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "Failed to upload file to storage provider",
-          cause: s3res,
-        });
-      }
+        },
+      );
+      console.log("Complete multipart upload response:", completeRes);
 
       // Poll for file to be available
       await pollForFileData(key);

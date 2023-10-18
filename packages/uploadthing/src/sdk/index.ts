@@ -39,7 +39,8 @@ export class UTApi {
     this.defaultHeaders = {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": this.apiKey!,
-      "x-uploadthing-version": UPLOADTHING_VERSION,
+      // FIXME: REVERT THIS OVERRIDE
+      "x-uploadthing-version": "6" ?? UPLOADTHING_VERSION,
     };
   }
 
