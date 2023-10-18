@@ -1,5 +1,30 @@
 # @uploadthing/react
 
+## 5.7.0
+
+### Minor Changes
+
+- [#396](https://github.com/pingdotgg/uploadthing/pull/396)
+  [`df0d3da`](https://github.com/pingdotgg/uploadthing/commit/df0d3da2db3b3cd609b3e84a65fdd23c63e2dc92)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: manual upload mode
+  for button
+
+- [#383](https://github.com/pingdotgg/uploadthing/pull/383)
+  [`d687d61`](https://github.com/pingdotgg/uploadthing/commit/d687d614fd3c543c6abf435e29c3dd45596dd5e7)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: add `appendOnPaste`
+  config option to support pasting files
+
+### Patch Changes
+
+- [#404](https://github.com/pingdotgg/uploadthing/pull/404)
+  [`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - better error
+  handling of invalid json parsing
+
+- Updated dependencies
+  [[`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)]:
+  - @uploadthing/shared@5.2.5
+
 ## 5.6.2
 
 ### Patch Changes
