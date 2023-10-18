@@ -248,7 +248,11 @@ export class UTApi {
 
     // TODO: Implement filtering and pagination
     const json = await this.requestUploadThing<{
-      files: { key: string; id: string; status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading" }[];
+      files: {
+        key: string;
+        id: string;
+        status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
+      }[];
     }>("/api/listFiles", {}, "An unknown error occured while listing files.");
 
     return json.files;
