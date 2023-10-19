@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 5.2.5
+
+### Patch Changes
+
+- [#404](https://github.com/pingdotgg/uploadthing/pull/404)
+  [`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - better error
+  handling of invalid json parsing
+
 ## 5.2.4
 
 ### Patch Changes
