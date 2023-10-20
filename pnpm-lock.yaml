@@ -74,10 +74,10 @@ importers:
         version: 18.2.4
       autoprefixer:
         specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.22)
+        version: 10.4.14(postcss@8.4.31)
       postcss:
-        specifier: 8.4.22
-        version: 8.4.22
+        specifier: 8.4.31
+        version: 8.4.31
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
@@ -369,7 +369,7 @@ importers:
         version: 6.7.0(eslint@8.47.0)(typescript@5.1.6)
       autoprefixer:
         specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.22)
+        version: 10.4.14(postcss@8.4.31)
       eslint:
         specifier: ^8.47.0
         version: 8.47.0
@@ -427,7 +427,7 @@ importers:
         version: 6.7.0(eslint@8.47.0)(typescript@5.1.6)
       autoprefixer:
         specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.22)
+        version: 10.4.14(postcss@8.4.31)
       eslint:
         specifier: ^8.47.0
         version: 8.47.0
@@ -666,10 +666,10 @@ importers:
         version: 18.2.4
       autoprefixer:
         specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.22)
+        version: 10.4.14(postcss@8.4.31)
       postcss:
-        specifier: 8.4.22
-        version: 8.4.22
+        specifier: 8.4.31
+        version: 8.4.31
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
@@ -737,7 +737,7 @@ importers:
         version: link:../tsconfig
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -751,7 +751,7 @@ importers:
         version: 18.16.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
 
   packages/mime-types:
     devDependencies:
@@ -769,7 +769,7 @@ importers:
         version: 8.47.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -809,7 +809,7 @@ importers:
         version: link:../config/tsup
       autoprefixer:
         specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.22)
+        version: 10.4.14(postcss@8.4.31)
       eslint:
         specifier: ^8.47.0
         version: 8.47.0
@@ -817,8 +817,8 @@ importers:
         specifier: 13.4.4
         version: 13.4.4(@babel/core@7.22.1)(react-dom@18.2.0)(react@18.2.0)
       postcss:
-        specifier: 8.4.22
-        version: 8.4.22
+        specifier: 8.4.31
+        version: 8.4.31
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -827,7 +827,7 @@ importers:
         version: 3.3.2
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -863,7 +863,7 @@ importers:
         version: 8.47.0
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
@@ -882,10 +882,10 @@ importers:
     devDependencies:
       autoprefixer:
         specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.22)
+        version: 10.4.14(postcss@8.4.31)
       postcss:
-        specifier: 8.4.22
-        version: 8.4.22
+        specifier: 8.4.31
+        version: 8.4.31
       solid-js:
         specifier: ^1.7.11
         version: 1.7.11
@@ -897,7 +897,7 @@ importers:
         version: 3.3.2
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       tsup-preset-solid:
         specifier: 0.1.8
         version: 0.1.8(esbuild@0.19.2)(solid-js@1.7.11)(tsup@6.7.0)
@@ -958,7 +958,7 @@ importers:
         version: 3.3.2
       tsup:
         specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.24)(typescript@5.1.6)
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       type-fest:
         specifier: ^3.11.1
         version: 3.11.1
@@ -4950,7 +4950,7 @@ packages:
     resolution: {integrity: sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==}
     engines: {node: '>=4'}
 
-  /autoprefixer@10.4.14(postcss@8.4.22):
+  /autoprefixer@10.4.14(postcss@8.4.31):
     resolution: {integrity: sha512-FQzyfOsTlwVzjHxKEqRIAdJx9niO6VCBCoEwax/VLSoQF29ggECcPuBqUMZ+u8jCZOPSy8b8/8KnuFbp0SaFZQ==}
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
@@ -4962,7 +4962,7 @@ packages:
       fraction.js: 4.2.0
       normalize-range: 0.1.2
       picocolors: 1.0.0
-      postcss: 8.4.22
+      postcss: 8.4.31
       postcss-value-parser: 4.2.0
     dev: true
 
@@ -10420,29 +10420,29 @@ packages:
       '@polka/url': 1.0.0-next.21
       trouter: 3.2.1
 
-  /postcss-import@15.1.0(postcss@8.4.24):
+  /postcss-import@15.1.0(postcss@8.4.31):
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       postcss: ^8.0.0
     dependencies:
-      postcss: 8.4.24
+      postcss: 8.4.31
       postcss-value-parser: 4.2.0
       read-cache: 1.0.0
       resolve: 1.22.4
     dev: true
 
-  /postcss-js@4.0.1(postcss@8.4.24):
+  /postcss-js@4.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
       postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
-      postcss: 8.4.24
+      postcss: 8.4.31
     dev: true
 
-  /postcss-load-config@3.1.4(postcss@8.4.22):
+  /postcss-load-config@3.1.4(postcss@8.4.31):
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
     peerDependencies:
@@ -10455,28 +10455,11 @@ packages:
         optional: true
     dependencies:
       lilconfig: 2.1.0
-      postcss: 8.4.22
+      postcss: 8.4.31
       yaml: 1.10.2
     dev: true
 
-  /postcss-load-config@3.1.4(postcss@8.4.24):
-    resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
-    engines: {node: '>= 10'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.1.0
-      postcss: 8.4.24
-      yaml: 1.10.2
-    dev: true
-
-  /postcss-load-config@4.0.1(postcss@8.4.24):
+  /postcss-load-config@4.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -10489,17 +10472,17 @@ packages:
         optional: true
     dependencies:
       lilconfig: 2.1.0
-      postcss: 8.4.24
+      postcss: 8.4.31
       yaml: 2.3.1
     dev: true
 
-  /postcss-nested@6.0.1(postcss@8.4.24):
+  /postcss-nested@6.0.1(postcss@8.4.31):
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
       postcss: ^8.2.14
     dependencies:
-      postcss: 8.4.24
+      postcss: 8.4.31
       postcss-selector-parser: 6.0.13
     dev: true
 
@@ -10523,26 +10506,8 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
-  /postcss@8.4.22:
-    resolution: {integrity: sha512-XseknLAfRHzVWjCEtdviapiBtfLdgyzExD50Rg2ePaucEesyh8Wv4VPdW0nbyDa1ydbrAxV19jvMT4+LFmcNUA==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.6
-      picocolors: 1.0.0
-      source-map-js: 1.0.2
-    dev: true
-
-  /postcss@8.4.24:
-    resolution: {integrity: sha512-M0RzbcI0sO/XJNucsGjvWU9ERWxb/ytp1w6dKtxTKgixdtQDq4rmx/g8W1hnaheq9jgwL/oyEdH5Bc4WwJKMqg==}
-    engines: {node: ^10 || ^12 || >=14}
-    dependencies:
-      nanoid: 3.3.6
-      picocolors: 1.0.0
-      source-map-js: 1.0.2
-    dev: true
-
-  /postcss@8.4.28:
-    resolution: {integrity: sha512-Z7V5j0cq8oEKyejIKfpD8b4eBy9cwW2JWPk0+fB1HOAMsfHbnAXLLS+PfVWlzMSLQaWttKDt607I0XHmpE67Vw==}
+  /postcss@8.4.31:
+    resolution: {integrity: sha512-PS08Iboia9mts/2ygV3eLpY5ghnUcfLV/EXTOW1E2qYxJKGGBUtNjN76FYHnMs36RmARn41bC0AZmn+rR0OVpQ==}
     engines: {node: ^10 || ^12 || >=14}
     dependencies:
       nanoid: 3.3.6
@@ -12041,11 +12006,11 @@ packages:
       normalize-path: 3.0.0
       object-hash: 3.0.0
       picocolors: 1.0.0
-      postcss: 8.4.24
-      postcss-import: 15.1.0(postcss@8.4.24)
-      postcss-js: 4.0.1(postcss@8.4.24)
-      postcss-load-config: 4.0.1(postcss@8.4.24)
-      postcss-nested: 6.0.1(postcss@8.4.24)
+      postcss: 8.4.31
+      postcss-import: 15.1.0(postcss@8.4.31)
+      postcss-js: 4.0.1(postcss@8.4.31)
+      postcss-load-config: 4.0.1(postcss@8.4.31)
+      postcss-nested: 6.0.1(postcss@8.4.31)
       postcss-selector-parser: 6.0.13
       postcss-value-parser: 4.2.0
       resolve: 1.22.4
@@ -12313,7 +12278,7 @@ packages:
       tsup: ^6.5.0
     dependencies:
       esbuild-plugin-solid: 0.5.0(esbuild@0.19.2)(solid-js@1.7.11)
-      tsup: 6.7.0(postcss@8.4.22)(typescript@5.1.6)
+      tsup: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
       type-fest: 3.11.1
     transitivePeerDependencies:
       - esbuild
@@ -12321,7 +12286,7 @@ packages:
       - supports-color
     dev: true
 
-  /tsup@6.7.0(postcss@8.4.22)(typescript@5.1.6):
+  /tsup@6.7.0(postcss@8.4.31)(typescript@5.1.6):
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
     engines: {node: '>=14.18'}
     hasBin: true
@@ -12345,45 +12310,8 @@ packages:
       execa: 5.1.1
       globby: 11.1.0
       joycon: 3.1.1
-      postcss: 8.4.22
-      postcss-load-config: 3.1.4(postcss@8.4.22)
-      resolve-from: 5.0.0
-      rollup: 3.28.1
-      source-map: 0.8.0-beta.0
-      sucrase: 3.32.0
-      tree-kill: 1.2.2
-      typescript: 5.1.6
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: true
-
-  /tsup@6.7.0(postcss@8.4.24)(typescript@5.1.6):
-    resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
-    engines: {node: '>=14.18'}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.1.0'
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      bundle-require: 4.0.1(esbuild@0.17.19)
-      cac: 6.7.14
-      chokidar: 3.5.3
-      debug: 4.3.4
-      esbuild: 0.17.19
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss: 8.4.24
-      postcss-load-config: 3.1.4(postcss@8.4.24)
+      postcss: 8.4.31
+      postcss-load-config: 3.1.4(postcss@8.4.31)
       resolve-from: 5.0.0
       rollup: 3.28.1
       source-map: 0.8.0-beta.0
@@ -13021,7 +12949,7 @@ packages:
     dependencies:
       '@types/node': 18.16.0
       esbuild: 0.18.20
-      postcss: 8.4.28
+      postcss: 8.4.31
       rollup: 3.28.1
     optionalDependencies:
       fsevents: 2.3.2
