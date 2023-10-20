@@ -1,13 +1,16 @@
+import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
   getUploadthingUrl,
+  isObject,
   objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
   safeParseJSON,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
+  ContentDisposition,
   ExpandedRouteConfig,
   FileRouterInputKey,
   Json,
@@ -22,13 +25,13 @@ import { VALID_ACTION_TYPES } from "./types";
 import type { ActionType, FileRouter } from "./types";
 
 const fileCountLimitHit = (
-  files: string[],
+  files: { name: string }[],
   routeConfig: ExpandedRouteConfig,
 ) => {
   const counts: Record<string, number> = {};
 
   files.forEach((file) => {
-    const type = getTypeFromFileName(file, objectKeys(routeConfig));
+    const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
 
     if (!counts[type]) {
       counts[type] = 1;
@@ -75,10 +78,15 @@ const getHeader = (req: RequestLike, key: string) => {
   return req.headers[key];
 };
 
-type UploadThingResponse = {
-  presignedUrl: { url: string; fields: Record<string, string> }; // ripped type from S3 package
-  name: string;
+export type UploadThingResponse = {
+  presignedUrls: string[];
   key: string;
+  uploadId: string;
+  fileName: string;
+  fileType: MimeType;
+  contentDisposition: ContentDisposition;
+  chunkCount: number;
+  chunkSize: number;
 }[];
 
 export const buildRequestHandler = <TRouter extends FileRouter>(
@@ -190,7 +198,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     switch (actionType) {
       case "upload": {
         const maybeInput = await safeParseJSON<{
-          files: string[];
+          files: { name: string; size: number }[];
           input: Json;
         }>(req);
 
@@ -237,7 +245,15 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         }
 
         // Validate without Zod (for now)
-        if (!Array.isArray(files) || !files.every((f) => typeof f === "string"))
+        if (
+          !Array.isArray(files) ||
+          !files.every(
+            (f) =>
+              isObject(f) &&
+              typeof f.name === "string" &&
+              typeof f.size === "number",
+          )
+        )
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Files must be a string array",
@@ -327,9 +343,14 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         return { body: parsedResponse, status: 200 };
       }
-      case "failure": {
+      case "multipart-complete": {
         const maybeReqBody = await safeParseJSON<{
           fileKey: string;
+          uploadId: string;
+          etags: {
+            tag: string;
+            partNumber: number;
+          }[];
         }>(req);
         if (maybeReqBody instanceof Error) {
           return new UploadThingError({
@@ -338,7 +359,40 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             cause: maybeReqBody,
           });
         }
-        const { fileKey } = maybeReqBody;
+
+        const completeRes = await fetch(
+          generateUploadThingURL("/api/completeMultipart"),
+          {
+            method: "POST",
+            body: JSON.stringify({
+              key: maybeReqBody.fileKey,
+              uploadId: maybeReqBody.uploadId,
+              etags: maybeReqBody.etags,
+            }),
+          },
+        );
+        if (!completeRes.ok) {
+          return new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: "Failed to complete multipart upload",
+          });
+        }
+
+        return { status: 200 };
+      }
+      case "failure": {
+        const maybeReqBody = await safeParseJSON<{
+          fileKey: string;
+          uploadId: string;
+        }>(req);
+        if (maybeReqBody instanceof Error) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid request body",
+            cause: maybeReqBody,
+          });
+        }
+        const { fileKey, uploadId } = maybeReqBody;
 
         // Tell uploadthing to mark the upload as failed
         const uploadthingApiResponse = await fetch(
@@ -347,6 +401,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             method: "POST",
             body: JSON.stringify({
               fileKey,
+              uploadId,
             }),
             headers: {
               "Content-Type": "application/json",

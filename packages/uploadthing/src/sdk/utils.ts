@@ -7,7 +7,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { maybeParseResponseXML } from "../internal/s3-error-parser";
+import { uploadPart } from "../internal/multi-part";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -114,80 +114,25 @@ export const uploadFilesInternal = async (
         });
       }
 
-      const maxRetries = 10;
       const etags = await Promise.all(
-        presignedUrls.map(async (url, partNumber) => {
-          let retryCount = 0;
-
-          const offset = chunkSize * partNumber;
+        presignedUrls.map(async (url, index) => {
+          const offset = chunkSize * index;
           const end = Math.min(offset + chunkSize, file.size);
           const chunk = file.slice(offset, end);
 
-          async function makeRequest() {
-            const s3Res = await opts.fetch(url, {
-              method: "PUT",
-              body: chunk as Blob, // omit weird union of different blobs
-              headers: {
-                "Content-Type": file.type,
-                "Content-Disposition": [
-                  data.contentDisposition,
-                  `filename="${file.name}"`,
-                  `filename*=UTF-8''${file.name}`,
-                ].join("; "),
-              },
-            });
+          const etag = await uploadPart({
+            fetch: opts.fetch,
+            url,
+            chunk: chunk as Blob,
+            contentDisposition: data.contentDisposition,
+            contentType: file.type,
+            fileName: file.name,
+            maxRetries: 10,
+            key,
+            utRequestHeaders: opts.utRequestHeaders,
+          });
 
-            if (s3Res.ok) {
-              const etag = s3Res.headers.get("Etag");
-              if (!etag) {
-                throw new UploadThingError({
-                  code: "UPLOAD_FAILED",
-                  message: "Missing Etag header from uploaded part",
-                });
-              }
-
-              console.log(`Uploaded part ${partNumber} with etag ${etag}`);
-              return etag.replace(/"/g, "");
-            }
-
-            if (retryCount < maxRetries) {
-              retryCount++;
-              // Retry after exponential backoff
-              const delay = 2 ** retryCount * 1000;
-              await new Promise((r) => setTimeout(r, delay));
-              console.log(
-                `Retrying part ${partNumber} after ${delay}ms, attempt ${
-                  retryCount + 1
-                }/${maxRetries}`,
-              );
-              return makeRequest();
-            }
-
-            // Max retries exceeded, tell UT server that upload failed
-            await opts.fetch(generateUploadThingURL("/api/failureCallback"), {
-              method: "POST",
-              body: JSON.stringify({
-                fileKey: key,
-              }),
-              headers: opts.utRequestHeaders,
-            });
-
-            const text = await s3Res.text();
-            const parsed = maybeParseResponseXML(text);
-            if (parsed?.message) {
-              throw new UploadThingError({
-                code: "UPLOAD_FAILED",
-                message: parsed.message,
-              });
-            }
-            throw new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: "Failed to upload file to storage provider",
-              cause: s3Res,
-            });
-          }
-
-          return { tag: await makeRequest(), partNumber: partNumber + 1 };
+          return { tag: etag, partNumber: index + 1 };
         }),
       );
 
