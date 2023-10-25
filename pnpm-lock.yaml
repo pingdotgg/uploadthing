@@ -867,9 +867,6 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
-      zod:
-        specifier: ^3.22.3
-        version: 3.22.3
 
   packages/solid:
     dependencies:
