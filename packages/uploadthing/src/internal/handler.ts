@@ -22,7 +22,26 @@ import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter } from "./types";
+import type { ActionType, FileRouter, UTEvents } from "./types";
+
+/**
+ * Creates a wrapped fetch that will always forward a few headers to the server.
+ */
+const createUTFetch = (apiKey: string) => {
+  return async (endpoint: `/${string}`, payload: unknown) => {
+    const response = await fetch(generateUploadThingURL(endpoint), {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        "x-uploadthing-api-key": apiKey,
+        "x-uploadthing-version": UPLOADTHING_VERSION,
+      },
+    });
+
+    return response;
+  };
+};
 
 const fileCountLimitHit = (
   files: { name: string }[],
@@ -81,6 +100,7 @@ const getHeader = (req: RequestLike, key: string) => {
 export type UploadThingResponse = {
   presignedUrls: string[];
   key: string;
+  pollingUrl: string;
   uploadId: string;
   fileName: string;
   fileType: MimeType;
@@ -195,12 +215,11 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
+    const utFetch = createUTFetch(preferredOrEnvSecret);
+
     switch (actionType) {
       case "upload": {
-        const maybeInput = await safeParseJSON<{
-          files: { name: string; size: number }[];
-          input: Json;
-        }>(req);
+        const maybeInput = await safeParseJSON<UTEvents["upload"]>(req);
 
         if (maybeInput instanceof Error) {
           return new UploadThingError({
@@ -256,8 +275,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         )
           return new UploadThingError({
             code: "BAD_REQUEST",
-            message: "Files must be a string array",
-            cause: `Expected files to be of type 'string[]', got '${JSON.stringify(
+            message: "Files must be an array of objects with name and size",
+            cause: `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
               files,
             )}'`,
           });
@@ -298,26 +317,15 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const uploadthingApiResponse = await fetch(
-          generateUploadThingURL("/api/prepareUpload"),
-          {
-            method: "POST",
-            body: JSON.stringify({
-              files: files,
+        const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
+          files: files,
 
-              routeConfig: parsedConfig,
+          routeConfig: parsedConfig,
 
-              metadata,
-              callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
-              callbackSlug: slug,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-              "x-uploadthing-api-key": preferredOrEnvSecret,
-              "x-uploadthing-version": UPLOADTHING_VERSION,
-            },
-          },
-        );
+          metadata,
+          callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
+          callbackSlug: slug,
+        });
 
         // This is when we send the response back to the user's form so they can submit the files
         const parsedResponse = await safeParseJSON<UploadThingResponse>(
@@ -341,17 +349,18 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           }
         }
 
-        return { body: parsedResponse, status: 200 };
+        return {
+          body: parsedResponse.map((x) => ({
+            ...x,
+            pollingUrl: generateUploadThingURL(`/api/pollUpload/${x.key}`),
+          })),
+          status: 200,
+        };
       }
       case "multipart-complete": {
-        const maybeReqBody = await safeParseJSON<{
-          fileKey: string;
-          uploadId: string;
-          etags: {
-            tag: string;
-            partNumber: number;
-          }[];
-        }>(req);
+        const maybeReqBody = await safeParseJSON<
+          UTEvents["multipart-complete"]
+        >(req);
         if (maybeReqBody instanceof Error) {
           return new UploadThingError({
             code: "BAD_REQUEST",
@@ -360,17 +369,11 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const completeRes = await fetch(
-          generateUploadThingURL("/api/completeMultipart"),
-          {
-            method: "POST",
-            body: JSON.stringify({
-              key: maybeReqBody.fileKey,
-              uploadId: maybeReqBody.uploadId,
-              etags: maybeReqBody.etags,
-            }),
-          },
-        );
+        const completeRes = await utFetch("/api/completeMultipart", {
+          key: maybeReqBody.fileKey,
+          uploadId: maybeReqBody.uploadId,
+          etags: maybeReqBody.etags,
+        });
         if (!completeRes.ok) {
           return new UploadThingError({
             code: "UPLOAD_FAILED",
@@ -381,10 +384,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         return { status: 200 };
       }
       case "failure": {
-        const maybeReqBody = await safeParseJSON<{
-          fileKey: string;
-          uploadId: string;
-        }>(req);
+        const maybeReqBody = await safeParseJSON<UTEvents["failure"]>(req);
         if (maybeReqBody instanceof Error) {
           return new UploadThingError({
             code: "BAD_REQUEST",
@@ -395,21 +395,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         const { fileKey, uploadId } = maybeReqBody;
 
         // Tell uploadthing to mark the upload as failed
-        const uploadthingApiResponse = await fetch(
-          generateUploadThingURL("/api/failureCallback"),
-          {
-            method: "POST",
-            body: JSON.stringify({
-              fileKey,
-              uploadId,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-              "x-uploadthing-api-key": preferredOrEnvSecret,
-              "x-uploadthing-version": UPLOADTHING_VERSION,
-            },
-          },
-        );
+        const uploadthingApiResponse = await utFetch("/api/failureCallback", {
+          fileKey,
+          uploadId,
+        });
 
         if (!uploadthingApiResponse.ok) {
           console.error("[UT] failed to mark upload as failed");

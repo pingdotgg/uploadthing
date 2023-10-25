@@ -2,6 +2,7 @@
 
 import type {
   FileRouterInputConfig,
+  Json,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -133,3 +134,24 @@ export const VALID_ACTION_TYPES = [
   "multipart-complete",
 ] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+
+export type UTEvents = {
+  upload: {
+    files: { name: string; size: number }[];
+    input: Json;
+  };
+  failure: {
+    fileKey: string;
+    uploadId: string;
+    s3Error?: string;
+    fileName: string;
+  };
+  "multipart-complete": {
+    fileKey: string;
+    uploadId: string;
+    etags: {
+      tag: string;
+      partNumber: number;
+    }[];
+  };
+};

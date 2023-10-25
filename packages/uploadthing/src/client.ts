@@ -6,35 +6,14 @@ import {
 
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import { maybeParseResponseXML } from "./internal/s3-error-parser";
-import type {
-  ActionType,
-  FileRouter,
-  inferEndpointInput,
-} from "./internal/types";
+import type { FileRouter, inferEndpointInput } from "./internal/types";
+import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 /**
  * @internal
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */
 export * from "./internal/component-theming";
-
-const createAPIRequestUrl = (config: {
-  url?: string;
-  slug: string;
-  actionType: ActionType;
-}) => {
-  const url = new URL(
-    config.url ?? `${window.location.origin}/api/uploadthing`,
-  );
-
-  const queryParams = new URLSearchParams(url.search);
-  queryParams.set("actionType", config.actionType);
-  queryParams.set("slug", config.slug);
-
-  url.search = queryParams.toString();
-  return url.toString();
-};
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
@@ -60,77 +39,17 @@ export type UploadFileResponse = {
   url: string;
 };
 
-async function alertUTOfError(opts: {
-  url?: string;
-  endpoint: string;
-  key: string;
-  uploadId: string;
-  fileName: string;
-  reason?: string;
-}) {
-  // tell uploadthing infra server that upload failed
-  await fetch(
-    createAPIRequestUrl({
-      url: opts.url,
-      slug: opts.endpoint,
-      actionType: "failure",
-    }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        fileKey: opts.key,
-        uploadId: opts.uploadId,
-      }),
-    },
-  );
-
-  // Attempt to parse response as XML
-  const parsed = maybeParseResponseXML(opts.reason ?? "");
-
-  // Throw an error for the client
-  if (parsed?.message) {
-    throw new UploadThingError({
-      code: parsed.code,
-      message: parsed.message,
-    });
-  } else {
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: `Failed to upload file ${opts.fileName} to S3`,
-      cause: opts.reason,
-    });
-  }
-}
-
-async function alertUTOfUploadComplete(opts: {
-  url?: string;
-  endpoint: string;
-  uploadId: string;
-  key: string;
-  etags: { tag: string; partNumber: number }[];
-}) {
-  const { url, endpoint, ...payload } = opts;
-  const response = await fetch(
-    createAPIRequestUrl({
-      url,
-      slug: endpoint,
-      actionType: "multipart-complete",
-    }),
-    {
-      method: "POST",
-      body: JSON.stringify(payload),
-    },
-  );
-
-  return response.ok;
-}
-
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
   config?: {
     url?: string;
   },
 ) => {
+  const reportEventToUT = createUTReporter({
+    endpoint: String(opts.endpoint),
+    url: config?.url,
+  });
+
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
@@ -189,55 +108,54 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       });
     }
 
-    const { presignedUrls, uploadId, chunkSize, contentDisposition, key } =
-      presigned;
+    const {
+      presignedUrls,
+      uploadId,
+      chunkSize,
+      contentDisposition,
+      key,
+      pollingUrl,
+    } = presigned;
 
-    const etags = await Promise.all(
-      presignedUrls.map(async (url, index) => {
-        const offset = chunkSize * index;
-        const end = Math.min(offset + chunkSize, file.size);
-        const chunk = file.slice(offset, end);
+    let etags: { tag: string; partNumber: number }[];
+    try {
+      etags = await Promise.all(
+        presignedUrls.map(async (url, index) => {
+          const offset = chunkSize * index;
+          const end = Math.min(offset + chunkSize, file.size);
+          const chunk = file.slice(offset, end);
 
-        const etag = await uploadPartWithProgress({
-          url,
-          chunk: chunk,
-          contentDisposition,
-          fileType: file.type,
-          fileName: file.name,
-          maxRetries: 10,
-          onProgress: (progress) => {
-            const totalUploaded = offset + progress;
-            const percent = (totalUploaded / file.size) * 100;
-            opts.onUploadProgress?.({ file: file.name, progress: percent });
-          },
-        });
+          const etag = await uploadPartWithProgress({
+            url,
+            chunk: chunk,
+            contentDisposition,
+            fileType: file.type,
+            fileName: file.name,
+            maxRetries: 10,
+            onProgress: (progress) => {
+              const totalUploaded = offset + progress;
+              const percent = (totalUploaded / file.size) * 100;
+              opts.onUploadProgress?.({ file: file.name, progress: percent });
+            },
+          });
 
-        return { tag: etag, partNumber: index + 1 };
-      }),
-    ).catch(async (error) => {
-      await alertUTOfError({
-        url: config?.url,
-        endpoint: String(opts.endpoint),
-        key,
+          return { tag: etag, partNumber: index + 1 };
+        }),
+      );
+    } catch (error) {
+      await reportEventToUT("failure", {
+        fileKey: key,
         uploadId,
         fileName: file.name,
-        reason: (error as Error).toString(),
+        s3Error: (error as Error).toString(),
       });
-    });
-    if (!etags) {
-      console.log("Failed to upload file to storage provider");
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "An error occurred while uploading file to storage provider",
-      });
+      throw "unreachable"; // failure event will throw for us
     }
 
     // Tell the server that the upload is complete
-    const uploadOk = await alertUTOfUploadComplete({
-      url: config?.url,
-      endpoint: String(opts.endpoint),
+    const uploadOk = await reportEventToUT("multipart-complete", {
       uploadId,
-      key,
+      fileKey: key,
       etags,
     });
     if (!uploadOk) {
@@ -249,7 +167,7 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     }
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData(key);
+    await pollForFileData(pollingUrl);
 
     return {
       name: file.name,

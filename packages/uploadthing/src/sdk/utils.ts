@@ -152,7 +152,7 @@ export const uploadFilesInternal = async (
       console.log("Complete multipart upload response:", completeRes);
 
       // Poll for file to be available
-      await pollForFileData(key);
+      await pollForFileData(generateUploadThingURL(`/api/pollUpload/${key}`));
 
       return {
         key,

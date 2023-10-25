@@ -1,4 +1,8 @@
-import { pollForFileData, UploadThingError } from "@uploadthing/shared";
+import {
+  generateUploadThingURL,
+  pollForFileData,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { FileData } from "@uploadthing/shared";
 
 const isValidResponse = (response: Response) => {
@@ -13,7 +17,7 @@ export const conditionalDevServer = async (fileKey: string) => {
   if (process.env.NODE_ENV !== "development") return;
 
   const fileData = await pollForFileData(
-    fileKey,
+    generateUploadThingURL(`/api/pollUpload/${fileKey}`),
     async (json: { fileData: FileData }) => {
       const file = json.fileData;
 
