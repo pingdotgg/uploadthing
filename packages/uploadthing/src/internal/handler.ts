@@ -1,7 +1,6 @@
 import {
   generateUploadThingURL,
   getTypeFromFileName,
-  getUploadthingUrl,
   objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
   safeParseJSON,
@@ -106,9 +105,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
+    let url: URL;
+    try {
+      url = new URL(input.url ?? req.url ?? "");
+    } catch (error) {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Invalid url '${input.url?.href ?? req.url}'`,
+        cause: error,
+      });
+    }
+
     // Get inputs from query and params
-    const params = new URL(input.url ?? req.url ?? "", getUploadthingUrl())
-      .searchParams;
+    const params = url.searchParams;
     const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
@@ -155,13 +164,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       return new UploadThingError({
         code: "NOT_FOUND",
         message: `No file route found for slug ${slug}`,
-      });
-    }
-
-    if (!input.url || !req.url) {
-      return new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "No url provided",
       });
     }
 
@@ -298,7 +300,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         let callbackUrl: string;
         try {
-          const url = new URL(input.url ?? req.url);
           callbackUrl = url.origin + url.pathname;
         } catch (error) {
           console.error(error);
