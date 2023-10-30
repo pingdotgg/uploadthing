@@ -298,17 +298,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        let callbackUrl: string;
-        try {
-          callbackUrl = url.origin + url.pathname;
-        } catch (error) {
-          console.error(error);
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: `Invalid url '${input.url?.href ?? req.url}'`,
-            cause: error,
-          });
-        }
+        const callbackUrl = url.origin + url.pathname;
 
         const uploadthingApiResponse = await fetch(
           generateUploadThingURL("/api/prepareUpload"),
