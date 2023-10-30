@@ -2,12 +2,6 @@
 
 ## 5.7.3
 
-### Patch Changes
-
-- [#441](https://github.com/pingdotgg/uploadthing/pull/441)
-  [`da43651`](https://github.com/pingdotgg/uploadthing/commit/da436516a9c1e30268878016a9c1dc930bc384f6)
-  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore:
-  changeset for zod removal
 
 - Updated dependencies
   [[`da43651`](https://github.com/pingdotgg/uploadthing/commit/da436516a9c1e30268878016a9c1dc930bc384f6)]:
