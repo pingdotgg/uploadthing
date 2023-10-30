@@ -1,4 +1,5 @@
 ---
+"uploadthing": patch
 "@uploadthing/shared": patch
 ---
 
