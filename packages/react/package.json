@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "5.5.0",
+  "version": "5.7.0",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -14,6 +14,11 @@
       "types": "./dist/hooks.d.ts",
       "import": "./dist/hooks.mjs",
       "require": "./dist/hooks.js"
+    },
+    "./next-ssr-plugin": {
+      "types": "./dist/next-ssr-plugin.d.ts",
+      "import": "./dist/next-ssr-plugin.mjs",
+      "require": "./dist/next-ssr-plugin.js"
     }
   },
   "files": [
@@ -39,13 +44,20 @@
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.1",
+    "@uploadthing/shared": "^5.2.5",
+    "attr-accept": "^2.2.2",
+    "file-selector": "^0.6.0",
     "tailwind-merge": "^1.13.2"
   },
   "peerDependencies": {
+    "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "react-dropzone": "^14.2.3",
     "uploadthing": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "18.16.0",
@@ -56,16 +68,16 @@
     "@uploadthing/tsup-config": "0.1.0",
     "autoprefixer": "10.4.14",
     "eslint": "^8.47.0",
-    "postcss": "8.4.22",
+    "next": "13.4.4",
+    "postcss": "8.4.31",
     "react": "18.2.0",
-    "react-dropzone": "^14.2.3",
     "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
     "typescript": "^5.1.6",
-    "uploadthing": "5.5.3",
+    "uploadthing": "5.7.2",
     "vitest": "^0.30.1",
     "wait-on": "^7.0.1",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "eslintConfig": {
     "root": true,

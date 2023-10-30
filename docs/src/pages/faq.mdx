@@ -27,8 +27,3 @@ their `middleware.ts` is configured incorrectly.
 Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
 serves as both a validation endpoint from client AND a webhook for the
 `onUploadComplete` calls.
-
-### I'm getting the error `Named export 'useDropzone' not found`
-
-This is because you forgot to include `esmExternals: true` in your
-`next.config.(m)js` file

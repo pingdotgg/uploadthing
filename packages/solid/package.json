@@ -3,7 +3,7 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "5.2.1",
+  "version": "5.4.1",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
@@ -87,18 +87,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.1"
+    "@uploadthing/shared": "^5.2.5",
+    "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
     "autoprefixer": "10.4.14",
-    "postcss": "8.4.22",
+    "postcss": "8.4.31",
     "solid-js": "^1.7.11",
     "solidjs-dropzone": "^1.0.0",
     "tailwindcss": "^3.3.2",
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "^5.1.6",
-    "uploadthing": "5.5.3",
+    "uploadthing": "5.7.2",
     "wait-on": "^7.0.1"
   },
   "peerDependencies": {

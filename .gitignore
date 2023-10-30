@@ -10,7 +10,6 @@ coverage
 
 # next.js
 .next/
-**/next-env.d.ts
 out/
 build
 
@@ -37,3 +36,4 @@ yarn-error.log*
 
 dist
 .solid
+.vercel

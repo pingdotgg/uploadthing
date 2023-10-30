@@ -1,5 +1,166 @@
 # uploadthing
 
+## 5.7.2
+
+### Patch Changes
+
+- [#404](https://github.com/pingdotgg/uploadthing/pull/404)
+  [`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - better error
+  handling of invalid json parsing
+
+- [#415](https://github.com/pingdotgg/uploadthing/pull/415)
+  [`1635217`](https://github.com/pingdotgg/uploadthing/commit/16352171ff05e309cd2590a2a236a48de2477860)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - clone res
+  before attempting to parse json so that we can fallback to .text()
+
+- [#430](https://github.com/pingdotgg/uploadthing/pull/430)
+  [`7a63ab5`](https://github.com/pingdotgg/uploadthing/commit/7a63ab5669dffec5e1ff3f4d837ccff2ae47852b)
+  Thanks [@JEK58](https://github.com/JEK58)! - feat: Upload status type added
+
+- Updated dependencies
+  [[`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)]:
+  - @uploadthing/shared@5.2.5
+
+## 5.7.1
+
+### Patch Changes
+
+- [#410](https://github.com/pingdotgg/uploadthing/pull/410)
+  [`1df596a`](https://github.com/pingdotgg/uploadthing/commit/1df596a2507abb9047fd5ad5d4355e3ab52d5044)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrong env
+  check for sdk
+
+- Updated dependencies
+  [[`fd24c9d`](https://github.com/pingdotgg/uploadthing/commit/fd24c9d2b4e8be089bae2c9cb78d8f1b1fa80c16)]:
+  - @uploadthing/shared@5.2.4
+
+## 5.7.0
+
+### Minor Changes
+
+- [#388](https://github.com/pingdotgg/uploadthing/pull/388)
+  [`440ae1b`](https://github.com/pingdotgg/uploadthing/commit/440ae1bb9de8887b6676b2566413f9e49575304a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - migrate utapi
+  to a class which allows for (optional) custom initialization options to be
+  passed in. Below are shown the available options and their default values:
+
+  ```ts
+  import { UTApi } from "uploadthing/server";
+
+  const utapi = new UTApi({
+    fetch: globalThis.fetch,
+    apiKey: process.env.UPLOADTHING_SECRET,
+  });
+
+  utapi.deleteFiles;
+  utapi.listFiles;
+  // ...
+  ```
+
+  `utapi` is still exported from `uploadthing/server` for backwards
+  compatibility, but will be removed in a future major release.
+
+### Patch Changes
+
+- [#380](https://github.com/pingdotgg/uploadthing/pull/380)
+  [`2803c5b`](https://github.com/pingdotgg/uploadthing/commit/2803c5b18962abc1884fe565fa0a3f60c04f2717)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: include
+  patterns of withUt now points to existing files
+
+- [#373](https://github.com/pingdotgg/uploadthing/pull/373)
+  [`33c67af`](https://github.com/pingdotgg/uploadthing/commit/33c67af34d57e2ea3091ba7d7cdc1ddfaf1bbf97)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat(sdk): add
+  usage endpoint to sdk
+
+- [#382](https://github.com/pingdotgg/uploadthing/pull/382)
+  [`3b04a8c`](https://github.com/pingdotgg/uploadthing/commit/3b04a8c52cd048bd7ea9e4150787ceb8180ed84a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add warning log
+  if node < 18
+
+- [#388](https://github.com/pingdotgg/uploadthing/pull/388)
+  [`440ae1b`](https://github.com/pingdotgg/uploadthing/commit/440ae1bb9de8887b6676b2566413f9e49575304a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - include more
+  logs for failed `utapi` functions
+
+- Updated dependencies
+  [[`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)]:
+  - @uploadthing/shared@5.2.3
+
+## 5.6.1
+
+### Patch Changes
+
+- [#359](https://github.com/pingdotgg/uploadthing/pull/359)
+  [`842f3bd`](https://github.com/pingdotgg/uploadthing/commit/842f3bd0f25f7289234f31e80f8d2b6d1599534f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: don't
+  reference external types in internal functions, only in the specific
+  entrypoints
+
+- [#360](https://github.com/pingdotgg/uploadthing/pull/360)
+  [`a0e1bf9`](https://github.com/pingdotgg/uploadthing/commit/a0e1bf937472b6909530dedd692c98af49470541)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor:
+  remove internal indirection for exporting adapers
+
+- [#363](https://github.com/pingdotgg/uploadthing/pull/363)
+  [`0612800`](https://github.com/pingdotgg/uploadthing/commit/06128000e90fe7080ebb8cbec1cacbb49c709aeb)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: only run
+  JSON.parse if body is a string
+
+- [#361](https://github.com/pingdotgg/uploadthing/pull/361)
+  [`4f6949d`](https://github.com/pingdotgg/uploadthing/commit/4f6949db22b36f27d59f2c3dcfc8588f7d033009)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: move
+  dev-log into function scope to prevent spam
+
+- [#298](https://github.com/pingdotgg/uploadthing/pull/298)
+  [`5e8016b`](https://github.com/pingdotgg/uploadthing/commit/5e8016b32fc7709dcd855da33dbc2ecf18eac0b5)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - refactor: extract some
+  theming-related code for easy sharing across frameworks
+
+- [#354](https://github.com/pingdotgg/uploadthing/pull/354)
+  [`0a2b1c1`](https://github.com/pingdotgg/uploadthing/commit/0a2b1c16c379271a70742e8ed1917f41d9a4d0d0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor to
+  remove indirection for express package
+
+## 5.6.0
+
+### Minor Changes
+
+- [#297](https://github.com/pingdotgg/uploadthing/pull/297)
+  [`4411aa0`](https://github.com/pingdotgg/uploadthing/commit/4411aa0608ab19eeceaf58ddad1e07769f367715)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: Fastify adapter
+
+- [#296](https://github.com/pingdotgg/uploadthing/pull/296)
+  [`4dff08c`](https://github.com/pingdotgg/uploadthing/commit/4dff08cb5ec042bb192e607b00cdb90393149b78)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: express support
+
+- [#335](https://github.com/pingdotgg/uploadthing/pull/335)
+  [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
+  ssr hydration helper for next.js appdir. 📚
+  [See docs for how to add to your app](https://docs.uploadthing.com/getting-started/appdir#configure-automatic-hydration-during-ssr-recommended)
+
+### Patch Changes
+
+- [#325](https://github.com/pingdotgg/uploadthing/pull/325)
+  [`da11434`](https://github.com/pingdotgg/uploadthing/commit/da11434d6b7ce72fedea7a7d81a86e21da487994)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: accept
+  Undici File type in utapi
+
+- [#345](https://github.com/pingdotgg/uploadthing/pull/345)
+  [`92c69d5`](https://github.com/pingdotgg/uploadthing/commit/92c69d51325658a9d0a92dd045d13f9c24ca1ced)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(sdk): await
+  error before throwing
+
+- [#327](https://github.com/pingdotgg/uploadthing/pull/327)
+  [`b848579`](https://github.com/pingdotgg/uploadthing/commit/b848579eadf1657be3215b9392cae126e53323fb)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add
+  default name to blobs for server uploads
+
+- Updated dependencies
+  [[`92fac44`](https://github.com/pingdotgg/uploadthing/commit/92fac447f525be027125004f8cc0607b32375997)]:
+  - @uploadthing/shared@5.2.2
+
 ## 5.5.3
 
 ### Patch Changes

@@ -7,6 +7,8 @@ import type {
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  RequestLike,
+  ResponseEsque,
 } from "./types";
 
 export function isRouteArray(
@@ -44,6 +46,7 @@ export function fillInputRouteConfig(
         // Apply defaults
         maxFileSize: getDefaultSizeForType(fileType),
         maxFileCount: 1,
+        contentDisposition: "inline",
       };
       return acc;
     }, {});
@@ -59,6 +62,7 @@ export function fillInputRouteConfig(
     const defaultValues = {
       maxFileSize: getDefaultSizeForType(key),
       maxFileCount: 1,
+      contentDisposition: "inline" as const,
     };
 
     newConfig[key] = { ...defaultValues, ...value };
@@ -112,7 +116,7 @@ export function generateUploadThingURL(path: `/${string}`) {
   } else {
     // @ts-expect-error - import.meta is dumb
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-    host = import.meta.env.CUSTOM_INFRA_URL ?? host;
+    host = import.meta.env?.CUSTOM_INFRA_URL ?? host;
   }
   return `${host}${path}`;
 }
@@ -157,13 +161,19 @@ export async function pollForFileData(
 
   return withExponentialBackoff(async () => {
     const res = await fetch(queryUrl);
-    const json = (await res.json()) as
-      | { status: "done"; fileData: FileData }
-      | { status: "something else" };
+    const maybeJson = await safeParseJSON<
+      { status: "done"; fileData: FileData } | { status: "something else" }
+    >(res);
 
-    if (json.status !== "done") return null;
+    if (maybeJson instanceof Error) {
+      console.error(
+        `[UT] Error polling for file data for ${fileKey}: ${maybeJson.message}`,
+      );
+      return null;
+    }
 
-    await callback?.(json);
+    if (maybeJson.status !== "done") return null;
+    await callback?.(maybeJson);
   });
 }
 
@@ -211,3 +221,37 @@ export const fileSizeToBytes = (input: string) => {
   const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
   return Math.floor(bytes);
 };
+
+export async function safeParseJSON<T>(
+  input: string | ResponseEsque | RequestLike,
+): Promise<T | Error> {
+  if (typeof input === "string") {
+    try {
+      return JSON.parse(input) as T;
+    } catch (err) {
+      console.error(`Error parsing JSON, got '${input}'`);
+      return new Error(`Error parsing JSON, got '${input}'`);
+    }
+  }
+
+  const clonedRes = input.clone?.();
+  try {
+    return (await input.json()) as T;
+  } catch (err) {
+    const text = (await clonedRes?.text()) ?? "unknown";
+    console.error(`Error parsing JSON, got '${text}'`);
+    return new Error(`Error parsing JSON, got '${text}'`);
+  }
+}
+
+/** typesafe Object.keys */
+export function objectKeys<T extends Record<string, unknown>>(
+  obj: T,
+): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
+}
+
+/** checks if obj is a valid, non-null object */
+export function isObject(obj: unknown): obj is Record<string, unknown> {
+  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+}

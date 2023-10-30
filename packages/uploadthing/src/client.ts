@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { UploadThingError } from "@uploadthing/shared";
+import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./internal/s3-error-parser";
 import type {
@@ -10,6 +10,12 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
+
+/**
+ * @internal
+ * Shared helpers for our premade components that's reusable by multiple frameworks
+ */
+export * from "./internal/component-theming";
 
 function fetchWithProgress(
   url: string,
@@ -131,6 +137,10 @@ export const DANGEROUS__uploadFiles = async <
         files: opts.files.map((f) => f.name),
         input: "input" in opts ? opts.input : null,
       }),
+      // Express requires Content-Type to be explicitly set to parse body properly
+      headers: {
+        "Content-Type": "application/json",
+      },
     },
   ).then(async (res) => {
     // check for 200 response
@@ -139,18 +149,15 @@ export const DANGEROUS__uploadFiles = async <
       throw error;
     }
 
-    // attempt to parse response
-    try {
-      return res.json();
-    } catch (e) {
-      // response is not JSON
-      console.error(e);
+    const jsonOrError = await safeParseJSON(res);
+    if (jsonOrError instanceof Error) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Failed to parse response as JSON. Got: ${await res.text()}`,
-        cause: e,
+        message: jsonOrError.message,
+        cause: res,
       });
     }
+    return jsonOrError;
   });
 
   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {

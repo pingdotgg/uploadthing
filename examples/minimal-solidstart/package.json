@@ -6,23 +6,24 @@
     "dev": "solid-start dev --port 9898",
     "start": "solid-start start --port 9898",
     "build": "solid-start build",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@solidjs/meta": "^0.28.6",
     "@solidjs/router": "^0.8.3",
-    "@uploadthing/solid": "5.2.1",
+    "@uploadthing/solid": "5.4.1",
     "attr-accept": "^2.2.2",
     "solid-js": "^1.7.11",
-    "solid-start": "^0.3.4",
+    "solid-start": "^0.3.5",
     "solidjs-dropzone": "^1.0.0",
     "undici": "^5.20.0",
-    "uploadthing": "5.5.3",
-    "zod": "^3.21.4"
+    "uploadthing": "5.7.2",
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/node": "18.16.0",
-    "@typescript-eslint/parser": "^6.3.0",
+    "@typescript-eslint/parser": "^6.7.0",
     "eslint": "^8.47.0",
     "eslint-plugin-solid": "^0.13.0",
     "solid-start-node": "^0.3.4",

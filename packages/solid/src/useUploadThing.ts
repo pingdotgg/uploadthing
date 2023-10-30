@@ -57,6 +57,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     const startUpload = async (...args: FuncInput) => {
       const [files, input] = args;
       setUploading(true);
+      opts?.onUploadProgress?.(0);
       try {
         const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
           files,

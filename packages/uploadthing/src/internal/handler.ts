@@ -1,26 +1,27 @@
 import type EventEmitter from "events";
-import type { NextApiResponse } from "next";
 
 import {
   generateUploadThingURL,
   getTypeFromFileName,
   getUploadthingUrl,
+  objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
-  pollForFileData,
+  safeParseJSON,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
   ExpandedRouteConfig,
-  FileData,
   FileRouterInputKey,
   Json,
+  RequestLike,
   UploadedFile,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { conditionalDevServer } from "./dev-hook";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, AnyRuntime, FileRouter, RequestLike } from "./types";
+import type { ActionType, FileRouter } from "./types";
 
 const fileCountLimitHit = (
   files: string[],
@@ -29,10 +30,7 @@ const fileCountLimitHit = (
   const counts: Record<string, number> = {};
 
   files.forEach((file) => {
-    const type = getTypeFromFileName(
-      file,
-      Object.keys(routeConfig) as FileRouterInputKey[],
-    ) as FileRouterInputKey;
+    const type = getTypeFromFileName(file, objectKeys(routeConfig));
 
     if (!counts[type]) {
       counts[type] = 1;
@@ -63,69 +61,6 @@ const fileCountLimitHit = (
   return { limitHit: false };
 };
 
-if (process.env.NODE_ENV === "development") {
-  console.log("[UT] UploadThing dev server is now running!");
-}
-
-const isValidResponse = (response: Response) => {
-  if (!response.ok) return false;
-  if (response.status >= 400) return false;
-  if (!response.headers.has("x-uploadthing-version")) return false;
-
-  return true;
-};
-
-const conditionalDevServer = async (fileKey: string) => {
-  if (process.env.NODE_ENV !== "development") return;
-
-  const fileData = await pollForFileData(
-    fileKey,
-    async (json: { fileData: FileData }) => {
-      const file = json.fileData;
-
-      let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-      if (!callbackUrl.startsWith("http"))
-        callbackUrl = "http://" + callbackUrl;
-
-      console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
-
-      const response = await fetch(callbackUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
-          file: {
-            url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
-            key: fileKey,
-            name: file.fileName,
-            size: file.fileSize,
-          },
-        }),
-        headers: {
-          "uploadthing-hook": "callback",
-        },
-      });
-      if (isValidResponse(response)) {
-        console.log("[UT] Successfully simulated callback for file", fileKey);
-      } else {
-        console.error(
-          "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-          fileKey,
-        );
-      }
-      return file;
-    },
-  );
-
-  if (fileData !== null) return fileData;
-
-  console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
-  throw new UploadThingError({
-    code: "UPLOAD_FAILED",
-    message: "File took too long to upload",
-  });
-};
-
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
@@ -148,20 +83,22 @@ type UploadThingResponse = {
   key: string;
 }[];
 
-export const buildRequestHandler = <
-  TRouter extends FileRouter,
-  TRuntime extends AnyRuntime,
->(
+export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
   ee?: EventEmitter,
 ) => {
   return async (input: {
     req: RequestLike;
-    res?: TRuntime extends "pages" ? NextApiResponse : undefined;
+    res?: unknown;
+    event?: unknown;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
-    const { req, res } = input;
+    if (process.env.NODE_ENV === "development") {
+      console.log("[UT] UploadThing dev server is now running!");
+    }
+
+    const { req, res, event } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
@@ -219,17 +156,24 @@ export const buildRequestHandler = <
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
-      const reqBody = (await req.json()) as {
+      const maybeReqBody = await safeParseJSON<{
         file: UploadedFile;
         files: unknown;
         metadata: Record<string, unknown>;
         input?: Json;
-      };
+      }>(req);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      if (maybeReqBody instanceof Error) {
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid request body",
+          cause: maybeReqBody,
+        });
+      }
+
       const res = await uploadable.resolver({
-        file: reqBody.file,
-        metadata: reqBody.metadata,
+        file: maybeReqBody.file,
+        metadata: maybeReqBody.metadata,
       });
       ee?.emit("callbackDone", res);
 
@@ -249,10 +193,19 @@ export const buildRequestHandler = <
 
     switch (actionType) {
       case "upload": {
-        const { files, input: userInput } = (await req.json()) as {
+        const maybeInput = await safeParseJSON<{
           files: string[];
           input: Json;
-        };
+        }>(req);
+
+        if (maybeInput instanceof Error) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid request body",
+            cause: maybeInput,
+          });
+        }
+        const { files, input: userInput } = maybeInput;
 
         // validate the input
         let parsedInput: Json = {};
@@ -273,7 +226,9 @@ export const buildRequestHandler = <
           metadata = await uploadable._def.middleware({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             req: req as any,
-            res,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            res: res as any,
+            event,
             input: parsedInput,
           });
         } catch (error) {
@@ -352,28 +307,21 @@ export const buildRequestHandler = <
           },
         );
 
-        if (!uploadthingApiResponse.ok) {
+        // This is when we send the response back to the user's form so they can submit the files
+        const parsedResponse = await safeParseJSON<UploadThingResponse>(
+          uploadthingApiResponse,
+        );
+
+        if (!uploadthingApiResponse.ok || parsedResponse instanceof Error) {
           console.error("[UT] unable to get presigned urls");
-          try {
-            const error = (await uploadthingApiResponse.json()) as unknown;
-            console.error(error);
-            return new UploadThingError({
-              code: "BAD_REQUEST",
-              cause: error,
-            });
-          } catch (cause) {
-            console.error("[UT] unable to parse response");
-            return new UploadThingError({
-              code: "URL_GENERATION_FAILED",
-              message: "Unable to get presigned urls",
-              cause,
-            });
-          }
+          return new UploadThingError({
+            code: "URL_GENERATION_FAILED",
+            message: "Unable to get presigned urls",
+            cause: parsedResponse,
+          });
         }
 
         // This is when we send the response back to the user's form so they can submit the files
-        const parsedResponse =
-          (await uploadthingApiResponse.json()) as UploadThingResponse;
 
         if (process.env.NODE_ENV === "development") {
           for (const file of parsedResponse) {
@@ -384,9 +332,17 @@ export const buildRequestHandler = <
         return { body: parsedResponse, status: 200 };
       }
       case "failure": {
-        const { fileKey } = (await req.json()) as {
+        const maybeReqBody = await safeParseJSON<{
           fileKey: string;
-        };
+        }>(req);
+        if (maybeReqBody instanceof Error) {
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid request body",
+            cause: maybeReqBody,
+          });
+        }
+        const { fileKey } = maybeReqBody;
 
         // Tell uploadthing to mark the upload as failed
         const uploadthingApiResponse = await fetch(
@@ -406,22 +362,14 @@ export const buildRequestHandler = <
 
         if (!uploadthingApiResponse.ok) {
           console.error("[UT] failed to mark upload as failed");
-          try {
-            const error = (await uploadthingApiResponse.json()) as unknown;
-            console.error(error);
-            return new UploadThingError({
-              message: "Failed to mark upload as failed",
-              code: "INTERNAL_SERVER_ERROR",
-              cause: error,
-            });
-          } catch (cause) {
-            console.error("[UT] unable to parse response");
-            return new UploadThingError({
-              code: "URL_GENERATION_FAILED",
-              message: "Unable to get presigned urls",
-              cause,
-            });
-          }
+          const parsedResponse = await safeParseJSON<UploadThingResponse>(
+            uploadthingApiResponse,
+          );
+          return new UploadThingError({
+            code: "URL_GENERATION_FAILED",
+            message: "Unable to get presigned urls",
+            cause: parsedResponse,
+          });
         }
 
         try {
