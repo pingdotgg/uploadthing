@@ -1,3 +1,4 @@
+import EventEmitter from "events";
 import { Router as ExpressRouter } from "express";
 import type {
   Request as ExpressRequest,
@@ -34,6 +35,7 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
   incompatibleNodeGuard();
+  const ee = new EventEmitter();
   const requestHandler = buildRequestHandler<TRouter>(opts);
   const router = ExpressRouter();
 
@@ -84,9 +86,19 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  router.get("/", (_, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  router.get("/", async (req, res) => {
     res.status(200);
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+
+    const clientPollingKey = req.headers["x-uploadthing-polling-key"];
+    if (clientPollingKey) {
+      const eventData = await new Promise((resolve) => {
+        ee.addListener("callbackDone", resolve);
+      });
+      return res.send(JSON.stringify(eventData));
+    }
+
     res.send(JSON.stringify(getBuildPerms()));
   });
 

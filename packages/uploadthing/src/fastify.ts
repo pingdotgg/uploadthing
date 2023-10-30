@@ -1,3 +1,4 @@
+import { EventEmitter } from "events";
 import type {
   FastifyInstance,
   FastifyReply,
@@ -76,8 +77,24 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   };
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
+  const ee = new EventEmitter();
 
-  const GET: RouteHandlerMethod = (_, res) => {
+  const GET: RouteHandlerMethod = async (req, res) => {
+    const clientPollingKey = req.headers["x-uploadthing-polling-key"];
+    if (clientPollingKey) {
+      const eventData = await new Promise((resolve) => {
+        ee.addListener("callbackDone", resolve);
+      });
+      ee.removeAllListeners("callbackDone");
+
+      void res
+        .status(200)
+        .headers({
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+        })
+        .send(eventData);
+      return;
+    }
     void res
       .status(200)
       .headers({
