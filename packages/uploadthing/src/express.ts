@@ -96,6 +96,7 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       const eventData = await new Promise((resolve) => {
         ee.addListener("callbackDone", resolve);
       });
+      ee.removeAllListeners("callbackDone");
       return res.send(JSON.stringify(eventData));
     }
 
