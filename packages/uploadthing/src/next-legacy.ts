@@ -48,12 +48,9 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
         });
         ee.removeAllListeners("callbackDone");
 
-        return new Response(JSON.stringify(eventData), {
-          status: 200,
-          headers: {
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-          },
-        });
+        res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+        res.status(200).json(eventData);
+        return;
       }
 
       const perms = getBuildPerms();
