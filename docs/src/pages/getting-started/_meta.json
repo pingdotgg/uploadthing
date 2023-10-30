@@ -1,0 +1,8 @@
+{
+  "appdir": "Next.js (app/)",
+  "pagedir": "Next.js (pages/)",
+  "solid": "SolidStart",
+  "svelte": "SvelteKit (Coming Soon)",
+  "nuxt": "Nuxt.js (Coming Soon)",
+  "astro": "Astro (Coming Soon)"
+}

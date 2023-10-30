@@ -1,9 +1,15 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Callout, Steps, Tab, Tabs } from "nextra-theme-docs";
 
-# Getting Started With `pages/`
+import EnvSetup from "./_shared/env-setup.mdx";
+import TailwindSetup from "./_shared/tailwind-setup.mdx";
 
-Make sure you
-[install the packages and get your env variables first](/getting-started)
+# Next.js (Legacy) Page Router Setup
+
+No shame in using Page Router still! We still use it for a lot of things at Ping
+😊. If your code is still mostly served from the `pages/` directory, this is
+where you want to be
+
+<EnvSetup />
 
 ## Set Up A FileRouter
 
@@ -72,12 +78,23 @@ const handler = createNextPageApiHandler({
 export default handler;
 ```
 
-### Creating The UploadThing Components (recommended)
+### Add UploadThing's Styles
 
-Generating components let's you pass your generic `FileRouter` once and then
-have typesafe components everywhere, instead of having to pass the generic
-everytime you mount a component, but you can also import the components
-individually from `@uploadthing/react`.
+<Tabs items={["Tailwind", "Not Tailwind"]}>
+  <Tab>
+    <TailwindSetup />
+  </Tab>
+  <Tab>
+    Include our CSS file in the root layout to make sure the components look right!
+
+    ```tsx copy filename="_app.tsx"
+    import "@uploadthing/react/styles.css";
+    ```
+
+  </Tab>
+</Tabs>
+
+### Create The UploadThing Components (Recommended)
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";
@@ -88,15 +105,13 @@ export const { UploadButton, UploadDropzone, Uploader } =
   generateComponents<OurFileRouter>();
 ```
 
-### Use the FileRouter in your app
+### Mount A Button And Upload!
 
 The `@uploadthing/react` package includes an "UploadButton" component that you
 can simply drop into your app, and start uploading files immediately.
 
 ```tsx copy filename="app/example-uploader.tsx"
 import { UploadButton } from "~/utils/uploadthing";
-// You need to import our styles for the button to look right. Best to import in the root /_app.tsx but this is fine
-import "@uploadthing/react/styles.css";
 
 export default function Home() {
   return (
@@ -119,3 +134,12 @@ export default function Home() {
 ```
 
 </Steps>
+
+---
+
+### 🎉 You're Done!
+
+Want to customize the components? Check out the ["Theming" page](/theming)
+
+Want to make your own components? Check out our
+[useUploadThing hook](/api-reference/react#useuploadthing)
