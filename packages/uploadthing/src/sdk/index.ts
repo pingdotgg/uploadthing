@@ -40,7 +40,7 @@ export class UTApi {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": this.apiKey!,
       // FIXME: REVERT THIS OVERRIDE
-      "x-uploadthing-version": "6" ?? UPLOADTHING_VERSION,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
     };
   }
 
