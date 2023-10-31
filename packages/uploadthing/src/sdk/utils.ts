@@ -8,6 +8,7 @@ import {
 } from "@uploadthing/shared";
 
 import { uploadPart } from "../internal/multi-part";
+import type { UTEvents } from "../server";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -142,10 +143,10 @@ export const uploadFilesInternal = async (
         {
           method: "POST",
           body: JSON.stringify({
-            key,
+            fileKey: key,
             uploadId,
             etags,
-          }),
+          } satisfies UTEvents["multipart-complete"]),
           headers: opts.utRequestHeaders,
         },
       );
