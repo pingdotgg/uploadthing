@@ -2,7 +2,7 @@
   "name": "@example/minimal-appdir",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbo",
     "clean": "git clean -xdf .next node_modules",
     "build": "next build",
     "start": "next start",

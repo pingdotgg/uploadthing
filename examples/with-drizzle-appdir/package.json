@@ -4,7 +4,7 @@
   "scripts": {
     "build": "pnpm db:push && next build",
     "db:push": "mkdir -p .data && drizzle-kit push:sqlite",
-    "dev": "pnpm db:push && next dev",
+    "dev": "pnpm db:push && next dev --turbo",
     "lint": "SKIP_ENV_VALIDATION=true next lint",
     "start": "next start"
   },

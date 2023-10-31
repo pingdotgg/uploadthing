@@ -10,9 +10,6 @@ const config = {
 
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  experimental: {
-    esmExternals: false, // THIS IS THE FLAG THAT MATTERS
-  },
 };
 
 export default config;
