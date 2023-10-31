@@ -14,8 +14,8 @@
     "uploadthing": "^5.7.3"
   },
   "devDependencies": {
-    "@types/react": "18.2.8",
-    "@types/react-dom": "18.2.4",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
     "@vitejs/plugin-react-swc": "^3.3.2",
     "typescript": "^5.1.6",
     "vite": "^4.4.9"
