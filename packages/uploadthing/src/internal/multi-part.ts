@@ -3,6 +3,10 @@ import type { ContentDisposition, FetchEsque } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
 
+/**
+ * Used by server uploads where progress is not needed.
+ * Uses normal fetch API.
+ */
 export async function uploadPart(
   opts: {
     fetch: FetchEsque;
@@ -72,6 +76,10 @@ export async function uploadPart(
   });
 }
 
+/**
+ * Used by client uploads where progress is needed.
+ * Uses XMLHttpRequest.
+ */
 export async function uploadPartWithProgress(
   opts: {
     url: string;
