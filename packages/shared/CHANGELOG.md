@@ -2,12 +2,9 @@
 
 ## 5.2.7
 
-### Patch Changes
-
-- [#448](https://github.com/pingdotgg/uploadthing/pull/448)
-  [`eb5f96d`](https://github.com/pingdotgg/uploadthing/commit/eb5f96dc06a81ecb4b1f7ee3d0ba259ebdfee7d1)
-  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: remove
-  traces of leaking zod dependency
+- Updated dependencies
+  [[`eb5f96d`](https://github.com/pingdotgg/uploadthing/commit/eb5f96dc06a81ecb4b1f7ee3d0ba259ebdfee7d1)]:
+  - @uploadthing/mime-types@0.2.2
 
 ## 5.2.6
 
