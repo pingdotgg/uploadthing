@@ -117,6 +117,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       pollingUrl,
     } = presigned;
 
+    let uploadedBytes = 0;
+
     let etags: { tag: string; partNumber: number }[];
     try {
       etags = await Promise.all(
@@ -132,9 +134,9 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
             fileType: file.type,
             fileName: file.name,
             maxRetries: 10,
-            onProgress: (progress) => {
-              const totalUploaded = offset + progress;
-              const percent = (totalUploaded / file.size) * 100;
+            onProgress: (delta) => {
+              uploadedBytes += delta;
+              const percent = (uploadedBytes / file.size) * 100;
               opts.onUploadProgress?.({ file: file.name, progress: percent });
             },
           });

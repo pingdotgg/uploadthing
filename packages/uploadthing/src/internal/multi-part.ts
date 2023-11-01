@@ -88,7 +88,7 @@ export async function uploadPartWithProgress(
     fileName: string;
     contentDisposition: ContentDisposition;
     maxRetries: number;
-    onProgress: (progress: number) => void;
+    onProgress: (progressDelta: number) => void;
   },
   retryCount = 0,
 ) {
@@ -120,7 +120,10 @@ export async function uploadPartWithProgress(
       }
     };
 
+    let lastProgress = 0;
+
     xhr.onerror = async () => {
+      lastProgress = 0;
       if (retryCount < opts.maxRetries) {
         // Add a delay before retrying (exponential backoff can be used)
         const delay = Math.pow(2, retryCount) * 100;
@@ -131,7 +134,11 @@ export async function uploadPartWithProgress(
       }
     };
 
-    xhr.upload.onprogress = (e) => opts.onProgress(e.loaded);
+    xhr.upload.onprogress = (e) => {
+      const delta = e.loaded - lastProgress;
+      lastProgress += delta;
+      opts.onProgress(delta);
+    };
 
     xhr.send(opts.chunk);
   });
