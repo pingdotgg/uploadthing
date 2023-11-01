@@ -17,7 +17,7 @@
     "nextra-theme-docs": "^2.13.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "5.7.3"
+    "uploadthing": "5.7.4"
   },
   "devDependencies": {
     "@types/react": "18.2.33",
