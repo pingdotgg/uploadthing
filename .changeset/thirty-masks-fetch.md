@@ -4,4 +4,4 @@
 "uploadthing": patch
 ---
 
-fix: remove zod dependency
+fix: remove traces of leaking zod dependency
