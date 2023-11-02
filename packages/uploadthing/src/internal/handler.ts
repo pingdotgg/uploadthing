@@ -345,7 +345,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         if (process.env.NODE_ENV === "development") {
           for (const file of parsedResponse) {
-            void conditionalDevServer(file.key);
+            void conditionalDevServer({
+              fileKey: file.key,
+              apiKey: preferredOrEnvSecret,
+            });
           }
         }
 

@@ -7,6 +7,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "../constants";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../server";
 
@@ -149,7 +150,11 @@ export const uploadFilesInternal = async (
       });
 
       // Poll for file to be available
-      await pollForFileData(generateUploadThingURL(`/api/pollUpload/${key}`));
+      await pollForFileData({
+        url: generateUploadThingURL(`/api/pollUpload/${key}`),
+        apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
+        sdkVersion: UPLOADTHING_VERSION,
+      });
 
       return {
         key,
