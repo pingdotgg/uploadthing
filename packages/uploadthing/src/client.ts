@@ -16,6 +16,14 @@ import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
  */
 export * from "./internal/component-theming";
 
+/** @internal */
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });
+
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;

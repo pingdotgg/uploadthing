@@ -2,7 +2,11 @@ import { useRef, useState } from "react";
 
 import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
+import {
+  DANGEROUS__uploadFiles,
+  getFullApiUrl,
+  INTERNAL_DO_NOT_USE__fatalClientError,
+} from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
@@ -33,13 +37,6 @@ export type UseUploadthingProps<TRouter extends FileRouter> = {
   onUploadBegin?: (fileName: string) => void;
   onBeforeUploadBegin?: (files: File[]) => File[];
 };
-
-const fatalClientError = (e: Error) =>
-  new UploadThingError({
-    code: "INTERNAL_CLIENT_ERROR",
-    message: "Something went wrong. Please report this to UploadThing.",
-    cause: e,
-  });
 
 export const INTERNAL_uploadthingHookGen = <
   TRouter extends FileRouter,
@@ -105,11 +102,17 @@ export const INTERNAL_uploadthingHookGen = <
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
-        const error =
-          e instanceof UploadThingError ? e : fatalClientError(e as Error);
-        opts?.onUploadError?.(
-          error as UploadThingError<inferErrorShape<TRouter>>,
-        );
+        let error: UploadThingError<inferErrorShape<TRouter>>;
+        if (e instanceof UploadThingError) {
+          error = e as UploadThingError<inferErrorShape<TRouter>>;
+        } else {
+          error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+          console.error(
+            "Something went wrong. Please contact UploadThing and provide the following cause:",
+            error.cause,
+          );
+        }
+        opts?.onUploadError?.(error);
       } finally {
         setUploading(false);
         fileProgress.current = new Map();
