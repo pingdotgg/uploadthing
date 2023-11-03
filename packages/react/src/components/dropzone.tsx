@@ -114,7 +114,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
 
-        void startUpload(files, input);
+        void startUpload(acceptedFiles, input);
         return;
       }
     },
