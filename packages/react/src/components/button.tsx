@@ -124,10 +124,7 @@ export function UploadButton<TRouter extends FileRouter>(
       const pastedFiles = getFilesFromClipboardEvent(event);
       if (!pastedFiles) return;
 
-      let filesToUpload = pastedFiles;
-      if ($props.onBeforeUploadBegin) {
-        filesToUpload = $props.onBeforeUploadBegin(pastedFiles);
-      }
+const filesToUpload = $props.onBeforeUploadBegin?.(pastedFiles) ?? pastedFiles;
 
       setFiles((prev) => [...prev, ...filesToUpload]);
 
