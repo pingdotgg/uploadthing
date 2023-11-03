@@ -9,6 +9,7 @@ export type UploadthingComponentProps<TRouter extends FileRouter> = {
     onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
     onUploadError?: (error: Error) => void;
     onUploadBegin?: (fileName: string) => void;
+    onBeforeUploadBegin?: (files: File[]) => void;
     url?: string;
     multiple?: boolean;
   } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>

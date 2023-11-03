@@ -22,6 +22,7 @@ const createEndpointMetadata = (endpoint: string, url?: string) => {
 export type UseUploadthingProps = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
+  onBeforeUploadBegin?: (files: File[]) => void;
   onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
   onUploadError?: (e: Error) => void;
   url?: string;
@@ -72,6 +73,11 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             if (!opts?.onUploadBegin) return;
 
             opts.onUploadBegin(file);
+          },
+          onBeforeUploadBegin(files: File[]) {
+            if (!opts?.onBeforeUploadBegin) return;
+
+            opts.onBeforeUploadBegin(files);
           },
         });
         setUploading(false);

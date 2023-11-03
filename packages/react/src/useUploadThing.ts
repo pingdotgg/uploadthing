@@ -31,6 +31,7 @@ export type UseUploadthingProps<TRouter extends FileRouter> = {
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
+  onBeforeUploadBegin?: (files: File[]) => void;
 };
 
 const fatalClientError = (e: Error) =>
@@ -84,6 +85,11 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
 
             opts.onUploadBegin(file);
           },
+          onBeforeUploadBegin(files: File[]) {
+            if (!opts?.onBeforeUploadBegin) return;
+
+            opts.onBeforeUploadBegin(files);
+          }
         });
 
         opts?.onClientUploadComplete?.(res);

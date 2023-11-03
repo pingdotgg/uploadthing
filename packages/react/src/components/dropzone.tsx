@@ -98,6 +98,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
   );
 
@@ -110,6 +111,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
       // If mode is auto, start upload immediately
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
+        if($props.onBeforeUploadBegin) {
+          $props.onBeforeUploadBegin(acceptedFiles)
+        }
         void startUpload(acceptedFiles, input);
         return;
       }
@@ -135,6 +139,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
     if (!files) return;
 
     const input = "input" in $props ? $props.input : undefined;
+    if($props.onBeforeUploadBegin) {
+      $props.onBeforeUploadBegin(files)
+    }
     void startUpload(files, input);
   };
 
@@ -150,6 +157,9 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
+        if($props.onBeforeUploadBegin) {
+          $props.onBeforeUploadBegin(files)
+        }
         void startUpload(files, input);
       }
     };

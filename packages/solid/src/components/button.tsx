@@ -68,6 +68,7 @@ export function UploadButton<TRouter extends FileRouter>(
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
+    onBeforeUploadBegin: $props.onBeforeUploadBegin,
     url: $props.url,
   });
 
@@ -130,6 +131,9 @@ export function UploadButton<TRouter extends FileRouter>(
             if (!e.target.files) return;
             const input = "input" in $props ? $props.input : undefined;
             const files = Array.from(e.target.files);
+            if($props.onBeforeUploadBegin) {
+              $props.onBeforeUploadBegin(files)
+            }
             void uploadedThing.startUpload(files, input);
           }}
         />

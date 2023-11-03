@@ -104,6 +104,7 @@ export function UploadButton<TRouter extends FileRouter>(
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
   );
 
@@ -127,6 +128,9 @@ export function UploadButton<TRouter extends FileRouter>(
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
+        if($props.onBeforeUploadBegin) {
+          $props.onBeforeUploadBegin(files)
+        }
         void startUpload(files, input);
       }
     };
@@ -160,6 +164,9 @@ export function UploadButton<TRouter extends FileRouter>(
       }
 
       const input = "input" in $props ? $props.input : undefined;
+      if($props.onBeforeUploadBegin) {
+        $props.onBeforeUploadBegin(selectedFiles)
+      }
       void startUpload(selectedFiles, input);
     },
     disabled: $props.__internal_button_disabled ?? !ready,
@@ -251,6 +258,9 @@ export function UploadButton<TRouter extends FileRouter>(
             e.preventDefault();
             e.stopPropagation();
             const input = "input" in $props ? $props.input : undefined;
+            if($props.onBeforeUploadBegin) {
+              $props.onBeforeUploadBegin(files)
+            }
             void startUpload(files, input);
           }
         }}
