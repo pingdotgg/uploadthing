@@ -106,15 +106,15 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
+      if ($props.onBeforeUploadBegin) {
+        acceptedFiles = $props.onBeforeUploadBegin(acceptedFiles);
+      }
       setFiles(acceptedFiles);
-
       // If mode is auto, start upload immediately
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        if($props.onBeforeUploadBegin) {
-          $props.onBeforeUploadBegin(acceptedFiles)
-        }
-        void startUpload(acceptedFiles, input);
+
+        void startUpload(files, input);
         return;
       }
     },
@@ -139,9 +139,6 @@ export function UploadDropzone<TRouter extends FileRouter>(
     if (!files) return;
 
     const input = "input" in $props ? $props.input : undefined;
-    if($props.onBeforeUploadBegin) {
-      $props.onBeforeUploadBegin(files)
-    }
     void startUpload(files, input);
   };
 
@@ -151,16 +148,24 @@ export function UploadDropzone<TRouter extends FileRouter>(
       if (document.activeElement !== rootRef.current) return;
 
       const pastedFiles = getFilesFromClipboardEvent(event);
+
       if (!pastedFiles) return;
 
-      setFiles((prev) => [...prev, ...pastedFiles]);
+      let newFiles = pastedFiles;
+
+      if (pastedFiles && $props.onBeforeUploadBegin) {
+        newFiles = $props.onBeforeUploadBegin(pastedFiles);
+      }
+
+      setFiles((prev) => [...prev, ...newFiles]);
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        if($props.onBeforeUploadBegin) {
-          $props.onBeforeUploadBegin(files)
+        let filesToUpload = files;
+        if ($props.onBeforeUploadBegin) {
+          filesToUpload = $props.onBeforeUploadBegin(files);
         }
-        void startUpload(files, input);
+        void startUpload(filesToUpload, input);
       }
     };
 

@@ -130,9 +130,9 @@ export function UploadButton<TRouter extends FileRouter>(
           onChange={(e) => {
             if (!e.target.files) return;
             const input = "input" in $props ? $props.input : undefined;
-            const files = Array.from(e.target.files);
-            if($props.onBeforeUploadBegin) {
-              $props.onBeforeUploadBegin(files)
+            let files = Array.from(e.target.files);
+            if ($props.onBeforeUploadBegin) {
+              files = $props.onBeforeUploadBegin(files);
             }
             void uploadedThing.startUpload(files, input);
           }}

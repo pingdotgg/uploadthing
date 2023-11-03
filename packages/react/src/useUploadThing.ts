@@ -89,7 +89,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             if (!opts?.onBeforeUploadBegin) return files;
 
             return opts.onBeforeUploadBegin(files);
-          }
+          },
         });
 
         opts?.onClientUploadComplete?.(res);

@@ -124,13 +124,16 @@ export function UploadButton<TRouter extends FileRouter>(
       const pastedFiles = getFilesFromClipboardEvent(event);
       if (!pastedFiles) return;
 
-      setFiles((prev) => [...prev, ...pastedFiles]);
+      let filesToUpload = pastedFiles;
+      if ($props.onBeforeUploadBegin) {
+        filesToUpload = $props.onBeforeUploadBegin(pastedFiles);
+      }
+
+      setFiles((prev) => [...prev, ...filesToUpload]);
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        if($props.onBeforeUploadBegin) {
-          $props.onBeforeUploadBegin(files)
-        }
+
         void startUpload(files, input);
       }
     };
@@ -155,7 +158,11 @@ export function UploadButton<TRouter extends FileRouter>(
     accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
-      const selectedFiles = Array.from(e.target.files);
+      let selectedFiles = Array.from(e.target.files);
+
+      if ($props.onBeforeUploadBegin) {
+        selectedFiles = $props.onBeforeUploadBegin(selectedFiles);
+      }
 
       if (mode === "manual") {
         setFiles(selectedFiles);
@@ -164,9 +171,6 @@ export function UploadButton<TRouter extends FileRouter>(
       }
 
       const input = "input" in $props ? $props.input : undefined;
-      if($props.onBeforeUploadBegin) {
-        $props.onBeforeUploadBegin(selectedFiles)
-      }
       void startUpload(selectedFiles, input);
     },
     disabled: $props.__internal_button_disabled ?? !ready,
@@ -258,9 +262,6 @@ export function UploadButton<TRouter extends FileRouter>(
             e.preventDefault();
             e.stopPropagation();
             const input = "input" in $props ? $props.input : undefined;
-            if($props.onBeforeUploadBegin) {
-              $props.onBeforeUploadBegin(files)
-            }
             void startUpload(files, input);
           }
         }}

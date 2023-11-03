@@ -78,14 +78,17 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 
   const [files, setFiles] = createSignal<File[]>([]);
   const onDrop: OnDropHandler = (acceptedFiles) => {
+    if ($props.onBeforeUploadBegin) {
+      acceptedFiles = $props.onBeforeUploadBegin(
+        acceptedFiles,
+      ) as typeof acceptedFiles;
+    }
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
-      if($props.onBeforeUploadBegin) {
-        $props.onBeforeUploadBegin(acceptedFiles)
-      }
+
       void uploadThing.startUpload(acceptedFiles, input);
       return;
     }
@@ -215,9 +218,6 @@ export const UploadDropzone = <TRouter extends FileRouter>(
             if (!files()) return;
 
             const input = "input" in $props ? $props.input : undefined;
-            if($props.onBeforeUploadBegin) {
-              $props.onBeforeUploadBegin(files())
-            }
             void uploadThing.startUpload(files(), input);
           }}
           data-ut-element="button"
