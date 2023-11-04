@@ -1,5 +1,5 @@
 ---
-"uploadthing": patch
+"uploadthing": minor
 "@uploadthing/react": patch
 "@uploadthing/solid": patch
 ---
