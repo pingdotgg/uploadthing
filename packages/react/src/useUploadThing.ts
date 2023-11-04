@@ -58,7 +58,9 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       : [files: File[], input: InferredInput];
 
     const startUpload = useEvent(async (...args: FuncInput) => {
-      const [files, input] = args;
+      const files = opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+      const input = args[1];
+
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
@@ -84,11 +86,6 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
             if (!opts?.onUploadBegin) return;
 
             opts.onUploadBegin(file);
-          },
-          onBeforeUploadBegin(files: File[]) {
-            if (!opts?.onBeforeUploadBegin) return files;
-
-            return opts.onBeforeUploadBegin(files);
           },
         });
 

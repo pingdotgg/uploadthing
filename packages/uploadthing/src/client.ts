@@ -77,7 +77,6 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
       progress: number;
     }) => void;
     onUploadBegin?: ({ file }: { file: string }) => void;
-    onBeforeUploadBegin?: (files: File[]) => File[];
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];

@@ -77,11 +77,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
-  const onDrop: OnDropHandler = (acceptedFiles) => {
+  const onDrop: OnDropHandler = (acceptedFiles: File[]) => {
     if ($props.onBeforeUploadBegin) {
-      acceptedFiles = $props.onBeforeUploadBegin(
-        acceptedFiles,
-      ) as typeof acceptedFiles;
+      acceptedFiles = $props.onBeforeUploadBegin(acceptedFiles);
     }
     setFiles(acceptedFiles);
 
