@@ -72,6 +72,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
+    onBeforeUploadBegin: $props.onBeforeUploadBegin,
     url: $props.url,
   });
 

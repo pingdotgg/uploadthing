@@ -98,6 +98,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
   );
 
