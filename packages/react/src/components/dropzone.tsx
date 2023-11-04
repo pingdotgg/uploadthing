@@ -106,9 +106,6 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
-      if ($props.onBeforeUploadBegin) {
-        acceptedFiles = $props.onBeforeUploadBegin(acceptedFiles);
-      }
       setFiles(acceptedFiles);
       // If mode is auto, start upload immediately
       if (mode === "auto") {
@@ -147,17 +144,13 @@ export function UploadDropzone<TRouter extends FileRouter>(
       if (document.activeElement !== rootRef.current) return;
 
       const pastedFiles = getFilesFromClipboardEvent(event);
-
       if (!pastedFiles) return;
 
-      const filesToUpload =
-        $props.onBeforeUploadBegin?.(pastedFiles) ?? pastedFiles;
-
-      setFiles((prev) => [...prev, ...filesToUpload]);
+      setFiles((prev) => [...prev, ...pastedFiles]);
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        void startUpload(filesToUpload, input);
+        void startUpload(files, input);
       }
     };
 
