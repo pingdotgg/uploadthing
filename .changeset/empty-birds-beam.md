@@ -1,7 +1,7 @@
 ---
 "uploadthing": minor
-"@uploadthing/react": patch
-"@uploadthing/solid": patch
+"@uploadthing/react": minor
+"@uploadthing/solid": minor
 ---
 
 Adds an onBeforeUploadBegin callback that is called before startUpload to allow
