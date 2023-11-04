@@ -107,6 +107,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
       setFiles(acceptedFiles);
+
       // If mode is auto, start upload immediately
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
@@ -145,6 +146,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
       const pastedFiles = getFilesFromClipboardEvent(event);
       if (!pastedFiles) return;
+
       setFiles((prev) => [...prev, ...pastedFiles]);
 
       if (mode === "auto") {
