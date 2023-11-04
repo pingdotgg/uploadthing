@@ -86,7 +86,6 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     // If mode is auto, start upload immediately
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
-
       void uploadThing.startUpload(acceptedFiles, input);
       return;
     }
