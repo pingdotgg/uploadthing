@@ -47,8 +47,8 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       : [files: File[], input: InferredInput];
 
     const startUpload = async (...args: FuncInput) => {
-      const [files, input] = args;
-
+      const files = opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+      const input = args[1];
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
