@@ -151,13 +151,10 @@ export function UploadDropzone<TRouter extends FileRouter>(
 
       if (!pastedFiles) return;
 
-      let newFiles = pastedFiles;
+      const filesToUpload =
+        $props.onBeforeUploadBegin?.(pastedFiles) ?? pastedFiles;
 
-      if (pastedFiles && $props.onBeforeUploadBegin) {
-        newFiles = $props.onBeforeUploadBegin(pastedFiles);
-      }
-
-      setFiles((prev) => [...prev, ...newFiles]);
+      setFiles((prev) => [...prev, ...filesToUpload]);
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
