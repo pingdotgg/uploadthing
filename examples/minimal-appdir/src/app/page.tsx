@@ -27,6 +27,12 @@ export default function Home() {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
         }}
+        onBeforeUploadBegin={(files) => {
+          console.log(`onBeforeUploadBegin`, files);
+          return files.map(
+            (f) => new File([f], "renamed-" + f.name, { type: f.type }),
+          );
+        }}
         onUploadBegin={() => {
           console.log("upload begin");
         }}

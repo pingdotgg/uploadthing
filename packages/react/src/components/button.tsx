@@ -124,10 +124,7 @@ export function UploadButton<TRouter extends FileRouter>(
       const pastedFiles = getFilesFromClipboardEvent(event);
       if (!pastedFiles) return;
 
-      const filesToUpload =
-        $props.onBeforeUploadBegin?.(pastedFiles) ?? pastedFiles;
-
-      setFiles((prev) => [...prev, ...filesToUpload]);
+      setFiles((prev) => [...prev, ...pastedFiles]);
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
@@ -155,10 +152,7 @@ export function UploadButton<TRouter extends FileRouter>(
     accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!e.target.files) return;
-      let selectedFiles = Array.from(e.target.files);
-      if ($props.onBeforeUploadBegin) {
-        selectedFiles = $props.onBeforeUploadBegin(selectedFiles);
-      }
+      const selectedFiles = Array.from(e.target.files);
 
       if (mode === "manual") {
         setFiles(selectedFiles);
