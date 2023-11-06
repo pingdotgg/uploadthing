@@ -1,6 +1,6 @@
 ---
 "@uploadthing/shared": patch
-"uploadthing": patch
+"uploadthing": major
 ---
 
 feat!: multipart uploads
