@@ -1,5 +1,5 @@
 ---
-"@uploadthing/shared": patch
+"@uploadthing/shared": major
 "uploadthing": major
 ---
 
