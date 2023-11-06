@@ -18,7 +18,7 @@ import type {
   UploadedFile,
 } from "@uploadthing/shared";
 
-// import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
@@ -35,8 +35,7 @@ const createUTFetch = (apiKey: string) => {
       headers: {
         "Content-Type": "application/json",
         "x-uploadthing-api-key": apiKey,
-        // FIXME: REVERT to proper version
-        "x-uploadthing-version": "6.x.x", // UPLOADTHING_VERSION,
+        "x-uploadthing-version": UPLOADTHING_VERSION,
       },
     });
 
