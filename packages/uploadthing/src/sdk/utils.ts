@@ -138,19 +138,15 @@ export const uploadFilesInternal = async (
       );
 
       // Complete multipart upload
-      const completeRes = await opts.fetch(
-        generateUploadThingURL("/api/completeMultipart"),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: key,
-            uploadId,
-            etags,
-          } satisfies UTEvents["multipart-complete"]),
-          headers: opts.utRequestHeaders,
-        },
-      );
-      console.log("Complete multipart upload response:", completeRes);
+      await opts.fetch(generateUploadThingURL("/api/completeMultipart"), {
+        method: "POST",
+        body: JSON.stringify({
+          fileKey: key,
+          uploadId,
+          etags,
+        } satisfies UTEvents["multipart-complete"]),
+        headers: opts.utRequestHeaders,
+      });
 
       // Poll for file to be available
       await pollForFileData(generateUploadThingURL(`/api/pollUpload/${key}`));
