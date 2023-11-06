@@ -6,7 +6,7 @@ import type {
 } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
-// import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { FileEsque, UploadFileResponse } from "./utils";
 import {
@@ -39,8 +39,7 @@ export class UTApi {
     this.defaultHeaders = {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": this.apiKey!,
-      // FIXME: REVERT to proper version
-      "x-uploadthing-version": "6.x.x", // UPLOADTHING_VERSION,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
     };
   }
 
