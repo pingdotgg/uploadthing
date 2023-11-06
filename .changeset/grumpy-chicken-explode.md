@@ -9,6 +9,8 @@ you can pass the `url` parameter to `generateComponents` and `generateReactHelpe
 
 ```ts
 export const { UploadButton, UploadDropzone } = generateComponents({
-  url: "/api/my-upload-endpoint"
+  url: "/api/my-upload-endpoint" // if the host is unchanged from default (localhost or VERCEL_URL)
+  // url: "https://my-custom-host.com" // if the host is different but path is /api/uploadthing
+  // url: "https://my-custom-host.com/my-custom-endpoint" // fully custom url
 })
 ```
