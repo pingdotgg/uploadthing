@@ -154,20 +154,18 @@ export const withExponentialBackoff = async <T>(
 };
 
 export async function pollForFileData(
-  fileKey: string,
+  url: string,
   callback?: (json: any) => Promise<any>,
 ) {
-  const queryUrl = generateUploadThingURL(`/api/pollUpload/${fileKey}`);
-
   return withExponentialBackoff(async () => {
-    const res = await fetch(queryUrl);
+    const res = await fetch(url);
     const maybeJson = await safeParseJSON<
       { status: "done"; fileData: FileData } | { status: "something else" }
     >(res);
 
     if (maybeJson instanceof Error) {
       console.error(
-        `[UT] Error polling for file data for ${fileKey}: ${maybeJson.message}`,
+        `[UT] Error polling for file data for ${url}: ${maybeJson.message}`,
       );
       return null;
     }

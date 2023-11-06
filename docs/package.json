@@ -12,16 +12,16 @@
   },
   "dependencies": {
     "@uploadthing/react": "5.7.0",
-    "next": "13.4.4",
-    "nextra": "^2.12.3",
-    "nextra-theme-docs": "^2.12.3",
+    "next": "14.0.1",
+    "nextra": "^2.13.2",
+    "nextra-theme-docs": "^2.13.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "5.7.2"
+    "uploadthing": "5.7.4"
   },
   "devDependencies": {
-    "@types/react": "18.2.8",
-    "@types/react-dom": "18.2.4",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
     "autoprefixer": "10.4.14",
     "postcss": "8.4.31",
     "tailwindcss": "^3.3.2"

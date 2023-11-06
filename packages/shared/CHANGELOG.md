@@ -1,5 +1,20 @@
 # @uploadthing/shared
 
+## 5.2.7
+
+- Updated dependencies
+  [[`eb5f96d`](https://github.com/pingdotgg/uploadthing/commit/eb5f96dc06a81ecb4b1f7ee3d0ba259ebdfee7d1)]:
+  - @uploadthing/mime-types@0.2.2
+
+## 5.2.6
+
+### Patch Changes
+
+- [#441](https://github.com/pingdotgg/uploadthing/pull/441)
+  [`da43651`](https://github.com/pingdotgg/uploadthing/commit/da436516a9c1e30268878016a9c1dc930bc384f6)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore:
+  changeset for zod removal
+
 ## 5.2.5
 
 ### Patch Changes
