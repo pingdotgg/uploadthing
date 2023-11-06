@@ -2,6 +2,7 @@
 
 import type {
   FileRouterInputConfig,
+  Json,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -127,5 +128,30 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
 
-export const VALID_ACTION_TYPES = ["upload", "failure"] as const;
+export const VALID_ACTION_TYPES = [
+  "upload",
+  "failure",
+  "multipart-complete",
+] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+
+export type UTEvents = {
+  upload: {
+    files: { name: string; size: number }[];
+    input: Json;
+  };
+  failure: {
+    fileKey: string;
+    uploadId: string;
+    s3Error?: string;
+    fileName: string;
+  };
+  "multipart-complete": {
+    fileKey: string;
+    uploadId: string;
+    etags: {
+      tag: string;
+      partNumber: number;
+    }[];
+  };
+};
