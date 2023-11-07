@@ -177,7 +177,7 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const serverData = await fetch("/api/uploadthing", {
+    const serverData = await fetch(opts.url, {
       headers: { "x-uploadthing-polling-key": key },
     }).then(
       (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
