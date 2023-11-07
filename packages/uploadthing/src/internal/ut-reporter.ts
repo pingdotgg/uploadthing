@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+
 import { UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -66,3 +68,12 @@ export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
     return response.ok;
   };
 };
+
+export const createUTReporterEff =
+  (cfg: { url: URL; endpoint: string }) =>
+  <TEvent extends keyof UTEvents>(type: TEvent, payload: UTEvents[TEvent]) =>
+    Effect.tryPromise(() => createUTReporter(cfg)(type, payload)).pipe(
+      Effect.catchAll((err) =>
+        err instanceof UploadThingError ? Effect.fail(err) : Effect.die(err),
+      ),
+    );

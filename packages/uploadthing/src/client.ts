@@ -1,3 +1,5 @@
+import { Cause, Data, Effect } from "effect";
+
 import {
   pollForFileData,
   safeParseJSON,
@@ -7,8 +9,16 @@ import {
 import { UPLOADTHING_VERSION } from "./constants";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import type { FileRouter, inferEndpointInput } from "./internal/types";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import type {
+  FileRouter,
+  inferEndpointInput,
+  UTEvents,
+} from "./internal/types";
+import {
+  createAPIRequestUrl,
+  createUTReporter,
+  createUTReporterEff,
+} from "./internal/ut-reporter";
 
 /**
  * @internal
@@ -47,7 +57,200 @@ export type UploadFileResponse = {
   url: string;
 };
 
+const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
+  opts: UploadFilesOptions<TRouter>,
+) =>
+  Effect.gen(function* ($) {
+    const reportEventToUT = createUTReporterEff({
+      endpoint: String(opts.endpoint),
+      url: opts?.url,
+    });
+
+    // Get presigned URL for S3 upload
+    const s3ConnectionRes_ = yield* $(
+      fetchEff(
+        createAPIRequestUrl({
+          url: opts.url,
+          slug: String(opts.endpoint),
+          actionType: "upload",
+        }),
+        {
+          method: "POST",
+          body: JSON.stringify({
+            files: opts.files.map((f) => ({ name: f.name, size: f.size })),
+            input: opts.input,
+          }),
+          // Express requires Content-Type to be explicitly set to parse body properly
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      ),
+    );
+
+    if (!s3ConnectionRes_.ok) {
+      const error = yield* $(
+        Effect.promise(() => UploadThingError.fromResponse(s3ConnectionRes_)),
+      );
+
+      return yield* $(Effect.die(error));
+    }
+
+    const jsonOrError = yield* $(
+      safeParseJSONEff<UploadThingResponse>(s3ConnectionRes_),
+    );
+    if (jsonOrError instanceof Error) {
+      return yield* $(
+        Effect.die(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: jsonOrError.message,
+            cause: s3ConnectionRes_,
+          }),
+        ),
+      );
+    }
+
+    const s3ConnectionRes = jsonOrError;
+
+    // TODO is this still needed?
+    // if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
+    //   throw new UploadThingError({
+    //     code: "BAD_REQUEST",
+    //     message: "No URL. How did you even get here?",
+    //     cause: s3ConnectionRes,
+    //   });
+    // }
+
+    return yield* $(
+      Effect.all(
+        s3ConnectionRes.map((presigned) =>
+          uploadFile(opts, presigned, reportEventToUT),
+        ),
+      ),
+    );
+  });
+
+const uploadFile = <TRouter extends FileRouter>(
+  opts: UploadFilesOptions<TRouter>,
+  presigned: UploadThingResponse[number],
+  reportEventToUT: <TEvent extends keyof UTEvents>(
+    type: TEvent,
+    payload: UTEvents[TEvent],
+  ) => Effect.Effect<never, UploadThingError<any>, boolean>,
+) =>
+  Effect.gen(function* ($) {
+    const file = opts.files.find((f) => f.name === presigned.fileName);
+
+    if (!file) {
+      console.error("No file found for presigned URL", presigned);
+      return yield* $(
+        Effect.die(
+          new UploadThingError({
+            code: "NOT_FOUND",
+            message: "No file found for presigned URL",
+            cause: `Expected file with name ${
+              presigned.fileName
+            } but got '${opts.files.join(",")}'`,
+          }),
+        ),
+      );
+    }
+
+    const {
+      presignedUrls,
+      uploadId,
+      chunkSize,
+      contentDisposition,
+      key,
+      pollingUrl,
+    } = presigned;
+
+    let uploadedBytes = 0;
+
+    // let etags: { tag: string; partNumber: number }[];
+
+    const innerEffect = (url: string, index: number) =>
+      Effect.gen(function* ($) {
+        const offset = chunkSize * index;
+        const end = Math.min(offset + chunkSize, file.size);
+        const chunk = file.slice(offset, end);
+
+        const etag = yield* $(
+          uploadPartWithProgressEff({
+            url,
+            chunk: chunk,
+            contentDisposition,
+            fileType: file.type,
+            fileName: file.name,
+            maxRetries: 10,
+            onProgress: (delta) => {
+              uploadedBytes += delta;
+              const percent = (uploadedBytes / file.size) * 100;
+              opts.onUploadProgress?.({ file: file.name, progress: percent });
+            },
+          }),
+        );
+
+        return { tag: etag, partNumber: index + 1 };
+      });
+
+    const etags = yield* $(
+      Effect.all(presignedUrls.map(innerEffect)),
+      Effect.tapErrorCause((error) =>
+        reportEventToUT("failure", {
+          fileKey: key,
+          uploadId,
+          fileName: file.name,
+          s3Error: Cause.pretty(error).toString(),
+        }),
+      ),
+    );
+
+    // Tell the server that the upload is complete
+    const uploadOk = yield* $(
+      reportEventToUT("multipart-complete", {
+        uploadId,
+        fileKey: key,
+        etags,
+      }),
+    );
+    if (!uploadOk) {
+      console.log("Failed to alert UT of upload completion");
+      return yield* $(
+        Effect.die(
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: "Failed to alert UT of upload completion",
+          }),
+        ),
+      );
+    }
+
+    // // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
+    yield* $(
+      Effect.promise(() =>
+        pollForFileData({
+          url: pollingUrl,
+          apiKey: null,
+          sdkVersion: UPLOADTHING_VERSION,
+        }),
+      ),
+    );
+
+    return {
+      name: file.name,
+      size: file.size,
+      key: presigned.key,
+      url: "https://utfs.io/f/" + key,
+    } satisfies UploadFileResponse;
+  });
+
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
+  opts: UploadFilesOptions<TRouter>,
+) => Effect.runPromise(DANGEROUS__uploadFiles_internal(opts));
+
+export const DANGEROUS__uploadFiles_old = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
 ) => {
   const reportEventToUT = createUTReporter({
@@ -258,3 +461,26 @@ export function getFullApiUrl(maybeUrl?: string): URL {
     );
   }
 }
+
+class FetchError extends Data.TaggedError("FetchError")<{
+  readonly input: RequestInfo | URL;
+  readonly error: unknown;
+}> {}
+
+// Temporary Effect wrappers below.
+// TODO should be refactored with much love
+
+// TODO handle error properly
+const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
+  Effect.tryPromise({
+    try: () => fetch(input, init),
+    catch: (error) => new FetchError({ error, input }),
+  });
+
+const safeParseJSONEff = <T>(res: Response) =>
+  Effect.promise<T | Error>(() => safeParseJSON<T>(res));
+
+const uploadPartWithProgressEff = (
+  opts: Parameters<typeof uploadPartWithProgress>[0],
+  retryCount?: number,
+) => Effect.promise(() => uploadPartWithProgress(opts, retryCount));
