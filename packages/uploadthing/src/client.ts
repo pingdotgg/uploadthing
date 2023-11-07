@@ -4,6 +4,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "./constants";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type { FileRouter, inferEndpointInput } from "./internal/types";
@@ -169,7 +170,11 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
     }
 
     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData(pollingUrl);
+    await pollForFileData({
+      url: pollingUrl,
+      apiKey: null,
+      sdkVersion: UPLOADTHING_VERSION,
+    });
 
     return {
       name: file.name,

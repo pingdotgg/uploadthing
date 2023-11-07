@@ -5,6 +5,8 @@ import {
 } from "@uploadthing/shared";
 import type { FileData } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "../constants";
+
 const isValidResponse = (response: Response) => {
   if (!response.ok) return false;
   if (response.status >= 400) return false;
@@ -13,11 +15,18 @@ const isValidResponse = (response: Response) => {
   return true;
 };
 
-export const conditionalDevServer = async (fileKey: string) => {
+export const conditionalDevServer = async (opts: {
+  fileKey: string;
+  apiKey: string;
+}) => {
   if (process.env.NODE_ENV !== "development") return;
 
   const fileData = await pollForFileData(
-    generateUploadThingURL(`/api/pollUpload/${fileKey}`),
+    {
+      url: generateUploadThingURL(`/api/pollUpload/${opts.fileKey}`),
+      apiKey: opts.apiKey,
+      sdkVersion: UPLOADTHING_VERSION,
+    },
     async (json: { fileData: FileData }) => {
       const file = json.fileData;
 
@@ -33,8 +42,8 @@ export const conditionalDevServer = async (fileKey: string) => {
           status: "uploaded",
           metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
           file: {
-            url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
-            key: fileKey,
+            url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
+            key: opts.fileKey,
             name: file.fileName,
             size: file.fileSize,
           },
@@ -44,11 +53,14 @@ export const conditionalDevServer = async (fileKey: string) => {
         },
       });
       if (isValidResponse(response)) {
-        console.log("[UT] Successfully simulated callback for file", fileKey);
+        console.log(
+          "[UT] Successfully simulated callback for file",
+          opts.fileKey,
+        );
       } else {
         console.error(
           "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
-          fileKey,
+          opts.fileKey,
         );
       }
       return file;
@@ -57,7 +69,7 @@ export const conditionalDevServer = async (fileKey: string) => {
 
   if (fileData !== null) return fileData;
 
-  console.error(`[UT] Failed to simulate callback for file ${fileKey}`);
+  console.error(`[UT] Failed to simulate callback for file ${opts.fileKey}`);
   throw new UploadThingError({
     code: "UPLOAD_FAILED",
     message: "File took too long to upload",
