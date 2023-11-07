@@ -1,9 +1,18 @@
 import { createSignal } from "solid-js";
 
+import { UploadThingError } from "@uploadthing/shared";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+import {
+  DANGEROUS__uploadFiles,
+  getFullApiUrl,
+  INTERNAL_DO_NOT_USE__fatalClientError,
+} from "uploadthing/client";
+import type {
+  FileRouter,
+  inferEndpointInput,
+  inferErrorShape,
+} from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
 
@@ -17,12 +26,13 @@ const createEndpointMetadata = (url: URL, endpoint: string) => {
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
-export type UseUploadthingProps = {
+export type UseUploadthingProps<TRouter extends FileRouter> = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
   onBeforeUploadBegin?: (files: File[]) => File[];
   onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
-  onUploadError?: (e: Error) => void;
+  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
+  url?: string;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -37,7 +47,7 @@ export const INTERNAL_uploadthingHookGen = <
 }) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps,
+    opts?: UseUploadthingProps<TRouter>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
@@ -84,17 +94,26 @@ export const INTERNAL_uploadthingHookGen = <
           },
           url: initOpts.url,
         });
-        setUploading(false);
-        fileProgress = new Map();
-        uploadProgress = 0;
+
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        let error: UploadThingError<inferErrorShape<TRouter>>;
+        if (e instanceof UploadThingError) {
+          error = e as UploadThingError<inferErrorShape<TRouter>>;
+        } else {
+          error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+          console.error(
+            "Something went wrong. Please contact UploadThing and provide the following cause:",
+            error.cause instanceof Error ? error.cause.toString() : error.cause,
+          );
+        }
+        opts?.onUploadError?.(error);
+        return;
+      } finally {
         setUploading(false);
         fileProgress = new Map();
         uploadProgress = 0;
-        opts?.onUploadError?.(e as Error);
-        return;
       }
     };
 
