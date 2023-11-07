@@ -25,25 +25,27 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
-export type UploadButtonProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<ButtonStyleFieldCallbackArgs>;
-      button?: StyleField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-      clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
-    };
-    content?: {
-      button?: ContentField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-      clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
-    };
-    className?: string;
-    config?: {
-      appendOnPaste?: boolean;
-      mode?: "auto" | "manual";
-    };
+export type UploadButtonProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<ButtonStyleFieldCallbackArgs>;
+    button?: StyleField<ButtonStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+    clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
   };
+  content?: {
+    button?: ContentField<ButtonStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+    clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
+  };
+  className?: string;
+  config?: {
+    appendOnPaste?: boolean;
+    mode?: "auto" | "manual";
+  };
+};
 
 /**
  * @example
@@ -53,14 +55,17 @@ export type UploadButtonProps<TRouter extends FileRouter> =
  *   onUploadError={(err) => console.log(err)}
  * />
  */
-export function UploadButton<TRouter extends FileRouter>(
+export function UploadButton<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<TRouter> & {
+  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";

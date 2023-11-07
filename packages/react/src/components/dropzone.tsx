@@ -29,36 +29,41 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: boolean;
 };
 
-export type UploadDropzoneProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    };
-    content?: {
-      uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    };
-    className?: string;
-    config?: {
-      mode?: "auto" | "manual";
-      appendOnPaste?: boolean;
-    };
+export type UploadDropzoneProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
+  content?: {
+    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  };
+  className?: string;
+  config?: {
+    mode?: "auto" | "manual";
+    appendOnPaste?: boolean;
+  };
+};
 
-export function UploadDropzone<TRouter extends FileRouter>(
+export function UploadDropzone<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter>,
+    : UploadDropzoneProps<TRouter, TEndpoint>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadDropzoneProps<TRouter> & {
+  const $props = props as unknown as UploadDropzoneProps<TRouter, TEndpoint> & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";

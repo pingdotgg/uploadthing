@@ -29,34 +29,39 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: () => boolean;
 };
 
-export type UploadDropzoneProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    };
-    content?: {
-      uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    };
-    class?: string;
-    config?: {
-      mode?: "manual" | "auto";
-    };
+export type UploadDropzoneProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
+  content?: {
+    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  };
+  class?: string;
+  config?: {
+    mode?: "manual" | "auto";
+  };
+};
 
-export const UploadDropzone = <TRouter extends FileRouter>(
+export const UploadDropzone = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter>,
+    : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
-  const $props = props as UploadDropzoneProps<TRouter>;
+  const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
 
   const { mode = "manual" } = $props.config ?? {};
 
