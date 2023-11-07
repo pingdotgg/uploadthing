@@ -56,10 +56,17 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       return;
     }
 
+    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
+    const url = new URL(
+      req.baseUrl + req.url, // baseUrl is the mount point for the router, url is the path
+      `${proto}://${req.headers.host}`,
+    );
+
     const response = await requestHandler({
       req: Object.assign(req, {
         json: () => Promise.resolve(bodyResult.data),
       }),
+      url,
       res,
     });
 

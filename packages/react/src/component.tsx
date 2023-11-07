@@ -1,3 +1,6 @@
+import type { ComponentProps } from "react";
+
+import { getFullApiUrl } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import { UploadButton } from "./components/button";
@@ -29,11 +32,31 @@ export function Uploader<TRouter extends FileRouter>(
   );
 }
 
-export function generateComponents<TRouter extends FileRouter>() {
+export function generateComponents<TRouter extends FileRouter>(initOpts?: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
   return {
-    UploadButton: UploadButton<TRouter>,
-    UploadDropzone: UploadDropzone<TRouter>,
-    Uploader: Uploader<TRouter>,
+    UploadButton: (
+      props: Omit<ComponentProps<typeof UploadButton<TRouter>>, "url">,
+    ) => <UploadButton<TRouter> {...(props as any)} url={url} />,
+    UploadDropzone: (
+      props: Omit<ComponentProps<typeof UploadDropzone<TRouter>>, "url">,
+    ) => <UploadDropzone<TRouter> {...(props as any)} url={url} />,
+    Uploader: (
+      props: Omit<ComponentProps<typeof Uploader<TRouter>>, "url">,
+    ) => <Uploader<TRouter> {...(props as any)} url={url} />,
   };
 }
 

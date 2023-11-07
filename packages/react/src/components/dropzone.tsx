@@ -7,6 +7,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -72,10 +73,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // Allow to disable the dropzone
     __internal_dropzone_disabled?: boolean;
   };
-
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+  });
 
   const [files, setFiles] = useState<File[]>([]);
 
@@ -98,6 +100,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
   );
 

@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
@@ -18,11 +18,11 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-const useEndpointMetadata = (endpoint: string) => {
+const useEndpointMetadata = (url: URL, endpoint: string) => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
-    maybeServerData ? undefined : "/api/uploadthing",
+    maybeServerData ? undefined : url.href,
   );
   return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
 };
@@ -37,6 +37,7 @@ export type UseUploadthingProps<
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
+  onBeforeUploadBegin?: (files: File[]) => File[];
 };
 
 const fatalClientError = (e: Error) =>
@@ -46,7 +47,16 @@ const fatalClientError = (e: Error) =>
     cause: e,
   });
 
-export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
+export const INTERNAL_uploadthingHookGen = <
+  TRouter extends FileRouter,
+>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
+}) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
@@ -55,7 +65,10 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
     const uploadProgress = useRef(0);
     const fileProgress = useRef<Map<string, number>>(new Map());
 
-    const permittedFileInfo = useEndpointMetadata(endpoint as string);
+    const permittedFileInfo = useEndpointMetadata(
+      initOpts.url,
+      endpoint as string,
+    );
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -63,7 +76,9 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       : [files: File[], input: InferredInput];
 
     const startUpload = useEvent(async (...args: FuncInput) => {
-      const [files, input] = args;
+      const files = opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+      const input = args[1];
+
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
@@ -89,6 +104,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
 
             opts.onUploadBegin(file);
           },
+          url: initOpts.url,
         });
 
         opts?.onClientUploadComplete?.(res);
@@ -116,12 +132,25 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   return useUploadThing;
 };
 
-export const generateReactHelpers = <TRouter extends FileRouter>() => {
+export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) => {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: <TEndpoint extends keyof TRouter>(
-      ...args: Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>
-    ) => DANGEROUS__uploadFiles<TRouter, TEndpoint>(...args),
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
+      DANGEROUS__uploadFiles<TRouter>({ ...props, url }),
   } as const;
 };
 

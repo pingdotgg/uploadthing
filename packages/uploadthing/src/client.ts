@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
-import { maybeParseResponseXML } from "./internal/s3-error-parser";
+import type { UploadThingResponse } from "./internal/handler";
+import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
-  ActionType,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
+import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 /**
  * @internal
@@ -17,56 +15,11 @@ import type {
  */
 export * from "./internal/component-theming";
 
-function fetchWithProgress(
-  url: string,
-  opts: {
-    headers?: Headers;
-    method?: string;
-    body?: string | FormData;
-  } = {},
-  onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
-  onUploadBegin?: (this: XMLHttpRequest, progress: ProgressEvent) => void,
-) {
-  return new Promise<XMLHttpRequest>((res, rej) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open(opts.method ?? "get", url);
-    opts.headers &&
-      Object.keys(opts.headers).forEach(
-        (h) =>
-          opts.headers && xhr.setRequestHeader(h, opts.headers.get(h) ?? ""),
-      );
-    xhr.onload = (e) => {
-      res(e.target as XMLHttpRequest);
-    };
-
-    xhr.onerror = rej;
-    if (xhr.upload && onProgress) xhr.upload.onprogress = onProgress;
-    if (xhr.upload && onUploadBegin) xhr.upload.onloadstart = onUploadBegin;
-    xhr.send(opts.body);
-  });
-}
-
-const createAPIRequestUrl = (config: {
-  url?: string;
-  slug: string;
-  actionType: ActionType;
-}) => {
-  const url = new URL(
-    config.url ?? `${window.location.origin}/api/uploadthing`,
-  );
-
-  const queryParams = new URLSearchParams(url.search);
-  queryParams.set("actionType", config.actionType);
-  queryParams.set("slug", config.slug);
-
-  url.search = queryParams.toString();
-  return url.toString();
-};
-
 type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 > = {
+  url: URL;
   onUploadProgress?: ({
     file,
     progress,
@@ -85,31 +38,10 @@ type UploadFilesOptions<
     });
 
 export type UploadFileResponse<TServerOutput> = {
-  /**
-   * @deprecated
-   * use `name` instead
-   */
-  fileName: string;
   name: string;
-  /**
-   * @deprecated
-   * use `size` instead
-   */
-  fileSize: number;
   size: number;
-  /**
-   * @deprecated
-   * use `key` instead
-   */
-  fileKey: string;
   key: string;
-  /**
-   * @deprecated
-   * use `url` instead
-   */
-  fileUrl: string;
   url: string;
-
   // Matches what's returned from the serverside `onUploadComplete` callback
   serverData: TServerOutput;
 };
@@ -120,22 +52,24 @@ export const DANGEROUS__uploadFiles = async <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
-  config?: {
-    url?: string;
-  },
 ) => {
+  const reportEventToUT = createUTReporter({
+    endpoint: String(endpoint),
+    url: opts?.url,
+  });
+
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
-      url: config?.url,
+      url: opts.url,
       slug: String(endpoint),
       actionType: "upload",
     }),
     {
       method: "POST",
       body: JSON.stringify({
-        files: opts.files.map((f) => f.name),
         input: "input" in opts ? opts.input : null,
+        files: opts.files.map((f) => ({ name: f.name, size: f.size })),
       }),
       // Express requires Content-Type to be explicitly set to parse body properly
       headers: {
@@ -149,7 +83,7 @@ export const DANGEROUS__uploadFiles = async <
       throw error;
     }
 
-    const jsonOrError = await safeParseJSON(res);
+    const jsonOrError = await safeParseJSON<UploadThingResponse>(res);
     if (jsonOrError instanceof Error) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
@@ -168,8 +102,8 @@ export const DANGEROUS__uploadFiles = async <
     });
   }
 
-  const fileUploadPromises = s3ConnectionRes.map(async (presigned: any) => {
-    const file = opts.files.find((f) => f.name === presigned.name);
+  const fileUploadPromises = s3ConnectionRes.map(async (presigned) => {
+    const file = opts.files.find((f) => f.name === presigned.fileName);
 
     if (!file) {
       console.error("No file found for presigned URL", presigned);
@@ -177,109 +111,77 @@ export const DANGEROUS__uploadFiles = async <
         code: "NOT_FOUND",
         message: "No file found for presigned URL",
         cause: `Expected file with name ${
-          presigned.name
+          presigned.fileName
         } but got '${opts.files.join(",")}'`,
       });
     }
-    const { url, fields } = presigned.presignedUrl;
-    const formData = new FormData();
 
-    // Give content type to blobs because S3 is dumb
-    // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
-    if (
-      presigned.fileType === file.type.split("/")[0] ||
-      presigned.fileType === file.type
-    ) {
-      formData.append("Content-Type", file.type);
-    } else if (presigned.fileType === "blob") {
-      formData.append("Content-Type", "application/octet-stream");
-    } else if (presigned.fileType === "pdf") {
-      formData.append("Content-Type", "application/pdf");
-    }
+    const { presignedUrls, uploadId, chunkSize, contentDisposition, key } =
+      presigned;
 
-    // Dump all values from response (+ the file itself) into form for S3 upload
-    Object.entries({ ...fields, file: file }).forEach(([key, value]) => {
-      formData.append(key, value as Blob);
-    });
+    let uploadedBytes = 0;
 
-    // Do S3 upload
-    const upload = await fetchWithProgress(
-      url,
-      {
-        method: "POST",
-        body: formData,
-        headers: new Headers({
-          Accept: "application/xml",
+    let etags: { tag: string; partNumber: number }[];
+    try {
+      etags = await Promise.all(
+        presignedUrls.map(async (url, index) => {
+          const offset = chunkSize * index;
+          const end = Math.min(offset + chunkSize, file.size);
+          const chunk = file.slice(offset, end);
+
+          const etag = await uploadPartWithProgress({
+            url,
+            chunk: chunk,
+            contentDisposition,
+            fileType: file.type,
+            fileName: file.name,
+            maxRetries: 10,
+            onProgress: (delta) => {
+              uploadedBytes += delta;
+              const percent = (uploadedBytes / file.size) * 100;
+              opts.onUploadProgress?.({ file: file.name, progress: percent });
+            },
+          });
+
+          return { tag: etag, partNumber: index + 1 };
         }),
-      },
-      (progressEvent) =>
-        opts.onUploadProgress?.({
-          file: file.name,
-          progress: (progressEvent.loaded / progressEvent.total) * 100,
-        }),
-      () => {
-        opts.onUploadBegin?.({
-          file: file.name,
-        });
-      },
-    );
-
-    if (upload.status > 299 || upload.status < 200) {
-      // tell uploadthing infra server that upload failed
-      await fetch(
-        createAPIRequestUrl({
-          url: config?.url,
-          slug: String(endpoint),
-          actionType: "failure",
-        }),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: fields.key,
-          }),
-        },
       );
-
-      // Attempt to parse response as XML
-      const parsed = maybeParseResponseXML(upload.responseText);
-
-      // Throw an error for the client
-      if (parsed?.message) {
-        throw new UploadThingError({
-          code: parsed.code,
-          message: parsed.message,
-        });
-      } else {
-        throw new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: `Failed to upload file ${file.name} to S3`,
-          cause: upload.responseText,
-        });
-      }
+    } catch (error) {
+      await reportEventToUT("failure", {
+        fileKey: key,
+        uploadId,
+        fileName: file.name,
+        s3Error: (error as Error).toString(),
+      });
+      throw "unreachable"; // failure event will throw for us
     }
 
-    // Generate a URL for the uploaded image since AWS won't give me one
-    const genUrl = "https://utfs.io/f/" + encodeURIComponent(fields.key);
+    // Tell the server that the upload is complete
+    const uploadOk = await reportEventToUT("multipart-complete", {
+      uploadId,
+      fileKey: key,
+      etags,
+    });
+    if (!uploadOk) {
+      console.log("Failed to alert UT of upload completion");
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "Failed to alert UT of upload completion",
+      });
+    }
 
     const serverData = await fetch("/api/uploadthing", {
-      headers: { "x-uploadthing-polling-key": fields.key },
+      headers: { "x-uploadthing-polling-key": key },
     }).then((res) => res.json());
 
-    // TODO: remove `file` prefix in next major version
-    const ret: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>> = {
-      fileName: file.name,
+    return {
       name: file.name,
-      fileSize: file.size,
       size: file.size,
-      fileKey: presigned.key,
       key: presigned.key,
-      fileUrl: genUrl,
-      url: genUrl,
 
       serverData,
-    };
-
-    return ret;
+      url: "https://utfs.io/f/" + key,
+    } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
 
   return Promise.all(fileUploadPromises);
@@ -316,3 +218,39 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+// Returns a full URL to the dev's uploadthing endpoint
+export function getFullApiUrl(maybeUrl?: string): URL {
+  const base = (() => {
+    if (typeof window !== "undefined") {
+      return window.location.origin;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}`;
+    }
+
+    // @ts-expect-error - import meta is not defined in node
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (import.meta.env?.VERCEL_URL) {
+      // @ts-expect-error - import meta is not defined in node
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      return `https://${import.meta.env.VERCEL_URL}`;
+    }
+
+    return "http://localhost:3000";
+  })();
+
+  try {
+    const url = new URL(maybeUrl ?? "/api/uploadthing", base);
+    if (url.pathname === "/") {
+      url.pathname = "/api/uploadthing";
+    }
+    return url;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse '${maybeUrl}' as a URL. Make sure it's a valid URL or path`,
+    );
+  }
+}

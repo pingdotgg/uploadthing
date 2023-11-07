@@ -49,6 +49,8 @@ export interface ResponseEsque {
   json<T = unknown>(): Promise<T>;
   text(): Promise<string>;
 
+  headers: Headers;
+
   clone(): ResponseEsque;
 }
 

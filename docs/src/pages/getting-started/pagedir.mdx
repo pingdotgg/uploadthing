@@ -64,10 +64,9 @@ export type OurFileRouter = typeof ourFileRouter;
 
 ### Create a Next.js API route using the FileRouter
 
-<Callout type="warning">
-  Note: This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this API
-  from `/api/uploadthing` as it is called via webhook to trigger
-  `onUploadComplete`.
+<Callout type="info">
+  File path here doesn't matter, you can serve this from any route. We recommend
+  serving it from `/api/uploadthing`.
 </Callout>
 
 ```ts copy filename="pages/api/uploadthing.ts"
@@ -98,7 +97,7 @@ export default handler;
   </Tab>
 </Tabs>
 
-### Create The UploadThing Components (Optional)
+### Create The UploadThing Components (Recommended)
 
 ```ts copy filename="src/utils/uploadthing.ts"
 import { generateComponents } from "@uploadthing/react";
