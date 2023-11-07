@@ -86,7 +86,8 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
     /**
-     * @deprecated this option is deprecated and will be removed in a future version
+     * @deprecated since v6.0.0
+     * this option is deprecated and will be removed in a future version, you can safely remove it from your config
      */
     callbackUrl?: string;
     uploadthingId?: string;
