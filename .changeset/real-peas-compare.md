@@ -10,7 +10,8 @@ deprecated in `v5.7` in favor of using the constructor directly.
 ```diff
 - import { utapi } from 'uploadthing/server'
 + import { UTApi } from 'uploadthing/server'
-+ const utapi = new UTApi(opts)
++
++ export const utapi = new UTApi(opts)
 ```
 
 > For full API spec of `UTAPI` see [the the server API reference](https://docs.uploadthing.com/api-reference/server#utapi).
