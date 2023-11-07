@@ -1,8 +1,10 @@
+import type { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
+  inferErrorShape,
 } from "uploadthing/server";
 
 export type UploadthingComponentProps<
@@ -15,7 +17,7 @@ export type UploadthingComponentProps<
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
-  onUploadError?: (error: Error) => void;
+  onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
   /**
    * URL to the UploadThing API endpoint

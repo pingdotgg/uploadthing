@@ -1,13 +1,19 @@
 import { createSignal } from "solid-js";
 
+import { UploadThingError } from "@uploadthing/shared";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
-import type { DistributiveOmit } from "uploadthing/dist/internal/types";
+import {
+  DANGEROUS__uploadFiles,
+  getFullApiUrl,
+  INTERNAL_DO_NOT_USE__fatalClientError,
+} from "uploadthing/client";
 import type {
+  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
+  inferErrorShape,
 } from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
@@ -32,7 +38,7 @@ export type UseUploadthingProps<
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
-  onUploadError?: (e: Error) => void;
+  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -93,17 +99,26 @@ export const INTERNAL_uploadthingHookGen = <
           },
           url: initOpts.url,
         });
-        setUploading(false);
-        fileProgress = new Map();
-        uploadProgress = 0;
+
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        let error: UploadThingError<inferErrorShape<TRouter>>;
+        if (e instanceof UploadThingError) {
+          error = e as UploadThingError<inferErrorShape<TRouter>>;
+        } else {
+          error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+          console.error(
+            "Something went wrong. Please contact UploadThing and provide the following cause:",
+            error.cause instanceof Error ? error.cause.toString() : error.cause,
+          );
+        }
+        opts?.onUploadError?.(error);
+        return;
+      } finally {
         setUploading(false);
         fileProgress = new Map();
         uploadProgress = 0;
-        opts?.onUploadError?.(e as Error);
-        return;
       }
     };
 

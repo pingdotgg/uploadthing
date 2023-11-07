@@ -44,6 +44,13 @@ type UploadFilesOptions<
       input: inferEndpointInput<TRouter[TEndpoint]>;
     });
 
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });
+
 export type UploadFileResponse<TServerOutput> = {
   name: string;
   size: number;
