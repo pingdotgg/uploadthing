@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getFullApiUrl } from "../src/client";
+import { getFullApiUrl } from "../src/client.js";
 
 describe("getFullApiUrl", () => {
   it("should return the provided url if it is already absolute", () => {

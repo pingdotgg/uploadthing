@@ -4,50 +4,52 @@
   "engines": {
     "node": ">=18.13.0"
   },
+  "type": "module",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
     "./client": {
       "types": "./dist/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.js"
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
     },
     "./server": {
       "types": "./dist/server.d.ts",
-      "import": "./dist/server.mjs",
-      "require": "./dist/server.js"
+      "import": "./dist/server.js",
+      "require": "./dist/server.cjs"
     },
     "./next": {
       "types": "./dist/next.d.ts",
-      "import": "./dist/next.mjs",
-      "require": "./dist/next.js"
+      "import": "./dist/next.js",
+      "require": "./dist/next.cjs"
     },
     "./next-legacy": {
       "types": "./dist/next-legacy.d.ts",
-      "import": "./dist/next-legacy.mjs",
-      "require": "./dist/next-legacy.js"
+      "import": "./dist/next-legacy.js",
+      "require": "./dist/next-legacy.cjs"
     },
     "./express": {
-      "import": "./dist/express.mjs",
       "types": "./dist/express.d.ts",
-      "require": "./dist/express.js"
+      "import": "./dist/express.js",
+      "require": "./dist/express.cjs"
     },
     "./tw": {
       "types": "./dist/tw.d.ts",
-      "import": "./dist/tw.mjs",
-      "require": "./dist/tw.js"
+      "import": "./dist/tw.js",
+      "require": "./dist/tw.cjs"
     },
     "./fastify": {
       "types": "./dist/fastify.d.ts",
-      "import": "./dist/fastify.mjs",
-      "require": "./dist/fastify.js"
+      "import": "./dist/fastify.js",
+      "require": "./dist/fastify.cjs"
     },
     "./h3": {
       "types": "./dist/h3.d.ts",
-      "import": "./dist/h3.mjs",
-      "require": "./dist/h3.js"
+      "import": "./dist/h3.js",
+      "require": "./dist/h3.cjs"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],

@@ -7,20 +7,20 @@ import type {
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
-import { formatError } from "./internal/error-formatter";
-import type { RouterWithConfig } from "./internal/handler";
+import { UPLOADTHING_VERSION } from "./constants.js";
+import { formatError } from "./internal/error-formatter.js";
+import type { RouterWithConfig } from "./internal/handler.js";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
-} from "./internal/handler";
-import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { getPostBody } from "./internal/node-http/getBody";
-import type { FileRouter } from "./internal/types";
-import type { CreateBuilderOptions } from "./internal/upload-builder";
-import { createBuilder } from "./internal/upload-builder";
+} from "./internal/handler.js";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard.js";
+import { getPostBody } from "./internal/node-http/getBody.js";
+import type { FileRouter } from "./internal/types.js";
+import type { CreateBuilderOptions } from "./internal/upload-builder.js";
+import { createBuilder } from "./internal/upload-builder.js";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter } from "./internal/types.js";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,

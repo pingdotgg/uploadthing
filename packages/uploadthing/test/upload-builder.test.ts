@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import type { NextRequest } from "next/server";
+import type { NextRequest } from "next/server.js";
 import type { H3Event } from "h3";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { createBuilder } from "../src/internal/upload-builder";
+import { createBuilder } from "../src/internal/upload-builder.js";
 
 const badReqMock = {
   headers: {

@@ -4,7 +4,7 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { defaultErrorFormatter } from "./error-formatter";
+import { defaultErrorFormatter } from "./error-formatter.js";
 import type {
   AnyParams,
   MiddlewareFnArgs,
@@ -12,7 +12,7 @@ import type {
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-} from "./types";
+} from "./types.js";
 
 function internalCreateBuilder<
   TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,

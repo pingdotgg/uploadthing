@@ -15,6 +15,7 @@
       "require": "./dist/db.js"
     }
   },
+  "sideEffects": true,
   "typesVersions": {
     "*": {
       "*": [

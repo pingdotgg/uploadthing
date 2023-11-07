@@ -1,8 +1,8 @@
 import { it } from "vitest";
 
-import { genUploader } from "../src/client";
-import type { FileRouter } from "../src/internal/types";
-import { createBuilder } from "../src/internal/upload-builder";
+import { genUploader } from "../src/client.js";
+import type { FileRouter } from "../src/internal/types.js";
+import { createBuilder } from "../src/internal/upload-builder.js";
 
 it("genuploader", async () => {
   const f = createBuilder();

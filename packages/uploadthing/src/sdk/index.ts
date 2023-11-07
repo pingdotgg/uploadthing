@@ -6,14 +6,14 @@ import type {
 } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
-import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { FileEsque, UploadFileResponse } from "./utils";
+import { UPLOADTHING_VERSION } from "../constants.js";
+import { incompatibleNodeGuard } from "../internal/incompat-node-guard.js";
+import type { FileEsque, UploadFileResponse } from "./utils.js";
 import {
   getApiKeyOrThrow,
   guardServerOnly,
   uploadFilesInternal,
-} from "./utils";
+} from "./utils.js";
 
 export interface UTApiOptions {
   /**

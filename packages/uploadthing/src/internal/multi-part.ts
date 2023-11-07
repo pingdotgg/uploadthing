@@ -1,7 +1,7 @@
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 import type { ContentDisposition, FetchEsque } from "@uploadthing/shared";
 
-import { maybeParseResponseXML } from "./s3-error-parser";
+import { maybeParseResponseXML } from "./s3-error-parser.js";
 
 /**
  * Used by server uploads where progress is not needed.

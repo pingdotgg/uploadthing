@@ -7,7 +7,7 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { JsonParser } from "./parser";
+import type { JsonParser } from "./parser.js";
 
 //
 // Utils

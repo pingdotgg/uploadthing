@@ -1,6 +1,6 @@
 import type { UploadThingError } from "@uploadthing/shared";
 
-import type { FileRouter, inferErrorShape } from "./types";
+import type { FileRouter, inferErrorShape } from "./types.js";
 
 export function defaultErrorFormatter(error: UploadThingError) {
   return {

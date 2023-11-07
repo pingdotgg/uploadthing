@@ -4,17 +4,20 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
-import type { UploadThingResponse } from "./internal/handler";
-import { uploadPartWithProgress } from "./internal/multi-part";
-import type { FileRouter, inferEndpointInput } from "./internal/types";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import { UPLOADTHING_VERSION } from "./constants.js";
+import type { UploadThingResponse } from "./internal/handler.js";
+import { uploadPartWithProgress } from "./internal/multi-part.js";
+import type { FileRouter, inferEndpointInput } from "./internal/types.js";
+import {
+  createAPIRequestUrl,
+  createUTReporter,
+} from "./internal/ut-reporter.js";
 
 /**
  * @internal
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */
-export * from "./internal/component-theming";
+export * from "./internal/component-theming.js";
 
 type UploadFilesOptions<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {

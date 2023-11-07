@@ -17,11 +17,11 @@ import type {
   UploadedFile,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
-import { conditionalDevServer } from "./dev-hook";
-import { getParseFn } from "./parser";
-import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter, UTEvents } from "./types";
+import { UPLOADTHING_VERSION } from "../constants.js";
+import { conditionalDevServer } from "./dev-hook.js";
+import { getParseFn } from "./parser.js";
+import { VALID_ACTION_TYPES } from "./types.js";
+import type { ActionType, FileRouter, UTEvents } from "./types.js";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.

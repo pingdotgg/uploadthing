@@ -7,9 +7,9 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
-import { uploadPart } from "../internal/multi-part";
-import type { UTEvents } from "../server";
+import { UPLOADTHING_VERSION } from "../constants.js";
+import { uploadPart } from "../internal/multi-part.js";
+import type { UTEvents } from "../server.js";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {

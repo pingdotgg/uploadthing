@@ -1,6 +1,6 @@
 import type { Json } from "@uploadthing/shared";
 
-import type { MaybePromise } from "./types";
+import type { MaybePromise } from "./types.js";
 
 // Don't want to use Zod cause it's an optional dependency
 export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;

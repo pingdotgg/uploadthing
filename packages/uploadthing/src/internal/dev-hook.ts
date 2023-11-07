@@ -5,7 +5,7 @@ import {
 } from "@uploadthing/shared";
 import type { FileData } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../constants.js";
 
 const isValidResponse = (response: Response) => {
   if (!response.ok) return false;

@@ -1,7 +1,7 @@
 import { describe, expectTypeOf, test } from "vitest";
 
-import { UTApi } from ".";
-import type { UploadError } from "./utils";
+import { UTApi } from "./index.js";
+import type { UploadError } from "./utils.js";
 
 const utapi = new UTApi();
 

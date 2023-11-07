@@ -12,18 +12,18 @@ import {
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
-import { defaultErrorFormatter } from "./internal/error-formatter";
+import { UPLOADTHING_VERSION } from "./constants.js";
+import { defaultErrorFormatter } from "./internal/error-formatter.js";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
-} from "./internal/handler";
-import type { RouterWithConfig } from "./internal/handler";
-import type { FileRouter } from "./internal/types";
-import type { CreateBuilderOptions } from "./internal/upload-builder";
-import { createBuilder } from "./internal/upload-builder";
+} from "./internal/handler.js";
+import type { RouterWithConfig } from "./internal/handler.js";
+import type { FileRouter } from "./internal/types.js";
+import type { CreateBuilderOptions } from "./internal/upload-builder.js";
+import { createBuilder } from "./internal/upload-builder.js";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter } from "./internal/types.js";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,

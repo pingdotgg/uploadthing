@@ -21,6 +21,7 @@
       "require": "./dist/next-ssr-plugin.js"
     }
   },
+  "sideEffects": false,
   "files": [
     "dist"
   ],
