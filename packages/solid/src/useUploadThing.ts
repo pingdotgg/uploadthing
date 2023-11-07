@@ -27,10 +27,10 @@ export type UseUploadthingProps<
 > = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
+  onBeforeUploadBegin?: (files: File[]) => File[];
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[];
   onUploadError?: (e: Error) => void;
 };
 

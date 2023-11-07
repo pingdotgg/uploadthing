@@ -91,6 +91,16 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
+  onUploadComplete: <TOutput extends Record<string, unknown> | void>(
+    fn: ResolverFn<TOutput, TParams>,
+  ) => Uploader<{
+    _input: TParams["_input"];
+    _metadata: TParams["_metadata"];
+    _middlewareArgs: TParams["_middlewareArgs"];
+    _errorShape: TParams["_errorShape"];
+    _errorFn: TParams["_errorFn"];
+    _output: TOutput;
+  }>;
   onUploadError: (
     fn: TParams["_errorFn"] extends UnsetMarker
       ? UploadErrorFn
@@ -102,16 +112,6 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorShape: TParams["_errorShape"];
     _errorFn: UploadErrorFn;
     _output: UnsetMarker;
-  }>;
-  onUploadComplete: <TOutput extends Record<string, unknown> | void>(
-    fn: ResolverFn<TOutput, TParams>,
-  ) => Uploader<{
-    _input: TParams["_input"];
-    _metadata: TParams["_metadata"];
-    _middlewareArgs: TParams["_middlewareArgs"];
-    _errorShape: TParams["_errorShape"];
-    _errorFn: TParams["_errorFn"];
-    _output: TOutput;
   }>;
 }
 
