@@ -33,7 +33,6 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
 ) => {
   incompatibleNodeGuard();
   const ee = new EventEmitter();
-
   const requestHandler = buildRequestHandler<TRouter>(opts, ee);
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);

@@ -36,7 +36,7 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
 ): ExpressRouter => {
   incompatibleNodeGuard();
   const ee = new EventEmitter();
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts, ee);
   const router = ExpressRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises

@@ -38,7 +38,7 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   const ee = new EventEmitter();
-  const requestHandler = buildRequestHandler(opts);
+  const requestHandler = buildRequestHandler(opts, ee);
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return defineEventHandler(async (event) => {

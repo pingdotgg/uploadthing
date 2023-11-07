@@ -30,7 +30,6 @@ export const createServerHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   incompatibleNodeGuard();
-
   const ee = new EventEmitter();
   const requestHandler = buildRequestHandler<TRouter>(opts, ee);
 

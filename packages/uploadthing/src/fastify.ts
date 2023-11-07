@@ -37,7 +37,8 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   done: (err?: Error) => void,
 ) => {
   incompatibleNodeGuard();
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const ee = new EventEmitter();
+  const requestHandler = buildRequestHandler<TRouter>(opts, ee);
 
   const POST: RouteHandlerMethod = async (req, res) => {
     const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
@@ -81,7 +82,6 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   };
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
-  const ee = new EventEmitter();
 
   const GET: RouteHandlerMethod = async (req, res) => {
     const clientPollingKey = req.headers["x-uploadthing-polling-key"];
