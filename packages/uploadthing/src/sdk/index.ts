@@ -90,7 +90,7 @@ export class UTApi {
    */
   async uploadFiles<T extends FileEsque | FileEsque[]>(
     files: T,
-    opts: {
+    opts?: {
       metadata?: Json;
       contentDisposition?: ContentDisposition;
     },
@@ -102,8 +102,8 @@ export class UTApi {
     const uploads = await uploadFilesInternal(
       {
         files: filesToUpload,
-        metadata: opts.metadata ?? {},
-        contentDisposition: opts.contentDisposition ?? "inline",
+        metadata: opts?.metadata ?? {},
+        contentDisposition: opts?.contentDisposition ?? "inline",
       },
       {
         fetch: this.fetch,
@@ -133,7 +133,7 @@ export class UTApi {
    */
   async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
     urls: T,
-    opts: {
+    opts?: {
       metadata: Json;
       contentDisposition: ContentDisposition;
     },
@@ -143,7 +143,7 @@ export class UTApi {
     const fileUrls: MaybeUrl[] = Array.isArray(urls) ? urls : [urls];
 
     const formData = new FormData();
-    formData.append("metadata", JSON.stringify(opts.metadata ?? {}));
+    formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
     const filesToUpload = await Promise.all(
       fileUrls.map(async (url) => {
@@ -167,8 +167,8 @@ export class UTApi {
     const uploads = await uploadFilesInternal(
       {
         files: filesToUpload,
-        metadata: opts.metadata ?? {},
-        contentDisposition: opts.contentDisposition ?? "inline",
+        metadata: opts?.metadata ?? {},
+        contentDisposition: opts?.contentDisposition ?? "inline",
       },
       {
         fetch: this.fetch,
