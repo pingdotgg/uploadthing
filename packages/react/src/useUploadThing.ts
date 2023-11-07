@@ -149,8 +149,10 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
-      DANGEROUS__uploadFiles<TRouter>({ ...props, url }),
+    uploadFiles: <TEndpoint extends keyof TRouter>(
+      endpoint: TEndpoint,
+      opts: Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+    ) => DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, { ...opts, url }),
   } as const;
 };
 

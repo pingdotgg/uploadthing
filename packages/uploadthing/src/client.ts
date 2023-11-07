@@ -19,7 +19,6 @@ type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 > = {
-  url: URL;
   onUploadProgress?: ({
     file,
     progress,
@@ -30,6 +29,13 @@ type UploadFilesOptions<
   onUploadBegin?: ({ file }: { file: string }) => void;
 
   files: File[];
+
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}
@@ -172,7 +178,9 @@ export const DANGEROUS__uploadFiles = async <
 
     const serverData = await fetch("/api/uploadthing", {
       headers: { "x-uploadthing-polling-key": key },
-    }).then((res) => res.json());
+    }).then(
+      (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
+    );
 
     return {
       name: file.name,

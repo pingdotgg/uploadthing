@@ -215,6 +215,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const res = await uploadable.resolver({
         file: maybeReqBody.file,
         metadata: maybeReqBody.metadata,
