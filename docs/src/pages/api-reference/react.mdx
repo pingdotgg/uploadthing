@@ -1,10 +1,26 @@
-## UploadButton
+## generateComponents
+
+The `generateComponents` function is used to generate the UploadButton and
+UploadDropzone components you use to interact with UploadThing. Generating
+components allows for fully typesafe components bound to the type of your file
+router.
+
+```tsx copy filename="utils/uploadthing.tsx"
+import { generateComponents } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { UploadButton, UploadDropzone } =
+  generateComponents<OurFileRouter>();
+```
+
+### UploadButton
 
 A simple button that opens the native file picker and uploads the selected
 files. The default button is shown below. See [Theming](/theming) on how to
 customize it.
 
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton } from "~/utils/uploadthing";
 
 <UploadButton
   className="mt-5"
@@ -47,7 +63,7 @@ export const OurUploadButton = () => (
 );
 ```
 
-### Configuration
+#### Configuration
 
 | Prop                   | Type                                  | Required                | Notes           | Description                                                                                                                 |
 | :--------------------- | :------------------------------------ | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
@@ -82,7 +98,7 @@ export type UploadFileResponse<TServerOutput> = {
 };
 ```
 
-## UploadDropzone
+### UploadDropzone
 
 A `react-dropzone` powered dropzone that let's you drag and drop files to
 upload. The default dropzone is shown below. See [Theming](/theming) on how to
@@ -125,7 +141,7 @@ export const OurUploadDropzone = () => (
 );
 ```
 
-### Configuration
+#### Configuration
 
 | Prop                   | Type                                  | Required                | Notes           | Description                                                                                                                 |
 | :--------------------- | :------------------------------------ | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
