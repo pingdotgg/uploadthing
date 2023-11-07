@@ -185,28 +185,6 @@ export async function pollForFileData(
   });
 }
 
-export function getUploadthingUrl() {
-  /**
-   * The pathname must be /api/uploadthing
-   * since we call that via webhook, so the user
-   * should not override that. Just the protocol and host
-   *
-   * User can override the callback url with the UPLOADTHING_URL env var,
-   * if they do, they should include the protocol
-   */
-  const uturl = process.env.UPLOADTHING_URL;
-  if (uturl) return `${uturl}/api/uploadthing`;
-
-  /**
-   * If the VERCEL_URL is set, we will fall back to that next.
-   * They don't set the protocol, however, so we need to add it
-   */
-  const vcurl = process.env.VERCEL_URL;
-  if (vcurl) return `https://${vcurl}/api/uploadthing`; // SSR should use vercel url
-
-  return `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`; // dev SSR should use localhost
-}
-
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = (input: string) => {

@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
+import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
 import { createFetch } from "./utils/createFetch";
@@ -12,10 +12,8 @@ type EndpointMetadata = {
   config: ExpandedRouteConfig;
 }[];
 
-const createEndpointMetadata = (endpoint: string, url?: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(
-    `${url ?? ""}/api/uploadthing`,
-  );
+const createEndpointMetadata = (url: URL, endpoint: string) => {
+  const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
@@ -25,18 +23,26 @@ export type UseUploadthingProps = {
   onBeforeUploadBegin?: (files: File[]) => File[];
   onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
   onUploadError?: (e: Error) => void;
-  url?: string;
 };
 
-export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
+export const INTERNAL_uploadthingHookGen = <
+  TRouter extends FileRouter,
+>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
+}) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
+      initOpts.url,
       endpoint as string,
-      opts?.url,
     );
     let uploadProgress = 0;
     let fileProgress = new Map();
@@ -76,6 +82,7 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
 
             opts.onUploadBegin(file);
           },
+          url: initOpts.url,
         });
         setUploading(false);
         fileProgress = new Map();
@@ -101,10 +108,25 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
   return useUploadThing;
 };
 
-export const generateSolidHelpers = <TRouter extends FileRouter>() => {
+export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) => {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
+      DANGEROUS__uploadFiles<TRouter>({ ...props, url }),
   } as const;
 };
 

@@ -9,6 +9,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -59,7 +60,9 @@ export const UploadDropzone = <TRouter extends FileRouter>(
 
   const { mode = "manual" } = $props.config ?? {};
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+  });
   const uploadThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
       setFiles([]);
@@ -73,7 +76,6 @@ export const UploadDropzone = <TRouter extends FileRouter>(
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,
     onBeforeUploadBegin: $props.onBeforeUploadBegin,
-    url: $props.url,
   });
 
   const [files, setFiles] = createSignal<File[]>([]);

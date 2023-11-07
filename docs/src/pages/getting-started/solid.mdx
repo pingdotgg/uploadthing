@@ -78,9 +78,9 @@ export type OurFileRouter = typeof uploadRouter;
 
 ### Create an API route using the FileRouter
 
-<Callout type="warning">
-  **Note:** This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this
-  API from `/api/uploadthing` on your application.
+<Callout type="info">
+  File path here doesn't matter, you can serve this from any route. We recommend
+  serving it from `/api/uploadthing`.
 </Callout>
 
 ```ts copy filename="src/routes/api/uploadthing.ts"
@@ -90,13 +90,10 @@ import { uploadRouter } from "~/server/uploadthing";
 
 export const { GET, POST } = createServerHandler({
   router: uploadRouter,
-  config: {
-    callbackUrl: `http://localhost:${process.env.PORT ?? 3000}/api/uploadthing`,
-  },
 });
 ```
 
-### Creating The UploadThing Components (optional)
+### Creating The UploadThing Components (recommended)
 
 Generating components let's you pass your generic `FileRouter` once and then
 have typesafe components everywhere, instead of having to pass the generic
@@ -108,11 +105,12 @@ import { generateComponents } from "@uploadthing/solid";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-// URL is only needed for server side rendering
+// URL is only needed for server side rendering, or when your router
+// is deployed on a different path than `/api/uploadthing`
 const url = `http://localhost:${process.env.PORT ?? 3000}`;
 
 export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>(url);
+  generateComponents<OurFileRouter>({ url });
 ```
 
 ### Include our stylesheet

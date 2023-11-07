@@ -30,6 +30,13 @@ type UploadFilesOptions<TRouter extends FileRouter> = {
     input?: inferEndpointInput<TRouter[TEndpoint]>;
 
     files: File[];
+
+    /**
+     * URL to the UploadThing API endpoint
+     * @example URL { http://localhost:3000/api/uploadthing }
+     * @example URL { https://www.example.com/api/uploadthing }
+     */
+    url: URL;
   };
 }[keyof TRouter];
 
@@ -42,19 +49,16 @@ export type UploadFileResponse = {
 
 export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
-  config?: {
-    url?: string;
-  },
 ) => {
   const reportEventToUT = createUTReporter({
     endpoint: String(opts.endpoint),
-    url: config?.url,
+    url: opts?.url,
   });
 
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
-      url: config?.url,
+      url: opts.url,
       slug: String(opts.endpoint),
       actionType: "upload",
     }),
@@ -218,3 +222,39 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+// Returns a full URL to the dev's uploadthing endpoint
+export function getFullApiUrl(maybeUrl?: string): URL {
+  const base = (() => {
+    if (typeof window !== "undefined") {
+      return window.location.origin;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}`;
+    }
+
+    // @ts-expect-error - import meta is not defined in node
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (import.meta.env?.VERCEL_URL) {
+      // @ts-expect-error - import meta is not defined in node
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      return `https://${import.meta.env.VERCEL_URL}`;
+    }
+
+    return "http://localhost:3000";
+  })();
+
+  try {
+    const url = new URL(maybeUrl ?? "/api/uploadthing", base);
+    if (url.pathname === "/") {
+      url.pathname = "/api/uploadthing";
+    }
+    return url;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse '${maybeUrl}' as a URL. Make sure it's a valid URL or path`,
+    );
+  }
+}

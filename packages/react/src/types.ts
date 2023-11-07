@@ -12,6 +12,16 @@ import type {
 export type UploadthingComponentProps<TRouter extends FileRouter> = {
   [TEndpoint in keyof TRouter]: {
     endpoint: TEndpoint;
+    /**
+     * URL to the UploadThing API endpoint
+     * @example URL { /api/uploadthing }
+     * @example URL { https://www.example.com/api/uploadthing }
+     *
+     * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+     *
+     * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+     */
+    url?: string | URL;
 
     onUploadProgress?: (progress: number) => void;
     onUploadBegin?: (fileName: string) => void;

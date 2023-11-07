@@ -1,8 +1,9 @@
+import type { ComponentProps } from "solid-js";
+
+import { getFullApiUrl } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
-import type { UploadButtonProps } from "./components/button";
 import { UploadButton } from "./components/button";
-import type { UploadDropzoneProps } from "./components/dropzone";
 import { UploadDropzone } from "./components/dropzone";
 import type { UploadthingComponentProps } from "./types";
 
@@ -33,17 +34,31 @@ export const Uploader = <TRouter extends FileRouter>(
   );
 };
 
-export function generateComponents<TRouter extends FileRouter>(url?: string) {
+export function generateComponents<TRouter extends FileRouter>(initOpts?: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
   return {
-    UploadButton: (props: UploadButtonProps<TRouter>) => (
-      <UploadButton<TRouter> {...(props as any)} url={props.url ?? url} />
-    ),
-    UploadDropzone: (props: UploadDropzoneProps<TRouter>) => (
-      <UploadDropzone<TRouter> {...(props as any)} url={props.url ?? url} />
-    ),
-    Uploader: (props: UploadthingComponentProps<TRouter>) => (
-      <Uploader<TRouter> {...(props as any)} url={props.url ?? url} />
-    ),
+    UploadButton: (
+      props: Omit<ComponentProps<typeof UploadButton<TRouter>>, "url">,
+    ) => <UploadButton<TRouter> {...(props as any)} url={url} />,
+    UploadDropzone: (
+      props: Omit<ComponentProps<typeof UploadDropzone<TRouter>>, "url">,
+    ) => <UploadDropzone<TRouter> {...(props as any)} url={url} />,
+    Uploader: (
+      props: Omit<ComponentProps<typeof Uploader<TRouter>>, "url">,
+    ) => <Uploader<TRouter> {...(props as any)} url={url} />,
   };
 }
 

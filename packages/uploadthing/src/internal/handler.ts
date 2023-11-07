@@ -2,7 +2,6 @@ import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
-  getUploadthingUrl,
   isObject,
   objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
@@ -84,6 +83,9 @@ const fileCountLimitHit = (
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
+    /**
+     * @deprecated this option is deprecated and will be removed in a future version
+     */
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
@@ -114,6 +116,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 ) => {
   return async (input: {
     req: RequestLike;
+    // Allow for overriding request URL since some req.url are read-only
+    // If the adapter doesn't give a full url on `req.url`, this should be set
+    url?: URL;
     res?: unknown;
     event?: unknown;
   }): Promise<
@@ -128,8 +133,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
+    let url: URL;
+    try {
+      url = new URL(input.url ?? req.url ?? "");
+    } catch (error) {
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Invalid url '${input.url?.href ?? req.url}'`,
+        cause: error,
+      });
+    }
+
     // Get inputs from query and params
-    const params = new URL(req.url ?? "", getUploadthingUrl()).searchParams;
+    const params = url.searchParams;
     const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
@@ -317,13 +333,15 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
+        const callbackUrl = url.origin + url.pathname;
+
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
           files: files,
 
           routeConfig: parsedConfig,
 
           metadata,
-          callbackUrl: config?.callbackUrl ?? getUploadthingUrl(),
+          callbackUrl: config?.callbackUrl ?? callbackUrl,
           callbackSlug: slug,
         });
 

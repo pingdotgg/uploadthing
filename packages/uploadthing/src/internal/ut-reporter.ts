@@ -4,27 +4,30 @@ import { maybeParseResponseXML } from "./s3-error-parser";
 import type { ActionType, UTEvents } from "./types";
 
 export const createAPIRequestUrl = (config: {
-  url?: string;
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
   slug: string;
   actionType: ActionType;
 }) => {
-  const url = new URL(
-    config.url ?? `${window.location.origin}/api/uploadthing`,
-  );
+  const url = new URL(config.url);
 
   const queryParams = new URLSearchParams(url.search);
   queryParams.set("actionType", config.actionType);
   queryParams.set("slug", config.slug);
 
   url.search = queryParams.toString();
-  return url.toString();
+  return url;
 };
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
  * Events are handled in "./handler.ts starting at L200"
  */
-export const createUTReporter = (cfg: { url?: string; endpoint: string }) => {
+export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
   return async <TEvent extends keyof UTEvents>(
     type: TEvent,
     payload: UTEvents[TEvent],
