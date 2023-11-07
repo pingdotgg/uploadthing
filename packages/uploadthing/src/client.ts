@@ -3,6 +3,7 @@ import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
+  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
@@ -61,7 +62,7 @@ export const DANGEROUS__uploadFiles = async <
 ) => {
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
-    url: opts?.url,
+    url: opts.url,
   });
 
   // Get presigned URL for S3 upload
@@ -195,10 +196,33 @@ export const DANGEROUS__uploadFiles = async <
   return Promise.all(fileUploadPromises);
 };
 
-export const genUploader = <TRouter extends FileRouter>() => {
+export const genUploader = <TRouter extends FileRouter>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) => {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
   return <TEndpoint extends keyof TRouter>(
-    ...args: Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>
-  ) => DANGEROUS__uploadFiles<TRouter, TEndpoint>(...args);
+    endpoint: TEndpoint,
+    opts: DistributiveOmit<
+      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+      "url"
+    >,
+  ) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+      ...opts,
+      url,
+    } as any);
 };
 
 export const classNames = (...classes: (string | boolean)[]) => {

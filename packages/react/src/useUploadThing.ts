@@ -4,6 +4,7 @@ import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import { DANGEROUS__uploadFiles, getFullApiUrl } from "uploadthing/client";
 import type {
+  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
@@ -151,8 +152,16 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: <TEndpoint extends keyof TRouter>(
       endpoint: TEndpoint,
-      opts: Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-    ) => DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, { ...opts, url }),
+      opts: DistributiveOmit<
+        Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+        "url"
+      >,
+    ) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+        ...opts,
+        url,
+      } as any),
   } as const;
 };
 
