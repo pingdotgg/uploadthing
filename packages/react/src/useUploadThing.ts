@@ -8,8 +8,10 @@ import {
   INTERNAL_DO_NOT_USE__fatalClientError,
 } from "uploadthing/client";
 import type {
+  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
+  inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
 
@@ -30,8 +32,13 @@ const useEndpointMetadata = (url: URL, endpoint: string) => {
   return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
 };
 
-export type UseUploadthingProps<TRouter extends FileRouter> = {
-  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
+export type UseUploadthingProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
+  onClientUploadComplete?: (
+    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
+  ) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
@@ -50,7 +57,7 @@ export const INTERNAL_uploadthingHookGen = <
 }) => {
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
@@ -73,9 +80,8 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles({
+        const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
           files,
-          endpoint: endpoint as string,
           input,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
@@ -147,8 +153,18 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: (props: Parameters<typeof DANGEROUS__uploadFiles>[0]) =>
-      DANGEROUS__uploadFiles<TRouter>({ ...props, url }),
+    uploadFiles: <TEndpoint extends keyof TRouter>(
+      endpoint: TEndpoint,
+      opts: DistributiveOmit<
+        Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+        "url"
+      >,
+    ) =>
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+        ...opts,
+        url,
+      } as any),
   } as const;
 };
 

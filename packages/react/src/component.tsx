@@ -7,10 +7,13 @@ import { UploadButton } from "./components/button";
 import { UploadDropzone } from "./components/dropzone";
 import type { UploadthingComponentProps } from "./types";
 
-export function Uploader<TRouter extends FileRouter>(
+export function Uploader<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadthingComponentProps<TRouter>,
+    : UploadthingComponentProps<TRouter, TEndpoint>,
 ) {
   return (
     <>
@@ -48,15 +51,21 @@ export function generateComponents<TRouter extends FileRouter>(initOpts?: {
     initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
 
   return {
-    UploadButton: (
-      props: Omit<ComponentProps<typeof UploadButton<TRouter>>, "url">,
-    ) => <UploadButton<TRouter> {...(props as any)} url={url} />,
-    UploadDropzone: (
-      props: Omit<ComponentProps<typeof UploadDropzone<TRouter>>, "url">,
-    ) => <UploadDropzone<TRouter> {...(props as any)} url={url} />,
-    Uploader: (
-      props: Omit<ComponentProps<typeof Uploader<TRouter>>, "url">,
-    ) => <Uploader<TRouter> {...(props as any)} url={url} />,
+    UploadButton: <TEndpoint extends keyof TRouter>(
+      props: Omit<
+        ComponentProps<typeof UploadButton<TRouter, TEndpoint>>,
+        "url"
+      >,
+    ) => <UploadButton<TRouter, TEndpoint> {...(props as any)} url={url} />,
+    UploadDropzone: <TEndpoint extends keyof TRouter>(
+      props: Omit<
+        ComponentProps<typeof UploadDropzone<TRouter, TEndpoint>>,
+        "url"
+      >,
+    ) => <UploadDropzone<TRouter, TEndpoint> {...(props as any)} url={url} />,
+    Uploader: <TEndpoint extends keyof TRouter>(
+      props: Omit<ComponentProps<typeof Uploader<TRouter, TEndpoint>>, "url">,
+    ) => <Uploader<TRouter, TEndpoint> {...(props as any)} url={url} />,
   };
 }
 

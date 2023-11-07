@@ -1,13 +1,13 @@
-import {
-  pollForFileData,
-  safeParseJSON,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import type { FileRouter, inferEndpointInput } from "./internal/types";
+import type {
+  DistributiveOmit,
+  FileRouter,
+  inferEndpointInput,
+  inferEndpointOutput,
+} from "./internal/types";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 /**
@@ -16,7 +16,34 @@ import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
  */
 export * from "./internal/component-theming";
 
-/** @internal */
+type UploadFilesOptions<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
+  onUploadProgress?: ({
+    file,
+    progress,
+  }: {
+    file: string;
+    progress: number;
+  }) => void;
+  onUploadBegin?: ({ file }: { file: string }) => void;
+
+  files: File[];
+
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
+} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
+  ? // eslint-disable-next-line @typescript-eslint/ban-types
+    {}
+  : {
+      input: inferEndpointInput<TRouter[TEndpoint]>;
+    });
+
 export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
   new UploadThingError({
     code: "INTERNAL_CLIENT_ERROR",
@@ -24,57 +51,39 @@ export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
     cause: e,
   });
 
-type UploadFilesOptions<TRouter extends FileRouter> = {
-  [TEndpoint in keyof TRouter]: {
-    endpoint: TEndpoint;
-    onUploadProgress?: ({
-      file,
-      progress,
-    }: {
-      file: string;
-      progress: number;
-    }) => void;
-    onUploadBegin?: ({ file }: { file: string }) => void;
-    input?: inferEndpointInput<TRouter[TEndpoint]>;
-
-    files: File[];
-
-    /**
-     * URL to the UploadThing API endpoint
-     * @example URL { http://localhost:3000/api/uploadthing }
-     * @example URL { https://www.example.com/api/uploadthing }
-     */
-    url: URL;
-  };
-}[keyof TRouter];
-
-export type UploadFileResponse = {
+export type UploadFileResponse<TServerOutput> = {
   name: string;
   size: number;
   key: string;
   url: string;
+  // Matches what's returned from the serverside `onUploadComplete` callback
+  serverData: TServerOutput;
 };
 
-export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
-  opts: UploadFilesOptions<TRouter>,
+export const DANGEROUS__uploadFiles = async <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
+  endpoint: TEndpoint,
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) => {
   const reportEventToUT = createUTReporter({
-    endpoint: String(opts.endpoint),
-    url: opts?.url,
+    endpoint: String(endpoint),
+    url: opts.url,
   });
 
   // Get presigned URL for S3 upload
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
       url: opts.url,
-      slug: String(opts.endpoint),
+      slug: String(endpoint),
       actionType: "upload",
     }),
     {
       method: "POST",
       body: JSON.stringify({
+        input: "input" in opts ? opts.input : null,
         files: opts.files.map((f) => ({ name: f.name, size: f.size })),
-        input: opts.input,
       }),
       // Express requires Content-Type to be explicitly set to parse body properly
       headers: {
@@ -121,14 +130,8 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       });
     }
 
-    const {
-      presignedUrls,
-      uploadId,
-      chunkSize,
-      contentDisposition,
-      key,
-      pollingUrl,
-    } = presigned;
+    const { presignedUrls, uploadId, chunkSize, contentDisposition, key } =
+      presigned;
 
     let uploadedBytes = 0;
 
@@ -181,28 +184,52 @@ export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
       });
     }
 
-    // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData({
-      url: pollingUrl,
-      apiKey: null,
-      sdkVersion: UPLOADTHING_VERSION,
-    });
+    const serverData = await fetch(opts.url, {
+      headers: { "x-uploadthing-polling-key": key },
+    }).then(
+      (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
+    );
 
     return {
       name: file.name,
       size: file.size,
       key: presigned.key,
+
+      serverData,
       url: "https://utfs.io/f/" + key,
-    } satisfies UploadFileResponse;
+    } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
 
   return Promise.all(fileUploadPromises);
 };
 
-export const genUploader = <
-  TRouter extends FileRouter,
->(): typeof DANGEROUS__uploadFiles<TRouter> => {
-  return DANGEROUS__uploadFiles;
+export const genUploader = <TRouter extends FileRouter>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) => {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
+  return <TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts: DistributiveOmit<
+      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+      "url"
+    >,
+  ) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+      ...opts,
+      url,
+    } as any);
 };
 
 export const classNames = (...classes: (string | boolean)[]) => {
