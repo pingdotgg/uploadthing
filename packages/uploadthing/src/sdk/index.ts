@@ -44,7 +44,7 @@ export class UTApi {
 
     // Assert some stuff
     guardServerOnly();
-    getApiKeyOrThrow();
+    getApiKeyOrThrow(this.apiKey);
     incompatibleNodeGuard();
   }
 
