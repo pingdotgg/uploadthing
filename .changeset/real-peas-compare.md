@@ -5,13 +5,15 @@
 chore!: remove deprecated `utapi` object in preference of using constructor
 
 the default UTApi was exported as `utapi` from `uploadthing/server`. this was
-deprecated in a previous release in favor of using the constructor directly.
+deprecated in `v5.7` in favor of using the constructor directly.
 
 ```diff
 - import { utapi } from 'uploadthing/server'
 + import { UTApi } from 'uploadthing/server'
 + const utapi = new UTApi(opts)
 ```
+
+> For full API spec of `UTAPI` see [the the server API reference](https://docs.uploadthing.com/api-reference/server#utapi).
 
 This update removes the deprecated `utapi` export.
 
