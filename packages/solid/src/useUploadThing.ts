@@ -105,7 +105,7 @@ export const INTERNAL_uploadthingHookGen = <
           error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
           console.error(
             "Something went wrong. Please contact UploadThing and provide the following cause:",
-            error.cause,
+            error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
         opts?.onUploadError?.(error);
