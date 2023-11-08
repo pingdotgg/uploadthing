@@ -90,3 +90,25 @@ jobs:
             .catch((err) => {
               console.error('Error sending discord notification', err)
             })
+
+      - name: Revalidate banner on dashboard
+        if: steps.changeset.outputs.published == 'true'
+        uses: actions/github-script@v6
+        env:
+          PING_SIGNING_SECRET: ${{ secrets.PING_SIGNING_SECRET }}
+        with:
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
+          script: |
+            fetch("https://uploadthing.com/api/revalidate-npm-tag", {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+                'x-ping-signature': process.env.PING_SIGNING_SECRET
+              },
+            })
+            .then((res) => {
+              console.log('Version revalidated', await res.text())
+            })
+            .catch((err) => {
+              console.error('Error revalidating tag', err)
+            })
