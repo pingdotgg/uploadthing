@@ -1,9 +1,9 @@
-import { describe, expectTypeOf, test } from "vitest";
+import { describe, expect, expectTypeOf, test } from "vitest";
 
 import { UTApi } from ".";
 import type { UploadError } from "./utils";
 
-const utapi = new UTApi();
+const utapi = new UTApi({ apiKey: "foo" });
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
@@ -58,5 +58,20 @@ describe("uploadFilesFromUrl", () => {
         | { data: null; error: UploadError }
       >(result);
     });
+  });
+});
+
+describe("constructor throws if no apiKey or secret is set", () => {
+  test("no secret or apikey", () => {
+    expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
+      '"Missing `UPLOADTHING_SECRET` env variable."',
+    );
+  });
+  test("env is set", () => {
+    process.env.UPLOADTHING_SECRET = "foo";
+    expect(() => new UTApi()).not.toThrow();
+  });
+  test("apikey option is passed", () => {
+    expect(() => new UTApi({ apiKey: "foobar" })).not.toThrow();
   });
 });
