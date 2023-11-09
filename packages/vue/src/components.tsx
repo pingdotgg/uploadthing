@@ -1,6 +1,10 @@
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
-import { classNames, generateMimeTypes } from "uploadthing/client";
+import {
+  classNames,
+  generateMimeTypes,
+  getFullApiUrl,
+} from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 
 import {
@@ -33,29 +37,38 @@ const Spinner = defineComponent(() => {
   };
 });
 
-export const UploadButton = <TRouter extends FileRouter>() =>
+export const UploadButton = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>() =>
   defineComponent(
-    (props: { config: UploadthingComponentProps<TRouter> }) => {
-      const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+    (props: { config: UploadthingComponentProps<TRouter, TEndpoint> }) => {
+      const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+        url:
+          props.config.url instanceof URL
+            ? props.config.url
+            : getFullApiUrl(props.config.url),
+      });
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
       const uploadProgress = ref(0);
 
       const $props = props.config;
-      const useUploadthingProps: UseUploadthingProps<TRouter> = reactive({
-        onClientUploadComplete: (res) => {
-          if (fileInputRef.value) {
-            fileInputRef.value.value = "";
-          }
-          $props.onClientUploadComplete?.(res);
-          uploadProgress.value = 0;
-        },
-        onUploadProgress: (p) => {
-          uploadProgress.value = p;
-          $props.onUploadProgress?.(p);
-        },
-        onUploadError: $props.onUploadError,
-      });
+      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+        reactive({
+          onClientUploadComplete: (res) => {
+            if (fileInputRef.value) {
+              fileInputRef.value.value = "";
+            }
+            $props.onClientUploadComplete?.(res);
+            uploadProgress.value = 0;
+          },
+          onUploadProgress: (p) => {
+            uploadProgress.value = p;
+            $props.onUploadProgress?.(p);
+          },
+          onUploadError: $props.onUploadError,
+        });
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
@@ -149,11 +162,19 @@ export const UploadButton = <TRouter extends FileRouter>() =>
     },
   );
 
-export const UploadDropzone = <TRouter extends FileRouter>() =>
+export const UploadDropzone = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>() =>
   defineComponent(
-    (props: { config: UploadthingComponentProps<TRouter> }) => {
+    (props: { config: UploadthingComponentProps<TRouter, TEndpoint> }) => {
       const $props = props.config;
-      const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+      const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+        url:
+          props.config.url instanceof URL
+            ? props.config.url
+            : getFullApiUrl(props.config.url),
+      });
       const files = ref<File[]>([]);
 
       const uploadProgress = ref(0);
@@ -161,18 +182,19 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
       const setFiles = (newFiles: File[]) => {
         files.value = newFiles;
       };
-      const useUploadthingProps: UseUploadthingProps<TRouter> = reactive({
-        onClientUploadComplete: (res) => {
-          setFiles([]);
-          $props.onClientUploadComplete?.(res);
-          uploadProgress.value = 0;
-        },
-        onUploadProgress: (p) => {
-          uploadProgress.value = p;
-          $props.onUploadProgress?.(p);
-        },
-        onUploadError: $props.onUploadError,
-      });
+      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+        reactive({
+          onClientUploadComplete: (res) => {
+            setFiles([]);
+            $props.onClientUploadComplete?.(res);
+            uploadProgress.value = 0;
+          },
+          onUploadProgress: (p) => {
+            uploadProgress.value = p;
+            $props.onUploadProgress?.(p);
+          },
+          onUploadError: $props.onUploadError,
+        });
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
@@ -311,9 +333,12 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
     },
   );
 
-export const Uploader = <TRouter extends FileRouter>() =>
+export const Uploader = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>() =>
   defineComponent(
-    (props: { config: UploadthingComponentProps<TRouter> }) => {
+    (_props: { config: UploadthingComponentProps<TRouter, TEndpoint> }) => {
       return () => {
         return (
           <>
@@ -342,13 +367,16 @@ export const Uploader = <TRouter extends FileRouter>() =>
 
 // builder function to create generic component inside of SFC setup script
 export const useUploadButton = <TRouter extends FileRouter>() => {
+  // @ts-expect-error - FIXME: need TEndpoint somehow
   return UploadButton<TRouter>();
 };
 
 export const useUploadDropzone = <TRouter extends FileRouter>() => {
+  // @ts-expect-error - FIXME: need TEndpoint somehow
   return UploadDropzone<TRouter>();
 };
 
 export const useUploader = <TRouter extends FileRouter>() => {
+  // @ts-expect-error - FIXME: need TEndpoint somehow
   return Uploader<TRouter>();
 };
