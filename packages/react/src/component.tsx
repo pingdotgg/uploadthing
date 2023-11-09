@@ -1,13 +1,19 @@
+import type { ComponentProps } from "react";
+
+import { getFullApiUrl } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import { UploadButton } from "./components/button";
 import { UploadDropzone } from "./components/dropzone";
 import type { UploadthingComponentProps } from "./types";
 
-export function Uploader<TRouter extends FileRouter>(
+export function Uploader<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadthingComponentProps<TRouter>,
+    : UploadthingComponentProps<TRouter, TEndpoint>,
 ) {
   return (
     <>
@@ -29,11 +35,37 @@ export function Uploader<TRouter extends FileRouter>(
   );
 }
 
-export function generateComponents<TRouter extends FileRouter>() {
+export function generateComponents<TRouter extends FileRouter>(initOpts?: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}) {
+  const url =
+    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
   return {
-    UploadButton: UploadButton<TRouter>,
-    UploadDropzone: UploadDropzone<TRouter>,
-    Uploader: Uploader<TRouter>,
+    UploadButton: <TEndpoint extends keyof TRouter>(
+      props: Omit<
+        ComponentProps<typeof UploadButton<TRouter, TEndpoint>>,
+        "url"
+      >,
+    ) => <UploadButton<TRouter, TEndpoint> {...(props as any)} url={url} />,
+    UploadDropzone: <TEndpoint extends keyof TRouter>(
+      props: Omit<
+        ComponentProps<typeof UploadDropzone<TRouter, TEndpoint>>,
+        "url"
+      >,
+    ) => <UploadDropzone<TRouter, TEndpoint> {...(props as any)} url={url} />,
+    Uploader: <TEndpoint extends keyof TRouter>(
+      props: Omit<ComponentProps<typeof Uploader<TRouter, TEndpoint>>, "url">,
+    ) => <Uploader<TRouter, TEndpoint> {...(props as any)} url={url} />,
   };
 }
 

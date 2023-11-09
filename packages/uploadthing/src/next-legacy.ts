@@ -1,3 +1,6 @@
+// This node import should be fine since it's available in both node and edge runtimes
+// https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
+import { EventEmitter } from "events";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
@@ -29,17 +32,33 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   incompatibleNodeGuard();
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const ee = new EventEmitter();
+  const requestHandler = buildRequestHandler<TRouter>(opts, ee);
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // Return valid endpoints
     if (req.method === "GET") {
+      const clientPollingKey = req.headers["x-uploadthing-polling-key"];
+      if (clientPollingKey) {
+        const eventData = await new Promise((resolve) => {
+          ee.addListener("callbackDone", resolve);
+        });
+        ee.removeAllListeners("callbackDone");
+
+        res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+        res.status(200).json(eventData);
+        return;
+      }
+
       const perms = getBuildPerms();
       res.status(200).json(perms);
       return;
     }
+
+    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
+    const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
 
     const response = await requestHandler({
       req: Object.assign(req, {
@@ -48,6 +67,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
             typeof req.body === "string" ? JSON.parse(req.body) : req.body,
           ),
       }),
+      url,
       res,
     });
 

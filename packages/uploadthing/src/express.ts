@@ -1,3 +1,4 @@
+import EventEmitter from "events";
 import { Router as ExpressRouter } from "express";
 import type {
   Request as ExpressRequest,
@@ -34,7 +35,8 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
   incompatibleNodeGuard();
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const ee = new EventEmitter();
+  const requestHandler = buildRequestHandler<TRouter>(opts, ee);
   const router = ExpressRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -54,10 +56,17 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       return;
     }
 
+    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
+    const url = new URL(
+      req.baseUrl + req.url, // baseUrl is the mount point for the router, url is the path
+      `${proto}://${req.headers.host}`,
+    );
+
     const response = await requestHandler({
       req: Object.assign(req, {
         json: () => Promise.resolve(bodyResult.data),
       }),
+      url,
       res,
     });
 
@@ -84,9 +93,20 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  router.get("/", (_, res) => {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  router.get("/", async (req, res) => {
     res.status(200);
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
+
+    const clientPollingKey = req.headers["x-uploadthing-polling-key"];
+    if (clientPollingKey) {
+      const eventData = await new Promise((resolve) => {
+        ee.addListener("callbackDone", resolve);
+      });
+      ee.removeAllListeners("callbackDone");
+      return res.send(JSON.stringify(eventData));
+    }
+
     res.send(JSON.stringify(getBuildPerms()));
   });
 

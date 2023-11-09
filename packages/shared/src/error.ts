@@ -1,4 +1,5 @@
-import type { Json } from "./types";
+import type { Json, ResponseEsque } from "./types";
+import { isObject, safeParseJSON } from "./utils";
 
 const ERROR_CODES = {
   // Generic
@@ -73,21 +74,29 @@ export class UploadThingError<
     }
   }
 
-  public static async fromResponse(response: Response) {
-    const json = (await response.json()) as Json;
+  public static async fromResponse(response: ResponseEsque) {
+    const jsonOrError = await safeParseJSON<Json>(response);
+    if (jsonOrError instanceof Error) {
+      return new UploadThingError({
+        message: jsonOrError.message,
+        code: getErrorTypeFromStatusCode(response.status),
+        cause: response,
+      });
+    }
+
     let message: string | undefined = undefined;
-    if (json !== null && typeof json === "object" && !Array.isArray(json)) {
-      if (typeof json.message === "string") {
-        message = json.message;
-      } else if (typeof json.error === "string") {
-        message = json.error;
+    if (isObject(jsonOrError)) {
+      if (typeof jsonOrError.message === "string") {
+        message = jsonOrError.message;
+      } else if (typeof jsonOrError.error === "string") {
+        message = jsonOrError.error;
       }
     }
     return new UploadThingError({
       message,
       code: getErrorTypeFromStatusCode(response.status),
       cause: response,
-      data: json,
+      data: jsonOrError,
     });
   }
 

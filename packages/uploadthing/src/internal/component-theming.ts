@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
 
+import { objectKeys } from "@uploadthing/shared";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 
 /**
@@ -8,7 +9,7 @@ import type { ExpandedRouteConfig } from "@uploadthing/shared";
  */
 
 export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
-  const fileTypes = config ? Object.keys(config) : [];
+  const fileTypes = config ? objectKeys(config) : [];
 
   const maxFileCount = config
     ? Object.values(config).map((v) => v.maxFileCount)
@@ -24,7 +25,7 @@ export const capitalizeStart = (str: string) => {
 export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
   if (!config) return "";
 
-  const allowedTypes = Object.keys(config) as (keyof ExpandedRouteConfig)[];
+  const allowedTypes = objectKeys(config);
 
   const formattedTypes = allowedTypes.map((f) => (f === "blob" ? "file" : f));
 

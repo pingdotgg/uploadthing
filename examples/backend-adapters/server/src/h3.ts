@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { createApp, createRouter, eventHandler } from "h3";
 
 import { createH3EventHandler } from "uploadthing/h3";

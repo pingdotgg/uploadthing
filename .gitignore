@@ -10,7 +10,6 @@ coverage
 
 # next.js
 .next/
-**/next-env.d.ts
 out/
 build
 
@@ -18,12 +17,14 @@ build
 .DS_Store
 *.pem
 .data
+.idea
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.tsbuildinfo
 
 # local env files
 .env

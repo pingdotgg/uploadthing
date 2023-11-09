@@ -1,5 +1,105 @@
 # uploadthing
 
+## 5.7.4
+
+- Updated dependencies
+  [[`eb5f96d`](https://github.com/pingdotgg/uploadthing/commit/eb5f96dc06a81ecb4b1f7ee3d0ba259ebdfee7d1)]:
+  - @uploadthing/mime-types@0.2.2
+  - @uploadthing/shared@5.2.7
+
+## 5.7.3
+
+- Updated dependencies
+  [[`da43651`](https://github.com/pingdotgg/uploadthing/commit/da436516a9c1e30268878016a9c1dc930bc384f6)]:
+  - @uploadthing/shared@5.2.6
+
+## 5.7.2
+
+### Patch Changes
+
+- [#404](https://github.com/pingdotgg/uploadthing/pull/404)
+  [`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - better error
+  handling of invalid json parsing
+
+- [#415](https://github.com/pingdotgg/uploadthing/pull/415)
+  [`1635217`](https://github.com/pingdotgg/uploadthing/commit/16352171ff05e309cd2590a2a236a48de2477860)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - clone res
+  before attempting to parse json so that we can fallback to .text()
+
+- [#430](https://github.com/pingdotgg/uploadthing/pull/430)
+  [`7a63ab5`](https://github.com/pingdotgg/uploadthing/commit/7a63ab5669dffec5e1ff3f4d837ccff2ae47852b)
+  Thanks [@JEK58](https://github.com/JEK58)! - feat: Upload status type added
+
+- Updated dependencies
+  [[`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)]:
+  - @uploadthing/shared@5.2.5
+
+## 5.7.1
+
+### Patch Changes
+
+- [#410](https://github.com/pingdotgg/uploadthing/pull/410)
+  [`1df596a`](https://github.com/pingdotgg/uploadthing/commit/1df596a2507abb9047fd5ad5d4355e3ab52d5044)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrong env
+  check for sdk
+
+- Updated dependencies
+  [[`fd24c9d`](https://github.com/pingdotgg/uploadthing/commit/fd24c9d2b4e8be089bae2c9cb78d8f1b1fa80c16)]:
+  - @uploadthing/shared@5.2.4
+
+## 5.7.0
+
+### Minor Changes
+
+- [#388](https://github.com/pingdotgg/uploadthing/pull/388)
+  [`440ae1b`](https://github.com/pingdotgg/uploadthing/commit/440ae1bb9de8887b6676b2566413f9e49575304a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - migrate utapi
+  to a class which allows for (optional) custom initialization options to be
+  passed in. Below are shown the available options and their default values:
+
+  ```ts
+  import { UTApi } from "uploadthing/server";
+
+  const utapi = new UTApi({
+    fetch: globalThis.fetch,
+    apiKey: process.env.UPLOADTHING_SECRET,
+  });
+
+  utapi.deleteFiles;
+  utapi.listFiles;
+  // ...
+  ```
+
+  `utapi` is still exported from `uploadthing/server` for backwards
+  compatibility, but will be removed in a future major release.
+
+### Patch Changes
+
+- [#380](https://github.com/pingdotgg/uploadthing/pull/380)
+  [`2803c5b`](https://github.com/pingdotgg/uploadthing/commit/2803c5b18962abc1884fe565fa0a3f60c04f2717)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: include
+  patterns of withUt now points to existing files
+
+- [#373](https://github.com/pingdotgg/uploadthing/pull/373)
+  [`33c67af`](https://github.com/pingdotgg/uploadthing/commit/33c67af34d57e2ea3091ba7d7cdc1ddfaf1bbf97)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat(sdk): add
+  usage endpoint to sdk
+
+- [#382](https://github.com/pingdotgg/uploadthing/pull/382)
+  [`3b04a8c`](https://github.com/pingdotgg/uploadthing/commit/3b04a8c52cd048bd7ea9e4150787ceb8180ed84a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add warning log
+  if node < 18
+
+- [#388](https://github.com/pingdotgg/uploadthing/pull/388)
+  [`440ae1b`](https://github.com/pingdotgg/uploadthing/commit/440ae1bb9de8887b6676b2566413f9e49575304a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - include more
+  logs for failed `utapi` functions
+
+- Updated dependencies
+  [[`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)]:
+  - @uploadthing/shared@5.2.3
+
 ## 5.6.1
 
 ### Patch Changes
@@ -51,7 +151,7 @@
   [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
   Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
   ssr hydration helper for next.js appdir. 📚
-  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+  [See docs for how to add to your app](https://docs.uploadthing.com/getting-started/appdir#configure-automatic-hydration-during-ssr-recommended)
 
 ### Patch Changes
 

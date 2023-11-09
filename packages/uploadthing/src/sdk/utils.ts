@@ -1,14 +1,15 @@
 import type { File as UndiciFile } from "undici";
 
-import type { Json } from "@uploadthing/shared";
+import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { maybeParseResponseXML } from "../internal/s3-error-parser";
-import type { FetchEsque } from "./types";
+import { UPLOADTHING_VERSION } from "../constants";
+import { uploadPart } from "../internal/multi-part";
+import type { UTEvents } from "../server";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -21,7 +22,7 @@ export function guardServerOnly() {
 
 export function getApiKeyOrThrow(apiKey?: string) {
   if (apiKey) return apiKey;
-  if (process.env.UPLOADTHING_API_KEY) return process.env.UPLOADTHING_API_KEY;
+  if (process.env.UPLOADTHING_SECRET) return process.env.UPLOADTHING_SECRET;
 
   throw new UploadThingError({
     code: "MISSING_ENV",
@@ -52,6 +53,7 @@ export const uploadFilesInternal = async (
   data: {
     files: FileEsque[];
     metadata: Json;
+    contentDisposition: ContentDisposition;
   },
   opts: {
     fetch: FetchEsque;
@@ -71,11 +73,12 @@ export const uploadFilesInternal = async (
     body: JSON.stringify({
       files: fileData,
       metadata: data.metadata,
+      contentDisposition: data.contentDisposition,
     }),
   });
 
   if (!res.ok) {
-    const error = await UploadThingError.fromResponse(res as Response);
+    const error = await UploadThingError.fromResponse(res);
     throw error;
   }
 
@@ -83,26 +86,29 @@ export const uploadFilesInternal = async (
   const json = await res.json<
     | {
         data: {
-          presignedUrl: string; // url to post to
-          fields: Record<string, string>;
+          presignedUrls: string[];
           key: string;
-          fileUrl: string; // the final url of the file after upload
+          fileUrl: string;
+          fileType: string;
+          uploadId: string;
+          chunkSize: number;
+          chunkCount: number;
         }[];
       }
     | { error: string }
   >();
 
   if ("error" in json) {
-    const error = await UploadThingError.fromResponse(clonedRes as Response);
+    const error = await UploadThingError.fromResponse(clonedRes);
     throw error;
   }
 
-  // Upload each file to S3
+  // Upload each file to S3 in chunks using multi-part uploads
   const uploads = await Promise.allSettled(
     data.files.map(async (file, i) => {
-      const { presignedUrl, fields, key, fileUrl } = json.data[i];
+      const { presignedUrls, key, fileUrl, uploadId, chunkSize } = json.data[i];
 
-      if (!presignedUrl || !fields) {
+      if (!presignedUrls || !Array.isArray(presignedUrls)) {
         throw new UploadThingError({
           code: "URL_GENERATION_FAILED",
           message: "Failed to generate presigned URL",
@@ -110,56 +116,45 @@ export const uploadFilesInternal = async (
         });
       }
 
-      const formData = new FormData();
-      formData.append("Content-Type", file.type);
-      Object.entries(fields).forEach(([key, value]) => {
-        formData.append(key, value);
-      });
+      const etags = await Promise.all(
+        presignedUrls.map(async (url, index) => {
+          const offset = chunkSize * index;
+          const end = Math.min(offset + chunkSize, file.size);
+          const chunk = file.slice(offset, end);
 
-      formData.append(
-        "file",
-        // Handles case when there is no file name
-        file.name
-          ? (file as File)
-          : Object.assign(file as File, { name: "unnamed-blob" }),
+          const etag = await uploadPart({
+            fetch: opts.fetch,
+            url,
+            chunk: chunk as Blob,
+            contentDisposition: data.contentDisposition,
+            contentType: file.type,
+            fileName: file.name,
+            maxRetries: 10,
+            key,
+            utRequestHeaders: opts.utRequestHeaders,
+          });
+
+          return { tag: etag, partNumber: index + 1 };
+        }),
       );
 
-      // Do S3 upload
-      const s3res = await opts.fetch(presignedUrl, {
+      // Complete multipart upload
+      await opts.fetch(generateUploadThingURL("/api/completeMultipart"), {
         method: "POST",
-        body: formData,
-        headers: new Headers({
-          Accept: "application/xml",
-        }),
+        body: JSON.stringify({
+          fileKey: key,
+          uploadId,
+          etags,
+        } satisfies UTEvents["multipart-complete"]),
+        headers: opts.utRequestHeaders,
       });
 
-      if (!s3res.ok) {
-        // tell uploadthing infra server that upload failed
-        await opts.fetch(generateUploadThingURL("/api/failureCallback"), {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: fields.key,
-          }),
-          headers: opts.utRequestHeaders,
-        });
-
-        const text = await s3res.text();
-        const parsed = maybeParseResponseXML(text);
-        if (parsed?.message) {
-          throw new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: parsed.message,
-          });
-        }
-        throw new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "Failed to upload file to storage provider",
-          cause: s3res,
-        });
-      }
-
       // Poll for file to be available
-      await pollForFileData(key);
+      await pollForFileData({
+        url: generateUploadThingURL(`/api/pollUpload/${key}`),
+        apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
+        sdkVersion: UPLOADTHING_VERSION,
+      });
 
       return {
         key,
