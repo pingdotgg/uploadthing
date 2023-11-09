@@ -56,13 +56,11 @@ export default defineNuxtModule<ModuleOptions>({
 
     addComponent({
       name: "UploadButton",
-      export: "UploadButton",
-      filePath: "@uploadthing/vue",
+      filePath: resolver.resolve("./runtime/components/button"),
     });
     addComponent({
       name: "UploadDropzone",
-      export: "UploadDropzone",
-      filePath: "@uploadthing/vue",
+      filePath: resolver.resolve("./runtime/components/dropzone"),
     });
     // FIXME: Use Tailwind Wrapper if the user has Tailwind installed
     nuxt.options.css.push("@uploadthing/vue/styles.css");
