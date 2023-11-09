@@ -15,4 +15,4 @@
 
 ## Further reference
 
-Check out the docs at: https://docs.uploadthing.com/nextjs/pagedir
+Check out the docs at: https://docs.uploadthing.com/getting-started/pagedir

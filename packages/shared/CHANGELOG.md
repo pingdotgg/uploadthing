@@ -1,5 +1,47 @@
 # @uploadthing/shared
 
+## 5.2.7
+
+- Updated dependencies
+  [[`eb5f96d`](https://github.com/pingdotgg/uploadthing/commit/eb5f96dc06a81ecb4b1f7ee3d0ba259ebdfee7d1)]:
+  - @uploadthing/mime-types@0.2.2
+
+## 5.2.6
+
+### Patch Changes
+
+- [#441](https://github.com/pingdotgg/uploadthing/pull/441)
+  [`da43651`](https://github.com/pingdotgg/uploadthing/commit/da436516a9c1e30268878016a9c1dc930bc384f6)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore:
+  changeset for zod removal
+
+## 5.2.5
+
+### Patch Changes
+
+- [#404](https://github.com/pingdotgg/uploadthing/pull/404)
+  [`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - better error
+  handling of invalid json parsing
+
+## 5.2.4
+
+### Patch Changes
+
+- [#406](https://github.com/pingdotgg/uploadthing/pull/406)
+  [`fd24c9d`](https://github.com/pingdotgg/uploadthing/commit/fd24c9d2b4e8be089bae2c9cb78d8f1b1fa80c16)
+  Thanks [@daalvarado](https://github.com/daalvarado)! - fix: Add optional to
+  import.meta.env call for better Remix support
+
+## 5.2.3
+
+### Patch Changes
+
+- [#403](https://github.com/pingdotgg/uploadthing/pull/403)
+  [`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: wrap
+  response.json in try-catch block
+
 ## 5.2.2
 
 ### Patch Changes

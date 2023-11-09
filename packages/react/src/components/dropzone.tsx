@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -7,6 +7,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -17,7 +18,7 @@ import type { UploadthingComponentProps } from "../types";
 import type { FileWithPath } from "../use-dropzone";
 import { useDropzone } from "../use-dropzone";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -28,35 +29,41 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: boolean;
 };
 
-export type UploadDropzoneProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    };
-    content?: {
-      uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    };
-    className?: string;
-    config?: {
-      mode?: "auto" | "manual";
-    };
+export type UploadDropzoneProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
+  content?: {
+    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  };
+  className?: string;
+  config?: {
+    mode?: "auto" | "manual";
+    appendOnPaste?: boolean;
+  };
+};
 
-export function UploadDropzone<TRouter extends FileRouter>(
+export function UploadDropzone<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter>,
+    : UploadDropzoneProps<TRouter, TEndpoint>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadDropzoneProps<TRouter> & {
+  const $props = props as unknown as UploadDropzoneProps<TRouter, TEndpoint> & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";
@@ -71,7 +78,11 @@ export function UploadDropzone<TRouter extends FileRouter>(
     // Allow to disable the dropzone
     __internal_dropzone_disabled?: boolean;
   };
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
+
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+  });
 
   const [files, setFiles] = useState<File[]>([]);
 
@@ -94,6 +105,7 @@ export function UploadDropzone<TRouter extends FileRouter>(
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
   );
 
@@ -104,16 +116,16 @@ export function UploadDropzone<TRouter extends FileRouter>(
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if ($props.config?.mode === "auto") {
+      if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
         void startUpload(acceptedFiles, input);
         return;
       }
     },
-    [$props, startUpload],
+    [$props, mode, startUpload],
   );
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: $props.__internal_dropzone_disabled,
@@ -133,6 +145,28 @@ export function UploadDropzone<TRouter extends FileRouter>(
     const input = "input" in $props ? $props.input : undefined;
     void startUpload(files, input);
   };
+
+  useEffect(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      if (!appendOnPaste) return;
+      if (document.activeElement !== rootRef.current) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
+
+      setFiles((prev) => [...prev, ...pastedFiles]);
+
+      if (mode === "auto") {
+        const input = "input" in $props ? $props.input : undefined;
+        void startUpload(files, input);
+      }
+    };
+
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      window.removeEventListener("paste", handlePaste);
+    };
+  }, [startUpload, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
   const styleFieldArg = {
     fileTypes,

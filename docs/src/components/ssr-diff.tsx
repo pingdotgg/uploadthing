@@ -3,16 +3,25 @@ import { useEffect, useState } from "react";
 import { UploadButton } from "@uploadthing/react";
 
 export function WithoutSSR() {
+  // False for 3 seconds, true for 1 second, repeating
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const intervalId = setInterval(
+      () => {
+        setLoading((prevIsActive) => !prevIsActive);
+      },
+      loading ? 5000 : 2000,
+    );
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [loading]);
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="font-semibold">Without SSR</span>
+      <span className="font-semibold">Without SSR Plugin</span>
       {/* @ts-expect-error - using non-public props */}
       <UploadButton
         __internal_button_disabled
@@ -29,7 +38,7 @@ export function WithoutSSR() {
 export function WithSSR() {
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className="font-semibold">With SSR</span>
+      <span className="font-semibold">With SSR Plugin</span>
       {/* @ts-expect-error - using non-public props */}
       <UploadButton
         __internal_button_disabled

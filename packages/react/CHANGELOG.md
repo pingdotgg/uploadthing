@@ -1,5 +1,48 @@
 # @uploadthing/react
 
+## 5.7.0
+
+### Minor Changes
+
+- [#396](https://github.com/pingdotgg/uploadthing/pull/396)
+  [`df0d3da`](https://github.com/pingdotgg/uploadthing/commit/df0d3da2db3b3cd609b3e84a65fdd23c63e2dc92)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: manual upload mode
+  for button
+
+- [#383](https://github.com/pingdotgg/uploadthing/pull/383)
+  [`d687d61`](https://github.com/pingdotgg/uploadthing/commit/d687d614fd3c543c6abf435e29c3dd45596dd5e7)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - feat: add `appendOnPaste`
+  config option to support pasting files
+
+### Patch Changes
+
+- [#404](https://github.com/pingdotgg/uploadthing/pull/404)
+  [`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - better error
+  handling of invalid json parsing
+
+- Updated dependencies
+  [[`6bd4ead`](https://github.com/pingdotgg/uploadthing/commit/6bd4ead898c824646c47d4899e3e610283a55c5a)]:
+  - @uploadthing/shared@5.2.5
+
+## 5.6.2
+
+### Patch Changes
+
+- [#392](https://github.com/pingdotgg/uploadthing/pull/392)
+  [`d4492d9`](https://github.com/pingdotgg/uploadthing/commit/d4492d941d174d8f2fb4647d97ae4a2d21e5d199)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! -
+  fix(components): Allow upload button to be focusable via keyboard
+
+- [#384](https://github.com/pingdotgg/uploadthing/pull/384)
+  [`8c01e98`](https://github.com/pingdotgg/uploadthing/commit/8c01e980cf5b695165101b11c741ce6c1b396bdd)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - fix bug where progress bar
+  styles was not included in the compiled stylesheet
+
+- Updated dependencies
+  [[`ee8533a`](https://github.com/pingdotgg/uploadthing/commit/ee8533a21e82c786537cea5dd7e98fcb71bb5131)]:
+  - @uploadthing/shared@5.2.3
+
 ## 5.6.1
 
 ### Patch Changes
@@ -25,7 +68,7 @@
   [`96736bd`](https://github.com/pingdotgg/uploadthing/commit/96736bd177b520985ea7c7fcf30e3309fe3c7f76)
   Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: automatic
   ssr hydration helper for next.js appdir. 📚
-  [See docs for how to add to your app](https://docs.uploadthing.com/nextjs/appdir#configure-automatic-hydration-during-ssr-recommended)
+  [See docs for how to add to your app](https://docs.uploadthing.com/getting-started/appdir#configure-automatic-hydration-during-ssr-recommended)
 
 ### Patch Changes
 

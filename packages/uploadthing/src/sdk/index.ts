@@ -1,9 +1,13 @@
-import type { Json } from "@uploadthing/shared";
+import type {
+  ContentDisposition,
+  FetchEsque,
+  Json,
+  MaybeUrl,
+} from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { FetchEsque, MaybeUrl } from "./types";
 import type { FileEsque, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,
@@ -37,6 +41,11 @@ export class UTApi {
       "x-uploadthing-api-key": this.apiKey!,
       "x-uploadthing-version": UPLOADTHING_VERSION,
     };
+
+    // Assert some stuff
+    guardServerOnly();
+    getApiKeyOrThrow(this.apiKey);
+    incompatibleNodeGuard();
   }
 
   private async requestUploadThing<T extends Record<string, unknown>>(
@@ -44,13 +53,6 @@ export class UTApi {
     body: Record<string, unknown>,
     fallbackErrorMessage: string,
   ) {
-    // Force API key to be set before requesting.
-    // Ideally we'd just throw in the constructor but since we need to export
-    // a `utapi` object we can't throw in the constructor because it would
-    // be a breaking change.
-    // FIXME: In next major
-    getApiKeyOrThrow();
-
     const res = await this.fetch(generateUploadThingURL(pathname), {
       method: "POST",
       cache: "no-store",
@@ -88,17 +90,20 @@ export class UTApi {
    */
   async uploadFiles<T extends FileEsque | FileEsque[]>(
     files: T,
-    metadata: Json = {},
+    opts?: {
+      metadata?: Json;
+      contentDisposition?: ContentDisposition;
+    },
   ) {
     guardServerOnly();
-    incompatibleNodeGuard();
 
     const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
 
     const uploads = await uploadFilesInternal(
       {
         files: filesToUpload,
-        metadata,
+        metadata: opts?.metadata ?? {},
+        contentDisposition: opts?.contentDisposition ?? "inline",
       },
       {
         fetch: this.fetch,
@@ -128,14 +133,17 @@ export class UTApi {
    */
   async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
     urls: T,
-    metadata: Json = {},
+    opts?: {
+      metadata: Json;
+      contentDisposition: ContentDisposition;
+    },
   ) {
     guardServerOnly();
 
     const fileUrls: MaybeUrl[] = Array.isArray(urls) ? urls : [urls];
 
     const formData = new FormData();
-    formData.append("metadata", JSON.stringify(metadata));
+    formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
     const filesToUpload = await Promise.all(
       fileUrls.map(async (url) => {
@@ -159,7 +167,8 @@ export class UTApi {
     const uploads = await uploadFilesInternal(
       {
         files: filesToUpload,
-        metadata,
+        metadata: opts?.metadata ?? {},
+        contentDisposition: opts?.contentDisposition ?? "inline",
       },
       {
         fetch: this.fetch,
@@ -210,7 +219,6 @@ export class UTApi {
    */
   async getFileUrls(fileKeys: string[] | string) {
     guardServerOnly();
-    incompatibleNodeGuard();
 
     if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
 
@@ -234,11 +242,14 @@ export class UTApi {
    */
   async listFiles() {
     guardServerOnly();
-    incompatibleNodeGuard();
 
     // TODO: Implement filtering and pagination
     const json = await this.requestUploadThing<{
-      files: { key: string; id: string }[];
+      files: {
+        key: string;
+        id: string;
+        status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
+      }[];
     }>("/api/listFiles", {}, "An unknown error occured while listing files.");
 
     return json.files;
@@ -256,7 +267,6 @@ export class UTApi {
         }[],
   ) {
     guardServerOnly();
-    incompatibleNodeGuard();
 
     if (!Array.isArray(updates)) updates = [updates];
 
@@ -269,7 +279,6 @@ export class UTApi {
 
   async getUsageInfo() {
     guardServerOnly();
-    incompatibleNodeGuard();
 
     return this.requestUploadThing<{
       totalBytes: number;
@@ -286,14 +295,3 @@ export class UTApi {
     );
   }
 }
-
-/**
- * @deprecated
- *
- * Import `UTApi` and instantiate it yourself:
- * ```ts
- * import { UTApi } from "@uploadthing/server";
- * const utapi = new UTApi({ ... });
- * ```
- */
-export const utapi = new UTApi();

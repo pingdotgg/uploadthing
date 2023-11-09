@@ -10,27 +10,27 @@
   },
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.6.0",
-    "@uploadthing/react": "5.6.1",
+    "@uploadthing/react": "5.7.0",
     "better-sqlite3": "^8.6.0",
     "drizzle-orm": "^0.28.5",
-    "next": "13.4.4",
+    "next": "14.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "5.6.1",
-    "zod": "^3.21.4"
+    "uploadthing": "5.7.4",
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.4",
     "@types/eslint": "^8.44.2",
     "@types/node": "18.16.0",
-    "@types/react": "18.2.8",
-    "@types/react-dom": "18.2.4",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "dotenv-cli": "^7.3.0",
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.47.0",
-    "eslint-config-next": "^13.4.19",
+    "eslint-config-next": "^14.0.1",
     "typescript": "^5.1.6"
   },
   "ct3aMetadata": {

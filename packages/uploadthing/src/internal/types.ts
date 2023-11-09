@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import type { IncomingHttpHeaders } from "node:http";
 
 import type {
   FileRouterInputConfig,
+  Json,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -20,16 +20,14 @@ export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 
 export type MaybePromise<TType> = TType | Promise<TType>;
 
-export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
-export type Overwrite<T, U> = Omit<T, keyof U> & U;
+/**
+ * Omits the key without removing a potential union
+ * @internal
+ */
+export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
+  ? Omit<TObj, TKey>
+  : never;
 
-export type RequestLike = Overwrite<
-  WithRequired<Partial<Request>, "json">,
-  {
-    body?: any; // we only use `.json`, don't care about `body`
-    headers: Headers | IncomingHttpHeaders;
-  }
->;
 //
 // Package
 type ResolverOptions<TParams extends AnyParams> = {
@@ -53,6 +51,7 @@ export interface AnyParams {
   _middlewareArgs: MiddlewareFnArgs<any, any, any>;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
+  _output: any;
 }
 
 type MiddlewareFn<
@@ -63,9 +62,10 @@ type MiddlewareFn<
   opts: TArgs & (TInput extends UnsetMarker ? {} : { input: TInput }),
 ) => MaybePromise<TOutput>;
 
-type ResolverFn<TParams extends AnyParams> = (
-  opts: ResolverOptions<TParams>,
-) => MaybePromise<void>;
+type ResolverFn<
+  TOutput extends Record<string, unknown> | void,
+  TParams extends AnyParams,
+> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
 
 type UploadErrorFn = (input: {
   error: UploadThingError;
@@ -85,6 +85,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
+    _output: UnsetMarker;
   }>;
   middleware: <TOutput extends Record<string, unknown>>(
     fn: TParams["_metadata"] extends UnsetMarker
@@ -96,9 +97,18 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
+    _output: UnsetMarker;
   }>;
-
-  onUploadComplete: (fn: ResolverFn<TParams>) => Uploader<TParams>;
+  onUploadComplete: <TOutput extends Record<string, unknown> | void>(
+    fn: ResolverFn<TOutput, TParams>,
+  ) => Uploader<{
+    _input: TParams["_input"];
+    _metadata: TParams["_metadata"];
+    _middlewareArgs: TParams["_middlewareArgs"];
+    _errorShape: TParams["_errorShape"];
+    _errorFn: TParams["_errorFn"];
+    _output: TOutput;
+  }>;
   onUploadError: (
     fn: TParams["_errorFn"] extends UnsetMarker
       ? UploadErrorFn
@@ -109,6 +119,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: UploadErrorFn;
+    _output: UnsetMarker;
   }>;
 }
 
@@ -122,7 +133,7 @@ export type UploadBuilderDef<TParams extends AnyParams> = {
 
 export interface Uploader<TParams extends AnyParams> {
   _def: TParams & UploadBuilderDef<TParams>;
-  resolver: ResolverFn<TParams>;
+  resolver: ResolverFn<TParams["_output"], TParams>;
 }
 
 export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
@@ -135,8 +146,38 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
     ? undefined
     : TUploader["_def"]["_input"];
 
+export type inferEndpointOutput<TUploader extends Uploader<any>> =
+  TUploader["_def"]["_output"] extends UnsetMarker
+    ? undefined
+    : TUploader["_def"]["_output"];
+
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
 
-export const VALID_ACTION_TYPES = ["upload", "failure"] as const;
+export const VALID_ACTION_TYPES = [
+  "upload",
+  "failure",
+  "multipart-complete",
+] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+
+export type UTEvents = {
+  upload: {
+    files: { name: string; size: number }[];
+    input: Json;
+  };
+  failure: {
+    fileKey: string;
+    uploadId: string;
+    s3Error?: string;
+    fileName: string;
+  };
+  "multipart-complete": {
+    fileKey: string;
+    uploadId: string;
+    etags: {
+      tag: string;
+      partNumber: number;
+    }[];
+  };
+};

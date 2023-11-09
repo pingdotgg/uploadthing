@@ -25,6 +25,7 @@ function internalCreateBuilder<
   _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
+  _output: UnsetMarker;
 }> {
   const _def: UploadBuilderDef<AnyParams> = {
     // Default router config
@@ -82,6 +83,7 @@ type InOut<
   _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
+  _output: UnsetMarker;
 }>;
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {

@@ -81,7 +81,7 @@ jobs:
                 'Content-Type': 'application/json'
               },
               body: JSON.stringify({
-                content: `New release available. [Read the changelog](https://github.com/pingdotgg/uploadthing/releases/latest)`
+                content: `New release available. [Read the changelog](https://github.com/pingdotgg/uploadthing/releases)`
               }),
             })
             .then((res) => {
