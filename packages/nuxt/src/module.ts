@@ -24,7 +24,7 @@ export default defineNuxtModule<ModuleOptions>({
     },
   },
   defaults: {
-    routerPath: "~/server/uploadthing.ts",
+    routerPath: "~/server/uploadthing",
   },
   async setup(options, nuxt) {
     const logger = useLogger("uploadthing");
