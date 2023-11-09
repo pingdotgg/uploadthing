@@ -1,5 +1,4 @@
 import { generateVueHelpers } from "@uploadthing/vue";
-import { FileRouter } from "uploadthing/h3";
+import type { UploadRouter } from "#uploadthing-router";
 
-// FIXME: This should use the user's UploadRouter type
-export const { useUploadThing } = generateVueHelpers<FileRouter>();
+export const { useUploadThing } = generateVueHelpers<UploadRouter>();
