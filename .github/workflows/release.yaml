@@ -95,7 +95,7 @@ jobs:
         if: steps.changeset.outputs.published == 'true'
         uses: actions/github-script@v6
         env:
-          PING_SIGNING_SECRET: ${{ secrets.PING_SIGNING_SECRET }}
+          PING_GH_SIGNING_SECRET: ${{ secrets.PING_GH_SIGNING_SECRET }}
         with:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
@@ -103,7 +103,7 @@ jobs:
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'
-                'x-ping-signature': process.env.PING_SIGNING_SECRET
+                'x-ping-signature': process.env.PING_GH_SIGNING_SECRET
               },
             })
             .then((res) => {
