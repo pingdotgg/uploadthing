@@ -93,7 +93,7 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
         Effect.promise(() => UploadThingError.fromResponse(s3ConnectionRes_)),
       );
 
-      return yield* $(Effect.die(error));
+      return yield* $(error);
     }
 
     const jsonOrError = yield* $(
@@ -101,13 +101,11 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
     );
     if (jsonOrError instanceof Error) {
       return yield* $(
-        Effect.die(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: jsonOrError.message,
-            cause: s3ConnectionRes_,
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: jsonOrError.message,
+          cause: s3ConnectionRes_,
+        }),
       );
     }
 
@@ -131,13 +129,15 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
     );
   });
 
+type ReportEventToUT = <TEvent extends keyof UTEvents>(
+  type: TEvent,
+  payload: UTEvents[TEvent],
+) => Effect.Effect<never, UploadThingError, boolean>;
+
 const uploadFile = <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
   presigned: UploadThingResponse[number],
-  reportEventToUT: <TEvent extends keyof UTEvents>(
-    type: TEvent,
-    payload: UTEvents[TEvent],
-  ) => Effect.Effect<never, UploadThingError<any>, boolean>,
+  reportEventToUT: ReportEventToUT,
 ) =>
   Effect.gen(function* ($) {
     const file = opts.files.find((f) => f.name === presigned.fileName);
@@ -145,15 +145,13 @@ const uploadFile = <TRouter extends FileRouter>(
     if (!file) {
       console.error("No file found for presigned URL", presigned);
       return yield* $(
-        Effect.die(
-          new UploadThingError({
-            code: "NOT_FOUND",
-            message: "No file found for presigned URL",
-            cause: `Expected file with name ${
-              presigned.fileName
-            } but got '${opts.files.join(",")}'`,
-          }),
-        ),
+        new UploadThingError({
+          code: "NOT_FOUND",
+          message: "No file found for presigned URL",
+          cause: `Expected file with name ${
+            presigned.fileName
+          } but got '${opts.files.join(",")}'`,
+        }),
       );
     }
 
@@ -218,12 +216,10 @@ const uploadFile = <TRouter extends FileRouter>(
     if (!uploadOk) {
       console.log("Failed to alert UT of upload completion");
       return yield* $(
-        Effect.die(
-          new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: "Failed to alert UT of upload completion",
-          }),
-        ),
+        new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: "Failed to alert UT of upload completion",
+        }),
       );
     }
 
