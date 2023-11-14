@@ -1,5 +1,70 @@
 # @uploadthing/react
 
+## 6.0.0
+
+### Major Changes
+
+- [#351](https://github.com/pingdotgg/uploadthing/pull/351)
+  [`0ef63c6`](https://github.com/pingdotgg/uploadthing/commit/0ef63c6ae43f92f4f1c5a2fee65827495162cb0e)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  returning data from the serverside `onUploadComplete` callback to the
+  clientside `onClientUploadComplete`. This change also ensures the serverside
+  callback will **finish** before the clientside one is invoked.
+
+  This change has required reworking some types, most notably for people who
+  were importing the UploadThing components directly from `@uploadthing/react`
+  and `@uploadthing/solid` instead of generating their own typesafe components
+  using `generateComponents`. We have always recommended using
+  `generateComponents`, but now we're emphasising it even more.
+
+- [#310](https://github.com/pingdotgg/uploadthing/pull/310)
+  [`7c2ed64`](https://github.com/pingdotgg/uploadthing/commit/7c2ed649f53e97957d6ad0be53d163132612f18b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  arbitrary callback URLs (serving router from any endpoint). To use a different
+  endpoint than `/api/uploadthing`, you can pass the `url` parameter to
+  `generateComponents` and `generateReactHelpers`/`generateSolidHelpers` (or
+  pass it as a prop to the components if you're not generating them):
+
+  ```ts
+  export const { UploadButton, UploadDropzone } = generateComponents({
+    url: "/api/my-upload-endpoint", // if the host is unchanged from default (localhost or VERCEL_URL)
+    // url: "https://my-custom-host.com" // if the host is different but path is /api/uploadthing
+    // url: "https://my-custom-host.com/my-custom-endpoint" // fully custom url
+  });
+  ```
+
+### Minor Changes
+
+- [#453](https://github.com/pingdotgg/uploadthing/pull/453)
+  [`0aae926`](https://github.com/pingdotgg/uploadthing/commit/0aae926cc4b4c36e167ac680d5de8522ef282152)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - Adds an
+  onBeforeUploadBegin callback that is called before startUpload to allow for
+  pre-processing of files (ie changing file names etc)
+
+### Patch Changes
+
+- [#451](https://github.com/pingdotgg/uploadthing/pull/451)
+  [`1241a16`](https://github.com/pingdotgg/uploadthing/commit/1241a16e23e5040db55eef1f39b133cbd80a0b28)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: log out
+  error if it's an unknown (not UploadThingError)
+
+  This log should not ever happen, but if it does we want it to be easy to
+  provide the error when reporting the bug to us.
+
+  "Normal" errors are never logged and you have full control over how to handle
+  them in your `onUploadError` handler.
+
+- Updated dependencies
+  [[`0ef63c6`](https://github.com/pingdotgg/uploadthing/commit/0ef63c6ae43f92f4f1c5a2fee65827495162cb0e),
+  [`0aae926`](https://github.com/pingdotgg/uploadthing/commit/0aae926cc4b4c36e167ac680d5de8522ef282152),
+  [`328f59b`](https://github.com/pingdotgg/uploadthing/commit/328f59b324a5013620dbf9c30023e9d3b0ee6141),
+  [`7c2ed64`](https://github.com/pingdotgg/uploadthing/commit/7c2ed649f53e97957d6ad0be53d163132612f18b),
+  [`f32f5c0`](https://github.com/pingdotgg/uploadthing/commit/f32f5c03da53780c14b4fa32f9b00b2cfeb23797),
+  [`f32f5c0`](https://github.com/pingdotgg/uploadthing/commit/f32f5c03da53780c14b4fa32f9b00b2cfeb23797),
+  [`1241a16`](https://github.com/pingdotgg/uploadthing/commit/1241a16e23e5040db55eef1f39b133cbd80a0b28)]:
+  - uploadthing@6.0.0
+  - @uploadthing/shared@6.0.0
+
 ## 5.7.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @uploadthing/shared
 
+## 6.0.0
+
+### Major Changes
+
+- [#432](https://github.com/pingdotgg/uploadthing/pull/432)
+  [`328f59b`](https://github.com/pingdotgg/uploadthing/commit/328f59b324a5013620dbf9c30023e9d3b0ee6141)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!:
+  multipart uploads
+
+  supports uploading larger files and uploads are now up to 2x faster
+
 ## 5.2.7
 
 - Updated dependencies
