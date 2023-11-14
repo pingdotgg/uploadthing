@@ -1,7 +1,9 @@
-import { Effect } from "effect";
+import { Data, Effect } from "effect";
 
 import { UploadThingError } from "@uploadthing/shared";
 
+import type { FetchError } from "../effect-utils";
+import { fetchEff } from "../effect-utils";
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type { ActionType, UTEvents } from "./types";
 
@@ -29,51 +31,50 @@ export const createAPIRequestUrl = (config: {
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
  * Events are handled in "./handler.ts starting at L200"
  */
-export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
-  return async <TEvent extends keyof UTEvents>(
-    type: TEvent,
-    payload: UTEvents[TEvent],
-  ) => {
-    const url = createAPIRequestUrl({
-      url: cfg.url,
-      slug: cfg.endpoint,
-      actionType: type,
-    });
-    const response = await fetch(url, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    switch (type) {
-      case "failure": {
-        // why isn't this narrowed automatically?
-        const p = payload as UTEvents["failure"];
-        const parsed = maybeParseResponseXML(p.s3Error ?? "");
-        if (parsed?.message) {
-          throw new UploadThingError({
-            code: parsed.code,
-            message: parsed.message,
-          });
-        } else {
-          throw new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: `Failed to upload file ${p.fileName} to S3`,
-            cause: p.s3Error,
-          });
-        }
-      }
-    }
-
-    return response.ok;
-  };
-};
-
-export const createUTReporterEff =
+export const createUTReporter =
   (cfg: { url: URL; endpoint: string }) =>
   <TEvent extends keyof UTEvents>(type: TEvent, payload: UTEvents[TEvent]) =>
-    Effect.tryPromise(() => createUTReporter(cfg)(type, payload)).pipe(
-      Effect.catchAll((err) =>
-        err instanceof UploadThingError ? Effect.fail(err) : Effect.die(err),
-      ),
-    );
+    Effect.gen(function* ($) {
+      const url = createAPIRequestUrl({
+        url: cfg.url,
+        slug: cfg.endpoint,
+        actionType: type,
+      });
+      const response = yield* $(
+        fetchEff(url, {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+
+      switch (type) {
+        case "failure": {
+          // why isn't this narrowed automatically?
+          const p = payload as UTEvents["failure"];
+          const parsed = maybeParseResponseXML(p.s3Error ?? "");
+          if (parsed?.message) {
+            return yield* $(
+              new UploadThingError({
+                code: parsed.code,
+                message: parsed.message,
+              }),
+            );
+          } else {
+            return yield* $(
+              new UploadThingError({
+                code: "UPLOAD_FAILED",
+                message: `Failed to upload file ${p.fileName} to S3`,
+                cause: p.s3Error,
+              }),
+            );
+          }
+        }
+      }
+
+      return response.ok;
+    }).pipe(Effect.mapError((error) => new UTReporterError({ error })));
+
+export class UTReporterError extends Data.TaggedError("UTReporterError")<{
+  readonly error: FetchError | UploadThingError;
+}> {}

@@ -1,0 +1,17 @@
+{
+  "Effect Gen Function": {
+    "prefix": "egen",
+    "body": ["Effect.gen(function* ($) {\n\t$0\n})"],
+    "description": "Effect generator FUnction with $ input"
+  },
+  "Gen Function": {
+    "prefix": "gen",
+    "body": ["function* ($) {}"],
+    "description": "Generator FUnction with $ input"
+  },
+  "Gen Yield * tmp": {
+    "prefix": "yy",
+    "body": ["yield* $($0)"],
+    "description": "Yield generator calling $()"
+  }
+}

@@ -1,4 +1,4 @@
-import { Cause, Data, Effect } from "effect";
+import { Cause, Effect } from "effect";
 
 import {
   pollForFileData,
@@ -7,6 +7,7 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
+import { fetchEff } from "./effect-utils";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
@@ -14,11 +15,19 @@ import type {
   inferEndpointInput,
   UTEvents,
 } from "./internal/types";
-import {
-  createAPIRequestUrl,
-  createUTReporter,
-  createUTReporterEff,
-} from "./internal/ut-reporter";
+import type { UTReporterError } from "./internal/ut-reporter";
+import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+
+/*
+
+More Effect refactoring:
+
+- Get rid of `Effect.promise`
+  - Either by refactoring promises to be effects (all the way down) with proper error handling
+  - Or use `Effect.tryPromise` instead with proper error handling
+- 
+
+*/
 
 /**
  * @internal
@@ -61,7 +70,7 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
 ) =>
   Effect.gen(function* ($) {
-    const reportEventToUT = createUTReporterEff({
+    const reportEventToUT = createUTReporter({
       endpoint: String(opts.endpoint),
       url: opts?.url,
     });
@@ -132,7 +141,7 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
 type ReportEventToUT = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent],
-) => Effect.Effect<never, UploadThingError, boolean>;
+) => Effect.Effect<never, UTReporterError, boolean>;
 
 const uploadFile = <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
@@ -242,153 +251,158 @@ const uploadFile = <TRouter extends FileRouter>(
     } satisfies UploadFileResponse;
   });
 
-export const DANGEROUS__uploadFiles = async <TRouter extends FileRouter>(
+export const DANGEROUS__uploadFiles = <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
-) => Effect.runPromise(DANGEROUS__uploadFiles_internal(opts));
+) =>
+  DANGEROUS__uploadFiles_internal(opts).pipe(
+    // TODO maybe find a better way to handle the UTReporterError instead of just dying
+    Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
+    Effect.runPromise,
+  );
 
-export const DANGEROUS__uploadFiles_old = async <TRouter extends FileRouter>(
-  opts: UploadFilesOptions<TRouter>,
-) => {
-  const reportEventToUT = createUTReporter({
-    endpoint: String(opts.endpoint),
-    url: opts?.url,
-  });
+// export const DANGEROUS__uploadFiles_old = async <TRouter extends FileRouter>(
+//   opts: UploadFilesOptions<TRouter>,
+// ) => {
+//   const reportEventToUT = createUTReporter({
+//     endpoint: String(opts.endpoint),
+//     url: opts?.url,
+//   });
 
-  // Get presigned URL for S3 upload
-  const s3ConnectionRes = await fetch(
-    createAPIRequestUrl({
-      url: opts.url,
-      slug: String(opts.endpoint),
-      actionType: "upload",
-    }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        files: opts.files.map((f) => ({ name: f.name, size: f.size })),
-        input: opts.input,
-      }),
-      // Express requires Content-Type to be explicitly set to parse body properly
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  ).then(async (res) => {
-    // check for 200 response
-    if (!res.ok) {
-      const error = await UploadThingError.fromResponse(res);
-      throw error;
-    }
+//   // Get presigned URL for S3 upload
+//   const s3ConnectionRes = await fetch(
+//     createAPIRequestUrl({
+//       url: opts.url,
+//       slug: String(opts.endpoint),
+//       actionType: "upload",
+//     }),
+//     {
+//       method: "POST",
+//       body: JSON.stringify({
+//         files: opts.files.map((f) => ({ name: f.name, size: f.size })),
+//         input: opts.input,
+//       }),
+//       // Express requires Content-Type to be explicitly set to parse body properly
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     },
+//   ).then(async (res) => {
+//     // check for 200 response
+//     if (!res.ok) {
+//       const error = await UploadThingError.fromResponse(res);
+//       throw error;
+//     }
 
-    const jsonOrError = await safeParseJSON<UploadThingResponse>(res);
-    if (jsonOrError instanceof Error) {
-      throw new UploadThingError({
-        code: "BAD_REQUEST",
-        message: jsonOrError.message,
-        cause: res,
-      });
-    }
-    return jsonOrError;
-  });
+//     const jsonOrError = await safeParseJSON<UploadThingResponse>(res);
+//     if (jsonOrError instanceof Error) {
+//       throw new UploadThingError({
+//         code: "BAD_REQUEST",
+//         message: jsonOrError.message,
+//         cause: res,
+//       });
+//     }
+//     return jsonOrError;
+//   });
 
-  if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
-    throw new UploadThingError({
-      code: "BAD_REQUEST",
-      message: "No URL. How did you even get here?",
-      cause: s3ConnectionRes,
-    });
-  }
+//   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
+//     throw new UploadThingError({
+//       code: "BAD_REQUEST",
+//       message: "No URL. How did you even get here?",
+//       cause: s3ConnectionRes,
+//     });
+//   }
 
-  const fileUploadPromises = s3ConnectionRes.map(async (presigned) => {
-    const file = opts.files.find((f) => f.name === presigned.fileName);
+//   const fileUploadPromises = s3ConnectionRes.map(async (presigned) => {
+//     const file = opts.files.find((f) => f.name === presigned.fileName);
 
-    if (!file) {
-      console.error("No file found for presigned URL", presigned);
-      throw new UploadThingError({
-        code: "NOT_FOUND",
-        message: "No file found for presigned URL",
-        cause: `Expected file with name ${
-          presigned.fileName
-        } but got '${opts.files.join(",")}'`,
-      });
-    }
+//     if (!file) {
+//       console.error("No file found for presigned URL", presigned);
+//       throw new UploadThingError({
+//         code: "NOT_FOUND",
+//         message: "No file found for presigned URL",
+//         cause: `Expected file with name ${
+//           presigned.fileName
+//         } but got '${opts.files.join(",")}'`,
+//       });
+//     }
 
-    const {
-      presignedUrls,
-      uploadId,
-      chunkSize,
-      contentDisposition,
-      key,
-      pollingUrl,
-    } = presigned;
+//     const {
+//       presignedUrls,
+//       uploadId,
+//       chunkSize,
+//       contentDisposition,
+//       key,
+//       pollingUrl,
+//     } = presigned;
 
-    let uploadedBytes = 0;
+//     let uploadedBytes = 0;
 
-    let etags: { tag: string; partNumber: number }[];
-    try {
-      etags = await Promise.all(
-        presignedUrls.map(async (url, index) => {
-          const offset = chunkSize * index;
-          const end = Math.min(offset + chunkSize, file.size);
-          const chunk = file.slice(offset, end);
+//     let etags: { tag: string; partNumber: number }[];
+//     try {
+//       etags = await Promise.all(
+//         presignedUrls.map(async (url, index) => {
+//           const offset = chunkSize * index;
+//           const end = Math.min(offset + chunkSize, file.size);
+//           const chunk = file.slice(offset, end);
 
-          const etag = await uploadPartWithProgress({
-            url,
-            chunk: chunk,
-            contentDisposition,
-            fileType: file.type,
-            fileName: file.name,
-            maxRetries: 10,
-            onProgress: (delta) => {
-              uploadedBytes += delta;
-              const percent = (uploadedBytes / file.size) * 100;
-              opts.onUploadProgress?.({ file: file.name, progress: percent });
-            },
-          });
+//           const etag = await uploadPartWithProgress({
+//             url,
+//             chunk: chunk,
+//             contentDisposition,
+//             fileType: file.type,
+//             fileName: file.name,
+//             maxRetries: 10,
+//             onProgress: (delta) => {
+//               uploadedBytes += delta;
+//               const percent = (uploadedBytes / file.size) * 100;
+//               opts.onUploadProgress?.({ file: file.name, progress: percent });
+//             },
+//           });
 
-          return { tag: etag, partNumber: index + 1 };
-        }),
-      );
-    } catch (error) {
-      await reportEventToUT("failure", {
-        fileKey: key,
-        uploadId,
-        fileName: file.name,
-        s3Error: (error as Error).toString(),
-      });
-      throw "unreachable"; // failure event will throw for us
-    }
+//           return { tag: etag, partNumber: index + 1 };
+//         }),
+//       );
+//     } catch (error) {
+//       await reportEventToUT("failure", {
+//         fileKey: key,
+//         uploadId,
+//         fileName: file.name,
+//         s3Error: (error as Error).toString(),
+//       });
+//       throw "unreachable"; // failure event will throw for us
+//     }
 
-    // Tell the server that the upload is complete
-    const uploadOk = await reportEventToUT("multipart-complete", {
-      uploadId,
-      fileKey: key,
-      etags,
-    });
-    if (!uploadOk) {
-      console.log("Failed to alert UT of upload completion");
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to alert UT of upload completion",
-      });
-    }
+//     // Tell the server that the upload is complete
+//     const uploadOk = await reportEventToUT("multipart-complete", {
+//       uploadId,
+//       fileKey: key,
+//       etags,
+//     });
+//     if (!uploadOk) {
+//       console.log("Failed to alert UT of upload completion");
+//       throw new UploadThingError({
+//         code: "UPLOAD_FAILED",
+//         message: "Failed to alert UT of upload completion",
+//       });
+//     }
 
-    // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    await pollForFileData({
-      url: pollingUrl,
-      apiKey: null,
-      sdkVersion: UPLOADTHING_VERSION,
-    });
+//     // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
+//     await pollForFileData({
+//       url: pollingUrl,
+//       apiKey: null,
+//       sdkVersion: UPLOADTHING_VERSION,
+//     });
 
-    return {
-      name: file.name,
-      size: file.size,
-      key: presigned.key,
-      url: "https://utfs.io/f/" + key,
-    } satisfies UploadFileResponse;
-  });
+//     return {
+//       name: file.name,
+//       size: file.size,
+//       key: presigned.key,
+//       url: "https://utfs.io/f/" + key,
+//     } satisfies UploadFileResponse;
+//   });
 
-  return Promise.all(fileUploadPromises);
-};
+//   return Promise.all(fileUploadPromises);
+// };
 
 export const genUploader = <
   TRouter extends FileRouter,
@@ -457,21 +471,6 @@ export function getFullApiUrl(maybeUrl?: string): URL {
     );
   }
 }
-
-class FetchError extends Data.TaggedError("FetchError")<{
-  readonly input: RequestInfo | URL;
-  readonly error: unknown;
-}> {}
-
-// Temporary Effect wrappers below.
-// TODO should be refactored with much love
-
-// TODO handle error properly
-const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
-  Effect.tryPromise({
-    try: () => fetch(input, init),
-    catch: (error) => new FetchError({ error, input }),
-  });
 
 const safeParseJSONEff = <T>(res: Response) =>
   Effect.promise<T | Error>(() => safeParseJSON<T>(res));
