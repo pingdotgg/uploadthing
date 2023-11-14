@@ -1,3 +1,5 @@
+import { Data } from "effect";
+
 import type { Json, ResponseEsque } from "./types";
 import { isObject, safeParseJSON } from "./utils";
 
@@ -44,10 +46,12 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
 
 export class UploadThingError<
   TShape extends Json = { message: string },
-> extends Error {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+> extends Data.TaggedError("UploadThingError")<{}> {
   public readonly cause?: Error;
   public readonly code: ErrorCode;
   public readonly data?: TShape;
+  public readonly message: string;
 
   constructor(opts: {
     code: keyof typeof ERROR_CODES;
@@ -55,9 +59,10 @@ export class UploadThingError<
     cause?: unknown;
     data?: TShape;
   }) {
-    const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
+    super();
 
-    super(message);
+    this.message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
+
     this.code = opts.code;
     this.data = opts.data;
 
