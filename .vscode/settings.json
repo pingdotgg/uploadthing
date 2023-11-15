@@ -9,6 +9,6 @@
   "eslint.workingDirectories": [
     "docs",
     { "pattern": "./packages/**" },
-    { "pattern": "./examples/**" }
+    { "pattern": "./sandbox/**" }
   ]
 }

@@ -1,9 +1,6 @@
 '📚 documentation':
   - any: ['docs/**', '!docs/**/package.json']
 
-'examples':
-  - any: ['examples/**', '!examples/**/package.json']
-
 '@uploadthing/react':
   - any: ['packages/react/**', '!packages/react/package.json']
 

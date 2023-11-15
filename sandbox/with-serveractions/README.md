@@ -1,6 +1,6 @@
 # Minimal Next.js App Router example for UploadThing using Server Actions
 
-<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/with-serveractions">
+<a href="https://stackblitz.com/github/pingdotgg/uploadthing-community/tree/main/examples/with-serveractions">
   <img height="64" src="https://github.com/pingdotgg/uploadthing/assets/51714798/45907a4e-aa64-401a-afb3-b6c6df6eb71f" />
 </a>
 

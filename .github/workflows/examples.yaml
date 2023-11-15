@@ -30,10 +30,10 @@ jobs:
           cache: "pnpm"
 
       - name: Install necessary deps
-        run: pnpm --filter "./examples/${{ matrix.dir }}/**"  --filter "@uploadthing/*" --filter "uploadthing" --filter "uploadthing-turbo" install
+        run: pnpm --filter "./sandbox/${{ matrix.dir }}/**"  --filter "@uploadthing/*" --filter "uploadthing" --filter "uploadthing-turbo" install
 
       - name: Build UT packages
         run: pnpm build
 
       - name: Run build
-        run: pnpm turbo --filter ./examples/${{ matrix.dir }} build
+        run: pnpm turbo --filter ./sandbox/${{ matrix.dir }} build
