@@ -4,7 +4,7 @@ import type { MimeType } from "@uploadthing/mime-types/db";
 
 import type { AllowedFileType } from "./file-types";
 
-export type JsonValue = string | number | boolean | null | undefined;
+export type JsonValue = string | number | boolean | null;
 export type JsonArray = JsonValue[];
 export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
 export type Json = JsonValue | JsonObject | JsonArray;
