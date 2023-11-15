@@ -102,7 +102,7 @@ jobs:
             fetch("https://uploadthing.com/api/revalidate-npm-tag", {
               method: 'POST',
               headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
                 'x-ping-signature': process.env.PING_GH_SIGNING_SECRET
               },
             })
