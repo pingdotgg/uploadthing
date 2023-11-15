@@ -15,23 +15,26 @@
 
 ## Table of Contents
 
-This repository contains the packages, docs and examples for uploadthing
+This repository contains the core packages and docs for UploadThing. For
+[examples](https://github.com/pingdotgg/uploadthing-community/tree/main/examples)
+and
+[frameworks other than React](https://github.com/pingdotgg/uploadthing-community/tree/main/packages),
+check out our
+[Community Repo](https://github.com/pingdotgg/uploadthing-community)
 
-- [Next.js App Directory](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-appdir) -
-  A simple example using the Next.js app directory
-- [Next.js Pages Directory](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-pagedir) -
-  A simple example using the Next.js pages directory
-- [SolidStart SSR](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-solidstart) -
-  A simple example using SSR with SolidStart
 - [Docs Site](https://github.com/pingdotgg/uploadthing/tree/main/docs) - Source
   for docs.uploadthing.com
 - [React Package](https://github.com/pingdotgg/uploadthing/tree/main/packages/react) -
   _@uploadthing/react_ - the components and hooks for using uploadthing in your
   React projects
-- [Solid Package](https://github.com/pingdotgg/uploadthing/tree/main/packages/solid) -
-  _@uploadthing/solid_ - the components and hooks for using uploadthing in your
-  Solid projects
 - [uploadthing](https://github.com/pingdotgg/uploadthing/tree/main/packages/uploadthing) -
   server/client stuff (framework agnostic)
+
+## Popular Examples
+
+- [Next.js App Directory](https://github.com/pingdotgg/uploadthing-community/tree/main/examples/minimal-appdir) -
+  A simple example using the Next.js app directory
+- [Next.js Pages Directory](https://github.com/pingdotgg/uploadthing-community/tree/main/examples/minimal-pagedir) -
+  A simple example using the Next.js pages directory
 
 [Report an Issue](https://github.com/pingdotgg/uploadthing/issues/new)
