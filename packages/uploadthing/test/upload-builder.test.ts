@@ -174,7 +174,7 @@ it("with optional input", () => {
   f(["image"])
     .input(z.object({ foo: z.string() }).optional())
     .middleware((opts) => {
-      expectTypeOf<{ foo?: string } | undefined>(opts.input);
+      expectTypeOf<{ foo: string } | undefined>(opts.input);
       return {};
     });
 });
