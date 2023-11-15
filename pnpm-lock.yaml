@@ -380,6 +380,96 @@ importers:
         specifier: ^3.22.3
         version: 3.22.3
 
+  sandbox/minimal-appdir:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 6.0.0
+        version: link:../../packages/react
+      next:
+        specifier: 14.0.1
+        version: 14.0.1(@babel/core@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: 6.0.0
+        version: link:../../packages/uploadthing
+    devDependencies:
+      '@types/node':
+        specifier: 18.16.0
+        version: 18.16.0
+      '@types/react':
+        specifier: 18.2.33
+        version: 18.2.33
+      '@types/react-dom':
+        specifier: 18.2.14
+        version: 18.2.14
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
+  sandbox/minimal-pagedir:
+    dependencies:
+      '@uploadthing/react':
+        specifier: 6.0.0
+        version: link:../../packages/react
+      next:
+        specifier: 14.0.1
+        version: 14.0.1(@babel/core@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: 6.0.0
+        version: link:../../packages/uploadthing
+    devDependencies:
+      '@types/node':
+        specifier: 18.16.0
+        version: 18.16.0
+      '@types/react':
+        specifier: 18.2.33
+        version: 18.2.33
+      '@types/react-dom':
+        specifier: 18.2.14
+        version: 18.2.14
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
+  sandbox/with-serveractions:
+    dependencies:
+      next:
+        specifier: 14.0.1
+        version: 14.0.1(@babel/core@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
+      uploadthing:
+        specifier: 6.0.0
+        version: link:../../packages/uploadthing
+    devDependencies:
+      '@types/node':
+        specifier: 18.16.0
+        version: 18.16.0
+      '@types/react':
+        specifier: 18.2.33
+        version: 18.2.33
+      '@types/react-dom':
+        specifier: 18.2.14
+        version: 18.2.14
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:
