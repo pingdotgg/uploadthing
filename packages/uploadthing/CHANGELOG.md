@@ -1,5 +1,14 @@
 # uploadthing
 
+## 6.0.1
+
+### Patch Changes
+
+- [#469](https://github.com/pingdotgg/uploadthing/pull/469)
+  [`7973a68`](https://github.com/pingdotgg/uploadthing/commit/7973a68c1c417cc0c6297a1be823012552e6efa4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: fallback
+  to null as serverdata to ensure json compatibility
+
 ## 6.0.0
 
 ### Major Changes
