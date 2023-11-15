@@ -100,15 +100,15 @@ jobs:
           github-token: ${{ secrets.MY_GITHUB_TOKEN }}
           script: |
             fetch("https://uploadthing.com/api/revalidate-npm-tag", {
-              method: 'POST',
+              method: "POST",
               headers: {
-                'Content-Type': 'application/json',
-                'x-ping-signature': process.env.PING_GH_SIGNING_SECRET
+                "Content-Type": "application/json",
+                "x-ping-signature": process.env.PING_GH_SIGNING_SECRET,
               },
             })
-            .then((res) => {
-              console.log('Version revalidated', await res.text())
+            .then(async (res) => {
+              console.log("Version revalidated", await res.text());
             })
             .catch((err) => {
-              console.error('Error revalidating tag', err)
-            })
+              console.error("Error revalidating tag", err);
+            });
