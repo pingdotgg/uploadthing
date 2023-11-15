@@ -87,6 +87,9 @@ importers:
       '@next/eslint-plugin-next':
         specifier: ^14.0.1
         version: 14.0.1
+      '@rushstack/eslint-patch':
+        specifier: 1.5.1
+        version: 1.5.1
       '@types/eslint':
         specifier: ^8.44.2
         version: 8.44.2
@@ -114,9 +117,6 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.0(eslint@8.47.0)
-      modern-module-resolution:
-        specifier: link:@rushstack/eslint-patch/modern-module-resolution
-        version: link:@rushstack/eslint-patch/modern-module-resolution
     devDependencies:
       eslint:
         specifier: ^8.47.0
@@ -1888,6 +1888,10 @@ packages:
 
   /@popperjs/core@2.11.8:
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
+    dev: false
+
+  /@rushstack/eslint-patch@1.5.1:
+    resolution: {integrity: sha512-6i/8UoL0P5y4leBIGzvkZdS85RDMG9y1ihZzmTZQ5LdHUYmZ7pKFoj8X0236s3lusPs1Fa5HTQUpwI+UfTcmeA==}
     dev: false
 
   /@sideway/address@4.1.4:
