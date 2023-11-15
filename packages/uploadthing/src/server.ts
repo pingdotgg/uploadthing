@@ -75,7 +75,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
       });
       ee.removeAllListeners("callbackDone");
 
-      return new Response(JSON.stringify(eventData), {
+      return new Response(JSON.stringify(eventData ?? null), {
         status: 200,
         headers: {
           "x-uploadthing-version": UPLOADTHING_VERSION,
