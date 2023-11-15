@@ -36,6 +36,11 @@ const router = {
     .onUploadComplete(({ metadata }) => {
       console.log(metadata);
     }),
+
+  // Should technically block returning undefined but there was
+  // so many issues with getting everything to work so we just
+  // serialize it as null on the other end...... JSON sucks
+  returningUndefined: f(["image"]).onUploadComplete(() => undefined),
 };
 
 const { useUploadThing } = generateReactHelpers<typeof router>();
@@ -115,6 +120,12 @@ it("infers output properly", () => {
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withBarInput");
     const res = await startUpload(files, { bar: 1 });
+    expectTypeOf<UploadFileResponse<null>[] | undefined>(res);
+  });
+
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing("returningUndefined");
+    const res = await startUpload(files);
     expectTypeOf<UploadFileResponse<null>[] | undefined>(res);
   });
 });
