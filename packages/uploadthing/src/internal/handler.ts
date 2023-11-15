@@ -221,7 +221,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         file: maybeReqBody.file,
         metadata: maybeReqBody.metadata,
       });
-      ee?.emit("callbackDone", res);
+      ee?.emit("callbackDone", res ?? null); // fallback to null to ensure JSON compatibility
 
       return { status: 200 };
     }
