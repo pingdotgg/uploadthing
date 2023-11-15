@@ -20,6 +20,6 @@
     "@uploadthing/react": "6.0.0",
     "concurrently": "^8.2.1",
     "typescript": "^5.1.6",
-    "uploadthing": "^6.0.0"
+    "uploadthing": "^6.0.1"
   }
 }
