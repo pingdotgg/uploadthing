@@ -40,7 +40,10 @@ export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
     const response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "fly-replay": `instance=${process.env.FLY_MACHINE_ID}`,
+      },
     });
 
     switch (type) {
