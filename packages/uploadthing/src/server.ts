@@ -60,6 +60,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
       status: response.status,
       headers: {
         "x-uploadthing-version": UPLOADTHING_VERSION,
+        ...(response.headers ?? {}),
       },
     });
   };
