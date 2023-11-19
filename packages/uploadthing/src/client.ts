@@ -222,21 +222,31 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Optional headers to send with the request to your server
+   * Can be used to force the request to the same instance if
+   * your app is running on multiple nodes.
+   * Note: `Content-Type` cannot be overridden and will always be `application/json`
+   * @example { 'fly-force-instance-id': 'my-instance-id' }
+   */
+  headers?: HeadersInit;
 }) => {
   const url =
     initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+  const headers = new Headers(initOpts?.headers);
 
   return <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts: DistributiveOmit<
       Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-      "url"
+      "url" | "headers"
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
       ...opts,
       url,
+      headers,
     } as any);
 };
 
