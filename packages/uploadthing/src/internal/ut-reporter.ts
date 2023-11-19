@@ -42,7 +42,6 @@ export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
       body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
-        "fly-replay": `instance=${process.env.FLY_MACHINE_ID}`,
       },
     });
 

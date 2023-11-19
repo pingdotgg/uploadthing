@@ -88,7 +88,6 @@ export const DANGEROUS__uploadFiles = async <
       // Express requires Content-Type to be explicitly set to parse body properly
       headers: {
         "Content-Type": "application/json",
-        "fly-replay": `instance=${process.env.FLY_MACHINE_ID}`,
       },
     },
   ).then(async (res) => {
@@ -188,7 +187,6 @@ export const DANGEROUS__uploadFiles = async <
     const serverData = await fetch(opts.url, {
       headers: {
         "x-uploadthing-polling-key": key,
-        "fly-replay": `instance=${process.env.FLY_MACHINE_ID}`,
       },
     }).then(
       (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
