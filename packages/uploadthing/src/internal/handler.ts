@@ -28,15 +28,23 @@ import type { ActionType, FileRouter, UTEvents } from "./types";
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
-const createUTFetch = (apiKey: string) => {
-  return async (endpoint: `/${string}`, payload: unknown) => {
+const createUTFetch = (
+  apiKey: string,
+  forwardedHeaders: Record<string, string>,
+) => {
+  return async (endpoint: `/${string}`, payload: Record<string, unknown>) => {
     const response = await fetch(generateUploadThingURL(endpoint), {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        internalMetadata: {
+          callbackHeaders: forwardedHeaders,
+        },
+      }),
       headers: {
         "Content-Type": "application/json",
-        "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": UPLOADTHING_VERSION,
+        "x-uploadthing-secret": apiKey,
       },
     });
 
@@ -92,6 +100,13 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
+    /**
+     * Headers which will be forwarded when UploadThing makes a callback to your server.
+     * Set this if your app is running on multiple nodes to something that your load
+     * balancer can use to force the callback request to the same node that sent the initial request.
+     * @example { 'fly-replay': `instance=${process.env.FLY_MACHINE_ID}` }
+     */
+    callbackHeaders?: Record<string, string>;
   };
 };
 
@@ -221,6 +236,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         file: maybeReqBody.file,
         metadata: maybeReqBody.metadata,
       });
+      console.log("[UT] callback done. Emitting event", res);
       ee?.emit("callbackDone", res ?? null); // fallback to null to ensure JSON compatibility
 
       return { status: 200 };
@@ -237,7 +253,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const utFetch = createUTFetch(preferredOrEnvSecret);
+    const utFetch = createUTFetch(
+      preferredOrEnvSecret,
+      opts.config?.callbackHeaders ?? {},
+    );
 
     switch (actionType) {
       case "upload": {

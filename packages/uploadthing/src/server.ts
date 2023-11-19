@@ -31,6 +31,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
 ) => {
   incompatibleNodeGuard();
   const ee = new EventEmitter();
+  console.log("Created event emitter");
   const requestHandler = buildRequestHandler<TRouter>(opts, ee);
 
   const POST = async (request: Request | { request: Request }) => {
@@ -69,6 +70,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
     const req = request instanceof Request ? request : request.request;
 
     const clientPollingKey = req.headers.get("x-uploadthing-polling-key");
+    console.log("Got polling request?", clientPollingKey);
     if (clientPollingKey) {
       const eventData = await new Promise((resolve) => {
         ee.addListener("callbackDone", resolve);
