@@ -37,6 +37,14 @@ type UploadFilesOptions<
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+  /**
+   * Optional headers to send with the request to your server
+   * Can be used to force the request to the same instance if
+   * your app is running on multiple nodes.
+   * Note: `Content-Type` cannot be overridden and will always be `application/json`
+   * @example { 'fly-force-instance-id': 'my-instance-id' }
+   */
+  headers: HeadersInit;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}
@@ -70,9 +78,12 @@ export const DANGEROUS__uploadFiles = async <
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     url: opts.url,
+    headers: opts.headers,
   });
 
   // Get presigned URL for S3 upload
+  const s3ConnectionHeaders = new Headers(opts.headers);
+  s3ConnectionHeaders.set("Content-Type", "application/json");
   const s3ConnectionRes = await fetch(
     createAPIRequestUrl({
       url: opts.url,
@@ -85,10 +96,7 @@ export const DANGEROUS__uploadFiles = async <
         input: "input" in opts ? opts.input : null,
         files: opts.files.map((f) => ({ name: f.name, size: f.size })),
       }),
-      // Express requires Content-Type to be explicitly set to parse body properly
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: s3ConnectionHeaders,
     },
   ).then(async (res) => {
     // check for 200 response
@@ -184,11 +192,9 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const serverData = await fetch(opts.url, {
-      headers: {
-        "x-uploadthing-polling-key": key,
-      },
-    }).then(
+    const pollingHeaders = new Headers(opts.headers);
+    pollingHeaders.set("x-uploadthing-polling-key", key);
+    const serverData = await fetch(opts.url, { headers: pollingHeaders }).then(
       (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
     );
 

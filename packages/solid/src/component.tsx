@@ -48,26 +48,56 @@ export function generateComponents<TRouter extends FileRouter>(initOpts?: {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Optional headers to send with the request to your server
+   * Can be used to force the request to the same instance if
+   * your app is running on multiple nodes.
+   * Note: `Content-Type` cannot be overridden and will always be `application/json`
+   * @example { 'fly-force-instance-id': 'my-instance-id' }
+   */
+  headers?: HeadersInit;
 }) {
   const url =
     initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+  const headers = new Headers(initOpts?.headers);
 
   return {
     UploadButton: <TEndpoint extends keyof TRouter>(
       props: Omit<
         ComponentProps<typeof UploadButton<TRouter, TEndpoint>>,
-        "url"
+        "url" | "headers"
       >,
-    ) => <UploadButton<TRouter, TEndpoint> {...(props as any)} url={url} />,
+    ) => (
+      <UploadButton<TRouter, TEndpoint>
+        {...(props as any)}
+        url={url}
+        headers={headers}
+      />
+    ),
     UploadDropzone: <TEndpoint extends keyof TRouter>(
       props: Omit<
         ComponentProps<typeof UploadDropzone<TRouter, TEndpoint>>,
-        "url"
+        "url" | "headers"
       >,
-    ) => <UploadDropzone<TRouter, TEndpoint> {...(props as any)} url={url} />,
+    ) => (
+      <UploadDropzone<TRouter, TEndpoint>
+        {...(props as any)}
+        url={url}
+        headers={headers}
+      />
+    ),
     Uploader: <TEndpoint extends keyof TRouter>(
-      props: Omit<ComponentProps<typeof Uploader<TRouter, TEndpoint>>, "url">,
-    ) => <Uploader<TRouter, TEndpoint> {...(props as any)} url={url} />,
+      props: Omit<
+        ComponentProps<typeof Uploader<TRouter, TEndpoint>>,
+        "url" | "headers"
+      >,
+    ) => (
+      <Uploader<TRouter, TEndpoint>
+        {...(props as any)}
+        url={url}
+        headers={headers}
+      />
+    ),
   };
 }
 

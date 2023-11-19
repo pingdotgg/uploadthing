@@ -25,6 +25,14 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Optional headers to send with the request to your server
+   * Can be used to force the request to the same instance if
+   * your app is running on multiple nodes.
+   * Note: `Content-Type` cannot be overridden and will always be `application/json`
+   * @example { 'fly-force-instance-id': 'my-instance-id' }
+   */
+  headers?: HeadersInit;
 
   onUploadProgress?: (progress: number) => void;
   onUploadBegin?: (fileName: string) => void;
