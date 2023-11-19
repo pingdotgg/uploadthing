@@ -141,11 +141,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     res?: unknown;
     event?: unknown;
   }): Promise<
-    | UploadThingError
-    | {
-        status: 200;
-        body?: UploadThingResponse;
-      }
+    UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
     if (process.env.NODE_ENV === "development") {
       console.log("[UT] UploadThing dev server is now running!");
@@ -243,9 +239,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       console.log("[UT] callback done. Emitting event", res);
       ee?.emit("callbackDone", res ?? null); // fallback to null to ensure JSON compatibility
 
-      return {
-        status: 200,
-      };
+      return { status: 200 };
     }
 
     if (!actionType || !VALID_ACTION_TYPES.includes(actionType)) {
