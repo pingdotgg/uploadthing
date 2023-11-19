@@ -104,7 +104,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
      * Headers which will be forwarded when UploadThing makes a callback to your server.
      * Set this if your app is running on multiple nodes to something that your load
      * balancer can use to force the callback request to the same node that sent the initial request.
-     * @example { 'fly-replay': `instance=${process.env.FLY_MACHINE_ID}` }
+     * @example { 'fly-force-instance-id': process.env.FLY_MACHINE_ID }
      */
     callbackHeaders?: Record<string, string>;
   };
