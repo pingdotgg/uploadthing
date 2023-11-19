@@ -368,7 +368,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         const callbackUrl = url.origin + url.pathname;
 
-        console.log("[UT] preparing upload");
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
           files: files,
 
