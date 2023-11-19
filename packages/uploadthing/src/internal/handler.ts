@@ -43,8 +43,8 @@ const createUTFetch = (
       }),
       headers: {
         "Content-Type": "application/json",
+        "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": UPLOADTHING_VERSION,
-        "x-uploadthing-secret": apiKey,
       },
     });
 
