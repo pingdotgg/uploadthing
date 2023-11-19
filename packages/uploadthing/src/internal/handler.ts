@@ -145,7 +145,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     | {
         status: 200;
         body?: UploadThingResponse;
-        headers?: Record<string, string>;
       }
   > => {
     if (process.env.NODE_ENV === "development") {
@@ -246,7 +245,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
       return {
         status: 200,
-        headers: { "fly-replay": `instance=${process.env.FLY_MACHINE_ID}` },
       };
     }
 
