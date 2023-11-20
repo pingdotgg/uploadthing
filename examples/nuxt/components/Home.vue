@@ -28,7 +28,7 @@ const UploadDropzone = useUploadDropzone<OurFileRouter>();
       </span>
       <UploadDropzone
         :config="{
-          endpoint: 'withMdwr',
+          endpoint: 'videoAndImage',
         }"
       />
     </div>
