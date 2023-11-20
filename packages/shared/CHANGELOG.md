@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 6.0.1
+
+### Patch Changes
+
+- [#480](https://github.com/pingdotgg/uploadthing/pull/480)
+  [`67109c8`](https://github.com/pingdotgg/uploadthing/commit/67109c835f3416d2928c0faa9e2fd99a1bcd2370)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: serverdata
+  polling timed out and returned 504
+
 ## 6.0.0
 
 ### Major Changes
