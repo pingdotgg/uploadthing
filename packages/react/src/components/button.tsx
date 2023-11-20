@@ -153,6 +153,16 @@ export function UploadButton<
     return `Choose File${multiple ? `(s)` : ``}`;
   };
 
+  const getUploadButtonContents = (fileTypes: string[]) => {
+    if (state !== "uploading") {
+      return getUploadButtonText(fileTypes);
+    }
+    if (uploadProgress === 100) {
+      return <Spinner />;
+    }
+    return `${uploadProgress}%`;
+  };
+
   const getInputProps = () => ({
     type: "file",
     ref: fileInputRef,
@@ -266,12 +276,7 @@ export function UploadButton<
       >
         <input {...getInputProps()} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          // only show spinner once upload is complete
-          (state === "uploading" && uploadProgress === 100 ? (
-            <Spinner />
-          ) : (
-            getUploadButtonText(fileTypes)
-          ))}
+          getUploadButtonContents(fileTypes)}
       </label>
       {mode === "manual" && files.length > 0
         ? renderClearButton()
