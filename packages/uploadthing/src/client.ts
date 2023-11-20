@@ -191,31 +191,27 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const poll = async () =>
-      fetch(pollingUrl, {
-        headers: { Authorization: pollingJwt },
-      }).then(
-        (res) =>
-          res.json() as Promise<
-            | {
-                status: "done";
-                callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
-              }
-            | { status: "still waiting" }
-          >,
-      );
+    type ServerData = inferEndpointOutput<TRouter[TEndpoint]>;
+    const serverData = await new Promise<ServerData>((resolve, reject) => {
+      const pollInterval = 1000;
 
-    const serverData = await new Promise<
-      inferEndpointOutput<TRouter[TEndpoint]>
-    >((resolve) => {
-      void poll().then((res) => {
-        if (res.status === "done") {
-          resolve(res.callbackData);
-        } else {
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          setTimeout(poll, 1000);
-        }
-      });
+      const poll = setInterval(() => {
+        type PollingResponse =
+          | { status: "done"; callbackData: ServerData }
+          | { status: "still waiting" };
+        fetch(pollingUrl, { headers: { Authorization: pollingJwt } })
+          .then((response) => response.json() as Promise<PollingResponse>)
+          .then((data) => {
+            if (data.status === "done") {
+              clearInterval(poll);
+              resolve(data.callbackData);
+            }
+          })
+          .catch((error) => {
+            clearInterval(poll);
+            reject(error);
+          });
+      }, pollInterval);
     });
 
     return {
