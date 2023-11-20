@@ -866,8 +866,8 @@ importers:
         specifier: ^5.1.6
         version: 5.2.2
       uploadthing:
-        specifier: 5.7.4
-        version: 5.7.4
+        specifier: '*'
+        version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -942,8 +942,8 @@ importers:
         specifier: ^5.1.6
         version: 5.2.2
       uploadthing:
-        specifier: 5.7.4
-        version: 5.7.4
+        specifier: '*'
+        version: link:../uploadthing
       wait-on:
         specifier: ^7.0.1
         version: 7.1.0
@@ -5196,6 +5196,7 @@ packages:
 
   /@uploadthing/mime-types@0.2.2:
     resolution: {integrity: sha512-ZUo1JHOPPMZDsUw1mOhhVDIvJGlsjj6T0xJ/YJtulyJwL43S9B5pxg1cHcRuTEgjaxj7B55jiqQ6r9mDrrjH9A==}
+    dev: false
 
   /@uploadthing/shared@5.2.7(@uploadthing/mime-types@0.2.2):
     resolution: {integrity: sha512-gc+i66m0vPQpy5PC783iq1koE8Fm9lFTd3uPrJAr7kXwpNRteJs4dnu6etDkY8EilTjMFA6w4js/AhW8AUDuQg==}
@@ -5206,6 +5207,7 @@ packages:
         optional: true
     dependencies:
       '@uploadthing/mime-types': 0.2.2
+    dev: false
 
   /@vercel/nft@0.24.3:
     resolution: {integrity: sha512-IyBdIxmFAeGZnEfMgt4QrGK7XX4lWazlQj34HEi9dw04/WeDBJ7r1yaOIO5tTf9pbfvwUFodj9b0H+NDGGoOMg==}
@@ -16493,6 +16495,7 @@ packages:
     dependencies:
       '@uploadthing/mime-types': 0.2.2
       '@uploadthing/shared': 5.2.7(@uploadthing/mime-types@0.2.2)
+    dev: false
 
   /uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
