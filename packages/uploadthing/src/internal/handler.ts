@@ -222,7 +222,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       })) as unknown;
       await utFetch("/api/serverCallback", {
         fileKey: maybeReqBody.file.key,
-        callbackData: res ?? null,
+        callbackData: res ?? {}, // must be defined/non-null
       });
 
       return { status: 200 };
