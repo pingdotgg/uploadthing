@@ -171,7 +171,7 @@ export const DANGEROUS__uploadFiles = async <
     }
 
     // Tell the server that the upload is complete
-    const [uploadOk, serverData] = await Promise.all([
+    const [_, serverData] = await Promise.all([
       reportEventToUT("multipart-complete", {
         uploadId,
         fileKey: key,
@@ -183,14 +183,6 @@ export const DANGEROUS__uploadFiles = async <
         (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
       ),
     ]);
-
-    if (!uploadOk) {
-      console.log("Failed to alert UT of upload completion");
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to alert UT of upload completion",
-      });
-    }
 
     return {
       name: file.name,

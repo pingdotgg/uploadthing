@@ -63,6 +63,14 @@ export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
       }
     }
 
+    if (!response.ok) {
+      console.log("Failed to alert UT of upload completion");
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "Failed to alert UT of upload completion",
+      });
+    }
+
     return response.ok;
   };
 };
