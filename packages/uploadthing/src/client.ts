@@ -195,6 +195,9 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
+    // wait a bit as it's unsreasonable to expect the server to be done by now
+    await new Promise((r) => setTimeout(r, 750));
+
     const serverData = (await withExponentialBackoff(async () => {
       type PollingResponse =
         | {
