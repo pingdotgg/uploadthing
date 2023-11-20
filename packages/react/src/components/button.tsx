@@ -266,7 +266,8 @@ export function UploadButton<
       >
         <input {...getInputProps()} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          (state === "uploading" ? (
+          // only show spinner once upload is complete
+          (state === "uploading" && uploadProgress === 100 ? (
             <Spinner />
           ) : (
             getUploadButtonText(fileTypes)
