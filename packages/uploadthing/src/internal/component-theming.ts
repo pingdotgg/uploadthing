@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
-import type { RenderFunction, StyleValue } from 'vue'
+import type { RenderFunction, StyleValue } from "vue";
 
 import { objectKeys } from "@uploadthing/shared";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
@@ -59,13 +59,19 @@ type AnyRuntime = "react" | "solid" | "vue";
 type MinCallbackArg = { __runtime: AnyRuntime };
 type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"
-  : T["__runtime"] extends "solid" ? "solid" : "vue";
+  : T["__runtime"] extends "solid"
+  ? "solid"
+  : "vue";
 
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
-  ? ReactNode : TRuntime extends "solid" ? JSX.Element
+  ? ReactNode
+  : TRuntime extends "solid"
+  ? JSX.Element
   : ReturnType<RenderFunction>;
 type CSSPropertiesEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
-  ? CSSProperties : TRuntime extends "solid" ? JSX.CSSProperties
+  ? CSSProperties
+  : TRuntime extends "solid"
+  ? JSX.CSSProperties
   : StyleValue;
 
 export type StyleField<
@@ -75,8 +81,8 @@ export type StyleField<
   | string
   | CSSPropertiesEsque<TRuntime>
   | ((
-    arg: Omit<CallbackArg, "__runtime">,
-  ) => string | CSSPropertiesEsque<TRuntime>);
+      arg: Omit<CallbackArg, "__runtime">,
+    ) => string | CSSPropertiesEsque<TRuntime>);
 
 export type ContentField<
   CallbackArg extends MinCallbackArg,

@@ -9,8 +9,8 @@ export function withUt(twConfig?: Config) {
   ];
 
   const defaultConfig: {
-    content: Config['content'];
-    plugins: Required<Config>['plugins'];
+    content: Config["content"];
+    plugins: Required<Config>["plugins"];
   } = {
     content: [],
     plugins: [],

@@ -1,3 +1,3 @@
-import { withUt } from 'uploadthing/tw'
+import { withUt } from "uploadthing/tw";
 
-export default withUt()
+export default withUt();

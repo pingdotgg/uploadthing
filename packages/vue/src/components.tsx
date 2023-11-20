@@ -2,16 +2,12 @@ import { defineComponent } from "vue";
 
 import type { FileRouter } from "uploadthing/server";
 
-import type { UploadthingComponentProps } from "./types";
-import { UploadButton } from './components/button'
+import { UploadButton } from "./components/button";
 import { UploadDropzone } from "./components/dropzone";
 import { Spinner } from "./components/shared";
+import type { UploadthingComponentProps } from "./types";
 
-export {
-  UploadButton,
-  UploadDropzone,
-  Spinner
-}
+export { UploadButton, UploadDropzone, Spinner };
 
 export const Uploader = <
   TRouter extends FileRouter,
