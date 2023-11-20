@@ -1,5 +1,3 @@
-import { EventEmitter } from "events";
-
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
 
@@ -30,8 +28,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   incompatibleNodeGuard();
-  const ee = new EventEmitter();
-  const requestHandler = buildRequestHandler<TRouter>(opts, ee);
+  const requestHandler = buildRequestHandler<TRouter>(opts);
 
   const POST = async (request: Request | { request: Request }) => {
     const req = request instanceof Request ? request : request.request;
@@ -65,23 +62,8 @@ export const createServerHandler = <TRouter extends FileRouter>(
 
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const GET = async (request: Request | { request: Request }) => {
-    const req = request instanceof Request ? request : request.request;
-
-    const clientPollingKey = req.headers.get("x-uploadthing-polling-key");
-    if (clientPollingKey) {
-      const eventData = await new Promise((resolve) => {
-        ee.addListener("callbackDone", resolve);
-      });
-      ee.removeAllListeners("callbackDone");
-
-      return new Response(JSON.stringify(eventData), {
-        status: 200,
-        headers: {
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        },
-      });
-    }
+  const GET = (request: Request | { request: Request }) => {
+    const _req = request instanceof Request ? request : request.request;
 
     return new Response(JSON.stringify(getBuildPerms()), {
       status: 200,

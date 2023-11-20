@@ -1,5 +1,3 @@
-import type EventEmitter from "events";
-
 import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,
@@ -104,6 +102,7 @@ const getHeader = (req: RequestLike, key: string) => {
 
 export type UploadThingResponse = {
   presignedUrls: string[];
+  pollingJwt: string;
   key: string;
   pollingUrl: string;
   uploadId: string;
@@ -116,7 +115,6 @@ export type UploadThingResponse = {
 
 export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
-  ee?: EventEmitter,
 ) => {
   return async (input: {
     req: RequestLike;
@@ -199,6 +197,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
+    const utFetch = createUTFetch(preferredOrEnvSecret);
+
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       const maybeReqBody = await safeParseJSON<{
@@ -216,12 +216,14 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const res = await uploadable.resolver({
+      const res = (await uploadable.resolver({
         file: maybeReqBody.file,
         metadata: maybeReqBody.metadata,
+      })) as unknown;
+      await utFetch("/api/serverCallback", {
+        fileKey: maybeReqBody.file.key,
+        callbackData: res ?? null,
       });
-      ee?.emit("callbackDone", res ?? null); // fallback to null to ensure JSON compatibility
 
       return { status: 200 };
     }
@@ -236,8 +238,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           .replace(/,(?!.*,)/, " or")} but got "${"a"}"`,
       });
     }
-
-    const utFetch = createUTFetch(preferredOrEnvSecret);
 
     switch (actionType) {
       case "upload": {
@@ -379,7 +379,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         return {
           body: parsedResponse.map((x) => ({
             ...x,
-            pollingUrl: generateUploadThingURL(`/api/pollUpload/${x.key}`),
+            pollingUrl: generateUploadThingURL(`/api/serverCallback`),
           })),
           status: 200,
         };
