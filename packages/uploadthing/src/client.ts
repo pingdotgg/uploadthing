@@ -130,8 +130,15 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const { presignedUrls, uploadId, chunkSize, contentDisposition, key } =
-      presigned;
+    const {
+      presignedUrls,
+      uploadId,
+      chunkSize,
+      contentDisposition,
+      key,
+      pollingUrl,
+      pollingJwt,
+    } = presigned;
 
     let uploadedBytes = 0;
 
@@ -184,11 +191,31 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const serverData = await fetch(opts.url, {
-      headers: { "x-uploadthing-polling-key": key },
-    }).then(
-      (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
-    );
+    const poll = async () =>
+      fetch(pollingUrl, {
+        headers: { Authorization: pollingJwt },
+      }).then(
+        (res) =>
+          res.json() as Promise<
+            | {
+                status: "done";
+                callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
+              }
+            | { status: "still waiting" }
+          >,
+      );
+
+    const serverData = await new Promise<
+      inferEndpointOutput<TRouter[TEndpoint]>
+    >((resolve) => {
+      void poll().then((res) => {
+        if (res.status === "done") {
+          resolve(res.callbackData);
+        } else {
+          setTimeout(resolve, 1000);
+        }
+      });
+    });
 
     return {
       name: file.name,
