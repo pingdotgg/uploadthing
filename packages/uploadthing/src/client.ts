@@ -1,4 +1,8 @@
-import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
+import {
+  safeParseJSON,
+  UploadThingError,
+  withExponentialBackoff,
+} from "@uploadthing/shared";
 
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
@@ -191,27 +195,20 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    type ServerData = inferEndpointOutput<TRouter[TEndpoint]>;
-    const serverData = await new Promise<ServerData>((resolve, reject) => {
-      const pollInterval = 1000;
+    const serverData = await withExponentialBackoff(async () => {
+      type PollingResponse =
+        | {
+            status: "done";
+            callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
+          }
+        | { status: "still waiting" };
 
-      const poll = setInterval(() => {
-        type PollingResponse =
-          | { status: "done"; callbackData: ServerData }
-          | { status: "still waiting" };
-        fetch(pollingUrl, { headers: { Authorization: pollingJwt } })
-          .then((response) => response.json() as Promise<PollingResponse>)
-          .then((data) => {
-            if (data.status === "done") {
-              clearInterval(poll);
-              resolve(data.callbackData);
-            }
-          })
-          .catch((error) => {
-            clearInterval(poll);
-            reject(error);
-          });
-      }, pollInterval);
+      const res = await fetch(pollingUrl, {
+        headers: { authorization: pollingJwt },
+      }).then((r) => r.json() as Promise<PollingResponse>);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return res.status === "done" ? res.callbackData : null;
     });
 
     return {
