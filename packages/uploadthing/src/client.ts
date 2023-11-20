@@ -195,7 +195,7 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const serverData = await withExponentialBackoff(async () => {
+    const serverData = (await withExponentialBackoff(async () => {
       type PollingResponse =
         | {
             status: "done";
@@ -209,7 +209,7 @@ export const DANGEROUS__uploadFiles = async <
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return res.status === "done" ? res.callbackData : null;
-    });
+    })) as inferEndpointOutput<TRouter[TEndpoint]>;
 
     return {
       name: file.name,
