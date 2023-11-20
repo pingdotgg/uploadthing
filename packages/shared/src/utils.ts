@@ -133,7 +133,7 @@ export const withExponentialBackoff = async <T>(
   let result = null;
   while (tries <= MAX_RETRIES) {
     result = await doTheThing();
-    if (result !== null) return result;
+    if (result !== undefined) return result;
 
     tries += 1;
     backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
@@ -177,10 +177,10 @@ export async function pollForFileData(
       console.error(
         `[UT] Error polling for file data for ${opts.url}: ${maybeJson.message}`,
       );
-      return null;
+      return undefined;
     }
 
-    if (maybeJson.status !== "done") return null;
+    if (maybeJson.status !== "done") return undefined;
     await callback?.(maybeJson);
   });
 }

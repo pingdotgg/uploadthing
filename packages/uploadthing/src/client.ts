@@ -208,7 +208,7 @@ export const DANGEROUS__uploadFiles = async <
       }).then((r) => r.json() as Promise<PollingResponse>);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return res.status === "done" ? res.callbackData : null;
+      return res.status === "done" ? res.callbackData : undefined;
     })) as inferEndpointOutput<TRouter[TEndpoint]>;
 
     return {
