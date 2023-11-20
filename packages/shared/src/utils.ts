@@ -122,7 +122,7 @@ export function generateUploadThingURL(path: `/${string}`) {
 }
 
 export const withExponentialBackoff = async <T>(
-  doTheThing: () => Promise<T | null>,
+  doTheThing: () => Promise<T | undefined>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
   MAX_RETRIES = 20,
 ): Promise<T | null> => {
@@ -130,7 +130,7 @@ export const withExponentialBackoff = async <T>(
   let backoffMs = 500;
   let backoffFuzzMs = 0;
 
-  let result = null;
+  let result = undefined;
   while (tries <= MAX_RETRIES) {
     result = await doTheThing();
     if (result !== undefined) return result;
