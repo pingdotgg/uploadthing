@@ -212,7 +212,8 @@ export const DANGEROUS__uploadFiles = async <
         if (res.status === "done") {
           resolve(res.callbackData);
         } else {
-          setTimeout(resolve, 1000);
+          // eslint-disable-next-line @typescript-eslint/no-misused-promises
+          setTimeout(poll, 1000);
         }
       });
     });
