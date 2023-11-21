@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 6.0.2
+
+### Patch Changes
+
+- [#487](https://github.com/pingdotgg/uploadthing/pull/487)
+  [`afc793e`](https://github.com/pingdotgg/uploadthing/commit/afc793e0635c7c4cee7592262b8aa13e5b2c7d55)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix:
+  exponential backoff infinite loop
+
 ## 6.0.1
 
 ### Patch Changes

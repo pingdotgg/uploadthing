@@ -87,7 +87,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/shared": "^6.0.1",
+    "@uploadthing/shared": "^6.0.2",
     "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
@@ -99,7 +99,7 @@
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "^5.1.6",
-    "uploadthing": "6.0.2",
+    "uploadthing": "6.0.3",
     "wait-on": "^7.0.1"
   },
   "peerDependencies": {
