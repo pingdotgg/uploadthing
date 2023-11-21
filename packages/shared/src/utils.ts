@@ -182,6 +182,8 @@ export async function pollForFileData(
 
     if (maybeJson.status !== "done") return undefined;
     await callback?.(maybeJson);
+
+    return Symbol("backoff done without response");
   });
 }
 
