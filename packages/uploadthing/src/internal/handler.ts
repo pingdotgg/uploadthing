@@ -19,6 +19,7 @@ import type {
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
+import { getFullApiUrl } from "./get-full-api-url";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
 import type { ActionType, FileRouter, UTEvents } from "./types";
@@ -83,10 +84,6 @@ const fileCountLimitHit = (
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
-    /**
-     * @deprecated since v6.0.0
-     * this option is deprecated and will be removed in a future version, you can safely remove it from your config
-     */
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
@@ -339,7 +336,24 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const callbackUrl = url.origin + url.pathname;
+        let callbackUrl = url;
+        if (config?.callbackUrl) {
+          callbackUrl = getFullApiUrl(config.callbackUrl);
+        } else if (process.env.UPLOADTHING_URL) {
+          callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
+        }
+
+        if (
+          process.env.NODE_ENV === "production" &&
+          callbackUrl.host.includes("localhost")
+        ) {
+          console.warn(
+            [
+              "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
+              "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
+            ].join(" "),
+          );
+        }
 
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
           files: files,
@@ -347,7 +361,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           routeConfig: parsedConfig,
 
           metadata,
-          callbackUrl: config?.callbackUrl ?? callbackUrl,
+          callbackUrl: callbackUrl.origin + callbackUrl.pathname,
           callbackSlug: slug,
         });
 
