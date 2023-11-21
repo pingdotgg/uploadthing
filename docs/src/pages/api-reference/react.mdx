@@ -310,9 +310,8 @@ const uploadSomeFiles = async () => {
     }),
   ];
 
-  const res = await uploadFiles({
+  const res = await uploadFiles("yourEndpoint", {
     files,
-    endpoint: "imageUploader",
     input: {}, // will be typesafe to match the input set for `imageUploader` in your FileRouter
   });
 };
@@ -321,9 +320,8 @@ const uploadSomeFiles = async () => {
 ### Configuration
 
 ```tsx
-uploadFiles(opts: {
+uploadFiles(endpoint: string, opts: {
   files: File[],
-  endpoint: string,
   input?: {} // will be typesafe to match the input set for `endpoint` in your FileRouter
 })
 ```
