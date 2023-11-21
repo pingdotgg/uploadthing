@@ -183,7 +183,7 @@ export async function pollForFileData(
       console.error(
         `[UT] Error polling for file data for ${opts.url}: ${maybeJson.message}`,
       );
-      return undefined;
+      return null;
     }
 
     if (maybeJson.status !== "done") return undefined;
