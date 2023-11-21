@@ -67,7 +67,7 @@ export const conditionalDevServer = async (opts: {
     },
   );
 
-  if (fileData !== null) return fileData;
+  if (fileData !== undefined) return fileData;
 
   console.error(`[UT] Failed to simulate callback for file ${opts.fileKey}`);
   throw new UploadThingError({

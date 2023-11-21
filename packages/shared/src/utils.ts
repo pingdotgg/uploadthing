@@ -121,6 +121,12 @@ export function generateUploadThingURL(path: `/${string}`) {
   return `${host}${path}`;
 }
 
+/**
+ * RETURN UNDEFINED TO KEEP GOING
+ * SO MAKE SURE YOUR FUNCTION RETURNS SOMETHING
+ * OTHERWISE IT'S AN IMPLICIT UNDEFINED AND WILL CAUSE
+ * AN INFINITE LOOP
+ */
 export const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | undefined>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
@@ -177,11 +183,13 @@ export async function pollForFileData(
       console.error(
         `[UT] Error polling for file data for ${opts.url}: ${maybeJson.message}`,
       );
-      return undefined;
+      return null;
     }
 
     if (maybeJson.status !== "done") return undefined;
     await callback?.(maybeJson);
+
+    return Symbol("backoff done without response");
   });
 }
 
