@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 6.0.2
+
+### Patch Changes
+
+- [#491](https://github.com/pingdotgg/uploadthing/pull/491)
+  [`f802978`](https://github.com/pingdotgg/uploadthing/commit/f802978ee0ccda74e198399ea078e05b351582aa)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix:
+  @uploadthing/react peer deps
+
 ## 6.0.1
 
 ### Patch Changes

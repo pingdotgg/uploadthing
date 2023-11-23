@@ -45,7 +45,7 @@ importers:
   docs:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../packages/react
       next:
         specifier: 14.0.1
@@ -85,7 +85,7 @@ importers:
   examples/backend-adapters:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       concurrently:
         specifier: ^8.2.1
@@ -100,7 +100,7 @@ importers:
   examples/backend-adapters/client:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../../packages/react
       react:
         specifier: 18.2.0
@@ -177,7 +177,7 @@ importers:
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -239,7 +239,7 @@ importers:
   examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -331,7 +331,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -389,7 +389,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -444,7 +444,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -511,7 +511,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.1.6)(zod@3.22.3)
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -578,7 +578,7 @@ importers:
   examples/with-react-image-crop:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -640,7 +640,7 @@ importers:
   examples/with-tailwindcss:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.0.1
+        specifier: 6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
