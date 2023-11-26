@@ -45,7 +45,7 @@ importers:
   docs:
     dependencies:
       '@uploadthing/react':
-        specifier: workspace:*
+        specifier: ^6.0.2
         version: link:../packages/react
       next:
         specifier: 14.0.1
@@ -63,7 +63,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: workspace:*
+        specifier: ^6.0.3
         version: link:../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -340,7 +340,7 @@ importers:
   sandbox/minimal-appdir:
     dependencies:
       '@uploadthing/react':
-        specifier: workspace:*
+        specifier: ^6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -352,7 +352,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: workspace:*
+        specifier: ^6.0.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -371,7 +371,7 @@ importers:
   sandbox/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
-        specifier: workspace:*
+        specifier: ^6.0.2
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -383,7 +383,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: workspace:*
+        specifier: ^6.0.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -411,7 +411,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: workspace:*
+        specifier: ^6.0.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
