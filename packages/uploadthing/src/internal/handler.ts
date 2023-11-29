@@ -424,11 +424,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
+        console.log(
+          `[UT] ${new Date().toISOString()} - Upload finsihed, completing multipart`,
+        );
         const completeRes = await utFetch("/api/completeMultipart", {
           fileKey: maybeReqBody.fileKey,
           uploadId: maybeReqBody.uploadId,
           etags: maybeReqBody.etags,
         });
+        console.log(
+          `[UT] ${new Date().toISOString()} - Multipart completed ${
+            completeRes.status
+          } - ${completeRes.statusText}`,
+        );
         if (!completeRes.ok) {
           return new UploadThingError({
             code: "UPLOAD_FAILED",
