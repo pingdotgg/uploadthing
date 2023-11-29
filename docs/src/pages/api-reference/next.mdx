@@ -23,10 +23,11 @@ programmatically set your UploadThing credentials. If you do not specify a
 `config` we will use the `UPLOADTHING_SECRET` and `UPLOADTHING_APP_ID`
 environment variables.
 
-|        Key        |  Type  | Required | Notes |             Description              |
-| :---------------: | :----: | :------: | :---: | :----------------------------------: |
-|   uploadthingId   | string |    No    |       | The App ID for your uploadthing app  |
-| uploadthingSecret | string |    No    |       | The API key for your uploadthing app |
+|        Key        |  Type  | Required | Notes |                             Description                             |
+| :---------------: | :----: | :------: | :---: | :-----------------------------------------------------------------: |
+|   uploadthingId   | string |    No    |       |                 The App ID for your uploadthing app                 |
+| uploadthingSecret | string |    No    |       |                The API key for your uploadthing app                 |
+|    callbackUrl    | string |    No    |       | Custom callback URL to use instead of `<BASE_URL>/api/uploadthing`. |
 
 <Callout type="info">
   **Note:** This same configuration object is also available for the

@@ -50,3 +50,33 @@ import type { OurFileRouter } from "~/app/api/uploadthing/core";
 As you can see, it's quite cumbersome having to provide the generics yourself,
 especially since the `endpoint` prop must be specified twice due to lack of
 partial inference in TypeScript.
+
+### My callback runs in development but not in production
+
+In order for UploadThing to work, our external server have to be able to reach
+your application in order to trigger the callbacks you have set up in your file
+router. This is not possible if your application is running on localhost.
+
+When you're running in development, UploadThing will simulate this callback for
+you so that you can test your application. However, for production we require
+your application to be reachable over the internet. The URL we'll attempt to hit
+is automatically inferred based on the request. There are mainly two reasons why
+your app would not be reachable by the callback:
+
+#### You're testing a production build locally.
+
+In this case, you can use a tool like [ngrok](https://ngrok.com/) or
+[Cloudflare Tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
+to expose your application to the internet. Start the application with the
+`UPLOADTHING_URL` variable set to the tunneled URL.
+
+#### Your app is running behind a reverse proxy such as Nginx.
+
+The automatic URL inference unfortunately breaks for certain reverse proxy
+setups. In this case, set either the
+[`config.callbackUrl`](/api-reference/next#config-object) when you're creating
+the server entrypoints or the `UPLOADTHING_URL` environment variable to the
+public URL of your application.
+
+You will get a warning in the console if we detect a localhost URL is being used
+as the callback URL in production.

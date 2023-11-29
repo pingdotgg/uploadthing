@@ -4,6 +4,7 @@ import {
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
+import { getFullApiUrl } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
@@ -282,38 +283,4 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
-// Returns a full URL to the dev's uploadthing endpoint
-export function getFullApiUrl(maybeUrl?: string): URL {
-  const base = (() => {
-    if (typeof window !== "undefined") {
-      return window.location.origin;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
-      return `https://${process.env.VERCEL_URL}`;
-    }
-
-    // @ts-expect-error - import meta is not defined in node
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (import.meta.env?.VERCEL_URL) {
-      // @ts-expect-error - import meta is not defined in node
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      return `https://${import.meta.env.VERCEL_URL}`;
-    }
-
-    return "http://localhost:3000";
-  })();
-
-  try {
-    const url = new URL(maybeUrl ?? "/api/uploadthing", base);
-    if (url.pathname === "/") {
-      url.pathname = "/api/uploadthing";
-    }
-    return url;
-  } catch (err) {
-    throw new Error(
-      `Failed to parse '${maybeUrl}' as a URL. Make sure it's a valid URL or path`,
-    );
-  }
-}
+export { getFullApiUrl };
