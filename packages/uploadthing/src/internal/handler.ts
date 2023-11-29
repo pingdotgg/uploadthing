@@ -213,14 +213,28 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
       }
 
+      console.log(
+        "[UT] Received callback from uploadthing:",
+        new Date().toISOString(),
+      );
       const res = (await uploadable.resolver({
         file: maybeReqBody.file,
         metadata: maybeReqBody.metadata,
       })) as unknown;
+      console.log(`[UT] ${new Date().toISOString()} - Callback finished`);
+      console.log(
+        `[UT] ${new Date().toISOString()} - Sending acknowledgement to UT:`,
+      );
       await utFetch("/api/serverCallback", {
         fileKey: maybeReqBody.file.key,
         callbackData: res ?? null,
-      });
+      }).then((res) =>
+        console.log(
+          `[UT] ${new Date().toISOString()} - Acknowledgement sent, got back response ${
+            res.status
+          } - ${res.statusText}:`,
+        ),
+      );
 
       return { status: 200 };
     }
