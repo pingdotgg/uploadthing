@@ -347,23 +347,22 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           process.env.NODE_ENV === "production" &&
           callbackUrl.host.includes("localhost")
         ) {
-          console.warn(
-            [
-              "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
-              "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
-            ].join(" "),
-          );
-          const attemptToParseThroughHeaders =
+          const attemptToParseThroughHeaders = (
             getHeader(req, "origin") ??
             getHeader(req, "referer") ??
-            getHeader(req, "host");
-          if (attemptToParseThroughHeaders) {
-            callbackUrl = getFullApiUrl(
-              attemptToParseThroughHeaders.toString(),
-            );
-            console.log(
-              "[UT] [INFO] Falled back to parsing callback url from headers:",
-              callbackUrl.href,
+            getHeader(req, "host")
+          )?.toString();
+          if (
+            attemptToParseThroughHeaders &&
+            !attemptToParseThroughHeaders.includes("localhost")
+          ) {
+            callbackUrl = getFullApiUrl(attemptToParseThroughHeaders);
+          } else {
+            console.warn(
+              [
+                "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
+                "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
+              ].join(" "),
             );
           }
         }
