@@ -353,6 +353,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
               "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
             ].join(" "),
           );
+          const attemptToParseThroughHeaders =
+            getHeader(req, "origin") ??
+            getHeader(req, "referer") ??
+            getHeader(req, "host");
+          if (attemptToParseThroughHeaders) {
+            console.log(
+              "[UT] [INFO] Falled back to parsing callback url from headers:",
+              callbackUrl.href,
+            );
+            callbackUrl = getFullApiUrl(
+              attemptToParseThroughHeaders.toString(),
+            );
+          }
         }
 
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
