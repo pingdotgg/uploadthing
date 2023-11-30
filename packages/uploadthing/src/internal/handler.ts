@@ -358,12 +358,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             getHeader(req, "referer") ??
             getHeader(req, "host");
           if (attemptToParseThroughHeaders) {
+            callbackUrl = getFullApiUrl(
+              attemptToParseThroughHeaders.toString(),
+            );
             console.log(
               "[UT] [INFO] Falled back to parsing callback url from headers:",
               callbackUrl.href,
-            );
-            callbackUrl = getFullApiUrl(
-              attemptToParseThroughHeaders.toString(),
             );
           }
         }
