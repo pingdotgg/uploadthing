@@ -336,24 +336,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        let callbackUrl = url;
-        if (config?.callbackUrl) {
-          callbackUrl = getFullApiUrl(config.callbackUrl);
-        } else if (process.env.UPLOADTHING_URL) {
-          callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
-        }
-
-        if (
-          process.env.NODE_ENV === "production" &&
-          callbackUrl.host.includes("localhost")
-        ) {
-          console.warn(
-            [
-              "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
-              "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
-            ].join(" "),
-          );
-        }
+        const callbackUrl = resolveCallbackUrl({ config, req, url });
 
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
           files: files,
@@ -487,6 +470,55 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     }
   };
 };
+
+function resolveCallbackUrl(opts: {
+  config: RouterWithConfig<FileRouter>["config"];
+  req: RequestLike;
+  url: URL;
+}): URL {
+  let callbackUrl = opts.url;
+  if (opts.config?.callbackUrl) {
+    callbackUrl = getFullApiUrl(opts.config.callbackUrl);
+  } else if (process.env.UPLOADTHING_URL) {
+    callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
+  }
+
+  if (
+    process.env.NODE_ENV !== "production" ||
+    !callbackUrl.host.includes("localhost")
+  ) {
+    return callbackUrl;
+  }
+
+  // Production builds have to have a public URL so UT can send webhook
+  // Parse the URL from the headers
+  let parsedFromHeaders = (
+    getHeader(opts.req, "origin") ??
+    getHeader(opts.req, "referer") ??
+    getHeader(opts.req, "host") ??
+    getHeader(opts.req, "x-forwarded-host")
+  )?.toString();
+
+  if (parsedFromHeaders && !parsedFromHeaders.includes("http")) {
+    parsedFromHeaders =
+      (getHeader(opts.req, "x-forwarded-proto") ?? "https").toString() +
+      "://" +
+      parsedFromHeaders;
+  }
+
+  if (!parsedFromHeaders || parsedFromHeaders.includes("localhost")) {
+    // Didn't find a valid URL in the headers, log a warning and use the original url anyway
+    console.warn(
+      [
+        "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
+        "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
+      ].join(" "),
+    );
+    return callbackUrl;
+  }
+
+  return getFullApiUrl(parsedFromHeaders);
+}
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
