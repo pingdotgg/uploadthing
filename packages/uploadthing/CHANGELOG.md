@@ -1,5 +1,20 @@
 # uploadthing
 
+## 6.0.4
+
+### Patch Changes
+
+- [#500](https://github.com/pingdotgg/uploadthing/pull/500)
+  [`ee0becf`](https://github.com/pingdotgg/uploadthing/commit/ee0becf4651651df152cb11f3c1f83c8da5b2c37)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: fallback
+  to header parsing of url if req.url is localhost
+
+- [#507](https://github.com/pingdotgg/uploadthing/pull/507)
+  [`36fb923`](https://github.com/pingdotgg/uploadthing/commit/36fb923a9bc1eebd169d5c79d1e732b2b6374e2f)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(upload):
+  URI encode filenames in content-disposition header to handle non-standard
+  characters
+
 ## 6.0.3
 
 ### Patch Changes
