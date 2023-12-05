@@ -63,7 +63,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -94,7 +94,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: ^6.0.3
+        specifier: ^6.0.4
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client:
@@ -109,7 +109,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: ^6.0.3
+        specifier: ^6.0.4
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -158,7 +158,7 @@ importers:
         specifier: ^1.5.5
         version: 1.5.5
       uploadthing:
-        specifier: ^6.0.3
+        specifier: ^6.0.4
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/cors':
@@ -189,7 +189,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -251,7 +251,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -294,7 +294,7 @@ importers:
         specifier: ^5.20.0
         version: 5.23.0
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.3
@@ -343,7 +343,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.3
@@ -401,7 +401,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.3
@@ -462,7 +462,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.3
@@ -532,7 +532,7 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.3
@@ -593,7 +593,7 @@ importers:
         specifier: ^10.1.5
         version: 10.1.5(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -621,7 +621,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -652,7 +652,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -832,7 +832,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -902,7 +902,7 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
       uploadthing:
-        specifier: 6.0.3
+        specifier: 6.0.4
         version: link:../uploadthing
       wait-on:
         specifier: ^7.0.1
