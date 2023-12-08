@@ -430,7 +430,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             uploadthingApiResponse,
           );
           return new UploadThingError({
-            code: "URL_GENERATION_FAILED",
+            code: "INTERNAL_SERVER_ERROR",
             message: "Unable to mark upload as failed",
             cause: parsedResponse,
           });
