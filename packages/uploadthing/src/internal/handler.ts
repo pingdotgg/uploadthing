@@ -431,7 +431,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           );
           return new UploadThingError({
             code: "URL_GENERATION_FAILED",
-            message: "Unable to get presigned urls",
+            message: "Unable to mark upload as failed",
             cause: parsedResponse,
           });
         }
