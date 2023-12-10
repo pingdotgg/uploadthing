@@ -430,8 +430,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             uploadthingApiResponse,
           );
           return new UploadThingError({
-            code: "URL_GENERATION_FAILED",
-            message: "Unable to get presigned urls",
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Unable to mark upload as failed",
             cause: parsedResponse,
           });
         }
