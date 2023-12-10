@@ -148,6 +148,7 @@ export const DANGEROUS__uploadFiles = async <
     let uploadedBytes = 0;
 
     let etags: { tag: string; partNumber: number }[];
+    opts.onUploadBegin?.({ file: file.name });
     try {
       etags = await Promise.all(
         presignedUrls.map(async (url, index) => {
