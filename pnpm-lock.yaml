@@ -64,7 +64,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/react':
         specifier: 18.2.33
@@ -95,7 +95,7 @@ importers:
         version: 5.2.2
       uploadthing:
         specifier: ^5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
 
   examples/backend-adapters/client:
     dependencies:
@@ -110,7 +110,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: ^5.7.4
-        version: link:../../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/react':
         specifier: 18.2.33
@@ -159,7 +159,7 @@ importers:
         version: 1.5.5
       uploadthing:
         specifier: ^5.7.4
-        version: link:../../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/cors':
         specifier: ^2.8.14
@@ -190,7 +190,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -252,7 +252,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -295,7 +295,7 @@ importers:
         version: 5.27.2
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -328,8 +328,8 @@ importers:
         specifier: 5.1.0
         version: link:../../packages/vue
       uploadthing:
-        specifier: 5.6.1
-        version: 5.6.1
+        specifier: '*'
+        version: link:../../packages/uploadthing
       zod:
         specifier: ^3.21.4
         version: 3.22.4
@@ -378,7 +378,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -436,7 +436,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -497,7 +497,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -567,7 +567,7 @@ importers:
         version: 2.2.4(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -628,7 +628,7 @@ importers:
         version: 10.1.8(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -656,7 +656,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -687,7 +687,7 @@ importers:
         version: 18.2.0(react@18.2.0)
       uploadthing:
         specifier: 5.7.4
-        version: link:../../packages/uploadthing
+        version: 5.7.4
     devDependencies:
       '@types/node':
         specifier: 18.16.0
@@ -866,7 +866,7 @@ importers:
         specifier: ^5.1.6
         version: 5.2.2
       uploadthing:
-        specifier: 5.7.4
+        specifier: '*'
         version: link:../uploadthing
       vitest:
         specifier: ^0.30.1
@@ -942,7 +942,7 @@ importers:
         specifier: ^5.1.6
         version: 5.2.2
       uploadthing:
-        specifier: 5.7.4
+        specifier: '*'
         version: link:../uploadthing
       wait-on:
         specifier: ^7.0.1
@@ -1011,6 +1011,9 @@ importers:
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
+      vue:
+        specifier: ^3.3.8
+        version: 3.3.8(typescript@5.2.2)
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -1029,6 +1032,9 @@ importers:
       file-selector:
         specifier: ^0.6.0
         version: 0.6.0
+      tailwind-merge:
+        specifier: ^2.0.0
+        version: 2.0.0
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: 4.2.3
@@ -4195,6 +4201,7 @@ packages:
     dependencies:
       is-glob: 4.0.3
       micromatch: 4.0.5
+      napi-wasm: 1.1.0
     bundledDependencies:
       - napi-wasm
 
@@ -12110,6 +12117,9 @@ packages:
     resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
     dev: false
 
+  /napi-wasm@1.1.0:
+    resolution: {integrity: sha512-lHwIAJbmLSjF9VDRm9GoVOy9AGp3aIvkjv+Kvz9h16QR3uSVYH78PNQUnT2U4X53mhlnV2M7wrhibQ3GHicDmg==}
+
   /natural-compare@1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
 
@@ -15502,6 +15512,12 @@ packages:
     resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
     dev: false
 
+  /tailwind-merge@2.0.0:
+    resolution: {integrity: sha512-WO8qghn9yhsldLSg80au+3/gY9E4hFxIvQ3qOmlpXnqpDKoMruKfi/56BbbMg6fHTQJ9QD3cc79PoWqlaQE4rw==}
+    dependencies:
+      '@babel/runtime': 7.23.2
+    dev: false
+
   /tailwindcss@3.3.5:
     resolution: {integrity: sha512-5SEZU4J7pxZgSkv7FP1zY8i2TIAOooNZ1e/OGtxIEv6GltpoiXUqWvLy89+a10qYTB1N5Ifkuw9lqQkN9sscvA==}
     engines: {node: '>=14.0.0'}
@@ -16473,8 +16489,9 @@ packages:
       escalade: 3.1.1
       picocolors: 1.0.0
 
-  /uploadthing@5.6.1:
-    resolution: {integrity: sha512-lWVMCoAmZ33mahV6NS7oW+eQl++jnYEuaR3zh9PlrEt6P8lkl3GPDUE5iWywBx+pK9HewIqZvaZXQvzKOjOlMg==}
+  /uploadthing@5.7.4:
+    resolution: {integrity: sha512-8pTPznWTUlvWRxwWME2Eo6A1VcpvjskRcxzx7aQ45yPjh1yVFZ9RUKG1sjBTNSJCArMdbeg5wlhJT5S2XGr/8Q==}
+    engines: {node: '>=18.13.0'}
     dependencies:
       '@uploadthing/mime-types': 0.2.2
       '@uploadthing/shared': 5.2.7(@uploadthing/mime-types@0.2.2)
