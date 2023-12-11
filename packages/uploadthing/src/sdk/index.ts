@@ -254,7 +254,7 @@ export class UTApi {
       }[];
     }>(
       "/api/listFiles",
-      { ...opts },
+      opts,
       "An unknown error occured while listing files.",
     );
 
