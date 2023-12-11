@@ -1,3 +1,5 @@
+import * as process from "node:process";
+
 import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,

@@ -1,3 +1,5 @@
+import * as process from "node:process";
+
 export function incompatibleNodeGuard() {
   if (typeof process === "undefined") return;
 

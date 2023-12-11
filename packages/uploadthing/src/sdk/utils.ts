@@ -1,3 +1,4 @@
+import * as process from "node:process";
 import type { File as UndiciFile } from "undici";
 
 import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
