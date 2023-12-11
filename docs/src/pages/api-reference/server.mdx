@@ -368,9 +368,9 @@ type ListFilesOptions = {
 };
 ```
 
-| Arguments | Type             | Required | Notes             | Description                                                     |
-| :-------- | :--------------- | :------- | :---------------- | :-------------------------------------------------------------- |
-| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files will be returned |
+| Arguments | Type             | Required | Notes             | Description                                                                   |
+| :-------- | :--------------- | :------- | :---------------- | :---------------------------------------------------------------------------- |
+| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files (up to 100k) will be returned. |
 
 ```ts
 import { utapi } from "~/server/uploadthing.ts";

@@ -252,11 +252,7 @@ export class UTApi {
         id: string;
         status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
       }[];
-    }>(
-      "/api/listFiles",
-      opts,
-      "An unknown error occured while listing files.",
-    );
+    }>("/api/listFiles", opts, "An unknown error occured while listing files.");
 
     return json.files;
   }
