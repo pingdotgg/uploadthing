@@ -240,7 +240,7 @@ export class UTApi {
    * @param {number} opts.offset The number of files to skip
    *
    * @example
-   * const data = await listFiles();
+   * const data = await listFiles({ limit: 1 });
    * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
    */
   async listFiles(opts: { limit?: number; offset?: number }) {
