@@ -357,9 +357,20 @@ const multipleUrls = await utapi.getFileUrls([
 
 > Added in `v5.3`
 
-`listFiles` takes no input and returns an array of objects containing file ids
-and keys for all files that have been uploaded to the application your API key
-corresponds to.
+`listFiles` returns an array of objects containing file ids and keys for all
+files that have been uploaded to the application your API key corresponds to. As
+of 6.0.5, you can optionally pass an `options` object to paginate the results
+
+```ts
+type ListFilesOptions = {
+  limit?: number; // The maximum number of files to return
+  offset?: number; // The number of files to skip
+};
+```
+
+| Arguments | Type             | Required | Notes             | Description                                                                   |
+| :-------- | :--------------- | :------- | :---------------- | :---------------------------------------------------------------------------- |
+| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files (up to 100k) will be returned. |
 
 ```ts
 import { utapi } from "~/server/uploadthing.ts";

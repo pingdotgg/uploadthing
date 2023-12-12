@@ -235,22 +235,24 @@ export class UTApi {
 
   /**
    * Request file list from UploadThing storage.
+   * @param {object} opts
+   * @param {number} opts.limit The maximum number of files to return
+   * @param {number} opts.offset The number of files to skip
    *
    * @example
-   * const data = await listFiles();
+   * const data = await listFiles({ limit: 1 });
    * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
    */
-  async listFiles() {
+  async listFiles(opts: { limit?: number; offset?: number }) {
     guardServerOnly();
 
-    // TODO: Implement filtering and pagination
     const json = await this.requestUploadThing<{
       files: {
         key: string;
         id: string;
         status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
       }[];
-    }>("/api/listFiles", {}, "An unknown error occured while listing files.");
+    }>("/api/listFiles", opts, "An unknown error occured while listing files.");
 
     return json.files;
   }
