@@ -87,6 +87,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
+    isDev?: boolean;
   };
 };
 
@@ -123,7 +124,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
-    if (process.env.NODE_ENV === "development") {
+    const isDev = opts.config?.isDev ?? process.env.NODE_ENV === "development";
+    if (isDev) {
       console.log("[UT] UploadThing dev server is now running!");
     }
 
@@ -336,7 +338,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const callbackUrl = resolveCallbackUrl({ config, req, url });
+        const callbackUrl = resolveCallbackUrl({ config, req, url, isDev });
 
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
           files: files,
@@ -364,11 +366,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         // This is when we send the response back to the user's form so they can submit the files
 
-        if (process.env.NODE_ENV === "development") {
+        if (isDev) {
           for (const file of parsedResponse) {
             void conditionalDevServer({
               fileKey: file.key,
               apiKey: preferredOrEnvSecret,
+              isDev,
             });
           }
         }
@@ -475,6 +478,7 @@ function resolveCallbackUrl(opts: {
   config: RouterWithConfig<FileRouter>["config"];
   req: RequestLike;
   url: URL;
+  isDev: boolean;
 }): URL {
   let callbackUrl = opts.url;
   if (opts.config?.callbackUrl) {
@@ -483,10 +487,7 @@ function resolveCallbackUrl(opts: {
     callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
   }
 
-  if (
-    process.env.NODE_ENV !== "production" ||
-    !callbackUrl.host.includes("localhost")
-  ) {
+  if (opts.isDev || !callbackUrl.host.includes("localhost")) {
     return callbackUrl;
   }
 

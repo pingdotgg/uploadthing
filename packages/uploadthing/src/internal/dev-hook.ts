@@ -18,8 +18,9 @@ const isValidResponse = (response: Response) => {
 export const conditionalDevServer = async (opts: {
   fileKey: string;
   apiKey: string;
+  isDev: boolean;
 }) => {
-  if (process.env.NODE_ENV !== "development") return;
+  if (!opts.isDev) return;
 
   const fileData = await pollForFileData(
     {
