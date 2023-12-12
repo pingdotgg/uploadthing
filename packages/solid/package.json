@@ -99,7 +99,7 @@
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "^5.1.6",
-    "uploadthing": "6.0.4",
+    "uploadthing": "6.1.0",
     "wait-on": "^7.0.1"
   },
   "peerDependencies": {

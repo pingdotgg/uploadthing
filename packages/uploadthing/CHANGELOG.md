@@ -1,5 +1,26 @@
 # uploadthing
 
+## 6.1.0
+
+### Minor Changes
+
+- [#512](https://github.com/pingdotgg/uploadthing/pull/512)
+  [`216649e`](https://github.com/pingdotgg/uploadthing/commit/216649e77be44969dbece45f37c614769223fe66)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat(utapi):
+  Add pagination to listFiles
+
+### Patch Changes
+
+- [#509](https://github.com/pingdotgg/uploadthing/pull/509)
+  [`66360b4`](https://github.com/pingdotgg/uploadthing/commit/66360b4b8f6da771d3fd752e17e65f0792db54ca)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(errors):
+  Correct error returned if unable to mark upload as failed
+
+- [#511](https://github.com/pingdotgg/uploadthing/pull/511)
+  [`0f28a51`](https://github.com/pingdotgg/uploadthing/commit/0f28a51dd7bccdba13fc11b3031642b3aaa9e59f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: call
+  onUploadBegin before starting to upload any parts
+
 ## 6.0.4
 
 ### Patch Changes
