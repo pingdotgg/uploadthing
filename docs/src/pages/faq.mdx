@@ -10,7 +10,7 @@ import "@uploadthing/react/styles.css";
 
 ### Some of my other components look weird now... what's up with that?
 
-You may need to check the order of imports. Making sure that the uploadthing
+You may need to check the order of imports. Make sure that the uploadthing
 component styles are imported before others usually does the trick
 
 ```tsx
@@ -25,7 +25,7 @@ endpoint. Almost every time we've seen someone who has this issue, it's because
 their `middleware.ts` is configured incorrectly.
 
 Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
-serves as both a validation endpoint from client AND a webhook for the
+serves as both a validation endpoint from the client AND a webhook for the
 `onUploadComplete` calls.
 
 ### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
@@ -53,13 +53,13 @@ partial inference in TypeScript.
 
 ### My callback runs in development but not in production
 
-In order for UploadThing to work, our external server have to be able to reach
-your application in order to trigger the callbacks you have set up in your file
+For UploadThing to work, our external server has to be able to reach
+your application to trigger the callbacks you have set up in your file
 router. This is not possible if your application is running on localhost.
 
 When you're running in development, UploadThing will simulate this callback for
-you so that you can test your application. However, for production we require
-your application to be reachable over the internet. The URL we'll attempt to hit
+you so that you can test your application. However, for production, we require
+your application to be reachable over the Internet. The URL we'll attempt to hit
 is automatically inferred based on the request. There are mainly two reasons why
 your app would not be reachable by the callback:
 
