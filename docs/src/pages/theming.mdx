@@ -12,11 +12,17 @@ Simplified component structure:
 
 ```tsx
 <div className={className} data-state={}>
-  <label data-ut-element="button" data-state={/* "ready" | "readying" | "uploading" */}>
+  <label
+    data-ut-element="button"
+    data-state={/* "ready" | "readying" | "uploading" */}
+  >
     <input />
     /button content goes here/
   </label>
-  <div data-ut-element="allowed-content" data-state={/* "ready" | "readying" | "uploading" */}>
+  <div
+    data-ut-element="allowed-content"
+    data-state={/* "ready" | "readying" | "uploading" */}
+  >
     /allowed content text goes here/
   </div>
 </div>
@@ -68,14 +74,14 @@ Simplified component structure:
 ```
 
 <Callout type="info">
-  UploadDropzone consists of five themeable elements: `container`, `upload icon`,
-  `label`, `button`, and `allowed content`.
+  UploadDropzone consists of five themeable elements: `container`, `upload
+  icon`, `label`, `button`, and `allowed content`.
 </Callout>
 
 <Callout type="warning">
   Note: While in UploadButton the button element is defined using `label`, in
-  UploadDropzone it is defined using the `button`. As an abstraction layer, the button
-  element in these two components have a special data attribute applied:
+  UploadDropzone it is defined using the `button`. As an abstraction layer, the
+  button element in these two components have a special data attribute applied:
   `data-ut-element="button"`.
 </Callout>
 
