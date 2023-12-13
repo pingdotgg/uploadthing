@@ -23,7 +23,7 @@ Simplified component structure:
 ```
 
 <Callout type="info">
-  UploadButton consists of three themable elements: `container`, `button` and
+  UploadButton consists of three themeable elements: `container`, `button`, and
   `allowed content`.
 </Callout>
 
@@ -68,14 +68,14 @@ Simplified component structure:
 ```
 
 <Callout type="info">
-  UploadDropzone consists of five themable elements: `container`, `upload icon`,
-  `label`, `button` and `allowed content`.
+  UploadDropzone consists of five themeable elements: `container`, `upload icon`,
+  `label`, `button`, and `allowed content`.
 </Callout>
 
 <Callout type="warning">
   Note: While in UploadButton the button element is defined using `label`, in
-  UploadDropzone it is defined using `button`. As an abstraction layer, button
-  element in these two components have special data attribute applied:
+  UploadDropzone it is defined using `button`. As an abstraction layer, the button
+  element in these two components have a special data attribute applied:
   `data-ut-element="button"`.
 </Callout>
 
@@ -91,15 +91,15 @@ Simplified component structure:
 
 ### `className`
 
-Both UploadButton and UploadDropzone accepts a `className` prop. It allows you
+Both UploadButton and UploadDropzone accept a `className` prop. It allows you
 to pass any additional classes to the component. All classes that are being
 passed through this prop are going to be applied to the outermost element -
 `container`.
 
 ### `appearance`
 
-Both `UploadButton` and `UploadDropzone` accepts an `appearance` prop. It
-accepts an object with keys that correspond to elements of component. The
+Both `UploadButton` and `UploadDropzone` accept an `appearance` prop. It
+accepts an object with keys that correspond to elements of a component. The
 interfaces for the `appearance` prop for `UploadButton` and `UploadDropzone`
 are:
 
@@ -168,10 +168,10 @@ Tailwind config with our utility function `withUt`. This utility function adds
 additional classes and variants used to style our components.
 
 In addition, it also automatically sets the `content` option to include all the
-necessary classes that the components uses. This allows you to avoid having
+necessary classes that the components use. This allows you to avoid having
 duplicated styles in your bundle. Therefore, when using `withUt`, you should not
 import our stylesheet into your app. If you choose not to use `withUt`, you have
-to import default stylesheet to make components look right.
+to import the default stylesheet to make the components look right.
 
 ```ts filename="tailwind.config.ts"
 import { withUt } from "uploadthing/tw";
@@ -238,7 +238,7 @@ component match your design in the exact way you want.
 <UploadButton
     className="mt-4 ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50"
                |    └─ applied to button └─ applied to button when readying
-               └─ applied to container
+               └─ applied to the container
 />
 ```
 
@@ -266,7 +266,7 @@ component match your design in the exact way you want.
     className="bg-slate-800 ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300"
                |            |                └─ applied to allowed content when uploading
                |            └─ applied to label
-               └─ applied to container
+               └─ applied to the container
 
 />
 ```
@@ -350,7 +350,7 @@ component.
 
 `className` prop accepts any classes so you can pass there anything you like.
 When it comes to custom classes, you can use `data` attributes to target
-specific elements of component.
+specific elements of components.
 
 ```jsx
 <UploadButton className="custom-class" />
@@ -431,8 +431,8 @@ specific elements of component.
 
 #### `appearance` prop
 
-If you need, you can pass classes directly to specific elements of component or
-provide a callback that will be called with current state of the component and
+If you need, you can pass classes directly to specific elements of components or
+provide a callback that will be called with the current state of the component and
 will return a string
 
 ```jsx
@@ -553,7 +553,7 @@ will return a string
 #### `appearance` prop
 
 If you need, you can pass inline styles directly to specific elements of
-component or provide a callback that will be called with current state of the
+component or provide a callback that will be called with the current state of the
 component and will return a `CSSProperties` object
 
 ```jsx
@@ -651,8 +651,8 @@ component and will return a `CSSProperties` object
 
 ## Content customisation
 
-To customise content of `UploadButton` and `UploadDropzone`, you can use the
-`content` prop that accepts an object with following shape:
+To customise the content of `UploadButton` and `UploadDropzone`, you can use the
+`content` prop that accepts an object with the following shape:
 
 > `ReactNode` in the type definitions below will be the equivalent depending on
 > the framework you use, e.g. `JSX.Element` in Solid.js.
