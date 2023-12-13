@@ -25,7 +25,7 @@ endpoint. Almost every time we've seen someone who has this issue, it's because
 their `middleware.ts` is configured incorrectly.
 
 Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
-serves as both a validation endpoint from the client AND a webhook for the
+serves as both a validation endpoint for the client AND a webhook for the
 `onUploadComplete` calls.
 
 ### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
