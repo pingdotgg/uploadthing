@@ -80,3 +80,26 @@ public URL of your application.
 
 You will get a warning in the console if we detect a localhost URL is being used
 as the callback URL in production.
+
+### My callback runs in development and production, but not in Vercel preview deployments
+
+By default, Vercel projects are configured to require authentication to access
+preview deployments. This means that our external server cannot access your
+application to trigger the callbacks you have set up in your file router.
+
+To fix, this you can either disable this setting in your Vercel project, or--if
+you are paying for Advanced Deployment Protection--set a
+[custom header](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
+in the uploadthing dashboard that will allow uploadthing callbacks to bypass the
+authentication.
+
+#### Configuring a custom header in the uploadthing dashboard
+
+1. Go to your project's dashboard on uploadthing.com
+2. Navigate to the "Settings" tab
+3. Click on "Advanced Settings"
+4. Click on the "Add Header" button
+5. Enter the header name and value
+6. Click "Save Changes"
+
+![Screenshot of the uploadthing dashboard showing the "Add Header" button](/add-header-settings.png)
