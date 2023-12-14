@@ -68,14 +68,14 @@ Simplified component structure:
 ```
 
 <Callout type="info">
-  UploadDropzone consists of five themeable elements: `container`, `upload icon`,
-  `label`, `button`, and `allowed content`.
+  UploadDropzone consists of five themeable elements: `container`, `upload
+  icon`, `label`, `button`, and `allowed content`.
 </Callout>
 
 <Callout type="warning">
   Note: While in UploadButton the button element is defined using `label`, in
-  UploadDropzone it is defined using `button`. As an abstraction layer, the button
-  element in these two components has a special data attribute applied:
+  UploadDropzone it is defined using `button`. As an abstraction layer, the
+  button element in these two components has a special data attribute applied:
   `data-ut-element="button"`.
 </Callout>
 
@@ -91,17 +91,16 @@ Simplified component structure:
 
 ### `className`
 
-Both UploadButton and UploadDropzone accept a `className` prop. It allows you
-to pass any additional classes to the component. All classes that are being
-passed through this prop are going to be applied to the outermost element -
+Both UploadButton and UploadDropzone accept a `className` prop. It allows you to
+pass any additional classes to the component. All classes that are being passed
+through this prop are going to be applied to the outermost element -
 `container`.
 
 ### `appearance`
 
-Both `UploadButton` and `UploadDropzone` accept an `appearance` prop. It
-accepts an object with keys that correspond to elements of a component. The
-interfaces for the `appearance` prop for `UploadButton` and `UploadDropzone`
-are:
+Both `UploadButton` and `UploadDropzone` accept an `appearance` prop. It accepts
+an object with keys that correspond to elements of a component. The interfaces
+for the `appearance` prop for `UploadButton` and `UploadDropzone` are:
 
 ```ts
 type StyleField =
@@ -432,8 +431,8 @@ specific elements of components.
 #### `appearance` prop
 
 If you need, you can pass classes directly to specific elements of components or
-provide a callback that will be called with the current state of the component and
-will return a string
+provide a callback that will be called with the current state of the component
+and will return a string
 
 ```jsx
 <UploadButton
@@ -553,8 +552,8 @@ will return a string
 #### `appearance` prop
 
 If you need, you can pass inline styles directly to specific elements of
-component or provide a callback that will be called with the current state of the
-component and will return a `CSSProperties` object
+component or provide a callback that will be called with the current state of
+the component and will return a `CSSProperties` object
 
 ```jsx
 <UploadButton
