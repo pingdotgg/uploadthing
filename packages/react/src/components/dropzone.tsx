@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+import type { FileWithPath } from "@uploadthing/dropzone/react";
+import { useDropzone } from "@uploadthing/dropzone/react";
 import {
   allowedContentTextLabelGenerator,
   classNames,
@@ -15,8 +17,6 @@ import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
-import type { FileWithPath } from "../use-dropzone";
-import { useDropzone } from "../use-dropzone";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
 

@@ -1,0 +1,349 @@
+/**
+ * This is a forked version of the react-dropzone package.
+ * See original source here: https://github.com/react-dropzone/react-dropzone
+ * The original package is licensed under the MIT license.
+ */
+
+import type {
+  ChangeEvent,
+  DragEvent,
+  HTMLProps,
+  KeyboardEvent,
+  MouseEvent,
+} from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { fromEvent } from "file-selector";
+
+import {
+  acceptPropAsAcceptAttr,
+  allFilesAccepted,
+  initialState,
+  isEnterOrSpace,
+  isEventWithFiles,
+  isFileAccepted,
+  isIeOrEdge,
+  isValidQuantity,
+  isValidSize,
+  noop,
+  reducer,
+} from "./core";
+import type { DropzoneOptions } from "./types";
+
+export type * from "./types";
+
+export type DropEvent =
+  | Event
+  | React.DragEvent<HTMLElement>
+  | React.ChangeEvent<HTMLElement>;
+
+/**
+ * A React hook that creates a drag 'n' drop area.
+ *
+ * ### Example
+ *
+ * ```tsx
+ * function MyDropzone() {
+ *   const { getRootProps, getInputProps } = useDropzone({
+ *     onDrop: acceptedFiles => {
+ *       // do something with the File objects, e.g. upload to some server
+ *     }
+ *   });
+ *
+ *   return (
+ *     <div {...getRootProps()}>
+ *       <input {...getInputProps()} />
+ *       <p>Drag and drop some files here, or click to select files</p>
+ *     </div>
+ *   )
+ * }
+ * ```
+ */
+export function useDropzone({
+  accept,
+  disabled = false,
+  maxSize = Number.POSITIVE_INFINITY,
+  minSize = 0,
+  multiple = true,
+  maxFiles = 0,
+  onDrop,
+}: DropzoneOptions) {
+  const acceptAttr = useMemo(() => acceptPropAsAcceptAttr(accept), [accept]);
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dragTargetsRef = useRef<EventTarget[]>([]);
+
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    // Update file dialog active state when the window is focused on
+    const onWindowFocus = () => {
+      // Execute the timeout only if the file dialog is opened in the browser
+      if (state.isFileDialogActive) {
+        setTimeout(() => {
+          if (inputRef.current) {
+            const { files } = inputRef.current;
+
+            if (!files?.length) {
+              dispatch({ type: "closeDialog" });
+            }
+          }
+        }, 300);
+      }
+    };
+
+    window.addEventListener("focus", onWindowFocus, false);
+    return () => {
+      window.removeEventListener("focus", onWindowFocus, false);
+    };
+  }, [inputRef, state.isFileDialogActive]);
+
+  useEffect(() => {
+    const onDocumentDrop = (event: DropEvent) => {
+      // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
+      if (rootRef.current?.contains(event.target as Node)) return;
+
+      event.preventDefault();
+      dragTargetsRef.current = [];
+    };
+    const onDocumentDragOver = (e: Pick<Event, "preventDefault">) =>
+      e.preventDefault();
+
+    document.addEventListener("dragover", onDocumentDragOver, false);
+    document.addEventListener("drop", onDocumentDrop, false);
+
+    return () => {
+      document.removeEventListener("dragover", onDocumentDragOver);
+      document.removeEventListener("drop", onDocumentDrop);
+    };
+  }, [rootRef]);
+
+  const onDragEnterCb = useCallback(
+    (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      event.persist();
+
+      dragTargetsRef.current = [...dragTargetsRef.current, event.target];
+
+      if (isEventWithFiles(event)) {
+        Promise.resolve(fromEvent(event))
+          .then((files) => {
+            if (event.isPropagationStopped()) return;
+
+            const fileCount = files.length;
+            const isDragAccept =
+              fileCount > 0 &&
+              allFilesAccepted({
+                files: files as File[],
+                accept: acceptAttr!,
+                minSize,
+                maxSize,
+                multiple,
+                maxFiles,
+              });
+            const isDragReject = fileCount > 0 && !isDragAccept;
+
+            dispatch({
+              type: "setDraggedFiles",
+              payload: {
+                isDragAccept,
+                isDragReject,
+                isDragActive: true,
+              },
+            });
+          })
+          .catch(noop);
+      }
+    },
+    [acceptAttr, minSize, maxSize, multiple, maxFiles],
+  );
+
+  const onDragOverCb = useCallback((event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.persist();
+
+    const hasFiles = isEventWithFiles(event);
+    if (hasFiles && event.dataTransfer !== null) {
+      try {
+        event.dataTransfer.dropEffect = "copy";
+      } catch {
+        noop();
+      }
+    }
+
+    return false;
+  }, []);
+
+  const onDragLeaveCb = useCallback(
+    (event: DragEvent<HTMLElement>) => {
+      event.preventDefault();
+      event.persist();
+
+      // Only deactivate once the dropzone and all children have been left
+      const targets = dragTargetsRef.current.filter((target) =>
+        rootRef.current?.contains(target as Node),
+      );
+
+      // Make sure to remove a target present multiple times only once
+      // (Firefox may fire dragenter/dragleave multiple times on the same element)
+      const targetIdx = targets.indexOf(event.target);
+      if (targetIdx !== -1) targets.splice(targetIdx, 1);
+      dragTargetsRef.current = targets;
+      if (targets.length > 0) return;
+
+      dispatch({
+        type: "setDraggedFiles",
+        payload: {
+          isDragActive: false,
+          isDragAccept: false,
+          isDragReject: false,
+        },
+      });
+    },
+    [rootRef],
+  );
+
+  const setFiles = useCallback(
+    (files: File[]) => {
+      const acceptedFiles: File[] = [];
+
+      files.forEach((file) => {
+        const accepted = isFileAccepted(file, acceptAttr!);
+        const sizeMatch = isValidSize(file, minSize, maxSize);
+
+        if (accepted && sizeMatch) {
+          acceptedFiles.push(file);
+        }
+      });
+
+      if (!isValidQuantity(acceptedFiles, multiple, maxFiles)) {
+        acceptedFiles.splice(0);
+      }
+
+      dispatch({
+        type: "setFiles",
+        payload: {
+          acceptedFiles,
+        },
+      });
+
+      onDrop(acceptedFiles);
+    },
+    [dispatch, multiple, acceptAttr, minSize, maxSize, maxFiles, onDrop],
+  );
+
+  const onDropCb = useCallback(
+    (event: ChangeEvent<HTMLElement>) => {
+      event.preventDefault();
+      event.persist();
+
+      dragTargetsRef.current = [];
+
+      if (isEventWithFiles(event)) {
+        Promise.resolve(fromEvent(event))
+          .then((files) => {
+            if (event.isPropagationStopped()) return;
+            setFiles(files as File[]);
+          })
+          .catch(noop);
+      }
+      dispatch({ type: "reset" });
+    },
+    [setFiles],
+  );
+
+  const openFileDialog = useCallback(() => {
+    if (inputRef.current) {
+      dispatch({ type: "openDialog" });
+      inputRef.current.value = "";
+      inputRef.current.click();
+    }
+  }, [dispatch]);
+
+  // Cb to open the file dialog when SPACE/ENTER occurs on the dropzone
+  const onKeyDownCb = useCallback(
+    (event: KeyboardEvent) => {
+      // Ignore keyboard events bubbling up the DOM tree
+      if (!rootRef.current?.isEqualNode(event.target as Node)) return;
+
+      if (isEnterOrSpace(event)) {
+        event.preventDefault();
+        openFileDialog();
+      }
+    },
+    [rootRef, openFileDialog],
+  );
+
+  const onInputElementClick = useCallback(
+    (e: MouseEvent) => e.stopPropagation(),
+    [],
+  );
+
+  // Update focus state for the dropzone
+  const onFocusCb = useCallback(() => dispatch({ type: "focus" }), []);
+  const onBlurCb = useCallback(() => dispatch({ type: "blur" }), []);
+
+  const onClickCb = useCallback(
+    // In IE11/Edge the file-browser dialog is blocking, therefore,
+    // use setTimeout() to ensure React can handle state changes
+    () => (isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog()),
+    [openFileDialog],
+  );
+
+  const getRootProps = useMemo(
+    () => (): HTMLProps<HTMLDivElement> => ({
+      ref: rootRef,
+      role: "presentation",
+      ...(!disabled
+        ? {
+            tabIndex: 0,
+            onKeyDown: onKeyDownCb,
+            onFocus: onFocusCb,
+            onBlur: onBlurCb,
+            onClick: onClickCb,
+            onDragEnter: onDragEnterCb,
+            onDragOver: onDragOverCb,
+            onDragLeave: onDragLeaveCb,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            onDrop: onDropCb as any,
+          }
+        : {}),
+    }),
+    [
+      onKeyDownCb,
+      onFocusCb,
+      onBlurCb,
+      onClickCb,
+      onDragEnterCb,
+      onDragOverCb,
+      onDragLeaveCb,
+      onDropCb,
+      disabled,
+    ],
+  );
+
+  const getInputProps = useMemo(
+    () => (): HTMLProps<HTMLInputElement> => ({
+      ref: inputRef,
+      type: "file",
+      accept: acceptAttr,
+      multiple,
+      tabIndex: -1,
+      ...(!disabled
+        ? {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            onChange: onDropCb as any,
+            onClick: onInputElementClick,
+          }
+        : {}),
+    }),
+    [acceptAttr, multiple, onDropCb, onInputElementClick, disabled],
+  );
+
+  return {
+    ...state,
+    getRootProps,
+    getInputProps,
+    rootRef,
+  };
+}

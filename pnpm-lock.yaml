@@ -753,6 +753,40 @@ importers:
         specifier: 6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
 
+  packages/dropzone:
+    dependencies:
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: ^0.6.0
+        version: 0.6.0
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.33
+        version: 18.2.33
+      '@uploadthing/eslint-config':
+        specifier: 0.2.0
+        version: link:../config/eslint-config
+      '@uploadthing/tsconfig':
+        specifier: 0.1.0
+        version: link:../config/tsconfig
+      '@uploadthing/tsup-config':
+        specifier: 0.1.0
+        version: link:../config/tsup
+      eslint:
+        specifier: ^8.47.0
+        version: 8.47.0
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   packages/mime-types:
     devDependencies:
       '@uploadthing/eslint-config':
@@ -776,6 +810,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@uploadthing/dropzone':
+        specifier: ^0.1.0
+        version: link:../dropzone
       '@uploadthing/shared':
         specifier: ^6.0.2
         version: link:../shared
