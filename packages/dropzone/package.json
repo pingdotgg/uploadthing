@@ -9,6 +9,11 @@
       "import": "./dist/core.mjs",
       "require": "./dist/core.js"
     },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "import": "./dist/solid.mjs",
+      "require": "./dist/solid.js"
+    },
     "./react": {
       "types": "./dist/react.d.ts",
       "import": "./dist/react.mjs",
@@ -46,6 +51,7 @@
     "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",
     "react": "18.2.0",
+    "solid-js": "^1.7.11",
     "tsup": "6.7.0",
     "typescript": "^5.1.6"
   },
