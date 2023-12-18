@@ -59,6 +59,16 @@
     "root": true,
     "extends": [
       "@uploadthing/eslint-config/base"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "src/react.tsx"
+        ],
+        "extends": [
+          "@uploadthing/eslint-config/react"
+        ]
+      }
     ]
   }
 }

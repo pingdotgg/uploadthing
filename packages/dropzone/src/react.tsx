@@ -1,5 +1,6 @@
 /**
- * This is a forked version of the react-dropzone package.
+ * This is a forked version of the react-dropzone package, that's been minified
+ * to suit UploadThing's needs and be easily portable to other frameworks than React.
  * See original source here: https://github.com/react-dropzone/react-dropzone
  * The original package is licensed under the MIT license.
  */
@@ -96,7 +97,7 @@ export function useDropzone({
     return () => {
       window.removeEventListener("focus", onWindowFocus, false);
     };
-  }, [inputRef, state.isFileDialogActive]);
+  }, [state.isFileDialogActive]);
 
   useEffect(() => {
     const onDocumentDrop = (event: DropEvent) => {
@@ -116,9 +117,9 @@ export function useDropzone({
       document.removeEventListener("dragover", onDocumentDragOver);
       document.removeEventListener("drop", onDocumentDrop);
     };
-  }, [rootRef]);
+  }, []);
 
-  const onDragEnterCb = useCallback(
+  const onDragEnter = useCallback(
     (event: DragEvent<HTMLElement>) => {
       event.preventDefault();
       event.persist();
@@ -155,10 +156,10 @@ export function useDropzone({
           .catch(noop);
       }
     },
-    [acceptAttr, minSize, maxSize, multiple, maxFiles],
+    [acceptAttr, maxFiles, maxSize, minSize, multiple],
   );
 
-  const onDragOverCb = useCallback((event: DragEvent<HTMLElement>) => {
+  const onDragOver = useCallback((event: DragEvent<HTMLElement>) => {
     event.preventDefault();
     event.persist();
 
@@ -174,34 +175,31 @@ export function useDropzone({
     return false;
   }, []);
 
-  const onDragLeaveCb = useCallback(
-    (event: DragEvent<HTMLElement>) => {
-      event.preventDefault();
-      event.persist();
+  const onDragLeave = useCallback((event: DragEvent<HTMLElement>) => {
+    event.preventDefault();
+    event.persist();
 
-      // Only deactivate once the dropzone and all children have been left
-      const targets = dragTargetsRef.current.filter((target) =>
-        rootRef.current?.contains(target as Node),
-      );
+    // Only deactivate once the dropzone and all children have been left
+    const targets = dragTargetsRef.current.filter((target) =>
+      rootRef.current?.contains(target as Node),
+    );
 
-      // Make sure to remove a target present multiple times only once
-      // (Firefox may fire dragenter/dragleave multiple times on the same element)
-      const targetIdx = targets.indexOf(event.target);
-      if (targetIdx !== -1) targets.splice(targetIdx, 1);
-      dragTargetsRef.current = targets;
-      if (targets.length > 0) return;
+    // Make sure to remove a target present multiple times only once
+    // (Firefox may fire dragenter/dragleave multiple times on the same element)
+    const targetIdx = targets.indexOf(event.target);
+    if (targetIdx !== -1) targets.splice(targetIdx, 1);
+    dragTargetsRef.current = targets;
+    if (targets.length > 0) return;
 
-      dispatch({
-        type: "setDraggedFiles",
-        payload: {
-          isDragActive: false,
-          isDragAccept: false,
-          isDragReject: false,
-        },
-      });
-    },
-    [rootRef],
-  );
+    dispatch({
+      type: "setDraggedFiles",
+      payload: {
+        isDragActive: false,
+        isDragAccept: false,
+        isDragReject: false,
+      },
+    });
+  }, []);
 
   const setFiles = useCallback(
     (files: File[]) => {
@@ -229,7 +227,7 @@ export function useDropzone({
 
       onDrop(acceptedFiles);
     },
-    [dispatch, multiple, acceptAttr, minSize, maxSize, maxFiles, onDrop],
+    [acceptAttr, maxFiles, maxSize, minSize, multiple, onDrop],
   );
 
   const onDropCb = useCallback(
@@ -258,10 +256,10 @@ export function useDropzone({
       inputRef.current.value = "";
       inputRef.current.click();
     }
-  }, [dispatch]);
+  }, []);
 
   // Cb to open the file dialog when SPACE/ENTER occurs on the dropzone
-  const onKeyDownCb = useCallback(
+  const onKeyDown = useCallback(
     (event: KeyboardEvent) => {
       // Ignore keyboard events bubbling up the DOM tree
       if (!rootRef.current?.isEqualNode(event.target as Node)) return;
@@ -271,24 +269,22 @@ export function useDropzone({
         openFileDialog();
       }
     },
-    [rootRef, openFileDialog],
-  );
-
-  const onInputElementClick = useCallback(
-    (e: MouseEvent) => e.stopPropagation(),
-    [],
-  );
-
-  // Update focus state for the dropzone
-  const onFocusCb = useCallback(() => dispatch({ type: "focus" }), []);
-  const onBlurCb = useCallback(() => dispatch({ type: "blur" }), []);
-
-  const onClickCb = useCallback(
-    // In IE11/Edge the file-browser dialog is blocking, therefore,
-    // use setTimeout() to ensure React can handle state changes
-    () => (isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog()),
     [openFileDialog],
   );
+
+  const onInputElementClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  // Update focus state for the dropzone
+  const onFocus = useCallback(() => dispatch({ type: "focus" }), []);
+  const onBlur = useCallback(() => dispatch({ type: "blur" }), []);
+
+  const onClick = useCallback(() => {
+    // In IE11/Edge the file-browser dialog is blocking, therefore,
+    // use setTimeout() to ensure React can handle state changes
+    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+  }, [openFileDialog]);
 
   const getRootProps = useMemo(
     () => (): HTMLProps<HTMLDivElement> => ({
@@ -297,28 +293,28 @@ export function useDropzone({
       ...(!disabled
         ? {
             tabIndex: 0,
-            onKeyDown: onKeyDownCb,
-            onFocus: onFocusCb,
-            onBlur: onBlurCb,
-            onClick: onClickCb,
-            onDragEnter: onDragEnterCb,
-            onDragOver: onDragOverCb,
-            onDragLeave: onDragLeaveCb,
+            onKeyDown,
+            onFocus,
+            onBlur,
+            onClick,
+            onDragEnter,
+            onDragOver,
+            onDragLeave,
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             onDrop: onDropCb as any,
           }
         : {}),
     }),
     [
-      onKeyDownCb,
-      onFocusCb,
-      onBlurCb,
-      onClickCb,
-      onDragEnterCb,
-      onDragOverCb,
-      onDragLeaveCb,
-      onDropCb,
       disabled,
+      onBlur,
+      onClick,
+      onDragEnter,
+      onDragLeave,
+      onDragOver,
+      onDropCb,
+      onFocus,
+      onKeyDown,
     ],
   );
 
