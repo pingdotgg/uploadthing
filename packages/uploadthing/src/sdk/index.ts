@@ -296,4 +296,23 @@ export class UTApi {
       "An unknown error occured while getting usage info.",
     );
   }
+
+  /** Request a presigned url for a private file(s) */
+  async getPresigned(
+    fileKey: string,
+    opts?: {
+      /** How long the URL will be valid for.
+       * @default app default on UploadThing dashboard
+       */
+      expiresInSeconds?: number;
+    },
+  ) {
+    const json = await this.requestUploadThing<{ url: string }>(
+      "/api/requestFileAccess",
+      { fileKey, expiresIn: opts?.expiresInSeconds },
+      "An unknown error occured while retrieving presigned URLs.",
+    );
+
+    return json.url;
+  }
 }
