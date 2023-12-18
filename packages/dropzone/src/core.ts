@@ -29,13 +29,12 @@ export function isEnterOrSpace(event: { key?: string; keyCode?: number }) {
 
 const isDefined = <T>(v: T | null | undefined): v is T => v != null;
 export function isValidSize(file: File, minSize: number, maxSize: number) {
-  if (isDefined(file.size)) {
-    if (isDefined(minSize) && isDefined(maxSize)) {
-      if (file.size > maxSize) return false;
-      if (file.size < minSize) return false;
-    } else if (isDefined(minSize) && file.size < minSize) return false;
-    else if (isDefined(maxSize) && file.size > maxSize) return false;
+  if (!isDefined(file.size)) return true;
+  if (isDefined(minSize) && isDefined(maxSize)) {
+    return file.size >= minSize && file.size <= maxSize;
   }
+  if (isDefined(minSize) && file.size < minSize) return false;
+  if (isDefined(maxSize) && file.size > maxSize) return false;
   return true;
 }
 
