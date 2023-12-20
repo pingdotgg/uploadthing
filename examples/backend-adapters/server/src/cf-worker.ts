@@ -15,6 +15,9 @@ export default {
     const handlers = createServerHandler({
       router: uploadRouter,
       config: {
+        /**
+         * Since workers doesn't have a global process.env, we need to set the config manually
+         */
         uploadthingSecret: env.UPLOADTHING_SECRET,
         isDev: env.MODE === "development",
         callbackUrl: url.origin + url.pathname,
