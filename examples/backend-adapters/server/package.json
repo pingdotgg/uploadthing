@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "dev:cf": "wrangler dev",
+    "dev:cf": "wrangler dev --port 3000",
     "dev:elysia": "NODE_ENV=development bun run --hot src/elysia.ts",
     "dev:express": "NODE_ENV=development tsx watch src/express.ts",
     "dev:fastify": "NODE_ENV=development tsx watch src/fastify.ts",
@@ -27,6 +27,7 @@
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.17",
     "tsx": "^3.12.7",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "wrangler": "^3.22.1"
   }
 }
