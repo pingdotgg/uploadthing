@@ -168,16 +168,20 @@ export async function pollForFileData(
   },
   callback?: (json: any) => Promise<any>,
 ) {
+  let tries = 0;
   return withExponentialBackoff(async () => {
+    console.log(tries, "Fetching file data from", opts.url);
     const res = await fetch(opts.url, {
       headers: {
         ...(opts.apiKey && { "x-uploadthing-api-key": opts.apiKey }),
         "x-uploadthing-version": opts.sdkVersion,
       },
     });
+    console.log(tries, "Got response", res.status, res.statusText);
     const maybeJson = await safeParseJSON<
       { status: "done"; fileData?: FileData } | { status: "something else" }
     >(res);
+    console.log(tries, "Parsed JSON", maybeJson);
 
     if (maybeJson instanceof Error) {
       console.error(
@@ -186,6 +190,7 @@ export async function pollForFileData(
       return null;
     }
 
+    tries++;
     if (maybeJson.status !== "done") return undefined;
     await callback?.(maybeJson);
 

@@ -8,6 +8,7 @@
     "server"
   ],
   "scripts": {
+    "dev:cf": "concurrently \"npm run -w client dev\" \"npm run -w server dev:cf\"",
     "dev:elysia": "concurrently \"npm run -w client dev\" \"npm run -w server dev:elysia\"",
     "dev:express": "concurrently \"npm run -w client dev\" \"npm run -w server dev:express\"",
     "dev:fastify": "concurrently \"npm run -w client dev\" \"npm run -w server dev:fastify\"",
