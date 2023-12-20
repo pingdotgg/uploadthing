@@ -154,6 +154,7 @@ export const uploadFilesInternal = async (
         url: generateUploadThingURL(`/api/pollUpload/${key}`),
         apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
         sdkVersion: UPLOADTHING_VERSION,
+        fetch: opts.fetch,
       });
 
       return {

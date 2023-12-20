@@ -21,6 +21,10 @@ export default {
         uploadthingSecret: env.UPLOADTHING_SECRET,
         isDev: env.MODE === "development",
         callbackUrl: url.origin + url.pathname,
+        fetch: (url, init) => {
+          console.log("worker fetch", url, init);
+          return fetch(url, init);
+        },
       },
     });
 

@@ -3,6 +3,7 @@ import { lookup } from "@uploadthing/mime-types";
 import type { AllowedFileType } from "./file-types";
 import type {
   ExpandedRouteConfig,
+  FetchEsque,
   FileData,
   FileRouterInputConfig,
   FileRouterInputKey,
@@ -165,19 +166,22 @@ export async function pollForFileData(
     // no apikey => no filedata will be returned, just status
     apiKey: string | null;
     sdkVersion: string;
+    fetch: FetchEsque;
   },
   callback?: (json: any) => Promise<any>,
 ) {
   let tries = 0;
   return withExponentialBackoff(async () => {
     console.log(tries, "Fetching file data from", opts.url);
-    const res = await fetch(opts.url, {
+
+    const res = await opts.fetch(opts.url, {
       headers: {
         ...(opts.apiKey && { "x-uploadthing-api-key": opts.apiKey }),
         "x-uploadthing-version": opts.sdkVersion,
       },
     });
-    console.log(tries, "Got response", res.status, res.statusText);
+
+    console.log(tries, "Got response", res.status);
     const maybeJson = await safeParseJSON<
       { status: "done"; fileData?: FileData } | { status: "something else" }
     >(res);

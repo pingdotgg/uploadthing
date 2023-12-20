@@ -3,11 +3,11 @@ import {
   pollForFileData,
   UploadThingError,
 } from "@uploadthing/shared";
-import type { FileData } from "@uploadthing/shared";
+import type { FetchEsque, FileData, ResponseEsque } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 
-const isValidResponse = (response: Response) => {
+const isValidResponse = (response: ResponseEsque) => {
   if (!response.ok) return false;
   if (response.status >= 400) return false;
   if (!response.headers.has("x-uploadthing-version")) return false;
@@ -19,6 +19,7 @@ export const conditionalDevServer = async (opts: {
   fileKey: string;
   apiKey: string;
   isDev: boolean;
+  fetch: FetchEsque;
 }) => {
   if (!opts.isDev) return;
 
@@ -28,6 +29,7 @@ export const conditionalDevServer = async (opts: {
       url: generateUploadThingURL(`/api/pollUpload/${opts.fileKey}`),
       apiKey: opts.apiKey,
       sdkVersion: UPLOADTHING_VERSION,
+      fetch: opts.fetch,
     },
     async (json: { fileData: FileData }) => {
       const file = json.fileData;
@@ -39,7 +41,7 @@ export const conditionalDevServer = async (opts: {
 
       console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
-      const response = await fetch(callbackUrl, {
+      const response = await opts.fetch(callbackUrl, {
         method: "POST",
         body: JSON.stringify({
           status: "uploaded",

@@ -11,6 +11,7 @@ import {
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
+  FetchEsque,
   FileRouterInputKey,
   Json,
   RequestLike,
@@ -27,9 +28,9 @@ import type { ActionType, FileRouter, UTEvents } from "./types";
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
-const createUTFetch = (apiKey: string) => {
+const createUTFetch = (apiKey: string, opts: { fetch: FetchEsque }) => {
   return async (endpoint: `/${string}`, payload: unknown) => {
-    const response = await fetch(generateUploadThingURL(endpoint), {
+    const response = await opts.fetch(generateUploadThingURL(endpoint), {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -88,6 +89,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
     uploadthingId?: string;
     uploadthingSecret?: string;
     isDev?: boolean;
+    fetch?: FetchEsque;
   };
 };
 
@@ -125,6 +127,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
     const isDev = opts.config?.isDev ?? process.env.NODE_ENV === "development";
+    const fetch = opts.config?.fetch ?? globalThis.fetch;
+
     if (isDev) {
       console.log("[UT] UploadThing dev server is now running!");
     }
@@ -196,7 +200,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const utFetch = createUTFetch(preferredOrEnvSecret);
+    const utFetch = createUTFetch(preferredOrEnvSecret, { fetch });
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
@@ -368,11 +372,14 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         if (isDev) {
           for (const file of parsedResponse) {
-            void conditionalDevServer({
+            conditionalDevServer({
               fileKey: file.key,
               apiKey: preferredOrEnvSecret,
               isDev,
-            });
+              fetch,
+            })
+              .then((res) => console.log("[UT] Dev hook finished", res))
+              .catch((err) => console.log("[UT] Dev hook failed", err));
           }
         }
 
