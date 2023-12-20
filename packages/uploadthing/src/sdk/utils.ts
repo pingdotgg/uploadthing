@@ -1,6 +1,11 @@
 import type { File as UndiciFile } from "undici";
 
-import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
+import type {
+  ACL,
+  ContentDisposition,
+  FetchEsque,
+  Json,
+} from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -54,6 +59,7 @@ export const uploadFilesInternal = async (
     files: FileEsque[];
     metadata: Json;
     contentDisposition: ContentDisposition;
+    acl?: ACL;
   },
   opts: {
     fetch: FetchEsque;
@@ -74,6 +80,7 @@ export const uploadFilesInternal = async (
       files: fileData,
       metadata: data.metadata,
       contentDisposition: data.contentDisposition,
+      acl: data.acl,
     }),
   });
 

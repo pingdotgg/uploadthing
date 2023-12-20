@@ -1,4 +1,5 @@
 import type {
+  ACL,
   ContentDisposition,
   FetchEsque,
   Json,
@@ -93,6 +94,7 @@ export class UTApi {
     opts?: {
       metadata?: Json;
       contentDisposition?: ContentDisposition;
+      acl?: ACL;
     },
   ) {
     guardServerOnly();
@@ -104,6 +106,7 @@ export class UTApi {
         files: filesToUpload,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
       },
       {
         fetch: this.fetch,
@@ -136,6 +139,7 @@ export class UTApi {
     opts?: {
       metadata: Json;
       contentDisposition: ContentDisposition;
+      acl?: ACL;
     },
   ) {
     guardServerOnly();
@@ -169,6 +173,7 @@ export class UTApi {
         files: filesToUpload,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
       },
       {
         fetch: this.fetch,
