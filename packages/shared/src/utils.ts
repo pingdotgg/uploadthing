@@ -101,11 +101,9 @@ export function getTypeFromFileName(
 
   if (!allowedTypes.includes(type)) {
     // Blob is a catch-all for any file type not explicitly supported
-    if (allowedTypes.includes("blob")) {
-      return "blob";
-    } else {
-      throw new Error(`File type ${type} not allowed for ${fileName}`);
-    }
+    if (allowsBlob) return "blob";
+
+    throw new Error(`File type ${type} not allowed for ${fileName}`);
   }
 
   return type;
