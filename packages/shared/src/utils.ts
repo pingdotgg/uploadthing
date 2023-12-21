@@ -75,10 +75,9 @@ export function getTypeFromFileName(
   fileName: string,
   allowedTypes: FileRouterInputKey[],
 ) {
-  const allowsBlob = allowedTypes.includes("blob");
   const mimeType = lookup(fileName);
   if (!mimeType) {
-    if (allowsBlob) return "blob";
+    if (allowedTypes.includes("blob")) return "blob";
     throw new Error(
       `Could not determine type for ${fileName}, presigned URL generation failed`,
     );
@@ -100,8 +99,11 @@ export function getTypeFromFileName(
 
   if (!allowedTypes.includes(type)) {
     // Blob is a catch-all for any file type not explicitly supported
-    if (allowsBlob) return "blob";
-    throw new Error(`File type ${type} not allowed for ${fileName}`);
+    if (allowedTypes.includes("blob")) {
+      return "blob";
+    } else {
+      throw new Error(`File type ${type} not allowed for ${fileName}`);
+    }
   }
 
   return type;
