@@ -15,6 +15,7 @@ import type {
   inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
+import type { MaybePromise } from "../../uploadthing/src/internal/types";
 
 import { createFetch } from "./utils/createFetch";
 
@@ -34,7 +35,7 @@ export type UseUploadthingProps<
 > = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[];
+  onBeforeUploadBegin?:  (files: File[]) => MaybePromise<File[]>;
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
@@ -69,7 +70,7 @@ export const INTERNAL_uploadthingHookGen = <
       : [files: File[], input: InferredInput];
 
     const startUpload = async (...args: FuncInput) => {
-      const files = opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+    const files = await opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
       const input = args[1];
 
       setUploading(true);
