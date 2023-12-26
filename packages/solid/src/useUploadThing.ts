@@ -15,7 +15,6 @@ import type {
   inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
-import type { MaybePromise } from "../../uploadthing/src/internal/types";
 
 import { createFetch } from "./utils/createFetch";
 
@@ -35,7 +34,7 @@ export type UseUploadthingProps<
 > = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?:  (files: File[]) => MaybePromise<File[]>;
+  onBeforeUploadBegin?:  (files: File[]) => File[] | Promise<File[]>;
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
