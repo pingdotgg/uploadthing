@@ -42,7 +42,7 @@ export type UseUploadthingProps<
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?:  (files: File[]) => Promise<File[]> | File;
+  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
 };
 
 export const INTERNAL_uploadthingHookGen = <
