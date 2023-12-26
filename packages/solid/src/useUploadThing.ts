@@ -34,7 +34,7 @@ export type UseUploadthingProps<
 > = {
   onUploadProgress?: (p: number) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?:  (files: File[]) => File[] | Promise<File[]>;
+  onBeforeUploadBegin?: (files: File[]) => File[] | Promise<File[]>;
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
@@ -69,7 +69,7 @@ export const INTERNAL_uploadthingHookGen = <
       : [files: File[], input: InferredInput];
 
     const startUpload = async (...args: FuncInput) => {
-      const files = await opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+      const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
       const input = args[1];
 
       setUploading(true);

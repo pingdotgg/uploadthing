@@ -74,7 +74,7 @@ export const INTERNAL_uploadthingHookGen = <
       : [files: File[], input: InferredInput];
 
     const startUpload = useEvent(async (...args: FuncInput) => {
-      const files = await opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+      const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
       const input = args[1];
 
       setUploading(true);
