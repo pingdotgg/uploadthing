@@ -753,6 +753,43 @@ importers:
         specifier: 6.7.0
         version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
 
+  packages/dropzone:
+    dependencies:
+      attr-accept:
+        specifier: ^2.2.2
+        version: 2.2.2
+      file-selector:
+        specifier: ^0.6.0
+        version: 0.6.0
+    devDependencies:
+      '@types/react':
+        specifier: 18.2.33
+        version: 18.2.33
+      '@uploadthing/eslint-config':
+        specifier: 0.2.0
+        version: link:../config/eslint-config
+      '@uploadthing/tsconfig':
+        specifier: 0.1.0
+        version: link:../config/tsconfig
+      '@uploadthing/tsup-config':
+        specifier: 0.1.0
+        version: link:../config/tsup
+      eslint:
+        specifier: ^8.47.0
+        version: 8.47.0
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      solid-js:
+        specifier: ^1.7.11
+        version: 1.8.7
+      tsup:
+        specifier: 6.7.0
+        version: 6.7.0(postcss@8.4.31)(typescript@5.1.6)
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   packages/mime-types:
     devDependencies:
       '@uploadthing/eslint-config':
@@ -776,6 +813,9 @@ importers:
 
   packages/react:
     dependencies:
+      '@uploadthing/dropzone':
+        specifier: ^0.1.0
+        version: link:../dropzone
       '@uploadthing/shared':
         specifier: ^6.0.3
         version: link:../shared
@@ -870,6 +910,9 @@ importers:
 
   packages/solid:
     dependencies:
+      '@uploadthing/dropzone':
+        specifier: ^0.1.0
+        version: link:../dropzone
       '@uploadthing/shared':
         specifier: ^6.0.3
         version: link:../shared
@@ -886,9 +929,6 @@ importers:
       solid-js:
         specifier: ^1.7.11
         version: 1.7.11
-      solidjs-dropzone:
-        specifier: ^1.0.0
-        version: 1.0.0(solid-js@1.7.11)
       tailwindcss:
         specifier: ^3.3.2
         version: 3.3.2
@@ -4981,6 +5021,7 @@ packages:
   /attr-accept@2.2.2:
     resolution: {integrity: sha512-7prDjvt9HmqiZ0cl5CRjtS84sEyhsHP2coDkaZKRKVfCDo9s7iw7ChVmar78Gu9pC4SoR/28wFu/G5JJhTnqEg==}
     engines: {node: '>=4'}
+    dev: false
 
   /autoprefixer@10.4.14(postcss@8.4.31):
     resolution: {integrity: sha512-FQzyfOsTlwVzjHxKEqRIAdJx9niO6VCBCoEwax/VLSoQF29ggECcPuBqUMZ+u8jCZOPSy8b8/8KnuFbp0SaFZQ==}
@@ -7618,6 +7659,7 @@ packages:
     engines: {node: '>= 12'}
     dependencies:
       tslib: 2.6.2
+    dev: false
 
   /file-uri-to-path@1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
@@ -11686,6 +11728,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /seroval@0.15.1:
+    resolution: {integrity: sha512-OPVtf0qmeC7RW+ScVX+7aOS+xoIM7pWcZ0jOWg2aTZigCydgRB04adfteBRbecZnnrO1WuGQ+C3tLeBBzX2zSQ==}
+    engines: {node: '>=10'}
+    dev: true
+
   /seroval@0.5.1:
     resolution: {integrity: sha512-ZfhQVB59hmIauJG5Ydynupy8KHyr5imGNtdDhbZG68Ufh1Ynkv9KOYOAABf71oVbQxJ8VkWnMHAjEHE7fWkH5g==}
     engines: {node: '>=10'}
@@ -11882,6 +11929,13 @@ packages:
       csstype: 3.1.2
       seroval: 0.5.1
 
+  /solid-js@1.8.7:
+    resolution: {integrity: sha512-9dzrSVieh2zj3SnJ02II6xZkonR6c+j/91b7XZUNcC6xSaldlqjjGh98F1fk5cRJ8ZTkzqF5fPIWDxEOs6QZXA==}
+    dependencies:
+      csstype: 3.1.2
+      seroval: 0.15.1
+    dev: true
+
   /solid-refresh@0.5.2(solid-js@1.7.11):
     resolution: {integrity: sha512-I69HmFj0LsGRJ3n8CEMVjyQFgVtuM2bSjznu2hCnsY+i5oOxh8ioWj00nnHBv0UYD3WpE/Sq4Q3TNw2IKmKN7A==}
     peerDependencies:
@@ -11995,6 +12049,7 @@ packages:
       attr-accept: 2.2.2
       file-selector: 0.6.0
       solid-js: 1.7.11
+    dev: false
 
   /sonic-boom@3.3.0:
     resolution: {integrity: sha512-LYxp34KlZ1a2Jb8ZQgFCK3niIHzibdwtwNUWKg0qQRzsDoJ3Gfgkf8KdBTFU3SkejDEIlWwnSnpVdOZIhFMl/g==}
