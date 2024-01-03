@@ -8,4 +8,4 @@ export {
 } from "./component";
 
 export type * from "./types";
-export type * from "@uploadthing/dropzone/react";
+export type * from "./use-dropzone/types";
