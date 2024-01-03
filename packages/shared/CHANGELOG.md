@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 6.0.3
+
+### Patch Changes
+
+- [#527](https://github.com/pingdotgg/uploadthing/pull/527)
+  [`cfd5381`](https://github.com/pingdotgg/uploadthing/commit/cfd53811b6267a5f20ba9334f82937f27c3be346)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fallback to
+  blob filetype if allowed
+
 ## 6.0.2
 
 ### Patch Changes

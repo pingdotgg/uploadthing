@@ -511,7 +511,7 @@ function resolveCallbackUrl(opts: {
     console.warn(
       [
         "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
-        "Read more and learn how to fix it here: https://uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
+        "Read more and learn how to fix it here: https://docs.uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
       ].join(" "),
     );
     return callbackUrl;

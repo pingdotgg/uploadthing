@@ -1,5 +1,20 @@
 # @uploadthing/react
 
+## 6.1.0
+
+### Minor Changes
+
+- [#529](https://github.com/pingdotgg/uploadthing/pull/529)
+  [`3b7e901`](https://github.com/pingdotgg/uploadthing/commit/3b7e901ddbdf7ceb743e25db4258a289c3943c6f)
+  Thanks [@ibrahimyaacob92](https://github.com/ibrahimyaacob92)! - feat: allow
+  async onBeforeUploadBegin callback
+
+### Patch Changes
+
+- Updated dependencies
+  [[`cfd5381`](https://github.com/pingdotgg/uploadthing/commit/cfd53811b6267a5f20ba9334f82937f27c3be346)]:
+  - @uploadthing/shared@6.0.3
+
 ## 6.0.2
 
 ### Patch Changes
