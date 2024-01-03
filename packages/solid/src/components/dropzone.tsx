@@ -1,7 +1,8 @@
 import { createSignal } from "solid-js";
+import type { OnDropHandler } from "solidjs-dropzone";
+import { createDropzone } from "solidjs-dropzone";
 import { twMerge } from "tailwind-merge";
 
-import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
   classNames,
@@ -83,7 +84,7 @@ export const UploadDropzone = <
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
-  const onDrop = (acceptedFiles: File[]) => {
+  const onDrop: OnDropHandler = (acceptedFiles) => {
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
@@ -103,6 +104,7 @@ export const UploadDropzone = <
         ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
         : undefined;
     },
+    useFsAccessApi: true,
   });
 
   const ready = () => fileInfo().fileTypes.length > 0;

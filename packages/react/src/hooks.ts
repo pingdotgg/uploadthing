@@ -1,3 +1,3 @@
 export { generateReactHelpers } from "./useUploadThing";
 
-export { useDropzone } from "@uploadthing/dropzone/react";
+export { useDropzone } from "./use-dropzone";
