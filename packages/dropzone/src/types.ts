@@ -1,5 +1,3 @@
-export type { FileWithPath } from "file-selector";
-
 export type AcceptProp = Record<string, string[]>;
 
 export type DropzoneOptions = {

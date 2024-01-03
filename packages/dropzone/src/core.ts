@@ -7,7 +7,7 @@
 
 import attrAccepts from "attr-accept";
 
-import type { AcceptProp, DropzoneState, FileWithPath } from "./types";
+import type { AcceptProp, DropzoneState } from "./types";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const accepts: typeof attrAccepts =
@@ -160,7 +160,7 @@ export const initialState = {
   isDragActive: false,
   isDragAccept: false,
   isDragReject: false,
-  acceptedFiles: [] as FileWithPath[],
+  acceptedFiles: [] as File[],
 };
 
 export function reducer(

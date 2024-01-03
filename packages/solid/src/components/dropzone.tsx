@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
-import type { FileWithPath } from "@uploadthing/dropzone/solid";
 import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
@@ -84,7 +83,7 @@ export const UploadDropzone = <
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
-  const onDrop = (acceptedFiles: FileWithPath[]) => {
+  const onDrop = (acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately

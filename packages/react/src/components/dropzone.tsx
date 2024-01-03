@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-import type { FileWithPath } from "@uploadthing/dropzone/react";
 import { useDropzone } from "@uploadthing/dropzone/react";
 import {
   allowedContentTextLabelGenerator,
@@ -112,7 +111,7 @@ export function UploadDropzone<
   const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
 
   const onDrop = useCallback(
-    (acceptedFiles: FileWithPath[]) => {
+    (acceptedFiles: File[]) => {
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
