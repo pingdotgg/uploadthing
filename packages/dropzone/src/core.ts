@@ -43,10 +43,9 @@ export function isValidQuantity(
   multiple: boolean,
   maxFiles: number,
 ) {
-  return (
-    (!multiple && files.length > 1) ||
-    (multiple && maxFiles >= 1 && files.length > maxFiles)
-  );
+  if (!multiple && files.length > 1) return false;
+  if (multiple && maxFiles >= 1 && files.length > maxFiles) return false;
+  return true;
 }
 
 export function allFilesAccepted({
