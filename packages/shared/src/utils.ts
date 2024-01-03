@@ -54,7 +54,7 @@ export function fillInputRouteConfig(
 
   // Backfill defaults onto config
   const newConfig: ExpandedRouteConfig = {};
-  const inputKeys = Object.keys(routeConfig) as FileRouterInputKey[];
+  const inputKeys = objectKeys(routeConfig);
   inputKeys.forEach((key) => {
     const value = routeConfig[key];
     if (!value) throw new Error("Invalid config during fill");
@@ -77,6 +77,7 @@ export function getTypeFromFileName(
 ) {
   const mimeType = lookup(fileName);
   if (!mimeType) {
+    if (allowedTypes.includes("blob")) return "blob";
     throw new Error(
       `Could not determine type for ${fileName}, presigned URL generation failed`,
     );
