@@ -279,6 +279,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const getInputProps = () => ({
     ref: setInputRef,
     type: "file",
+    style: { display: "none" },
     accept: acceptAttr(),
     multiple: props.multiple,
     tabIndex: -1,
