@@ -322,6 +322,7 @@ export function useDropzone({
     () => (): HTMLProps<HTMLInputElement> => ({
       ref: inputRef,
       type: "file",
+      style: { display: "none" },
       accept: acceptAttr,
       multiple,
       tabIndex: -1,
