@@ -11,7 +11,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "rm -rf dist && bunchee --external=express,h3,tailwindcss",
+    "build": "rm -rf dist && bunchee",
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
     "test": "vitest run",
@@ -40,6 +40,34 @@
     "undici": "^5.20.0",
     "vitest": "^0.30.1",
     "zod": "^3.22.3"
+  },
+  "peerDependencies": {
+    "express": "*",
+    "fastify": "*",
+    "h3": "*",
+    "next": "*",
+    "tailwindcss": "*",
+    "zod": "*"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
+    "h3": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
   },
   "eslintConfig": {
     "root": true,

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "rm -rf dist && bunchee --external=react,solid-js",
+    "build": "rm -rf dist && bunchee",
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
@@ -15,6 +15,10 @@
   "dependencies": {
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.2 || ^18.0.0",
+    "solid-js": "^1.5.3"
   },
   "devDependencies": {
     "@types/react": "18.2.33",
