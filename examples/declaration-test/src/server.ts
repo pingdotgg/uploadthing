@@ -7,7 +7,7 @@ import {
   UTApi,
 } from "uploadthing/server";
 
-const f = createUploadthing({
+export const f = createUploadthing({
   /**
    * Log out more information about the error, but don't return it to the client
    * @see https://docs.uploadthing.com/errors#error-formatting
