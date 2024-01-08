@@ -857,9 +857,6 @@ importers:
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../config/tsconfig
-      autoprefixer:
-        specifier: 10.4.14
-        version: 10.4.14(postcss@8.4.31)
       bunchee:
         specifier: ^4.3.0
         version: 4.3.0(typescript@5.1.6)
@@ -869,9 +866,6 @@ importers:
       next:
         specifier: 14.0.1
         version: 14.0.1(@babel/core@7.23.2)(react-dom@18.2.0)(react@18.2.0)
-      postcss:
-        specifier: 8.4.31
-        version: 8.4.31
       react:
         specifier: 18.2.0
         version: 18.2.0
