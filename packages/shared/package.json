@@ -1,42 +1,24 @@
 {
   "name": "@uploadthing/shared",
   "version": "6.0.3",
+  "type": "module",
   "license": "MIT",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    }
-  },
-  "files": [
-    "dist"
-  ],
   "publishConfig": {
     "access": "public"
   },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
+    "build": "rm -rf dist && bunchee",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
+    "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/mime-types": "0.2.2",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
+    "bunchee": "^4.3.0",
     "eslint": "^8.47.0",
-    "tsup": "6.7.0",
     "typescript": "^5.1.6"
   },
   "peerDependencies": {
@@ -52,5 +34,23 @@
     "extends": [
       "@uploadthing/eslint-config/base"
     ]
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*"
+      ]
+    }
   }
 }

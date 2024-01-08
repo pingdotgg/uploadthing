@@ -2,6 +2,50 @@
   "name": "@uploadthing/dropzone",
   "version": "0.1.0",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
+    "build": "rm -rf dist && bunchee --external=react,solid-js",
+    "clean": "git clean -xdf dist node_modules",
+    "dev": "bunchee -w",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "attr-accept": "^2.2.2",
+    "file-selector": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.33",
+    "@uploadthing/eslint-config": "0.2.0",
+    "@uploadthing/tsconfig": "0.1.0",
+    "bunchee": "^4.3.0",
+    "eslint": "^8.47.0",
+    "react": "18.2.0",
+    "solid-js": "^1.7.11",
+    "typescript": "^5.1.6"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "src/react.tsx"
+        ],
+        "extends": [
+          "@uploadthing/eslint-config/react"
+        ]
+      }
+    ]
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
   "exports": {
     "./package.json": "./package.json",
     "./core": {
@@ -20,55 +64,11 @@
       "require": "./dist/react.js"
     }
   },
-  "files": [
-    "dist"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
   "typesVersions": {
     "*": {
       "*": [
         "dist/*"
       ]
     }
-  },
-  "scripts": {
-    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
-    "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "attr-accept": "^2.2.2",
-    "file-selector": "^0.6.0"
-  },
-  "devDependencies": {
-    "@types/react": "18.2.33",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
-    "eslint": "^8.47.0",
-    "react": "18.2.0",
-    "solid-js": "^1.7.11",
-    "tsup": "6.7.0",
-    "typescript": "^5.1.6"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "src/react.tsx"
-        ],
-        "extends": [
-          "@uploadthing/eslint-config/react"
-        ]
-      }
-    ]
   }
 }

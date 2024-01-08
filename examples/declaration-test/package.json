@@ -1,0 +1,21 @@
+{
+  "name": "@examples/declaration-test",
+  "version": "10.45.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "rm -rf build && tsc"
+  },
+  "devDependencies": {
+    "@tsconfig/esm": "^1.0.3",
+    "@tsconfig/node-lts": "^18.12.2",
+    "@tsconfig/strictest": "^2.0.1",
+    "@types/node": "18.16.0",
+    "typescript": "^5.1.6"
+  },
+  "dependencies": {
+    "@uploadthing/react": "6.1.0",
+    "uploadthing": "6.1.1",
+    "zod": "^3.22.3"
+  }
+}
