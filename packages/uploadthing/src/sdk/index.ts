@@ -278,10 +278,7 @@ export class UTApi {
       "An unknown error occured while renaming files.",
     );
   }
-
-  /**
-   * @deprecated Use {@link renameFiles} instead.
-   */
+  /** @deprecated Use {@link renameFiles} instead. */
   // eslint-disable-next-line @typescript-eslint/unbound-method
   public renameFile = this.renameFiles;
 
