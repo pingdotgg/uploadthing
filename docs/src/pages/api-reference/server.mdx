@@ -91,6 +91,7 @@ export type OurFileRouter = typeof ourFileRouter;
 type MimeType = /** any web mime-type */
 type ValidFileTypes = "image" | "video" | "audio" | "blob" | "pdf" | "text" | MimeType;
 type ContentDisposition = "inline" | "attachment";
+type ACL = "public-read" | "private";
 
 // The input to your f() function can be an array of file types OR an object of them w/ config
 type FileRouterInput =
@@ -100,6 +101,7 @@ type FileRouterInput =
         maxFileSize?: string;
         maxFileCount?: number;
         contentDisposition?: ContentDisposition = "inline";
+        acl?: ACL;
       };
     };
 ```
@@ -109,6 +111,11 @@ disposition set at the storage provider. This is useful if you want your files
 downloaded instead of previewed in the browser. You can read more about content
 disposition on
 [MDN ↗](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
+
+<Callout>
+  ACL can only be overridden if set on the UploadThing dashboard. Attempts to
+  upload a mismatching ACL setting will error.
+</Callout>
 
 ### Defaults
 
@@ -427,3 +434,28 @@ type Rename = {
 | Arguments | Type                 | Required | Description                                            |
 | :-------- | :------------------- | :------- | :----------------------------------------------------- |
 | renames   | Rename \|\| Rename[] | Yes      | Object specifying what file to rename and the new name |
+
+### `getSignedURL`
+
+> Added in `v6.2`
+
+Retrieve a [signed URL](/regions-and-acl#using-signed-urls) for a private file.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
+const url = await utapi.getSignedURL(fileKey, {
+  expiresInSeconds: 60 * 60, // 1 hour
+});
+```
+
+<Callout>
+  The `expiresInSeconds` option can only be used if you allow overrides in your
+  app settings on the UploadThing dashboard.
+</Callout>
+
+| Arguments                | Type   | Required | Description                                                                           |
+| :----------------------- | :----- | :------- | :------------------------------------------------------------------------------------ |
+| key                      | string | Yes      | The file key you want to get the URL for.                                             |
+| options.expiresInSeconds | number | No       | How long the URL should be valid for. Must be positive and less than 604800 (7 days). |

@@ -303,10 +303,13 @@ export class UTApi {
   }
 
   /** Request a presigned url for a private file(s) */
-  async getPresigned(
+  async getSignedURL(
     fileKey: string,
     opts?: {
-      /** How long the URL will be valid for.
+      /**
+       * How long the URL will be valid for.
+       * - Must be positive and less than 7 days (604800 seconds).
+       * - You must accept overrides on the UploadThing dashboard for this option to be accepted.
        * @default app default on UploadThing dashboard
        */
       expiresInSeconds?: number;
