@@ -315,8 +315,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        console.log("Parsed config", parsedConfig);
-
         try {
           const { limitHit, count, limit, type } = fileCountLimitHit(
             files,
