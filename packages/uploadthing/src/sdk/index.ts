@@ -257,7 +257,7 @@ export class UTApi {
     return json.files;
   }
 
-  async renameFile(
+  async renameFiles(
     updates:
       | {
           fileKey: string;
@@ -278,6 +278,9 @@ export class UTApi {
       "An unknown error occured while renaming files.",
     );
   }
+  /** @deprecated Use {@link renameFiles} instead. */
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  public renameFile = this.renameFiles;
 
   async getUsageInfo() {
     guardServerOnly();
