@@ -1,4 +1,6 @@
-import { describe, expect, expectTypeOf, test } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
+
+import type { ResponseEsque } from "@uploadthing/shared";
 
 import { UTApi } from ".";
 import type { UploadError } from "./utils";
@@ -73,5 +75,61 @@ describe("constructor throws if no apiKey or secret is set", () => {
   });
   test("apikey option is passed", () => {
     expect(() => new UTApi({ apiKey: "foobar" })).not.toThrow();
+  });
+});
+
+describe("getSignedURL", () => {
+  // Mock fetch
+  const mockFetch = vi.fn();
+  const utapi = new UTApi({
+    apiKey: "foo",
+    fetch: (url, init) => {
+      mockFetch(url, init);
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ url: "https://example.com" }),
+      }) as unknown as Promise<ResponseEsque>;
+    },
+  });
+
+  beforeEach(() => {
+    mockFetch.mockClear();
+  });
+
+  test("sends request with valid expiresIn (1)", async () => {
+    await utapi.getSignedURL("foo", { expiresIn: "1d" });
+    console.log(mockFetch.mock);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(mockFetch.mock.calls[0][1]).toContain({
+      body: JSON.stringify({ fileKey: "foo", expiresIn: 86400 }),
+    });
+  });
+
+  test("sends request with valid expiresIn (2)", async () => {
+    await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
+    console.log(mockFetch.mock);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    expect(mockFetch.mock.calls[0][1]).toContain({
+      body: JSON.stringify({ fileKey: "foo", expiresIn: 180 }),
+    });
+  });
+
+  test("throws if expiresIn is invalid", async () => {
+    await expect(() =>
+      // @ts-expect-error - intentionally passing invalid expiresIn
+      utapi.getSignedURL("foo", { expiresIn: "something" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      "\"expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.\"",
+    );
+    expect(mockFetch.mock.calls.length).toBe(0);
+  });
+
+  test("throws if expiresIn is longer than 7 days", async () => {
+    await expect(() =>
+      utapi.getSignedURL("foo", { expiresIn: "10 days" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      '"expiresIn must be less than 7 days (604800 seconds)."',
+    );
+    expect(mockFetch.mock.calls.length).toBe(0);
   });
 });

@@ -321,11 +321,13 @@ export class UTApi {
     const expiresIn = opts?.expiresIn
       ? parseTimeToSeconds(opts.expiresIn)
       : undefined;
-    if (expiresIn && isNaN(expiresIn)) {
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    if (isNaN(expiresIn as any)) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
         message:
-          "expiresIn must be a valid time string, for example '1d', '2 days', or a number.",
+          "expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.",
       });
     }
     if (expiresIn && expiresIn > 86400 * 7) {
