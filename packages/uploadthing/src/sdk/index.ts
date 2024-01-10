@@ -322,8 +322,7 @@ export class UTApi {
       ? parseTimeToSeconds(opts.expiresIn)
       : undefined;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    if (isNaN(expiresIn as any)) {
+    if (opts?.expiresIn && isNaN(expiresIn!)) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
         message:
