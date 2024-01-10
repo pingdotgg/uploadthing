@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import type { ConsolaOptions, ConsolaReporter, LogObject } from "consola/core";
-import { createConsola, LogTypes } from "consola/core";
+import { inspect } from "node:util";
+import type { ConsolaReporter, LogObject } from "consola/core";
+import { createConsola, LogLevels } from "consola/core";
 
 class Reporter implements ConsolaReporter {
   private formatStack(stack: string) {
@@ -33,59 +34,33 @@ class Reporter implements ConsolaReporter {
       if (typeof arg === "string") {
         return arg;
       }
-      return JSON.stringify(arg, null, 2);
+      return inspect(arg, { depth: 4 });
     });
   }
 
-  private formatLogObj(logObj: LogObject) {
-    const message = this.formatArgs(logObj.args);
-    const bracket = (x: string) => (x ? `[${x}]` : "");
+  log(logObj: LogObject) {
+    const { type, tag, date, args } = logObj;
 
-    return [bracket(logObj.type), bracket(logObj.tag), message]
-      .filter(Boolean)
-      .join(" ");
-  }
-
-  log(logObj: LogObject, _ctx: { options: ConsolaOptions }) {
-    const line = this.formatLogObj(logObj);
+    const logPrefix = `[${tag} ${type.toUpperCase()} ${date.toLocaleTimeString()}]`;
+    const lines = this.formatArgs(args)
+      .join(" ") // concat all arguments to one space-separated string (like console does)
+      .split("\n") // split all the newlines (e.g. from logged JSON.stringified objects)
+      .map((l) => logPrefix + " " + l) // prepend the log prefix to each line
+      .join("\n"); // join all the lines back together
     // eslint-disable-next-line no-console
-    console.log(line);
+    console.log(lines);
   }
 }
 
 export const logger = createConsola({
   reporters: [new Reporter()],
   defaults: {
-    tag: "uploadthing",
-  },
-  types: {
-    // Bump up the level of `logger.log` to 4 == a single `-v` flag.
-    ...LogTypes,
-    log: {
-      ...LogTypes.log,
-      level: 4,
-      type: "info",
-    },
-    // Bump up the level of `logger.debug` to 5 == `-vv` to show.
-    debug: {
-      ...LogTypes.debug,
-      level: 5,
-    },
-    // Bump up the level of `logger.debug` to 6 == `-vvv` to show.
-    trace: {
-      ...LogTypes.trace,
-      level: 6,
-    },
+    tag: "UPLOADTHING",
   },
 });
 
-const levels = {
-  log: 1,
-  info: 2,
-  trace: 3,
-};
-export type LogLevel = keyof typeof levels;
-export const setLogLevel = (level?: LogLevel) => {
-  logger.level = (level ? levels[level] : 0) + 3;
+export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
+export const setLogLevel = (level: LogLevel = "info") => {
+  logger.level = LogLevels[level];
   logger.info("Set log level", { level: logger.level });
 };
