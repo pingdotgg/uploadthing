@@ -34,7 +34,13 @@ class Reporter implements ConsolaReporter {
       if (typeof arg === "string") {
         return arg;
       }
-      return inspect(arg, { depth: 4 });
+      try {
+        // prefer inspect over JSON.stringify because it handles circular references, prints classes etc
+        return inspect(arg, { depth: 4 });
+      } catch {
+        // fallback to JSON.stringify if inspect fails e.g. if runtime doesn't have util module
+        return JSON.stringify(arg, null, 4);
+      }
     });
   }
 
