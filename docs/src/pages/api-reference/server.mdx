@@ -449,16 +449,23 @@ import { utapi } from "~/server/uploadthing.ts";
 
 const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
 const url = await utapi.getSignedURL(fileKey, {
-  expiresInSeconds: 60 * 60, // 1 hour
+  expiresIn: 60 * 60, // 1 hour
+  // expiresIn: '1 hour',
+  // expiresIn: '3d',
+  // expiresIn: '7 days',
 });
 ```
 
 <Callout>
-  The `expiresInSeconds` option can only be used if you allow overrides in your
-  app settings on the UploadThing dashboard.
+  The `expiresIn` option can only be used if you allow overrides in your app
+  settings on the UploadThing dashboard.
 </Callout>
 
-| Arguments             | Type   | Required | Description                                                                            |
-| :-------------------- | :----- | :------- | :------------------------------------------------------------------------------------- |
-| key                   | string | Yes      | The file key you want to get the URL for.                                              |
-| opts.expiresInSeconds | number | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
+| Arguments      | Type                 | Required | Description                                                                            |
+| :------------- | :------------------- | :------- | :------------------------------------------------------------------------------------- |
+| key            | string               | Yes      | The file key you want to get the URL for.                                              |
+| opts.expiresIn | number \| TimeString | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
+
+> `TimeString` refers to a human-readable string that can be parsed as a number,
+> followed by a unit of time. For example, `1s`, `1 second`, `2m`, `2 minutes`,
+> `7 days` etc. If no unit is specified, seconds are assumed.
