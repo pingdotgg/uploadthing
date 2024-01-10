@@ -11,6 +11,7 @@ import {
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { setLogLevel } from "@uploadthing/shared/logger";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { defaultErrorFormatter } from "./internal/error-formatter";
@@ -19,6 +20,7 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import type { RouterWithConfig } from "./internal/handler";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -36,6 +38,8 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createH3EventHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
+  setLogLevel(opts.config?.logLevel);
+  incompatibleNodeGuard();
   const requestHandler = buildRequestHandler(opts);
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 

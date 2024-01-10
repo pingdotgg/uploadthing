@@ -1,5 +1,6 @@
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
+import { setLogLevel } from "@uploadthing/shared/logger";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { formatError } from "./internal/error-formatter";
@@ -27,8 +28,10 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createServerHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
+  setLogLevel(opts.config?.logLevel);
   incompatibleNodeGuard();
   const requestHandler = buildRequestHandler<TRouter>(opts);
+  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST = async (request: Request | { request: Request }) => {
     const req = request instanceof Request ? request : request.request;
@@ -59,8 +62,6 @@ export const createServerHandler = <TRouter extends FileRouter>(
       },
     });
   };
-
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const GET = (request: Request | { request: Request }) => {
     const _req = request instanceof Request ? request : request.request;

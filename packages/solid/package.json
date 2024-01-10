@@ -114,6 +114,9 @@
     "root": true,
     "extends": [
       "@uploadthing/eslint-config/base"
-    ]
+    ],
+    "rules": {
+      "no-console": "off"
+    }
   }
 }

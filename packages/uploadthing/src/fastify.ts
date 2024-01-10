@@ -7,6 +7,7 @@ import type {
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { setLogLevel } from "@uploadthing/shared/logger";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { formatError } from "./internal/error-formatter";
@@ -35,6 +36,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
   done: (err?: Error) => void,
 ) => {
+  setLogLevel(opts.config?.logLevel);
   incompatibleNodeGuard();
   const requestHandler = buildRequestHandler<TRouter>(opts);
 

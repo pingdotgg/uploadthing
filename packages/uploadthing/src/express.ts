@@ -6,6 +6,7 @@ import type {
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { setLogLevel } from "@uploadthing/shared/logger";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { formatError } from "./internal/error-formatter";
@@ -33,6 +34,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
+  setLogLevel(opts.config?.logLevel);
   incompatibleNodeGuard();
   const requestHandler = buildRequestHandler<TRouter>(opts);
   const router = ExpressRouter();

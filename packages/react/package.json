@@ -85,6 +85,9 @@
     "extends": [
       "@uploadthing/eslint-config/base",
       "@uploadthing/eslint-config/react"
-    ]
+    ],
+    "rules": {
+      "no-console": "off"
+    }
   }
 }

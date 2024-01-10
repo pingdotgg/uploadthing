@@ -5,6 +5,8 @@ import type {
   MaybeUrl,
 } from "@uploadthing/shared";
 import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
+import type { LogLevel } from "@uploadthing/shared/logger";
+import { logger, setLogLevel } from "@uploadthing/shared/logger";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
@@ -26,6 +28,10 @@ export interface UTApiOptions {
    * @default process.env.UPLOADTHING_SECRET
    */
   apiKey?: string;
+  /**
+   * Opt in to more verbose logging.
+   */
+  logLevel?: LogLevel;
 }
 
 export class UTApi {
@@ -41,6 +47,7 @@ export class UTApi {
       "x-uploadthing-api-key": this.apiKey!,
       "x-uploadthing-version": UPLOADTHING_VERSION,
     };
+    setLogLevel(opts?.logLevel);
 
     // Assert some stuff
     guardServerOnly();
@@ -62,7 +69,7 @@ export class UTApi {
 
     const json = await res.json<T | { error: string }>();
     if (!res.ok || "error" in json) {
-      console.error("[UT] Error:", json);
+      logger.error("[UT] Error:", json);
       throw new UploadThingError({
         code: "INTERNAL_SERVER_ERROR",
         message:

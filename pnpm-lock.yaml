@@ -885,6 +885,10 @@ importers:
         version: 3.22.3
 
   packages/shared:
+    dependencies:
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
     devDependencies:
       '@uploadthing/eslint-config':
         specifier: 0.2.0

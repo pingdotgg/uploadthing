@@ -21,6 +21,7 @@ const config = {
   },
   plugins: ["@typescript-eslint", "import"],
   rules: {
+    "no-console": "error",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "turbo/no-undeclared-env-vars": "off",

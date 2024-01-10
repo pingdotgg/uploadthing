@@ -1,3 +1,6 @@
+// TODO: idk if we want to import logger here, think about bundle splitting maybe, not sure if it's a concern
+/* eslint-disable no-console */
+
 import { lookup } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
