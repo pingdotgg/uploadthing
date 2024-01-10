@@ -1,6 +1,6 @@
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
-import { setLogLevel } from "@uploadthing/shared/logger";
+import { logger, setLogLevel } from "@uploadthing/shared/logger";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { formatError } from "./internal/error-formatter";
@@ -35,6 +35,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
 
   const POST = async (request: Request | { request: Request }) => {
     const req = request instanceof Request ? request : request.request;
+    logger.log("POST request", { req });
     const response = await requestHandler({ req });
 
     if (response instanceof UploadThingError) {

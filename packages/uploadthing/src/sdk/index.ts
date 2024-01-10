@@ -69,7 +69,7 @@ export class UTApi {
 
     const json = await res.json<T | { error: string }>();
     if (!res.ok || "error" in json) {
-      logger.error("[UT] Error:", json);
+      logger.error(json);
       throw new UploadThingError({
         code: "INTERNAL_SERVER_ERROR",
         message:

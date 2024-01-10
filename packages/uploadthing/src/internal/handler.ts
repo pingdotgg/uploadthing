@@ -127,7 +127,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
     if (process.env.NODE_ENV === "development") {
-      logger.log("[UT] UploadThing dev server is now running!");
+      logger.log("UploadThing dev server is now running!");
     }
 
     const { req, res, event } = input;
@@ -357,7 +357,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         );
 
         if (!uploadthingApiResponse.ok || parsedResponse instanceof Error) {
-          logger.error("[UT] unable to get presigned urls");
+          logger.error("unable to get presigned urls");
           return new UploadThingError({
             code: "URL_GENERATION_FAILED",
             message: "Unable to get presigned urls",
@@ -428,7 +428,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
 
         if (!uploadthingApiResponse.ok) {
-          logger.error("[UT] failed to mark upload as failed");
+          logger.error("failed to mark upload as failed");
           const parsedResponse = await safeParseJSON<UploadThingResponse>(
             uploadthingApiResponse,
           );
@@ -450,7 +450,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         } catch (error) {
           logger.error(
-            "[UT] Failed to run onUploadError callback. You probably shouldn't be throwing errors in your callback.",
+            "Failed to run onUploadError callback. You probably shouldn't be throwing errors in your callback.",
           );
           logger.error(error);
 
@@ -513,7 +513,7 @@ function resolveCallbackUrl(opts: {
     // Didn't find a valid URL in the headers, log a warning and use the original url anyway
     logger.warn(
       [
-        "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
+        "You are using a localhost callback url in production which is not supported.",
         "Read more and learn how to fix it here: https://docs.uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
       ].join(" "),
     );

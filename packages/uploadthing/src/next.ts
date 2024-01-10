@@ -1,7 +1,6 @@
 import type { NextRequest } from "next/server";
 
 import type { Json } from "@uploadthing/shared";
-import { setLogLevel } from "@uploadthing/shared/logger";
 
 import type { RouterWithConfig } from "./internal/handler";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -22,7 +21,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createNextRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  setLogLevel(opts.config?.logLevel);
   const handlers = createServerHandler(opts);
 
   return {

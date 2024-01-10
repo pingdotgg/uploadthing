@@ -35,7 +35,7 @@ export const conditionalDevServer = async (opts: {
       if (!callbackUrl.startsWith("http"))
         callbackUrl = "http://" + callbackUrl;
 
-      logger.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+      logger.log("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
       const response = await fetch(callbackUrl, {
         method: "POST",
@@ -54,13 +54,10 @@ export const conditionalDevServer = async (opts: {
         },
       });
       if (isValidResponse(response)) {
-        logger.log(
-          "[UT] Successfully simulated callback for file",
-          opts.fileKey,
-        );
+        logger.log("Successfully simulated callback for file", opts.fileKey);
       } else {
         logger.error(
-          "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
+          "Failed to simulate callback for file. Is your webhook configured correctly?",
           opts.fileKey,
         );
       }
@@ -70,7 +67,7 @@ export const conditionalDevServer = async (opts: {
 
   if (fileData !== undefined) return fileData;
 
-  logger.error(`[UT] Failed to simulate callback for file ${opts.fileKey}`);
+  logger.error(`Failed to simulate callback for file ${opts.fileKey}`);
   throw new UploadThingError({
     code: "UPLOAD_FAILED",
     message: "File took too long to upload",
