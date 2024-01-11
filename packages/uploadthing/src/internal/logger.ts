@@ -19,9 +19,9 @@ const colorize = (str: string, level: LogType) => {
     case "log":
       return `\x1b[44m\x1b[30m${str}\x1b[0m`;
     case "debug":
-      return `\x1b[45m\x1b[30m${str}\x1b[0m`;
+      return `\x1b[47m\x1b[30m${str}\x1b[0m`;
     case "trace":
-      return `\x1b[46m\x1b[30m${str}\x1b[0m`;
+      return `\x1b[47m\x1b[30m${str}\x1b[0m`;
     case "success":
       return `\x1b[42m\x1b[30m${str}\x1b[0m`;
     default:

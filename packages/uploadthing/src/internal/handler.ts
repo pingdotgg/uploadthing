@@ -153,49 +153,62 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
 
     // Validate inputs
-    if (!slug)
+    if (!slug) {
+      logger.error("No slug provided in params:", params);
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "No slug provided",
+        message: "No slug provided in params",
       });
+    }
 
     if (slug && typeof slug !== "string") {
+      const msg = `Expected slug to be of type 'string', got '${typeof slug}'`;
+      logger.error(msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
         message: "`slug` must be a string",
-        cause: `Expected slug to be of type 'string', got '${typeof slug}'`,
+        cause: msg,
       });
     }
     if (actionType && typeof actionType !== "string") {
+      const msg = `Expected actionType to be of type 'string', got '${typeof actionType}'`;
+      logger.error(msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
         message: "`actionType` must be a string",
-        cause: `Expected actionType to be of type 'string', got '${typeof actionType}'`,
+        cause: msg,
       });
     }
     if (uploadthingHook && typeof uploadthingHook !== "string") {
+      const msg = `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`;
       return new UploadThingError({
         code: "BAD_REQUEST",
         message: "`uploadthingHook` must be a string",
-        cause: `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`,
+        cause: msg,
       });
     }
 
     if (!preferredOrEnvSecret) {
+      const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
+      logger.error(msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Please set your preferred secret in ${slug} router's config or set UPLOADTHING_SECRET in your env file`,
-        cause: "No secret provided",
+        message: `No secret provided`,
+        cause: msg,
       });
     }
 
     const uploadable = router[slug];
     if (!uploadable) {
+      const msg = `No file route found for slug ${slug}`;
+      logger.error(msg);
       return new UploadThingError({
         code: "NOT_FOUND",
-        message: `No file route found for slug ${slug}`,
+        message: msg,
       });
     }
+
+    logger.debug("All request input is valid", { slug, actionType });
 
     const utFetch = createUTFetch(preferredOrEnvSecret);
 
@@ -208,7 +221,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         input?: Json;
       }>(req);
 
+      logger.debug("Handling callback request with input:", maybeReqBody);
+
       if (maybeReqBody instanceof Error) {
+        logger.error("Invalid request body", maybeReqBody);
         return new UploadThingError({
           code: "BAD_REQUEST",
           message: "Invalid request body",
@@ -216,26 +232,41 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
       }
 
-      const res = (await uploadable.resolver({
+      const resolverArgs = {
         file: maybeReqBody.file,
         metadata: maybeReqBody.metadata,
-      })) as unknown;
-      await utFetch("/api/serverCallback", {
+      };
+      logger.debug(
+        "Running 'onUploadComplete' callback with input:",
+        resolverArgs,
+      );
+      const res = (await uploadable.resolver(resolverArgs)) as unknown;
+      const payload = {
         fileKey: maybeReqBody.file.key,
         callbackData: res ?? null,
-      });
-
+      };
+      logger.debug(
+        "'onUploadComplete' callback finished. Sending response to UploadThing:",
+        payload,
+      );
+      const callbackResponse = await utFetch("/api/serverCallback", payload);
+      logger.debug(
+        "UploadThing responded with status:",
+        callbackResponse.status,
+      );
       return { status: 200 };
     }
 
     if (!actionType || !VALID_ACTION_TYPES.includes(actionType)) {
       // This would either be someone spamming or the AWS webhook
+      const msg = `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
+        .join(", ")
+        .replace(/,(?!.*,)/, " or")} but got "${"a"}"`;
+      logger.error("Invalid action type.", msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
         cause: `Invalid action type ${actionType}`,
-        message: `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
-          .join(", ")
-          .replace(/,(?!.*,)/, " or")} but got "${"a"}"`,
+        message: msg,
       });
     }
 
@@ -244,19 +275,24 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         const maybeInput = await safeParseJSON<UTEvents["upload"]>(req);
 
         if (maybeInput instanceof Error) {
+          logger.error("Invalid request body", maybeInput);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid request body",
             cause: maybeInput,
           });
         }
+
+        logger.debug("Handling upload request with input:", maybeInput);
         const { files, input: userInput } = maybeInput;
 
         // validate the input
         let parsedInput: Json = {};
         try {
+          logger.debug("Parsing input");
           const inputParser = uploadable._def.inputParser;
           parsedInput = await getParseFn(inputParser)(userInput);
+          logger.debug("Input parsed successfully", parsedInput);
         } catch (error) {
           logger.error("An error occured trying to parse input", error);
           return new UploadThingError({
@@ -268,6 +304,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         let metadata: Json = {};
         try {
+          logger.debug("Running middleware");
           metadata = await uploadable._def.middleware({
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             req: req as any,
@@ -276,6 +313,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             event,
             input: parsedInput,
           });
+          logger.debug("Middleware finished successfully with:", metadata);
         } catch (error) {
           logger.error("An error occured in your middleware function", error);
           return new UploadThingError({
@@ -294,21 +332,26 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
               typeof f.name === "string" &&
               typeof f.size === "number",
           )
-        )
+        ) {
+          const msg = `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
+            files,
+          )}'`;
+          logger.error(msg);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Files must be an array of objects with name and size",
-            cause: `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
-              files,
-            )}'`,
+            cause: msg,
           });
+        }
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
         let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
         try {
+          logger.debug("Parsing route config", uploadable._def.routerConfig);
           parsedConfig = parseAndExpandInputConfig(
             uploadable._def.routerConfig,
           );
+          logger.debug("Route config parsed successfully", parsedConfig);
         } catch (error) {
           logger.error("Invalid route config", error);
           return new UploadThingError({
@@ -319,17 +362,21 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         }
 
         try {
+          logger.debug("Checking file count limit", files);
           const { limitHit, count, limit, type } = fileCountLimitHit(
             files,
             parsedConfig,
           );
           if (limitHit) {
+            const msg = `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`;
+            logger.error(msg);
             return new UploadThingError({
               code: "BAD_REQUEST",
               message: "File limit exceeded",
-              cause: `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`,
+              cause: msg,
             });
           }
+          logger.debug("File count limit check passed");
         } catch (error) {
           logger.error("Invalid route config", error);
           return new UploadThingError({
@@ -340,7 +387,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         }
 
         const callbackUrl = resolveCallbackUrl({ config, req, url });
-
+        logger.debug(
+          "Retrieving presigned URLs from UploadThing. Callback URL is:",
+          callbackUrl.href,
+        );
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
           files: files,
 
@@ -364,6 +414,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             cause: parsedResponse,
           });
         }
+
+        logger.debug("UploadThing responded with:", parsedResponse);
+        logger.debug("Sending presigned URLs to client");
 
         // This is when we send the response back to the user's form so they can submit the files
 
@@ -389,12 +442,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           UTEvents["multipart-complete"]
         >(req);
         if (maybeReqBody instanceof Error) {
+          logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid request body",
             cause: maybeReqBody,
           });
         }
+
+        logger.debug(
+          "Handling multipart-complete request with input:",
+          maybeReqBody,
+        );
+        logger.debug("Notifying UploadThing that multipart upload is complete");
 
         const completeRes = await utFetch("/api/completeMultipart", {
           fileKey: maybeReqBody.fileKey,
@@ -402,17 +462,24 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           etags: maybeReqBody.etags,
         });
         if (!completeRes.ok) {
+          logger.error(
+            "Failed to notify UploadThing that multipart upload is complete",
+          );
           return new UploadThingError({
             code: "UPLOAD_FAILED",
             message: "Failed to complete multipart upload",
+            cause: completeRes,
           });
         }
+
+        logger.debug("UploadThing responded with:", completeRes.status);
 
         return { status: 200 };
       }
       case "failure": {
         const maybeReqBody = await safeParseJSON<UTEvents["failure"]>(req);
         if (maybeReqBody instanceof Error) {
+          logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid request body",
@@ -420,6 +487,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
         const { fileKey, uploadId } = maybeReqBody;
+        logger.debug("Handling failure request with input:", maybeReqBody);
+        logger.debug("Notifying UploadThing that upload failed");
 
         // Tell uploadthing to mark the upload as failed
         const uploadthingApiResponse = await utFetch("/api/failureCallback", {
@@ -439,6 +508,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             cause: parsedResponse,
           });
         }
+
+        logger.debug("UploadThing responded with:", uploadthingApiResponse);
+        logger.debug("Running 'onUploadError' callback");
 
         try {
           // Run the onUploadError callback
