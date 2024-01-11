@@ -11,10 +11,12 @@ const colorize = (str: string, level: LogType) => {
 
   switch (level) {
     case "error":
+    case "fatal":
       return `\x1b[31m${str}\x1b[0m`;
     case "warn":
       return `\x1b[33m${str}\x1b[0m`;
     case "info":
+    case "log":
       return `\x1b[34m${str}\x1b[0m`;
     case "debug":
       return `\x1b[35m${str}\x1b[0m`;
