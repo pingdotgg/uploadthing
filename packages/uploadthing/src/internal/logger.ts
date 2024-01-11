@@ -12,18 +12,18 @@ const colorize = (str: string, level: LogType) => {
   switch (level) {
     case "error":
     case "fatal":
-      return `\x1b[41m\x1b[97m${str}\x1b[0m`; // Red background with white text
+      return `\x1b[41m\x1b[30m${str}\x1b[0m`;
     case "warn":
-      return `\x1b[43m\x1b[30m${str}\x1b[0m`; // Yellow background with black text
+      return `\x1b[43m\x1b[30m${str}\x1b[0m`;
     case "info":
     case "log":
-      return `\x1b[44m\x1b[97m${str}\x1b[0m`; // Blue background with white text
+      return `\x1b[44m\x1b[30m${str}\x1b[0m`;
     case "debug":
-      return `\x1b[45m\x1b[97m${str}\x1b[0m`; // Magenta background with white text
+      return `\x1b[45m\x1b[30m${str}\x1b[0m`;
     case "trace":
-      return `\x1b[46m\x1b[30m${str}\x1b[0m`; // Cyan background with black text
+      return `\x1b[46m\x1b[30m${str}\x1b[0m`;
     case "success":
-      return `\x1b[42m\x1b[30m${str}\x1b[0m`; // Green background with black text
+      return `\x1b[42m\x1b[30m${str}\x1b[0m`;
     default:
       return str;
   }
