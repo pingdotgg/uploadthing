@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import { UploadThingError } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared/error";
 import type { UploadFileResponse } from "uploadthing/client";
 import {
   DANGEROUS__uploadFiles,

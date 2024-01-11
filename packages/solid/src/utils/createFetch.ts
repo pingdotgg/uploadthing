@@ -1,7 +1,7 @@
 import type { Resource } from "solid-js";
 import { createResource } from "solid-js";
 
-import { safeParseJSON } from "@uploadthing/shared";
+import { safeParseJSON } from "@uploadthing/shared/utils";
 
 interface State<T> {
   data?: T;

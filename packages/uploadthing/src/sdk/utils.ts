@@ -1,11 +1,15 @@
 import type { File as UndiciFile } from "undici";
 
-import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared/error";
+import type {
+  ContentDisposition,
+  FetchEsque,
+  Json,
+} from "@uploadthing/shared/types";
 import {
   generateUploadThingURL,
   pollForFileData,
-  UploadThingError,
-} from "@uploadthing/shared";
+} from "@uploadthing/shared/utils";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { uploadPart } from "../internal/multi-part";

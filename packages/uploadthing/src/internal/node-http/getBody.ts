@@ -1,6 +1,6 @@
 import type { IncomingMessage } from "node:http";
 
-import { UploadThingError } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared/error";
 
 export type BodyResult =
   | {

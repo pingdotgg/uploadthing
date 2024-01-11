@@ -1,10 +1,10 @@
 // TODO: idk if we want to import logger here, think about bundle splitting maybe, not sure if it's a concern
 /* eslint-disable no-console */
+import { UploadThingError } from "@uploadthing/shared/error";
 import {
   safeParseJSON,
-  UploadThingError,
   withExponentialBackoff,
-} from "@uploadthing/shared";
+} from "@uploadthing/shared/utils";
 
 import { getFullApiUrl } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";

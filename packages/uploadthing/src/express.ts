@@ -4,9 +4,12 @@ import type {
   Response as ExpressResponse,
 } from "express";
 
-import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import {
+  getStatusCodeFromError,
+  UploadThingError,
+} from "@uploadthing/shared/error";
 import { setLogLevel } from "@uploadthing/shared/logger";
+import type { Json } from "@uploadthing/shared/types";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { formatError } from "./internal/error-formatter";

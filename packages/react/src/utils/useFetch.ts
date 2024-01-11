@@ -1,7 +1,7 @@
 // Ripped from https://usehooks-ts.com/react-hook/use-fetch
 import { useEffect, useReducer, useRef } from "react";
 
-import { safeParseJSON } from "@uploadthing/shared";
+import { safeParseJSON } from "@uploadthing/shared/utils";
 
 interface State<T> {
   data?: T;

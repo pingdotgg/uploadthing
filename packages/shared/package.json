@@ -4,15 +4,25 @@
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+    "./error": {
+      "types": "./dist/error.d.ts",
+      "import": "./dist/error.mjs",
+      "require": "./dist/error.js"
     },
     "./logger": {
       "types": "./dist/logger.d.ts",
       "import": "./dist/logger.mjs",
       "require": "./dist/logger.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.mjs",
+      "require": "./dist/types.js"
+    },
+    "./utils": {
+      "types": "./dist/utils.d.ts",
+      "import": "./dist/utils.mjs",
+      "require": "./dist/utils.js"
     }
   },
   "files": [

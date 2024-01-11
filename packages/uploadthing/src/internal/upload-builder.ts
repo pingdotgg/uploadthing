@@ -1,8 +1,5 @@
-import type {
-  FileRouterInputConfig,
-  Json,
-  UploadThingError,
-} from "@uploadthing/shared";
+import type { UploadThingError } from "@uploadthing/shared/error";
+import type { FileRouterInputConfig, Json } from "@uploadthing/shared/types";
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {

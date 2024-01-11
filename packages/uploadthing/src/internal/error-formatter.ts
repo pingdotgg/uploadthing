@@ -1,4 +1,4 @@
-import type { UploadThingError } from "@uploadthing/shared";
+import type { UploadThingError } from "@uploadthing/shared/error";
 
 import type { FileRouter, inferErrorShape } from "./types";
 

@@ -1,5 +1,6 @@
-import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
-import type { ContentDisposition, FetchEsque } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared/error";
+import type { ContentDisposition, FetchEsque } from "@uploadthing/shared/types";
+import { generateUploadThingURL } from "@uploadthing/shared/utils";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
 

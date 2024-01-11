@@ -1,4 +1,4 @@
-import { UploadThingError } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared/error";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type { ActionType, UTEvents } from "./types";

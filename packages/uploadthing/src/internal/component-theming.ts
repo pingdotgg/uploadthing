@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
 
-import { objectKeys } from "@uploadthing/shared";
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { ExpandedRouteConfig } from "@uploadthing/shared/types";
+import { objectKeys } from "@uploadthing/shared/utils";
 
 /**
  * Shared helpers for our premade components that's reusable by multiple frameworks

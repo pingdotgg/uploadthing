@@ -1,10 +1,10 @@
+import { UploadThingError } from "@uploadthing/shared/error";
+import { logger } from "@uploadthing/shared/logger";
+import type { FileData } from "@uploadthing/shared/types";
 import {
   generateUploadThingURL,
   pollForFileData,
-  UploadThingError,
-} from "@uploadthing/shared";
-import type { FileData } from "@uploadthing/shared";
-import { logger } from "@uploadthing/shared/logger";
+} from "@uploadthing/shared/utils";
 
 import { UPLOADTHING_VERSION } from "../constants";
 

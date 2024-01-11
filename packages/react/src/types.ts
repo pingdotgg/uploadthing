@@ -1,7 +1,5 @@
-import type {
-  ExpandedRouteConfig,
-  UploadThingError,
-} from "@uploadthing/shared";
+import type { UploadThingError } from "@uploadthing/shared/error";
+import type { ExpandedRouteConfig } from "@uploadthing/shared/types";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,

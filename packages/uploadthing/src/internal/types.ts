@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import type { UploadThingError } from "@uploadthing/shared/error";
 import type {
   FileRouterInputConfig,
   Json,
   UploadedFile,
-  UploadThingError,
-} from "@uploadthing/shared";
+} from "@uploadthing/shared/types";
 
 import type { JsonParser } from "./parser";
 

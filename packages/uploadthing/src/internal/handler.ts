@@ -1,13 +1,7 @@
 import type { MimeType } from "@uploadthing/mime-types/db";
-import {
-  generateUploadThingURL,
-  getTypeFromFileName,
-  isObject,
-  objectKeys,
-  fillInputRouteConfig as parseAndExpandInputConfig,
-  safeParseJSON,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared/error";
+import type { LogLevel } from "@uploadthing/shared/logger";
+import { logger } from "@uploadthing/shared/logger";
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
@@ -15,9 +9,15 @@ import type {
   Json,
   RequestLike,
   UploadedFile,
-} from "@uploadthing/shared";
-import type { LogLevel } from "@uploadthing/shared/logger";
-import { logger } from "@uploadthing/shared/logger";
+} from "@uploadthing/shared/types";
+import {
+  generateUploadThingURL,
+  getTypeFromFileName,
+  isObject,
+  objectKeys,
+  fillInputRouteConfig as parseAndExpandInputConfig,
+  safeParseJSON,
+} from "@uploadthing/shared/utils";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";

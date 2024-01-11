@@ -2,7 +2,16 @@ import type { IncomingHttpHeaders } from "node:http";
 
 import type { MimeType } from "@uploadthing/mime-types/db";
 
-import type { AllowedFileType } from "./file-types";
+export const ALLOWED_FILE_TYPES = [
+  "image",
+  "video",
+  "audio",
+  "pdf",
+  "text",
+  "blob",
+] as const;
+
+export type AllowedFileType = (typeof ALLOWED_FILE_TYPES)[number];
 
 export type JsonValue = string | number | boolean | null | undefined;
 export type JsonArray = JsonValue[];

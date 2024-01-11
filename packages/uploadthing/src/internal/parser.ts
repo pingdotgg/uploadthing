@@ -1,4 +1,4 @@
-import type { Json } from "@uploadthing/shared";
+import type { Json } from "@uploadthing/shared/types";
 
 import type { MaybePromise } from "./types";
 

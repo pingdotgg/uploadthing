@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 
-import type { Json } from "@uploadthing/shared";
+import type { Json } from "@uploadthing/shared/types";
 
 import type { RouterWithConfig } from "./internal/handler";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
