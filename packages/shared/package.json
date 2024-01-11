@@ -17,9 +17,9 @@
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/mime-types": "0.2.2",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.3.1",
+    "bunchee": "^4.3.3",
     "eslint": "^8.47.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3"
   },
   "peerDependencies": {
     "@uploadthing/mime-types": "^0.2.2"

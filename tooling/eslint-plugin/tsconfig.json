@@ -1,6 +1,5 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Default",
+  "extends": ["@uploadthing/tsconfig/base.json"],
   "compilerOptions": {
     "composite": false,
     "declaration": true,
@@ -16,5 +15,7 @@
     "skipLibCheck": true,
     "strict": true
   },
+
+  "include": ["src/**/*", "*.ts", "test/**/*"],
   "exclude": ["node_modules"]
 }

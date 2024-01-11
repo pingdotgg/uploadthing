@@ -24,11 +24,11 @@
     "@types/react": "18.2.33",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.3.1",
+    "bunchee": "^4.3.3",
     "eslint": "^8.47.0",
     "react": "18.2.0",
     "solid-js": "^1.7.11",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3"
   },
   "eslintConfig": {
     "root": true,

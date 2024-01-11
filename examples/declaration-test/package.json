@@ -11,7 +11,7 @@
     "@tsconfig/node-lts": "^18.12.2",
     "@tsconfig/strictest": "^2.0.1",
     "@types/node": "18.16.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "@uploadthing/react": "6.1.0",
