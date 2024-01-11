@@ -20,6 +20,7 @@ import type {
 import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getFullApiUrl } from "./get-full-api-url";
+import { logger } from "./logger";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
 import type { ActionType, FileRouter, UTEvents } from "./types";
@@ -65,7 +66,7 @@ const fileCountLimitHit = (
     const limit = routeConfig[key]?.maxFileCount;
 
     if (!limit) {
-      console.error(routeConfig, key);
+      logger.error(routeConfig, key);
       throw new UploadThingError({
         code: "BAD_REQUEST",
         message: "Invalid config during file count",
@@ -124,7 +125,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
     if (process.env.NODE_ENV === "development") {
-      console.log("[UT] UploadThing dev server is now running!");
+      logger.info("UploadThing dev server is now running!");
     }
 
     const { req, res, event } = input;
@@ -255,7 +256,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           const inputParser = uploadable._def.inputParser;
           parsedInput = await getParseFn(inputParser)(userInput);
         } catch (error) {
-          console.error(error);
+          logger.error("An error occured trying to parse input", error);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid input.",
@@ -274,7 +275,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             input: parsedInput,
           });
         } catch (error) {
-          console.error(error);
+          logger.error("An error occured in your middleware function", error);
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to run middleware.",
@@ -307,7 +308,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             uploadable._def.routerConfig,
           );
         } catch (error) {
-          console.error(error);
+          logger.error("Invalid route config", error);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid config.",
@@ -328,7 +329,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             });
           }
         } catch (error) {
-          console.error(error);
+          logger.error("Invalid route config", error);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid config.",
@@ -354,7 +355,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         );
 
         if (!uploadthingApiResponse.ok || parsedResponse instanceof Error) {
-          console.error("[UT] unable to get presigned urls");
+          logger.error("Unable to get presigned URLs", parsedResponse);
           return new UploadThingError({
             code: "URL_GENERATION_FAILED",
             message: "Unable to get presigned urls",
@@ -425,10 +426,11 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
 
         if (!uploadthingApiResponse.ok) {
-          console.error("[UT] failed to mark upload as failed");
           const parsedResponse = await safeParseJSON<UploadThingResponse>(
             uploadthingApiResponse,
           );
+          logger.error("Failed to mark upload as failed", parsedResponse);
+
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Unable to mark upload as failed",
@@ -446,10 +448,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             fileKey,
           });
         } catch (error) {
-          console.error(
-            "[UT] Failed to run onUploadError callback. You probably shouldn't be throwing errors in your callback.",
+          logger.error(
+            "Failed to run onUploadError callback. You probably shouldn't be throwing errors in your callback.",
+            error,
           );
-          console.error(error);
 
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
@@ -508,11 +510,9 @@ function resolveCallbackUrl(opts: {
 
   if (!parsedFromHeaders || parsedFromHeaders.includes("localhost")) {
     // Didn't find a valid URL in the headers, log a warning and use the original url anyway
-    console.warn(
-      [
-        "[UT] [WARN] You are using a localhost callback url in production which is not supported.",
-        "Read more and learn how to fix it here: https://docs.uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
-      ].join(" "),
+    logger.warn(
+      "You are using a localhost callback url in production which is not supported.",
+      "Read more and learn how to fix it here: https://docs.uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
     );
     return callbackUrl;
   }

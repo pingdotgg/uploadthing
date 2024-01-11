@@ -8,6 +8,7 @@ import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
+import { logger } from "../internal/logger";
 import type { FileEsque, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,
@@ -62,7 +63,7 @@ export class UTApi {
 
     const json = await res.json<T | { error: string }>();
     if (!res.ok || "error" in json) {
-      console.error("[UT] Error:", json);
+      logger.error("Error:", json);
       throw new UploadThingError({
         code: "INTERNAL_SERVER_ERROR",
         message:

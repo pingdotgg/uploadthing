@@ -1,3 +1,6 @@
+// Don't want to ship our logger to the client, keep size down
+/* eslint-disable no-console */
+
 import {
   safeParseJSON,
   UploadThingError,
