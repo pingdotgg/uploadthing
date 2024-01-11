@@ -93,7 +93,8 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "^0.2.2",
-    "@uploadthing/shared": "^6.0.3"
+    "@uploadthing/shared": "^6.0.3",
+    "consola": "^3.2.3"
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
@@ -119,6 +120,9 @@
     "root": true,
     "extends": [
       "@uploadthing/eslint-config/base"
-    ]
+    ],
+    "rules": {
+      "no-console": "error"
+    }
   }
 }

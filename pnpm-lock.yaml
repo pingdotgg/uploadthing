@@ -959,6 +959,9 @@ importers:
       '@uploadthing/shared':
         specifier: ^6.0.3
         version: link:../shared
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
     devDependencies:
       '@types/express':
         specifier: ^4.17.17

@@ -67,6 +67,8 @@ export class UploadThingError<
       this.cause = new Error(
         `Response ${opts.cause.status} ${opts.cause.statusText}`,
       );
+    } else if (typeof opts.cause === "string") {
+      this.cause = new Error(opts.cause);
     } else {
       this.cause = opts.cause;
     }

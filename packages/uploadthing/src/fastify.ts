@@ -16,6 +16,7 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { initLogger } from "./internal/logger";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -35,8 +36,11 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
   done: (err?: Error) => void,
 ) => {
+  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
+
   const requestHandler = buildRequestHandler<TRouter>(opts);
+  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST: RouteHandlerMethod = async (req, res) => {
     const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
@@ -78,8 +82,6 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
       })
       .send(response.body);
   };
-
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const GET: RouteHandlerMethod = async (req, res) => {
     void res
