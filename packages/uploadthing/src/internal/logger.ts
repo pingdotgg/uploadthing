@@ -28,9 +28,11 @@ const colorize = (str: string, level: LogType) => {
 };
 
 const icons: { [t in LogType]?: string } = {
+  fatal: "⨯",
   error: "⨯",
   warn: "⚠️",
   info: "ℹ",
+  log: "ℹ",
   debug: "⚙",
   trace: "→",
   success: "✓",
