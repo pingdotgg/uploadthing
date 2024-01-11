@@ -28,7 +28,7 @@ export function incompatibleNodeGuard() {
   if (major > 18) return;
   if (major === 18 && minor >= 13) return;
 
-  logger.error(
+  logger.fatal(
     `YOU ARE USING A LEGACY (${major}.${minor}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE ^18.13.`,
   );
   process.exit(1); // Kill the process if it isn't going to work correctly anyway
