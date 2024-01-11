@@ -20,6 +20,7 @@ import type {
 import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getFullApiUrl } from "./get-full-api-url";
+import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
@@ -85,6 +86,7 @@ const fileCountLimitHit = (
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: {
+    logLevel?: LogLevel;
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
