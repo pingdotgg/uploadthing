@@ -15,6 +15,7 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { initLogger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -33,8 +34,11 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
+  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
+
   const requestHandler = buildRequestHandler<TRouter>(opts);
+  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
   const router = ExpressRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -88,8 +92,6 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
     res.send(JSON.stringify(response.body));
   });
-
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   router.get("/", (_req, res) => {
     res.status(200);

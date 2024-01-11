@@ -6,6 +6,7 @@ import {
 import type { FileData } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { logger } from "./logger";
 
 const isValidResponse = (response: Response) => {
   if (!response.ok) return false;
@@ -34,7 +35,7 @@ export const conditionalDevServer = async (opts: {
       if (!callbackUrl.startsWith("http"))
         callbackUrl = "http://" + callbackUrl;
 
-      console.log("[UT] SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+      logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
       const response = await fetch(callbackUrl, {
         method: "POST",
@@ -53,13 +54,13 @@ export const conditionalDevServer = async (opts: {
         },
       });
       if (isValidResponse(response)) {
-        console.log(
-          "[UT] Successfully simulated callback for file",
+        logger.success(
+          "Successfully simulated callback for file",
           opts.fileKey,
         );
       } else {
-        console.error(
-          "[UT] Failed to simulate callback for file. Is your webhook configured correctly?",
+        logger.error(
+          "Failed to simulate callback for file. Is your webhook configured correctly?",
           opts.fileKey,
         );
       }
@@ -69,7 +70,7 @@ export const conditionalDevServer = async (opts: {
 
   if (fileData !== undefined) return fileData;
 
-  console.error(`[UT] Failed to simulate callback for file ${opts.fileKey}`);
+  logger.error(`Failed to simulate callback for file ${opts.fileKey}`);
   throw new UploadThingError({
     code: "UPLOAD_FAILED",
     message: "File took too long to upload",

@@ -8,6 +8,8 @@ import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
+import type { LogLevel } from "../internal/logger";
+import { initLogger, logger } from "../internal/logger";
 import type { FileEsque, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,
@@ -26,6 +28,10 @@ export interface UTApiOptions {
    * @default process.env.UPLOADTHING_SECRET
    */
   apiKey?: string;
+  /**
+   * @default "info"
+   */
+  logLevel?: LogLevel;
 }
 
 export class UTApi {
@@ -42,6 +48,8 @@ export class UTApi {
       "x-uploadthing-version": UPLOADTHING_VERSION,
     };
 
+    initLogger(opts?.logLevel);
+
     // Assert some stuff
     guardServerOnly();
     getApiKeyOrThrow(this.apiKey);
@@ -53,16 +61,23 @@ export class UTApi {
     body: Record<string, unknown>,
     fallbackErrorMessage: string,
   ) {
-    const res = await this.fetch(generateUploadThingURL(pathname), {
+    const url = generateUploadThingURL(pathname);
+    logger.debug("Requesting UploadThing:", {
+      url,
+      body,
+      headers: this.defaultHeaders,
+    });
+    const res = await this.fetch(url, {
       method: "POST",
       cache: "no-store",
       headers: this.defaultHeaders,
       body: JSON.stringify(body),
     });
+    logger.debug("UploadThing responsed with status:", res.status);
 
     const json = await res.json<T | { error: string }>();
     if (!res.ok || "error" in json) {
-      console.error("[UT] Error:", json);
+      logger.error("Error:", json);
       throw new UploadThingError({
         code: "INTERNAL_SERVER_ERROR",
         message:
@@ -72,12 +87,12 @@ export class UTApi {
       });
     }
 
+    logger.debug("UploadThing response:", json);
     return json;
   }
 
   /**
-   * @param {FileEsque | FileEsque[]} files The file(s) to upload
-   * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+   * Upload files to UploadThing storage.
    *
    * @example
    * await uploadFiles(new File(["foo"], "foo.txt"));
@@ -98,6 +113,7 @@ export class UTApi {
     guardServerOnly();
 
     const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
+    logger.debug("Uploading files:", filesToUpload);
 
     const uploads = await uploadFilesInternal(
       {
@@ -112,6 +128,7 @@ export class UTApi {
     );
 
     const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
+    logger.debug("Finished uploading:", uploadFileResponse);
 
     return uploadFileResponse as T extends FileEsque[]
       ? UploadFileResponse[]
@@ -151,6 +168,7 @@ export class UTApi {
         const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
         // Download the file on the user's server to avoid egress charges
+        logger.debug("Downloading file:", url);
         const fileResponse = await fetch(url);
         if (!fileResponse.ok) {
           throw new UploadThingError({
@@ -159,10 +177,14 @@ export class UTApi {
             cause: fileResponse,
           });
         }
+        logger.debug("Finished downloading file. Reading blob...");
         const blob = await fileResponse.blob();
+        logger.debug("Finished reading blob.");
         return Object.assign(blob, { name: filename });
       }),
     );
+
+    logger.debug("All files downloaded, uploading...");
 
     const uploads = await uploadFilesInternal(
       {
@@ -178,6 +200,7 @@ export class UTApi {
 
     const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
 
+    logger.debug("Finished uploading:", uploadFileResponse);
     return uploadFileResponse as T extends MaybeUrl[]
       ? UploadFileResponse[]
       : UploadFileResponse;
