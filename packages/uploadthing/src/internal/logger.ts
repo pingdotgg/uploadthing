@@ -12,18 +12,18 @@ const colorize = (str: string, level: LogType) => {
   switch (level) {
     case "error":
     case "fatal":
-      return `\x1b[31m${str}\x1b[0m`;
+      return `\x1b[41m\x1b[97m${str}\x1b[0m`; // Red background with white text
     case "warn":
-      return `\x1b[33m${str}\x1b[0m`;
+      return `\x1b[43m\x1b[30m${str}\x1b[0m`; // Yellow background with black text
     case "info":
     case "log":
-      return `\x1b[34m${str}\x1b[0m`;
+      return `\x1b[44m\x1b[97m${str}\x1b[0m`; // Blue background with white text
     case "debug":
-      return `\x1b[35m${str}\x1b[0m`;
+      return `\x1b[45m\x1b[97m${str}\x1b[0m`; // Magenta background with white text
     case "trace":
-      return `\x1b[36m${str}\x1b[0m`;
+      return `\x1b[46m\x1b[30m${str}\x1b[0m`; // Cyan background with black text
     case "success":
-      return `\x1b[32m${str}\x1b[0m`;
+      return `\x1b[42m\x1b[30m${str}\x1b[0m`; // Green background with black text
     default:
       return str;
   }
@@ -107,7 +107,7 @@ export const logger = createConsola({
 });
 
 export const initLogger = (level: LogLevel | undefined) => {
-  logger.wrapConsole();
+  // logger.wrapConsole();
   logger.level = LogLevels[level ?? "info"];
   logger.info("Set log level", { level: logger.level });
 };
