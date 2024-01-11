@@ -261,7 +261,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       // This would either be someone spamming or the AWS webhook
       const msg = `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
         .join(", ")
-        .replace(/,(?!.*,)/, " or")} but got "${"a"}"`;
+        .replace(/,(?!.*,)/, " or")} but got "${actionType}"`;
       logger.error("Invalid action type.", msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
