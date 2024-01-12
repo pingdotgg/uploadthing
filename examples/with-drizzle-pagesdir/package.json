@@ -1,6 +1,5 @@
 {
   "name": "@example/with-drizzle-pagesdir",
-  "type": "module",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -34,7 +33,7 @@
     "drizzle-kit": "^0.19.13",
     "eslint": "^8.47.0",
     "eslint-config-next": "^14.0.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.1.6"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.1"

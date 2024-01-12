@@ -1,6 +1,5 @@
 {
   "name": "@example/image-cropping",
-  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -21,6 +20,6 @@
     "@types/node": "18.16.0",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
-    "typescript": "^5.3.3"
+    "typescript": "^5.1.6"
   }
 }
