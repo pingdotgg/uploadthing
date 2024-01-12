@@ -81,71 +81,101 @@
   "exports": {
     "./package.json": "./package.json",
     "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.js"
+      "import": {
+        "types": "./dist/client.d.mts",
+        "default": "./dist/client.mjs"
+      },
+      "require": {
+        "types": "./dist/client.d.ts",
+        "default": "./dist/client.js"
+      }
     },
     "./server": {
-      "types": "./dist/server.d.ts",
-      "import": "./dist/server.mjs",
-      "require": "./dist/server.js"
+      "import": {
+        "types": "./dist/server.d.mts",
+        "default": "./dist/server.mjs"
+      },
+      "require": {
+        "types": "./dist/server.d.ts",
+        "default": "./dist/server.js"
+      }
     },
     "./next": {
-      "types": "./dist/next.d.ts",
-      "import": "./dist/next.mjs",
-      "require": "./dist/next.js"
+      "import": {
+        "types": "./dist/next.d.mts",
+        "default": "./dist/next.mjs"
+      },
+      "require": {
+        "types": "./dist/next.d.ts",
+        "default": "./dist/next.js"
+      }
     },
     "./next-legacy": {
-      "types": "./dist/next-legacy.d.ts",
-      "import": "./dist/next-legacy.mjs",
-      "require": "./dist/next-legacy.js"
+      "import": {
+        "types": "./dist/next-legacy.d.mts",
+        "default": "./dist/next-legacy.mjs"
+      },
+      "require": {
+        "types": "./dist/next-legacy.d.ts",
+        "default": "./dist/next-legacy.js"
+      }
     },
     "./express": {
-      "types": "./dist/express.d.ts",
-      "import": "./dist/express.mjs",
-      "require": "./dist/express.js"
+      "import": {
+        "types": "./dist/express.d.mts",
+        "default": "./dist/express.mjs"
+      },
+      "require": {
+        "types": "./dist/express.d.ts",
+        "default": "./dist/express.js"
+      }
     },
     "./tw": {
-      "types": "./dist/tw.d.ts",
-      "import": "./dist/tw.mjs",
-      "require": "./dist/tw.js"
+      "import": {
+        "types": "./dist/tw.d.mts",
+        "default": "./dist/tw.mjs"
+      },
+      "require": {
+        "types": "./dist/tw.d.ts",
+        "default": "./dist/tw.js"
+      }
     },
     "./fastify": {
-      "types": "./dist/fastify.d.ts",
-      "import": "./dist/fastify.mjs",
-      "require": "./dist/fastify.js"
+      "import": {
+        "types": "./dist/fastify.d.mts",
+        "default": "./dist/fastify.mjs"
+      },
+      "require": {
+        "types": "./dist/fastify.d.ts",
+        "default": "./dist/fastify.js"
+      }
     },
     "./h3": {
-      "types": "./dist/h3.d.ts",
-      "import": "./dist/h3.mjs",
-      "require": "./dist/h3.js"
+      "import": {
+        "types": "./dist/h3.d.mts",
+        "default": "./dist/h3.mjs"
+      },
+      "require": {
+        "types": "./dist/h3.d.ts",
+        "default": "./dist/h3.js"
+      }
+    },
+    "./internal/types": {
+      "import": {
+        "types": "./dist/internal/types.d.mts",
+        "default": "./dist/internal/types.mjs"
+      },
+      "require": {
+        "types": "./dist/internal/types.d.ts",
+        "default": "./dist/internal/types.js"
+      }
     }
   },
   "typesVersions": {
     "*": {
-      "client": [
-        "dist/client.d.ts"
-      ],
-      "server": [
-        "dist/server.d.ts"
-      ],
-      "next": [
-        "dist/next.d.ts"
-      ],
-      "next-legacy": [
-        "dist/next-legacy.d.ts"
-      ],
-      "tw": [
-        "dist/tw.d.ts"
-      ],
-      "express": [
-        "dist/express.d.ts"
-      ],
-      "fastify": [
-        "dist/fastify.d.ts"
-      ],
-      "h3": [
-        "dist/h3.d.ts"
+      "*": [
+        "dist/*.d.ts",
+        "dist/*.d.mts"
       ]
     }
   }

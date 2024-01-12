@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 
+import type { DistributiveOmit } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import {
@@ -8,7 +9,6 @@ import {
   INTERNAL_DO_NOT_USE__fatalClientError,
 } from "uploadthing/client";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,

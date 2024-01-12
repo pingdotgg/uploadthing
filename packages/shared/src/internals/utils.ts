@@ -1,7 +1,7 @@
 import { lookup } from "@uploadthing/mime-types";
 
-import type { AllowedFileType } from "./file-types";
 import type {
+  AllowedFileType,
   ExpandedRouteConfig,
   FileData,
   FileRouterInputConfig,

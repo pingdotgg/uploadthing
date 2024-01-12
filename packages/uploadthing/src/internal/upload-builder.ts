@@ -1,6 +1,7 @@
 import type {
   FileRouterInputConfig,
   Json,
+  UnsetMarker,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -8,7 +9,6 @@ import { defaultErrorFormatter } from "./error-formatter";
 import type {
   AnyParams,
   MiddlewareFnArgs,
-  UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
   Uploader,

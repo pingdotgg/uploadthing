@@ -7,22 +7,24 @@ import {
   fillInputRouteConfig as parseAndExpandInputConfig,
   safeParseJSON,
   UploadThingError,
+  VALID_ACTION_TYPES,
 } from "@uploadthing/shared";
 import type {
+  ActionType,
   ContentDisposition,
   ExpandedRouteConfig,
   FileRouterInputKey,
   Json,
   RequestLike,
   UploadedFile,
+  UTEvents,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getFullApiUrl } from "./get-full-api-url";
 import { getParseFn } from "./parser";
-import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter, UTEvents } from "./types";
+import type { FileRouter } from "./types";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.

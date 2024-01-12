@@ -1,7 +1,7 @@
 import { UploadThingError } from "@uploadthing/shared";
+import type { ActionType, UTEvents } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
-import type { ActionType, UTEvents } from "./types";
 
 export const createAPIRequestUrl = (config: {
   /**

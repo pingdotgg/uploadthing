@@ -1,7 +1,10 @@
 import { createSignal } from "solid-js";
 
 import { UploadThingError } from "@uploadthing/shared";
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type {
+  DistributiveOmit,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import {
   DANGEROUS__uploadFiles,
@@ -9,7 +12,6 @@ import {
   INTERNAL_DO_NOT_USE__fatalClientError,
 } from "uploadthing/client";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,

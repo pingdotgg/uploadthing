@@ -3,6 +3,9 @@
 import type {
   FileRouterInputConfig,
   Json,
+  MaybePromise,
+  Simplify,
+  UnsetMarker,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -11,22 +14,6 @@ import type { JsonParser } from "./parser";
 
 //
 // Utils
-export const unsetMarker = "unsetMarker" as "unsetMarker" & {
-  __brand: "unsetMarker";
-};
-export type UnsetMarker = typeof unsetMarker;
-
-export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
-
-export type MaybePromise<TType> = TType | Promise<TType>;
-
-/**
- * Omits the key without removing a potential union
- * @internal
- */
-export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
-  ? Omit<TObj, TKey>
-  : never;
 
 //
 // Package
@@ -152,31 +139,3 @@ export type inferEndpointOutput<TUploader extends Uploader<any>> =
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
-
-export const VALID_ACTION_TYPES = [
-  "upload",
-  "failure",
-  "multipart-complete",
-] as const;
-export type ActionType = (typeof VALID_ACTION_TYPES)[number];
-
-export type UTEvents = {
-  upload: {
-    files: { name: string; size: number }[];
-    input: Json;
-  };
-  failure: {
-    fileKey: string;
-    uploadId: string;
-    s3Error?: string;
-    fileName: string;
-  };
-  "multipart-complete": {
-    fileKey: string;
-    uploadId: string;
-    etags: {
-      tag: string;
-      partNumber: number;
-    }[];
-  };
-};

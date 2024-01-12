@@ -1,5 +1,5 @@
 {
   "extends": ["@uploadthing/tsconfig/base.json"],
-  "include": ["src/**/*", "*.ts", "test/**/*"],
+  "include": ["src/**/*", "*.ts", "test/**/*", "dist"],
   "exclude": ["node_modules"]
 }

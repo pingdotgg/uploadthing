@@ -1,6 +1,11 @@
 import type { File as UndiciFile } from "undici";
 
-import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
+import type {
+  ContentDisposition,
+  FetchEsque,
+  Json,
+  UTEvents,
+} from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -9,7 +14,6 @@ import {
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { uploadPart } from "../internal/multi-part";
-import type { UTEvents } from "../server";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {

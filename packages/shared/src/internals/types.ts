@@ -2,8 +2,6 @@ import type { IncomingHttpHeaders } from "node:http";
 
 import type { MimeType } from "@uploadthing/mime-types/db";
 
-import type { AllowedFileType } from "./file-types";
-
 export type JsonValue = string | number | boolean | null | undefined;
 export type JsonArray = JsonValue[];
 export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
@@ -11,6 +9,17 @@ export type Json = JsonValue | JsonObject | JsonArray;
 
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+
+export const ALLOWED_FILE_TYPES = [
+  "image",
+  "video",
+  "audio",
+  "pdf",
+  "text",
+  "blob",
+] as const;
+
+export type AllowedFileType = (typeof ALLOWED_FILE_TYPES)[number];
 
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
@@ -116,3 +125,49 @@ type PartialRouteConfig = Partial<
 >;
 
 export type FileRouterInputConfig = FileRouterInputKey[] | PartialRouteConfig;
+
+export const VALID_ACTION_TYPES = [
+  "upload",
+  "failure",
+  "multipart-complete",
+] as const;
+export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+
+export type UTEvents = {
+  upload: {
+    files: { name: string; size: number }[];
+    input: Json;
+  };
+  failure: {
+    fileKey: string;
+    uploadId: string;
+    s3Error?: string;
+    fileName: string;
+  };
+  "multipart-complete": {
+    fileKey: string;
+    uploadId: string;
+    etags: {
+      tag: string;
+      partNumber: number;
+    }[];
+  };
+};
+
+export const unsetMarker = "unsetMarker" as "unsetMarker" & {
+  __brand: "unsetMarker";
+};
+export type UnsetMarker = typeof unsetMarker;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
+
+export type MaybePromise<TType> = TType | Promise<TType>;
+
+/**
+ * Omits the key without removing a potential union
+ * @internal
+ */
+export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
+  ? Omit<TObj, TKey>
+  : never;

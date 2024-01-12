@@ -1,3 +1,4 @@
+import type { DistributiveOmit } from "@uploadthing/shared";
 import {
   safeParseJSON,
   UploadThingError,
@@ -8,7 +9,6 @@ import { getFullApiUrl } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
