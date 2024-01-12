@@ -854,6 +854,9 @@ importers:
         specifier: ^1.13.2
         version: 1.13.2
     devDependencies:
+      '@uploadthing/tsconfig':
+        specifier: ^0.1.0
+        version: link:../../tooling/tsconfig
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.31)
