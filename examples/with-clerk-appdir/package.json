@@ -1,5 +1,6 @@
 {
   "name": "@example/with-clerk-appdir",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "next build",
