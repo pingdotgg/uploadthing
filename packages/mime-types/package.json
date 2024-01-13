@@ -7,12 +7,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./db": {
       "types": "./dist/db.d.ts",
       "import": "./dist/db.mjs",
-      "require": "./dist/db.js"
+      "require": "./dist/db.cjs"
     }
   },
   "typesVersions": {
@@ -27,7 +27,7 @@
   ],
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "bunchee",
+    "build": "rm -rf dist && bunchee",
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"

@@ -164,7 +164,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
       DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
         ...opts,
         url,
-      }),
+      } as any),
   } as const;
 };
 

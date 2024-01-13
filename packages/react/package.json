@@ -8,17 +8,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.cjs"
     },
     "./hooks": {
       "types": "./dist/hooks.d.ts",
       "import": "./dist/hooks.mjs",
-      "require": "./dist/hooks.js"
+      "require": "./dist/hooks.cjs"
     },
     "./next-ssr-plugin": {
       "types": "./dist/next-ssr-plugin.d.ts",
       "import": "./dist/next-ssr-plugin.mjs",
-      "require": "./dist/next-ssr-plugin.js"
+      "require": "./dist/next-ssr-plugin.cjs"
     }
   },
   "files": [

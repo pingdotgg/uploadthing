@@ -7,17 +7,17 @@
     "./core": {
       "types": "./dist/core.d.ts",
       "import": "./dist/core.mjs",
-      "require": "./dist/core.js"
+      "require": "./dist/core.cjs"
     },
     "./solid": {
       "types": "./dist/solid.d.ts",
       "import": "./dist/solid.mjs",
-      "require": "./dist/solid.js"
+      "require": "./dist/solid.cjs"
     },
     "./react": {
       "types": "./dist/react.d.ts",
       "import": "./dist/react.mjs",
-      "require": "./dist/react.js"
+      "require": "./dist/react.cjs"
     }
   },
   "files": [
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "bunchee",
+    "build": "rm -rf dist && bunchee",
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
@@ -52,6 +52,18 @@
     "react": "18.2.0",
     "solid-js": "^1.7.11",
     "typescript": "^5.1.6"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "solid-js": "^1.7.11"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
   },
   "eslintConfig": {
     "root": true,
