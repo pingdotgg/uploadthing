@@ -8,44 +8,88 @@
   "exports": {
     "./package.json": "./package.json",
     "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.js"
+      "import": {
+        "types": "./dist/client.d.mts",
+        "default": "./dist/client.mjs"
+      },
+      "require": {
+        "types": "./dist/client.d.cts",
+        "default": "./dist/client.cjs"
+      }
     },
     "./server": {
-      "types": "./dist/server.d.ts",
-      "import": "./dist/server.mjs",
-      "require": "./dist/server.js"
+      "import": {
+        "types": "./dist/server.d.mts",
+        "default": "./dist/server.mjs"
+      },
+      "require": {
+        "types": "./dist/server.d.cts",
+        "default": "./dist/server.cjs"
+      }
     },
     "./next": {
-      "types": "./dist/next.d.ts",
-      "import": "./dist/next.mjs",
-      "require": "./dist/next.js"
+      "import": {
+        "types": "./dist/next.d.mts",
+        "default": "./dist/next.mjs"
+      },
+      "require": {
+        "types": "./dist/next.d.cts",
+        "default": "./dist/next.cjs"
+      }
     },
     "./next-legacy": {
-      "types": "./dist/next-legacy.d.ts",
-      "import": "./dist/next-legacy.mjs",
-      "require": "./dist/next-legacy.js"
+      "import": {
+        "types": "./dist/next-legacy.d.mts",
+        "default": "./dist/next-legacy.mjs"
+      },
+      "require": {
+        "types": "./dist/next-legacy.d.cts",
+        "default": "./dist/next-legacy.cjs"
+      }
     },
     "./express": {
-      "import": "./dist/express.mjs",
-      "types": "./dist/express.d.ts",
-      "require": "./dist/express.js"
+      "import": {
+        "types": "./dist/express.d.mts",
+        "default": "./dist/express.mjs"
+      },
+      "require": {
+        "types": "./dist/express.d.cts",
+        "default": "./dist/express.cjs"
+      }
     },
     "./tw": {
-      "types": "./dist/tw.d.ts",
-      "import": "./dist/tw.mjs",
-      "require": "./dist/tw.js"
+      "import": {
+        "types": "./dist/tw.d.mts",
+        "default": "./dist/tw.mjs"
+      },
+      "require": {
+        "types": "./dist/tw.d.cts",
+        "default": "./dist/tw.cjs"
+      }
     },
     "./fastify": {
-      "types": "./dist/fastify.d.ts",
-      "import": "./dist/fastify.mjs",
-      "require": "./dist/fastify.js"
+      "import": {
+        "types": "./dist/fastify.d.mts",
+        "default": "./dist/fastify.mjs"
+      },
+      "require": {
+        "types": "./dist/fastify.d.cts",
+        "default": "./dist/fastify.cjs"
+      }
     },
     "./h3": {
-      "types": "./dist/h3.d.ts",
-      "import": "./dist/h3.mjs",
-      "require": "./dist/h3.js"
+      "import": {
+        "types": "./dist/h3.d.mts",
+        "default": "./dist/h3.mjs"
+      },
+      "require": {
+        "types": "./dist/h3.d.cts",
+        "default": "./dist/h3.cjs"
+      }
+    },
+    "./internal/types": {
+      "types": "./dist/internal/types.d.ts",
+      "default": "./dist/internal/types.js"
     }
   },
   "files": [
@@ -84,9 +128,9 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
+    "build": "bunchee",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
+    "dev": "bunchee -w",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
@@ -101,7 +145,6 @@
     "@types/react": "18.2.33",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
     "eslint": "^8.47.0",
     "express": "^4.18.2",
     "fastify": "^4.23.2",
@@ -109,12 +152,35 @@
     "next": "14.0.1",
     "solid-js": "^1.7.11",
     "tailwindcss": "^3.3.2",
-    "tsup": "6.7.0",
     "type-fest": "^3.11.1",
     "typescript": "^5.1.6",
     "undici": "^5.20.0",
     "vitest": "^0.30.1",
     "zod": "^3.22.3"
+  },
+  "peerDependencies": {
+    "express": "*",
+    "fastify": "*",
+    "h3": "*",
+    "next": "*",
+    "tailwindcss": "*"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
+    "h3": {
+      "optional": true
+    },
+    "next": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "eslintConfig": {
     "root": true,

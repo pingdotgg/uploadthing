@@ -1,4 +1,1 @@
-import packageJson from "../package.json";
-
-if (!packageJson.version) throw new Error("no version found in package.json");
-export const UPLOADTHING_VERSION = packageJson.version;
+export { version as UPLOADTHING_VERSION } from "../package.json";

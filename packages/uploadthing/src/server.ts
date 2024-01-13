@@ -14,7 +14,14 @@ import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export * from "./internal/types";
+export type {
+  FileRouter,
+  ErrorMessage,
+  DistributiveOmit,
+  inferEndpointInput,
+  inferEndpointOutput,
+  inferErrorShape,
+} from "./internal/types";
 export { UTApi } from "./sdk";
 
 export const createUploadthing = <TErrorShape extends Json>(

@@ -10,7 +10,7 @@ import {
 import { UPLOADTHING_VERSION } from "../constants";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
-import type { UTEvents } from "../server";
+import type { UTEvents } from "../internal/types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {

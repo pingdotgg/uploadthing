@@ -27,6 +27,7 @@
     "@manypkg/cli": "^0.20.0",
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.2.0",
+    "bunchee": "^4.3.3",
     "dotenv": "latest",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",
