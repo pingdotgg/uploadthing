@@ -19,6 +19,7 @@ const isValidResponse = (response: Response) => {
 export const conditionalDevServer = async (opts: {
   fileKey: string;
   apiKey: string;
+  callbackWithPathparam?: boolean;
 }) => {
   if (process.env.NODE_ENV !== "development") return;
 
@@ -31,12 +32,17 @@ export const conditionalDevServer = async (opts: {
     async (json: { fileData: FileData }) => {
       const file = json.fileData;
 
-      let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
+      let callbackUrl = file.callbackUrl;
+      if (opts.callbackWithPathparam) {
+        callbackUrl += `/callback`;
+      }
+      callbackUrl += `?slug=${file.callbackSlug}`;
       if (!callbackUrl.startsWith("http"))
         callbackUrl = "http://" + callbackUrl;
 
       logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
+      const now = Date.now();
       const response = await fetch(callbackUrl, {
         method: "POST",
         body: JSON.stringify({
@@ -53,6 +59,15 @@ export const conditionalDevServer = async (opts: {
           "uploadthing-hook": "callback",
         },
       });
+      logger.debug("Callback took", Date.now() - now, "ms");
+      logger.debug(
+        "Response",
+        response,
+        response.status,
+        response.statusText,
+        // @ts-expect-error - this is fine
+        Object.fromEntries(response.headers.entries()),
+      );
       if (isValidResponse(response)) {
         logger.success(
           "Successfully simulated callback for file",

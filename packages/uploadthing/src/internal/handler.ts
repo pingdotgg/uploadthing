@@ -123,12 +123,15 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     url?: URL;
     res?: unknown;
     event?: unknown;
+    callbackWithPathparam?: boolean;
   }): Promise<
     UploadThingError | { status: 200; body?: UploadThingResponse }
   > => {
     if (process.env.NODE_ENV === "development") {
       logger.info("UploadThing dev server is now running!");
     }
+
+    logger.debug("Got request from", input.req.url);
 
     const { req, res, event } = input;
     const { router, config } = opts;
@@ -425,6 +428,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             void conditionalDevServer({
               fileKey: file.key,
               apiKey: preferredOrEnvSecret,
+              callbackWithPathparam: input.callbackWithPathparam,
             });
           }
         }

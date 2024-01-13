@@ -34,9 +34,15 @@ export const createServerHandler = <TRouter extends FileRouter>(
   const requestHandler = buildRequestHandler<TRouter>(opts);
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const POST = async (request: Request | { request: Request }) => {
+  const POST = async (
+    request: Request | { request: Request },
+    usePathparam?: boolean,
+  ) => {
     const req = request instanceof Request ? request : request.request;
-    const response = await requestHandler({ req });
+    const response = await requestHandler({
+      req,
+      callbackWithPathparam: usePathparam,
+    });
 
     if (response instanceof UploadThingError) {
       return new Response(JSON.stringify(formatError(response, opts.router)), {

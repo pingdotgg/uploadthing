@@ -24,7 +24,26 @@ export const createNextRouteHandler = <TRouter extends FileRouter>(
   const handlers = createServerHandler(opts);
 
   return {
-    POST: (req: NextRequest) => handlers.POST(req),
+    POST: (req: NextRequest, ctx: { params?: Record<string, unknown> }) => {
+      // If the route file is like `[[...slug]]/route.ts`, then ctx.params is defined
+      // If the route file is like `route.ts`, then ctx.params is undefined
+      const callbackWithPathparam = !!ctx?.params;
+      const action = req.nextUrl.searchParams.get("actionType");
+      if (action && callbackWithPathparam) {
+        // Rewrite the request to /{action}, that way we can send a request to
+        // /callback later without hitting Next.js' recursion stopper
+        const newUrl = new URL(req.nextUrl);
+        newUrl.pathname += `/${action}`;
+        const rewritten = new Request(newUrl, {
+          method: req.method,
+          headers: req.headers,
+          body: req.body,
+        });
+        return handlers.POST(rewritten, true);
+      }
+
+      return handlers.POST(req);
+    },
     GET: (req: NextRequest) => handlers.GET(req),
   };
 };
