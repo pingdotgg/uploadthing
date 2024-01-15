@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.23.5",
+    "@clerk/nextjs": "^4.29.3",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@uploadthing/react": "6.1.0",
     "next": "14.0.1",
