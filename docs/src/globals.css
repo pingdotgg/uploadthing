@@ -98,9 +98,14 @@
   padding: 0 !important;
 }
 
+.show-api-client-button {
+  background: var(--theme-color-accent) !important;
+}
+
 :root {
   --theme-color-accent: hsla(4, 61%, 49%, 1);
   --theme-color-background: hsla(348, 71%, 93%, 1);
+  --scalar-api-client-color: var(--theme-color-accent);
 }
 
 .dark {
