@@ -77,6 +77,10 @@
 /*
  * Scalar
  */
+.references-layout {
+  height: max-content;
+}
+
 .references-classic-header-container {
   display: none;
 }
