@@ -198,6 +198,16 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
+    if (!preferredOrEnvSecret.startsWith("sk_")) {
+      const msg = `Invalid secret provided, UPLOADTHING_SECRET must start with 'sk_'`;
+      logger.error(msg);
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Invalid secret provided`,
+        cause: msg,
+      });
+    }
+
     const uploadable = router[slug];
     if (!uploadable) {
       const msg = `No file route found for slug ${slug}`;
