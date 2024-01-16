@@ -5,8 +5,7 @@ import { applyVueInReact } from "veaury";
 
 const ApiReference = applyVueInReact(VueComponent);
 
-const specUrl =
-  "https://uploadthing-git-swagger-pinglabs.vercel.app/openapi.json";
+const specUrl = "https://uploadthing.com/openapi.json";
 
 export function ScalarApiRef() {
   const theme = useTheme();
