@@ -53,6 +53,12 @@ export class UTApi {
     // Assert some stuff
     guardServerOnly();
     getApiKeyOrThrow(this.apiKey);
+    if (!this.apiKey?.startsWith("sk_")) {
+      throw new UploadThingError({
+        code: "MISSING_ENV",
+        message: "Invalid API key. API keys must start with `sk_`.",
+      });
+    }
     incompatibleNodeGuard();
   }
 

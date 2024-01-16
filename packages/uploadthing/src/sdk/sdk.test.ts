@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf, test } from "vitest";
 import { UTApi } from ".";
 import type { UploadError } from "./utils";
 
-const utapi = new UTApi({ apiKey: "foo" });
+const utapi = new UTApi({ apiKey: "sk_test_foo" });
 
 async function ignoreErrors<T>(fn: () => T | Promise<T>) {
   try {
@@ -68,10 +68,10 @@ describe("constructor throws if no apiKey or secret is set", () => {
     );
   });
   test("env is set", () => {
-    process.env.UPLOADTHING_SECRET = "foo";
+    process.env.UPLOADTHING_SECRET = "sk_test_foo";
     expect(() => new UTApi()).not.toThrow();
   });
   test("apikey option is passed", () => {
-    expect(() => new UTApi({ apiKey: "foobar" })).not.toThrow();
+    expect(() => new UTApi({ apiKey: "sk_test_foo" })).not.toThrow();
   });
 });
