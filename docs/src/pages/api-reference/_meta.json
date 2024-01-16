@@ -2,5 +2,5 @@
   "react": "React",
   "next": "Next",
   "server": "Server",
-  "openapi-spec": { "title": "OpenAPI Spec" }
+  "openapi-spec": "OpenAPI Spec"
 }
