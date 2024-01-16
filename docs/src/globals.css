@@ -81,12 +81,21 @@
   display: none;
 }
 
+.section.introduction-section {
+  padding: 16px 0 !important;
+}
+
 .section-container {
   border: none !important;
+  padding: 0 !important;
+}
+
+.tag-section {
+  padding: 0 !important;
 }
 
 :root {
-  --theme-color-accent: hsla(355, 67%, 35%, 1);
+  --theme-color-accent: hsla(4, 61%, 49%, 1);
   --theme-color-background: hsla(348, 71%, 93%, 1);
 }
 
