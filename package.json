@@ -2,10 +2,10 @@
   "name": "uploadthing-turbo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@8.7.0",
+  "packageManager": "pnpm@8.14.1",
   "engines": {
-    "node": ">=v18.16.0",
-    "pnpm": ">=8.7.0"
+    "node": ">=v20.0.0",
+    "pnpm": ">=8.9.0"
   },
   "scripts": {
     "build:all": "turbo run build",
