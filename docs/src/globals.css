@@ -73,3 +73,25 @@
   color: rgb(0 0 0 / 0.5);
   cursor: not-allowed;
 }
+
+/*
+ * Scalar
+ */
+.references-classic-header-container {
+  display: none;
+}
+
+.section-container {
+  border: none !important;
+}
+
+:root {
+  --theme-color-accent: hsla(355, 67%, 35%, 1);
+  --theme-color-background: hsla(348, 71%, 93%, 1);
+}
+
+.dark {
+  --theme-background-1: hsl(0deg, 0%, 7%, 0.8);
+  --theme-color-accent: hsla(356, 65%, 50%, 1);
+  --theme-color-background: hsla(348, 24%, 12%, 1);
+}
