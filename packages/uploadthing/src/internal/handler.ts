@@ -192,7 +192,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
       logger.error(msg);
       return new UploadThingError({
-        code: "BAD_REQUEST",
+        code: "MISSING_ENV",
         message: `No secret provided`,
         cause: msg,
       });
@@ -202,8 +202,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       const msg = `Invalid secret provided, UPLOADTHING_SECRET must start with 'sk_'`;
       logger.error(msg);
       return new UploadThingError({
-        code: "BAD_REQUEST",
-        message: `Invalid secret provided`,
+        code: "MISSING_ENV",
+        message: "Invalid API key. API keys must start with 'sk_'.",
         cause: msg,
       });
     }
