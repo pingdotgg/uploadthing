@@ -98,7 +98,6 @@ describe("getSignedURL", () => {
 
   test("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
-    console.log(mockFetch.mock);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(mockFetch.mock.calls[0][1]).toContain({
       body: JSON.stringify({ fileKey: "foo" }),
@@ -107,7 +106,6 @@ describe("getSignedURL", () => {
 
   test("sends request with valid expiresIn (1)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
-    console.log(mockFetch.mock);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(mockFetch.mock.calls[0][1]).toContain({
       body: JSON.stringify({ fileKey: "foo", expiresIn: 86400 }),
@@ -116,7 +114,6 @@ describe("getSignedURL", () => {
 
   test("sends request with valid expiresIn (2)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
-    console.log(mockFetch.mock);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(mockFetch.mock.calls[0][1]).toContain({
       body: JSON.stringify({ fileKey: "foo", expiresIn: 180 }),
