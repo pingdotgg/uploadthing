@@ -82,7 +82,7 @@ describe("getSignedURL", () => {
   // Mock fetch
   const mockFetch = vi.fn();
   const utapi = new UTApi({
-    apiKey: "foo",
+    apiKey: "sk_foo",
     fetch: (url, init) => {
       mockFetch(url, init);
       return Promise.resolve({
