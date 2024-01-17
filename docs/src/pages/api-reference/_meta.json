@@ -1,5 +1,6 @@
 {
   "react": "React",
   "next": "Next",
-  "server": "Server"
+  "server": "Server",
+  "openapi-spec": "OpenAPI Spec"
 }
