@@ -109,5 +109,4 @@ export const logger = createConsola({
 export const initLogger = (level: LogLevel | undefined) => {
   // logger.wrapConsole();
   logger.level = LogLevels[level ?? "info"];
-  logger.info("Set log level", { level: logger.level });
 };
