@@ -11,6 +11,7 @@
     "debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "dependencies": {
+    "@radix-ui/react-accordion": "^1.1.2",
     "@scalar/api-reference": "^1.13.5",
     "@uploadthing/react": "6.1.0",
     "next": "14.0.1",

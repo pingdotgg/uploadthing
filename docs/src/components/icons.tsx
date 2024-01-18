@@ -43,3 +43,20 @@ export function Json() {
     </svg>
   );
 }
+
+export function ChevronDown(props: { className: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={[
+        "h-5 w-5 fill-none stroke-current stroke-2",
+        props.className,
+      ].join(" ")}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
