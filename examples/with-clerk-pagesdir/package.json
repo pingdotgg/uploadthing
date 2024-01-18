@@ -12,11 +12,11 @@
   "dependencies": {
     "@clerk/nextjs": "^4.29.3",
     "@t3-oss/env-nextjs": "^0.6.0",
-    "@uploadthing/react": "6.1.0",
+    "@uploadthing/react": "6.2.0",
     "next": "14.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "6.1.1",
+    "uploadthing": "6.2.0",
     "zod": "^3.22.3"
   },
   "devDependencies": {
