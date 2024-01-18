@@ -1,4 +1,4 @@
-import { inspect } from "node:util";
+// import { inspect } from "node:util";
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
 
@@ -71,7 +71,8 @@ function formatArgs(args: any[]) {
     }
     try {
       // prefer inspect over JSON.stringify because it handles circular references, prints classes etc
-      return inspect(arg, { depth: 4 });
+      return JSON.stringify(arg, null, 4);
+      // return inspect(arg, { depth: 4 });
     } catch {
       // fallback to JSON.stringify if inspect fails e.g. if runtime doesn't have util module
       return JSON.stringify(arg, null, 4);
