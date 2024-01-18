@@ -104,6 +104,11 @@ type FileRouterInput =
     };
 ```
 
+MIME types can also be used as keys in the FileRouter. For example: use
+`application/json` to only allow JSON files to be uploaded. You can read more
+about MIME types on
+[MDN ↗](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_Types).
+
 The `contentDisposition` option can be used to override the default `inline`
 disposition set at the storage provider. This is useful if you want your files
 downloaded instead of previewed in the browser. You can read more about content
