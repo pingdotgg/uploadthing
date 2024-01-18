@@ -1,5 +1,44 @@
 # uploadthing
 
+## 6.2.0
+
+### Minor Changes
+
+- [#545](https://github.com/pingdotgg/uploadthing/pull/545)
+  [`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `logLevel` option to enable more verbose logging
+
+- [#525](https://github.com/pingdotgg/uploadthing/pull/525)
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `utapi.getSignedURL` and ACL configuration options on file routes and
+  `utapi.uploadFiles`
+
+### Patch Changes
+
+- [#559](https://github.com/pingdotgg/uploadthing/pull/559)
+  [`71be9e4`](https://github.com/pingdotgg/uploadthing/commit/71be9e42019b1f172543c6ae3ee6ad25e3c57bbf)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: rm
+  redundant log
+
+- [#541](https://github.com/pingdotgg/uploadthing/pull/541)
+  [`9170d97`](https://github.com/pingdotgg/uploadthing/commit/9170d978459f80a6a894bdbc8e985ec5bfe552e0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: rename
+  `utapi.renameFile` to `renameFiles`
+
+  `renameFile` is now a deprecated alias for `renameFiles`.
+
+- [#554](https://github.com/pingdotgg/uploadthing/pull/554)
+  [`55f3225`](https://github.com/pingdotgg/uploadthing/commit/55f3225864b8cd7d987674b7cecdea4cb5a4f802)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - validate api
+  key shape
+
+- Updated dependencies
+  [[`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933),
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60)]:
+  - @uploadthing/shared@6.1.0
+
 ## 6.1.1
 
 ### Patch Changes
