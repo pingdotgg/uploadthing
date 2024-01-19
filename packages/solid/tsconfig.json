@@ -13,7 +13,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "esModuleInterop": true,
