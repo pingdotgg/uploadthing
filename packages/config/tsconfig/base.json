@@ -15,7 +15,7 @@
 
     "skipLibCheck": true,
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false
     // "noFallthroughCasesInSwitch": true,
     // "noImplicitOverride": true,
     // "noImplicitReturns": true,
@@ -23,6 +23,5 @@
     // "noUnusedParameters": true,
     // "useUnknownInCatchVariables": true,
     // "noUncheckedIndexedAccess": true,
-    
   }
 }
