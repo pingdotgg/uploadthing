@@ -28,7 +28,20 @@ their `middleware.ts` is configured incorrectly.
 
 Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
 serves as both a validation endpoint for the client AND a webhook for the
-`onUploadComplete` calls.
+`onUploadComplete` calls.""
+
+If you are seeing this issue in development, and are using edge runtine, there
+is a limitation in Next.js where it does not allow an edge function to fetch
+itself, which is what the dev hook is doing (in production, the callback request
+comes from Uploadthing's servers, so this is not an issue).
+
+You can either ignore this error as it only affects the development environment,
+or use the node runtime instead:
+
+```ts
+// src/app/api/uploadthing/route.ts
+export const runtime = "nodejs";
+```
 
 ### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
 
