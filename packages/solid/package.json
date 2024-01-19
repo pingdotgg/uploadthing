@@ -3,7 +3,7 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
@@ -87,8 +87,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "^0.1.0",
-    "@uploadthing/shared": "^6.0.3",
+    "@uploadthing/dropzone": "^0.1.1",
+    "@uploadthing/shared": "^6.1.0",
     "tailwind-merge": "^1.13.2"
   },
   "devDependencies": {
@@ -99,7 +99,7 @@
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "^5.1.6",
-    "uploadthing": "6.1.1",
+    "uploadthing": "6.2.0",
     "wait-on": "^7.0.1"
   },
   "peerDependencies": {

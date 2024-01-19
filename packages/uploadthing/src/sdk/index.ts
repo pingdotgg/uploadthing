@@ -1,4 +1,5 @@
 import type {
+  ACL,
   ContentDisposition,
   FetchEsque,
   Json,
@@ -10,10 +11,11 @@ import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { LogLevel } from "../internal/logger";
 import { initLogger, logger } from "../internal/logger";
-import type { FileEsque, UploadFileResponse } from "./utils";
+import type { FileEsque, Time, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,
   guardServerOnly,
+  parseTimeToSeconds,
   uploadFilesInternal,
 } from "./utils";
 
@@ -53,6 +55,12 @@ export class UTApi {
     // Assert some stuff
     guardServerOnly();
     getApiKeyOrThrow(this.apiKey);
+    if (!this.apiKey?.startsWith("sk_")) {
+      throw new UploadThingError({
+        code: "MISSING_ENV",
+        message: "Invalid API key. API keys must start with `sk_`.",
+      });
+    }
     incompatibleNodeGuard();
   }
 
@@ -108,6 +116,7 @@ export class UTApi {
     opts?: {
       metadata?: Json;
       contentDisposition?: ContentDisposition;
+      acl?: ACL;
     },
   ) {
     guardServerOnly();
@@ -120,6 +129,7 @@ export class UTApi {
         files: filesToUpload,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
       },
       {
         fetch: this.fetch,
@@ -153,6 +163,7 @@ export class UTApi {
     opts?: {
       metadata: Json;
       contentDisposition: ContentDisposition;
+      acl?: ACL;
     },
   ) {
     guardServerOnly();
@@ -191,6 +202,7 @@ export class UTApi {
         files: filesToUpload,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
       },
       {
         fetch: this.fetch,
@@ -296,7 +308,7 @@ export class UTApi {
     if (!Array.isArray(updates)) updates = [updates];
 
     return this.requestUploadThing<{ success: true }>(
-      "/api/renameFile",
+      "/api/renameFiles",
       { updates },
       "An unknown error occured while renaming files.",
     );
@@ -321,5 +333,47 @@ export class UTApi {
       {},
       "An unknown error occured while getting usage info.",
     );
+  }
+
+  /** Request a presigned url for a private file(s) */
+  async getSignedURL(
+    fileKey: string,
+    opts?: {
+      /**
+       * How long the URL will be valid for.
+       * - Must be positive and less than 7 days (604800 seconds).
+       * - You must accept overrides on the UploadThing dashboard for this option to be accepted.
+       * @default app default on UploadThing dashboard
+       */
+      expiresIn?: Time;
+    },
+  ) {
+    guardServerOnly();
+
+    const expiresIn = opts?.expiresIn
+      ? parseTimeToSeconds(opts.expiresIn)
+      : undefined;
+
+    if (opts?.expiresIn && isNaN(expiresIn!)) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message:
+          "expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.",
+      });
+    }
+    if (expiresIn && expiresIn > 86400 * 7) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "expiresIn must be less than 7 days (604800 seconds).",
+      });
+    }
+
+    const json = await this.requestUploadThing<{ url: string }>(
+      "/api/requestFileAccess",
+      { fileKey, expiresIn },
+      "An unknown error occured while retrieving presigned URLs.",
+    );
+
+    return json.url;
   }
 }

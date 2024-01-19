@@ -23,6 +23,7 @@ export const uploadRouter = {
     image: {
       maxFileSize: "4MB",
       maxFileCount: 4,
+      acl: "public-read",
     },
     video: {
       maxFileSize: "16MB",

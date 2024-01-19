@@ -2,10 +2,10 @@
   "name": "uploadthing-turbo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@8.7.0",
+  "packageManager": "pnpm@8.14.1",
   "engines": {
-    "node": ">=v18.16.0",
-    "pnpm": ">=8.7.0"
+    "node": "20.x",
+    "pnpm": "8.x"
   },
   "scripts": {
     "build:all": "turbo run build",
@@ -27,7 +27,7 @@
     "@manypkg/cli": "^0.20.0",
     "@types/node": "18.16.0",
     "@uploadthing/eslint-config": "0.2.0",
-    "bunchee": "^4.3.3",
+    "bunchee": "^4.4.1",
     "dotenv": "latest",
     "prettier": "^2.8.8",
     "prettier-plugin-tailwindcss": "^0.3.0",

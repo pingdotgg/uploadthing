@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/dropzone",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "rm -rf dist && bunchee",
+    "build": "bunchee",
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
