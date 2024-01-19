@@ -238,7 +238,8 @@ export async function safeParseJSON<T>(
     }
   }
 
-  const clonedRes = input.clone?.();
+  // @ts-expect-error - don't clone for CF
+  const clonedRes = new Response(input.body, input);
   try {
     return (await input.json()) as T;
   } catch (err) {

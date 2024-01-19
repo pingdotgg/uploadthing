@@ -28,6 +28,6 @@
     "@types/express": "^4.17.17",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6",
-    "wrangler": "^3.22.1"
+    "wrangler": "^3.23.0"
   }
 }
