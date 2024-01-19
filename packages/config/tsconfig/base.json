@@ -12,10 +12,10 @@
     "noEmit": true,
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": true,
 
+    "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": false,
     // "noFallthroughCasesInSwitch": true,
     // "noImplicitOverride": true,
     // "noImplicitReturns": true,
@@ -23,11 +23,6 @@
     // "noUnusedParameters": true,
     // "useUnknownInCatchVariables": true,
     // "noUncheckedIndexedAccess": true,
-
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "useDefineForClassFields": true
+    
   }
 }

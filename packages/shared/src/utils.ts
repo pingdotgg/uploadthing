@@ -137,7 +137,7 @@ export const withExponentialBackoff = async <T>(
   let backoffMs = 500;
   let backoffFuzzMs = 0;
 
-  let result = undefined;
+  let result: Awaited<T> | undefined = undefined;
   while (tries <= MAX_RETRIES) {
     result = await doTheThing();
     if (result !== undefined) return result;
