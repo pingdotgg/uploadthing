@@ -1,5 +1,239 @@
 # uploadthing
 
+## 6.2.0
+
+### Minor Changes
+
+- [#545](https://github.com/pingdotgg/uploadthing/pull/545)
+  [`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `logLevel` option to enable more verbose logging
+
+- [#525](https://github.com/pingdotgg/uploadthing/pull/525)
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `utapi.getSignedURL` and ACL configuration options on file routes and
+  `utapi.uploadFiles`
+
+### Patch Changes
+
+- [#559](https://github.com/pingdotgg/uploadthing/pull/559)
+  [`71be9e4`](https://github.com/pingdotgg/uploadthing/commit/71be9e42019b1f172543c6ae3ee6ad25e3c57bbf)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: rm
+  redundant log
+
+- [#541](https://github.com/pingdotgg/uploadthing/pull/541)
+  [`9170d97`](https://github.com/pingdotgg/uploadthing/commit/9170d978459f80a6a894bdbc8e985ec5bfe552e0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: rename
+  `utapi.renameFile` to `renameFiles`
+
+  `renameFile` is now a deprecated alias for `renameFiles`.
+
+- [#554](https://github.com/pingdotgg/uploadthing/pull/554)
+  [`55f3225`](https://github.com/pingdotgg/uploadthing/commit/55f3225864b8cd7d987674b7cecdea4cb5a4f802)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - validate api
+  key shape
+
+- Updated dependencies
+  [[`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933),
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60)]:
+  - @uploadthing/shared@6.1.0
+
+## 6.1.1
+
+### Patch Changes
+
+- [#527](https://github.com/pingdotgg/uploadthing/pull/527)
+  [`cfd5381`](https://github.com/pingdotgg/uploadthing/commit/cfd53811b6267a5f20ba9334f82937f27c3be346)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fallback to
+  blob filetype if allowed
+
+- Updated dependencies
+  [[`cfd5381`](https://github.com/pingdotgg/uploadthing/commit/cfd53811b6267a5f20ba9334f82937f27c3be346)]:
+  - @uploadthing/shared@6.0.3
+
+## 6.1.0
+
+### Minor Changes
+
+- [#512](https://github.com/pingdotgg/uploadthing/pull/512)
+  [`216649e`](https://github.com/pingdotgg/uploadthing/commit/216649e77be44969dbece45f37c614769223fe66)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat(utapi):
+  Add pagination to listFiles
+
+### Patch Changes
+
+- [#509](https://github.com/pingdotgg/uploadthing/pull/509)
+  [`66360b4`](https://github.com/pingdotgg/uploadthing/commit/66360b4b8f6da771d3fd752e17e65f0792db54ca)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(errors):
+  Correct error returned if unable to mark upload as failed
+
+- [#511](https://github.com/pingdotgg/uploadthing/pull/511)
+  [`0f28a51`](https://github.com/pingdotgg/uploadthing/commit/0f28a51dd7bccdba13fc11b3031642b3aaa9e59f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: call
+  onUploadBegin before starting to upload any parts
+
+## 6.0.4
+
+### Patch Changes
+
+- [#500](https://github.com/pingdotgg/uploadthing/pull/500)
+  [`ee0becf`](https://github.com/pingdotgg/uploadthing/commit/ee0becf4651651df152cb11f3c1f83c8da5b2c37)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: fallback
+  to header parsing of url if req.url is localhost
+
+- [#507](https://github.com/pingdotgg/uploadthing/pull/507)
+  [`36fb923`](https://github.com/pingdotgg/uploadthing/commit/36fb923a9bc1eebd169d5c79d1e732b2b6374e2f)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(upload):
+  URI encode filenames in content-disposition header to handle non-standard
+  characters
+
+## 6.0.3
+
+### Patch Changes
+
+- [#487](https://github.com/pingdotgg/uploadthing/pull/487)
+  [`afc793e`](https://github.com/pingdotgg/uploadthing/commit/afc793e0635c7c4cee7592262b8aa13e5b2c7d55)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix:
+  exponential backoff infinite loop
+
+- Updated dependencies
+  [[`afc793e`](https://github.com/pingdotgg/uploadthing/commit/afc793e0635c7c4cee7592262b8aa13e5b2c7d55)]:
+  - @uploadthing/shared@6.0.2
+
+## 6.0.2
+
+### Patch Changes
+
+- [#480](https://github.com/pingdotgg/uploadthing/pull/480)
+  [`67109c8`](https://github.com/pingdotgg/uploadthing/commit/67109c835f3416d2928c0faa9e2fd99a1bcd2370)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: serverdata
+  polling timed out and returned 504
+
+- [#479](https://github.com/pingdotgg/uploadthing/pull/479)
+  [`f4270fe`](https://github.com/pingdotgg/uploadthing/commit/f4270fe58a1d685714a19ec420cc7e3eb0aa8266)
+  Thanks [@Mr0Bread](https://github.com/Mr0Bread)! - Make Express external
+  dependency
+
+- Updated dependencies
+  [[`67109c8`](https://github.com/pingdotgg/uploadthing/commit/67109c835f3416d2928c0faa9e2fd99a1bcd2370)]:
+  - @uploadthing/shared@6.0.1
+
+## 6.0.1
+
+### Patch Changes
+
+- [#469](https://github.com/pingdotgg/uploadthing/pull/469)
+  [`7973a68`](https://github.com/pingdotgg/uploadthing/commit/7973a68c1c417cc0c6297a1be823012552e6efa4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: fallback
+  to null as serverdata to ensure json compatibility
+
+## 6.0.0
+
+### Major Changes
+
+- [#351](https://github.com/pingdotgg/uploadthing/pull/351)
+  [`0ef63c6`](https://github.com/pingdotgg/uploadthing/commit/0ef63c6ae43f92f4f1c5a2fee65827495162cb0e)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  returning data from the serverside `onUploadComplete` callback to the
+  clientside `onClientUploadComplete`. This change also ensures the serverside
+  callback will **finish** before the clientside one is invoked.
+
+  This change has required reworking some types, most notably for people who
+  were importing the UploadThing components directly from `@uploadthing/react`
+  and `@uploadthing/solid` instead of generating their own typesafe components
+  using `generateComponents`. We have always recommended using
+  `generateComponents`, but now we're emphasising it even more.
+
+- [#432](https://github.com/pingdotgg/uploadthing/pull/432)
+  [`328f59b`](https://github.com/pingdotgg/uploadthing/commit/328f59b324a5013620dbf9c30023e9d3b0ee6141)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!:
+  multipart uploads
+
+  supports uploading larger files and uploads are now up to 2x faster
+
+- [#310](https://github.com/pingdotgg/uploadthing/pull/310)
+  [`7c2ed64`](https://github.com/pingdotgg/uploadthing/commit/7c2ed649f53e97957d6ad0be53d163132612f18b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  arbitrary callback URLs (serving router from any endpoint). To use a different
+  endpoint than `/api/uploadthing`, you can pass the `url` parameter to
+  `generateComponents` and `generateReactHelpers`/`generateSolidHelpers` (or
+  pass it as a prop to the components if you're not generating them):
+
+  ```ts
+  export const { UploadButton, UploadDropzone } = generateComponents({
+    url: "/api/my-upload-endpoint", // if the host is unchanged from default (localhost or VERCEL_URL)
+    // url: "https://my-custom-host.com" // if the host is different but path is /api/uploadthing
+    // url: "https://my-custom-host.com/my-custom-endpoint" // fully custom url
+  });
+  ```
+
+- [#459](https://github.com/pingdotgg/uploadthing/pull/459)
+  [`f32f5c0`](https://github.com/pingdotgg/uploadthing/commit/f32f5c03da53780c14b4fa32f9b00b2cfeb23797)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: change
+  sdk function arguments to be an option object instead of positional arguments
+
+  the signature of `UTApi.uploadFiles` and `UTApi.uploadFilesFromUrl` has
+  changed to be easier to add new options in the future.
+
+  ```diff
+  - uploadFiles(files, metadata, contentDisposition)
+  + uploadFiles(files, { metadata, contentDisposition })
+
+  - uploadFilesFromUrl(urls, metadata, contentDisposition)
+  + uploadFilesFromUrl(urls, { metadata, contentDisposition })
+  ```
+
+- [#459](https://github.com/pingdotgg/uploadthing/pull/459)
+  [`f32f5c0`](https://github.com/pingdotgg/uploadthing/commit/f32f5c03da53780c14b4fa32f9b00b2cfeb23797)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore!: remove
+  deprecated `utapi` object in preference of using constructor
+
+  the default UTApi was exported as `utapi` from `uploadthing/server`. this was
+  deprecated in `v5.7` in favor of using the constructor directly.
+
+  ```diff
+  - import { utapi } from 'uploadthing/server'
+  + import { UTApi } from 'uploadthing/server'
+  +
+  + export const utapi = new UTApi(opts)
+  ```
+
+  > For full API spec of `UTAPI` see
+  > [the the server API reference](https://docs.uploadthing.com/api-reference/server#utapi).
+
+  This update removes the deprecated `utapi` export.
+
+  In conjunction with this, we have moved certain guards to be in the
+  constructor instead of in individual methods. This means that the constructor
+  will throw if there is no `apiKey` passed as object or `UPLOADTHING_SECRET` in
+  env, instead of this error being delayed until the method call.
+
+### Minor Changes
+
+- [#453](https://github.com/pingdotgg/uploadthing/pull/453)
+  [`0aae926`](https://github.com/pingdotgg/uploadthing/commit/0aae926cc4b4c36e167ac680d5de8522ef282152)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - Adds an
+  onBeforeUploadBegin callback that is called before startUpload to allow for
+  pre-processing of files (ie changing file names etc)
+
+### Patch Changes
+
+- [#451](https://github.com/pingdotgg/uploadthing/pull/451)
+  [`1241a16`](https://github.com/pingdotgg/uploadthing/commit/1241a16e23e5040db55eef1f39b133cbd80a0b28)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: log out
+  error if it's an unknown (not UploadThingError)
+
+  This log should not ever happen, but if it does we want it to be easy to
+  provide the error when reporting the bug to us.
+
+  "Normal" errors are never logged and you have full control over how to handle
+  them in your `onUploadError` handler.
+
+- Updated dependencies
+  [[`328f59b`](https://github.com/pingdotgg/uploadthing/commit/328f59b324a5013620dbf9c30023e9d3b0ee6141)]:
+  - @uploadthing/shared@6.0.0
+
 ## 5.7.4
 
 - Updated dependencies

@@ -28,7 +28,7 @@ export type UploadthingComponentProps<
 
   onUploadProgress?: (progress: number) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[];
+  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;

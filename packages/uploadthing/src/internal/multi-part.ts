@@ -28,8 +28,8 @@ export async function uploadPart(
       "Content-Type": opts.contentType,
       "Content-Disposition": [
         opts.contentDisposition,
-        `filename="${opts.fileName}"`,
-        `filename*=UTF-8''${opts.fileName}`,
+        `filename="${encodeURI(opts.fileName)}"`,
+        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
       ].join("; "),
     },
   });
@@ -101,8 +101,8 @@ export async function uploadPartWithProgress(
       "Content-Disposition",
       [
         opts.contentDisposition,
-        `filename="${opts.fileName}"`,
-        `filename*=UTF-8''${opts.fileName}`,
+        `filename="${encodeURI(opts.fileName)}"`,
+        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
       ].join("; "),
     );
 

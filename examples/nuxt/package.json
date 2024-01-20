@@ -22,7 +22,7 @@
   "dependencies": {
     "@uploadthing/vue": "5.1.0",
     "nuxt-uploadthing": "^1.0.0",
-    "uploadthing": "5.7.4",
+    "uploadthing": "6.2.0",
     "zod": "^3.22.3"
   }
 }

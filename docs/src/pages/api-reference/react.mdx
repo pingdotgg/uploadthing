@@ -74,7 +74,7 @@ export const OurUploadButton = () => (
 | onClientUploadComplete | (res: UploadedFileResponse[]) => void | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
 | onUploadError          | function                              | No                      |                 | callback function when upload fails                                                                                         |
 | onUploadProgress       | function                              | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
-| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No                      | Added in `v5.8` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                              | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | Config                                | No                      | Added in `v5.7` | object to pass additional configuration for button                                                                          |
 
@@ -152,7 +152,7 @@ export const OurUploadDropzone = () => (
 | onClientUploadComplete | (res: UploadedFileResponse[]) => void | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
 | onUploadError          | function                              | No                      |                 | callback function when upload fails                                                                                         |
 | onUploadProgress       | function                              | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
-| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No                      | Added in `v5.8` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                              | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | object                                | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                                                        |
 
@@ -213,7 +213,6 @@ take a look at
 
 ```tsx copy filename="app/example-custom-uploader.tsx"
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import type { FileWithPath } from "@uploadthing/react";
 import { useDropzone } from "@uploadthing/react/hooks";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
@@ -221,7 +220,7 @@ import { useUploadThing } from "~/utils/uploadthing";
 
 export function MultiUploader() {
   const [files, setFiles] = useState<File[]>([]);
-  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
   }, []);
 
@@ -310,9 +309,8 @@ const uploadSomeFiles = async () => {
     }),
   ];
 
-  const res = await uploadFiles({
+  const res = await uploadFiles("yourEndpoint", {
     files,
-    endpoint: "imageUploader",
     input: {}, // will be typesafe to match the input set for `imageUploader` in your FileRouter
   });
 };
@@ -321,9 +319,8 @@ const uploadSomeFiles = async () => {
 ### Configuration
 
 ```tsx
-uploadFiles(opts: {
+uploadFiles(endpoint: string, opts: {
   files: File[],
-  endpoint: string,
   input?: {} // will be typesafe to match the input set for `endpoint` in your FileRouter
 })
 ```

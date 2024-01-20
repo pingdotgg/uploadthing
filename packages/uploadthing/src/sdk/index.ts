@@ -1,4 +1,5 @@
 import type {
+  ACL,
   ContentDisposition,
   FetchEsque,
   Json,
@@ -8,10 +9,13 @@ import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { FileEsque, UploadFileResponse } from "./utils";
+import type { LogLevel } from "../internal/logger";
+import { initLogger, logger } from "../internal/logger";
+import type { FileEsque, Time, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,
   guardServerOnly,
+  parseTimeToSeconds,
   uploadFilesInternal,
 } from "./utils";
 
@@ -26,6 +30,10 @@ export interface UTApiOptions {
    * @default process.env.UPLOADTHING_SECRET
    */
   apiKey?: string;
+  /**
+   * @default "info"
+   */
+  logLevel?: LogLevel;
 }
 
 export class UTApi {
@@ -42,9 +50,17 @@ export class UTApi {
       "x-uploadthing-version": UPLOADTHING_VERSION,
     };
 
+    initLogger(opts?.logLevel);
+
     // Assert some stuff
     guardServerOnly();
     getApiKeyOrThrow(this.apiKey);
+    if (!this.apiKey?.startsWith("sk_")) {
+      throw new UploadThingError({
+        code: "MISSING_ENV",
+        message: "Invalid API key. API keys must start with `sk_`.",
+      });
+    }
     incompatibleNodeGuard();
   }
 
@@ -53,16 +69,23 @@ export class UTApi {
     body: Record<string, unknown>,
     fallbackErrorMessage: string,
   ) {
-    const res = await this.fetch(generateUploadThingURL(pathname), {
+    const url = generateUploadThingURL(pathname);
+    logger.debug("Requesting UploadThing:", {
+      url,
+      body,
+      headers: this.defaultHeaders,
+    });
+    const res = await this.fetch(url, {
       method: "POST",
       cache: "no-store",
       headers: this.defaultHeaders,
       body: JSON.stringify(body),
     });
+    logger.debug("UploadThing responsed with status:", res.status);
 
     const json = await res.json<T | { error: string }>();
     if (!res.ok || "error" in json) {
-      console.error("[UT] Error:", json);
+      logger.error("Error:", json);
       throw new UploadThingError({
         code: "INTERNAL_SERVER_ERROR",
         message:
@@ -72,12 +95,12 @@ export class UTApi {
       });
     }
 
+    logger.debug("UploadThing response:", json);
     return json;
   }
 
   /**
-   * @param {FileEsque | FileEsque[]} files The file(s) to upload
-   * @param {Json} metadata JSON-parseable metadata to attach to the uploaded file(s)
+   * Upload files to UploadThing storage.
    *
    * @example
    * await uploadFiles(new File(["foo"], "foo.txt"));
@@ -93,17 +116,20 @@ export class UTApi {
     opts?: {
       metadata?: Json;
       contentDisposition?: ContentDisposition;
+      acl?: ACL;
     },
   ) {
     guardServerOnly();
 
     const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
+    logger.debug("Uploading files:", filesToUpload);
 
     const uploads = await uploadFilesInternal(
       {
         files: filesToUpload,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
       },
       {
         fetch: this.fetch,
@@ -112,6 +138,7 @@ export class UTApi {
     );
 
     const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
+    logger.debug("Finished uploading:", uploadFileResponse);
 
     return uploadFileResponse as T extends FileEsque[]
       ? UploadFileResponse[]
@@ -136,6 +163,7 @@ export class UTApi {
     opts?: {
       metadata: Json;
       contentDisposition: ContentDisposition;
+      acl?: ACL;
     },
   ) {
     guardServerOnly();
@@ -151,6 +179,7 @@ export class UTApi {
         const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
         // Download the file on the user's server to avoid egress charges
+        logger.debug("Downloading file:", url);
         const fileResponse = await fetch(url);
         if (!fileResponse.ok) {
           throw new UploadThingError({
@@ -159,16 +188,21 @@ export class UTApi {
             cause: fileResponse,
           });
         }
+        logger.debug("Finished downloading file. Reading blob...");
         const blob = await fileResponse.blob();
+        logger.debug("Finished reading blob.");
         return Object.assign(blob, { name: filename });
       }),
     );
+
+    logger.debug("All files downloaded, uploading...");
 
     const uploads = await uploadFilesInternal(
       {
         files: filesToUpload,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
       },
       {
         fetch: this.fetch,
@@ -178,6 +212,7 @@ export class UTApi {
 
     const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
 
+    logger.debug("Finished uploading:", uploadFileResponse);
     return uploadFileResponse as T extends MaybeUrl[]
       ? UploadFileResponse[]
       : UploadFileResponse;
@@ -235,27 +270,29 @@ export class UTApi {
 
   /**
    * Request file list from UploadThing storage.
+   * @param {object} opts
+   * @param {number} opts.limit The maximum number of files to return
+   * @param {number} opts.offset The number of files to skip
    *
    * @example
-   * const data = await listFiles();
+   * const data = await listFiles({ limit: 1 });
    * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
    */
-  async listFiles() {
+  async listFiles(opts: { limit?: number; offset?: number }) {
     guardServerOnly();
 
-    // TODO: Implement filtering and pagination
     const json = await this.requestUploadThing<{
       files: {
         key: string;
         id: string;
         status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
       }[];
-    }>("/api/listFiles", {}, "An unknown error occured while listing files.");
+    }>("/api/listFiles", opts, "An unknown error occured while listing files.");
 
     return json.files;
   }
 
-  async renameFile(
+  async renameFiles(
     updates:
       | {
           fileKey: string;
@@ -271,11 +308,14 @@ export class UTApi {
     if (!Array.isArray(updates)) updates = [updates];
 
     return this.requestUploadThing<{ success: true }>(
-      "/api/renameFile",
+      "/api/renameFiles",
       { updates },
       "An unknown error occured while renaming files.",
     );
   }
+  /** @deprecated Use {@link renameFiles} instead. */
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  public renameFile = this.renameFiles;
 
   async getUsageInfo() {
     guardServerOnly();
@@ -293,5 +333,47 @@ export class UTApi {
       {},
       "An unknown error occured while getting usage info.",
     );
+  }
+
+  /** Request a presigned url for a private file(s) */
+  async getSignedURL(
+    fileKey: string,
+    opts?: {
+      /**
+       * How long the URL will be valid for.
+       * - Must be positive and less than 7 days (604800 seconds).
+       * - You must accept overrides on the UploadThing dashboard for this option to be accepted.
+       * @default app default on UploadThing dashboard
+       */
+      expiresIn?: Time;
+    },
+  ) {
+    guardServerOnly();
+
+    const expiresIn = opts?.expiresIn
+      ? parseTimeToSeconds(opts.expiresIn)
+      : undefined;
+
+    if (opts?.expiresIn && isNaN(expiresIn!)) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message:
+          "expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.",
+      });
+    }
+    if (expiresIn && expiresIn > 86400 * 7) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "expiresIn must be less than 7 days (604800 seconds).",
+      });
+    }
+
+    const json = await this.requestUploadThing<{ url: string }>(
+      "/api/requestFileAccess",
+      { fileKey, expiresIn },
+      "An unknown error occured while retrieving presigned URLs.",
+    );
+
+    return json.url;
   }
 }

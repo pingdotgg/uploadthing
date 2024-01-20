@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 ### The UploadThing components look all weird, what's going on?
 
 If your components appear unstyled, you likely forgot to import our CSS file
@@ -25,8 +27,21 @@ endpoint. Almost every time we've seen someone who has this issue, it's because
 their `middleware.ts` is configured incorrectly.
 
 Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
-serves as both a validation endpoint from client AND a webhook for the
-`onUploadComplete` calls.
+serves as both a validation endpoint for the client AND a webhook for the
+`onUploadComplete` calls.""
+
+If you are seeing this issue in development, and are using edge runtine, there
+is a limitation in Next.js where it does not allow an edge function to fetch
+itself, which is what the dev hook is doing (in production, the callback request
+comes from Uploadthing's servers, so this is not an issue).
+
+You can either ignore this error as it only affects the development environment,
+or use the node runtime instead:
+
+```ts
+// src/app/api/uploadthing/route.ts
+export const runtime = "nodejs";
+```
 
 ### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
 
@@ -50,3 +65,61 @@ import type { OurFileRouter } from "~/app/api/uploadthing/core";
 As you can see, it's quite cumbersome having to provide the generics yourself,
 especially since the `endpoint` prop must be specified twice due to lack of
 partial inference in TypeScript.
+
+### My callback runs in development but not in production
+
+In order for UploadThing to work, our external server must be able to reach your
+application to trigger the callbacks you have set up in your file router. This
+is not possible if your application is running on localhost.
+
+When you're running in development, UploadThing will simulate this callback for
+you so that you can test your application. However, for production, we require
+your application to be reachable over the Internet. The URL we'll attempt to hit
+is automatically inferred based on the request. There are mainly two reasons why
+your app would not be reachable by the callback:
+
+#### You're testing a production build locally.
+
+In this case, you can use a tool like [ngrok](https://ngrok.com/) or
+[Cloudflare Tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
+to expose your application to the internet. Start the application with the
+`UPLOADTHING_URL` variable set to the tunneled URL.
+
+#### Your app is running behind a reverse proxy such as Nginx.
+
+The automatic URL inference unfortunately breaks for certain reverse proxy
+setups. In this case, set either the
+[`config.callbackUrl`](/api-reference/next#config-object) when you're creating
+the server entrypoints or the `UPLOADTHING_URL` environment variable to the
+public URL of your application.
+
+You will get a warning in the console if we detect a localhost URL is being used
+as the callback URL in production.
+
+### My callback runs in development and production, but not in Vercel preview deployments
+
+By default, Vercel projects are configured to require authentication to access
+preview deployments. This means that our external server cannot access your
+application to trigger the callbacks you have set up in your file router.
+
+To fix, this you can either disable this setting in your Vercel project, or—if
+you are paying for Advanced Deployment Protection—set a
+[custom header](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
+in the uploadthing dashboard that will allow uploadthing callbacks to bypass the
+authentication.
+
+#### Configuring a custom header in the uploadthing dashboard
+
+1. Go to your project's dashboard on uploadthing.com
+2. Navigate to the "Settings" tab
+3. Click on "Advanced Settings"
+4. Click on the "Add Header" button
+5. Enter the header name and value
+6. Click "Save Changes"
+
+<Image
+  src="/add-header-settings.png"
+  alt="Screenshot of the uploadthing dashboard showing the 'Add Header' button"
+  width="500"
+  style={{ marginTop: "1rem", borderRadius: "0.5rem" }}
+/>
