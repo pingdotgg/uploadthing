@@ -1,4 +1,7 @@
-import type { UploadThingError } from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
@@ -25,7 +28,7 @@ export type UploadthingComponentProps<
 
   onUploadProgress?: (progress: number) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[];
+  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
   onClientUploadComplete?: (
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
@@ -36,3 +39,8 @@ export type UploadthingComponentProps<
   : {
       input: inferEndpointInput<TRouter[TEndpoint]>;
     });
+
+export type EndpointMetadata = {
+  slug: string;
+  config: ExpandedRouteConfig;
+}[];

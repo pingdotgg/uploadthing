@@ -1,7 +1,6 @@
 import { useFetch } from "@vueuse/core";
 import { computed, ref } from "vue";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 import {
   DANGEROUS__uploadFiles,
@@ -17,15 +16,11 @@ import type {
   inferErrorShape,
 } from "uploadthing/server";
 
+import { EndpointMetadata } from "./types";
 import { useEvent } from "./utils/useEvent";
 
-type EndpointMetadata = {
-  slug: string;
-  config: ExpandedRouteConfig;
-};
-
 const useEndpointMetadata = () => {
-  const { data } = useFetch<string>("/api/uploadthing");
+  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
   return { data };
 };
 
@@ -39,7 +34,7 @@ export type UseUploadthingProps<
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[];
+  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -61,13 +56,8 @@ export const INTERNAL_uploadthingHookGen = <
     const fileProgress = ref(new Map<string, number>());
 
     const { data } = useEndpointMetadata();
-
     const permittedFileInfo = computed(() => {
-      if (!data.value) return {} as EndpointMetadata;
-
-      return (JSON.parse(data.value) as EndpointMetadata[]).find(
-        (e) => e.slug === endpoint,
-      );
+      return data.value?.find((e) => e.slug === endpoint);
     });
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
@@ -76,10 +66,11 @@ export const INTERNAL_uploadthingHookGen = <
       : [files: File[], input: InferredInput];
 
     const startUpload = useEvent(async (...args: FuncInput) => {
-      const files = opts?.onBeforeUploadBegin?.(args[0]) ?? args[0];
+      const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
       const input = args[1];
 
       isUploading.value = true;
+      opts?.onUploadProgress?.(0);
       try {
         const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
           files,
@@ -131,7 +122,7 @@ export const INTERNAL_uploadthingHookGen = <
       startUpload,
       isUploading,
       permittedFileInfo,
-    };
+    } as const;
   };
 
   return useUploadThing;

@@ -2,8 +2,10 @@ import { twMerge } from "tailwind-merge";
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
 import {
+  allowedContentTextLabelGenerator,
   classNames,
   contentFieldToContent,
+  generatePermittedFileTypes,
   getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -11,18 +13,13 @@ import {
 import type { ContentField, StyleField } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressHeights,
-} from "../shared";
 import type { UploadthingComponentProps } from "../types";
 import { useDropzone, type FileUploadOptions } from "../useDropzone";
 import {
   INTERNAL_uploadthingHookGen,
   UseUploadthingProps,
 } from "../useUploadThing";
-import { Spinner } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -226,7 +223,7 @@ export const UploadDropzone = <
             "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
             state.value === "uploading"
               ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-                  progressHeights[uploadProgress.value]
+                  progressWidths[uploadProgress.value]
                 }`
               : "bg-blue-600",
           ),

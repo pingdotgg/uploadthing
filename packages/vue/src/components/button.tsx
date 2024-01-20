@@ -2,8 +2,10 @@ import { twMerge } from "tailwind-merge";
 import { computed, defineComponent, reactive, ref } from "vue";
 
 import {
+  allowedContentTextLabelGenerator,
   contentFieldToContent,
   generateMimeTypes,
+  generatePermittedFileTypes,
   getFullApiUrl,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -12,16 +14,12 @@ import type { ContentField, StyleField } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 
 import { Spinner } from "../components";
-import {
-  allowedContentTextLabelGenerator,
-  generatePermittedFileTypes,
-  progressHeights,
-} from "../shared";
 import type { UploadthingComponentProps } from "../types";
 import {
   INTERNAL_uploadthingHookGen,
   UseUploadthingProps,
 } from "../useUploadThing";
+import { progressWidths } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "vue";
@@ -158,7 +156,7 @@ export const UploadButton = <
           state.value === "readying" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${
-              progressHeights[uploadProgress.value]
+              progressWidths[uploadProgress.value]
             }`,
           state.value === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
@@ -204,12 +202,12 @@ export const UploadButton = <
         return (
           <div
             class={containerClass.value}
-            style={containerStyle.value}
+            style={containerStyle.value ?? {}}
             data-state={state.value}
           >
             <label
               class={labelClass.value}
-              style={labelStyle.value}
+              style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
               tabindex={0}
@@ -229,7 +227,7 @@ export const UploadButton = <
             </label>
             <div
               class={allowedContentClass.value}
-              style={allowedContentStyle.value}
+              style={allowedContentStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="allowed-content"
             >
