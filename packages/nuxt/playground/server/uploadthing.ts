@@ -28,6 +28,30 @@ export const uploadRouter = {
       metadata;
       // ^?
       console.log("upload completed", file);
+      return { foo: "bar" as const };
+    }),
+  e2: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+  })
+    .middleware(({ event }) => {
+      event;
+      //^?
+
+      // Return some metadata to be stored with the file
+      return { foo: "bar" as const };
+    })
+    .onUploadComplete(({ file, metadata }) => {
+      metadata;
+      // ^?
+      console.log("upload completed", file);
+
+      return { bar: "baz" as const };
     }),
 } satisfies FileRouter;
 
