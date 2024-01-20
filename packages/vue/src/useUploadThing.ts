@@ -19,9 +19,15 @@ import type {
 import { EndpointMetadata } from "./types";
 import { useEvent } from "./utils/useEvent";
 
-const useEndpointMetadata = () => {
-  const { data } = useFetch<EndpointMetadata>("/api/uploadthing");
-  return { data };
+const useEndpointMetadata = (url: URL, endpoint: string) => {
+  // TODO: useState with server-inserted data to skip fetch on client
+  const { data } = useFetch<string>(url.href);
+  return computed(() => {
+    if (!data.value) return undefined;
+    const endpointData: EndpointMetadata =
+      typeof data.value === "string" ? JSON.parse(data.value) : data.value;
+    return endpointData?.find((x) => x.slug === endpoint);
+  });
 };
 
 export type UseUploadthingProps<
@@ -55,10 +61,10 @@ export const INTERNAL_uploadthingHookGen = <
     const uploadProgress = ref(0);
     const fileProgress = ref(new Map<string, number>());
 
-    const { data } = useEndpointMetadata();
-    const permittedFileInfo = computed(() => {
-      return data.value?.find((e) => e.slug === endpoint);
-    });
+    const permittedFileInfo = useEndpointMetadata(
+      initOpts.url,
+      endpoint as string,
+    );
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
