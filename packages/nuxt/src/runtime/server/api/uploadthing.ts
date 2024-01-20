@@ -9,8 +9,9 @@ export default defineEventHandler((event) => {
   return createH3EventHandler({
     router: uploadRouter,
     config: {
-      uploadthingSecret: runtime.uploadthingSecret,
-      uploadthingId: runtime.uploadthingAppId,
+      uploadthingSecret: runtime.uploadthing?.secret,
+      uploadthingId: runtime.uploadthing?.appId,
+      logLevel: runtime.uploadthing?.logLevel,
     },
   })(event);
 });

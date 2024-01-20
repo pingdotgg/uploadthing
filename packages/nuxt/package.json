@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-uploadthing",
+  "name": "@uploadthing/nuxt",
   "version": "1.0.0",
   "description": "My new Nuxt module",
   "repository": "your-org/my-module",
@@ -30,6 +30,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.7.4",
     "@uploadthing/vue": "^6.2.0",
+    "defu": "^6.1.4",
     "uploadthing": "^6.2.0"
   },
   "devDependencies": {

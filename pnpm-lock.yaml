@@ -831,6 +831,9 @@ importers:
       '@uploadthing/vue':
         specifier: ^6.2.0
         version: link:../vue
+      defu:
+        specifier: ^6.1.4
+        version: 6.1.4
       uploadthing:
         specifier: ^6.2.0
         version: link:../uploadthing
@@ -4651,7 +4654,7 @@ packages:
       perfect-debounce: 1.0.0
       pkg-types: 1.0.3
       postcss: 8.4.33
-      rollup-plugin-visualizer: 5.12.0(rollup@4.9.5)
+      rollup-plugin-visualizer: 5.12.0(rollup@3.29.4)
       std-env: 3.7.0
       strip-literal: 2.0.0
       ufo: 1.3.2

@@ -9,25 +9,25 @@ import {
   resolvePath,
   useLogger,
 } from "@nuxt/kit";
+import defu from "defu";
 
 import type { createH3EventHandler } from "uploadthing/h3";
 
-// TODO: How do we get these settings to the server handler?
-type HandlerConfig = NonNullable<
-  Parameters<typeof createH3EventHandler>[0]["config"]
+type HandlerConfig = Omit<
+  NonNullable<Parameters<typeof createH3EventHandler>[0]["config"]>,
+  "uploadthingSecret" | "uploadthingId"
 >;
 
 // Module options TypeScript interface definition
-export type ModuleOptions = Omit<
-  HandlerConfig,
-  "uploadthingId" | "uploadthingSecret" // injected from runtime config
-> & {
+export type ModuleOptions = HandlerConfig & {
   routerPath: string;
+  secret?: string;
+  appId?: string;
 };
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: "nuxt-uploadthing",
+    name: "@uploadthing/nuxt",
     configKey: "uploadthing",
     compatibility: {
       nuxt: "^3.0.0",
@@ -39,6 +39,15 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const logger = useLogger("uploadthing");
     const resolver = createResolver(import.meta.url);
+
+    nuxt.options.runtimeConfig.uploadthing = defu(
+      nuxt.options.runtimeConfig.uploadthing as any,
+      {
+        secret: options.secret,
+        appId: options.appId,
+        logLevel: options.logLevel,
+      },
+    );
 
     // Set path to router
     const routerPath = await resolvePath(options.routerPath);
