@@ -45,7 +45,7 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
 export class UploadThingError<
   TShape extends Json = { message: string },
 > extends Error {
-  public readonly cause?: Error;
+  public readonly cause?: unknown;
   public readonly code: ErrorCode;
   public readonly data?: TShape;
 
@@ -70,7 +70,7 @@ export class UploadThingError<
     } else if (typeof opts.cause === "string") {
       this.cause = new Error(opts.cause);
     } else {
-      this.cause = undefined;
+      this.cause = opts.cause;
     }
   }
 

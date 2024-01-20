@@ -8,6 +8,23 @@ body:
       value: |
         Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
         Note that the more precise you are, the quicker we will be able to investigate the bug.
+
+        When filing a bug report, we would much appreciate it if you could provide any additional error information by creating an error formatter that logs out the `error.cause`:
+
+        ```ts
+        const f = createUploadthing({
+          /**
+           * Log out more information about the error, but don't return it to the client
+           * @see https://docs.uploadthing.com/errors#error-formatting
+           */
+          errorFormatter: (err) => {
+            console.log("Error uploading file", err.message);
+            console.log("  - Above error caused by:", err.cause);
+
+            return { message: err.message };
+          },
+        });
+        ```
   - type: textarea
     attributes:
       label: Provide environment information

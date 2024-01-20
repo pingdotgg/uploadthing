@@ -1,4 +1,3 @@
-import EventEmitter from "events";
 import type { H3Event } from "h3";
 import {
   assertMethod,
@@ -20,6 +19,8 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import type { RouterWithConfig } from "./internal/handler";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { initLogger } from "./internal/logger";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -37,8 +38,10 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createH3EventHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const ee = new EventEmitter();
-  const requestHandler = buildRequestHandler(opts, ee);
+  initLogger(opts.config?.logLevel);
+  incompatibleNodeGuard();
+
+  const requestHandler = buildRequestHandler(opts);
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return defineEventHandler(async (event) => {
@@ -47,16 +50,6 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
     // GET
     if (event.method === "GET") {
-      const clientPollingKey =
-        getRequestHeaders(event)["x-uploadthing-polling"];
-      if (clientPollingKey) {
-        const eventData = await new Promise((resolve) => {
-          ee.addListener("callbackDone", resolve);
-        });
-        ee.removeAllListeners("callbackDone");
-        return eventData;
-      }
-
       return getBuildPerms();
     }
 

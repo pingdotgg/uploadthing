@@ -7,4 +7,7 @@ import { uploadRouter } from "~/server/uploadthing";
 
 export const { GET, POST } = createNextRouteHandler({
   router: uploadRouter,
+  config: {
+    logLevel: "debug",
+  },
 });

@@ -1,5 +1,13 @@
-import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
+// Don't want to ship our logger to the client, keep size down
+/* eslint-disable no-console */
 
+import {
+  safeParseJSON,
+  UploadThingError,
+  withExponentialBackoff,
+} from "@uploadthing/shared";
+
+import { getFullApiUrl } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
@@ -130,12 +138,20 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const { presignedUrls, uploadId, chunkSize, contentDisposition, key } =
-      presigned;
+    const {
+      presignedUrls,
+      uploadId,
+      chunkSize,
+      contentDisposition,
+      key,
+      pollingUrl,
+      pollingJwt,
+    } = presigned;
 
     let uploadedBytes = 0;
 
     let etags: { tag: string; partNumber: number }[];
+    opts.onUploadBegin?.({ file: file.name });
     try {
       etags = await Promise.all(
         presignedUrls.map(async (url, index) => {
@@ -184,11 +200,24 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const serverData = await fetch(opts.url, {
-      headers: { "x-uploadthing-polling-key": key },
-    }).then(
-      (res) => res.json() as Promise<inferEndpointOutput<TRouter[TEndpoint]>>,
-    );
+    // wait a bit as it's unsreasonable to expect the server to be done by now
+    await new Promise((r) => setTimeout(r, 750));
+
+    const serverData = (await withExponentialBackoff(async () => {
+      type PollingResponse =
+        | {
+            status: "done";
+            callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
+          }
+        | { status: "still waiting" };
+
+      const res = await fetch(pollingUrl, {
+        headers: { authorization: pollingJwt },
+      }).then((r) => r.json() as Promise<PollingResponse>);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return res.status === "done" ? res.callbackData : undefined;
+    })) as inferEndpointOutput<TRouter[TEndpoint]>;
 
     return {
       name: file.name,
@@ -258,38 +287,4 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
-// Returns a full URL to the dev's uploadthing endpoint
-export function getFullApiUrl(maybeUrl?: string): URL {
-  const base = (() => {
-    if (typeof window !== "undefined") {
-      return window.location.origin;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-    if (typeof process !== "undefined" && process?.env?.VERCEL_URL) {
-      return `https://${process.env.VERCEL_URL}`;
-    }
-
-    // @ts-expect-error - import meta is not defined in node
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    if (import.meta.env?.VERCEL_URL) {
-      // @ts-expect-error - import meta is not defined in node
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      return `https://${import.meta.env.VERCEL_URL}`;
-    }
-
-    return "http://localhost:3000";
-  })();
-
-  try {
-    const url = new URL(maybeUrl ?? "/api/uploadthing", base);
-    if (url.pathname === "/") {
-      url.pathname = "/api/uploadthing";
-    }
-    return url;
-  } catch (err) {
-    throw new Error(
-      `Failed to parse '${maybeUrl}' as a URL. Make sure it's a valid URL or path`,
-    );
-  }
-}
+export { getFullApiUrl };
