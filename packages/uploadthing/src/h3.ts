@@ -5,7 +5,7 @@ import {
   getRequestHeaders,
   getRequestURL,
   readBody,
-  setHeaders,
+  setHeader,
   setResponseStatus,
 } from "h3";
 
@@ -46,7 +46,7 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
   return defineEventHandler(async (event) => {
     assertMethod(event, ["GET", "POST"]);
-    setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
+    setHeader(event, "x-uploadthing-version", UPLOADTHING_VERSION);
 
     // GET
     if (event.method === "GET") {

@@ -69,7 +69,7 @@ export type RequestLike = Overwrite<
   WithRequired<Partial<Request>, "json">,
   {
     body?: any; // we only use `.json`, don't care about `body`
-    headers: Headers | IncomingHttpHeaders;
+    headers: Headers | IncomingHttpHeaders | Record<string, string | undefined>;
   }
 >;
 
