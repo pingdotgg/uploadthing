@@ -10,10 +10,20 @@ import {
   useLogger,
 } from "@nuxt/kit";
 
+import type { createH3EventHandler } from "uploadthing/h3";
+
+// TODO: How do we get these settings to the server handler?
+type HandlerConfig = NonNullable<
+  Parameters<typeof createH3EventHandler>[0]["config"]
+>;
+
 // Module options TypeScript interface definition
-export interface ModuleOptions {
+export type ModuleOptions = Omit<
+  HandlerConfig,
+  "uploadthingId" | "uploadthingSecret" // injected from runtime config
+> & {
   routerPath: string;
-}
+};
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
