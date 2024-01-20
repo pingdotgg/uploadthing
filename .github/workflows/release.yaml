@@ -14,17 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Use PNPM
-        uses: pnpm/action-setup@v2.2.4
+        uses: pnpm/action-setup@v2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -32,7 +32,7 @@ jobs:
           echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.0
         with:
           path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -69,7 +69,7 @@ jobs:
 
       - name: Send a discord notification
         if: steps.changeset.outputs.published == 'true'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         with:
@@ -90,3 +90,25 @@ jobs:
             .catch((err) => {
               console.error('Error sending discord notification', err)
             })
+
+      - name: Revalidate banner on dashboard
+        if: steps.changeset.outputs.published == 'true'
+        uses: actions/github-script@v7
+        env:
+          PING_GH_SIGNING_SECRET: ${{ secrets.PING_GH_SIGNING_SECRET }}
+        with:
+          github-token: ${{ secrets.MY_GITHUB_TOKEN }}
+          script: |
+            fetch("https://uploadthing.com/api/revalidate-npm-tag", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-ping-signature": process.env.PING_GH_SIGNING_SECRET,
+              },
+            })
+            .then(async (res) => {
+              console.log("Version revalidated", await res.text());
+            })
+            .catch((err) => {
+              console.error("Error revalidating tag", err);
+            });

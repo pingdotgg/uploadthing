@@ -55,17 +55,16 @@ export interface AnyParams {
 }
 
 type MiddlewareFn<
-  TInput extends JSON | UnsetMarker,
+  TInput extends Json | UnsetMarker,
   TOutput extends Record<string, unknown>,
   TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
   opts: TArgs & (TInput extends UnsetMarker ? {} : { input: TInput }),
 ) => MaybePromise<TOutput>;
 
-type ResolverFn<
-  TOutput extends Record<string, unknown> | void,
-  TParams extends AnyParams,
-> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
+type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
+  opts: ResolverOptions<TParams>,
+) => MaybePromise<TOutput>;
 
 type UploadErrorFn = (input: {
   error: UploadThingError;
@@ -99,7 +98,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
-  onUploadComplete: <TOutput extends Record<string, unknown> | void>(
+  onUploadComplete: <TOutput extends Json | void>(
     fn: ResolverFn<TOutput, TParams>,
   ) => Uploader<{
     _input: TParams["_input"];
@@ -147,8 +146,8 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
     : TUploader["_def"]["_input"];
 
 export type inferEndpointOutput<TUploader extends Uploader<any>> =
-  TUploader["_def"]["_output"] extends UnsetMarker
-    ? undefined
+  TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
+    ? null
     : TUploader["_def"]["_output"];
 
 export type inferErrorShape<TRouter extends FileRouter> =

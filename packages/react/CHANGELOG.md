@@ -1,5 +1,134 @@
 # @uploadthing/react
 
+## 6.2.0
+
+### Minor Changes
+
+- [#556](https://github.com/pingdotgg/uploadthing/pull/556)
+  [`f06a538`](https://github.com/pingdotgg/uploadthing/commit/f06a538af2467269403c5cd5018fe7cdbac5d43c)
+  Thanks [@Martoxdlol](https://github.com/Martoxdlol)! - feat: allow async on
+  onBeforeUploadBegin on Dropzone
+
+### Patch Changes
+
+- [#536](https://github.com/pingdotgg/uploadthing/pull/536)
+  [`095fbbe`](https://github.com/pingdotgg/uploadthing/commit/095fbbe0babc375bcb1c06ac096a3d4d6e02c0e2)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: minify
+  usedropzone hook
+
+  solidjs projects can now remove the `solidjs-dropzone` dependency as our own
+  minimal hook has been made framework agnostic and is now bundled with the main
+  package
+
+- Updated dependencies
+  [[`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933),
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60),
+  [`095fbbe`](https://github.com/pingdotgg/uploadthing/commit/095fbbe0babc375bcb1c06ac096a3d4d6e02c0e2)]:
+  - @uploadthing/shared@6.1.0
+  - @uploadthing/dropzone@0.1.1
+
+## 6.1.0
+
+### Minor Changes
+
+- [#529](https://github.com/pingdotgg/uploadthing/pull/529)
+  [`3b7e901`](https://github.com/pingdotgg/uploadthing/commit/3b7e901ddbdf7ceb743e25db4258a289c3943c6f)
+  Thanks [@ibrahimyaacob92](https://github.com/ibrahimyaacob92)! - feat: allow
+  async onBeforeUploadBegin callback
+
+### Patch Changes
+
+- Updated dependencies
+  [[`cfd5381`](https://github.com/pingdotgg/uploadthing/commit/cfd53811b6267a5f20ba9334f82937f27c3be346)]:
+  - @uploadthing/shared@6.0.3
+
+## 6.0.2
+
+### Patch Changes
+
+- [#491](https://github.com/pingdotgg/uploadthing/pull/491)
+  [`f802978`](https://github.com/pingdotgg/uploadthing/commit/f802978ee0ccda74e198399ea078e05b351582aa)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix:
+  @uploadthing/react peer deps
+
+## 6.0.1
+
+### Patch Changes
+
+- [#480](https://github.com/pingdotgg/uploadthing/pull/480)
+  [`67109c8`](https://github.com/pingdotgg/uploadthing/commit/67109c835f3416d2928c0faa9e2fd99a1bcd2370)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: serverdata
+  polling timed out and returned 504
+
+- Updated dependencies
+  [[`67109c8`](https://github.com/pingdotgg/uploadthing/commit/67109c835f3416d2928c0faa9e2fd99a1bcd2370)]:
+  - @uploadthing/shared@6.0.1
+
+## 6.0.0
+
+### Major Changes
+
+- [#351](https://github.com/pingdotgg/uploadthing/pull/351)
+  [`0ef63c6`](https://github.com/pingdotgg/uploadthing/commit/0ef63c6ae43f92f4f1c5a2fee65827495162cb0e)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  returning data from the serverside `onUploadComplete` callback to the
+  clientside `onClientUploadComplete`. This change also ensures the serverside
+  callback will **finish** before the clientside one is invoked.
+
+  This change has required reworking some types, most notably for people who
+  were importing the UploadThing components directly from `@uploadthing/react`
+  and `@uploadthing/solid` instead of generating their own typesafe components
+  using `generateComponents`. We have always recommended using
+  `generateComponents`, but now we're emphasising it even more.
+
+- [#310](https://github.com/pingdotgg/uploadthing/pull/310)
+  [`7c2ed64`](https://github.com/pingdotgg/uploadthing/commit/7c2ed649f53e97957d6ad0be53d163132612f18b)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  arbitrary callback URLs (serving router from any endpoint). To use a different
+  endpoint than `/api/uploadthing`, you can pass the `url` parameter to
+  `generateComponents` and `generateReactHelpers`/`generateSolidHelpers` (or
+  pass it as a prop to the components if you're not generating them):
+
+  ```ts
+  export const { UploadButton, UploadDropzone } = generateComponents({
+    url: "/api/my-upload-endpoint", // if the host is unchanged from default (localhost or VERCEL_URL)
+    // url: "https://my-custom-host.com" // if the host is different but path is /api/uploadthing
+    // url: "https://my-custom-host.com/my-custom-endpoint" // fully custom url
+  });
+  ```
+
+### Minor Changes
+
+- [#453](https://github.com/pingdotgg/uploadthing/pull/453)
+  [`0aae926`](https://github.com/pingdotgg/uploadthing/commit/0aae926cc4b4c36e167ac680d5de8522ef282152)
+  Thanks [@joelhooks](https://github.com/joelhooks)! - Adds an
+  onBeforeUploadBegin callback that is called before startUpload to allow for
+  pre-processing of files (ie changing file names etc)
+
+### Patch Changes
+
+- [#451](https://github.com/pingdotgg/uploadthing/pull/451)
+  [`1241a16`](https://github.com/pingdotgg/uploadthing/commit/1241a16e23e5040db55eef1f39b133cbd80a0b28)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: log out
+  error if it's an unknown (not UploadThingError)
+
+  This log should not ever happen, but if it does we want it to be easy to
+  provide the error when reporting the bug to us.
+
+  "Normal" errors are never logged and you have full control over how to handle
+  them in your `onUploadError` handler.
+
+- Updated dependencies
+  [[`0ef63c6`](https://github.com/pingdotgg/uploadthing/commit/0ef63c6ae43f92f4f1c5a2fee65827495162cb0e),
+  [`0aae926`](https://github.com/pingdotgg/uploadthing/commit/0aae926cc4b4c36e167ac680d5de8522ef282152),
+  [`328f59b`](https://github.com/pingdotgg/uploadthing/commit/328f59b324a5013620dbf9c30023e9d3b0ee6141),
+  [`7c2ed64`](https://github.com/pingdotgg/uploadthing/commit/7c2ed649f53e97957d6ad0be53d163132612f18b),
+  [`f32f5c0`](https://github.com/pingdotgg/uploadthing/commit/f32f5c03da53780c14b4fa32f9b00b2cfeb23797),
+  [`f32f5c0`](https://github.com/pingdotgg/uploadthing/commit/f32f5c03da53780c14b4fa32f9b00b2cfeb23797),
+  [`1241a16`](https://github.com/pingdotgg/uploadthing/commit/1241a16e23e5040db55eef1f39b133cbd80a0b28)]:
+  - uploadthing@6.0.0
+  - @uploadthing/shared@6.0.0
+
 ## 5.7.0
 
 ### Minor Changes

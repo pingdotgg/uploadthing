@@ -15,4 +15,5 @@ export default defineConfig((opts) => ({
     "./src/h3.ts",
   ],
   clean: !opts.watch,
+  external: ["express", "h3", "tailwindcss"],
 }));
