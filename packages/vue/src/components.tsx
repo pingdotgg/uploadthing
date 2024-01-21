@@ -40,19 +40,3 @@ export const Uploader = <
       props: ["config"],
     },
   );
-
-// builder function to create generic component inside of SFC setup script
-export const useUploadButton = <TRouter extends FileRouter>() => {
-  // @ts-expect-error - FIXME: need TEndpoint somehow
-  return UploadButton<TRouter>();
-};
-
-export const useUploadDropzone = <TRouter extends FileRouter>() => {
-  // @ts-expect-error - FIXME: need TEndpoint somehow
-  return UploadDropzone<TRouter>();
-};
-
-export const useUploader = <TRouter extends FileRouter>() => {
-  // @ts-expect-error - FIXME: need TEndpoint somehow
-  return Uploader<TRouter>();
-};

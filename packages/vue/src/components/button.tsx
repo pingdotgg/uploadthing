@@ -47,12 +47,11 @@ export type UploadButtonProps<
   className?: string;
 };
 
-export const UploadButton = <
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->() =>
+export const UploadButton = <TRouter extends FileRouter>() =>
   defineComponent(
-    (props: { config: UploadButtonProps<TRouter, TEndpoint> }) => {
+    <TEndpoint extends keyof TRouter>(props: {
+      config: UploadButtonProps<TRouter, TEndpoint>;
+    }) => {
       const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
         url:
           props.config.url instanceof URL
@@ -238,6 +237,6 @@ export const UploadButton = <
       };
     },
     {
-      props: ["config"],
+      props: ["config"] as any,
     },
   );

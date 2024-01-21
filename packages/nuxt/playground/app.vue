@@ -1,8 +1,8 @@
 <template>
   <div>Playground</div>
   <UploadButton
+    endpoint="videoAndImage"
     :config="{
-      endpoint: 'videoAndImage',
       onClientUploadComplete(res) {
         res[0]?.serverData;
         expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: 'bar' }>()
@@ -11,8 +11,13 @@
   />
 
   <UploadDropzone
+    endpoint="e2"
+    :on-client-upload-complete="
+      (res) => {
+        res[0]?.serverData;
+      }
+    "
     :config="{
-      endpoint: 'e2',
       onClientUploadComplete(res) {
         res[0]?.serverData;
         expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: 'baz' }>()

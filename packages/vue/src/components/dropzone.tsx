@@ -50,12 +50,11 @@ export type UploadDropzoneProps<
   className?: string;
 };
 
-export const UploadDropzone = <
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->() =>
+export const UploadDropzone = <TRouter extends FileRouter>() =>
   defineComponent(
-    (props: { config: UploadDropzoneProps<TRouter, TEndpoint> }) => {
+    <TEndpoint extends keyof TRouter>(props: {
+      config: UploadDropzoneProps<TRouter, TEndpoint>;
+    }) => {
       const $props = props.config;
       const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
         url:
