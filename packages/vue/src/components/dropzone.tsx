@@ -67,13 +67,10 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
 
       const uploadProgress = ref(0);
 
-      const setFiles = (newFiles: File[]) => {
-        files.value = newFiles;
-      };
       const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
         reactive({
           onClientUploadComplete: (res) => {
-            setFiles([]);
+            files.value = [];
             $props.onClientUploadComplete?.(res);
             uploadProgress.value = 0;
           },
@@ -100,7 +97,7 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
 
       const dropzoneOptions = reactive({
         onDrop: (acceptedFiles: File[]) => {
-          setFiles(acceptedFiles);
+          files.value = acceptedFiles;
 
           // TODO: If mode is auto, start upload immediately
         },
@@ -280,7 +277,7 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
               <input
                 class="ut-sr-only"
                 {...getInputProps()}
-                disabled={!ready.value}
+                // disabled={!ready.value}
               />
             </label>
             <div
