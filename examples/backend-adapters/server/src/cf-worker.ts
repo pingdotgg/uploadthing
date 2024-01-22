@@ -10,7 +10,7 @@ export interface Env {
 }
 
 export default {
-  async fetch(request: Request, env: Env) {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
     const handlers = createServerHandler({
       router: uploadRouter,
@@ -21,11 +21,9 @@ export default {
         uploadthingSecret: env.UPLOADTHING_SECRET,
         isDev: env.MODE === "development",
         callbackUrl: url.origin + url.pathname,
-        fetch: async (url, init) => {
-          console.log("worker fetch", url, init);
-          const response = await fetch(url, init);
-          console.log("worker fetch response", response);
-          return response;
+        fetch: (url, init) => {
+          if (init && "cache" in init) delete init.cache;
+          return fetch(url, init);
         },
       },
     });
@@ -36,6 +34,12 @@ export default {
         return new Response("Hello from Cloudflare Workers!");
       }
       case "/api/uploadthing": {
+        const response = await handlers[
+          request.method as keyof typeof handlers
+        ](request);
+        if ("cleanup" in response && response.cleanup) {
+          ctx.waitUntil(response.cleanup);
+        }
         return request.method === "GET" || request.method === "POST"
           ? handlers[request.method](request)
           : new Response("Method not allowed", { status: 405 });

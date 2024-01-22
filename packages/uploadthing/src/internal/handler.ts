@@ -1,3 +1,5 @@
+import { process } from "std-env";
+
 import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,
@@ -127,7 +129,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     res?: unknown;
     event?: unknown;
   }): Promise<
-    UploadThingError | { status: 200; body?: UploadThingResponse }
+    | UploadThingError
+    | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
   > => {
     const isDev = opts.config?.isDev ?? process.env.NODE_ENV === "development";
     const fetch = opts.config?.fetch ?? globalThis.fetch;
@@ -435,20 +438,23 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         // This is when we send the response back to the user's form so they can submit the files
 
+        let promise: Promise<unknown> | undefined = undefined;
         if (isDev) {
-          for (const file of parsedResponse) {
-            conditionalDevServer({
-              fileKey: file.key,
-              apiKey: preferredOrEnvSecret,
-              isDev,
-              fetch,
-            })
-              .then((res) => console.log("[UT] Dev hook finished", res))
-              .catch((err) => console.log("[UT] Dev hook failed", err));
-          }
+          promise = Promise.all(
+            parsedResponse.map((file) =>
+              conditionalDevServer({
+                fileKey: file.key,
+                apiKey: preferredOrEnvSecret,
+                fetch,
+              }).catch((error) => {
+                console.error("Err", error);
+              }),
+            ),
+          );
         }
 
         return {
+          cleanup: promise,
           body: parsedResponse.map((x) => ({
             ...x,
             pollingUrl: generateUploadThingURL(`/api/serverCallback`),

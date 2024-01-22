@@ -19,11 +19,8 @@ const isValidResponse = (response: ResponseEsque) => {
 export const conditionalDevServer = async (opts: {
   fileKey: string;
   apiKey: string;
-  isDev: boolean;
   fetch: FetchEsque;
 }) => {
-  if (!opts.isDev) return;
-
   console.log("Running devhook", opts.fileKey);
   const fileData = await pollForFileData(
     {

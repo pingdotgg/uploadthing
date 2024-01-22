@@ -52,5 +52,8 @@
     "extends": [
       "@uploadthing/eslint-config/base"
     ]
+  },
+  "dependencies": {
+    "std-env": "^3.7.0"
   }
 }

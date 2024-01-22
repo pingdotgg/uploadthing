@@ -897,6 +897,10 @@ importers:
         version: 3.22.3
 
   packages/shared:
+    dependencies:
+      std-env:
+        specifier: ^3.7.0
+        version: 3.7.0
     devDependencies:
       '@uploadthing/eslint-config':
         specifier: 0.2.0
@@ -971,6 +975,9 @@ importers:
       consola:
         specifier: ^3.2.3
         version: 3.2.3
+      std-env:
+        specifier: ^3.7.0
+        version: 3.7.0
     devDependencies:
       '@types/express':
         specifier: ^4.17.17
@@ -10213,7 +10220,7 @@ packages:
       mlly: 1.4.2
       node-forge: 1.3.1
       pathe: 1.1.1
-      std-env: 3.4.3
+      std-env: 3.7.0
       ufo: 1.3.0
       untun: 0.1.2
       uqr: 0.1.2
@@ -13891,13 +13898,8 @@ packages:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
 
-  /std-env@3.3.3:
-    resolution: {integrity: sha512-Rz6yejtVyWnVjC1RFvNmYL10kgjC49EOghxWn0RFqlCHGFpQx+Xe7yW3I4ceK1SGrWIGMjD5Kbue8W/udkbMJg==}
-    dev: true
-
-  /std-env@3.4.3:
-    resolution: {integrity: sha512-f9aPhy8fYBuMN+sNfakZV18U39PbalgjXG3lLB9WkaYTxijru61wb57V9wxxNthXM5Sd88ETBWi29qLAsHO52Q==}
-    dev: false
+  /std-env@3.7.0:
+    resolution: {integrity: sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==}
 
   /stdin-discarder@0.1.0:
     resolution: {integrity: sha512-xhV7w8S+bUwlPTb4bAOUQhv8/cSS5offJuX8GQGq32ONF0ZtDWKfkdomM3HMRA+LhX6um/FZ0COqlwsjD53LeQ==}
@@ -15303,7 +15305,7 @@ packages:
       pathe: 1.1.1
       picocolors: 1.0.0
       source-map: 0.6.1
-      std-env: 3.3.3
+      std-env: 3.7.0
       strip-literal: 1.0.1
       tinybench: 2.5.0
       tinypool: 0.4.0

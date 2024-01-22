@@ -1,3 +1,4 @@
 name = "uploadthing-cf-worker"
 main = "src/cf-worker.ts"
 compatibility_date = "2023-11-21"
+node_compat = true

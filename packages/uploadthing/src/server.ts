@@ -25,6 +25,14 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
+class ResponseWithCleanup extends Response {
+  cleanup?: Promise<any>;
+
+  constructor(body: BodyInit, init?: ResponseInit) {
+    super(body, init);
+  }
+}
+
 export const createServerHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
@@ -34,7 +42,9 @@ export const createServerHandler = <TRouter extends FileRouter>(
   const requestHandler = buildRequestHandler<TRouter>(opts);
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const POST = async (request: Request | { request: Request }) => {
+  const POST = async (
+    request: Request | { request: Request },
+  ): Promise<Response | ResponseWithCleanup> => {
     const req = request instanceof Request ? request : request.request;
     const response = await requestHandler({ req });
 
@@ -56,12 +66,14 @@ export const createServerHandler = <TRouter extends FileRouter>(
       });
     }
 
-    return new Response(JSON.stringify(response.body), {
+    const res = new ResponseWithCleanup(JSON.stringify(response.body), {
       status: response.status,
       headers: {
         "x-uploadthing-version": UPLOADTHING_VERSION,
       },
     });
+    res.cleanup = response.cleanup;
+    return res;
   };
 
   const GET = (request: Request | { request: Request }) => {
