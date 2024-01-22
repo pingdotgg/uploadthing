@@ -315,6 +315,6 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
       };
     },
     {
-      props: ["config"],
+      props: ["config"] as any,
     },
   );
