@@ -31,7 +31,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/shared": "*",
+    "@uploadthing/shared": "6.1.0",
+    "@uploadthing/dropzone": "0.1.1",
     "@vueuse/core": "^10.2.1",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",

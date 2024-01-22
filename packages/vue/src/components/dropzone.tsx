@@ -1,10 +1,12 @@
 import { twMerge } from "tailwind-merge";
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
+import { useDropzone } from "@uploadthing/dropzone/vue";
 import {
   allowedContentTextLabelGenerator,
   classNames,
   contentFieldToContent,
+  generateClientDropzoneAccept,
   generatePermittedFileTypes,
   getFullApiUrl,
   styleFieldToClassName,
@@ -14,7 +16,6 @@ import type { ContentField, StyleField } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";
-import { useDropzone, type FileUploadOptions } from "../useDropzone";
 import {
   INTERNAL_uploadthingHookGen,
   UseUploadthingProps,
@@ -92,36 +93,25 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
         generatePermittedFileTypes(permittedFileInfo.value?.config),
       );
       const acceptedFileTypes = computed(() =>
-        generatedPermittedFileTypes.value.fileTypes.map((fileType) => {
-          const map: Record<string, string> = {
-            image: "image/*",
-            video: "video/*",
-            audio: "audio/*",
-            text: "text/*",
-          };
-
-          return map[fileType] || fileType;
-        }),
+        generateClientDropzoneAccept(
+          generatedPermittedFileTypes.value.fileTypes,
+        ),
       );
 
-      const ready = computed(
-        () => generatedPermittedFileTypes.value.fileTypes.length > 0,
-      );
-
-      const dropzoneOptions = reactive<Partial<FileUploadOptions>>({
-        onDrop: (acceptedFiles) => {
+      const dropzoneOptions = reactive({
+        onDrop: (acceptedFiles: File[]) => {
           setFiles(acceptedFiles);
+
+          // TODO: If mode is auto, start upload immediately
         },
         accept: acceptedFileTypes.value,
       });
-
       watch(
         () => acceptedFileTypes.value,
         (value) => {
           dropzoneOptions.accept = value;
         },
       );
-
       const { getRootProps, getInputProps, isDragActive } =
         useDropzone(dropzoneOptions);
 
@@ -134,6 +124,10 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
           : // It contains whitespace because for some reason, if string is empty
             // There will be error on FE
             " ",
+      );
+
+      const ready = computed(
+        () => generatedPermittedFileTypes.value.fileTypes.length > 0,
       );
 
       const styleFieldArg = computed(
