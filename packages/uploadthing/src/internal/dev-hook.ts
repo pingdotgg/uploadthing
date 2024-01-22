@@ -21,7 +21,6 @@ export const conditionalDevServer = async (opts: {
   apiKey: string;
   fetch: FetchEsque;
 }) => {
-  console.log("Running devhook", opts.fileKey);
   const fileData = await pollForFileData(
     {
       url: generateUploadThingURL(`/api/pollUpload/${opts.fileKey}`),
@@ -31,7 +30,6 @@ export const conditionalDevServer = async (opts: {
     },
     async (json: { fileData: FileData }) => {
       const file = json.fileData;
-      console.log("[UT] Got file data from polling??", file);
 
       let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
       if (!callbackUrl.startsWith("http"))

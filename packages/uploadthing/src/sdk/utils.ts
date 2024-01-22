@@ -85,8 +85,8 @@ export const uploadFilesInternal = async (
     logger.debug("Failed getting presigned URLs:", error);
     throw error;
   }
-  // @ts-expect-error -whaterver
-  const clonedRes = new Response(res.body, res);
+
+  const clonedRes = res.clone();
   const json = await res.json<
     | {
         data: {
