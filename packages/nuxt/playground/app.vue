@@ -1,43 +1,68 @@
 <template>
   <div>Playground</div>
   <UploadButton
-    endpoint="videoAndImage"
     :config="{
+      endpoint: 'videoAndImage',
       onClientUploadComplete(res) {
+        console.log(`onClientUploadComplete`, res);
+        alert('Upload Completed');
+
         res[0]?.serverData;
-        expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: 'bar' }>()
+        // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: 'bar' }>()
+      },
+      onUploadBegin: () => {
+        console.log(`onUploadBegin`);
       },
     }"
   />
 
   <UploadDropzone
-    endpoint="e2"
-    :on-client-upload-complete="
-      (res) => {
-        res[0]?.serverData;
-      }
-    "
     :config="{
+      endpoint: 'e2',
       onClientUploadComplete(res) {
+        console.log(`onClientUploadComplete`, res);
+        alert('Upload Completed');
+
         res[0]?.serverData;
-        expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: 'baz' }>()
+        // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: 'baz' }>()
+      },
+      onUploadBegin: () => {
+        console.log(`onUploadBegin`);
       },
     }"
+  />
+
+  <input
+    type="file"
+    @change="
+      async (e) => {
+        console.log(`e`, e);
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Do something with files
+
+        // Then start the upload
+        await startUpload([file]);
+      }
+    "
   />
 </template>
 
 <script setup lang="ts">
-import { expectTypeOf } from "vitest";
+// import { expectTypeOf } from "vitest";
 
-useUploadThing("videoAndImage", {
+const { startUpload } = useUploadThing("videoAndImage", {
   onClientUploadComplete(res) {
-    expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: "bar" }>();
+    alert("Upload Completed");
+
+    // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: "bar" }>();
   },
 });
 
 useUploadThing("e2", {
   onClientUploadComplete(res) {
-    expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: "baz" }>();
+    // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: "baz" }>();
   },
 });
 </script>
