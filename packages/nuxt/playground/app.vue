@@ -5,7 +5,7 @@
       endpoint: 'videoAndImage',
       onClientUploadComplete(res) {
         console.log(`onClientUploadComplete`, res);
-        alert('Upload Completed');
+        // alert('Upload Completed');
 
         res[0]?.serverData;
         // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: 'bar' }>()
@@ -21,7 +21,7 @@
       endpoint: 'e2',
       onClientUploadComplete(res) {
         console.log(`onClientUploadComplete`, res);
-        alert('Upload Completed');
+        // alert('Upload Completed');
 
         res[0]?.serverData;
         // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: 'baz' }>()
@@ -54,7 +54,8 @@
 
 const { startUpload } = useUploadThing("videoAndImage", {
   onClientUploadComplete(res) {
-    alert("Upload Completed");
+    console.log(`onClientUploadComplete`, res);
+    // alert("Upload Completed");
 
     // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: "bar" }>();
   },
