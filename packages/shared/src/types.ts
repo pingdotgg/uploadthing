@@ -90,10 +90,12 @@ export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
 export type ContentDisposition = "inline" | "attachment";
+export type ACL = "public-read" | "private";
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;
   contentDisposition: ContentDisposition;
+  acl?: ACL; // default is set on UT server, not backfilled like other options
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;

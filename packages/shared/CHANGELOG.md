@@ -1,5 +1,20 @@
 # @uploadthing/shared
 
+## 6.1.0
+
+### Minor Changes
+
+- [#545](https://github.com/pingdotgg/uploadthing/pull/545)
+  [`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `logLevel` option to enable more verbose logging
+
+- [#525](https://github.com/pingdotgg/uploadthing/pull/525)
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `utapi.getSignedURL` and ACL configuration options on file routes and
+  `utapi.uploadFiles`
+
 ## 6.0.3
 
 ### Patch Changes

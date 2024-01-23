@@ -1,7 +1,12 @@
 import { process } from "std-env";
 import type { File as UndiciFile } from "undici";
 
-import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
+import type {
+  ACL,
+  ContentDisposition,
+  FetchEsque,
+  Json,
+} from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -56,6 +61,7 @@ export const uploadFilesInternal = async (
     files: FileEsque[];
     metadata: Json;
     contentDisposition: ContentDisposition;
+    acl?: ACL;
   },
   opts: {
     fetch: FetchEsque;
@@ -77,6 +83,7 @@ export const uploadFilesInternal = async (
       files: fileData,
       metadata: data.metadata,
       contentDisposition: data.contentDisposition,
+      acl: data.acl,
     }),
   });
 
@@ -214,3 +221,30 @@ export const uploadFilesInternal = async (
     return { data: null, error };
   });
 };
+
+type TimeShort = "s" | "m" | "h" | "d";
+type TimeLong = "second" | "minute" | "hour" | "day";
+type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type AutoCompleteableNumber = SuggestedNumbers | (number & {});
+export type Time =
+  | number
+  | `1${TimeShort}`
+  | `${AutoCompleteableNumber}${TimeShort}`
+  | `1 ${TimeLong}`
+  | `${AutoCompleteableNumber} ${TimeLong}s`;
+
+export function parseTimeToSeconds(time: Time) {
+  const match = time.toString().split(/(\d+)/).filter(Boolean);
+  const num = Number(match[0]);
+  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
+
+  const multiplier = {
+    s: 1,
+    m: 60,
+    h: 3600,
+    d: 86400,
+  }[unit];
+
+  return num * multiplier;
+}

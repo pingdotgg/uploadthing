@@ -91,6 +91,7 @@ export type OurFileRouter = typeof ourFileRouter;
 type MimeType = /** any web mime-type */
 type ValidFileTypes = "image" | "video" | "audio" | "blob" | "pdf" | "text" | MimeType;
 type ContentDisposition = "inline" | "attachment";
+type ACL = "public-read" | "private";
 
 // The input to your f() function can be an array of file types OR an object of them w/ config
 type FileRouterInput =
@@ -100,15 +101,27 @@ type FileRouterInput =
         maxFileSize?: string;
         maxFileCount?: number;
         contentDisposition?: ContentDisposition = "inline";
+        acl?: ACL;
       };
     };
 ```
+
+MIME types can also be used as keys in the FileRouter. For example: use
+`application/json` to only allow JSON files to be uploaded. You can read more
+about MIME types on
+[MDN ↗](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_Types).
 
 The `contentDisposition` option can be used to override the default `inline`
 disposition set at the storage provider. This is useful if you want your files
 downloaded instead of previewed in the browser. You can read more about content
 disposition on
 [MDN ↗](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
+
+<Callout>
+  ACL can only be overridden if you have enabled the "Allow Overriding ACL"
+  setting on the UploadThing dashboard. Attempts to override the ACL without
+  enabling this setting will result in an error.
+</Callout>
 
 ### Defaults
 
@@ -242,11 +255,12 @@ When uploading files using `uploadFiles`, the files must be present on your
 server. Then presigned URLs are generated on our servers before the files can be
 uploaded to the storage provider.
 
-| Arguments          | Type                       | Required | Description                                                                                                                                                           |
-| :----------------- | :------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| files              | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload                                                                                                                                        |
-| metadata           | Json                       | No       | Metadata to attach to the file(s)                                                                                                                                     |
-| contentDisposition | "inline" \| "attachment"   | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline` |
+| Arguments               | Type                       | Required | Description                                                                                                                                                                                                                                   |
+| :---------------------- | :------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| files                   | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload                                                                                                                                                                                                                |
+| opts.metadata           | Json                       | No       | Metadata to attach to the file(s)                                                                                                                                                                                                             |
+| opts.contentDisposition | "inline" \| "attachment"   | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline`                                                                         |
+| opts.acl                | "public-read" \| "private" | No       | What [ACL](/regions-and-acl#access-controls) should be set on the storage provider. Defaults to whatever is [configured on your app settings](/regions-and-acl#configuring-acl) and can only be used if the app allows per-request overrides. |
 
 ```ts
 // Edge / Node < 20 friendly File interface
@@ -303,11 +317,12 @@ const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
 //    ^? UploadedFileResponse[]
 ```
 
-| Arguments          | Type                                     | Required | Description                                                                                                                                                           |
-| :----------------- | :--------------------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| urls               | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload                                                                                                                          |
-| metadata           | Json                                     | No       | Metadata to attach to the file(s)                                                                                                                                     |
-| contentDisposition | "inline" \| "attachment"                 | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline` |
+| Arguments               | Type                                     | Required | Description                                                                                                                                                                                                                                   |
+| :---------------------- | :--------------------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| urls                    | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload                                                                                                                                                                                                  |
+| opts.metadata           | Json                                     | No       | Metadata to attach to the file(s)                                                                                                                                                                                                             |
+| opts.contentDisposition | "inline" \| "attachment"                 | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline`                                                                         |
+| opts.acl                | "public-read" \| "private"               | No       | What [ACL](/regions-and-acl#access-controls) should be set on the storage provider. Defaults to whatever is [configured on your app settings](/regions-and-acl#configuring-acl) and can only be used if the app allows per-request overrides. |
 
 ### `deleteFiles`
 
@@ -427,3 +442,35 @@ type Rename = {
 | Arguments | Type                 | Required | Description                                            |
 | :-------- | :------------------- | :------- | :----------------------------------------------------- |
 | renames   | Rename \|\| Rename[] | Yes      | Object specifying what file to rename and the new name |
+
+### `getSignedURL`
+
+> Added in `v6.2`
+
+Retrieve a [signed URL](/regions-and-acl#using-signed-urls) for a private file.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
+const url = await utapi.getSignedURL(fileKey, {
+  expiresIn: 60 * 60, // 1 hour
+  // expiresIn: '1 hour',
+  // expiresIn: '3d',
+  // expiresIn: '7 days',
+});
+```
+
+<Callout>
+  The `expiresIn` option can only be used if you allow overrides in your app
+  settings on the UploadThing dashboard.
+</Callout>
+
+| Arguments      | Type                 | Required | Description                                                                            |
+| :------------- | :------------------- | :------- | :------------------------------------------------------------------------------------- |
+| key            | string               | Yes      | The file key you want to get the URL for.                                              |
+| opts.expiresIn | number \| TimeString | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
+
+> `TimeString` refers to a human-readable string that can be parsed as a number,
+> followed by a unit of time. For example, `1s`, `1 second`, `2m`, `2 minutes`,
+> `7 days` etc. If no unit is specified, seconds are assumed.
