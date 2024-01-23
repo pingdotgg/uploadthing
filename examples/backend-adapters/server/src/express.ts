@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import express from "express";
 
-import { createUploadthingExpressHandler } from "uploadthing/express";
+import { createRouteHandler } from "uploadthing/express";
 
 import { uploadRouter } from "./router";
 
@@ -14,7 +14,7 @@ app.get("/api", (req, res) => res.send("Hello from Express!"));
 
 app.use(
   "/api/uploadthing",
-  createUploadthingExpressHandler({
+  createRouteHandler({
     router: uploadRouter,
   }),
 );

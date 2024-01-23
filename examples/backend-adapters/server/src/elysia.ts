@@ -1,10 +1,10 @@
 import { Elysia } from "elysia";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./router";
 
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
 });
 
