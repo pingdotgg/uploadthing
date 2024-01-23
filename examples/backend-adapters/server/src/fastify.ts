@@ -11,9 +11,6 @@ fastify.get("/api", async () => "Hello from Fastify!");
 
 fastify.register(fastifyUploadthingPlugin, {
   router: uploadRouter,
-  config: {
-    logLevel: "debug",
-  },
 });
 
 const start = async () => {
