@@ -1,3 +1,5 @@
+import { process } from "std-env";
+
 import type {
   ACL,
   ContentDisposition,
@@ -180,7 +182,7 @@ export class UTApi {
 
         // Download the file on the user's server to avoid egress charges
         logger.debug("Downloading file:", url);
-        const fileResponse = await fetch(url);
+        const fileResponse = await this.fetch(url);
         if (!fileResponse.ok) {
           throw new UploadThingError({
             code: "BAD_REQUEST",

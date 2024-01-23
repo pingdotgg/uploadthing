@@ -42,3 +42,7 @@ dist
 .output
 .nuxt
 .vercel
+
+# cf
+.wrangler
+.dev.vars

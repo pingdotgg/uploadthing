@@ -1,5 +1,3 @@
-import type { IncomingHttpHeaders } from "node:http";
-
 import type { MimeType } from "@uploadthing/mime-types/db";
 
 import type { AllowedFileType } from "./file-types";
@@ -48,6 +46,7 @@ export interface ResponseEsque {
    */
   json<T = unknown>(): Promise<T>;
   text(): Promise<string>;
+  blob(): Promise<Blob>;
 
   headers: Headers;
 
@@ -64,14 +63,6 @@ export type FetchEsque = (
   input: RequestInfo | MaybeUrl,
   init?: RequestInit | RequestInitEsque,
 ) => Promise<ResponseEsque>;
-
-export type RequestLike = Overwrite<
-  WithRequired<Partial<Request>, "json">,
-  {
-    body?: any; // we only use `.json`, don't care about `body`
-    headers: Headers | IncomingHttpHeaders | Record<string, string | undefined>;
-  }
->;
 
 /** This matches the return type from the infra */
 export interface FileData {

@@ -53,7 +53,7 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
     // POST
     const response = await requestHandler({
-      req: toWebRequest(event),
+      nativeRequest: toWebRequest(event),
       event,
     });
 
