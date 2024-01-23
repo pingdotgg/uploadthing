@@ -20,8 +20,8 @@ export default {
          */
         uploadthingSecret: env.UPLOADTHING_SECRET,
         isDev: env.MODE === "development",
-        callbackUrl: url.origin + url.pathname,
         fetch: (url, init) => {
+          // Cloudflare Workers doesn't support the cache option
           if (init && "cache" in init) delete init.cache;
           return fetch(url, init);
         },
@@ -41,9 +41,7 @@ export default {
         if ("cleanup" in response && response.cleanup) {
           ctx.waitUntil(response.cleanup.catch(() => null));
         }
-        return request.method === "GET" || request.method === "POST"
-          ? handlers[request.method](request)
-          : new Response("Method not allowed", { status: 405 });
+        return response ?? new Response("Method not allowed", { status: 405 });
       }
       default: {
         return new Response("Not found", { status: 404 });
