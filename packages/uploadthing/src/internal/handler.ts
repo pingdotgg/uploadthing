@@ -139,21 +139,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       logger.info("UploadThing dev server is now running!");
     }
 
-    const req = input.nativeRequest;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
-    let url: URL;
-    try {
-      url = new URL(req.url ?? "");
-    } catch (error) {
-      return new UploadThingError({
-        code: "BAD_REQUEST",
-        message: `Invalid url '${req.url}'`,
-        cause: error,
-      });
-    }
+    const req = input.nativeRequest;
+    const url = new URL(req.url);
 
     // Get inputs from query and params
     const params = url.searchParams;
