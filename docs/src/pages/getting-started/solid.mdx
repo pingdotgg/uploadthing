@@ -84,14 +84,18 @@ export type OurFileRouter = typeof uploadRouter;
 </Callout>
 
 ```ts copy filename="src/routes/api/uploadthing.ts"
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
-export const { GET, POST } = createServerHandler({
+export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
+  config: { ... },
 });
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Creating The UploadThing Components (recommended)
 

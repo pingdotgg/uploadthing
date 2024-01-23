@@ -70,16 +70,18 @@ export type OurFileRouter = typeof ourFileRouter;
 </Callout>
 
 ```ts copy filename="pages/api/uploadthing.ts"
-import { createNextPageApiHandler } from "uploadthing/next-legacy";
+import { createRouteHandler } from "uploadthing/next-legacy";
 
 import { ourFileRouter } from "~/server/uploadthing";
 
-const handler = createNextPageApiHandler({
+export default createRouteHandler({
   router: ourFileRouter,
+  config: { ... },
 });
-
-export default handler;
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Add UploadThing's Styles
 
