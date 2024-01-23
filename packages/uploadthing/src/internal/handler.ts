@@ -31,9 +31,9 @@ import type { ActionType, FileRouter, UTEvents } from "./types";
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
-const createUTFetch = (apiKey: string, opts: { fetch: FetchEsque }) => {
+const createUTFetch = (apiKey: string, fetch: FetchEsque) => {
   return async (endpoint: `/${string}`, payload: unknown) => {
-    const response = await opts.fetch(generateUploadThingURL(endpoint), {
+    const response = await fetch(generateUploadThingURL(endpoint), {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -219,7 +219,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const utFetch = createUTFetch(preferredOrEnvSecret, { fetch });
+    const utFetch = createUTFetch(preferredOrEnvSecret, fetch);
     logger.debug("All request input is valid", {
       slug,
       actionType,
@@ -228,14 +228,13 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
-      // console.log("hijacking req reader", await req.json());
       const maybeReqBody = await safeParseJSON<{
         file: UploadedFile;
         files: unknown;
         metadata: Record<string, unknown>;
         input?: Json;
       }>(req);
-      logger.debug("typeof maybeReqBody", typeof maybeReqBody);
+
       logger.debug("Handling callback request with input:", maybeReqBody);
 
       if (maybeReqBody instanceof Error) {

@@ -181,8 +181,8 @@ export class UTApi {
         const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
         // Download the file on the user's server to avoid egress charges
-        const fileResponse = await this.fetch(url);
         logger.debug("Downloading file:", url);
+        const fileResponse = await this.fetch(url);
         if (!fileResponse.ok) {
           throw new UploadThingError({
             code: "BAD_REQUEST",
