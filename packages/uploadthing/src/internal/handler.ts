@@ -212,11 +212,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     }
 
     if (utPackage && typeof utPackage !== "string") {
-      const msg = `Expected x-ut-package to be of type 'string', got '${typeof utPackage}'`;
+      const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utPackage}'`;
       logger.error(msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: "`x-ut-package` must be a string. eg. '@uploadthing/react'",
+        message:
+          "`x-uploadthing-package` must be a string. eg. '@uploadthing/react'",
         cause: msg,
       });
     }
