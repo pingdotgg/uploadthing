@@ -44,7 +44,7 @@ function formatStack(stack: string) {
   const cwd =
     "cwd" in process && typeof process.cwd === "function"
       ? process.cwd()
-      : "unknown";
+      : "__UnknownCWD__";
   return (
     "  " +
     stack
