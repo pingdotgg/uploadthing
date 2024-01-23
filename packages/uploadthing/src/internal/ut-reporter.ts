@@ -27,7 +27,11 @@ export const createAPIRequestUrl = (config: {
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
  * Events are handled in "./handler.ts starting at L200"
  */
-export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
+export const createUTReporter = (cfg: {
+  url: URL;
+  endpoint: string;
+  package: string;
+}) => {
   return async <TEvent extends keyof UTEvents>(
     type: TEvent,
     payload: UTEvents[TEvent],
@@ -40,7 +44,10 @@ export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
     const response = await fetch(url, {
       method: "POST",
       body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-ut-package": cfg.package,
+      },
     });
 
     switch (type) {

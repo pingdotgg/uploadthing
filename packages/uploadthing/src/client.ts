@@ -45,6 +45,14 @@ type UploadFilesOptions<
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+
+  /**
+   * The uploadthing package that is making this request
+   * @example "uploadthing-react"
+   *
+   * This is used to identify the client in the server logs
+   */
+  package: string;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}
@@ -78,6 +86,7 @@ export const DANGEROUS__uploadFiles = async <
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     url: opts.url,
+    package: opts.package,
   });
 
   // Get presigned URL for S3 upload
@@ -96,6 +105,7 @@ export const DANGEROUS__uploadFiles = async <
       // Express requires Content-Type to be explicitly set to parse body properly
       headers: {
         "Content-Type": "application/json",
+        "x-ut-package": opts.package,
       },
     },
   ).then(async (res) => {
@@ -243,9 +253,19 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+
+  /**
+   * The uploadthing package that is making this request
+   * @example "uploadthing-react"
+   *
+   * This is used to identify the client in the server logs
+   */
+  package: string;
 }) => {
   const url =
     initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+
+  const utPkg = initOpts.package;
 
   return <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
@@ -258,6 +278,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
     DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
       ...opts,
       url,
+      package: utPkg,
     } as any);
 };
 

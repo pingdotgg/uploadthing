@@ -29,7 +29,7 @@ import type { ActionType, FileRouter, UTEvents } from "./types";
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
-const createUTFetch = (apiKey: string) => {
+const createUTFetch = (apiKey: string, utPkg: string) => {
   return async (endpoint: `/${string}`, payload: unknown) => {
     const response = await fetch(generateUploadThingURL(endpoint), {
       method: "POST",
@@ -38,6 +38,7 @@ const createUTFetch = (apiKey: string) => {
         "Content-Type": "application/json",
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": UPLOADTHING_VERSION,
+        "x-uploadthing-package": utPkg,
       },
     });
 
@@ -151,6 +152,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
+    const utPackage = getHeader(req, "x-ut-package") ?? "unknown";
 
     // Validate inputs
     if (!slug) {
@@ -208,6 +210,16 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
+    if (utPackage && typeof utPackage !== "string") {
+      const msg = `Expected x-ut-package to be of type 'string', got '${typeof utPackage}'`;
+      logger.error(msg);
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "`x-ut-package` must be a string. eg. '@uploadthing/react'",
+        cause: msg,
+      });
+    }
+
     const uploadable = router[slug];
     if (!uploadable) {
       const msg = `No file route found for slug ${slug}`;
@@ -220,7 +232,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
     logger.debug("All request input is valid", { slug, actionType });
 
-    const utFetch = createUTFetch(preferredOrEnvSecret);
+    const utFetch = createUTFetch(preferredOrEnvSecret, utPackage);
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
