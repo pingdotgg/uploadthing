@@ -1,13 +1,15 @@
+import { process } from "std-env";
+
 import { lookup } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
 import type {
   ExpandedRouteConfig,
+  FetchEsque,
   FileData,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
-  RequestLike,
   ResponseEsque,
 } from "./types";
 
@@ -111,13 +113,8 @@ export function getTypeFromFileName(
 
 export function generateUploadThingURL(path: `/${string}`) {
   let host = "https://uploadthing.com";
-
-  if (typeof process !== "undefined") {
-    host = process.env.CUSTOM_INFRA_URL ?? host;
-  } else {
-    // @ts-expect-error - import.meta is dumb
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-    host = import.meta.env?.CUSTOM_INFRA_URL ?? host;
+  if (process.env.CUSTOM_INFRA_URL) {
+    host = process.env.CUSTOM_INFRA_URL;
   }
   return `${host}${path}`;
 }
@@ -166,11 +163,12 @@ export async function pollForFileData(
     // no apikey => no filedata will be returned, just status
     apiKey: string | null;
     sdkVersion: string;
+    fetch: FetchEsque;
   },
   callback?: (json: any) => Promise<any>,
 ) {
   return withExponentialBackoff(async () => {
-    const res = await fetch(opts.url, {
+    const res = await opts.fetch(opts.url, {
       headers: {
         ...(opts.apiKey && { "x-uploadthing-api-key": opts.apiKey }),
         "x-uploadthing-version": opts.sdkVersion,
@@ -218,7 +216,7 @@ export const fileSizeToBytes = (input: string) => {
 };
 
 export async function safeParseJSON<T>(
-  input: string | ResponseEsque | RequestLike,
+  input: string | ResponseEsque | Request,
 ): Promise<T | Error> {
   if (typeof input === "string") {
     try {
@@ -229,11 +227,10 @@ export async function safeParseJSON<T>(
     }
   }
 
-  const clonedRes = input.clone?.();
+  const text = await input.text();
   try {
-    return (await input.json()) as T;
+    return JSON.parse(text ?? "null") as T;
   } catch (err) {
-    const text = (await clonedRes?.text()) ?? "unknown";
     console.error(`Error parsing JSON, got '${text}'`);
     return new Error(`Error parsing JSON, got '${text}'`);
   }

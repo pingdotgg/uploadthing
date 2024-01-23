@@ -17,6 +17,7 @@ import {
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
+import { toWebRequest } from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -65,10 +66,8 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
     );
 
     const response = await requestHandler({
-      req: Object.assign(req, {
-        json: () => Promise.resolve(bodyResult.data),
-      }),
-      url,
+      nativeRequest: toWebRequest(req, url, bodyResult.data),
+      originalRequest: req,
       res,
     });
 

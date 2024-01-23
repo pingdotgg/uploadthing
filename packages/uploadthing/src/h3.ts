@@ -2,11 +2,9 @@ import type { H3Event } from "h3";
 import {
   assertMethod,
   defineEventHandler,
-  getRequestHeaders,
-  getRequestURL,
-  readBody,
   setHeaders,
   setResponseStatus,
+  toWebRequest,
 } from "h3";
 
 import type { Json } from "@uploadthing/shared";
@@ -55,11 +53,7 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
     // POST
     const response = await requestHandler({
-      req: {
-        url: getRequestURL(event).href,
-        headers: getRequestHeaders(event),
-        json: () => Promise.resolve(readBody(event)),
-      },
+      nativeRequest: toWebRequest(event),
       event,
     });
 

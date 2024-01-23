@@ -17,6 +17,7 @@ import {
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
+import { toWebRequest } from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -47,10 +48,8 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
     const url = new URL(req.url, `${proto}://${req.headers.host}`);
 
     const response = await requestHandler({
-      req: Object.assign(req, {
-        json: () => Promise.resolve(req.body),
-      }),
-      url,
+      nativeRequest: toWebRequest(req, url),
+      originalRequest: req,
       res,
     });
 

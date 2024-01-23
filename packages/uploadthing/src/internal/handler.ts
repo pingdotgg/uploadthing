@@ -1,3 +1,5 @@
+import { isDevelopment, process } from "std-env";
+
 import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,
@@ -11,9 +13,9 @@ import {
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
+  FetchEsque,
   FileRouterInputKey,
   Json,
-  RequestLike,
   UploadedFile,
 } from "@uploadthing/shared";
 
@@ -29,7 +31,7 @@ import type { ActionType, FileRouter, UTEvents } from "./types";
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
-const createUTFetch = (apiKey: string) => {
+const createUTFetch = (apiKey: string, fetch: FetchEsque) => {
   return async (endpoint: `/${string}`, payload: unknown) => {
     const response = await fetch(generateUploadThingURL(endpoint), {
       method: "POST",
@@ -90,14 +92,17 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
+    /**
+     * Used to determine whether to run dev hook or not
+     * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+     */
+    isDev?: boolean;
+    /**
+     * Used to override the fetch implementation
+     * @default `globalThis.fetch`
+     */
+    fetch?: FetchEsque;
   };
-};
-
-const getHeader = (req: RequestLike, key: string) => {
-  if (req.headers instanceof Headers) {
-    return req.headers.get(key);
-  }
-  return req.headers[key];
 };
 
 export type UploadThingResponse = {
@@ -117,38 +122,33 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
-    req: RequestLike;
-    // Allow for overriding request URL since some req.url are read-only
-    // If the adapter doesn't give a full url on `req.url`, this should be set
-    url?: URL;
+    nativeRequest: Request;
+
+    // Forward to middleware handler
+    originalRequest?: unknown;
     res?: unknown;
     event?: unknown;
   }): Promise<
-    UploadThingError | { status: 200; body?: UploadThingResponse }
+    | UploadThingError
+    | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
   > => {
-    if (process.env.NODE_ENV === "development") {
+    const isDev = opts.config?.isDev ?? isDevelopment;
+    const fetch = opts.config?.fetch ?? globalThis.fetch;
+
+    if (isDev) {
       logger.info("UploadThing dev server is now running!");
     }
 
-    const { req, res, event } = input;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
-    let url: URL;
-    try {
-      url = new URL(input.url ?? req.url ?? "");
-    } catch (error) {
-      return new UploadThingError({
-        code: "BAD_REQUEST",
-        message: `Invalid url '${input.url?.href ?? req.url}'`,
-        cause: error,
-      });
-    }
+    const req = input.nativeRequest;
+    const url = new URL(req.url);
 
     // Get inputs from query and params
     const params = url.searchParams;
-    const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
+    const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
 
@@ -218,9 +218,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    logger.debug("All request input is valid", { slug, actionType });
-
-    const utFetch = createUTFetch(preferredOrEnvSecret);
+    const utFetch = createUTFetch(preferredOrEnvSecret, fetch);
+    logger.debug("All request input is valid", {
+      slug,
+      actionType,
+      uploadthingHook,
+    });
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
@@ -316,11 +319,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         try {
           logger.debug("Running middleware");
           metadata = await uploadable._def.middleware({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            req: req as any,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            res: res as any,
-            event,
+            req: input.originalRequest,
+            res: input.res,
+            event: input.event,
             input: parsedInput,
           });
           logger.debug("Middleware finished successfully with:", metadata);
@@ -396,7 +397,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        const callbackUrl = resolveCallbackUrl({ config, req, url });
+        const callbackUrl = resolveCallbackUrl({ config, req, url, isDev });
         logger.debug(
           "Retrieving presigned URLs from UploadThing. Callback URL is:",
           callbackUrl.href,
@@ -430,16 +431,23 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         // This is when we send the response back to the user's form so they can submit the files
 
-        if (process.env.NODE_ENV === "development") {
-          for (const file of parsedResponse) {
-            void conditionalDevServer({
-              fileKey: file.key,
-              apiKey: preferredOrEnvSecret,
-            });
-          }
+        let promise: Promise<unknown> | undefined = undefined;
+        if (isDev) {
+          promise = Promise.all(
+            parsedResponse.map((file) =>
+              conditionalDevServer({
+                fileKey: file.key,
+                apiKey: preferredOrEnvSecret,
+                fetch,
+              }).catch((error) => {
+                logger.error("Err", error);
+              }),
+            ),
+          );
         }
 
         return {
+          cleanup: promise,
           body: parsedResponse.map((x) => ({
             ...x,
             pollingUrl: generateUploadThingURL(`/api/serverCallback`),
@@ -559,8 +567,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
 function resolveCallbackUrl(opts: {
   config: RouterWithConfig<FileRouter>["config"];
-  req: RequestLike;
+  req: Request;
   url: URL;
+  isDev: boolean;
 }): URL {
   let callbackUrl = opts.url;
   if (opts.config?.callbackUrl) {
@@ -569,27 +578,22 @@ function resolveCallbackUrl(opts: {
     callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
   }
 
-  if (
-    process.env.NODE_ENV !== "production" ||
-    !callbackUrl.host.includes("localhost")
-  ) {
+  if (opts.isDev || !callbackUrl.host.includes("localhost")) {
     return callbackUrl;
   }
 
   // Production builds have to have a public URL so UT can send webhook
   // Parse the URL from the headers
-  let parsedFromHeaders = (
-    getHeader(opts.req, "origin") ??
-    getHeader(opts.req, "referer") ??
-    getHeader(opts.req, "host") ??
-    getHeader(opts.req, "x-forwarded-host")
-  )?.toString();
+  const headers = opts.req.headers;
+  let parsedFromHeaders =
+    headers.get("origin") ??
+    headers.get("referer") ??
+    headers.get("host") ??
+    headers.get("x-forwarded-host");
 
   if (parsedFromHeaders && !parsedFromHeaders.includes("http")) {
     parsedFromHeaders =
-      (getHeader(opts.req, "x-forwarded-proto") ?? "https").toString() +
-      "://" +
-      parsedFromHeaders;
+      (headers.get("x-forwarded-proto") ?? "https") + "://" + parsedFromHeaders;
   }
 
   if (!parsedFromHeaders || parsedFromHeaders.includes("localhost")) {

@@ -1,3 +1,5 @@
+import { process } from "std-env";
+
 import { logger } from "./logger";
 
 export function incompatibleNodeGuard() {
@@ -31,5 +33,9 @@ export function incompatibleNodeGuard() {
   logger.fatal(
     `YOU ARE USING A LEGACY (${major}.${minor}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE ^18.13.`,
   );
-  process.exit(1); // Kill the process if it isn't going to work correctly anyway
+
+  // Kill the process if it isn't going to work correctly anyway
+  // If we've gotten this far we know we have a Node.js runtime so exit is defined. Override std-env type.
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  (process as any).exit?.(1);
 }

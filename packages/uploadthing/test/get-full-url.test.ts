@@ -1,3 +1,4 @@
+import { process } from "std-env";
 import { describe, expect, it } from "vitest";
 
 import { getFullApiUrl } from "../src/internal/get-full-api-url";
