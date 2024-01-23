@@ -1,3 +1,4 @@
+import type { FetchEsque } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -31,6 +32,7 @@ export const createUTReporter = (cfg: {
   url: URL;
   endpoint: string;
   package: string;
+  fetch: FetchEsque;
 }) => {
   return async <TEvent extends keyof UTEvents>(
     type: TEvent,
@@ -41,7 +43,7 @@ export const createUTReporter = (cfg: {
       slug: cfg.endpoint,
       actionType: type,
     });
-    const response = await fetch(url, {
+    const response = await cfg.fetch(url, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {

@@ -1,3 +1,4 @@
+import { process } from "std-env";
 import type { File as UndiciFile } from "undici";
 
 import type {
@@ -92,27 +93,23 @@ export const uploadFilesInternal = async (
     throw error;
   }
 
-  const clonedRes = res.clone(); // so that `UploadThingError.fromResponse()` can consume the body again
-  const json = await res.json<
-    | {
-        data: {
-          presignedUrls: string[];
-          key: string;
-          fileUrl: string;
-          fileType: string;
-          uploadId: string;
-          chunkSize: number;
-          chunkCount: number;
-        }[];
-      }
-    | { error: string }
-  >();
-
-  if ("error" in json) {
-    const error = await UploadThingError.fromResponse(clonedRes);
+  if (!res.ok) {
+    const error = await UploadThingError.fromResponse(res);
     logger.debug("Failed getting presigned URLs:", error);
     throw error;
   }
+
+  const json = await res.json<{
+    data: {
+      presignedUrls: string[];
+      key: string;
+      fileUrl: string;
+      fileType: string;
+      uploadId: string;
+      chunkSize: number;
+      chunkCount: number;
+    }[];
+  }>();
 
   logger.debug("Got presigned URLs:", json.data);
   logger.debug("Starting uploads...");
@@ -197,6 +194,7 @@ export const uploadFilesInternal = async (
         url: generateUploadThingURL(`/api/pollUpload/${key}`),
         apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
         sdkVersion: UPLOADTHING_VERSION,
+        fetch: opts.fetch,
       });
 
       logger.debug("Polling complete.");
