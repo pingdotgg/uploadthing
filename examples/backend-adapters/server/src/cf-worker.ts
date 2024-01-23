@@ -16,16 +16,19 @@ export default {
       router: uploadRouter,
       config: {
         /**
-         * Since workers doesn't have a global process.env, we need to set the config manually
+         * Since workers doesn't have envs on `process`. We need to pass
+         * secret and isDev flag manually.
          */
         uploadthingSecret: env.UPLOADTHING_SECRET,
         isDev: env.MODE === "development",
+        /*
+         * Cloudflare Workers doesn't support the cache option
+         * so we need to remove it from the request init.
+         */
         fetch: (url, init) => {
-          // Cloudflare Workers doesn't support the cache option
           if (init && "cache" in init) delete init.cache;
           return fetch(url, init);
         },
-        logLevel: "debug",
       },
     });
 
