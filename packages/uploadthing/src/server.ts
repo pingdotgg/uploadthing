@@ -25,8 +25,9 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-interface ResponseWithCleanup extends Response {
-  cleanup: (promise: Promise<unknown>) => void;
+export interface ResponseWithCleanup extends Response {
+  /** custom property where a Promise may be put that you can await in for example Cloudflare Workers */
+  cleanup?: Promise<unknown>;
 }
 
 export const createServerHandler = <TRouter extends FileRouter>(
