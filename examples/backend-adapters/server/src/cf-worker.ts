@@ -38,9 +38,11 @@ export default {
         return new Response("Hello from Cloudflare Workers!");
       }
       case "/api/uploadthing": {
-        const response = await handlers[
-          request.method as keyof typeof handlers
-        ](request);
+        if (request.method !== "GET" && request.method !== "POST") {
+          return new Response("Method not allowed", { status: 405 });
+        }
+
+        const response = await handlers[request.method](request);
         if ("cleanup" in response && response.cleanup) {
           /**
            * UploadThing dev server leaves some promises hanging around that we
@@ -48,7 +50,7 @@ export default {
            */
           ctx.waitUntil(response.cleanup);
         }
-        return response ?? new Response("Method not allowed", { status: 405 });
+        return response;
       }
       default: {
         return new Response("Not found", { status: 404 });
