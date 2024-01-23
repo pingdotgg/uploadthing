@@ -92,7 +92,15 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
     callbackUrl?: string;
     uploadthingId?: string;
     uploadthingSecret?: string;
+    /**
+     * Used to determine whether to run dev hook or not
+     * @default `process.env.NODE_ENV === "development"`
+     */
     isDev?: boolean;
+    /**
+     * Used to override the fetch implementation
+     * @default `globalThis.fetch`
+     */
     fetch?: FetchEsque;
   };
 };
