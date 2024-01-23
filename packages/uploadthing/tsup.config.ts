@@ -13,7 +13,6 @@ export default defineConfig((opts) => ({
     "./src/tw.ts",
     "./src/fastify.ts",
     "./src/h3.ts",
-    "./src/cf-worker.ts",
   ],
   clean: !opts.watch,
   external: ["express", "h3", "tailwindcss"],
