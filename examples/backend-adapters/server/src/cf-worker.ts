@@ -31,7 +31,7 @@ export default {
       },
     });
 
-    // World's worst router
+    // World's simplest router. Handle GET/POST requests to /api/uploadthing
     switch (new URL(request.url).pathname) {
       case "/api": {
         return new Response("Hello from Cloudflare Workers!");

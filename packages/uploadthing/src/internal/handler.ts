@@ -1,4 +1,4 @@
-import { process } from "std-env";
+import { isDevelopment, process } from "std-env";
 
 import type { MimeType } from "@uploadthing/mime-types/db";
 import {
@@ -94,7 +94,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
     uploadthingSecret?: string;
     /**
      * Used to determine whether to run dev hook or not
-     * @default `process.env.NODE_ENV === "development"`
+     * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
      */
     isDev?: boolean;
     /**
@@ -132,7 +132,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     | UploadThingError
     | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
   > => {
-    const isDev = opts.config?.isDev ?? process.env.NODE_ENV === "development";
+    const isDev = opts.config?.isDev ?? isDevelopment;
     const fetch = opts.config?.fetch ?? globalThis.fetch;
 
     if (isDev) {
