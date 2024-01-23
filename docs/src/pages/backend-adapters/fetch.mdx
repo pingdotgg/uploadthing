@@ -139,7 +139,6 @@ import { uploadRouter } from "./uploadthing.ts";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const url = new URL(request.url);
     const handlers = createServerHandler({
       router: uploadRouter,
       config: {
@@ -161,7 +160,7 @@ export default {
     });
 
     // World's simplest router. Handle GET/POST requests to /api/uploadthing
-    switch (url.pathname) {
+    switch (new URL(request.url).pathname) {
       case "/api/uploadthing": {
         if (request.method !== "POST" && request.method !== "GET") {
           return new Response("Method not allowed", { status: 405 });

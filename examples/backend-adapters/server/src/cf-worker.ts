@@ -11,7 +11,6 @@ export interface Env {
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const url = new URL(request.url);
     const handlers = createServerHandler({
       router: uploadRouter,
       config: {
@@ -33,7 +32,7 @@ export default {
     });
 
     // World's worst router
-    switch (url.pathname) {
+    switch (new URL(request.url).pathname) {
       case "/api": {
         return new Response("Hello from Cloudflare Workers!");
       }
