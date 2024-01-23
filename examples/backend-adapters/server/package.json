@@ -8,7 +8,7 @@
     "dev:express": "NODE_ENV=development tsx watch src/express.ts",
     "dev:fastify": "NODE_ENV=development tsx watch src/fastify.ts",
     "dev:hono": "NODE_ENV=development tsx watch src/hono.ts",
-    "dev:h3": "listhen -w src/h3.ts"
+    "dev:h3": "NODE_ENV=development listhen -w src/h3.ts"
   },
   "dependencies": {
     "@hono/node-server": "^1.1.1",

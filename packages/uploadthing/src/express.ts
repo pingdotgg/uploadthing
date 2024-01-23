@@ -65,8 +65,11 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
     );
 
     const response = await requestHandler({
-      req: Object.assign(req, {
-        json: () => Promise.resolve(bodyResult.data),
+      req: new Request(url, {
+        method: req.method,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        headers: req.headers as any,
+        body: JSON.stringify(bodyResult.data),
       }),
       url,
       res,

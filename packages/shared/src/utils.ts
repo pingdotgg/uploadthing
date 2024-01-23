@@ -228,11 +228,10 @@ export async function safeParseJSON<T>(
     }
   }
 
-  const clonedRes = input.clone?.();
+  const text = await input.text();
   try {
-    return (await input.json()) as T;
+    return JSON.parse(text ?? "null") as T;
   } catch (err) {
-    const text = (await clonedRes?.text()) ?? "unknown";
     console.error(`Error parsing JSON, got '${text}'`);
     return new Error(`Error parsing JSON, got '${text}'`);
   }

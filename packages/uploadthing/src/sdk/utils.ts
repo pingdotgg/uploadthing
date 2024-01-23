@@ -86,27 +86,23 @@ export const uploadFilesInternal = async (
     throw error;
   }
 
-  const clonedRes = res.clone();
-  const json = await res.json<
-    | {
-        data: {
-          presignedUrls: string[];
-          key: string;
-          fileUrl: string;
-          fileType: string;
-          uploadId: string;
-          chunkSize: number;
-          chunkCount: number;
-        }[];
-      }
-    | { error: string }
-  >();
-
-  if ("error" in json) {
-    const error = await UploadThingError.fromResponse(clonedRes);
+  if (!res.ok) {
+    const error = await UploadThingError.fromResponse(res);
     logger.debug("Failed getting presigned URLs:", error);
     throw error;
   }
+
+  const json = await res.json<{
+    data: {
+      presignedUrls: string[];
+      key: string;
+      fileUrl: string;
+      fileType: string;
+      uploadId: string;
+      chunkSize: number;
+      chunkCount: number;
+    }[];
+  }>();
 
   logger.debug("Got presigned URLs:", json.data);
   logger.debug("Starting uploads...");

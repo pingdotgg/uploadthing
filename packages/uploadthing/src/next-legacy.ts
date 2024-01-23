@@ -49,11 +49,12 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
 
     const response = await requestHandler({
-      req: Object.assign(req, {
-        json: () =>
-          Promise.resolve(
-            typeof req.body === "string" ? JSON.parse(req.body) : req.body,
-          ),
+      req: new Request(url, {
+        method: req.method,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        headers: req.headers as any,
+        body:
+          typeof req.body === "string" ? req.body : JSON.stringify(req.body),
       }),
       url,
       res,

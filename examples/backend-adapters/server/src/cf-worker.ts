@@ -25,6 +25,7 @@ export default {
           if (init && "cache" in init) delete init.cache;
           return fetch(url, init);
         },
+        logLevel: "debug",
       },
     });
 
@@ -38,7 +39,7 @@ export default {
           request.method as keyof typeof handlers
         ](request);
         if ("cleanup" in response && response.cleanup) {
-          ctx.waitUntil(response.cleanup);
+          ctx.waitUntil(response.cleanup.catch(() => null));
         }
         return request.method === "GET" || request.method === "POST"
           ? handlers[request.method](request)

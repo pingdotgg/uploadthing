@@ -122,7 +122,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
-    req: RequestLike;
+    req: Request;
     // Allow for overriding request URL since some req.url are read-only
     // If the adapter doesn't give a full url on `req.url`, this should be set
     url?: URL;
@@ -228,17 +228,22 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     }
 
     const utFetch = createUTFetch(preferredOrEnvSecret, { fetch });
-    logger.debug("All request input is valid", { slug, actionType });
+    logger.debug("All request input is valid", {
+      slug,
+      actionType,
+      uploadthingHook,
+    });
 
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
+      // console.log("hijacking req reader", await req.json());
       const maybeReqBody = await safeParseJSON<{
         file: UploadedFile;
         files: unknown;
         metadata: Record<string, unknown>;
         input?: Json;
       }>(req);
-
+      logger.debug("typeof maybeReqBody", typeof maybeReqBody);
       logger.debug("Handling callback request with input:", maybeReqBody);
 
       if (maybeReqBody instanceof Error) {
@@ -447,7 +452,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
                 apiKey: preferredOrEnvSecret,
                 fetch,
               }).catch((error) => {
-                console.error("Err", error);
+                logger.error("Err", error);
               }),
             ),
           );
