@@ -17,19 +17,4 @@ export default defineConfig((opts) => ({
   ],
   clean: !opts.watch,
   external: ["express", "h3", "tailwindcss"],
-  plugins: [
-    {
-      name: "preserve-node-import-protocol",
-      renderChunk(_, chunk) {
-        const NODE_BUILTINS = ["util"];
-        // tsup strips the node: protocol from imports, but we need it to
-        // keep other runtimes happy
-        const code = chunk.code.replace(
-          new RegExp(`from ['"](${NODE_BUILTINS.join("|")})['"]`, "g"),
-          "from 'node:$1'",
-        );
-        return { code };
-      },
-    },
-  ],
 }));

@@ -1,7 +1,5 @@
 // Don't want to ship our logger to the client, keep size down
 /* eslint-disable no-console */
-// Browser env it's fine to use global `fetch`
-/* eslint-disable no-restricted-globals */
 
 import {
   safeParseJSON,
@@ -77,6 +75,8 @@ export const DANGEROUS__uploadFiles = async <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) => {
+  const fetch = globalThis.fetch.bind(globalThis);
+
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     url: opts.url,
