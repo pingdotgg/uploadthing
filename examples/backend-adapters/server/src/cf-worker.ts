@@ -39,7 +39,8 @@ export default {
           request.method as keyof typeof handlers
         ](request);
         if ("cleanup" in response && response.cleanup) {
-          ctx.waitUntil(response.cleanup.catch(() => null));
+          // Let any cleanup tasks run before quitting the worker
+          ctx.waitUntil(response.cleanup);
         }
         return response ?? new Response("Method not allowed", { status: 405 });
       }
