@@ -42,7 +42,10 @@ export default {
           request.method as keyof typeof handlers
         ](request);
         if ("cleanup" in response && response.cleanup) {
-          // Let any cleanup tasks run before quitting the worker
+          /**
+           * UploadThing dev server leaves some promises hanging around that we
+           * need to wait for to prevent the worker from exiting prematurely.
+           */
           ctx.waitUntil(response.cleanup);
         }
         return response ?? new Response("Method not allowed", { status: 405 });
