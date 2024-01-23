@@ -30,7 +30,7 @@ export interface ResponseWithCleanup extends Response {
   cleanup?: Promise<unknown>;
 }
 
-export const createServerHandler = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   initLogger(opts.config?.logLevel);
@@ -90,3 +90,8 @@ export const createServerHandler = <TRouter extends FileRouter>(
 
 export const extractRouterConfig = (router: FileRouter) =>
   buildPermissionsInfoHandler({ router })();
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createServerHandler = createRouteHandler;

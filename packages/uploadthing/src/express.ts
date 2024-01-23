@@ -32,7 +32,7 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ): ExpressRouter => {
   initLogger(opts.config?.logLevel);
@@ -101,3 +101,8 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
 
   return router;
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createUploadthingExpressHandler = createRouteHandler;

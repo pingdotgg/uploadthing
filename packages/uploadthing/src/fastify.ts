@@ -32,7 +32,7 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   fastify: FastifyInstance,
   opts: RouterWithConfig<TRouter>,
   done: (err?: Error) => void,
@@ -95,3 +95,8 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
 
   done();
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const fastifyUploadthingPlugin = createRouteHandler;
