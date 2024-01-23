@@ -103,7 +103,7 @@ export const INTERNAL_uploadthingHookGen = <
             opts.onUploadBegin(file);
           },
           url: initOpts.url,
-          package: "uploadthing-react",
+          package: "@uploadthing/react",
         });
 
         opts?.onClientUploadComplete?.(res);
@@ -165,7 +165,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
       DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
         ...opts,
         url,
-        package: "uploadthing-react",
+        package: "@uploadthing/react",
       } as any),
   } as const;
 };

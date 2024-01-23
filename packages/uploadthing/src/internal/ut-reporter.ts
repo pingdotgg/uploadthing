@@ -46,7 +46,7 @@ export const createUTReporter = (cfg: {
       body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
-        "x-ut-package": cfg.package,
+        "x-uploadthing-package": cfg.package,
       },
     });
 

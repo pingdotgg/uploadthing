@@ -48,7 +48,7 @@ type UploadFilesOptions<
 
   /**
    * The uploadthing package that is making this request
-   * @example "uploadthing-react"
+   * @example "@uploadthing/react"
    *
    * This is used to identify the client in the server logs
    */
@@ -105,7 +105,7 @@ export const DANGEROUS__uploadFiles = async <
       // Express requires Content-Type to be explicitly set to parse body properly
       headers: {
         "Content-Type": "application/json",
-        "x-ut-package": opts.package,
+        "x-uploadthing-package": opts.package,
       },
     },
   ).then(async (res) => {
@@ -256,7 +256,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
 
   /**
    * The uploadthing package that is making this request
-   * @example "uploadthing-react"
+   * @example "@uploadthing/react"
    *
    * This is used to identify the client in the server logs
    */
