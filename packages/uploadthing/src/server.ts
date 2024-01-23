@@ -25,12 +25,8 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-class ResponseWithCleanup extends Response {
-  cleanup?: Promise<any>;
-
-  constructor(body: BodyInit, init?: ResponseInit) {
-    super(body, init);
-  }
+interface ResponseWithCleanup extends Response {
+  cleanup: (promise: Promise<unknown>) => void;
 }
 
 export const createServerHandler = <TRouter extends FileRouter>(
@@ -66,14 +62,15 @@ export const createServerHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const res = new ResponseWithCleanup(JSON.stringify(response.body), {
+    const res = new Response(JSON.stringify(response.body), {
       status: response.status,
       headers: {
         "x-uploadthing-version": UPLOADTHING_VERSION,
       },
     });
+    // @ts-expect-error - this is a custom property
     res.cleanup = response.cleanup;
-    return res;
+    return res as ResponseWithCleanup;
   };
 
   const GET = (request: Request | { request: Request }) => {
