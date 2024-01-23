@@ -75,6 +75,7 @@ export const DANGEROUS__uploadFiles = async <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) => {
+  // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
   const reportEventToUT = createUTReporter({
