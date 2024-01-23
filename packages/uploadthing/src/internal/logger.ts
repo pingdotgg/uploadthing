@@ -1,6 +1,7 @@
 import * as util from "node:util";
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
+import { process } from "std-env";
 
 import { isObject } from "@uploadthing/shared";
 
@@ -41,6 +42,10 @@ const icons: { [t in LogType]?: string } = {
 };
 
 function formatStack(stack: string) {
+  const cwd =
+    "cwd" in process && typeof process.cwd === "function"
+      ? process.cwd()
+      : "unknown";
   return (
     "  " +
     stack
@@ -50,7 +55,7 @@ function formatStack(stack: string) {
         l
           .trim()
           .replace("file://", "")
-          .replace(process.cwd() + "/", ""),
+          .replace(cwd + "/", ""),
       )
       .join("\n  ")
   );

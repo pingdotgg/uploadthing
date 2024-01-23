@@ -1,5 +1,7 @@
 // Don't want to ship our logger to the client, keep size down
 /* eslint-disable no-console */
+// Browser env it's fine to use global `fetch`
+/* eslint-disable no-restricted-globals */
 
 import {
   safeParseJSON,
@@ -78,6 +80,7 @@ export const DANGEROUS__uploadFiles = async <
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     url: opts.url,
+    fetch,
   });
 
   // Get presigned URL for S3 upload

@@ -1,3 +1,4 @@
+import type { FetchEsque } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -27,7 +28,11 @@ export const createAPIRequestUrl = (config: {
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
  * Events are handled in "./handler.ts starting at L200"
  */
-export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
+export const createUTReporter = (cfg: {
+  url: URL;
+  endpoint: string;
+  fetch: FetchEsque;
+}) => {
   return async <TEvent extends keyof UTEvents>(
     type: TEvent,
     payload: UTEvents[TEvent],
@@ -37,7 +42,7 @@ export const createUTReporter = (cfg: { url: URL; endpoint: string }) => {
       slug: cfg.endpoint,
       actionType: type,
     });
-    const response = await fetch(url, {
+    const response = await cfg.fetch(url, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: { "Content-Type": "application/json" },
