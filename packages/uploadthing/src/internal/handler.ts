@@ -153,7 +153,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
-    const utPackage = getHeader(req, "x-ut-package") ?? "unknown";
+    const utPackage = req.headers.get("x-uploadthing-package") ?? "unknown";
 
     // Validate inputs
     if (!slug) {
