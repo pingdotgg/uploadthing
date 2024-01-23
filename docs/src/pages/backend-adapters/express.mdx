@@ -10,8 +10,6 @@ import { Callout, Steps } from "nextra-theme-docs";
 
 ### Install the package
 
-import { Tab, Tabs } from "nextra-theme-docs";
-
 ```sh npm2yarn
 npm install uploadthing
 ```
@@ -73,7 +71,7 @@ export type OurFileRouter = typeof uploadRouter;
 ```ts copy filename="src/index.ts"
 import express from "express";
 
-import { createUploadthingExpressHandler } from "uploadthing/express";
+import { createRouteHandler } from "uploadthing/express";
 
 import { uploadRouter } from "./uploadthing";
 
@@ -81,11 +79,15 @@ const app = express();
 
 app.use(
   "/api/uploadthing",
-  createUploadthingExpressHandler({
+  createRouteHandler({
     router: uploadRouter,
+    config: { ... },
   }),
 );
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Use the FileRouter in your app
 

@@ -69,7 +69,7 @@ export type OurFileRouter = typeof uploadRouter;
 ```ts copy filename="src/index.ts"
 import Fastify from "fastify";
 
-import { fastifyUploadthingPlugin } from "uploadthing/fastify";
+import { createRouteHandler } from "uploadthing/fastify";
 
 import { uploadRouter } from "./router";
 
@@ -77,10 +77,14 @@ const fastify = Fastify({ logger: true });
 
 fastify
   /** ... */
-  .register(fastifyUploadthingPlugin, {
+  .register(createRouteHandler, {
     router: uploadRouter,
+    config: { ... },
   });
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Use the FileRouter in your app
 
