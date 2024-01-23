@@ -16,7 +16,6 @@ import type {
   FetchEsque,
   FileRouterInputKey,
   Json,
-  RequestLike,
   UploadedFile,
 } from "@uploadthing/shared";
 
@@ -98,13 +97,6 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   };
 };
 
-const getHeader = (req: RequestLike, key: string) => {
-  if (req.headers instanceof Headers) {
-    return req.headers.get(key);
-  }
-  return req.headers[key];
-};
-
 export type UploadThingResponse = {
   presignedUrls: string[];
   pollingJwt: string;
@@ -122,10 +114,10 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   return async (input: {
-    req: Request;
-    // Allow for overriding request URL since some req.url are read-only
-    // If the adapter doesn't give a full url on `req.url`, this should be set
-    url?: URL;
+    nativeRequest: Request;
+
+    // Forward to middleware handler
+    originalRequest?: unknown;
     res?: unknown;
     event?: unknown;
   }): Promise<
@@ -139,25 +131,25 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       logger.info("UploadThing dev server is now running!");
     }
 
-    const { req, res, event } = input;
+    const req = input.nativeRequest;
     const { router, config } = opts;
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
     let url: URL;
     try {
-      url = new URL(input.url ?? req.url ?? "");
+      url = new URL(req.url ?? "");
     } catch (error) {
       return new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Invalid url '${input.url?.href ?? req.url}'`,
+        message: `Invalid url '${req.url}'`,
         cause: error,
       });
     }
 
     // Get inputs from query and params
     const params = url.searchParams;
-    const uploadthingHook = getHeader(req, "uploadthing-hook") ?? undefined;
+    const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
 
@@ -329,11 +321,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         try {
           logger.debug("Running middleware");
           metadata = await uploadable._def.middleware({
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            req: req as any,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            res: res as any,
-            event,
+            req: input.originalRequest,
+            res: input.res,
+            event: input.event,
             input: parsedInput,
           });
           logger.debug("Middleware finished successfully with:", metadata);
@@ -579,7 +569,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
 function resolveCallbackUrl(opts: {
   config: RouterWithConfig<FileRouter>["config"];
-  req: RequestLike;
+  req: Request;
   url: URL;
   isDev: boolean;
 }): URL {
@@ -596,18 +586,16 @@ function resolveCallbackUrl(opts: {
 
   // Production builds have to have a public URL so UT can send webhook
   // Parse the URL from the headers
-  let parsedFromHeaders = (
-    getHeader(opts.req, "origin") ??
-    getHeader(opts.req, "referer") ??
-    getHeader(opts.req, "host") ??
-    getHeader(opts.req, "x-forwarded-host")
-  )?.toString();
+  const headers = opts.req.headers;
+  let parsedFromHeaders =
+    headers.get("origin") ??
+    headers.get("referer") ??
+    headers.get("host") ??
+    headers.get("x-forwarded-host");
 
   if (parsedFromHeaders && !parsedFromHeaders.includes("http")) {
     parsedFromHeaders =
-      (getHeader(opts.req, "x-forwarded-proto") ?? "https").toString() +
-      "://" +
-      parsedFromHeaders;
+      (headers.get("x-forwarded-proto") ?? "https") + "://" + parsedFromHeaders;
   }
 
   if (!parsedFromHeaders || parsedFromHeaders.includes("localhost")) {

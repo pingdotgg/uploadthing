@@ -14,6 +14,7 @@ import {
 import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
+import { toWebRequest } from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -49,14 +50,8 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
 
     const response = await requestHandler({
-      req: new Request(url, {
-        method: req.method,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        headers: req.headers as any,
-        body:
-          typeof req.body === "string" ? req.body : JSON.stringify(req.body),
-      }),
-      url,
+      nativeRequest: toWebRequest(req, url),
+      originalRequest: req,
       res,
     });
 

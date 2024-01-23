@@ -10,7 +10,6 @@ import type {
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
-  RequestLike,
   ResponseEsque,
 } from "./types";
 
@@ -217,7 +216,7 @@ export const fileSizeToBytes = (input: string) => {
 };
 
 export async function safeParseJSON<T>(
-  input: string | ResponseEsque | RequestLike,
+  input: string | ResponseEsque | Request,
 ): Promise<T | Error> {
   if (typeof input === "string") {
     try {

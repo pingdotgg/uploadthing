@@ -46,7 +46,7 @@ export const createServerHandler = <TRouter extends FileRouter>(
     request: Request | { request: Request },
   ): Promise<Response | ResponseWithCleanup> => {
     const req = request instanceof Request ? request : request.request;
-    const response = await requestHandler({ req });
+    const response = await requestHandler({ nativeRequest: req });
 
     if (response instanceof UploadThingError) {
       return new Response(JSON.stringify(formatError(response, opts.router)), {
