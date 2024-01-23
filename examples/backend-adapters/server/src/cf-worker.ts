@@ -6,7 +6,7 @@ import { uploadRouter } from "./router";
 
 export interface Env {
   UPLOADTHING_SECRET: string;
-  MODE: string;
+  ENVIRONMENT?: string;
 }
 
 export default {
@@ -19,7 +19,7 @@ export default {
          * secret and isDev flag manually.
          */
         uploadthingSecret: env.UPLOADTHING_SECRET,
-        isDev: env.MODE === "development",
+        isDev: env.ENVIRONMENT === "development",
         /*
          * Cloudflare Workers doesn't support the cache option
          * so we need to remove it from the request init.
