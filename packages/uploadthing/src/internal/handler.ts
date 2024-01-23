@@ -323,6 +323,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             res: input.res,
             event: input.event,
             input: parsedInput,
+            files,
           });
           logger.debug("Middleware finished successfully with:", metadata);
         } catch (error) {

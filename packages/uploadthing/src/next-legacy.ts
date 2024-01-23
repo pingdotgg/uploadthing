@@ -25,7 +25,12 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) =>
   createBuilder<
-    { req: NextApiRequest; res: NextApiResponse; event: undefined },
+    {
+      req: NextApiRequest;
+      res: NextApiResponse;
+      event: undefined;
+      files: { name: string; size: number }[];
+    },
     TErrorShape
   >(opts);
 

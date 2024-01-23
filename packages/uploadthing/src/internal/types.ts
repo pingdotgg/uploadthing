@@ -44,6 +44,7 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
   req: TRequest;
   res: TResponse;
   event: TEvent;
+  files: { name: string; size: number }[];
 };
 export interface AnyParams {
   _input: any;

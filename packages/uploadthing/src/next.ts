@@ -14,7 +14,12 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) =>
   createBuilder<
-    { req: NextRequest; res: undefined; event: undefined },
+    {
+      req: NextRequest;
+      res: undefined;
+      event: undefined;
+      files: { name: string; size: number }[];
+    },
     TErrorShape
   >(opts);
 
