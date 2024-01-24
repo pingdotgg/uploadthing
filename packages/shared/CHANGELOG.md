@@ -1,5 +1,13 @@
 # @uploadthing/shared
 
+## 6.2.0
+
+### Minor Changes
+
+- [`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  cloudflare workers
+
 ## 6.1.0
 
 ### Minor Changes
