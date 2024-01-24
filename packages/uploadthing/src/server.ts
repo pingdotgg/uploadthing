@@ -30,7 +30,10 @@ export interface ResponseWithCleanup extends Response {
   cleanup?: Promise<unknown>;
 }
 
-export const createServerHandlerCore = <TRouter extends FileRouter>(
+/** @internal */
+export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
+  TRouter extends FileRouter,
+>(
   opts: RouterWithConfig<TRouter>,
   adapter: string,
 ) => {
@@ -89,9 +92,14 @@ export const createServerHandlerCore = <TRouter extends FileRouter>(
   return { GET, POST };
 };
 
-export const createServerHandler = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
-) => createServerHandlerCore(opts, "server");
+) => INTERNAL_DO_NOT_USE_createRouteHandlerCore(opts, "server");
 
 export const extractRouterConfig = (router: FileRouter) =>
   buildPermissionsInfoHandler({ router })();
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createServerHandler = createRouteHandler;

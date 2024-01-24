@@ -23,7 +23,7 @@ import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter };
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
@@ -33,7 +33,7 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-export const createH3EventHandler = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
   initLogger(opts.config?.logLevel);
@@ -74,3 +74,8 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
     return response.body;
   });
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createH3EventHandler = createRouteHandler;

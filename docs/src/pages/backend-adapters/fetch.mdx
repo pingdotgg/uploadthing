@@ -65,20 +65,19 @@ export type OurFileRouter = typeof uploadRouter;
 
 ## Runtimes-specific setup
 
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
+
 ### Astro
 
 ```ts filename="pages/api/uploadthing.ts"
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "../../server/uploadthing";
 
-export const { GET, POST } = createServerHandler({
+export const { GET, POST } = createHandlerHandler({
   router: uploadRouter,
-  config: {
-    uploadthingId: import.meta.env.UPLOADTHING_APPID,
-    uploadthingSecret: import.meta.env.UPLOADTHING_SECRET,
-    callbackUrl: "http://localhost:4321/api/uploadthing",
-  },
+  config: { ... },
 });
 ```
 
@@ -87,12 +86,13 @@ export const { GET, POST } = createServerHandler({
 ```ts filename="src/index.ts"
 import { Elysia } from "elysia";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
+  config: { ... },
 });
 
 const app = new Elysia().get("/", () => "Hello Elysia");
@@ -111,12 +111,13 @@ app.listen(3000);
 ```ts filename="src/index.ts"
 import { Hono } from "hono";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
+  config: { ... },
 });
 
 const app = new Hono();
@@ -133,13 +134,13 @@ export default app;
 ### Cloudflare Workers
 
 ```ts filename="src/worker.ts"
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const handlers = createServerHandler({
+    const handlers = createRouteHandler({
       router: uploadRouter,
       config: {
         /**

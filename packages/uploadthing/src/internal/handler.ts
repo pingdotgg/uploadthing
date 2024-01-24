@@ -93,24 +93,26 @@ const fileCountLimitHit = (
   return { limitHit: false };
 };
 
+type RouteHandlerConfig = {
+  logLevel?: LogLevel;
+  callbackUrl?: string;
+  uploadthingId?: string;
+  uploadthingSecret?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+};
+
 export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
-  config?: {
-    logLevel?: LogLevel;
-    callbackUrl?: string;
-    uploadthingId?: string;
-    uploadthingSecret?: string;
-    /**
-     * Used to determine whether to run dev hook or not
-     * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
-     */
-    isDev?: boolean;
-    /**
-     * Used to override the fetch implementation
-     * @default `globalThis.fetch`
-     */
-    fetch?: FetchEsque;
-  };
+  config?: RouteHandlerConfig;
 };
 
 export type UploadThingResponse = {

@@ -2,14 +2,14 @@ import Fastify from "fastify";
 
 import "dotenv/config";
 
-import { fastifyUploadthingPlugin } from "uploadthing/fastify";
+import { createRouteHandler } from "uploadthing/fastify";
 
 import { uploadRouter } from "./router";
 
 const fastify = Fastify({ logger: true });
 fastify.get("/api", async () => "Hello from Fastify!");
 
-fastify.register(fastifyUploadthingPlugin, {
+fastify.register(createRouteHandler, {
   router: uploadRouter,
 });
 
