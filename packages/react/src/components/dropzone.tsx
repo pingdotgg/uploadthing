@@ -8,12 +8,12 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
 import type { ContentField, StyleField } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
-import { resolveMaybeUrlArg } from "uploadthing/src/client";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
