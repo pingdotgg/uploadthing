@@ -25,3 +25,7 @@ export function getFullApiUrl(maybeUrl?: string): URL {
     );
   }
 }
+
+export function resolveMaybeUrlArg(maybeUrl: string | URL | undefined) {
+  return maybeUrl instanceof URL ? maybeUrl : getFullApiUrl(maybeUrl);
+}

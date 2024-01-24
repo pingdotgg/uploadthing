@@ -1,21 +1,20 @@
 import { useRef, useState } from "react";
 
+import type { EndpointMetadata } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
-import type { UploadFileResponse } from "uploadthing/client";
 import {
   DANGEROUS__uploadFiles,
-  getFullApiUrl,
   INTERNAL_DO_NOT_USE__fatalClientError,
+  resolveMaybeUrlArg,
 } from "uploadthing/client";
 import type {
   DistributiveOmit,
   FileRouter,
   inferEndpointInput,
-  inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
 
-import type { EndpointMetadata } from "./types";
+import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
 
@@ -30,19 +29,6 @@ const useEndpointMetadata = (url: URL, endpoint: string) => {
     maybeServerData ? undefined : url.href,
   );
   return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
-};
-
-export type UseUploadthingProps<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
-  onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
-  onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -137,20 +123,10 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example "/api/uploadthing"
-   * @example "https://www.example.com/api/uploadthing"
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-}) => {
-  const url =
-    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+export const generateReactHelpers = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
@@ -168,9 +144,4 @@ export const generateReactHelpers = <TRouter extends FileRouter>(initOpts?: {
         package: "@uploadthing/react",
       } as any),
   } as const;
-};
-
-export type FullFile = {
-  file: File;
-  contents: string;
 };

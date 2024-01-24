@@ -170,7 +170,7 @@ and the uploadFiles functions you use to interact with UploadThing in custom
 components. It takes your File Router as a generic
 
 ```tsx copy
-import { generateReactHelpers } from "@uploadthing/react/hooks";
+import { generateReactHelpers } from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
@@ -192,7 +192,7 @@ This hook is currently a 1:1 fork of
 [react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
 ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
 
-You can import the hook from `@uploadthing/react/hooks`.
+You can import the hook from `@uploadthing/react`.
 
 import { Callout } from "nextra-theme-docs";
 
@@ -213,7 +213,7 @@ take a look at
 
 ```tsx copy filename="app/example-custom-uploader.tsx"
 // Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
-import { useDropzone } from "@uploadthing/react/hooks";
+import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";

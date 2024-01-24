@@ -8,7 +8,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -46,10 +46,6 @@ export type UploadDropzoneProps<
     button?: ContentField<DropzoneStyleFieldCallbackArgs>;
   };
   className?: string;
-  config?: {
-    mode?: "auto" | "manual";
-    appendOnPaste?: boolean;
-  };
 };
 
 export function UploadDropzone<
@@ -80,7 +76,7 @@ export function UploadDropzone<
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const [files, setFiles] = useState<File[]>([]);

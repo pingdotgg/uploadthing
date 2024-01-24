@@ -7,7 +7,7 @@ import {
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
-import { getFullApiUrl } from "./internal/get-full-api-url";
+import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
@@ -266,8 +266,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
    */
   package: string;
 }) => {
-  const url =
-    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   const utPkg = initOpts.package;
 
@@ -312,4 +311,4 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
-export { getFullApiUrl };
+export { resolveMaybeUrlArg };

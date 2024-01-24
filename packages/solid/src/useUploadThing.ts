@@ -1,44 +1,25 @@
 import { createSignal } from "solid-js";
 
 import { UploadThingError } from "@uploadthing/shared";
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import type { UploadFileResponse } from "uploadthing/client";
+import type { EndpointMetadata } from "@uploadthing/shared";
 import {
   DANGEROUS__uploadFiles,
-  getFullApiUrl,
   INTERNAL_DO_NOT_USE__fatalClientError,
+  resolveMaybeUrlArg,
 } from "uploadthing/client";
 import type {
   DistributiveOmit,
   FileRouter,
   inferEndpointInput,
-  inferEndpointOutput,
   inferErrorShape,
 } from "uploadthing/server";
 
+import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { createFetch } from "./utils/createFetch";
-
-type EndpointMetadata = {
-  slug: string;
-  config: ExpandedRouteConfig;
-}[];
 
 const createEndpointMetadata = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
-};
-
-export type UseUploadthingProps<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
-  onUploadProgress?: (p: number) => void;
-  onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[] | Promise<File[]>;
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -133,20 +114,10 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { /api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-}) => {
-  const url =
-    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+export const generateSolidHelpers = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
@@ -164,9 +135,4 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
         package: "@uploadthing/solid",
       } as any),
   } as const;
-};
-
-export type FullFile = {
-  file: File;
-  contents: string;
 };

@@ -4,7 +4,7 @@ import * as z from "zod";
 import type { UploadFileResponse } from "uploadthing/client";
 import { createUploadthing } from "uploadthing/server";
 
-import { generateReactHelpers } from "../src/hooks";
+import { generateReactHelpers } from "../src";
 
 const doNotExecute = (_fn: (...args: any[]) => any) => {
   // noop
