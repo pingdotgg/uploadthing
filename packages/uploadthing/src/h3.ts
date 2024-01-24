@@ -39,7 +39,7 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler(opts);
+  const requestHandler = buildRequestHandler(opts, "h3");
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return defineEventHandler(async (event) => {

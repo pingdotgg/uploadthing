@@ -30,13 +30,14 @@ export interface ResponseWithCleanup extends Response {
   cleanup?: Promise<unknown>;
 }
 
-export const createServerHandler = <TRouter extends FileRouter>(
+export const createServerHandlerCore = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
+  adapter: string,
 ) => {
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts, adapter);
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST = async (
@@ -87,6 +88,10 @@ export const createServerHandler = <TRouter extends FileRouter>(
 
   return { GET, POST };
 };
+
+export const createServerHandler = <TRouter extends FileRouter>(
+  opts: RouterWithConfig<TRouter>,
+) => createServerHandlerCore(opts, "server");
 
 export const extractRouterConfig = (router: FileRouter) =>
   buildPermissionsInfoHandler({ router })();

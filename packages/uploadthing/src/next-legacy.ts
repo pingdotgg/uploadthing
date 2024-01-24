@@ -35,7 +35,7 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts, "nextjs-pages");
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {

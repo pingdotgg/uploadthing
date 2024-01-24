@@ -50,7 +50,7 @@ export class UTApi {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": this.apiKey!,
       "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-package": "uploadthing/server",
+      "x-uploadthing-be-adapter": "server-sdk",
     };
 
     initLogger(opts?.logLevel);

@@ -40,7 +40,7 @@ export const fastifyUploadthingPlugin = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts, "fastify");
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST: RouteHandlerMethod = async (req, res) => {

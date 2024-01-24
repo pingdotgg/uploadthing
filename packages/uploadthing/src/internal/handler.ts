@@ -32,7 +32,12 @@ import type { ActionType, FileRouter, UTEvents } from "./types";
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
 
-const createUTFetch = (apiKey: string, utPkg: string, fetch: FetchEsque) => {
+const createUTFetch = (
+  apiKey: string,
+  fetch: FetchEsque,
+  fePackage: string,
+  beAdapter: string,
+) => {
   return async (endpoint: `/${string}`, payload: unknown) => {
     const response = await fetch(generateUploadThingURL(endpoint), {
       method: "POST",
@@ -41,7 +46,8 @@ const createUTFetch = (apiKey: string, utPkg: string, fetch: FetchEsque) => {
         "Content-Type": "application/json",
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": UPLOADTHING_VERSION,
-        "x-uploadthing-package": utPkg,
+        "x-uploadthing-fe-package": fePackage,
+        "x-uploadthing-be-adapter": beAdapter,
       },
     });
 
@@ -122,6 +128,7 @@ export type UploadThingResponse = {
 
 export const buildRequestHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
+  adapter: string,
 ) => {
   return async (input: {
     nativeRequest: Request;
@@ -153,7 +160,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
-    const utPackage = req.headers.get("x-uploadthing-package") ?? "unknown";
+    const utFrontendPackage =
+      req.headers.get("x-uploadthing-package") ?? "unknown";
 
     // Validate inputs
     if (!slug) {
@@ -211,8 +219,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    if (utPackage && typeof utPackage !== "string") {
-      const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utPackage}'`;
+    if (utFrontendPackage && typeof utFrontendPackage !== "string") {
+      const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utFrontendPackage}'`;
       logger.error(msg);
       return new UploadThingError({
         code: "BAD_REQUEST",
@@ -232,7 +240,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const utFetch = createUTFetch(preferredOrEnvSecret, utPackage, fetch);
+    const utFetch = createUTFetch(
+      preferredOrEnvSecret,
+      fetch,
+      utFrontendPackage,
+      adapter,
+    );
     logger.debug("All request input is valid", {
       slug,
       actionType,

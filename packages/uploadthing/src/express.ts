@@ -38,7 +38,7 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter>(opts, "express");
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
   const router = ExpressRouter();
 
