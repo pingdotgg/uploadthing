@@ -88,6 +88,8 @@ it("uses defaults for not-chained", async () => {
     req: badReqMock,
     res: undefined,
     event: undefined,
+    input: undefined,
+    files: [{ name: "test.txt", size: 123456 }],
   });
   expect(metadata).toEqual({});
   expectTypeOf<Record<string, never>>(metadata);
@@ -187,6 +189,7 @@ it("smoke", async () => {
     .middleware((opts) => {
       expect(opts.input).toEqual({ foo: "bar" });
       expectTypeOf<{ foo: string }>(opts.input);
+      expectTypeOf<{ name: string; size: number }[]>(opts.files);
 
       const header1 = opts.req.headers.get("header1");
 
@@ -210,6 +213,7 @@ it("smoke", async () => {
     input: { foo: "bar" },
     res: undefined,
     event: undefined,
+    files: [{ name: "test.txt", size: 123456 }],
   });
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
 });
