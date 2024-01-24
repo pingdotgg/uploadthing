@@ -24,7 +24,10 @@ it("genuploader", () => {
       }),
   } satisfies FileRouter;
 
-  const uploader = genUploader<typeof router>({ url: "0.0.0.0" });
+  const uploader = genUploader<typeof router>({
+    url: "0.0.0.0",
+    package: "test",
+  });
 
   doNotExecute(async () => {
     // @ts-expect-error - Argument of type '"random"' is not assignable to parameter of type '"uploadable"'
@@ -33,7 +36,7 @@ it("genuploader", () => {
 
   doNotExecute(async () => {
     // No input should be required here
-    const res = await uploader("uploadable1", { files: [] });
+    const res = await uploader("uploadable1", { files: [], package: "test" });
     expectTypeOf<UploadFileResponse<{ foo: "bar" }>[]>(res);
   });
 

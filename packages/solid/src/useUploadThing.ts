@@ -98,6 +98,7 @@ export const INTERNAL_uploadthingHookGen = <
             opts.onUploadBegin(file);
           },
           url: initOpts.url,
+          package: "@uploadthing/solid",
         });
 
         opts?.onClientUploadComplete?.(res);
@@ -160,6 +161,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
       DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
         ...opts,
         url,
+        package: "@uploadthing/solid",
       } as any),
   } as const;
 };

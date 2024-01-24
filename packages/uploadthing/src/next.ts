@@ -6,7 +6,7 @@ import type { RouterWithConfig } from "./internal/handler";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 import type { FileRouter } from "./server";
-import { createRouteHandler as createRouteHandlerCore } from "./server";
+import { INTERNAL_DO_NOT_USE_createRouteHandlerCore } from "./server";
 
 export type { FileRouter };
 
@@ -21,7 +21,10 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const handlers = createRouteHandlerCore(opts);
+  const handlers = INTERNAL_DO_NOT_USE_createRouteHandlerCore(
+    opts,
+    "nextjs-app",
+  );
 
   return {
     POST: (req: NextRequest) => handlers.POST(req),
