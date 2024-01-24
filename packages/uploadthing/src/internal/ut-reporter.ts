@@ -31,6 +31,7 @@ export const createAPIRequestUrl = (config: {
 export const createUTReporter = (cfg: {
   url: URL;
   endpoint: string;
+  package: string;
   fetch: FetchEsque;
 }) => {
   return async <TEvent extends keyof UTEvents>(
@@ -45,7 +46,10 @@ export const createUTReporter = (cfg: {
     const response = await cfg.fetch(url, {
       method: "POST",
       body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-uploadthing-package": cfg.package,
+      },
     });
 
     switch (type) {
