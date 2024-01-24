@@ -18,11 +18,7 @@ const badReqMock = {
 } as unknown as Request;
 
 it("typeerrors for invalid input", () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
   // @ts-expect-error - invalid file type
   f(["png"]);
@@ -82,12 +78,7 @@ it("typeerrors for invalid input", () => {
 });
 
 it("uses defaults for not-chained", async () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
   const uploadable = f(["image"]).onUploadComplete(() => {});
 
@@ -105,12 +96,7 @@ it("uses defaults for not-chained", async () => {
 });
 
 it("passes `Request` by default", () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
   f(["image"]).middleware((opts) => {
     expectTypeOf<Request>(opts.req);
@@ -120,12 +106,7 @@ it("passes `Request` by default", () => {
 });
 
 it("allows async middleware", () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
   f(["image"])
     .middleware((opts) => {
@@ -143,7 +124,6 @@ it("passes `NextRequest` for /app", () => {
     req: NextRequest;
     res: undefined;
     event: undefined;
-    files: { name: string; size: number }[];
   }>();
 
   f(["image"]).middleware((opts) => {
@@ -157,7 +137,6 @@ it("passes `res` for /pages", () => {
     req: NextApiRequest;
     res: NextApiResponse;
     event: undefined;
-    files: { name: string; size: number }[];
   }>();
 
   f(["image"]).middleware((opts) => {
@@ -169,12 +148,7 @@ it("passes `res` for /pages", () => {
 });
 
 it("passes `event` for /h3", () => {
-  const f = createBuilder<{
-    req: undefined;
-    res: undefined;
-    event: H3Event;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: undefined; res: undefined; event: H3Event }>();
 
   f(["image"]).middleware((opts) => {
     expectTypeOf<H3Event>(opts.event);
@@ -184,12 +158,7 @@ it("passes `event` for /h3", () => {
 });
 
 it("with input", () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
   f(["image"])
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => {
@@ -199,12 +168,7 @@ it("with input", () => {
 });
 
 it("with optional input", () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
   f(["image"])
     .input(z.object({ foo: z.string() }).optional())
     .middleware((opts) => {
@@ -214,12 +178,7 @@ it("with optional input", () => {
 });
 
 it("smoke", async () => {
-  const f = createBuilder<{
-    req: Request;
-    res: undefined;
-    event: undefined;
-    files: { name: string; size: number }[];
-  }>();
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
   const uploadable = f(["image", "video"])
     .input(z.object({ foo: z.string() }))
