@@ -1,5 +1,18 @@
 # @uploadthing/solid
 
+## 6.1.2
+
+### Patch Changes
+
+- [#564](https://github.com/pingdotgg/uploadthing/pull/564)
+  [`4e9ff0e`](https://github.com/pingdotgg/uploadthing/commit/4e9ff0e5c5504806608f77a9bafd9a9f78d04d17)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore
+  (analytics): Report which UT frontend package is being used to make requests
+
+- Updated dependencies
+  [[`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)]:
+  - @uploadthing/shared@6.2.0
+
 ## 6.1.1
 
 ### Patch Changes

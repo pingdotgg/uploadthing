@@ -1,5 +1,46 @@
 # uploadthing
 
+## 6.3.0
+
+### Minor Changes
+
+- [`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  cloudflare workers
+
+- [`a493cd6`](https://github.com/pingdotgg/uploadthing/commit/a493cd6ef54240843a5601ab9dceb284e0f60ff6)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: forward
+  incoming files to middleware function.
+
+  ### Example usage
+
+  ```ts
+  f({ ... })
+    .middleware(({ files }) => {
+      const uploadCount = files.length
+      // ...
+    })
+  ```
+
+### Patch Changes
+
+- [#567](https://github.com/pingdotgg/uploadthing/pull/567)
+  [`31d84d0`](https://github.com/pingdotgg/uploadthing/commit/31d84d09cb88cf7961a181c9258979e717e63c5d)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: rename
+  all adapter exports to be `createRouteHandler`
+
+  the import path is already self-documenting, and this makes it easier to
+  document when there's a single name to refer to
+
+- [#564](https://github.com/pingdotgg/uploadthing/pull/564)
+  [`4e9ff0e`](https://github.com/pingdotgg/uploadthing/commit/4e9ff0e5c5504806608f77a9bafd9a9f78d04d17)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore
+  (analytics): Report which UT frontend package is being used to make requests
+
+- Updated dependencies
+  [[`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)]:
+  - @uploadthing/shared@6.2.0
+
 ## 6.2.0
 
 ### Minor Changes
