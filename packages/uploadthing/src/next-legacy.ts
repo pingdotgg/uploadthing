@@ -29,7 +29,6 @@ export const createUploadthing = <TErrorShape extends Json>(
       req: NextApiRequest;
       res: NextApiResponse;
       event: undefined;
-      files: { name: string; size: number }[];
     },
     TErrorShape
   >(opts);

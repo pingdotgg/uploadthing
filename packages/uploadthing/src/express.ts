@@ -32,7 +32,6 @@ export const createUploadthing = <TErrorShape extends Json>(
       req: ExpressRequest;
       res: ExpressResponse;
       event: undefined;
-      files: { name: string; size: number }[];
     },
     TErrorShape
   >(opts);

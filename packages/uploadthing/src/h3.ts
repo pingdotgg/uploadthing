@@ -33,7 +33,6 @@ export const createUploadthing = <TErrorShape extends Json>(
       req: undefined;
       res: undefined;
       event: H3Event;
-      files: { name: string; size: number }[];
     },
     TErrorShape
   >(opts);

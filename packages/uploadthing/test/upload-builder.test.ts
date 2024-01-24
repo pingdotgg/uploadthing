@@ -22,7 +22,6 @@ it("typeerrors for invalid input", () => {
     req: Request;
     res: undefined;
     event: undefined;
-    files: { name: string; size: number }[];
   }>();
 
   // @ts-expect-error - invalid file type

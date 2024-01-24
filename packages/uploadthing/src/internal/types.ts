@@ -44,7 +44,6 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
   req: TRequest;
   res: TResponse;
   event: TEvent;
-  files: { name: string; size: number }[];
 };
 export interface AnyParams {
   _input: any;
@@ -60,7 +59,9 @@ type MiddlewareFn<
   TOutput extends Record<string, unknown>,
   TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
-  opts: TArgs & (TInput extends UnsetMarker ? {} : { input: TInput }),
+  opts: TArgs & {
+    files: UTEvents["upload"]["files"];
+  } & (TInput extends UnsetMarker ? {} : { input: TInput }),
 ) => MaybePromise<TOutput>;
 
 type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (

@@ -18,7 +18,6 @@ export const createUploadthing = <TErrorShape extends Json>(
       req: NextRequest;
       res: undefined;
       event: undefined;
-      files: { name: string; size: number }[];
     },
     TErrorShape
   >(opts);
