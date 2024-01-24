@@ -148,7 +148,11 @@ it("passes `res` for /pages", () => {
 });
 
 it("passes `event` for /h3", () => {
-  const f = createBuilder<{ req: undefined; res: undefined; event: H3Event }>();
+  const f = createBuilder<{
+    req: undefined;
+    res: undefined;
+    event: H3Event;
+  }>();
 
   f(["image"]).middleware((opts) => {
     expectTypeOf<H3Event>(opts.event);
