@@ -1,8 +1,8 @@
 import {
+  generateReactHelpers,
   generateUploadButton,
   generateUploadDropzone,
 } from "@uploadthing/react";
-import { generateReactHelpers } from "@uploadthing/react/hooks";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
