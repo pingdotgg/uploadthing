@@ -1,6 +1,8 @@
-import { UploadButton } from "@uploadthing/react";
+import { generateUploadButton } from "@uploadthing/react";
 
 import type { OurFileRouter } from "../server/uploadthing";
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
 
 export default function Page() {
   return (
@@ -10,7 +12,7 @@ export default function Page() {
           {`Upload a file using a button:`}
         </span>
 
-        <UploadButton<OurFileRouter>
+        <UploadButton
           endpoint="videoAndImage"
           onClientUploadComplete={(res) => {
             // Do something with the response
