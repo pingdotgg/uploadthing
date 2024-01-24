@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   UploadButton,
   UploadDropzone,
   useUploadThing,
@@ -18,6 +19,7 @@ export default function Home() {
 
   return (
     <main>
+      <Button endpoint="videoAndImage" />
       <UploadButton
         /**
          * @see https://docs.uploadthing.com/api-reference/react#uploadbutton

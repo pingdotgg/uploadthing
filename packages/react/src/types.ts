@@ -1,7 +1,4 @@
-import type {
-  ExpandedRouteConfig,
-  UploadThingError,
-} from "@uploadthing/shared";
+import type { UploadThingError } from "@uploadthing/shared";
 import type { UploadFileResponse } from "uploadthing/client";
 import type {
   FileRouter,
@@ -10,10 +7,36 @@ import type {
   inferErrorShape,
 } from "uploadthing/server";
 
-export type UploadthingComponentProps<
+export interface GenerateTypedHelpersOptions {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+}
+
+export type UseUploadthingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 > = {
+  onClientUploadComplete?: (
+    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
+  ) => void;
+  onUploadProgress?: (p: number) => void;
+  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
+  onUploadBegin?: (fileName: string) => void;
+  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
+};
+
+export type UploadthingComponentProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UseUploadthingProps<TRouter, TEndpoint> & {
   endpoint: TEndpoint;
   /**
    * URL to the UploadThing API endpoint
@@ -25,22 +48,13 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
-
-  onUploadProgress?: (progress: number) => void;
-  onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
-  onUploadError?: (error: UploadThingError<inferErrorShape<TRouter>>) => void;
+  config?: {
+    mode?: "auto" | "manual";
+    appendOnPaste?: boolean;
+  };
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-  ? // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
-  : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
-
-export type EndpointMetadata = {
-  slug: string;
-  config: ExpandedRouteConfig;
-}[];
+    ? // eslint-disable-next-line @typescript-eslint/ban-types
+      {}
+    : {
+        input: inferEndpointInput<TRouter[TEndpoint]>;
+      });

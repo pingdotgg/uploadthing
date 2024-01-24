@@ -104,6 +104,11 @@ export type ExpandedRouteConfig = Partial<{
   [key in FileRouterInputKey]: RouteConfig;
 }>;
 
+export type EndpointMetadata = {
+  slug: string;
+  config: ExpandedRouteConfig;
+}[];
+
 type PartialRouteConfig = Partial<
   Record<FileRouterInputKey, Partial<RouteConfig>>
 >;

@@ -6,7 +6,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -41,10 +41,6 @@ export type UploadButtonProps<
     clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
   };
   className?: string;
-  config?: {
-    appendOnPaste?: boolean;
-    mode?: "auto" | "manual";
-  };
 };
 
 /**
@@ -80,7 +76,7 @@ export function UploadButton<
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
