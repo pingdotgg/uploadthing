@@ -29,11 +29,7 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) =>
   createBuilder<
-    {
-      req: undefined;
-      res: undefined;
-      event: H3Event;
-    },
+    { req: undefined; res: undefined; event: H3Event },
     TErrorShape
   >(opts);
 
