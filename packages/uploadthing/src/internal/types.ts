@@ -61,7 +61,8 @@ type MiddlewareFn<
 > = (
   opts: TArgs & {
     files: UTEvents["upload"]["files"];
-  } & (TInput extends UnsetMarker ? {} : { input: TInput }),
+    input: TInput extends UnsetMarker ? undefined : TInput;
+  },
 ) => MaybePromise<TOutput>;
 
 type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
