@@ -125,7 +125,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
       endpoint: TEndpoint,
       opts: DistributiveOmit<
         Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-        "url"
+        "url" | "package"
       >,
     ) =>
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
