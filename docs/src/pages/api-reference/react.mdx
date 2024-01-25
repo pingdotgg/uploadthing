@@ -1,4 +1,14 @@
-## generateComponents
+import { Callout } from "nextra-theme-docs";
+
+## Generated Components
+
+### generateComponents
+
+<Callout type="warning">
+  As of `v6.2.1`, the `generateComponents` function has been deprecated in favor
+  of the `generateUploadButton` and `generateUploadDropzone` functions so as to
+  improve tree-shaking.
+</Callout>
 
 The `generateComponents` function is used to generate the UploadButton and
 UploadDropzone components you use to interact with UploadThing. Generating
@@ -12,6 +22,30 @@ import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
 export const { UploadButton, UploadDropzone } =
   generateComponents<OurFileRouter>();
+```
+
+### generateUploadButton
+
+The `generateUploadButton` function is used to generate the UploadButton
+component you use to interact with UploadThing. Generating components allows for
+fully typesafe components bound to the type of your file router.
+
+```tsx copy filename="utils/uploadthing.tsx"
+import { generateUploadButton } from "@uploadthing/react";
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
+```
+
+### generateUploadDropzone
+
+The `generateUploadDropzone` function is used to generate the UploadButton
+component you use to interact with UploadThing. Generating components allows for
+fully typesafe components bound to the type of your file router.
+
+```tsx copy filename="utils/uploadthing.tsx"
+import { generateUploadDropzone } from "@uploadthing/react";
+
+export const UploadButton = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### UploadButton

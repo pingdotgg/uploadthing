@@ -105,7 +105,10 @@ everytime you mount a component, but you can also import the components
 individually from `@uploadthing/solid`.
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/solid";
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/solid";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
@@ -113,8 +116,8 @@ import type { OurFileRouter } from "~/server/uploadthing";
 // is deployed on a different path than `/api/uploadthing`
 const url = `http://localhost:${process.env.PORT ?? 3000}`;
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>({ url });
+export const UploadButton = generateUploadButton<OurFileRouter>({ url });
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>({ url });
 ```
 
 ### Include our stylesheet
