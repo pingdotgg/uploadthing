@@ -102,12 +102,15 @@ export default createRouteHandler({
 ### Create The UploadThing Components (Recommended)
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/react";
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Mount A Button And Upload!

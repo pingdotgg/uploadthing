@@ -48,8 +48,9 @@ export const runtime = "nodejs";
 This occurs when you're importing the `UploadButton` or `UploadDropzone`
 components from `@uploadthing/react` or `@uploadthing/solid` directly, and not
 [generating your own typesafe components](/api-reference/react#generateComponents)
-using `generateComponents`. While you can do this, it is not recommended as you
-have to provide the generics yourself in order to get full typesafety.
+using `generateUploadButton` or `generateUploadDropzone`. While you can do this,
+it is not recommended as you have to provide the generics yourself in order to
+get full typesafety.
 
 ```tsx
 import { UploadButton } from "@uploadthing/react";
