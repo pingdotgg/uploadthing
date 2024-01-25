@@ -71,7 +71,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return "An unknown error occurred";
     }
 
-    return response.body;
+    return response.body ?? "OK";
   });
 };
 
