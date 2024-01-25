@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 6.2.2
+
+### Patch Changes
+
+- [#576](https://github.com/pingdotgg/uploadthing/pull/576)
+  [`05be7e9`](https://github.com/pingdotgg/uploadthing/commit/05be7e9f129230348f63c089c03fd25e48d40889)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: remove
+  required package argument from generated function
+
 ## 6.2.1
 
 ### Patch Changes

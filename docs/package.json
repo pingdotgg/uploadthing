@@ -13,13 +13,13 @@
   "dependencies": {
     "@radix-ui/react-accordion": "^1.1.2",
     "@scalar/api-reference": "^1.13.5",
-    "@uploadthing/react": "6.2.1",
+    "@uploadthing/react": "6.2.2",
     "next": "14.0.1",
     "nextra": "^2.13.2",
     "nextra-theme-docs": "^2.13.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "6.3.0",
+    "uploadthing": "6.3.1",
     "veaury": "^2.3.12"
   },
   "devDependencies": {

@@ -1,5 +1,14 @@
 # uploadthing
 
+## 6.3.1
+
+### Patch Changes
+
+- [#573](https://github.com/pingdotgg/uploadthing/pull/573)
+  [`adf7994`](https://github.com/pingdotgg/uploadthing/commit/adf7994e85d4bb7a160ba43f643073bbca36463c)
+  Thanks [@pi0](https://github.com/pi0)! - fix(h3): always return a response to
+  support non-preemptive routers
+
 ## 6.3.0
 
 ### Minor Changes
