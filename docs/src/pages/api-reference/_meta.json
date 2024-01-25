@@ -1,6 +1,5 @@
 {
   "react": "React",
-  "next": "Next",
   "server": "Server",
   "openapi-spec": "OpenAPI Spec",
   "ut-api": "UTApi (Server SDK)"
