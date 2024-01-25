@@ -312,3 +312,5 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 };
 
 export { resolveMaybeUrlArg };
+export { getFullApiUrl } from "./internal/get-full-api-url";
+
