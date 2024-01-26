@@ -97,6 +97,7 @@ export async function getPostBody(opts: {
         return;
       }
 
+      logger.debug("Body parsed successfully.", parsedBody);
       resolve({
         ok: true,
         data: hasBody ? parsedBody : undefined,
