@@ -1,6 +1,6 @@
 packages:
-  - "packages/config/*"
-  - "packages/*"
+  - "docs"
   - "examples/*"
   - "examples/backend-adapters/*"
-  - "docs"
+  - "packages/*"
+  - "tooling/*"
