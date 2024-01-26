@@ -2,6 +2,9 @@
   "name": "@uploadthing/react",
   "version": "6.2.2",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",

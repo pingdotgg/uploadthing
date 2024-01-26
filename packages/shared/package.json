@@ -2,6 +2,9 @@
   "name": "@uploadthing/shared",
   "version": "6.2.0",
   "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {

@@ -13,7 +13,9 @@ export default defineConfig((opts) => ({
     "./src/tw.ts",
     "./src/fastify.ts",
     "./src/h3.ts",
+    "./src/internal/types.ts",
   ],
+  splitting: false,
   clean: !opts.watch,
   external: ["express", "h3", "tailwindcss"],
 }));
