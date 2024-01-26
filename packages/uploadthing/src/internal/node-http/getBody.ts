@@ -21,9 +21,8 @@ export async function getPostBody(opts: {
   return new Promise((resolve) => {
     if ("body" in req) {
       const contentType = req.headers["content-type"];
-      const isJsonType = contentType === "application/json";
 
-      if (!isJsonType) {
+      if (contentType !== "application/json") {
         logger.error("Expected JSON content type, got:", contentType);
         resolve({
           ok: false,
@@ -36,7 +35,10 @@ export async function getPostBody(opts: {
       }
 
       if (typeof req.body !== "object") {
-        logger.error("Body is not an object. Make sure uploadthing is registerred before any preprocessors");
+        logger.error(
+          "Expected body to be of type 'object', got:",
+          typeof req.body,
+        );
         resolve({
           ok: false,
           error: new UploadThingError({
@@ -47,6 +49,7 @@ export async function getPostBody(opts: {
         return;
       }
 
+      logger.debug("Body parsed successfully.", req.body);
       resolve({
         ok: true,
         data: req.body,
@@ -59,6 +62,13 @@ export async function getPostBody(opts: {
       body += data;
       hasBody = true;
       if (body.length > maxBodySize) {
+        logger.error(
+          "Body too large, max size is",
+          maxBodySize,
+          "bytes but received",
+          body.length,
+          "bytes",
+        );
         resolve({
           ok: false,
           error: new UploadThingError({
