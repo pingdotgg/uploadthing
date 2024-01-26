@@ -15,7 +15,7 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger } from "./internal/logger";
+import { initLogger, logger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
@@ -47,6 +47,9 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     const bodyResult = await getPostBody({ req });
 
     if (!bodyResult.ok) {
+      logger.error(
+        "Error parsing body. UploadThing expects a raw JSON body, make sure any body-parsing middlewares are registered after uploadthing.",
+      );
       res.status(400);
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
       res.send(

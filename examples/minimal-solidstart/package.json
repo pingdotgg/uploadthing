@@ -19,15 +19,15 @@
     "solidjs-dropzone": "^1.0.0",
     "undici": "^5.20.0",
     "uploadthing": "6.3.1",
-    "zod": "^3.22.3"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "18.16.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "eslint": "^8.47.0",
-    "eslint-plugin-solid": "^0.13.0",
+    "@typescript-eslint/parser": "^6.19.1",
+    "eslint": "^8.56.0",
+    "eslint-plugin-solid": "^0.13.1",
     "solid-start-node": "^0.3.4",
-    "typescript": "^5.1.6",
+    "typescript": "^5.3.3",
     "vite": "^4.4.9"
   },
   "eslintConfig": {
