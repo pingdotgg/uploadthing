@@ -38,6 +38,9 @@ yarn-error.log*
 
 dist
 .solid
+
+.output
+.nuxt
 .vercel
 
 # cf

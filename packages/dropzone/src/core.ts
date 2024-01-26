@@ -84,6 +84,18 @@ export function isEventWithFiles(event: Partial<Event>) {
   );
 }
 
+export function isPropagationStopped(
+  event: Event & { isPropagationStopped?: () => boolean },
+): boolean {
+  if (typeof event.isPropagationStopped === "function") {
+    return event.isPropagationStopped();
+  }
+  if (typeof event.cancelBubble !== "undefined") {
+    return event.cancelBubble;
+  }
+  return false;
+}
+
 export function isIeOrEdge(ua = window.navigator.userAgent) {
   return (
     ua.indexOf("MSIE ") > -1 ||

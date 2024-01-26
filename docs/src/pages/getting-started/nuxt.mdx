@@ -1,1 +1,105 @@
-# Nuxt (Coming Soon!)
+import { Callout, Steps, Tab, Tabs } from "nextra-theme-docs";
+
+import EnvSetup from "./_shared/env-setup.mdx";
+import TailwindSetup from "./_shared/tailwind-setup.mdx";
+
+# Getting Started using Nuxt
+
+## Setting up your environment
+
+<Steps>
+
+### Install the packages
+
+```bash copy npm2yarn
+npm install uploadthing nuxt-uploadthing
+```
+
+### Add env variables
+
+```bash
+NUXT_UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+```
+
+<Callout type="warning">
+  If you don't already have a uploadthing secret key, [sign up](https://uploadthing.com/sign-in) and create one from
+  the [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+</Steps>
+
+## Initialize the Uploadthing module
+
+```ts copy filename="nuxt.config.js"
+export default {
+  modules: ["nuxt"],
+  uploadthing: {
+    /**
+     * Path to your router definition file
+     * @default `~/server/uploadthing.ts`
+     */
+    routerPath: "",
+  },
+};
+```
+
+## Set Up A FileRouter
+
+All files uploaded to uploadthing are associated with a FileRoute. Think of a
+FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+```ts copy filename="~/server/uploadthing.ts"
+import { createUploadthing, type FileRouter } from "uploadthing/h3";
+
+const f = createUploadthing();
+
+const auth = (ev: H3Event) => ({ id: "fakeId" }); // Fake auth function
+
+// FileRouter for your app, can contain multiple FileRoutes
+export const uploadRouter = {
+  // Define as many FileRoutes as you like, each with a unique routeSlug
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    // Set permissions and file types for this FileRoute
+    .middleware(async ({ event }) => {
+      // This code runs on your server before upload
+      const user = await auth(event);
+
+      // If you throw, the user will not be able to upload
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
+    }),
+} satisfies FileRouter;
+
+export type UploadRouter = typeof uploadRouter;
+```
+
+## Add UploadThing's Styles
+
+<Tabs items={["Tailwind", "Not Tailwind"]}>
+  <Tab>
+    <TailwindSetup />
+  </Tab>
+  <Tab>
+    Include our CSS file in the root layout to make sure the components look right!
+
+    ```tsx copy filename="app/layout.tsx"
+    import "@uploadthing/react/styles.css";
+    ```
+
+  </Tab>
+</Tabs>

@@ -1,6 +1,7 @@
 packages:
   - "packages/config/*"
   - "packages/*"
+  - "packages/nuxt/*"
   - "examples/*"
   - "examples/backend-adapters/*"
   - "docs"
