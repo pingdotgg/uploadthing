@@ -1,8 +1,4 @@
-import { generateUploadButton } from "@uploadthing/react";
-
-import type { OurFileRouter } from "~/server/uploadthing";
-
-export const UploadButton = generateUploadButton<OurFileRouter>();
+import { UploadButton } from "~/utils/uploadthing";
 
 export function ImageUploader() {
   return (
