@@ -1,4 +1,4 @@
 {
   "extends": "@uploadthing/tsconfig/base.json",
-  "include": ["**/*.ts"],
+  "include": ["src/**/*", "*.ts", "test"]
 }
