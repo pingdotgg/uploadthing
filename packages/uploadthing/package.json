@@ -99,15 +99,15 @@
     }
   },
   "files": [
-    "dist",
     "client",
-    "server",
+    "express",
+    "fastify",
+    "h3",
+    "interal",
     "next",
     "next-legacy",
-    "express",
-    "tw",
-    "fastify",
-    "h3"
+    "server",
+    "tw"
   ],
   "publishConfig": {
     "access": "public"
