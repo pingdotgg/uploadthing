@@ -76,6 +76,12 @@
         "types": "./h3/index.d.ts",
         "default": "./h3/index.js"
       }
+    },
+    "./internal/types": {
+      "import": {
+        "types": "./internal/types.d.ts",
+        "default": "./internal/types.mjs"
+      }
     }
   },
   "files": [
