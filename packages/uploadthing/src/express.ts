@@ -42,6 +42,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
   const router = ExpressRouter();
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - rollup-plugin-dts doesn't pick up these types for some reason...
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   router.post("/", async (req, res) => {
     const bodyResult = await getPostBody({ req });
@@ -95,6 +97,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     res.send(JSON.stringify(response.body));
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore - rollup-plugin-dts doesn't pick up these types for some reason...
   router.get("/", (_req, res) => {
     res.status(200);
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
