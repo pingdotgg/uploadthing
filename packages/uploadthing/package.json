@@ -97,6 +97,12 @@
         "types": "./internal/types.d.cts",
         "default": "./internal/types.cjs"
       }
+    },
+    "./internal/types": {
+      "import": {
+        "types": "./internal/types.d.ts",
+        "default": "./internal/types.mjs"
+      }
     }
   },
   "files": [
