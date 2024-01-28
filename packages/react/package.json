@@ -9,48 +9,68 @@
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./hooks": {
-      "types": "./dist/hooks.d.ts",
-      "import": "./dist/hooks.mjs",
-      "require": "./dist/hooks.js"
+      "import": {
+        "types": "./hooks/index.d.mts",
+        "default": "./hooks/index.mjs"
+      },
+      "require": {
+        "types": "./hooks/index.d.ts",
+        "default": "./hooks/index.js"
+      }
+    },
+    "./native": {
+      "import": {
+        "types": "./native/index.d.mts",
+        "default": "./native/index.mjs"
+      },
+      "require": {
+        "types": "./native/index.d.ts",
+        "default": "./native/index.js"
+      }
     },
     "./next-ssr-plugin": {
-      "types": "./dist/next-ssr-plugin.d.ts",
-      "import": "./dist/next-ssr-plugin.mjs",
-      "require": "./dist/next-ssr-plugin.js"
+      "import": {
+        "types": "./next-ssr-plugin/index.d.mts",
+        "default": "./next-ssr-plugin/index.mjs"
+      },
+      "require": {
+        "types": "./next-ssr-plugin/index.d.ts",
+        "default": "./next-ssr-plugin/index.js"
+      }
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "hooks",
+    "native",
+    "next-ssr-plugin"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
     "clean": "git clean -xdf dist node_modules",
-    "build": "tsup",
+    "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
+    "build": "bunchee && pnpm build:css",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
+    "dev": "wait-on ../uploadthing/dist/server.mjs && bunchee -w"
   },
   "dependencies": {
     "@uploadthing/dropzone": "^0.1.1",
     "@uploadthing/shared": "^6.2.0",
-    "attr-accept": "^2.2.2",
-    "file-selector": "^0.6.0",
     "tailwind-merge": "^1.14.0"
   },
   "peerDependencies": {
@@ -69,14 +89,11 @@
     "@types/react-dom": "18.2.14",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
-    "autoprefixer": "10.4.14",
+    "bunchee": "^4.4.3",
     "eslint": "^8.56.0",
     "next": "14.0.1",
-    "postcss": "8.4.31",
     "react": "18.2.0",
     "tailwindcss": "^3.4.1",
-    "tsup": "6.7.0",
     "typescript": "^5.3.3",
     "uploadthing": "6.3.1",
     "vitest": "^1.2.2",

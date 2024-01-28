@@ -5,39 +5,49 @@
   "exports": {
     "./package.json": "./package.json",
     "./core": {
-      "types": "./dist/core.d.ts",
-      "import": "./dist/core.mjs",
-      "require": "./dist/core.js"
-    },
-    "./solid": {
-      "types": "./dist/solid.d.ts",
-      "import": "./dist/solid.mjs",
-      "require": "./dist/solid.js"
+      "import": {
+        "types": "./core/index.d.mts",
+        "default": "./core/index.mjs"
+      },
+      "require": {
+        "types": "./core/index.d.ts",
+        "default": "./core/index.js"
+      }
     },
     "./react": {
-      "types": "./dist/react.d.ts",
-      "import": "./dist/react.mjs",
-      "require": "./dist/react.js"
+      "import": {
+        "types": "./react/index.d.mts",
+        "default": "./react/index.mjs"
+      },
+      "require": {
+        "types": "./react/index.d.ts",
+        "default": "./react/index.js"
+      }
+    },
+    "./solid": {
+      "import": {
+        "types": "./solid/index.d.mts",
+        "default": "./solid/index.mjs"
+      },
+      "require": {
+        "types": "./solid/index.d.ts",
+        "default": "./solid/index.js"
+      }
     }
   },
   "files": [
-    "dist"
+    "core",
+    "react",
+    "solid"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
+    "build": "bunchee",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
+    "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -48,11 +58,10 @@
     "@types/react": "18.2.33",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
+    "bunchee": "^4.4.3",
     "eslint": "^8.56.0",
     "react": "18.2.0",
     "solid-js": "^1.7.11",
-    "tsup": "6.7.0",
     "typescript": "^5.3.3"
   },
   "eslintConfig": {

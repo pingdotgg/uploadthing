@@ -2,42 +2,48 @@
   "name": "@uploadthing/mime-types",
   "version": "0.2.2",
   "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./db": {
-      "types": "./dist/db.d.ts",
-      "import": "./dist/db.mjs",
-      "require": "./dist/db.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
+      "import": {
+        "types": "./db/index.d.mts",
+        "default": "./db/index.mjs"
+      },
+      "require": {
+        "types": "./db/index.d.ts",
+        "default": "./db/index.js"
+      }
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "db"
   ],
   "scripts": {
     "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
+    "build": "bunchee",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
+    "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
+    "bunchee": "^4.4.3",
     "eslint": "^8.56.0",
-    "tsup": "6.7.0",
     "typescript": "^5.3.3"
   },
   "publishConfig": {
