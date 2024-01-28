@@ -256,11 +256,14 @@ importers:
       '@react-navigation/native':
         specifier: ^6.0.2
         version: 6.1.9(react-native@0.73.2)(react@18.2.0)
+      '@uploadthing/mime-types':
+        specifier: ^0.2.2
+        version: link:../../packages/mime-types
       '@uploadthing/react':
         specifier: ^6.2.2
         version: link:../../packages/react
       expo:
-        specifier: ~50.0.3
+        specifier: ~50.0.4
         version: 50.0.4(@babel/core@7.23.9)(@react-native/babel-preset@0.73.20)
       expo-font:
         specifier: ~11.10.2
@@ -269,7 +272,7 @@ importers:
         specifier: ~6.2.2
         version: 6.2.2(expo@50.0.4)
       expo-router:
-        specifier: ~3.4.5
+        specifier: ~3.4.6
         version: 3.4.6(expo-constants@15.4.5)(expo-linking@6.2.2)(expo-modules-autolinking@1.10.2)(expo-status-bar@1.11.1)(expo@50.0.4)(react-dom@18.2.0)(react-native-safe-area-context@4.8.2)(react-native-screens@3.29.0)(react-native@0.73.2)(react@18.2.0)
       expo-splash-screen:
         specifier: ~0.26.3
@@ -3974,7 +3977,7 @@ packages:
       fs-extra: 9.0.0
       getenv: 1.0.0
       jimp-compact: 0.16.1
-      node-fetch: 2.6.11
+      node-fetch: 2.7.0
       parse-png: 2.1.0
       resolve-from: 5.0.0
       semver: 7.3.2
