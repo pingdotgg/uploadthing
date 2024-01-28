@@ -1,4 +1,4 @@
-import "./styles.css";
+"use client";
 
 export {
   UploadButton,

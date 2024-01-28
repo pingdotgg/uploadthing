@@ -64,6 +64,18 @@
     "solid-js": "^1.7.11",
     "typescript": "^5.3.3"
   },
+  "peerDependencies": {
+    "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
+    "solid-js": "^1.7.11"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
   "eslintConfig": {
     "root": true,
     "extends": [
