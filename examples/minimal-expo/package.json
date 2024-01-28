@@ -18,6 +18,7 @@
     "@uploadthing/react": "^6.2.2",
     "expo": "~50.0.4",
     "expo-font": "~11.10.2",
+    "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",
     "expo-router": "~3.4.6",
     "expo-splash-screen": "~0.26.3",
