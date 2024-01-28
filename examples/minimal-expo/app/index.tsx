@@ -6,8 +6,12 @@ import { generateReactHelpers } from "@uploadthing/react/native";
 
 import type { UploadRouter } from "./uploadthing+api";
 
+const { useUploadThing } = generateReactHelpers<UploadRouter>({
+  url: new URL("http://localhost:8081/uploadthing"),
+});
+
 export default function ModalScreen() {
-  const { startUpload } = useUploadThing("videoAndImage");
+  const { startUpload, permittedFileInfo } = useUploadThing("videoAndImage");
 
   console.log(permittedFileInfo);
 
