@@ -79,8 +79,12 @@
     },
     "./internal/types": {
       "import": {
-        "types": "./internal/types.d.ts",
+        "types": "./internal/types.d.mts",
         "default": "./internal/types.mjs"
+      },
+      "require": {
+        "types": "./internal/types.d.ts",
+        "default": "./internal/types.js"
       }
     }
   },
