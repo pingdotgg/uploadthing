@@ -321,8 +321,8 @@ importers:
         specifier: ^7.20.0
         version: 7.23.9
       '@types/react':
-        specifier: ~18.2.45
-        version: 18.2.53
+        specifier: 18.2.33
+        version: 18.2.33
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -4638,7 +4638,7 @@ packages:
       react: '>=16'
     dependencies:
       '@types/mdx': 2.0.5
-      '@types/react': 18.2.53
+      '@types/react': 18.2.33
       react: 18.2.0
     dev: false
 
@@ -7013,13 +7013,6 @@ packages:
 
   /@types/react@18.2.33:
     resolution: {integrity: sha512-v+I7S+hu3PIBoVkKGpSYYpiBT1ijqEzWpzQD62/jm4K74hPpSP7FF9BnKG6+fg2+62weJYkkBWDJlZt5JO/9hg==}
-    dependencies:
-      '@types/prop-types': 15.7.5
-      '@types/scheduler': 0.16.3
-      csstype: 3.1.3
-
-  /@types/react@18.2.53:
-    resolution: {integrity: sha512-52IHsMDT8qATp9B9zoOyobW8W3/0QhaJQTw1HwRj0UY2yBpCAQ7+S/CqHYQ8niAm3p4ji+rWUQ9UCib0GxQ60w==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
@@ -10991,7 +10984,7 @@ packages:
     peerDependencies:
       expo: '*'
     dependencies:
-      expo: 50.0.4(@babel/core@7.23.2)(@react-native/babel-preset@0.73.20)
+      expo: 50.0.4(@babel/core@7.23.9)(@react-native/babel-preset@0.73.20)
     dev: false
 
   /expo-image-picker@14.7.1(expo@50.0.4):
@@ -10999,7 +10992,7 @@ packages:
     peerDependencies:
       expo: '*'
     dependencies:
-      expo: 50.0.4(@babel/core@7.23.2)(@react-native/babel-preset@0.73.20)
+      expo: 50.0.4(@babel/core@7.23.9)(@react-native/babel-preset@0.73.20)
       expo-image-loader: 4.6.0(expo@50.0.4)
     dev: false
 
