@@ -78,6 +78,16 @@
         "default": "./express/index.cjs"
       }
     },
+    "./express": {
+      "import": {
+        "types": "./express/index.d.mts",
+        "default": "./express/index.mjs"
+      },
+      "require": {
+        "types": "./express/index.d.ts",
+        "default": "./express/index.js"
+      }
+    },
     "./h3": {
       "import": {
         "types": "./h3/index.d.ts",
