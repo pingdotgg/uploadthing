@@ -59,7 +59,7 @@
     "access": "public"
   },
   "scripts": {
-    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
+    "lint": "eslint src --max-warnings 0",
     "clean": "git clean -xdf dist node_modules",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "build": "bunchee && pnpm build:css",

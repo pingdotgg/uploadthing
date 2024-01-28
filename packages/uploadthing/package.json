@@ -93,7 +93,7 @@
     "access": "public"
   },
   "scripts": {
-    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
+    "lint": "eslint src --max-warnings 0",
     "build": "bunchee",
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
@@ -127,10 +127,10 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "next": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",
+    "next": "*",
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
