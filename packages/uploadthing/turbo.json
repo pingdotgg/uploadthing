@@ -5,8 +5,10 @@
     "build": {
       "outputs": [
         "client/**",
+        "express/**",
         "fastify/**",
         "h3/**",
+        "internal/**",
         "next/**",
         "next-legacy/**",
         "server/**",

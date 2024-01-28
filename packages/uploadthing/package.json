@@ -115,7 +115,7 @@
   "scripts": {
     "lint": "eslint src --max-warnings 0",
     "build": "bunchee",
-    "clean": "git clean -xdf dist node_modules",
+    "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "bunchee -w",
     "test": "vitest run",
     "test:watch": "vitest",

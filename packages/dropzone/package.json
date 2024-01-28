@@ -46,7 +46,7 @@
   "scripts": {
     "lint": "eslint src --max-warnings 0",
     "build": "bunchee",
-    "clean": "git clean -xdf dist node_modules",
+    "clean": "git clean -xdf core react solid node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
   },
