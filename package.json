@@ -21,15 +21,14 @@
     "typecheck": "turbo run typecheck"
   },
   "dependencies": {
-    "@changesets/changelog-github": "^0.4.8",
-    "@changesets/cli": "^2.26.1",
-    "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
-    "@manypkg/cli": "^0.20.0",
-    "@types/node": "18.16.0",
+    "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+    "@manypkg/cli": "^0.21.2",
+    "@types/node": "^20.11.10",
     "@uploadthing/eslint-config": "0.2.0",
-    "dotenv": "latest",
-    "prettier": "^2.8.8",
-    "prettier-plugin-tailwindcss": "^0.3.0",
+    "prettier": "^3.2.4",
+    "prettier-plugin-tailwindcss": "^0.5.11",
     "turbo": "^1.10.1",
     "typescript": "^5.3.3"
   }
