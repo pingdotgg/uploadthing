@@ -3,6 +3,7 @@
 
 import { Cause, Effect } from "effect";
 import {
+  ResponseEsque,
   safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
@@ -13,8 +14,10 @@ import { fetchEff } from "./effect-utils";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
+  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
+  inferEndpointOutput,
   UTEvents,
 } from "./internal/types";
 import type { UTReporterError } from "./internal/ut-reporter";
@@ -91,31 +94,35 @@ export type UploadFileResponse<TServerOutput> = {
   serverData: TServerOutput;
 };
 
-const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
-  opts: UploadFilesOptions<TRouter>,
+const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint extends keyof FileRouter >(
+  endpoint: TEndpoint,
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
   Effect.gen(function* ($) {
     // Fine to use global fetch in browser
     const fetch = globalThis.fetch.bind(globalThis);
   
     const reportEventToUT = createUTReporter({
-      endpoint: String(opts.endpoint),
+      endpoint: String(endpoint),
       url: opts?.url,
+      package: opts.package,
+      fetch,
     });
 
     // Get presigned URL for S3 upload
     const s3ConnectionRes_ = yield* $(
       fetchEff(
+        fetch,
         createAPIRequestUrl({
           url: opts.url,
-          slug: String(opts.endpoint),
+          slug: String(endpoint),
           actionType: "upload",
         }),
         {
           method: "POST",
           body: JSON.stringify({
+            input: "input" in opts ? opts.input : null,
             files: opts.files.map((f) => ({ name: f.name, size: f.size })),
-            input: opts.input,
           }),
           // Express requires Content-Type to be explicitly set to parse body properly
           headers: {
@@ -172,8 +179,8 @@ type ReportEventToUT = <TEvent extends keyof UTEvents>(
   payload: UTEvents[TEvent],
 ) => Effect.Effect<never, UTReporterError, boolean>;
 
-const uploadFile = <TRouter extends FileRouter>(
-  opts: UploadFilesOptions<TRouter>,
+const uploadFile = <TRouter extends FileRouter, TEndpoint extends keyof FileRouter>(
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
   presigned: UploadThingResponse[number],
   reportEventToUT: ReportEventToUT,
 ) =>
@@ -263,33 +270,35 @@ const uploadFile = <TRouter extends FileRouter>(
     }
 
     // // Poll for file data, this way we know that the client-side onUploadComplete callback will be called after the server-side version
-    yield* $(
-      Effect.promise(() =>
-        pollForFileData({
-          url: pollingUrl,
-          apiKey: null,
-          sdkVersion: UPLOADTHING_VERSION,
-        }),
-      ),
-    );
-//     // wait a bit as it's unsreasonable to expect the server to be done by now
-//     await new Promise((r) => setTimeout(r, 750));
+    // yield* $(
+    //   Effect.promise(() =>
+    //     pollForFileData({
+    //       url: pollingUrl,
+    //       apiKey: null,
+    //       sdkVersion: UPLOADTHING_VERSION,
+    //     }),
+    //   ),
+    // );
+    // wait a bit as it's unsreasonable to expect the server to be done by now
+    yield* $(Effect.sleep(1000));
 
-//     const serverData = (await withExponentialBackoff(async () => {
-//       type PollingResponse =
-//         | {
-//             status: "done";
-//             callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
-//           }
-//         | { status: "still waiting" };
+    const serverData =  yield* $(
+    Effect.promise(()=>withExponentialBackoff(async () => {
+      type PollingResponse =
+        | {
+            status: "done";
+            callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
+          }
+        | { status: "still waiting" };
 
-//       const res = await fetch(pollingUrl, {
-//         headers: { authorization: pollingJwt },
-//       }).then((r) => r.json() as Promise<PollingResponse>);
+      const res = await fetch(pollingUrl, {
+        headers: { authorization: pollingJwt },
+      }).then((r) => r.json() as Promise<PollingResponse>);
 
-//       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-//       return res.status === "done" ? res.callbackData : undefined;
-//     })) as inferEndpointOutput<TRouter[TEndpoint]>;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return res.status === "done" ? res.callbackData : undefined;
+    }))
+    )
 
     return {
       name: file.name,
@@ -301,10 +310,11 @@ const uploadFile = <TRouter extends FileRouter>(
     } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
 
-export const DANGEROUS__uploadFiles = <TRouter extends FileRouter>(
-  opts: UploadFilesOptions<TRouter>,
+export const DANGEROUS__uploadFiles = <TRouter extends FileRouter, TEndpoint extends keyof TRouter>(
+  endpoint: TEndpoint,
+  opts: UploadFilesOptions<TRouter, string>,
 ) =>
-  DANGEROUS__uploadFiles_internal(opts).pipe(
+  DANGEROUS__uploadFiles_internal(endpoint as string, opts).pipe(
     // TODO maybe find a better way to handle the UTReporterError instead of just dying
     Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
     Effect.runPromise,
@@ -555,7 +565,7 @@ export function getFullApiUrl(maybeUrl?: string): URL {
   }
 }
 
-const safeParseJSONEff = <T>(res: Response) =>
+const safeParseJSONEff = <T>(res: ResponseEsque) =>
   Effect.promise<T | Error>(() => safeParseJSON<T>(res));
 
 const uploadPartWithProgressEff = (

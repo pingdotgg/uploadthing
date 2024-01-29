@@ -46,8 +46,7 @@ export const createUTReporter =
         actionType: type,
       });
       const response = yield* $(
-        fetchEff(url, {
-          fetch: cfg.fetch,
+        fetchEff(cfg.fetch, url, {
           method: "POST",
           body: JSON.stringify(payload),
           headers: {
