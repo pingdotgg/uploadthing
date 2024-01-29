@@ -50,6 +50,54 @@ export const ourFileRouter = {
 export type OurFileRouter = typeof ourFileRouter;
 ```
 
+### `UploadThingError`
+
+For most users, throwing an `UploadThingError("your message")` will be enough.
+For advanced use cases, you can pass an options object for more control.
+
+```ts
+type UploadThingErrorOptions<T> =
+  | {
+      /**
+   * ERROR_CODES:
+   *  BAD_REQUEST: 400,
+   *  NOT_FOUND: 404,
+   *  FORBIDDEN: 403,
+   *  INTERNAL_SERVER_ERROR: 500,
+   *  INTERNAL_CLIENT_ERROR: 500,
+      
+   *  // S3 specific
+   *  TOO_LARGE: 413,
+   *  TOO_SMALL: 400,
+   *  TOO_MANY_FILES: 400,
+   *  KEY_TOO_LONG: 400,
+      
+   *  // UploadThing specific
+   *  URL_GENERATION_FAILED: 500,
+   *  UPLOAD_FAILED: 500,
+   *  MISSING_ENV: 500,
+   *  FILE_LIMIT_EXCEEDED: 500,
+   * @default `INTERNAL_SERVER_ERROR`
+   */
+      code?: keyof typeof ERROR_CODES;
+      /**
+       * Your error message describing what happened
+       * @default `An unknown error occurred`
+       */
+      message?: string;
+      /**
+       * The original error that caused this, if any.
+       * @default `env.UPLOADTHING_KEY`
+       */
+      cause?: unkown;
+      /**
+       * Data associated with the error
+       */
+      data?: T;
+    }
+  | string;
+```
+
 If you're using Zod as an input parser, you can return information of what
 fields failed validation by checking if the cause is a `ZodError`. Zod provides
 a `flatten` method that returns a JSON-serializable object which we can return

@@ -227,6 +227,8 @@ tag the upload with metadata here. Example using Clerk:
 ```ts
 import { currentUser } from "@clerk/nextjs";
 
+import { UploadThingError } from "uploadthing/server";
+
 f(["image"])
   .middleware(async ({ req, res }) => {
     const user = await currentUser();
