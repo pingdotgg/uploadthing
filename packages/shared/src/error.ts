@@ -56,7 +56,7 @@ export class UploadThingError<
   constructor(opts: {
     code: keyof typeof ERROR_CODES;
     message?: string;
-    cause?: unknown;
+    cause?: Error | Response | string ;
     data?: TShape;
   }) {
     super();
