@@ -486,9 +486,8 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         };
       }
       case "multipart-complete": {
-        const maybeReqBody = await safeParseJSON<
-          UTEvents["multipart-complete"]
-        >(req);
+        const maybeReqBody =
+          await safeParseJSON<UTEvents["multipart-complete"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({

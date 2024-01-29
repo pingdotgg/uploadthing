@@ -7,6 +7,6 @@
     "declarationMap": false,
     "moduleResolution": "nodenext",
     "allowJs": true,
-    "checkJs": true
-  }
+    "checkJs": true,
+  },
 }

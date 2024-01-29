@@ -15,8 +15,8 @@
     "noUnusedParameters": false,
     "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "strict": true
+    "strict": true,
   },
   "include": ["src/**/*", "*.ts", "test/**/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }

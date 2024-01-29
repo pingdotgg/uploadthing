@@ -18,9 +18,9 @@
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*"],
     },
-    "plugins": [{ "name": "next" }]
+    "plugins": [{ "name": "next" }],
   },
   "include": [
     ".eslintrc.cjs",
@@ -29,7 +29,7 @@
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
