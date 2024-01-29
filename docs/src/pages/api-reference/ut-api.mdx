@@ -1,0 +1,281 @@
+import { Callout } from "nextra-theme-docs";
+
+## `UTApi`
+
+The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
+API but better.
+
+To get started, initialize an instance of `UTApi`.
+
+<Callout type="info">
+  Prior to `v5.7`, this was exported as a regular object called `utapi` without
+  any custom intialization support.
+</Callout>
+
+```ts filename="~/server/uploadthing.ts"
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
+```
+
+The constructor takes some optional arguments that you can pass to override the
+defaults. Below are shown the available options, the default values, and the
+types of the values.
+
+```ts
+{
+  fetch: FetchEsque = globalThis.fetch; // subset of standard fetch required for uploadthing
+  apiKey: string = process.env.UPLOADTHING_SECRET;
+}
+```
+
+### `uploadFiles`
+
+> Added in `v5.3`
+
+Upload files directly from your server **without** using the file router. Useful
+for server-side file processing, uploading from a server action, and much more.
+
+```tsx
+import { utapi } from "~/server/uploadthing.ts";
+
+async function uploadFiles(formData: FormData) {
+  "use server";
+  const files = formData.getAll("files");
+  const response = await utapi.uploadFiles(files);
+  //    ^? UploadedFileResponse[]
+}
+
+function MyForm() {
+  return (
+    <form action={uploadFiles}>
+      <input name="files" type="file" multiple />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+When uploading files using `uploadFiles`, the files must be present on your
+server. Then presigned URLs are generated on our servers before the files can be
+uploaded to the storage provider.
+
+| Arguments               | Type                       | Required | Description                                                                                                                                                                                                                                   |
+| :---------------------- | :------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| files                   | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload                                                                                                                                                                                                                |
+| opts.metadata           | Json                       | No       | Metadata to attach to the file(s)                                                                                                                                                                                                             |
+| opts.contentDisposition | "inline" \| "attachment"   | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline`                                                                         |
+| opts.acl                | "public-read" \| "private" | No       | What [ACL](/regions-and-acl#access-controls) should be set on the storage provider. Defaults to whatever is [configured on your app settings](/regions-and-acl#configuring-acl) and can only be used if the app allows per-request overrides. |
+
+```ts
+// Edge / Node < 20 friendly File interface
+interface FileEsque extends Blob {
+  name: string;
+}
+```
+
+The returned `UploadedFileResponse` is an object with the following shape. If
+the `files` argument is an array, the returned value will be of type
+`UploadedFileResponse[]`.
+
+```ts
+type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
+
+type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
+
+type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+```
+
+### `uploadFilesFromUrl`
+
+> Added in `v5.3`
+
+Have a file hosted somewhere else you want to upload on UploadThing? This is the
+function you're looking for.
+
+<Callout type="warning">
+  When uploading files from URL, the file is first downloaded on **your**
+  server, before presigned URLs are created and the file is uploaded to the
+  storage provider.
+</Callout>
+
+```tsx
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileUrl = "https://test.com/some.png";
+const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
+//    ^? UploadedFileResponse
+
+const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
+const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
+//    ^? UploadedFileResponse[]
+```
+
+| Arguments               | Type                                     | Required | Description                                                                                                                                                                                                                                   |
+| :---------------------- | :--------------------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| urls                    | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload                                                                                                                                                                                                  |
+| opts.metadata           | Json                                     | No       | Metadata to attach to the file(s)                                                                                                                                                                                                             |
+| opts.contentDisposition | "inline" \| "attachment"                 | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline`                                                                         |
+| opts.acl                | "public-read" \| "private"               | No       | What [ACL](/regions-and-acl#access-controls) should be set on the storage provider. Defaults to whatever is [configured on your app settings](/regions-and-acl#configuring-acl) and can only be used if the app allows per-request overrides. |
+
+### `deleteFiles`
+
+> Added in `v4.0`
+
+`deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
+the server.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+await utapi.deleteFiles([
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
+```
+
+| Arguments | Type                 | Required | Notes           | Description                                |
+| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------- |
+| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to delete |
+
+### `getFileUrls`
+
+> Added in `v4.0`
+
+`getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to
+access them.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const oneUrl = await utapi.getFileUrls(
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+);
+const multipleUrls = await utapi.getFileUrls([
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
+```
+
+| Arguments | Type                 | Required | Notes           | Description                                      |
+| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------------- |
+| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to get URLs for |
+
+### `listFiles`
+
+> Added in `v5.3`
+
+`listFiles` returns an array of objects containing file ids and keys for all
+files that have been uploaded to the application your API key corresponds to. As
+of 6.0.5, you can optionally pass an `options` object to paginate the results
+
+```ts
+type ListFilesOptions = {
+  limit?: number; // The maximum number of files to return
+  offset?: number; // The number of files to skip
+};
+```
+
+| Arguments | Type             | Required | Notes             | Description                                                                   |
+| :-------- | :--------------- | :------- | :---------------- | :---------------------------------------------------------------------------- |
+| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files (up to 100k) will be returned. |
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const files = await utapi.listFiles();
+
+console.log(files);
+/*
+ * [
+ *  {
+ *    id: "2e0fdb64-9957-4262-8e45-f372ba903ac8",
+ *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"
+ *  }
+ * ]
+ */
+```
+
+### `renameFiles`
+
+> Added in `v5.3`
+
+`renameFiles` takes in a `Rename` or an array of `Rename`s and renames the
+appropriate files on the server.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+await utapi.renameFiles({
+  fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  newName: "myImage.jpg",
+});
+
+await utapi.renameFiles([
+  {
+    fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    newName: "myImage.jpg",
+  },
+  {
+    fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+    newName: "myOtherImage.jpg",
+  },
+]);
+```
+
+#### `Rename` type definition
+
+```ts
+type Rename = {
+  fileKey: string;
+  newName: string; // should include file extension
+};
+```
+
+| Arguments | Type                 | Required | Description                                            |
+| :-------- | :------------------- | :------- | :----------------------------------------------------- |
+| renames   | Rename \|\| Rename[] | Yes      | Object specifying what file to rename and the new name |
+
+### `getSignedURL`
+
+> Added in `v6.2`
+
+Retrieve a [signed URL](/regions-and-acl#using-signed-urls) for a private file.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
+const url = await utapi.getSignedURL(fileKey, {
+  expiresIn: 60 * 60, // 1 hour
+  // expiresIn: '1 hour',
+  // expiresIn: '3d',
+  // expiresIn: '7 days',
+});
+```
+
+<Callout>
+  The `expiresIn` option can only be used if you allow overrides in your app
+  settings on the UploadThing dashboard.
+</Callout>
+
+| Arguments      | Type                 | Required | Description                                                                            |
+| :------------- | :------------------- | :------- | :------------------------------------------------------------------------------------- |
+| key            | string               | Yes      | The file key you want to get the URL for.                                              |
+| opts.expiresIn | number \| TimeString | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
+
+> `TimeString` refers to a human-readable string that can be parsed as a number,
+> followed by a unit of time. For example, `1s`, `1 second`, `2m`, `2 minutes`,
+> `7 days` etc. If no unit is specified, seconds are assumed.

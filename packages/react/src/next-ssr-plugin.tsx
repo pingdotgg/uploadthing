@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { useServerInsertedHTML } from "next/navigation";
 
-import type { EndpointMetadata } from "./types";
+import type { EndpointMetadata } from "@uploadthing/shared";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;

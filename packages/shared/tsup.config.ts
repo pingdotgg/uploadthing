@@ -6,7 +6,4 @@ export default defineConfig((opts) => ({
   ...config,
   entry: ["./src/index.ts"],
   clean: !opts.watch,
-  async onSuccess() {
-    // void
-  },
 }));

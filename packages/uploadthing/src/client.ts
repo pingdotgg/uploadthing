@@ -1,9 +1,11 @@
-import { Cause, Effect } from "effect";
+// Don't want to ship our logger to the client, keep size down
+/* eslint-disable no-console */
 
+import { Cause, Effect } from "effect";
 import {
-  pollForFileData,
   safeParseJSON,
   UploadThingError,
+  withExponentialBackoff,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -16,6 +18,8 @@ import type {
   UTEvents,
 } from "./internal/types";
 import type { UTReporterError } from "./internal/ut-reporter";
+import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
+
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 /*
@@ -35,41 +39,65 @@ More Effect refactoring:
  */
 export * from "./internal/component-theming";
 
-type UploadFilesOptions<TRouter extends FileRouter> = {
-  [TEndpoint in keyof TRouter]: {
-    endpoint: TEndpoint;
-    onUploadProgress?: ({
-      file,
-      progress,
-    }: {
-      file: string;
-      progress: number;
-    }) => void;
-    onUploadBegin?: ({ file }: { file: string }) => void;
-    input?: inferEndpointInput<TRouter[TEndpoint]>;
+type UploadFilesOptions<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
+  onUploadProgress?: ({
+    file,
+    progress,
+  }: {
+    file: string;
+    progress: number;
+  }) => void;
+  onUploadBegin?: ({ file }: { file: string }) => void;
 
-    files: File[];
+  files: File[];
 
-    /**
-     * URL to the UploadThing API endpoint
-     * @example URL { http://localhost:3000/api/uploadthing }
-     * @example URL { https://www.example.com/api/uploadthing }
-     */
-    url: URL;
-  };
-}[keyof TRouter];
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
 
-export type UploadFileResponse = {
+  /**
+   * The uploadthing package that is making this request
+   * @example "@uploadthing/react"
+   *
+   * This is used to identify the client in the server logs
+   */
+  package: string;
+} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
+  ? // eslint-disable-next-line @typescript-eslint/ban-types
+    {}
+  : {
+      input: inferEndpointInput<TRouter[TEndpoint]>;
+    });
+
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });
+
+export type UploadFileResponse<TServerOutput> = {
   name: string;
   size: number;
   key: string;
   url: string;
+  // Matches what's returned from the serverside `onUploadComplete` callback
+  serverData: TServerOutput;
 };
 
 const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
   opts: UploadFilesOptions<TRouter>,
 ) =>
   Effect.gen(function* ($) {
+    // Fine to use global fetch in browser
+    const fetch = globalThis.fetch.bind(globalThis);
+  
     const reportEventToUT = createUTReporter({
       endpoint: String(opts.endpoint),
       url: opts?.url,
@@ -103,6 +131,7 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter>(
       );
 
       return yield* $(error);
+
     }
 
     const jsonOrError = yield* $(
@@ -171,6 +200,7 @@ const uploadFile = <TRouter extends FileRouter>(
       contentDisposition,
       key,
       pollingUrl,
+      pollingJwt,
     } = presigned;
 
     let uploadedBytes = 0;
@@ -242,13 +272,33 @@ const uploadFile = <TRouter extends FileRouter>(
         }),
       ),
     );
+//     // wait a bit as it's unsreasonable to expect the server to be done by now
+//     await new Promise((r) => setTimeout(r, 750));
+
+//     const serverData = (await withExponentialBackoff(async () => {
+//       type PollingResponse =
+//         | {
+//             status: "done";
+//             callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
+//           }
+//         | { status: "still waiting" };
+
+//       const res = await fetch(pollingUrl, {
+//         headers: { authorization: pollingJwt },
+//       }).then((r) => r.json() as Promise<PollingResponse>);
+
+//       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+//       return res.status === "done" ? res.callbackData : undefined;
+//     })) as inferEndpointOutput<TRouter[TEndpoint]>;
 
     return {
       name: file.name,
       size: file.size,
       key: presigned.key,
+
+      serverData,
       url: "https://utfs.io/f/" + key,
-    } satisfies UploadFileResponse;
+    } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
 
 export const DANGEROUS__uploadFiles = <TRouter extends FileRouter>(
@@ -404,10 +454,43 @@ export const DANGEROUS__uploadFiles = <TRouter extends FileRouter>(
 //   return Promise.all(fileUploadPromises);
 // };
 
-export const genUploader = <
-  TRouter extends FileRouter,
->(): typeof DANGEROUS__uploadFiles<TRouter> => {
-  return DANGEROUS__uploadFiles;
+export const genUploader = <TRouter extends FileRouter>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+
+  /**
+   * The uploadthing package that is making this request
+   * @example "@uploadthing/react"
+   *
+   * This is used to identify the client in the server logs
+   */
+  package: string;
+}) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
+
+  const utPkg = initOpts.package;
+
+  return <TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts: DistributiveOmit<
+      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+      "url"
+    >,
+  ) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+      ...opts,
+      url,
+      package: utPkg,
+    } as any);
 };
 
 export const classNames = (...classes: (string | boolean)[]) => {
@@ -479,3 +562,5 @@ const uploadPartWithProgressEff = (
   opts: Parameters<typeof uploadPartWithProgress>[0],
   retryCount?: number,
 ) => Effect.promise(() => uploadPartWithProgress(opts, retryCount));
+
+export { resolveMaybeUrlArg };

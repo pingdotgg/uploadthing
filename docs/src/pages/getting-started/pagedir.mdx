@@ -53,6 +53,9 @@ export const ourFileRouter = {
       console.log("Upload complete for userId:", metadata.userId);
 
       console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
 
@@ -67,16 +70,18 @@ export type OurFileRouter = typeof ourFileRouter;
 </Callout>
 
 ```ts copy filename="pages/api/uploadthing.ts"
-import { createNextPageApiHandler } from "uploadthing/next-legacy";
+import { createRouteHandler } from "uploadthing/next-legacy";
 
 import { ourFileRouter } from "~/server/uploadthing";
 
-const handler = createNextPageApiHandler({
+export default createRouteHandler({
   router: ourFileRouter,
+  config: { ... },
 });
-
-export default handler;
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Add UploadThing's Styles
 
@@ -97,12 +102,15 @@ export default handler;
 ### Create The UploadThing Components (Recommended)
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/react";
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Mount A Button And Upload!

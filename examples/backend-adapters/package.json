@@ -8,6 +8,7 @@
     "server"
   ],
   "scripts": {
+    "dev:cf": "concurrently \"npm run -w client dev\" \"npm run -w server dev:cf\"",
     "dev:elysia": "concurrently \"npm run -w client dev\" \"npm run -w server dev:elysia\"",
     "dev:express": "concurrently \"npm run -w client dev\" \"npm run -w server dev:express\"",
     "dev:fastify": "concurrently \"npm run -w client dev\" \"npm run -w server dev:fastify\"",
@@ -17,9 +18,9 @@
     "start": "concurrently \"npm run -w client start\" \"npm run -w server start\""
   },
   "dependencies": {
-    "@uploadthing/react": "5.7.0",
+    "@uploadthing/react": "6.2.2",
     "concurrently": "^8.2.1",
-    "typescript": "^5.1.6",
-    "uploadthing": "^5.7.4"
+    "typescript": "^5.3.3",
+    "uploadthing": "^6.3.1"
   }
 }

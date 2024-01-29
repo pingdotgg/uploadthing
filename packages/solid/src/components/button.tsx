@@ -6,7 +6,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -25,19 +25,21 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: () => string[];
 };
 
-export type UploadButtonProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<ButtonStyleFieldCallbackArgs>;
-      button?: StyleField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-    };
-    content?: {
-      button?: ContentField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-    };
-    class?: string;
+export type UploadButtonProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<ButtonStyleFieldCallbackArgs>;
+    button?: StyleField<ButtonStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
   };
+  content?: {
+    button?: ContentField<ButtonStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+  };
+  class?: string;
+};
 
 /**
  * @example
@@ -46,16 +48,19 @@ export type UploadButtonProps<TRouter extends FileRouter> =
  *   onUploadComplete={(url) => console.log(url)}
  * />
  */
-export function UploadButton<TRouter extends FileRouter>(
+export function UploadButton<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   let inputRef: HTMLInputElement;
-  const $props = props as UploadButtonProps<TRouter>;
+  const $props = props as UploadButtonProps<TRouter, TEndpoint>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
   const uploadedThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {

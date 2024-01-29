@@ -1,6 +1,12 @@
+import { process } from "std-env";
 import type { File as UndiciFile } from "undici";
 
-import type { ContentDisposition, FetchEsque, Json } from "@uploadthing/shared";
+import type {
+  ACL,
+  ContentDisposition,
+  FetchEsque,
+  Json,
+} from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -8,6 +14,7 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
+import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../server";
 
@@ -54,6 +61,7 @@ export const uploadFilesInternal = async (
     files: FileEsque[];
     metadata: Json;
     contentDisposition: ContentDisposition;
+    acl?: ACL;
   },
   opts: {
     fetch: FetchEsque;
@@ -66,6 +74,7 @@ export const uploadFilesInternal = async (
     type: file.type,
     size: file.size,
   }));
+  logger.debug("Getting presigned URLs for files", fileData);
   const res = await opts.fetch(generateUploadThingURL("/api/uploadFiles"), {
     method: "POST",
     headers: opts.utRequestHeaders,
@@ -74,34 +83,36 @@ export const uploadFilesInternal = async (
       files: fileData,
       metadata: data.metadata,
       contentDisposition: data.contentDisposition,
+      acl: data.acl,
     }),
   });
 
   if (!res.ok) {
     const error = await UploadThingError.fromResponse(res);
+    logger.debug("Failed getting presigned URLs:", error);
     throw error;
   }
 
-  const clonedRes = res.clone(); // so that `UploadThingError.fromResponse()` can consume the body again
-  const json = await res.json<
-    | {
-        data: {
-          presignedUrls: string[];
-          key: string;
-          fileUrl: string;
-          fileType: string;
-          uploadId: string;
-          chunkSize: number;
-          chunkCount: number;
-        }[];
-      }
-    | { error: string }
-  >();
-
-  if ("error" in json) {
-    const error = await UploadThingError.fromResponse(clonedRes);
+  if (!res.ok) {
+    const error = await UploadThingError.fromResponse(res);
+    logger.debug("Failed getting presigned URLs:", error);
     throw error;
   }
+
+  const json = await res.json<{
+    data: {
+      presignedUrls: string[];
+      key: string;
+      fileUrl: string;
+      fileType: string;
+      uploadId: string;
+      chunkSize: number;
+      chunkCount: number;
+    }[];
+  }>();
+
+  logger.debug("Got presigned URLs:", json.data);
+  logger.debug("Starting uploads...");
 
   // Upload each file to S3 in chunks using multi-part uploads
   const uploads = await Promise.allSettled(
@@ -109,12 +120,27 @@ export const uploadFilesInternal = async (
       const { presignedUrls, key, fileUrl, uploadId, chunkSize } = json.data[i];
 
       if (!presignedUrls || !Array.isArray(presignedUrls)) {
+        logger.error(
+          "Failed to generate presigned URL for file:",
+          file,
+          json.data[i],
+        );
         throw new UploadThingError({
           code: "URL_GENERATION_FAILED",
           message: "Failed to generate presigned URL",
           cause: JSON.stringify(json.data[i]),
         });
       }
+
+      logger.debug(
+        "Uploading file",
+        file.name,
+        "with",
+        presignedUrls.length,
+        "chunks of size",
+        chunkSize,
+        "bytes each",
+      );
 
       const etags = await Promise.all(
         presignedUrls.map(async (url, index) => {
@@ -134,27 +160,44 @@ export const uploadFilesInternal = async (
             utRequestHeaders: opts.utRequestHeaders,
           });
 
+          logger.debug("Part", index + 1, "uploaded successfully:", etag);
+
           return { tag: etag, partNumber: index + 1 };
         }),
       );
 
+      logger.debug(
+        "File",
+        file.name,
+        "uploaded successfully. Notifying UploadThing to complete multipart upload.",
+      );
+
       // Complete multipart upload
-      await opts.fetch(generateUploadThingURL("/api/completeMultipart"), {
-        method: "POST",
-        body: JSON.stringify({
-          fileKey: key,
-          uploadId,
-          etags,
-        } satisfies UTEvents["multipart-complete"]),
-        headers: opts.utRequestHeaders,
-      });
+      const completionRes = await opts.fetch(
+        generateUploadThingURL("/api/completeMultipart"),
+        {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: key,
+            uploadId,
+            etags,
+          } satisfies UTEvents["multipart-complete"]),
+          headers: opts.utRequestHeaders,
+        },
+      );
+
+      logger.debug("UploadThing responsed with status:", completionRes.status);
+      logger.debug("Polling for file data...");
 
       // Poll for file to be available
       await pollForFileData({
         url: generateUploadThingURL(`/api/pollUpload/${key}`),
         apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
         sdkVersion: UPLOADTHING_VERSION,
+        fetch: opts.fetch,
       });
+
+      logger.debug("Polling complete.");
 
       return {
         key,
@@ -164,6 +207,8 @@ export const uploadFilesInternal = async (
       };
     }),
   );
+
+  logger.debug("All uploads complete, aggregating results...");
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {
@@ -176,3 +221,30 @@ export const uploadFilesInternal = async (
     return { data: null, error };
   });
 };
+
+type TimeShort = "s" | "m" | "h" | "d";
+type TimeLong = "second" | "minute" | "hour" | "day";
+type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type AutoCompleteableNumber = SuggestedNumbers | (number & {});
+export type Time =
+  | number
+  | `1${TimeShort}`
+  | `${AutoCompleteableNumber}${TimeShort}`
+  | `1 ${TimeLong}`
+  | `${AutoCompleteableNumber} ${TimeLong}s`;
+
+export function parseTimeToSeconds(time: Time) {
+  const match = time.toString().split(/(\d+)/).filter(Boolean);
+  const num = Number(match[0]);
+  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
+
+  const multiplier = {
+    s: 1,
+    m: 60,
+    h: 3600,
+    d: 86400,
+  }[unit];
+
+  return num * multiplier;
+}

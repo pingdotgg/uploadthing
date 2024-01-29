@@ -1,15 +1,14 @@
 import { createSignal } from "solid-js";
-import type { OnDropHandler } from "solidjs-dropzone";
-import { createDropzone } from "solidjs-dropzone";
 import { twMerge } from "tailwind-merge";
 
+import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
   classNames,
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -29,39 +28,44 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: () => boolean;
 };
 
-export type UploadDropzoneProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-      button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    };
-    content?: {
-      uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-      button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    };
-    class?: string;
-    config?: {
-      mode?: "manual" | "auto";
-    };
+export type UploadDropzoneProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
+  content?: {
+    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  };
+  class?: string;
+  config?: {
+    mode?: "manual" | "auto";
+  };
+};
 
-export const UploadDropzone = <TRouter extends FileRouter>(
+export const UploadDropzone = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter>,
+    : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
-  const $props = props as UploadDropzoneProps<TRouter>;
+  const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
 
   const { mode = "manual" } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
   const uploadThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {
@@ -79,7 +83,7 @@ export const UploadDropzone = <TRouter extends FileRouter>(
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
-  const onDrop: OnDropHandler = (acceptedFiles) => {
+  const onDrop = (acceptedFiles: File[]) => {
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
@@ -99,7 +103,6 @@ export const UploadDropzone = <TRouter extends FileRouter>(
         ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
         : undefined;
     },
-    useFsAccessApi: true,
   });
 
   const ready = () => fileInfo().fileTypes.length > 0;

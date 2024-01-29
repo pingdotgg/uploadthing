@@ -73,7 +73,7 @@ export type OurFileRouter = typeof uploadRouter;
     ```ts
     import { createApp, createRouter } from "h3";
 
-    import { createH3EventHandler } from "uploadthing/h3";
+    import { createRouteHandler } from "uploadthing/h3";
     import { uploadRouter } from "./router";
 
     const app = createApp();
@@ -81,7 +81,10 @@ export type OurFileRouter = typeof uploadRouter;
 
     router.use(
       "/api/uploadthing",
-      createH3EventHandler({ router: uploadRouter })
+      createRouteHandler({
+        router: uploadRouter,
+        config: { ... },
+      })
     );
 
     app.use(router);
@@ -92,25 +95,34 @@ export type OurFileRouter = typeof uploadRouter;
   </Tabs.Tab>
   <Tabs.Tab>
     ```ts filename="routes/api/uploadthing.ts"
-    import { createH3EventHandler } from "uploadthing/h3";
+    import { createRouteHandler } from "uploadthing/h3";
 
     import { uploadRouter } from "./router";
 
-    export default createH3EventHandler({ router: uploadRouter });
+    export default createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    });
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
     ```ts filename="server/api/uploadthing.ts"
-    import { createH3EventHandler } from "uploadthing/h3";
+    import { createRouteHandler } from "uploadthing/h3";
 
     import { uploadRouter } from "./router";
 
-    export default createH3EventHandler({ router: uploadRouter });
+    export default createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    });
     ```
 
   </Tabs.Tab>
 </Tabs>
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Use the FileRouter in your app
 

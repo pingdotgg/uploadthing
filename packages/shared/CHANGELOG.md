@@ -1,5 +1,66 @@
 # @uploadthing/shared
 
+## 6.2.0
+
+### Minor Changes
+
+- [`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  cloudflare workers
+
+## 6.1.0
+
+### Minor Changes
+
+- [#545](https://github.com/pingdotgg/uploadthing/pull/545)
+  [`2d8b31c`](https://github.com/pingdotgg/uploadthing/commit/2d8b31c57260e3607ea16ce9dfcfeee08b074933)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `logLevel` option to enable more verbose logging
+
+- [#525](https://github.com/pingdotgg/uploadthing/pull/525)
+  [`98f9e0d`](https://github.com/pingdotgg/uploadthing/commit/98f9e0de1eabe5520757a7da0a7b0e90624c9d60)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `utapi.getSignedURL` and ACL configuration options on file routes and
+  `utapi.uploadFiles`
+
+## 6.0.3
+
+### Patch Changes
+
+- [#527](https://github.com/pingdotgg/uploadthing/pull/527)
+  [`cfd5381`](https://github.com/pingdotgg/uploadthing/commit/cfd53811b6267a5f20ba9334f82937f27c3be346)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fallback to
+  blob filetype if allowed
+
+## 6.0.2
+
+### Patch Changes
+
+- [#487](https://github.com/pingdotgg/uploadthing/pull/487)
+  [`afc793e`](https://github.com/pingdotgg/uploadthing/commit/afc793e0635c7c4cee7592262b8aa13e5b2c7d55)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix:
+  exponential backoff infinite loop
+
+## 6.0.1
+
+### Patch Changes
+
+- [#480](https://github.com/pingdotgg/uploadthing/pull/480)
+  [`67109c8`](https://github.com/pingdotgg/uploadthing/commit/67109c835f3416d2928c0faa9e2fd99a1bcd2370)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: serverdata
+  polling timed out and returned 504
+
+## 6.0.0
+
+### Major Changes
+
+- [#432](https://github.com/pingdotgg/uploadthing/pull/432)
+  [`328f59b`](https://github.com/pingdotgg/uploadthing/commit/328f59b324a5013620dbf9c30023e9d3b0ee6141)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!:
+  multipart uploads
+
+  supports uploading larger files and uploads are now up to 2x faster
+
 ## 5.2.7
 
 - Updated dependencies

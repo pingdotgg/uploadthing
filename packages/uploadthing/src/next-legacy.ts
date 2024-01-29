@@ -1,3 +1,5 @@
+// This node import should be fine since it's available in both node and edge runtimes
+// https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
@@ -11,11 +13,13 @@ import {
 } from "./internal/handler";
 import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { initLogger } from "./internal/logger";
+import { toWebRequest } from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter };
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
@@ -25,12 +29,13 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-export const createNextPageApiHandler = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
+  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
-  const requestHandler = buildRequestHandler<TRouter>(opts);
 
+  const requestHandler = buildRequestHandler<TRouter>(opts, "nextjs-pages");
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
@@ -45,13 +50,8 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
 
     const response = await requestHandler({
-      req: Object.assign(req, {
-        json: () =>
-          Promise.resolve(
-            typeof req.body === "string" ? JSON.parse(req.body) : req.body,
-          ),
-      }),
-      url,
+      nativeRequest: toWebRequest(req, url),
+      originalRequest: req,
       res,
     });
 
@@ -73,3 +73,8 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     return res.json(response.body);
   };
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createNextPageApiHandler = createRouteHandler;

@@ -1,0 +1,17 @@
+name: ⚙️ Other
+description: My issue doesn't fit into any of the other categories
+title: '[misc]: '
+body:
+- type: checkboxes
+  attributes:
+    label: I understand that this issue may be closed if it should be filed in another category
+    description: Please confirm that no other category fits your issue better.
+    options:
+    - label: I understand
+      required: true
+- type: textarea
+  attributes:
+    label: My issue
+    description: A concise description of what you're experiencing.
+  validations:
+    required: true

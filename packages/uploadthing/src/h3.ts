@@ -2,11 +2,9 @@ import type { H3Event } from "h3";
 import {
   assertMethod,
   defineEventHandler,
-  getRequestHeaders,
-  getRequestURL,
-  readBody,
-  setHeaders,
+  setHeader,
   setResponseStatus,
+  toWebRequest,
 } from "h3";
 
 import type { Json } from "@uploadthing/shared";
@@ -19,11 +17,13 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import type { RouterWithConfig } from "./internal/handler";
+import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { initLogger } from "./internal/logger";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter };
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
@@ -33,15 +33,18 @@ export const createUploadthing = <TErrorShape extends Json>(
     TErrorShape
   >(opts);
 
-export const createH3EventHandler = <TRouter extends FileRouter>(
+export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler(opts);
+  initLogger(opts.config?.logLevel);
+  incompatibleNodeGuard();
+
+  const requestHandler = buildRequestHandler(opts, "h3");
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return defineEventHandler(async (event) => {
     assertMethod(event, ["GET", "POST"]);
-    setHeaders(event, { "x-uploadthing-version": UPLOADTHING_VERSION });
+    setHeader(event, "x-uploadthing-version", UPLOADTHING_VERSION);
 
     // GET
     if (event.method === "GET") {
@@ -50,11 +53,7 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
     // POST
     const response = await requestHandler({
-      req: {
-        url: getRequestURL(event).href,
-        headers: getRequestHeaders(event),
-        json: () => Promise.resolve(readBody(event)),
-      },
+      nativeRequest: toWebRequest(event),
       event,
     });
 
@@ -72,6 +71,11 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
       return "An unknown error occurred";
     }
 
-    return response.body;
+    return response.body ?? "OK";
   });
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createH3EventHandler = createRouteHandler;

@@ -6,7 +6,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "uploadthing/client";
@@ -25,25 +25,23 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
-export type UploadButtonProps<TRouter extends FileRouter> =
-  UploadthingComponentProps<TRouter> & {
-    appearance?: {
-      container?: StyleField<ButtonStyleFieldCallbackArgs>;
-      button?: StyleField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-      clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
-    };
-    content?: {
-      button?: ContentField<ButtonStyleFieldCallbackArgs>;
-      allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-      clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
-    };
-    className?: string;
-    config?: {
-      appendOnPaste?: boolean;
-      mode?: "auto" | "manual";
-    };
+export type UploadButtonProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  appearance?: {
+    container?: StyleField<ButtonStyleFieldCallbackArgs>;
+    button?: StyleField<ButtonStyleFieldCallbackArgs>;
+    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+    clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
   };
+  content?: {
+    button?: ContentField<ButtonStyleFieldCallbackArgs>;
+    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+    clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
+  };
+  className?: string;
+};
 
 /**
  * @example
@@ -53,14 +51,17 @@ export type UploadButtonProps<TRouter extends FileRouter> =
  *   onUploadError={(err) => console.log(err)}
  * />
  */
-export function UploadButton<TRouter extends FileRouter>(
+export function UploadButton<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<TRouter> & {
+  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";
@@ -75,7 +76,7 @@ export function UploadButton<TRouter extends FileRouter>(
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -146,6 +147,16 @@ export function UploadButton<TRouter extends FileRouter>(
       return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
     if (fileTypes.length === 0) return "Loading...";
     return `Choose File${multiple ? `(s)` : ``}`;
+  };
+
+  const getUploadButtonContents = (fileTypes: string[]) => {
+    if (state !== "uploading") {
+      return getUploadButtonText(fileTypes);
+    }
+    if (uploadProgress === 100) {
+      return <Spinner />;
+    }
+    return `${uploadProgress}%`;
   };
 
   const getInputProps = () => ({
@@ -261,11 +272,7 @@ export function UploadButton<TRouter extends FileRouter>(
       >
         <input {...getInputProps()} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          (state === "uploading" ? (
-            <Spinner />
-          ) : (
-            getUploadButtonText(fileTypes)
-          ))}
+          getUploadButtonContents(fileTypes)}
       </label>
       {mode === "manual" && files.length > 0
         ? renderClearButton()

@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "5.7.0",
+  "version": "6.2.2",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -44,15 +44,16 @@
     "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.7",
+    "@uploadthing/dropzone": "^0.1.1",
+    "@uploadthing/shared": "^6.2.0",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
-    "tailwind-merge": "^1.13.2"
+    "tailwind-merge": "^1.14.0"
   },
   "peerDependencies": {
-    "next": "14.0.1",
+    "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^5.0.0"
+    "uploadthing": "^6.0.0"
   },
   "peerDependenciesMeta": {
     "next": {
@@ -60,24 +61,24 @@
     }
   },
   "devDependencies": {
-    "@types/node": "18.16.0",
+    "@types/node": "^20.11.10",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "@uploadthing/tsup-config": "0.1.0",
     "autoprefixer": "10.4.14",
-    "eslint": "^8.47.0",
+    "eslint": "^8.56.0",
     "next": "14.0.1",
     "postcss": "8.4.31",
     "react": "18.2.0",
-    "tailwindcss": "^3.3.2",
+    "tailwindcss": "^3.4.1",
     "tsup": "6.7.0",
-    "typescript": "^5.1.6",
-    "uploadthing": "5.7.4",
-    "vitest": "^0.30.1",
-    "wait-on": "^7.0.1",
-    "zod": "^3.22.3"
+    "typescript": "^5.3.3",
+    "uploadthing": "6.3.1",
+    "vitest": "^1.2.2",
+    "wait-on": "^7.2.0",
+    "zod": "^3.22.4"
   },
   "eslintConfig": {
     "root": true,

@@ -50,6 +50,9 @@ export const ourFileRouter = {
       console.log("Upload complete for userId:", metadata.userId);
 
       console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
 
@@ -64,15 +67,19 @@ export type OurFileRouter = typeof ourFileRouter;
 </Callout>
 
 ```ts copy filename="app/api/uploadthing/route.ts"
-import { createNextRouteHandler } from "uploadthing/next";
+import { createRouteHandler } from "uploadthing/next";
 
 import { ourFileRouter } from "./core";
 
 // Export routes for Next App Router
-export const { GET, POST } = createNextRouteHandler({
+export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
+  config: { ... },
 });
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Add UploadThing's Styles
 
@@ -97,15 +104,23 @@ re-exporting them with the types assigned**, but you CAN import the components
 individually from `@uploadthing/react` instead.
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/react";
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Mount A Button And Upload!
+
+<Callout type="info">
+  Don't forget to add the `"use client;"` directive at the top of your file,
+  since the `UploadButton` component needs to run on the client-side.
+</Callout>
 
 ```tsx copy filename="app/example-uploader/page.tsx"
 "use client";

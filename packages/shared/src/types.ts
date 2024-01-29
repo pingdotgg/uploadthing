@@ -1,5 +1,3 @@
-import type { IncomingHttpHeaders } from "node:http";
-
 import type { MimeType } from "@uploadthing/mime-types/db";
 
 import type { AllowedFileType } from "./file-types";
@@ -48,6 +46,7 @@ export interface ResponseEsque {
    */
   json<T = unknown>(): Promise<T>;
   text(): Promise<string>;
+  blob(): Promise<Blob>;
 
   headers: Headers;
 
@@ -64,14 +63,6 @@ export type FetchEsque = (
   input: RequestInfo | MaybeUrl,
   init?: RequestInit | RequestInitEsque,
 ) => Promise<ResponseEsque>;
-
-export type RequestLike = Overwrite<
-  WithRequired<Partial<Request>, "json">,
-  {
-    body?: any; // we only use `.json`, don't care about `body`
-    headers: Headers | IncomingHttpHeaders;
-  }
->;
 
 /** This matches the return type from the infra */
 export interface FileData {
@@ -99,10 +90,12 @@ export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
 export type ContentDisposition = "inline" | "attachment";
+export type ACL = "public-read" | "private";
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;
   contentDisposition: ContentDisposition;
+  acl?: ACL; // default is set on UT server, not backfilled like other options
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
@@ -110,6 +103,11 @@ export type FileRouterInputKey = AllowedFileType | MimeType;
 export type ExpandedRouteConfig = Partial<{
   [key in FileRouterInputKey]: RouteConfig;
 }>;
+
+export type EndpointMetadata = {
+  slug: string;
+  config: ExpandedRouteConfig;
+}[];
 
 type PartialRouteConfig = Partial<
   Record<FileRouterInputKey, Partial<RouteConfig>>

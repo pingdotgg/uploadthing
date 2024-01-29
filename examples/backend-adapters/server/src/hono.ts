@@ -4,11 +4,11 @@ import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./router";
 
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
 });
 

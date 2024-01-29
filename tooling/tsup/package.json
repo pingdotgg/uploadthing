@@ -1,0 +1,11 @@
+{
+  "name": "@uploadthing/tsup-config",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "types": "index.d.ts",
+  "devDependencies": {
+    "@types/node": "^20.11.10",
+    "tsup": "6.7.0"
+  }
+}

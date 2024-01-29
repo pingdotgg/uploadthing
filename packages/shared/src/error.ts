@@ -75,7 +75,7 @@ export class UploadThingError<
     } else if (typeof opts.cause === "string") {
       this.cause = new Error(opts.cause);
     } else {
-      this.cause = undefined;
+      this.cause = opts.cause;
     }
   }
 
