@@ -233,7 +233,7 @@ f(["image"])
 
     // Throw if user isn't signed in
     if (!user)
-      throw new Error("You must be logged in to upload a profile picture");
+      throw new UploadThingError("You must be logged in to upload a profile picture");
 
     // Return userId to be used in onUploadComplete
     return { userId: user.id };
@@ -242,6 +242,12 @@ f(["image"])
     console.log("Uploaded by user", metadata.userId);
   });
 ```
+
+<Callout type="info">
+  Note: By default, a thrown `UploadThingError`'s message will be sent to the client's `onError`.
+  All other errors are turned into generic failure messages to avoid leaking sensitive
+  information.
+</Callout>
 
 ### `onUploadComplete`
 
