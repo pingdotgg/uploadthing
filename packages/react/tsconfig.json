@@ -1,21 +1,7 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Default",
+  "extends": "@uploadthing/tsconfig/base.json",
   "compilerOptions": {
-    "composite": false,
-    "declaration": false,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "inlineSources": false,
-    "isolatedModules": true,
-    "moduleResolution": "Bundler",
-    "module": "ES2022",
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "preserveWatchOutput": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": ["src/**/*", "*.ts", "test"],
   "exclude": ["node_modules"],
