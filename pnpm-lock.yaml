@@ -992,15 +992,6 @@ importers:
 
   tooling/tsconfig: {}
 
-  tooling/tsup:
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.10
-        version: 20.11.10
-      tsup:
-        specifier: 6.7.0
-        version: 6.7.0(postcss@8.4.31)(typescript@5.3.3)
-
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:
