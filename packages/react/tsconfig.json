@@ -1,7 +1,7 @@
 {
   "extends": "@uploadthing/tsconfig/base.json",
   "compilerOptions": {
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
   },
   "include": ["src/**/*", "*.ts", "test"],
   "exclude": ["node_modules"],
