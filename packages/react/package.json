@@ -61,7 +61,7 @@
     }
   },
   "devDependencies": {
-    "@types/node": "18.16.0",
+    "@types/node": "^20.11.10",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "@uploadthing/eslint-config": "0.2.0",
@@ -76,8 +76,8 @@
     "tsup": "6.7.0",
     "typescript": "^5.3.3",
     "uploadthing": "6.3.1",
-    "vitest": "^0.30.1",
-    "wait-on": "^7.0.1",
+    "vitest": "^1.2.2",
+    "wait-on": "^7.2.0",
     "zod": "^3.22.4"
   },
   "eslintConfig": {

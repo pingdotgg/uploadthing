@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "devDependencies": {
-    "@types/node": "18.16.0",
+    "@types/node": "^20.11.10",
     "tsup": "6.7.0"
   }
 }

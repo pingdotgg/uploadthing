@@ -67,7 +67,7 @@ describe("uploadFilesFromUrl", () => {
 describe("constructor throws if no apiKey or secret is set", () => {
   test("no secret or apikey", () => {
     expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      '"Missing `UPLOADTHING_SECRET` env variable."',
+      `[Error: Missing \`UPLOADTHING_SECRET\` env variable.]`,
     );
   });
   test("env is set", () => {
@@ -99,26 +99,63 @@ describe("getSignedURL", () => {
 
   test("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(mockFetch.mock.calls[0][1]).toContain({
-      body: JSON.stringify({ fileKey: "foo" }),
-    });
+    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
+      [
+        "https://uploadthing.com/api/requestFileAccess",
+        {
+          "body": "{"fileKey":"foo"}",
+          "cache": "no-store",
+          "headers": {
+            "Content-Type": "application/json",
+            "x-uploadthing-api-key": "sk_foo",
+            "x-uploadthing-be-adapter": "server-sdk",
+            "x-uploadthing-version": "6.3.1",
+          },
+          "method": "POST",
+        },
+      ]
+    `);
   });
 
   test("sends request with valid expiresIn (1)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(mockFetch.mock.calls[0][1]).toContain({
-      body: JSON.stringify({ fileKey: "foo", expiresIn: 86400 }),
-    });
+
+    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
+      [
+        "https://uploadthing.com/api/requestFileAccess",
+        {
+          "body": "{"fileKey":"foo","expiresIn":86400}",
+          "cache": "no-store",
+          "headers": {
+            "Content-Type": "application/json",
+            "x-uploadthing-api-key": "sk_foo",
+            "x-uploadthing-be-adapter": "server-sdk",
+            "x-uploadthing-version": "6.3.1",
+          },
+          "method": "POST",
+        },
+      ]
+    `);
   });
 
   test("sends request with valid expiresIn (2)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    expect(mockFetch.mock.calls[0][1]).toContain({
-      body: JSON.stringify({ fileKey: "foo", expiresIn: 180 }),
-    });
+    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
+      [
+        "https://uploadthing.com/api/requestFileAccess",
+        {
+          "body": "{"fileKey":"foo","expiresIn":180}",
+          "cache": "no-store",
+          "headers": {
+            "Content-Type": "application/json",
+            "x-uploadthing-api-key": "sk_foo",
+            "x-uploadthing-be-adapter": "server-sdk",
+            "x-uploadthing-version": "6.3.1",
+          },
+          "method": "POST",
+        },
+      ]
+    `);
   });
 
   test("throws if expiresIn is invalid", async () => {
@@ -126,7 +163,7 @@ describe("getSignedURL", () => {
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      "\"expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.\"",
+      `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
     expect(mockFetch.mock.calls.length).toBe(0);
   });
@@ -135,7 +172,7 @@ describe("getSignedURL", () => {
     await expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      '"expiresIn must be less than 7 days (604800 seconds)."',
+      `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
     );
     expect(mockFetch.mock.calls.length).toBe(0);
   });
