@@ -8,9 +8,6 @@
     "android": "expo start --android",
     "ios": "expo start --ios"
   },
-  "jest": {
-    "preset": "jest-expo"
-  },
   "dependencies": {
     "@uploadthing/mime-types": "^0.2.2",
     "@uploadthing/react": "^6.2.2",
