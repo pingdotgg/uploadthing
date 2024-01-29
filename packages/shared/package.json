@@ -31,7 +31,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "effect": "2.0.0-next.54"
+    "effect": "2.0.0-next.54",
+    "std-env": "^3.7.0"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
@@ -55,8 +56,5 @@
     "extends": [
       "@uploadthing/eslint-config/base"
     ]
-  },
-  "dependencies": {
-    "std-env": "^3.7.0"
   }
 }

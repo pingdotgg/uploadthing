@@ -816,6 +816,9 @@ importers:
 
   packages/shared:
     dependencies:
+      effect:
+        specifier: 2.0.0-next.54
+        version: 2.0.0-next.54
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
