@@ -30,7 +30,7 @@ export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
 
 //
 // Package
-export type ResolverOptions<TParams extends AnyParams> = {
+type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
     TParams["_metadata"] extends UnsetMarker ? undefined : TParams["_metadata"]
   >;
@@ -54,7 +54,7 @@ export interface AnyParams {
   _output: any;
 }
 
-export type MiddlewareFn<
+type MiddlewareFn<
   TInput extends Json | UnsetMarker,
   TOutput extends Record<string, unknown>,
   TArgs extends MiddlewareFnArgs<any, any, any>,
@@ -65,12 +65,11 @@ export type MiddlewareFn<
   },
 ) => MaybePromise<TOutput>;
 
-export type ResolverFn<
-  TOutput extends Json | void,
-  TParams extends AnyParams,
-> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
+type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
+  opts: ResolverOptions<TParams>,
+) => MaybePromise<TOutput>;
 
-export type UploadErrorFn = (input: {
+type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
 }) => void;
