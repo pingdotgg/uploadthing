@@ -1,1 +1,0 @@
-export { generateReactHelpers } from "./useUploadThing";
