@@ -39,6 +39,16 @@
         "default": "./native/index.cjs"
       }
     },
+    "./native": {
+      "import": {
+        "types": "./native/index.d.mts",
+        "default": "./native/index.mjs"
+      },
+      "require": {
+        "types": "./native/index.d.ts",
+        "default": "./native/index.js"
+      }
+    },
     "./next-ssr-plugin": {
       "import": {
         "types": "./next-ssr-plugin/index.d.ts",
@@ -53,6 +63,7 @@
   "files": [
     "dist",
     "hooks",
+    "native",
     "next-ssr-plugin"
   ],
   "publishConfig": {
