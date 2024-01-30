@@ -312,7 +312,7 @@ const uploadFile = <TRouter extends FileRouter, TEndpoint extends keyof FileRout
 
 export const DANGEROUS__uploadFiles = <TRouter extends FileRouter, TEndpoint extends keyof TRouter>(
   endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, string>,
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
   DANGEROUS__uploadFiles_internal(endpoint as string, opts).pipe(
     // TODO maybe find a better way to handle the UTReporterError instead of just dying
