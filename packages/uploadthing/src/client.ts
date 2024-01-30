@@ -94,7 +94,7 @@ export type UploadFileResponse<TServerOutput> = {
   serverData: TServerOutput;
 };
 
-const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint extends keyof FileRouter >(
+const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint extends keyof TRouter >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
@@ -137,7 +137,7 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint e
         Effect.promise(() => UploadThingError.fromResponse(s3ConnectionRes_)),
       );
 
-      return yield* $(error);
+      // return yield* $(error);
 
     }
 
@@ -165,13 +165,13 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint e
     //   });
     // }
 
-    return yield* $(
-      Effect.all(
-        s3ConnectionRes.map((presigned) =>
-          uploadFile(opts, presigned, reportEventToUT),
-        ),
-      ),
-    );
+    // return yield* $(
+    //   Effect.all(
+    //     s3ConnectionRes.map((presigned) =>
+    //       uploadFile(opts, presigned, reportEventToUT),
+    //     ),
+    //   ),
+    // );
   });
 
 type ReportEventToUT = <TEvent extends keyof UTEvents>(
