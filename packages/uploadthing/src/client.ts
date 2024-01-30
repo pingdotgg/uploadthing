@@ -8,7 +8,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { exponentialBackoff10Sec, fetchEff, fetchEffJson } from "./effect-utils";
+import { exponentialBackoff, fetchEff, fetchEffJson } from "./effect-utils";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
@@ -283,7 +283,7 @@ const uploadFile = <
       ),
       Effect.retry({
         while: (res) => res._tag === "NotDone",
-        schedule: exponentialBackoff10Sec,
+        schedule: exponentialBackoff,
       }),
     );
 

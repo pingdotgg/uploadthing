@@ -10,7 +10,6 @@ export class FetchError extends Data.TaggedError("FetchError")<{
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
-
 // TODO handle error properly
 
 export const fetchEff = (
@@ -45,13 +44,17 @@ export const fetchEffJson = <Res>(
   );
 
 
-export const exponentialBackoff10Sec: Schedule.Schedule<
+/**
+ * Schedule that retries with exponential backoff, up to 1 minute.
+ * 10ms * 4^n, where n is the number of retries.
+ */
+export const exponentialBackoff: Schedule.Schedule<
   never,
   unknown,
   Duration.DurationInput
 > = pipe(
-  Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms, 2560ms, ...
+  Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms...
   Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
   Schedule.compose(Schedule.elapsed),
-  Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))), // max 1 minute
+  Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))), 
 );
