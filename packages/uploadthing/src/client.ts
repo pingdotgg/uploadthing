@@ -314,7 +314,7 @@ export const DANGEROUS__uploadFiles = <TRouter extends FileRouter, TEndpoint ext
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
-  DANGEROUS__uploadFiles_internal(endpoint as string, opts).pipe(
+  DANGEROUS__uploadFiles_internal(endpoint, opts).pipe(
     // TODO maybe find a better way to handle the UTReporterError instead of just dying
     Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
     Effect.runPromise,
