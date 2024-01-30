@@ -230,15 +230,30 @@ export class UTApi {
    *
    * @example
    * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
+   *
+   * @example
+   * await deleteFiles("myCustomIdentifier", { keyType: "customId" })
    */
-  async deleteFiles(fileKeys: string[] | string) {
+  async deleteFiles(
+    keys: string[] | string,
+    opts?: {
+      /**
+       * Whether the provided keys are fileKeys or a custom identifier. fileKey is the
+       * identifier you get from UploadThing after uploading a file, customId is a
+       * custom identifier you provided when uploading a file.
+       * @default fileKey
+       */
+      keyType?: "fileKey" | "customId";
+    },
+  ) {
     guardServerOnly();
 
-    if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
+    if (!Array.isArray(keys)) keys = [keys];
+    const { keyType = "fileKey" } = opts ?? {};
 
     return this.requestUploadThing<{ success: boolean }>(
       "/api/deleteFile",
-      { fileKeys },
+      keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
       "An unknown error occured while deleting files.",
     );
   }
@@ -255,16 +270,28 @@ export class UTApi {
    * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
    * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
    */
-  async getFileUrls(fileKeys: string[] | string) {
+  async getFileUrls(
+    keys: string[] | string,
+    opts?: {
+      /**
+       * Whether the provided keys are fileKeys or a custom identifier. fileKey is the
+       * identifier you get from UploadThing after uploading a file, customId is a
+       * custom identifier you provided when uploading a file.
+       * @default fileKey
+       */
+      keyType?: "fileKey" | "customId";
+    },
+  ) {
     guardServerOnly();
 
-    if (!Array.isArray(fileKeys)) fileKeys = [fileKeys];
+    if (!Array.isArray(keys)) keys = [keys];
+    const { keyType = "fileKey" } = opts ?? {};
 
     const json = await this.requestUploadThing<{
       data: { key: string; url: string }[];
     }>(
       "/api/getFileUrl",
-      { fileKeys },
+      keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
       "An unknown error occured while retrieving file URLs.",
     );
 
@@ -304,15 +331,23 @@ export class UTApi {
       | {
           fileKey: string;
           newName: string;
+        }[]
+      | {
+          customId: string;
+          newName: string;
+        }
+      | {
+          customId: string;
+          newName: string;
         }[],
   ) {
     guardServerOnly();
 
-    if (!Array.isArray(updates)) updates = [updates];
+    const ups = Array.isArray(updates) ? updates : [updates];
 
     return this.requestUploadThing<{ success: true }>(
       "/api/renameFiles",
-      { updates },
+      { updates: ups },
       "An unknown error occured while renaming files.",
     );
   }
@@ -340,7 +375,7 @@ export class UTApi {
 
   /** Request a presigned url for a private file(s) */
   async getSignedURL(
-    fileKey: string,
+    key: string,
     opts?: {
       /**
        * How long the URL will be valid for.
@@ -349,6 +384,13 @@ export class UTApi {
        * @default app default on UploadThing dashboard
        */
       expiresIn?: Time;
+      /**
+       * Whether the provided key is a fileKey or a custom identifier. fileKey is the
+       * identifier you get from UploadThing after uploading a file, customId is a
+       * custom identifier you provided when uploading a file.
+       * @default fileKey
+       */
+      keyType?: "fileKey" | "customId";
     },
   ) {
     guardServerOnly();
@@ -356,6 +398,7 @@ export class UTApi {
     const expiresIn = opts?.expiresIn
       ? parseTimeToSeconds(opts.expiresIn)
       : undefined;
+    const { keyType = "fileKey" } = opts ?? {};
 
     if (opts?.expiresIn && isNaN(expiresIn!)) {
       throw new UploadThingError({
@@ -373,7 +416,9 @@ export class UTApi {
 
     const json = await this.requestUploadThing<{ url: string }>(
       "/api/requestFileAccess",
-      { fileKey, expiresIn },
+      keyType === "fileKey"
+        ? { fileKey: key, expiresIn }
+        : { customId: key, expiresIn },
       "An unknown error occured while retrieving presigned URLs.",
     );
 
