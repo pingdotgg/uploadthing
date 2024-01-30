@@ -74,8 +74,7 @@ export class UploadThingError<
       this.cause = new Error(
         `Response ${(opts.cause as ResponseEsque).status} ${(opts.cause as ResponseEsque).statusText}`,
       );
-    }
-  
+    } 
   }
 
   public static async fromResponse(response: ResponseEsque) {
