@@ -817,8 +817,8 @@ importers:
   packages/shared:
     dependencies:
       effect:
-        specifier: 2.0.0-next.54
-        version: 2.0.0-next.54
+        specifier: ^2.2.3
+        version: 2.2.3
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -887,6 +887,9 @@ importers:
 
   packages/uploadthing:
     dependencies:
+      '@effect/schema':
+        specifier: ^0.61.5
+        version: 0.61.5(effect@2.2.3)(fast-check@3.15.0)
       '@uploadthing/mime-types':
         specifier: ^0.2.2
         version: link:../mime-types
@@ -897,8 +900,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: 2.0.0-next.54
-        version: 2.0.0-next.54
+        specifier: ^2.2.3
+        version: 2.2.3
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -2878,6 +2881,16 @@ packages:
   /@drizzle-team/studio@0.0.5:
     resolution: {integrity: sha512-ps5qF0tMxWRVu+V5gvCRrQNqlY92aTnIKdq27gm9LZMSdaKYZt6AVvSK1dlUMzs6Rt0Jm80b+eWct6xShBKhIw==}
     dev: true
+
+  /@effect/schema@0.61.5(effect@2.2.3)(fast-check@3.15.0):
+    resolution: {integrity: sha512-Z+16tlYGSMQIcurMsIyhR1zlJnIRKxKc+/a0+sTums9VN52FXjQcDEhfhInYUWjhI81k8QkeG4TV6B3GyFKKMw==}
+    peerDependencies:
+      effect: ^2.2.3
+      fast-check: ^3.13.2
+    dependencies:
+      effect: 2.2.3
+      fast-check: 3.15.0
+    dev: false
 
   /@esbuild-kit/cjs-loader@2.4.4:
     resolution: {integrity: sha512-NfsJX4PdzhwSkfJukczyUiZGc7zNNWZcEAyqeISpDnn0PTfzMJR1aR8xAIPskBejIxBJbIgCCMzbaYa9SXepIg==}
@@ -8140,8 +8153,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@2.0.0-next.54:
-    resolution: {integrity: sha512-qROhKMxlm6fpa90YRfWSgKeelDfhaDq2igPK+pIKupGehiCnZH4vd2qrY71HVZ10qZgXxh0VXpGyDQxJC+EQqw==}
+  /effect@2.2.3:
+    resolution: {integrity: sha512-9h1YbGAjmT0A6HLseMmp1OI7VIg8Ee1go+FVjilDvNAWoxvlzudu/eYSo3lqJz1/TjUxj115AytTmI3CeuaUCA==}
     dev: false
 
   /electron-to-chromium@1.4.419:
@@ -9076,6 +9089,13 @@ packages:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.0.33
+    dev: false
+
+  /fast-check@3.15.0:
+    resolution: {integrity: sha512-iBz6c+EXL6+nI931x/sbZs1JYTZtLG6Cko0ouS8LRTikhDR7+wZk4TYzdRavlnByBs2G6+nuuJ7NYL9QplNt8Q==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      pure-rand: 6.0.4
     dev: false
 
   /fast-content-type-parse@1.0.0:
@@ -13151,6 +13171,10 @@ packages:
   /punycode@2.3.0:
     resolution: {integrity: sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==}
     engines: {node: '>=6'}
+
+  /pure-rand@6.0.4:
+    resolution: {integrity: sha512-LA0Y9kxMYv47GIPJy6MI84fqTd2HmYZI83W/kM/SkKfDlajnZYfmXFTxkbY+xSBPkLJxltMa9hIkmdc29eguMA==}
+    dev: false
 
   /pvtsutils@1.3.5:
     resolution: {integrity: sha512-ARvb14YB9Nm2Xi6nBq1ZX6dAM0FsJnuk+31aUp4TrcZEdKUlSqOqsxJHUPJDNE3qiIp+iUPEIeR6Je/tgV7zsA==}
