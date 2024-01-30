@@ -315,6 +315,7 @@ export class UTApi {
       files: {
         key: string;
         id: string;
+        customId: string | null;
         status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
       }[];
     }>("/api/listFiles", opts, "An unknown error occured while listing files.");
