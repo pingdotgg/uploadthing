@@ -56,7 +56,7 @@ export class UploadThingError<
   constructor(opts: {
     code: keyof typeof ERROR_CODES;
     message?: string;
-    cause?: Error | Response | string ;
+    cause?: Error | ResponseEsque | string ;
     data?: TShape;
   }) {
     super();
@@ -66,17 +66,18 @@ export class UploadThingError<
     this.code = opts.code;
     this.data = opts.data;
 
+    if(opts.cause){
+
     if (opts.cause instanceof Error) {
       this.cause = opts.cause;
-    } else if (opts.cause instanceof Response) {
+    } else if (typeof opts.cause === "string") {
+      this.cause = new Error(opts.cause);
+    } else if (opts.cause?.status && opts.cause?.statusText) {
       this.cause = new Error(
         `Response ${opts.cause.status} ${opts.cause.statusText}`,
       );
-    } else if (typeof opts.cause === "string") {
-      this.cause = new Error(opts.cause);
-    } else {
-      this.cause = opts.cause;
     }
+  }
   }
 
   public static async fromResponse(response: ResponseEsque) {
