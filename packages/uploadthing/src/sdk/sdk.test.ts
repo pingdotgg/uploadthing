@@ -67,7 +67,7 @@ describe("uploadFilesFromUrl", () => {
 describe("constructor throws if no apiKey or secret is set", () => {
   test("no secret or apikey", () => {
     expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      `[UploadthingError: Missing \`UPLOADTHING_SECRET\` env variable.]`,
+      `[UploadThingError: Missing \`UPLOADTHING_SECRET\` env variable.]`,
     );
   });
   test("env is set", () => {
@@ -163,7 +163,7 @@ describe("getSignedURL", () => {
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[UploadthingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
+      `[UploadThingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
     expect(mockFetch.mock.calls.length).toBe(0);
   });
@@ -172,7 +172,7 @@ describe("getSignedURL", () => {
     await expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[UploadthingError: expiresIn must be less than 7 days (604800 seconds).]`,
+      `[UploadThingError: expiresIn must be less than 7 days (604800 seconds).]`,
     );
     expect(mockFetch.mock.calls.length).toBe(0);
   });
