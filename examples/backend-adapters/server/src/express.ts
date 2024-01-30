@@ -2,6 +2,7 @@ import cors from "cors";
 
 import "dotenv/config";
 
+import bodyParser from "body-parser";
 import express from "express";
 
 import { createRouteHandler } from "uploadthing/express";
@@ -11,6 +12,7 @@ import { uploadRouter } from "./router";
 const app = express();
 app.use(cors());
 app.get("/api", (req, res) => res.send("Hello from Express!"));
+app.use(bodyParser.json());
 
 app.use(
   "/api/uploadthing",

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.1.1",
+    "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "elysia": "^0.6.24",
