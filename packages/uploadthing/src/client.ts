@@ -1,16 +1,19 @@
 // Don't want to ship our logger to the client, keep size down
 /* eslint-disable no-console */
 
-import { Cause, Effect } from "effect";
+import { Schema } from "@effect/schema";
+import { Cause, Duration, Effect, pipe, Schedule } from "effect";
+
+import type { ResponseEsque } from "@uploadthing/shared";
 import {
-  ResponseEsque,
   safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
-import { fetchEff } from "./effect-utils";
+import { exponentialBackoff10Sec, fetchEff, fetchEffJson } from "./effect-utils";
+import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
@@ -21,8 +24,6 @@ import type {
   UTEvents,
 } from "./internal/types";
 import type { UTReporterError } from "./internal/ut-reporter";
-import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
-
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 /*
@@ -73,10 +74,10 @@ type UploadFilesOptions<
   package: string;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
   ? // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
+  {}
   : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
+    input: inferEndpointInput<TRouter[TEndpoint]>;
+  });
 
 export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
   new UploadThingError({
@@ -94,14 +95,16 @@ export type UploadFileResponse<TServerOutput> = {
   serverData: TServerOutput;
 };
 
-const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint extends keyof TRouter >(
+const DANGEROUS__uploadFiles_internal = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
   Effect.gen(function* ($) {
     // Fine to use global fetch in browser
     const fetch = globalThis.fetch.bind(globalThis);
-  
     const reportEventToUT = createUTReporter({
       endpoint: String(endpoint),
       url: opts?.url,
@@ -137,8 +140,7 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint e
         Effect.promise(() => UploadThingError.fromResponse(s3ConnectionRes_)),
       );
 
-      // return yield* $(error);
-
+      return yield* $(error);
     }
 
     const jsonOrError = yield* $(
@@ -165,13 +167,13 @@ const DANGEROUS__uploadFiles_internal = <TRouter extends FileRouter, TEndpoint e
     //   });
     // }
 
-    // return yield* $(
-    //   Effect.all(
-    //     s3ConnectionRes.map((presigned) =>
-    //       uploadFile(opts, presigned, reportEventToUT),
-    //     ),
-    //   ),
-    // );
+    return yield* $(
+      Effect.all(
+        s3ConnectionRes.map((presigned) =>
+          uploadFile(opts, presigned, reportEventToUT),
+        ),
+      ),
+    );
   });
 
 type ReportEventToUT = <TEvent extends keyof UTEvents>(
@@ -179,7 +181,10 @@ type ReportEventToUT = <TEvent extends keyof UTEvents>(
   payload: UTEvents[TEvent],
 ) => Effect.Effect<never, UTReporterError, boolean>;
 
-const uploadFile = <TRouter extends FileRouter, TEndpoint extends keyof FileRouter>(
+const uploadFile = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   opts: UploadFilesOptions<TRouter, TEndpoint>,
   presigned: UploadThingResponse[number],
   reportEventToUT: ReportEventToUT,
@@ -193,9 +198,8 @@ const uploadFile = <TRouter extends FileRouter, TEndpoint extends keyof FileRout
         new UploadThingError({
           code: "NOT_FOUND",
           message: "No file found for presigned URL",
-          cause: `Expected file with name ${
-            presigned.fileName
-          } but got '${opts.files.join(",")}'`,
+          cause: `Expected file with name ${presigned.fileName
+            } but got '${opts.files.join(",")}'`,
         }),
       );
     }
@@ -282,23 +286,31 @@ const uploadFile = <TRouter extends FileRouter, TEndpoint extends keyof FileRout
     // wait a bit as it's unsreasonable to expect the server to be done by now
     yield* $(Effect.sleep(1000));
 
-    const serverData =  yield* $(
-    Effect.promise(()=>withExponentialBackoff(async () => {
-      type PollingResponse =
-        | {
-            status: "done";
-            callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
-          }
-        | { status: "still waiting" };
+    const PollingResponse = Schema.union(
+      Schema.struct({
+        status: Schema.literal("done"),
+        callbackData: Schema.any as Schema.Schema<
+          never,
+          inferEndpointOutput<TRouter[TEndpoint]>
+        >,
+      }),
+      Schema.struct({ status: Schema.literal("still waiting") }),
+    );
 
-      const res = await fetch(pollingUrl, {
+    const serverData = yield* $(
+      fetchEffJson(fetch, PollingResponse, pollingUrl, {
         headers: { authorization: pollingJwt },
-      }).then((r) => r.json() as Promise<PollingResponse>);
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return res.status === "done" ? res.callbackData : undefined;
-    }))
-    )
+      }),
+      Effect.andThen((res) =>
+        res.status === "done"
+          ? Effect.succeed(res.callbackData)
+          : Effect.fail({ _tag: "NotDone" as const }),
+      ),
+      Effect.retry({
+        while: (res) => res._tag === "NotDone",
+        schedule: exponentialBackoff10Sec,
+      }),
+    );
 
     return {
       name: file.name,
@@ -310,13 +322,17 @@ const uploadFile = <TRouter extends FileRouter, TEndpoint extends keyof FileRout
     } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
 
-export const DANGEROUS__uploadFiles = <TRouter extends FileRouter, TEndpoint extends keyof TRouter>(
+export const DANGEROUS__uploadFiles = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+>(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
   DANGEROUS__uploadFiles_internal(endpoint, opts).pipe(
     // TODO maybe find a better way to handle the UTReporterError instead of just dying
     Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
+    Effect.tapErrorCause(Effect.logError),
     Effect.runPromise,
   );
 
