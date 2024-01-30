@@ -357,6 +357,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           logger.debug("Middleware finished successfully with:", metadata);
         } catch (error) {
           logger.error("An error occured in your middleware function", error);
+          if (error instanceof UploadThingError) return error;
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to run middleware.",
