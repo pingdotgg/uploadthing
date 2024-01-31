@@ -128,11 +128,6 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
 ### Mount A Button And Upload!
 
-<Callout type="info">
-  Don't forget to add the `"use client;"` directive at the top of your file,
-  since the `UploadButton` component needs to run on the client-side.
-</Callout>
-
 ```tsx copy filename="src/components/image-uploader.tsx"
 import { UploadButton } from "~/utils/uploadthing";
 
@@ -153,6 +148,11 @@ export function ImageUploader() {
   );
 }
 ```
+
+<Callout type="info">
+  Don't forget to add the `client:load` directive when mounting your component
+  in an Astro island.
+</Callout>
 
 ```astro copy filename="src/pages/index.astro"
 ---
