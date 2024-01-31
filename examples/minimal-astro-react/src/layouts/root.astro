@@ -1,0 +1,17 @@
+---
+import "@uploadthing/react/styles.css";
+import UploadThingSSR from "~/components/uploadthing-ssr.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<UploadThingSSR />
+	<body>
+		<slot />
+	</body>
+</html>

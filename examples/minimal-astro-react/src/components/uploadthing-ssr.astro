@@ -1,0 +1,20 @@
+---
+import { extractRouterConfig } from "uploadthing/server"
+import { uploadRouter } from "~/server/uploadthing";
+
+/**
+ * This you only need to do once in your app to enable
+ * server side rendering of the uploadthing component.
+ * No data will be fetched on the client.
+ */
+const routerConfig = extractRouterConfig(uploadRouter);
+(globalThis as any).__UPLOADTHING ??= routerConfig;
+---
+
+<script define:vars={{ routerConfig }}>
+    /**
+     * This prevents the client from fetching the
+     * configuration from the server, since we already have it.
+     */
+    globalThis.__UPLOADTHING ??= routerConfig;
+</script>

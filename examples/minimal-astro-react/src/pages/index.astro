@@ -1,16 +1,16 @@
 ---
-import "@uploadthing/react/styles.css"
-import Page from "../components/page";
+import "@uploadthing/react/styles.css";
+import Layout from "~/layouts/root.astro";
+import { ImageUploader } from "~/components/image-uploader"
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<Page client:load/>
-	</body>
-</html>
+<Layout>
+	<main class="flex min-h-screen flex-col items-center justify-center  gap-16 p-24">
+		<div class="flex flex-col items-center justify-center gap-4">
+			<span class="text-center text-4xl font-bold">
+			{`Upload a file using a button:`}
+			</span>
+			<ImageUploader client:load />
+		</div>
+	</main>
+</Layout>
