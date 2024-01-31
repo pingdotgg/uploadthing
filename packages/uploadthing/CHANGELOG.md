@@ -1,5 +1,11 @@
 # uploadthing
 
+## 6.3.3
+
+### Patch Changes
+
+- [#593](https://github.com/pingdotgg/uploadthing/pull/593) [`91a2ad7`](https://github.com/pingdotgg/uploadthing/commit/91a2ad7889105380871c0b0abe1769131706bc80) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: Fix broken tests so release works
+
 ## 6.3.2
 
 ### Patch Changes
