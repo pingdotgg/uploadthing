@@ -1,30 +1,31 @@
 {
   "name": "@uploadthing/mime-types",
   "version": "0.2.2",
+  "type": "module",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     },
     "./db": {
       "import": {
-        "types": "./db/index.d.mts",
-        "default": "./db/index.mjs"
-      },
-      "require": {
         "types": "./db/index.d.ts",
         "default": "./db/index.js"
+      },
+      "require": {
+        "types": "./db/index.d.cts",
+        "default": "./db/index.cjs"
       }
     }
   },

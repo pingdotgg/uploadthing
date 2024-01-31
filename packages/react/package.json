@@ -1,41 +1,42 @@
 {
   "name": "@uploadthing/react",
   "version": "6.2.2",
+  "type": "module",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",
     ".": {
       "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     },
     "./hooks": {
       "import": {
-        "types": "./hooks/index.d.mts",
-        "default": "./hooks/index.mjs"
-      },
-      "require": {
         "types": "./hooks/index.d.ts",
         "default": "./hooks/index.js"
+      },
+      "require": {
+        "types": "./hooks/index.d.cts",
+        "default": "./hooks/index.cjs"
       }
     },
     "./next-ssr-plugin": {
       "import": {
-        "types": "./next-ssr-plugin/index.d.mts",
-        "default": "./next-ssr-plugin/index.mjs"
-      },
-      "require": {
         "types": "./next-ssr-plugin/index.d.ts",
         "default": "./next-ssr-plugin/index.js"
+      },
+      "require": {
+        "types": "./next-ssr-plugin/index.d.cts",
+        "default": "./next-ssr-plugin/index.cjs"
       }
     }
   },

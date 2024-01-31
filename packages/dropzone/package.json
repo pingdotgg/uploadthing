@@ -1,37 +1,38 @@
 {
   "name": "@uploadthing/dropzone",
   "version": "0.1.1",
+  "type": "module",
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
     "./core": {
       "import": {
-        "types": "./core/index.d.mts",
-        "default": "./core/index.mjs"
-      },
-      "require": {
         "types": "./core/index.d.ts",
         "default": "./core/index.js"
+      },
+      "require": {
+        "types": "./core/index.d.cts",
+        "default": "./core/index.cjs"
       }
     },
     "./react": {
       "import": {
-        "types": "./react/index.d.mts",
-        "default": "./react/index.mjs"
-      },
-      "require": {
         "types": "./react/index.d.ts",
         "default": "./react/index.js"
+      },
+      "require": {
+        "types": "./react/index.d.cts",
+        "default": "./react/index.cjs"
       }
     },
     "./solid": {
       "import": {
-        "types": "./solid/index.d.mts",
-        "default": "./solid/index.mjs"
-      },
-      "require": {
         "types": "./solid/index.d.ts",
         "default": "./solid/index.js"
+      },
+      "require": {
+        "types": "./solid/index.d.cts",
+        "default": "./solid/index.cjs"
       }
     }
   },

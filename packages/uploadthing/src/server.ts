@@ -14,9 +14,9 @@ import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export * from "./internal/types";
 export { UTApi } from "./sdk";
 export { UploadThingError };
+export type { FileRouter };
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,

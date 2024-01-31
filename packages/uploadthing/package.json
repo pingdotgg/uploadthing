@@ -1,6 +1,7 @@
 {
   "name": "uploadthing",
   "version": "6.3.1",
+  "type": "module",
   "engines": {
     "node": ">=18.13.0"
   },
@@ -9,92 +10,92 @@
     "./package.json": "./package.json",
     "./client": {
       "import": {
-        "types": "./client/index.d.mts",
-        "default": "./client/index.mjs"
-      },
-      "require": {
         "types": "./client/index.d.ts",
         "default": "./client/index.js"
+      },
+      "require": {
+        "types": "./client/index.d.cts",
+        "default": "./client/index.cjs"
       }
     },
     "./server": {
       "import": {
-        "types": "./server/index.d.mts",
-        "default": "./server/index.mjs"
-      },
-      "require": {
         "types": "./server/index.d.ts",
         "default": "./server/index.js"
+      },
+      "require": {
+        "types": "./server/index.d.cts",
+        "default": "./server/index.cjs"
       }
     },
     "./next": {
       "import": {
-        "types": "./next/index.d.mts",
-        "default": "./next/index.mjs"
-      },
-      "require": {
         "types": "./next/index.d.ts",
         "default": "./next/index.js"
+      },
+      "require": {
+        "types": "./next/index.d.cts",
+        "default": "./next/index.cjs"
       }
     },
     "./next-legacy": {
       "import": {
-        "types": "./next-legacy/index.d.mts",
-        "default": "./next-legacy/index.mjs"
-      },
-      "require": {
         "types": "./next-legacy/index.d.ts",
         "default": "./next-legacy/index.js"
+      },
+      "require": {
+        "types": "./next-legacy/index.d.cts",
+        "default": "./next-legacy/index.cjs"
       }
     },
     "./tw": {
       "import": {
-        "types": "./tw/index.d.mts",
-        "default": "./tw/index.mjs"
-      },
-      "require": {
         "types": "./tw/index.d.ts",
         "default": "./tw/index.js"
+      },
+      "require": {
+        "types": "./tw/index.d.cts",
+        "default": "./tw/index.cjs"
       }
     },
     "./fastify": {
       "import": {
-        "types": "./fastify/index.d.mts",
-        "default": "./fastify/index.mjs"
-      },
-      "require": {
         "types": "./fastify/index.d.ts",
         "default": "./fastify/index.js"
+      },
+      "require": {
+        "types": "./fastify/index.d.cts",
+        "default": "./fastify/index.cjs"
       }
     },
     "./express": {
       "import": {
-        "types": "./express/index.d.mts",
-        "default": "./express/index.mjs"
-      },
-      "require": {
         "types": "./express/index.d.ts",
         "default": "./express/index.js"
+      },
+      "require": {
+        "types": "./express/index.d.cts",
+        "default": "./express/index.cjs"
       }
     },
     "./h3": {
       "import": {
-        "types": "./h3/index.d.mts",
-        "default": "./h3/index.mjs"
-      },
-      "require": {
         "types": "./h3/index.d.ts",
         "default": "./h3/index.js"
+      },
+      "require": {
+        "types": "./h3/index.d.cts",
+        "default": "./h3/index.cjs"
       }
     },
     "./internal/types": {
       "import": {
-        "types": "./internal/types.d.mts",
-        "default": "./internal/types.mjs"
-      },
-      "require": {
         "types": "./internal/types.d.ts",
         "default": "./internal/types.js"
+      },
+      "require": {
+        "types": "./internal/types.d.cts",
+        "default": "./internal/types.cjs"
       }
     }
   },
@@ -128,7 +129,7 @@
     "std-env": "^3.7.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
+    "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.42",
     "@types/react": "18.2.33",
     "@uploadthing/eslint-config": "0.2.0",
