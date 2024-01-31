@@ -1,5 +1,27 @@
 # uploadthing
 
+## 6.3.3
+
+### Patch Changes
+
+- [#593](https://github.com/pingdotgg/uploadthing/pull/593) [`91a2ad7`](https://github.com/pingdotgg/uploadthing/commit/91a2ad7889105380871c0b0abe1769131706bc80) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: Fix broken tests so release works
+
+## 6.3.2
+
+### Patch Changes
+
+- [#592](https://github.com/pingdotgg/uploadthing/pull/592) [`9a1c507`](https://github.com/pingdotgg/uploadthing/commit/9a1c50716a80787cbce3169ee98f4fc50fc9bce3) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(server-handler): forward original request
+
+- [#582](https://github.com/pingdotgg/uploadthing/pull/582) [`d6c8358`](https://github.com/pingdotgg/uploadthing/commit/d6c8358e535843e82427dd904e6b90c8328dd61f) Thanks [@GentikSolm](https://github.com/GentikSolm)! - feat: float error messages to client for UploadThingErrors. Read the [error handling docs 📚](https://docs.uploadthing.com/errors) to find out more.
+
+- [#577](https://github.com/pingdotgg/uploadthing/pull/577) [`8a9878f`](https://github.com/pingdotgg/uploadthing/commit/8a9878fe6e76de9aa1147f08f0c8c81035ffcae8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore(express): add logs for express body parser
+
+  Enables easier debugging for a common issue Express users has had when registed other middlewares before UploadThing that processes the body in an incompatible way.
+  These logs should help track down these cases more easily
+
+- Updated dependencies [[`d6c8358`](https://github.com/pingdotgg/uploadthing/commit/d6c8358e535843e82427dd904e6b90c8328dd61f)]:
+  - @uploadthing/shared@6.2.1
+
 ## 6.3.1
 
 ### Patch Changes
@@ -775,7 +797,7 @@
     ```ts
     // before
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
-    uploadFiles(files, endpoint, { url: "" })
+    uploadFiles(files, endpoint, { url: "" });
 
     // after
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
@@ -784,7 +806,7 @@
       endpoint,
       input, // <-- new option
       url,
-    })
+    });
     ```
 
 ## 4.1.3

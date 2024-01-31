@@ -22,13 +22,15 @@ import { createBuilder } from "./internal/upload-builder";
 export type { FileRouter };
 export { UTIds } from "./internal/types";
 
+type MiddlewareArgs = {
+  req: NextApiRequest;
+  res: NextApiResponse;
+  event: undefined;
+};
+
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: NextApiRequest; res: NextApiResponse; event: undefined },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
@@ -36,7 +38,10 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts, "nextjs-pages");
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    "nextjs-pages",
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
@@ -54,6 +59,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       nativeRequest: toWebRequest(req, url),
       originalRequest: req,
       res,
+      event: undefined,
     });
 
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);

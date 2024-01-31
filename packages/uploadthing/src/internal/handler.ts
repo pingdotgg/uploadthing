@@ -29,6 +29,7 @@ import { UTIds, VALID_ACTION_TYPES } from "./types";
 import type {
   ActionType,
   FileRouter,
+  MiddlewareFnArgs,
   UTEvents,
   ValidMiddlewareObject,
 } from "./types";
@@ -133,7 +134,10 @@ export type UploadThingResponse = {
   chunkSize: number;
 }[];
 
-export const buildRequestHandler = <TRouter extends FileRouter>(
+export const buildRequestHandler = <
+  TRouter extends FileRouter,
+  Args extends MiddlewareFnArgs<any, any, any>,
+>(
   opts: RouterWithConfig<TRouter>,
   adapter: string,
 ) => {
@@ -141,9 +145,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     nativeRequest: Request;
 
     // Forward to middleware handler
-    originalRequest?: unknown;
-    res?: unknown;
-    event?: unknown;
+    originalRequest: Args["req"];
+    res: Args["res"];
+    event: Args["event"];
   }): Promise<
     | UploadThingError
     | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
@@ -362,6 +366,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           logger.debug("Middleware finished successfully with:", metadata);
         } catch (error) {
           logger.error("An error occured in your middleware function", error);
+          if (error instanceof UploadThingError) return error;
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to run middleware.",
