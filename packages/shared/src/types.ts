@@ -73,6 +73,7 @@ export interface FileData {
   fileName: string;
   fileSize: number;
   metadata: string | null;
+  customId: string | null;
 
   callbackUrl: string;
   callbackSlug: string;
