@@ -316,7 +316,7 @@ export class UTApi {
    * const data = await listFiles({ limit: 1 });
    * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
    */
-  async listFiles(opts: { limit?: number; offset?: number }) {
+  async listFiles(opts?: { limit?: number; offset?: number }) {
     guardServerOnly();
 
     const json = await this.requestUploadThing<{
@@ -326,7 +326,11 @@ export class UTApi {
         customId: string | null;
         status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
       }[];
-    }>("/api/listFiles", opts, "An unknown error occured while listing files.");
+    }>(
+      "/api/listFiles",
+      { ...opts },
+      "An unknown error occured while listing files.",
+    );
 
     return json.files;
   }
