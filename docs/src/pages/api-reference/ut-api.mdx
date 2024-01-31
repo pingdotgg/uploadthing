@@ -89,6 +89,7 @@ uploaded to the storage provider.
 // Edge / Node < 20 friendly File interface
 interface FileEsque extends Blob {
   name: string;
+  customId?: string;
 }
 ```
 
@@ -162,11 +163,13 @@ await utapi.deleteFiles([
   "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
   "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
 ]);
+await deleteFiles("myCustomIdentifier", { keyType: "customId" });
 ```
 
-| Arguments | Type                 | Required | Notes           | Description                                |
-| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------- |
-| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to delete |
+| Arguments    | Type                    | Required | Notes           | Description                                               |
+| :----------- | :---------------------- | :------- | :-------------- | :-------------------------------------------------------- |
+| input        | string \|\| string[]    | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to delete                |
+| opts.keyType | "fileKey" \| "customId" | No       | Added in `v6.4` | The type of key you are passing in. Defaults to `fileKey` |
 
 ### `getFileUrls`
 
@@ -187,9 +190,10 @@ const multipleUrls = await utapi.getFileUrls([
 ]);
 ```
 
-| Arguments | Type                 | Required | Notes           | Description                                      |
-| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------------- |
-| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to get URLs for |
+| Arguments    | Type                    | Required | Notes           | Description                                               |
+| :----------- | :---------------------- | :------- | :-------------- | :-------------------------------------------------------- |
+| input        | string \|\| string[]    | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to get URLs for          |
+| opts.keyType | "fileKey" \| "customId" | No       | Added in `v6.4` | The type of key you are passing in. Defaults to `fileKey` |
 
 ### `listFiles`
 
@@ -220,7 +224,9 @@ console.log(files);
  * [
  *  {
  *    id: "2e0fdb64-9957-4262-8e45-f372ba903ac8",
- *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"
+ *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+ *    customId: null, // whatever you set it to when uploading
+ *    status: "uploaded",
  *  }
  * ]
  */
@@ -256,10 +262,15 @@ await utapi.renameFiles([
 #### `Rename` type definition
 
 ```ts
-type Rename = {
-  fileKey: string;
-  newName: string; // should include file extension
-};
+type Rename =
+  | {
+      fileKey: string;
+      newName: string; // should include file extension
+    }
+  | {
+      customId: string;
+      newName: string; // should include file extension
+    };
 ```
 
 | Arguments | Type                 | Required | Description                                            |
@@ -289,10 +300,11 @@ const url = await utapi.getSignedURL(fileKey, {
   settings on the UploadThing dashboard.
 </Callout>
 
-| Arguments      | Type                 | Required | Description                                                                            |
-| :------------- | :------------------- | :------- | :------------------------------------------------------------------------------------- |
-| key            | string               | Yes      | The file key you want to get the URL for.                                              |
-| opts.expiresIn | number \| TimeString | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
+| Arguments      | Type                    | Required | Description                                                                            |
+| :------------- | :---------------------- | :------- | :------------------------------------------------------------------------------------- |
+| key            | string                  | Yes      | The file key you want to get the URL for.                                              |
+| opts.expiresIn | number \| TimeString    | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
+| opts.keyType   | "fileKey" \| "customId" | No       | The type of key you are passing in. Defaults to `fileKey`                              |
 
 > `TimeString` refers to a human-readable string that can be parsed as a number,
 > followed by a unit of time. For example, `1s`, `1 second`, `2m`, `2 minutes`,
