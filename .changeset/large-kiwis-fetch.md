@@ -1,5 +1,4 @@
 ---
-"docs": patch
 "@uploadthing/shared": patch
 "uploadthing": patch
 ---
