@@ -36,12 +36,19 @@ export interface UTApiOptions {
    * @default "info"
    */
   logLevel?: LogLevel;
+  /**
+   * Set the default key type for file operations. Allows you to set your preferred filter
+   * for file keys or custom identifiers without needing to specify it on every call.
+   * @default "fileKey"
+   */
+  defaultKeyType?: "fileKey" | "customId";
 }
 
 export class UTApi {
   private fetch: FetchEsque;
   private apiKey: string | undefined;
   private defaultHeaders: Record<string, string>;
+  private defaultKeyType: "fileKey" | "customId";
 
   constructor(opts?: UTApiOptions) {
     this.fetch = opts?.fetch ?? globalThis.fetch;
@@ -52,6 +59,7 @@ export class UTApi {
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
     };
+    this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
 
     initLogger(opts?.logLevel);
 
@@ -249,7 +257,7 @@ export class UTApi {
     guardServerOnly();
 
     if (!Array.isArray(keys)) keys = [keys];
-    const { keyType = "fileKey" } = opts ?? {};
+    const { keyType = this.defaultKeyType } = opts ?? {};
 
     return this.requestUploadThing<{ success: boolean }>(
       "/api/deleteFile",
@@ -285,7 +293,7 @@ export class UTApi {
     guardServerOnly();
 
     if (!Array.isArray(keys)) keys = [keys];
-    const { keyType = "fileKey" } = opts ?? {};
+    const { keyType = this.defaultKeyType } = opts ?? {};
 
     const json = await this.requestUploadThing<{
       data: { key: string; url: string }[];
@@ -399,7 +407,7 @@ export class UTApi {
     const expiresIn = opts?.expiresIn
       ? parseTimeToSeconds(opts.expiresIn)
       : undefined;
-    const { keyType = "fileKey" } = opts ?? {};
+    const { keyType = this.defaultKeyType } = opts ?? {};
 
     if (opts?.expiresIn && isNaN(expiresIn!)) {
       throw new UploadThingError({
