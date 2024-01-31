@@ -1,1 +1,229 @@
-# Astro (Coming Soon!)
+import { Callout, Steps, Tab, Tabs } from "nextra-theme-docs";
+
+import EnvSetup from "./_shared/env-setup.mdx";
+import TailwindSetup from "./_shared/tailwind-setup.mdx";
+
+# Astro Setup
+
+You can use Astro with any of the frontend frameworks we support. This guide
+will walk you through setting it up using React, but the steps will be near
+identical for other frameworks too.
+
+<Callout type="info">
+  Check out a full example
+  [here](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-astro-react)
+</Callout>
+
+<EnvSetup />
+
+## Set Up A FileRouter
+
+<Steps>
+### Creating your first FileRoute
+
+All files uploaded to uploadthing are associated with a FileRoute. Think of a
+FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+```ts copy filename="src/server/uploadthing.ts"
+import { createUploadthing, type FileRouter } from "uploadthing/server";
+
+const f = createUploadthing();
+
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
+
+// FileRouter for your app, can contain multiple FileRoutes
+export const ourFileRouter = {
+  // Define as many FileRoutes as you like, each with a unique routeSlug
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    // Set permissions and file types for this FileRoute
+    .middleware(async ({ req }) => {
+      // This code runs on your server before upload
+      const user = await auth(req);
+
+      // If you throw, the user will not be able to upload
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof ourFileRouter;
+```
+
+### Create a Astro API route using the FileRouter
+
+<Callout type="info">
+  File path here doesn't matter, you can serve this from any route. We recommend
+  serving it from `/api/uploadthing`.
+</Callout>
+
+```ts copy filename="src/pages/api/uploadthing.ts"
+import { createRouteHandler } from "uploadthing/server";
+
+import { ourFileRouter } from "~/server/uploadthing";
+
+// Export routes for Next App Router
+export const { GET, POST } = createRouteHandler({
+  router: ourFileRouter,
+  config: {
+    uploadthingSecret: import.meta.env.UPLOADTHING_SECRET,
+  },
+});
+```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
+
+### Add UploadThing's Styles
+
+<Tabs items={["Tailwind", "Not Tailwind"]}>
+  <Tab>
+    <TailwindSetup />
+  </Tab>
+  <Tab>
+    Include our CSS file in the root layout to make sure the components look right!
+
+    ```astro copy filename="src/layouts/root.astro"
+    ---
+    import "@uploadthing/react/styles.css";
+    // ...
+    ---
+    ```
+
+  </Tab>
+</Tabs>
+
+### Create The UploadThing Components (Recommended)
+
+We provide components to make uploading easier. We **highly recommend
+re-exporting them with the types assigned**, but you CAN import the components
+individually from `@uploadthing/react` instead.
+
+```ts copy filename="src/utils/uploadthing.ts"
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
+```
+
+### Mount A Button And Upload!
+
+```tsx copy filename="src/components/image-uploader.tsx"
+import { UploadButton } from "~/utils/uploadthing";
+
+export function ImageUploader() {
+  return (
+    <UploadButton
+      endpoint="imageUploader"
+      onClientUploadComplete={(res) => {
+        // Do something with the response
+        console.log("Files: ", res);
+        alert("Upload Completed");
+      }}
+      onUploadError={(error: Error) => {
+        // Do something with the error.
+        alert(`ERROR! ${error.message}`);
+      }}
+    />
+  );
+}
+```
+
+<Callout type="info">
+  Don't forget to add the `client:load` directive when mounting your component
+  in an Astro island.
+</Callout>
+
+```astro copy filename="src/pages/index.astro"
+---
+import Layout from "~/layouts/root.astro"
+import { ImageUploader } from "~/components/image-uploader";
+---
+<Layout>
+    <ImageUploader client:load />
+</Layout>
+```
+
+### (Optional) Rendering with SSR
+
+import { WithoutSSR, WithSSR } from "../../components/ssr-diff";
+
+<div className="mt-6 flex items-center justify-center gap-8">
+  <WithoutSSR />
+  <WithSSR />
+</div>
+
+UploadThing needs to get info from your server to get permissions info. Normally
+this means a loading state, but you can inject the router config from
+server-rendered Astro components:
+
+```astro copy filename="src/components/uploadthing-ssr.astro"
+---
+import { extractRouterConfig } from "uploadthing/server"
+import { uploadRouter } from "~/server/uploadthing";
+
+/**
+ * This you only need to do once in your app to enable
+ * server side rendering of the uploadthing component.
+ * No data will be fetched on the client.
+ */
+const routerConfig = extractRouterConfig(uploadRouter);
+(globalThis as any).__UPLOADTHING ??= routerConfig;
+---
+
+<script define:vars={{ routerConfig }}>
+    /**
+     * Injecting config to the client. This prevents the client from fetching
+     * the configuration from the server, since we already have it.
+     */
+    globalThis.__UPLOADTHING ??= routerConfig;
+</script>
+```
+
+Then render this component in your layout:
+
+```astro copy filename="src/layouts/root.astro"
+---
+import UploadThingSSR from "~/components/uploadthing-ssr.astro";
+---
+<html lang="en">
+    <head>
+        <title>My App</title>
+    </head>
+        <UploadThingSSR />
+    <body>
+        <slot />
+    </body>
+</html>
+```
+
+</Steps>
+
+---
+
+### 🎉 You're Done!
+
+Want to customize the components? Check out the ["Theming" page](/theming)
+
+Want to make your own components? Check out our
+[useUploadThing hook](/api-reference/react#useuploadthing)

@@ -24,13 +24,15 @@ import { createBuilder } from "./internal/upload-builder";
 
 export type { FileRouter };
 
+type MiddlewareArgs = {
+  req: FastifyRequest;
+  res: FastifyReply;
+  event: undefined;
+};
+
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: FastifyRequest; res: FastifyReply; event: undefined },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   fastify: FastifyInstance,
@@ -40,7 +42,10 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts, "fastify");
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    "fastify",
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST: RouteHandlerMethod = async (req, res) => {
@@ -51,6 +56,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       nativeRequest: toWebRequest(req, url),
       originalRequest: req,
       res,
+      event: undefined,
     });
 
     if (response instanceof UploadThingError) {

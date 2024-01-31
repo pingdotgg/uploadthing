@@ -9,13 +9,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^6.0.0",
-    "@astrojs/react": "^3.0.2",
-    "@uploadthing/react": "*",
-    "astro": "^3.0.13",
+    "@astrojs/node": "^8.0.0",
+    "@astrojs/react": "^3.0.9",
+    "@uploadthing/react": "^6.2.2",
+    "astro": "^4.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "*"
+    "uploadthing": "^6.3.3"
   },
   "devDependencies": {
     "@types/react": "18.2.33",
