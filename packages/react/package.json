@@ -53,8 +53,6 @@
     "clean": "git clean -xdf dist hooks native next-ssr-plugin node_modules",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "build": "bunchee && pnpm build:css",
-    "test": "vitest run",
-    "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "dev": "wait-on ../uploadthing/dist/server.mjs && bunchee -w"
   },
@@ -88,7 +86,6 @@
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3",
     "uploadthing": "6.3.1",
-    "vitest": "^1.2.2",
     "wait-on": "^7.2.0",
     "zod": "^3.22.4"
   },

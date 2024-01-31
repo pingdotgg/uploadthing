@@ -1,4 +1,4 @@
-import type { MimeType } from "@uploadthing/mime-types/db";
+import type { MimeType } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
 

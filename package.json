@@ -16,8 +16,8 @@
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "typecheck": "turbo run typecheck"
   },
   "dependencies": {
@@ -30,6 +30,8 @@
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "turbo": "^1.10.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite-tsconfig-paths": "^4.3.1",
+    "vitest": "^1.2.2"
   }
 }

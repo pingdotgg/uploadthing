@@ -17,26 +17,15 @@
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    },
-    "./db": {
-      "import": {
-        "types": "./db/index.d.ts",
-        "default": "./db/index.js"
-      },
-      "require": {
-        "types": "./db/index.d.cts",
-        "default": "./db/index.cjs"
-      }
     }
   },
   "files": [
-    "dist",
-    "db"
+    "dist"
   ],
   "scripts": {
     "lint": "eslint src --max-warnings 0",
     "build": "bunchee",
-    "clean": "git clean -xdf dist db node_modules",
+    "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
   },
