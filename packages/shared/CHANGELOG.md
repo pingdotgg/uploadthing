@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 6.2.1
+
+### Patch Changes
+
+- [#582](https://github.com/pingdotgg/uploadthing/pull/582) [`d6c8358`](https://github.com/pingdotgg/uploadthing/commit/d6c8358e535843e82427dd904e6b90c8328dd61f) Thanks [@GentikSolm](https://github.com/GentikSolm)! - feat: float error messages to client for UploadThingErrors. Read the [error handling docs 📚](https://docs.uploadthing.com/errors) to find out more.
+
 ## 6.2.0
 
 ### Minor Changes
