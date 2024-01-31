@@ -100,7 +100,6 @@ describe("getSignedURL", () => {
   test("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
     expect(mockFetch).toHaveBeenCalledWith(
-      
         "https://uploadthing.com/api/requestFileAccess",
         {
           "body": `{"fileKey":"foo"}`,
