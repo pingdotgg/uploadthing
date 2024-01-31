@@ -6,6 +6,7 @@ import type { H3Event } from "h3";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
+import { UTIds } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
 
 const badReqMock = {
@@ -178,6 +179,18 @@ it("with optional input", () => {
     .middleware((opts) => {
       expectTypeOf<{ foo: string } | undefined>(opts.input);
       return {};
+    });
+});
+
+it("can append a customId", () => {
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
+  f(["image"])
+    .middleware(() => {
+      return { [UTIds]: ["foo"], foo: "bar" };
+    })
+    .onUploadComplete(({ metadata, file }) => {
+      expectTypeOf<{ foo: string }>(metadata);
+      expectTypeOf<{ customId: string | null }>(file);
     });
 });
 

@@ -30,9 +30,17 @@ export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
 
 //
 // Package
+export const UTIds = Symbol("uploadthing-custom-id-symbol");
+export type ValidMiddlewareObject = {
+  [UTIds]?: (string | null)[];
+  [key: string]: unknown;
+};
+
 type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
-    TParams["_metadata"] extends UnsetMarker ? undefined : TParams["_metadata"]
+    TParams["_metadata"] extends UnsetMarker
+      ? undefined
+      : Omit<TParams["_metadata"], typeof UTIds>
   >;
 
   file: UploadedFile;
@@ -56,7 +64,7 @@ export interface AnyParams {
 
 type MiddlewareFn<
   TInput extends Json | UnsetMarker,
-  TOutput extends Record<string, unknown>,
+  TOutput extends ValidMiddlewareObject,
   TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
   opts: TArgs & {
@@ -89,7 +97,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
-  middleware: <TOutput extends Record<string, unknown>>(
+  middleware: <TOutput extends ValidMiddlewareObject>(
     fn: TParams["_metadata"] extends UnsetMarker
       ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
       : ErrorMessage<"middleware is already set">,

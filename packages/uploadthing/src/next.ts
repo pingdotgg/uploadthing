@@ -9,6 +9,7 @@ import { createBuilder } from "./internal/upload-builder";
 import { INTERNAL_DO_NOT_USE_createRouteHandlerCore } from "./server";
 
 export type { FileRouter };
+export { UTIds } from "./internal/types";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,

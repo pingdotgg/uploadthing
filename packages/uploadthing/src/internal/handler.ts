@@ -25,8 +25,13 @@ import { getFullApiUrl } from "./get-full-api-url";
 import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
-import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter, UTEvents } from "./types";
+import { UTIds, VALID_ACTION_TYPES } from "./types";
+import type {
+  ActionType,
+  FileRouter,
+  UTEvents,
+  ValidMiddlewareObject,
+} from "./types";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
@@ -344,7 +349,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        let metadata: Json = {};
+        let metadata: ValidMiddlewareObject = {};
         try {
           logger.debug("Running middleware");
           metadata = await uploadable._def.middleware({
@@ -383,6 +388,19 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             message: "Files must be an array of objects with name and size",
             cause: msg,
           });
+        }
+
+        // Attach customIds from middleware to the files
+        let filesWithCustomId: {
+          name: string;
+          size: number;
+          customId?: string | null;
+        }[] = files;
+        if (metadata && UTIds in metadata) {
+          filesWithCustomId = files.map((f, i) => ({
+            ...f,
+            customId: metadata[UTIds]?.[i],
+          }));
         }
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
@@ -433,7 +451,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           callbackUrl.href,
         );
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
-          files: files,
+          files: filesWithCustomId,
 
           routeConfig: parsedConfig,
 
