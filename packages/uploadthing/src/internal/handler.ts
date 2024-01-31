@@ -26,7 +26,12 @@ import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
 import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter, UTEvents } from "./types";
+import type {
+  ActionType,
+  FileRouter,
+  MiddlewareFnArgs,
+  UTEvents,
+} from "./types";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
@@ -128,7 +133,10 @@ export type UploadThingResponse = {
   chunkSize: number;
 }[];
 
-export const buildRequestHandler = <TRouter extends FileRouter>(
+export const buildRequestHandler = <
+  TRouter extends FileRouter,
+  Args extends MiddlewareFnArgs<any, any, any>,
+>(
   opts: RouterWithConfig<TRouter>,
   adapter: string,
 ) => {
@@ -136,9 +144,9 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     nativeRequest: Request;
 
     // Forward to middleware handler
-    originalRequest: unknown;
-    res?: unknown;
-    event?: unknown;
+    originalRequest: Args["req"];
+    res: Args["res"];
+    event: Args["event"];
   }): Promise<
     | UploadThingError
     | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }

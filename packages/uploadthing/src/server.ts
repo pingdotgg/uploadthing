@@ -18,13 +18,11 @@ export * from "./internal/types";
 export { UTApi } from "./sdk";
 export { UploadThingError };
 
+type MiddlewareArgs = { req: Request; res: undefined; event: undefined };
+
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: Request; res: undefined; event: undefined },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
 export interface ResponseWithCleanup extends Response {
   /** custom property where a Promise may be put that you can await in for example Cloudflare Workers */
@@ -41,7 +39,10 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts, adapter);
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    adapter,
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST = async (
@@ -51,6 +52,8 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     const response = await requestHandler({
       nativeRequest: req,
       originalRequest: req,
+      event: undefined,
+      res: undefined,
     });
 
     if (response instanceof UploadThingError) {

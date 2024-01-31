@@ -25,13 +25,11 @@ import { createBuilder } from "./internal/upload-builder";
 
 export type { FileRouter };
 
+type MiddlewareArgs = { req: undefined; res: undefined; event: H3Event };
+
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: undefined; res: undefined; event: H3Event },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouterWithConfig<TRouter>,
@@ -39,7 +37,10 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler(opts, "h3");
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    "h3",
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return defineEventHandler(async (event) => {
@@ -56,6 +57,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       nativeRequest: toWebRequest(event),
       event,
       originalRequest: undefined,
+      res: undefined,
     });
 
     if (response instanceof UploadThingError) {
