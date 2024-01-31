@@ -136,7 +136,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     nativeRequest: Request;
 
     // Forward to middleware handler
-    originalRequest?: unknown;
+    originalRequest: unknown;
     res?: unknown;
     event?: unknown;
   }): Promise<

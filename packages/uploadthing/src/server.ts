@@ -48,7 +48,10 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     request: Request | { request: Request },
   ): Promise<Response | ResponseWithCleanup> => {
     const req = request instanceof Request ? request : request.request;
-    const response = await requestHandler({ nativeRequest: req });
+    const response = await requestHandler({
+      nativeRequest: req,
+      originalRequest: req,
+    });
 
     if (response instanceof UploadThingError) {
       return new Response(JSON.stringify(formatError(response, opts.router)), {
