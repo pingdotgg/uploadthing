@@ -99,63 +99,62 @@ describe("getSignedURL", () => {
 
   test("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
-    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
-      [
+    expect(mockFetch).toHaveBeenCalledWith(
+      
         "https://uploadthing.com/api/requestFileAccess",
         {
-          "body": "{"fileKey":"foo"}",
+          "body": `{"fileKey":"foo"}`,
           "cache": "no-store",
           "headers": {
             "Content-Type": "application/json",
             "x-uploadthing-api-key": "sk_foo",
             "x-uploadthing-be-adapter": "server-sdk",
-            "x-uploadthing-version": "6.3.2",
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
           },
           "method": "POST",
         },
-      ]
-    `);
+      
+    );
   });
 
   test("sends request with valid expiresIn (1)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
-    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        "https://uploadthing.com/api/requestFileAccess",
-        {
-          "body": "{"fileKey":"foo","expiresIn":86400}",
+    expect(mockFetch).toHaveBeenCalledWith(
+          "https://uploadthing.com/api/requestFileAccess",
+          {
+          "body": `{"fileKey":"foo","expiresIn":86400}`,
           "cache": "no-store",
           "headers": {
             "Content-Type": "application/json",
             "x-uploadthing-api-key": "sk_foo",
             "x-uploadthing-be-adapter": "server-sdk",
-            "x-uploadthing-version": "6.3.2",
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
           },
           "method": "POST",
-        },
-      ]
-    `);
+        }
+    );
   });
 
   test("sends request with valid expiresIn (2)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
-    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        "https://uploadthing.com/api/requestFileAccess",
-        {
-          "body": "{"fileKey":"foo","expiresIn":180}",
-          "cache": "no-store",
-          "headers": {
-            "Content-Type": "application/json",
-            "x-uploadthing-api-key": "sk_foo",
-            "x-uploadthing-be-adapter": "server-sdk",
-            "x-uploadthing-version": "6.3.2",
-          },
-          "method": "POST",
-        },
-      ]
-    `);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/requestFileAccess",
+      {
+      "body": `{"fileKey":"foo","expiresIn":180}`,
+      "cache": "no-store",
+      "headers": {
+        "Content-Type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      },
+      "method": "POST",
+    })
+    
   });
 
   test("throws if expiresIn is invalid", async () => {
