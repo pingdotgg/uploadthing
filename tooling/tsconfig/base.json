@@ -25,9 +25,13 @@
     "baseUrl": "../..",
     "paths": {
       "@uploadthing/*": ["packages/*/src"],
-      "@uploadthing/*/*": ["packages/*/src/*"],
       "uploadthing": ["packages/uploadthing/src"],
-      "uploadthing/*": ["packages/uploadthing/src/*"]
+      /** Packages with multiple entrypoints must have a second matcher since you can only have 1 * per pattern... */
+      "@uploadthing/dropzone/*": ["packages/dropzone/src/*"],
+      "@uploadthing/mime-types/*": ["packages/mime-types/src/*"],
+      "@uploadthing/react/*": ["packages/react/src/*"],
+      "@uploadthing/solid/*": ["packages/solid/src/*"],
+      "uploadthing/*": ["packages/uploadthing/src"]
     }
   },
   "include": ["*.ts"],
