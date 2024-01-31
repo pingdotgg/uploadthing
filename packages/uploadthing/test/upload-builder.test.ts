@@ -185,8 +185,9 @@ it("with optional input", () => {
 it("can append a customId", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
   f(["image"])
-    .middleware(() => {
-      return { [UTFiles]: ["foo"], foo: "bar" };
+    .middleware(({ files }) => {
+      const overrides = files.map((f) => ({ ...f, customId: "123" }));
+      return { [UTFiles]: overrides, foo: "bar" };
     })
     .onUploadComplete(({ metadata, file }) => {
       expectTypeOf<{ foo: string }>(metadata);
