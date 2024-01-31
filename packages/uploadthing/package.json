@@ -92,11 +92,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@effect/schema": "^0.61.5",
     "@uploadthing/mime-types": "^0.2.2",
     "@uploadthing/shared": "^6.2.1",
     "consola": "^3.2.3",
     "effect": "^2.2.3",
-    "@effect/schema": "^0.61.5",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
