@@ -6,7 +6,7 @@ import type { H3Event } from "h3";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { UTIds } from "../src/internal/types";
+import { UTFiles } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
 
 const badReqMock = {
@@ -186,7 +186,7 @@ it("can append a customId", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
   f(["image"])
     .middleware(() => {
-      return { [UTIds]: ["foo"], foo: "bar" };
+      return { [UTFiles]: ["foo"], foo: "bar" };
     })
     .onUploadComplete(({ metadata, file }) => {
       expectTypeOf<{ foo: string }>(metadata);

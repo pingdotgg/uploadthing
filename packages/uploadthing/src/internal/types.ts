@@ -30,9 +30,9 @@ export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
 
 //
 // Package
-export const UTIds = Symbol("uploadthing-custom-id-symbol");
+export const UTFiles = Symbol("uploadthing-custom-id-symbol");
 export type ValidMiddlewareObject = {
-  [UTIds]?: (string | null)[];
+  [UTFiles]?: { name: string; size: number; customId: string | null }[];
   [key: string]: unknown;
 };
 
@@ -40,7 +40,7 @@ type ResolverOptions<TParams extends AnyParams> = {
   metadata: Simplify<
     TParams["_metadata"] extends UnsetMarker
       ? undefined
-      : Omit<TParams["_metadata"], typeof UTIds>
+      : Omit<TParams["_metadata"], typeof UTFiles>
   >;
 
   file: UploadedFile;

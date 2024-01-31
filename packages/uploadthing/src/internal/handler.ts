@@ -25,7 +25,7 @@ import { getFullApiUrl } from "./get-full-api-url";
 import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
-import { UTIds, VALID_ACTION_TYPES } from "./types";
+import { UTFiles, VALID_ACTION_TYPES } from "./types";
 import type {
   ActionType,
   FileRouter,
@@ -396,17 +396,7 @@ export const buildRequestHandler = <
         }
 
         // Attach customIds from middleware to the files
-        let filesWithCustomId: {
-          name: string;
-          size: number;
-          customId?: string | null;
-        }[] = files;
-        if (metadata && UTIds in metadata) {
-          filesWithCustomId = files.map((f, i) => ({
-            ...f,
-            customId: metadata[UTIds]?.[i],
-          }));
-        }
+        const filesWithCustomIds = metadata[UTFiles] ?? files;
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
         let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
@@ -456,7 +446,7 @@ export const buildRequestHandler = <
           callbackUrl.href,
         );
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
-          files: filesWithCustomId,
+          files: filesWithCustomIds,
 
           routeConfig: parsedConfig,
 

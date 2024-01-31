@@ -24,7 +24,7 @@ import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
 export type { FileRouter };
-export { UTIds } from "./internal/types";
+export { UTFiles } from "./internal/types";
 
 type MiddlewareArgs = { req: undefined; res: undefined; event: H3Event };
 
