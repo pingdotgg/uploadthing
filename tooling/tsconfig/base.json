@@ -20,7 +20,15 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "jsx": "preserve"
+    "jsx": "preserve",
+
+    "baseUrl": "../..",
+    "paths": {
+      "@uploadthing/*": ["packages/*/src"],
+      "@uploadthing/*/*": ["packages/*/src/*"],
+      "uploadthing": ["packages/uploadthing/src"],
+      "uploadthing/*": ["packages/uploadthing/src/*"]
+    }
   },
   "include": ["*.ts"],
   "exclude": ["node_modules"]
