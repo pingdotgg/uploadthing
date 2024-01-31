@@ -99,6 +99,8 @@ describe("getSignedURL", () => {
 
   test("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
@@ -119,6 +121,7 @@ describe("getSignedURL", () => {
   test("sends request with valid expiresIn (1)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
+    expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
@@ -138,6 +141,8 @@ describe("getSignedURL", () => {
 
   test("sends request with valid expiresIn (2)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
     expect(mockFetch).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
@@ -162,7 +167,7 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
-    expect(mockFetch.mock.calls.length).toBe(0);
+    expect(mockFetch).toHaveBeenCalledTimes(0);
   });
 
   test("throws if expiresIn is longer than 7 days", async () => {
@@ -171,6 +176,6 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
     );
-    expect(mockFetch.mock.calls.length).toBe(0);
+    expect(mockFetch).toHaveBeenCalledTimes(0);
   });
 });
