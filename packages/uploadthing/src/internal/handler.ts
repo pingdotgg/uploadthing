@@ -337,6 +337,27 @@ export const buildRequestHandler = <
         logger.debug("Handling upload request with input:", maybeInput);
         const { files, input: userInput } = maybeInput;
 
+        // Validate without Zod (for now)
+        if (
+          !Array.isArray(files) ||
+          !files.every(
+            (f) =>
+              isObject(f) &&
+              typeof f.name === "string" &&
+              typeof f.size === "number",
+          )
+        ) {
+          const msg = `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
+            files,
+          )}'`;
+          logger.error(msg);
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Files must be an array of objects with name and size",
+            cause: msg,
+          });
+        }
+
         // validate the input
         let parsedInput: Json = {};
         try {
@@ -374,29 +395,28 @@ export const buildRequestHandler = <
           });
         }
 
-        // Validate without Zod (for now)
-        if (
-          !Array.isArray(files) ||
-          !files.every(
-            (f) =>
-              isObject(f) &&
-              typeof f.name === "string" &&
-              typeof f.size === "number",
-          )
-        ) {
-          const msg = `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
-            files,
-          )}'`;
+        if (metadata[UTFiles] && metadata[UTFiles].length !== files.length) {
+          const msg = `Expected files override to have the same length as original files, got ${metadata[UTFiles].length} but expected ${files.length}`;
           logger.error(msg);
           return new UploadThingError({
             code: "BAD_REQUEST",
-            message: "Files must be an array of objects with name and size",
+            message: "Files override must have the same length as files",
             cause: msg,
           });
         }
 
         // Attach customIds from middleware to the files
-        const filesWithCustomIds = metadata[UTFiles] ?? files;
+        const filesWithCustomIds = files.map((file, idx) => {
+          const theirs = metadata[UTFiles]?.[idx];
+          if (theirs && theirs.size !== file.size) {
+            logger.warn("File size mismatch. Reverting to original size");
+          }
+          return {
+            ...file,
+            ...theirs,
+            size: file.size,
+          };
+        });
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
         let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
