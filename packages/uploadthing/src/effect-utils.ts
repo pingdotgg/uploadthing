@@ -1,12 +1,12 @@
 import { Schema } from "@effect/schema";
-import { Data, Duration, Effect, Schedule, pipe } from "effect";
+import { Data, Duration, Effect, pipe, Schedule } from "effect";
 
 import type { FetchEsque } from "@uploadthing/shared";
 
 export class FetchError extends Data.TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
   readonly error: unknown;
-}> { }
+}> {}
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
@@ -43,7 +43,6 @@ export const fetchEffJson = <Res>(
     }),
   );
 
-
 /**
  * Schedule that retries with exponential backoff, up to 1 minute.
  * 10ms * 4^n, where n is the number of retries.
@@ -56,5 +55,5 @@ export const exponentialBackoff: Schedule.Schedule<
   Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms...
   Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
   Schedule.compose(Schedule.elapsed),
-  Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))), 
+  Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
 );

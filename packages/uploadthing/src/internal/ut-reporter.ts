@@ -1,4 +1,5 @@
 import { Data, Effect } from "effect";
+
 import type { FetchEsque } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 
@@ -32,12 +33,7 @@ export const createAPIRequestUrl = (config: {
  * Events are handled in "./handler.ts starting at L200"
  */
 export const createUTReporter =
-  (cfg: {
-  url: URL;
-  endpoint: string;
-  package: string;
-  fetch: FetchEsque;
-}) =>
+  (cfg: { url: URL; endpoint: string; package: string; fetch: FetchEsque }) =>
   <TEvent extends keyof UTEvents>(type: TEvent, payload: UTEvents[TEvent]) =>
     Effect.gen(function* ($) {
       const url = createAPIRequestUrl({
@@ -55,7 +51,6 @@ export const createUTReporter =
           },
         }),
       );
-
 
       switch (type) {
         case "failure": {

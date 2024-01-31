@@ -1,12 +1,10 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
-import { Effect, Cause } from "effect";
 import { Schema } from "@effect/schema";
+import { Cause, Effect } from "effect";
+
 import type { ResponseEsque } from "@uploadthing/shared";
-import {
-  safeParseJSON,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
 import { exponentialBackoff, fetchEff, fetchEffJson } from "./effect-utils";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
@@ -70,10 +68,10 @@ type UploadFilesOptions<
   package: string;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
   ? // eslint-disable-next-line @typescript-eslint/ban-types
-  {}
+    {}
   : {
-    input: inferEndpointInput<TRouter[TEndpoint]>;
-  });
+      input: inferEndpointInput<TRouter[TEndpoint]>;
+    });
 
 export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
   new UploadThingError({
@@ -158,7 +156,7 @@ const DANGEROUS__uploadFiles_internal = <
       ),
     );
   });
-}
+};
 
 type ReportEventToUT = <TEvent extends keyof UTEvents>(
   type: TEvent,
@@ -182,8 +180,9 @@ const uploadFile = <
         new UploadThingError({
           code: "NOT_FOUND",
           message: "No file found for presigned URL",
-          cause: `Expected file with name ${presigned.fileName
-            } but got '${opts.files.join(",")}'`,
+          cause: `Expected file with name ${
+            presigned.fileName
+          } but got '${opts.files.join(",")}'`,
         }),
       );
     }
