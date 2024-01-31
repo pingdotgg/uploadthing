@@ -23,6 +23,12 @@ const ERROR_CODES = {
 } as const;
 
 type ErrorCode = keyof typeof ERROR_CODES;
+type UploadThingErrorOptions<T> = {
+  code: keyof typeof ERROR_CODES;
+  message?: string;
+  cause?: unknown;
+  data?: T;
+};
 
 function messageFromUnknown(cause: unknown, fallback?: string) {
   if (typeof cause === "string") {
@@ -49,12 +55,11 @@ export class UploadThingError<
   public readonly code: ErrorCode;
   public readonly data?: TShape;
 
-  constructor(opts: {
-    code: keyof typeof ERROR_CODES;
-    message?: string;
-    cause?: unknown;
-    data?: TShape;
-  }) {
+  constructor(initOpts: UploadThingErrorOptions<TShape> | string) {
+    const opts: UploadThingErrorOptions<TShape> =
+      typeof initOpts === "string"
+        ? { code: "INTERNAL_SERVER_ERROR", message: initOpts }
+        : initOpts;
     const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
 
     super(message);

@@ -16,6 +16,7 @@ import { createBuilder } from "./internal/upload-builder";
 
 export * from "./internal/types";
 export { UTApi } from "./sdk";
+export { UploadThingError };
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
