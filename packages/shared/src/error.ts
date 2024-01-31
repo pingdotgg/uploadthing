@@ -57,7 +57,7 @@ export class UploadThingError<
   public readonly cause?: Error;
   public readonly code: ErrorCode;
   public readonly data?: TShape;
-  public readonly message: string;
+  public readonly message?: string;
 
   constructor(initOpts: UploadThingErrorOptions<TShape> | string) {
     const opts: UploadThingErrorOptions<TShape> =
@@ -66,6 +66,7 @@ export class UploadThingError<
         : initOpts;
     const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
 
+    super(message);
     this.code = opts.code;
     this.data = opts.data;
 
@@ -73,11 +74,14 @@ export class UploadThingError<
       this.cause = opts.cause;
     } else if (typeof opts.cause === "string") {
       this.cause = new Error(opts.cause);
-    } else if ((opts.cause as ResponseEsque)?.status && (opts.cause as ResponseEsque)?.statusText) {
+    } else if (
+      (opts.cause as ResponseEsque)?.status &&
+      (opts.cause as ResponseEsque)?.statusText
+    ) {
       this.cause = new Error(
         `Response ${(opts.cause as ResponseEsque).status} ${(opts.cause as ResponseEsque).statusText}`,
       );
-    } 
+    }
   }
 
   public static async fromResponse(response: ResponseEsque) {
