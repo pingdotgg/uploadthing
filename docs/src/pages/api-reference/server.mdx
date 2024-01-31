@@ -253,6 +253,31 @@ f(["image"])
   to avoid leaking sensitive information.
 </Callout>
 
+You can also tag your metadata using the `UTFiles` symbol to override the
+uploaded files attributes. This can be used to either rename the file, or set a
+custom identifer for the file:
+
+```ts
+import { UTFiles } from "uploadthing/server";
+
+f(["image"])
+  .middleware(async ({ req, files }) => {
+    const fileOverrides = files.map((file) => {
+      const newName = sluggify(file.name);
+      const myIdentifier = generateId();
+      return { ...file, name: newName, customId: myIdentifier };
+    });
+
+    // Return userId to be used in onUploadComplete
+    return { foo: "bar" as const, [UTFiles]: fileOverrides };
+  })
+  .onUploadComplete(async ({ metadata, file }) => {
+    // The UTFIles symbol is stripped from the metadata
+    metadata; // { foo: "bar" }
+    file.customId; // myIdentifier
+  });
+```
+
 ### `onUploadComplete`
 
 This is the function you use to do something with the uploaded file, such as
