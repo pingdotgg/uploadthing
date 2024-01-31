@@ -129,6 +129,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.17",
+    "@types/express-serve-static-core": "^4.17.42",
     "@types/react": "18.2.33",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
