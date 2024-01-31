@@ -99,63 +99,65 @@ describe("getSignedURL", () => {
 
   test("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
-    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        "https://uploadthing.com/api/requestFileAccess",
-        {
-          "body": "{"fileKey":"foo"}",
-          "cache": "no-store",
-          "headers": {
-            "Content-Type": "application/json",
-            "x-uploadthing-api-key": "sk_foo",
-            "x-uploadthing-be-adapter": "server-sdk",
-            "x-uploadthing-version": "6.3.1",
-          },
-          "method": "POST",
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/requestFileAccess",
+      {
+        body: `{"fileKey":"foo"}`,
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
-      ]
-    `);
+        method: "POST",
+      },
+    );
   });
 
   test("sends request with valid expiresIn (1)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
-    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        "https://uploadthing.com/api/requestFileAccess",
-        {
-          "body": "{"fileKey":"foo","expiresIn":86400}",
-          "cache": "no-store",
-          "headers": {
-            "Content-Type": "application/json",
-            "x-uploadthing-api-key": "sk_foo",
-            "x-uploadthing-be-adapter": "server-sdk",
-            "x-uploadthing-version": "6.3.1",
-          },
-          "method": "POST",
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/requestFileAccess",
+      {
+        body: `{"fileKey":"foo","expiresIn":86400}`,
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
-      ]
-    `);
+        method: "POST",
+      },
+    );
   });
 
   test("sends request with valid expiresIn (2)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
-    expect(mockFetch.mock.calls[0]).toMatchInlineSnapshot(`
-      [
-        "https://uploadthing.com/api/requestFileAccess",
-        {
-          "body": "{"fileKey":"foo","expiresIn":180}",
-          "cache": "no-store",
-          "headers": {
-            "Content-Type": "application/json",
-            "x-uploadthing-api-key": "sk_foo",
-            "x-uploadthing-be-adapter": "server-sdk",
-            "x-uploadthing-version": "6.3.1",
-          },
-          "method": "POST",
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/requestFileAccess",
+      {
+        body: `{"fileKey":"foo","expiresIn":180}`,
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
-      ]
-    `);
+        method: "POST",
+      },
+    );
   });
 
   test("throws if expiresIn is invalid", async () => {
@@ -165,7 +167,7 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
-    expect(mockFetch.mock.calls.length).toBe(0);
+    expect(mockFetch).toHaveBeenCalledTimes(0);
   });
 
   test("throws if expiresIn is longer than 7 days", async () => {
@@ -174,6 +176,6 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
     );
-    expect(mockFetch.mock.calls.length).toBe(0);
+    expect(mockFetch).toHaveBeenCalledTimes(0);
   });
 });
