@@ -14,7 +14,7 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
-import { logger } from "../internal/logger";
+import { logDuration, logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../server";
 
@@ -75,6 +75,7 @@ export const uploadFilesInternal = async (
     size: file.size,
   }));
   logger.debug("Getting presigned URLs for files", fileData);
+  const getPresignedStart = Date.now();
   const res = await opts.fetch(generateUploadThingURL("/api/uploadFiles"), {
     method: "POST",
     headers: opts.utRequestHeaders,
@@ -86,12 +87,6 @@ export const uploadFilesInternal = async (
       acl: data.acl,
     }),
   });
-
-  if (!res.ok) {
-    const error = await UploadThingError.fromResponse(res);
-    logger.debug("Failed getting presigned URLs:", error);
-    throw error;
-  }
 
   if (!res.ok) {
     const error = await UploadThingError.fromResponse(res);
@@ -111,8 +106,13 @@ export const uploadFilesInternal = async (
     }[];
   }>();
 
-  logger.debug("Got presigned URLs:", json.data);
+  logger.debug(
+    `Got presigned URLs ${logDuration(getPresignedStart)} :`,
+    json.data,
+  );
+
   logger.debug("Starting uploads...");
+  const uploadsStart = Date.now();
 
   // Upload each file to S3 in chunks using multi-part uploads
   const uploads = await Promise.allSettled(
@@ -141,6 +141,7 @@ export const uploadFilesInternal = async (
         chunkSize,
         "bytes each",
       );
+      const uploadStart = Date.now();
 
       const etags = await Promise.all(
         presignedUrls.map(async (url, index) => {
@@ -148,6 +149,7 @@ export const uploadFilesInternal = async (
           const end = Math.min(offset + chunkSize, file.size);
           const chunk = file.slice(offset, end);
 
+          const partStart = Date.now();
           const etag = await uploadPart({
             fetch: opts.fetch,
             url,
@@ -160,7 +162,10 @@ export const uploadFilesInternal = async (
             utRequestHeaders: opts.utRequestHeaders,
           });
 
-          logger.debug("Part", index + 1, "uploaded successfully:", etag);
+          logger.debug(
+            `Part", index + 1, "uploaded successfully ${logDuration(partStart)}:`,
+            etag,
+          );
 
           return { tag: etag, partNumber: index + 1 };
         }),
@@ -169,35 +174,42 @@ export const uploadFilesInternal = async (
       logger.debug(
         "File",
         file.name,
-        "uploaded successfully. Notifying UploadThing to complete multipart upload.",
+        `uploaded successfully ${logDuration(uploadStart)}. Notifying UploadThing to complete multipart upload.`,
       );
 
-      // Complete multipart upload
-      const completionRes = await opts.fetch(
-        generateUploadThingURL("/api/completeMultipart"),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: key,
-            uploadId,
-            etags,
-          } satisfies UTEvents["multipart-complete"]),
-          headers: opts.utRequestHeaders,
-        },
-      );
-
-      logger.debug("UploadThing responsed with status:", completionRes.status);
-      logger.debug("Polling for file data...");
-
-      // Poll for file to be available
-      await pollForFileData({
-        url: generateUploadThingURL(`/api/pollUpload/${key}`),
-        apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
-        sdkVersion: UPLOADTHING_VERSION,
-        fetch: opts.fetch,
-      });
-
-      logger.debug("Polling complete.");
+      // Complete multipart upload and poll for file to be available
+      const completionStart = Date.now();
+      await Promise.all([
+        opts
+          .fetch(generateUploadThingURL("/api/completeMultipart"), {
+            method: "POST",
+            body: JSON.stringify({
+              fileKey: key,
+              uploadId,
+              etags,
+            } satisfies UTEvents["multipart-complete"]),
+            headers: opts.utRequestHeaders,
+          })
+          .then((completionRes) => {
+            logger.debug(
+              `UploadThing responsed with status ${logDuration(completionStart)}:`,
+              completionRes.status,
+            );
+          }),
+        pollForFileData(
+          {
+            url: generateUploadThingURL(`/api/pollUpload/${key}`),
+            apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
+            sdkVersion: UPLOADTHING_VERSION,
+            fetch: opts.fetch,
+          },
+          (_, tries) => {
+            logger.debug(`Polling took ${tries} tries before succeeding.`);
+          },
+        ).then(() => {
+          logger.debug(`Polling complete ${logDuration(completionStart)}.`);
+        }),
+      ]);
 
       return {
         key,
@@ -208,7 +220,9 @@ export const uploadFilesInternal = async (
     }),
   );
 
-  logger.debug("All uploads complete, aggregating results...");
+  logger.debug(
+    `All uploads complete ${logDuration(uploadsStart)}, aggregating results...`,
+  );
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {

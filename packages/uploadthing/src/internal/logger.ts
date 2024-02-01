@@ -112,6 +112,8 @@ export const logger = createConsola({
   },
 });
 
+export const logDuration = (start: number) => `(took ${Date.now() - start}ms)`;
+
 export const initLogger = (level: LogLevel | undefined) => {
   // logger.wrapConsole();
   logger.level = LogLevels[level ?? "info"];

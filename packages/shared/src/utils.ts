@@ -129,10 +129,12 @@ export const withExponentialBackoff = async <T>(
   doTheThing: () => Promise<T | undefined>,
   MAXIMUM_BACKOFF_MS = 64 * 1000,
   MAX_RETRIES = 20,
+  MAX_SAME_BACKOFF_TRIES = 3,
 ): Promise<T | null> => {
   let tries = 0;
-  let backoffMs = 500;
+  let backoffMs = 250;
   let backoffFuzzMs = 0;
+  let sameBackoffTries = 0;
 
   let result = undefined;
   while (tries <= MAX_RETRIES) {
@@ -140,7 +142,11 @@ export const withExponentialBackoff = async <T>(
     if (result !== undefined) return result;
 
     tries += 1;
-    backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
+    sameBackoffTries += 1;
+    if (sameBackoffTries > MAX_SAME_BACKOFF_TRIES) {
+      backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
+      sameBackoffTries = 0;
+    }
     backoffFuzzMs = Math.floor(Math.random() * 500);
 
     if (tries > 3) {
@@ -165,9 +171,11 @@ export async function pollForFileData(
     sdkVersion: string;
     fetch: FetchEsque;
   },
-  callback?: (json: any) => Promise<any>,
+  callback?: (json: any, tries: number) => Promise<any> | void,
 ) {
+  let tries = 0;
   return withExponentialBackoff(async () => {
+    tries += 1;
     const res = await opts.fetch(opts.url, {
       headers: {
         ...(opts.apiKey && { "x-uploadthing-api-key": opts.apiKey }),
@@ -186,7 +194,7 @@ export async function pollForFileData(
     }
 
     if (maybeJson.status !== "done") return undefined;
-    await callback?.(maybeJson);
+    await callback?.(maybeJson, tries);
 
     return Symbol("backoff done without response");
   });
