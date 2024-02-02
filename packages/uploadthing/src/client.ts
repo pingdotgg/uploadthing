@@ -4,9 +4,14 @@ import { Schema } from "@effect/schema";
 import { Cause, Effect } from "effect";
 
 import type { ResponseEsque } from "@uploadthing/shared";
-import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
+import {
+  exponentialBackoff,
+  fetchEff,
+  fetchEffJson,
+  safeParseJSON,
+  UploadThingError,
+} from "@uploadthing/shared";
 
-import { exponentialBackoff, fetchEff, fetchEffJson } from "./effect-utils";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type { UploadThingResponse } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";

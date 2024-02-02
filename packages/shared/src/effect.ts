@@ -1,12 +1,15 @@
 import { Schema } from "@effect/schema";
 import { Data, Duration, Effect, pipe, Schedule } from "effect";
 
-import type { FetchEsque } from "@uploadthing/shared";
+import type { FetchEsque } from "./types";
 
 export class FetchError extends Data.TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
   readonly error: unknown;
 }> {}
+
+export type EffectValue<T> =
+  T extends Effect.Effect<any, any, infer A> ? A : never;
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love

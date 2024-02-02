@@ -1,10 +1,8 @@
 import { Data, Effect } from "effect";
 
-import type { FetchEsque } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import type { FetchError, FetchEsque } from "@uploadthing/shared";
+import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
-import type { FetchError } from "../effect-utils";
-import { fetchEff } from "../effect-utils";
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type { ActionType, UTEvents } from "./types";
 
