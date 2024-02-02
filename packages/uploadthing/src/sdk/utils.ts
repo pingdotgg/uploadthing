@@ -52,8 +52,7 @@ export function uploadFilesInternal(
   input: Parameters<typeof getPresignedUrls>[0],
 ) {
   return pipe(
-    input,
-    getPresignedUrls,
+    getPresignedUrls(input),
     Effect.andThen((presigneds) =>
       // TODO: Catch errors for each file and return data like
       // ({ data, error: null } | { data: null, error })[]
@@ -73,8 +72,7 @@ export function downloadFiles(urls: MaybeUrl[]) {
 
     const downloads = urls.map((url) =>
       pipe(
-        url,
-        (url) => fetchEff(goodies.fetch, url),
+        fetchEff(goodies.fetch, url),
         Effect.andThen((r) => r.blob()),
         Effect.andThen((b) => {
           const name = url.toString().split("/").pop();
