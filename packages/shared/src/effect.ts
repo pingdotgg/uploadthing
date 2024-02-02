@@ -8,9 +8,6 @@ export class FetchError extends Data.TaggedError("FetchError")<{
   readonly error: unknown;
 }> {}
 
-export type EffectValue<T> =
-  T extends Effect.Effect<any, any, infer A> ? A : never;
-
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly

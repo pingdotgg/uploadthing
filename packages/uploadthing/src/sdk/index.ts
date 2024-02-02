@@ -5,7 +5,6 @@ import { process } from "std-env";
 import type {
   ACL,
   ContentDisposition,
-  EffectValue,
   FetchEsque,
   Json,
   MaybeUrl,
@@ -30,6 +29,10 @@ import {
   uploadFilesInternal,
 } from "./utils";
 import type { FileEsque, Time } from "./utils";
+
+type Upload = Effect.Effect.Success<
+  ReturnType<typeof uploadFilesInternal>
+>[number];
 
 export interface UTApiOptions {
   /**
@@ -145,8 +148,6 @@ export class UTApi {
 
     const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
     logger.debug("Finished uploading:", uploadFileResponse);
-
-    type Upload = EffectValue<ReturnType<typeof uploadFilesInternal>>[number];
     return uploadFileResponse as T extends FileEsque[] ? Upload[] : Upload;
   };
 
@@ -194,8 +195,6 @@ export class UTApi {
 
     const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
     logger.debug("Finished uploading:", uploadFileResponse);
-
-    type Upload = EffectValue<ReturnType<typeof uploadFilesInternal>>[number];
     return uploadFileResponse as T extends MaybeUrl[] ? Upload[] : Upload;
   };
 

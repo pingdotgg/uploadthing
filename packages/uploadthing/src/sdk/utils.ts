@@ -13,7 +13,6 @@ import {
 import type {
   ACL,
   ContentDisposition,
-  EffectValue,
   FetchEsque,
   Json,
   MaybeUrl,
@@ -145,7 +144,7 @@ function getPresignedUrls(input: {
 }
 
 function uploadFile(
-  input: EffectValue<ReturnType<typeof getPresignedUrls>>[number],
+  input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
 ) {
   return Effect.gen(function* ($) {
     const { file, presigned, contentDisposition } = input;
