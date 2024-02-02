@@ -62,6 +62,11 @@ export function uploadFilesInternal(
   );
 }
 
+/**
+ * FIXME: downloading everything into memory and then upload
+ * isn't the best. We should support streams so we can download
+ * just as much as we need at any time.
+ */
 export function downloadFiles(urls: MaybeUrl[]) {
   return Effect.gen(function* ($) {
     const goodies = yield* $(Goodies);
