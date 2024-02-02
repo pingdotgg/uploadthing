@@ -42,10 +42,10 @@ export function getApiKeyOrThrow(apiKey?: string) {
   });
 }
 
-export const Goodies = Context.Tag<{
+export const fetchContext = Context.Tag<{
   fetch: FetchEsque;
   utRequestHeaders: Record<string, string>;
-}>("Goodies");
+}>("fetch-context");
 
 export function uploadFilesInternal(
   input: Parameters<typeof getPresignedUrls>[0],
@@ -67,11 +67,11 @@ export function uploadFilesInternal(
  */
 export function downloadFiles(urls: MaybeUrl[]) {
   return Effect.gen(function* ($) {
-    const goodies = yield* $(Goodies);
+    const context = yield* $(fetchContext);
 
     const downloads = urls.map((url) =>
       pipe(
-        fetchEff(goodies.fetch, url),
+        fetchEff(context.fetch, url),
         Effect.andThen((r) => r.blob()),
         Effect.andThen((b) => {
           const name = url.toString().split("/").pop();
@@ -92,7 +92,7 @@ function getPresignedUrls(input: {
 }) {
   return Effect.gen(function* ($) {
     const { files, metadata, contentDisposition, acl } = input;
-    const goodies = yield* $(Goodies);
+    const context = yield* $(fetchContext);
 
     const fileData = files.map((file) => ({
       name: file.name ?? "unnamed-blob",
@@ -117,12 +117,12 @@ function getPresignedUrls(input: {
 
     const presigneds = yield* $(
       fetchEffJson(
-        goodies.fetch,
+        context.fetch,
         responseSchema,
         generateUploadThingURL("/api/uploadFiles"),
         {
           method: "POST",
-          headers: goodies.utRequestHeaders,
+          headers: context.utRequestHeaders,
           cache: "no-store",
           body: JSON.stringify({
             files: fileData,
@@ -148,7 +148,6 @@ function uploadFile(
 ) {
   return Effect.gen(function* ($) {
     const { file, presigned, contentDisposition } = input;
-    const goodies = yield* $(Goodies);
 
     logger.debug(
       "Uploading file",
@@ -168,19 +167,15 @@ function uploadFile(
           const chunk = file.slice(offset, end);
 
           return pipe(
-            Effect.promise(() =>
-              uploadPart({
-                fetch: goodies.fetch,
-                url,
-                chunk: chunk as Blob,
-                contentDisposition,
-                contentType: file.type,
-                fileName: file.name,
-                maxRetries: 10,
-                key: presigned.key,
-                utRequestHeaders: goodies.utRequestHeaders,
-              }),
-            ),
+            uploadPart({
+              url,
+              chunk: chunk as Blob,
+              contentDisposition,
+              contentType: file.type,
+              fileName: file.name,
+              maxRetries: 10,
+              key: presigned.key,
+            }),
             Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
           );
         }),
@@ -207,11 +202,11 @@ function completeUpload(
   etags: { tag: string; partNumber: number }[],
 ) {
   return Effect.gen(function* ($) {
-    const goodies = yield* $(Goodies);
+    const context = yield* $(fetchContext);
 
     yield* $(
       fetchEff(
-        goodies.fetch,
+        context.fetch,
         generateUploadThingURL("/api/completeMultipart"),
         {
           method: "POST",
@@ -220,17 +215,17 @@ function completeUpload(
             uploadId: presigned.uploadId,
             etags,
           }),
-          headers: goodies.utRequestHeaders,
+          headers: context.utRequestHeaders,
         },
       ),
     );
 
     yield* $(
       fetchEffJson(
-        goodies.fetch,
+        context.fetch,
         S.struct({ status: S.string }),
         generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        { headers: goodies.utRequestHeaders },
+        { headers: context.utRequestHeaders },
       ),
       Effect.andThen((res) =>
         res.status === "done"

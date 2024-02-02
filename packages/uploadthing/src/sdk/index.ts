@@ -22,8 +22,8 @@ import type { LogLevel } from "../internal/logger";
 import { initLogger, logger } from "../internal/logger";
 import {
   downloadFiles,
+  fetchContext,
   getApiKeyOrThrow,
-  Goodies,
   guardServerOnly,
   parseTimeToSeconds,
   uploadFilesInternal,
@@ -139,8 +139,8 @@ export class UTApi {
         metadata: opts?.metadata ?? {},
         acl: opts?.acl,
       }),
-      Goodies,
-      Goodies.of({
+      fetchContext,
+      fetchContext.of({
         fetch: this.fetch,
         utRequestHeaders: this.defaultHeaders,
       }),
@@ -186,8 +186,8 @@ export class UTApi {
           }),
         ),
       ),
-      Goodies,
-      Goodies.of({
+      fetchContext,
+      fetchContext.of({
         fetch: this.fetch,
         utRequestHeaders: this.defaultHeaders,
       }),

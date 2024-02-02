@@ -1,79 +1,84 @@
-import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
-import type { ContentDisposition, FetchEsque } from "@uploadthing/shared";
+import { Effect, pipe } from "effect";
 
-import { maybeParseResponseXML } from "./s3-error-parser";
+import {
+  contentDisposition,
+  exponentialBackoff,
+  fetchEff,
+  generateUploadThingURL,
+  UploadThingError,
+} from "@uploadthing/shared";
+import type { ContentDisposition } from "@uploadthing/shared";
+
+import { fetchContext } from "../sdk/utils";
+
+// import { maybeParseResponseXML } from "./s3-error-parser";
 
 /**
  * Used by server uploads where progress is not needed.
  * Uses normal fetch API.
  */
-export async function uploadPart(
-  opts: {
-    fetch: FetchEsque;
-    url: string;
-    key: string;
-    chunk: Blob;
-    contentType: string;
-    contentDisposition: ContentDisposition;
-    fileName: string;
-    maxRetries: number;
-    utRequestHeaders: Record<string, string>;
-  },
-  retryCount = 0,
-) {
-  const s3Res = await opts.fetch(opts.url, {
-    method: "PUT",
-    body: opts.chunk,
-    headers: {
-      "Content-Type": opts.contentType,
-      "Content-Disposition": [
-        opts.contentDisposition,
-        `filename="${encodeURI(opts.fileName)}"`,
-        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
-      ].join("; "),
-    },
-  });
-
-  if (s3Res.ok) {
-    const etag = s3Res.headers.get("Etag");
-    if (!etag) {
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Missing Etag header from uploaded part",
-      });
-    }
-    return etag.replace(/"/g, "");
-  }
-
-  if (retryCount < opts.maxRetries) {
-    // Retry after exponential backoff
-    const delay = 2 ** retryCount * 1000;
-    await new Promise((r) => setTimeout(r, delay));
-    return uploadPart(opts, retryCount++);
-  }
-
-  // Max retries exceeded, tell UT server that upload failed
-  await opts.fetch(generateUploadThingURL("/api/failureCallback"), {
-    method: "POST",
-    body: JSON.stringify({
-      fileKey: opts.key,
-    }),
-    headers: opts.utRequestHeaders,
-  });
-
-  const text = await s3Res.text();
-  const parsed = maybeParseResponseXML(text);
-  if (parsed?.message) {
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: parsed.message,
-    });
-  }
-  throw new UploadThingError({
-    code: "UPLOAD_FAILED",
-    message: "Failed to upload file to storage provider",
-    cause: s3Res,
-  });
+export function uploadPart(opts: {
+  url: string;
+  key: string;
+  chunk: Blob;
+  contentType: string;
+  contentDisposition: ContentDisposition;
+  fileName: string;
+  maxRetries: number;
+}) {
+  return fetchContext.pipe(
+    Effect.flatMap((context) =>
+      pipe(
+        fetchEff(context.fetch, opts.url, {
+          method: "PUT",
+          body: opts.chunk,
+          headers: {
+            "Content-Type": opts.contentType,
+            "Content-Disposition": contentDisposition(
+              opts.contentDisposition,
+              opts.fileName,
+            ),
+          },
+        }),
+        Effect.andThen((res) =>
+          res.ok && res.headers.get("Etag")
+            ? Effect.succeed(res.headers.get("Etag")!)
+            : Effect.fail({ _tag: "Retry" as const }),
+        ),
+        Effect.retry({
+          while: (res) => res._tag === "Retry",
+          schedule: exponentialBackoff,
+          times: opts.maxRetries,
+        }),
+        Effect.tapErrorTag("Retry", () =>
+          pipe(
+            // Max retries exceeded, tell UT server that upload failed
+            fetchEff(
+              context.fetch,
+              generateUploadThingURL("/api/failureCallback"),
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  fileKey: opts.key,
+                }),
+                headers: context.utRequestHeaders,
+              },
+            ),
+            Effect.andThen(() =>
+              Effect.fail(
+                new UploadThingError({
+                  code: "UPLOAD_FAILED",
+                  // TODO: Add S3 error parsing back
+                  message: "Failed to upload file to storage provider",
+                  // cause: s3Res,
+                }),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 /**
@@ -99,11 +104,7 @@ export async function uploadPartWithProgress(
     xhr.setRequestHeader("Content-Type", opts.fileType);
     xhr.setRequestHeader(
       "Content-Disposition",
-      [
-        opts.contentDisposition,
-        `filename="${encodeURI(opts.fileName)}"`,
-        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
-      ].join("; "),
+      contentDisposition(opts.contentDisposition, opts.fileName),
     );
 
     xhr.onload = async () => {
