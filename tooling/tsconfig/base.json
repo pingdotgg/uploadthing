@@ -20,7 +20,7 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "jsx": "preserve",
+    "jsx": "preserve"
   },
   "include": ["*.ts"],
   "exclude": ["node_modules"]
