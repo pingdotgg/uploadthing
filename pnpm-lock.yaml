@@ -708,8 +708,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.3
-        version: 4.4.3(typescript@5.3.3)
+        specifier: ^4.4.5
+        version: 4.4.5(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -732,8 +732,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.3
-        version: 4.4.3(typescript@5.3.3)
+        specifier: ^4.4.5
+        version: 4.4.5(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -775,8 +775,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.3
-        version: 4.4.3(typescript@5.3.3)
+        specifier: ^4.4.5
+        version: 4.4.5(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -818,8 +818,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.3
-        version: 4.4.3(typescript@5.3.3)
+        specifier: ^4.4.5
+        version: 4.4.5(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -898,8 +898,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.3
-        version: 4.4.3(typescript@5.3.3)
+        specifier: ^4.4.5
+        version: 4.4.5(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -4655,20 +4655,7 @@ packages:
       estree-walker: 2.0.2
       glob: 8.1.0
       is-reference: 1.2.1
-      magic-string: 0.30.5
-      rollup: 4.9.6
-    dev: true
-
-  /@rollup/plugin-esm-shim@0.1.5(rollup@4.9.6):
-    resolution: {integrity: sha512-xnIjDm/0EbqAw0/rR1UE7eAo9db0ftGPqT8RUCFtkFxtCuspbbmj+wutoyxm32jBytyO3SgkxSG17OR893fV7A==}
-    engines: {node: '>=14.0.0'}
-    peerDependencies:
-      rollup: ^2.0.0||^3.0.0||^4.0.0
-    peerDependenciesMeta:
-      rollup:
-        optional: true
-    dependencies:
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       rollup: 4.9.6
     dev: true
 
@@ -4742,7 +4729,7 @@ packages:
         optional: true
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.9.6)
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       rollup: 4.9.6
     dev: true
 
@@ -6864,8 +6851,8 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bunchee@4.4.3(typescript@5.3.3):
-    resolution: {integrity: sha512-N67vxbBzdBOpbgwQtynvfKfM5mlvNw+f0IYFkrM0AL9/GFw/Zl6YB+4A/ph71A2OUvTLjWf4IRJIlQbBeR2xsg==}
+  /bunchee@4.4.5(typescript@5.3.3):
+    resolution: {integrity: sha512-PBqPDj58yw7XfDmhz+5XtuWXEg5puol1dBBI8kVgK3NbhcMTisZCe5rFP8v5TNoBVV/m8xfxx8N35Z7u1cSJCw==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
     peerDependencies:
@@ -6877,7 +6864,6 @@ packages:
         optional: true
     dependencies:
       '@rollup/plugin-commonjs': 25.0.7(rollup@4.9.6)
-      '@rollup/plugin-esm-shim': 0.1.5(rollup@4.9.6)
       '@rollup/plugin-json': 6.1.0(rollup@4.9.6)
       '@rollup/plugin-node-resolve': 15.2.3(rollup@4.9.6)
       '@rollup/plugin-replace': 5.0.5(rollup@4.9.6)
@@ -6887,6 +6873,7 @@ packages:
       '@swc/helpers': 0.5.3
       arg: 5.0.2
       clean-css: 5.3.3
+      magic-string: 0.30.6
       pretty-bytes: 5.6.0
       rimraf: 5.0.5
       rollup: 4.9.6
@@ -8899,7 +8886,7 @@ packages:
   /estree-util-attach-comments@2.1.1:
     resolution: {integrity: sha512-+5Ba/xGGS6mnwFbXIuQiDPTbuTxuMCooq3arVv7gPZtYpjp+VXH/NkHAP35OOefPhNG/UGqU3vt/LTABwcHX0w==}
     dependencies:
-      '@types/estree': 1.0.1
+      '@types/estree': 1.0.5
     dev: false
 
   /estree-util-build-jsx@2.2.2:
@@ -10362,7 +10349,7 @@ packages:
   /is-reference@3.0.1:
     resolution: {integrity: sha512-baJJdQLiYaJdvFbJqXrcGv3WU3QCzBlUcI5QhbesIm6/xPsvmO+2CDoi/GMOFBQEQm+PXkwOPrp9KK5ozZsp2w==}
     dependencies:
-      '@types/estree': 1.0.1
+      '@types/estree': 1.0.5
     dev: false
 
   /is-regex@1.1.4:
@@ -10895,6 +10882,14 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
+    dev: false
+
+  /magic-string@0.30.6:
+    resolution: {integrity: sha512-n62qCLbPjNjyo+owKtveQxZFZTBm+Ms6YoGD23Wew6Vw337PElFNifQpknPruVRQV57kVShPnLGo9vWxVhpPvA==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@jridgewell/sourcemap-codec': 1.4.15
+    dev: true
 
   /map-obj@1.0.1:
     resolution: {integrity: sha512-7N/q3lyZ+LVCp7PzuxrJr4KMbBE2hW7BT7YNia330OFxIf4d3r5zVpicP2650l7CPN6RM9zOJRl3NGpqSiw3Eg==}
@@ -11564,7 +11559,7 @@ packages:
   /micromark-extension-mdx-expression@1.0.8:
     resolution: {integrity: sha512-zZpeQtc5wfWKdzDsHRBY003H2Smg+PUi2REhqgIhdzAa5xonhP03FcXxqFSerFiNUr5AWmHpaNPQTBVOS4lrXw==}
     dependencies:
-      '@types/estree': 1.0.1
+      '@types/estree': 1.0.5
       micromark-factory-mdx-expression: 1.0.9
       micromark-factory-space: 1.1.0
       micromark-util-character: 1.2.0
@@ -11578,7 +11573,7 @@ packages:
     resolution: {integrity: sha512-gPH+9ZdmDflbu19Xkb8+gheqEDqkSpdCEubQyxuz/Hn8DOXiXvrXeikOoBA71+e8Pfi0/UYmU3wW3H58kr7akA==}
     dependencies:
       '@types/acorn': 4.0.6
-      '@types/estree': 1.0.1
+      '@types/estree': 1.0.5
       estree-util-is-identifier-name: 2.1.0
       micromark-factory-mdx-expression: 1.0.9
       micromark-factory-space: 1.1.0
@@ -11598,7 +11593,7 @@ packages:
   /micromark-extension-mdxjs-esm@1.0.5:
     resolution: {integrity: sha512-xNRBw4aoURcyz/S69B19WnZAkWJMxHMT5hE36GtDAyhoyn/8TuAeqjFJQlwk+MKQsUD7b3l7kFX+vlfVWgcX1w==}
     dependencies:
-      '@types/estree': 1.0.1
+      '@types/estree': 1.0.5
       micromark-core-commonmark: 1.1.0
       micromark-util-character: 1.2.0
       micromark-util-events-to-acorn: 1.2.3
@@ -13808,7 +13803,7 @@ packages:
       rollup: ^3.29.4 || ^4
       typescript: ^4.5 || ^5.0
     dependencies:
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       rollup: 4.9.6
       typescript: 5.3.3
     optionalDependencies:
@@ -13872,7 +13867,7 @@ packages:
     peerDependencies:
       rollup: ^2.0.0 || ^3.0.0 || ^4.0.0
     dependencies:
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       rollup: 4.9.6
     dev: true
 

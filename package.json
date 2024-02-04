@@ -2,7 +2,7 @@
   "name": "uploadthing-turbo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@8.14.1",
+  "packageManager": "pnpm@8.15.1",
   "engines": {
     "node": "20.x",
     "pnpm": "8.x"
