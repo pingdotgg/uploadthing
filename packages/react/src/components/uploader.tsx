@@ -1,3 +1,5 @@
+"use client";
+
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";

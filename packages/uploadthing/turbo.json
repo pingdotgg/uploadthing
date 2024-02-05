@@ -1,0 +1,19 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "build": {
+      "outputs": [
+        "client/**",
+        "express/**",
+        "fastify/**",
+        "h3/**",
+        "internal/**",
+        "next/**",
+        "next-legacy/**",
+        "server/**",
+        "tw/**"
+      ]
+    }
+  }
+}

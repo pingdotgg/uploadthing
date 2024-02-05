@@ -1,13 +1,22 @@
 {
   "name": "@uploadthing/shared",
   "version": "6.2.1",
+  "type": "module",
   "license": "MIT",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     }
   },
   "files": [
@@ -16,27 +25,19 @@
   "publishConfig": {
     "access": "public"
   },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "scripts": {
-    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
+    "lint": "eslint src --max-warnings 0",
+    "build": "bunchee",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
+    "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/mime-types": "0.2.2",
     "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
+    "bunchee": "^4.4.5",
     "eslint": "^8.56.0",
-    "tsup": "6.7.0",
     "typescript": "^5.3.3"
   },
   "peerDependencies": {

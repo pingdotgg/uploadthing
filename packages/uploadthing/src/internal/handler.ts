@@ -1,6 +1,6 @@
 import { isDevelopment, process } from "std-env";
 
-import type { MimeType } from "@uploadthing/mime-types/db";
+import type { MimeType } from "@uploadthing/mime-types";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
