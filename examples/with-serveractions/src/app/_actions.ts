@@ -2,7 +2,9 @@
 
 import { UTApi } from "uploadthing/server";
 
-const utapi = new UTApi();
+const utapi = new UTApi({
+  logLevel: "debug",
+});
 
 /**
  * @see https://docs.uploadthing.com/api-reference/server#uploadfiles
