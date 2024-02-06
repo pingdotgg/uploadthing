@@ -47,6 +47,7 @@ export const conditionalDevServer = async (opts: {
             key: opts.fileKey,
             name: file.fileName,
             size: file.fileSize,
+            customId: file.customId,
           },
         }),
         headers: {

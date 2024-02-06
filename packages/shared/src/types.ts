@@ -73,6 +73,7 @@ export interface FileData {
   fileName: string;
   fileSize: number;
   metadata: string | null;
+  customId: string | null;
 
   callbackUrl: string;
   callbackSlug: string;
@@ -83,6 +84,7 @@ export type UploadedFile = {
   key: string;
   url: string;
   size: number;
+  customId: string | null;
 };
 
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
