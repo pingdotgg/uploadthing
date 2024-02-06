@@ -330,22 +330,7 @@ async function uploadPresignedPost(
 ) {
   const formData = new FormData();
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
-
-  // Give content type to blobs because S3 is dumb
-  // check if content-type is one of the allowed types, or if not and blobs are allowed, use application/octet-stream
-  if (
-    presigned.fileType === file.type.split("/")[0] ||
-    presigned.fileType === file.type
-  ) {
-    formData.append("Content-Type", file.type);
-  } else if (presigned.fileType === "blob") {
-    formData.append("Content-Type", "application/octet-stream");
-  } else if (presigned.fileType === "pdf") {
-    formData.append("Content-Type", "application/pdf");
-  }
-
-  // File data **MUST GO LAST**
-  formData.append("file", file);
+  formData.append("file", file); // File data **MUST GO LAST**
 
   const res = await fetchWithProgress(presigned.presignedUrl, {
     method: "POST",
