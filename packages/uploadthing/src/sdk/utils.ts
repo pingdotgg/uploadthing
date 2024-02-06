@@ -238,10 +238,7 @@ async function uploadPresignedPost(
 
   const formData = new FormData();
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
-  // Give content type to blobs because S3 is dumb
-  formData.append("Content-Type", file.type);
-  // File data **MUST GO LAST**
-  formData.append("file", file as Blob);
+  formData.append("file", file as Blob); // File data **MUST GO LAST**
 
   const res = await opts.fetch(presigned.presignedUrl, {
     method: "POST",
