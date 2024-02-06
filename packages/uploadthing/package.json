@@ -104,7 +104,7 @@
     "express",
     "fastify",
     "h3",
-    "interal",
+    "internal",
     "next",
     "next-legacy",
     "server",
