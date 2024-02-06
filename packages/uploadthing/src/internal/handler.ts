@@ -122,7 +122,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
 type UploadThingBaseResponse = {
   key: string;
   fileName: string;
-  fileType: string;
+  fileType: FileRouterInputKey;
   fileUrl: string;
   contentDisposition: ContentDisposition;
   pollingJwt: string;
