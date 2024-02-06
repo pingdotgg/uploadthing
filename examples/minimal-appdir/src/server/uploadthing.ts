@@ -26,7 +26,7 @@ export const uploadRouter = {
       acl: "public-read",
     },
     video: {
-      maxFileSize: "32MB",
+      maxFileSize: "16MB",
     },
   })
     .middleware(({ req }) => {
