@@ -123,7 +123,7 @@ export const uploadFilesInternal = async (
         });
       }
 
-      if ("presignedUrls" in presigned) {
+      if ("urls" in presigned) {
         await uploadMultipart(file, presigned, { ...opts });
       } else {
         await uploadPresignedPost(file, presigned, { ...opts });
@@ -174,14 +174,14 @@ async function uploadMultipart(
     "Uploading file",
     file.name,
     "with",
-    presigned.presignedUrls.length,
+    presigned.urls.length,
     "chunks of size",
     presigned.chunkSize,
     "bytes each",
   );
 
   const etags = await Promise.all(
-    presigned.presignedUrls.map(async (url, index) => {
+    presigned.urls.map(async (url, index) => {
       const offset = presigned.chunkSize * index;
       const end = Math.min(offset + presigned.chunkSize, file.size);
       const chunk = file.slice(offset, end);
@@ -240,7 +240,7 @@ async function uploadPresignedPost(
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
   formData.append("file", file as Blob); // File data **MUST GO LAST**
 
-  const res = await opts.fetch(presigned.presignedUrl, {
+  const res = await opts.fetch(presigned.url, {
     method: "POST",
     body: formData,
     headers: new Headers({
