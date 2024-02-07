@@ -222,11 +222,33 @@ export const { useUploadThing, uploadFiles } =
 
 > Added in `v5.6`
 
-This hook is currently a 1:1 fork of
+This hook is currently a minified fork of
 [react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
 ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
 
-You can import the hook from `@uploadthing/react`.
+Several features have been removed:
+ - `autofocus` Option
+ - `children` Option
+ - `getFilesFromEvent` Option
+ - `noClick` Option
+ - `noDrag` Option
+ - `noDragEventsBubbling` Option
+ - `noKeyboard` Option
+ - `onDragEnter` Option
+ - `onDragLeave` Option
+ - `onDragOver` Option
+ - `onDropAccepted` Option
+ - `onDropRejected` Option
+ - `onError` Option
+ - `onFileDialogCancel` Option
+ - `onFileDialogOpen` Option
+ - `preventDropOnDocument` Option
+ - `useFsAccessApi` Option
+ - `validator` Option
+ - `open` Method
+
+You can import the minified hook from `@uploadthing/react`.
+If you need access to any of the above APIs, you should import the original hook from `react-dropzone`.
 
 <Callout type="info">
   This hook isn't strictly covered by semver as we might make changes to tailor
