@@ -115,7 +115,7 @@
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "bunchee",
+    "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "bunchee -w",
     "typecheck": "tsc --noEmit"
