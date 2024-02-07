@@ -130,12 +130,12 @@ type UploadThingBaseResponse = {
 };
 
 export interface PSPResponse extends UploadThingBaseResponse {
-  presignedUrl: string;
+  url: string;
   fields: Record<string, string>;
 }
 
 export interface MPUResponse extends UploadThingBaseResponse {
-  presignedUrls: string[];
+  urls: string[];
   uploadId: string;
   chunkSize: number;
   chunkCount: number;

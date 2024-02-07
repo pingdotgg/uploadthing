@@ -157,7 +157,7 @@ export const DANGEROUS__uploadFiles = async <
     }
 
     opts.onUploadBegin?.({ file: file.name });
-    if ("presignedUrls" in presigned) {
+    if ("urls" in presigned) {
       await uploadMultipart(file, presigned, { reportEventToUT, ...opts });
       // wait a bit as it's unsreasonable to expect the server to be done by now
       await new Promise((r) => setTimeout(r, 750));
@@ -274,7 +274,7 @@ async function uploadMultipart(
 
   try {
     etags = await Promise.all(
-      presigned.presignedUrls.map(async (url, index) => {
+      presigned.urls.map(async (url, index) => {
         const offset = presigned.chunkSize * index;
         const end = Math.min(offset + presigned.chunkSize, file.size);
         const chunk = file.slice(offset, end);
@@ -332,7 +332,7 @@ async function uploadPresignedPost(
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
   formData.append("file", file); // File data **MUST GO LAST**
 
-  const res = await fetchWithProgress(presigned.presignedUrl, {
+  const res = await fetchWithProgress(presigned.url, {
     method: "POST",
     body: formData,
     headers: new Headers({
