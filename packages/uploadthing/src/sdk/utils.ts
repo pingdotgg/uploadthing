@@ -42,7 +42,9 @@ export function getApiKeyOrThrow(apiKey?: string) {
   });
 }
 
-export type FileEsque = (Blob & { name: string }) | UndiciFile;
+export type FileEsque =
+  | (Blob & { name: string; customId?: string })
+  | UndiciFile;
 
 export type UploadData = {
   key: string;
@@ -78,6 +80,7 @@ export const uploadFilesInternal = async (
     name: file.name ?? "unnamed-blob",
     type: file.type,
     size: file.size,
+    ...("customId" in file ? { customId: file.customId } : {}),
   }));
   logger.debug("Getting presigned URLs for files", fileData);
   const res = await opts.fetch(generateUploadThingURL("/api/uploadFiles"), {
