@@ -88,7 +88,26 @@ fastify
 
 ### Use the FileRouter in your app
 
-Please refer to client side examples:
+Client side usage differs ever so slightly from the fullstack framework setups
+when using a separate backend server. You'll need to set the URL of your server
+when you generate the components and helpers.
+
+```tsx
+import { generateUploadButton } from "@uploadthing/react";
+
+export const UploadButton = generateUploadButton({
+  url: "https://your-server.com/api/uploadthing",
+});
+// ...
+```
+
+<Callout type="info">
+  Please note that you might need to setup some CORS rules on your server to
+  allow the client to make requests to the server.
+</Callout>
+
+For the remaining usage, please refer to client side examples of the fullstack
+framework guides:
 
 - [NextJS App directory](/getting-started/appdir#create-the-uploadthing-components-optional)
 - [NextJS Pages directory](/getting-started/pagedir#create-the-uploadthing-components-optional)
