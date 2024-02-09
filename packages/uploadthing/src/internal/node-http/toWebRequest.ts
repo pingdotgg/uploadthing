@@ -9,10 +9,9 @@ type IncomingMessageLike = {
   body?: any;
 };
 
-function parseUrlFromHeaders(
-  relativeUrl: string | undefined,
-  headers: Record<string, string | string[] | undefined> | undefined,
-): URL {
+function parseURL(req: IncomingMessageLike): URL {
+  const { url: relativeUrl, headers } = req;
+
   const proto = (headers?.["x-forwarded-proto"] as string) ?? "http";
   const host = headers?.host as string;
   const origin = headers?.origin as string;
@@ -58,7 +57,7 @@ export function toWebRequest(req: IncomingMessageLike, body?: any) {
   const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
   const method = req.method ?? "GET";
   const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
-  return new Request(parseUrlFromHeaders(req.url, req.headers), {
+  return new Request(parseURL(req), {
     method,
     headers: req.headers as HeadersInit,
     ...(allowsBody ? { body: bodyStr } : {}),
