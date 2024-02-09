@@ -33,6 +33,7 @@ function parseUrlFromHeaders(
     );
   }
   try {
+    // If we still didn't get any luck, try the environment variable
     return new URL(relativeUrl ?? "/", process.env.UPLOADTHING_URL);
   } catch {
     logger.fatal(
