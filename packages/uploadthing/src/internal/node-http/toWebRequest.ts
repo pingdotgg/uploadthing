@@ -10,14 +10,14 @@ type IncomingMessageLike = {
 };
 
 function parseURL(req: IncomingMessageLike): URL {
-  const { url: relativeUrl, headers } = req;
+  const { url: relativeUrl = "/", headers } = req;
 
   const proto = (headers?.["x-forwarded-proto"] as string) ?? "http";
   const host = headers?.host as string;
   const origin = headers?.origin as string;
   try {
     // proto and host headers are standard in HTTP/1.1
-    return new URL(relativeUrl ?? "/", `${proto}://${host}`);
+    return new URL(relativeUrl, `${proto}://${host}`);
   } catch {
     logger.warn(
       "No valid URL could be parsed using proto+host headers. Trying origin.",
@@ -25,7 +25,7 @@ function parseURL(req: IncomingMessageLike): URL {
   }
   try {
     // e.g. FlightControl doesn't adhere to this and doesn't send a host header...
-    return new URL(relativeUrl ?? "/", origin);
+    return new URL(relativeUrl, origin);
   } catch {
     logger.warn(
       "No valid URL could be parsed using origin header. Trying environment variable.",
@@ -33,7 +33,7 @@ function parseURL(req: IncomingMessageLike): URL {
   }
   try {
     // If we still didn't get any luck, try the environment variable
-    return new URL(relativeUrl ?? "/", process.env.UPLOADTHING_URL);
+    return new URL(relativeUrl, process.env.UPLOADTHING_URL);
   } catch {
     logger.fatal(
       "No valid URL could be parsed using environment variable. Aborting.",
