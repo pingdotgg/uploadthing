@@ -14,7 +14,10 @@ import {
 import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import { toWebRequest } from "./internal/node-http/toWebRequest";
+import {
+  parseUrlFromHeaders,
+  toWebRequest,
+} from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -52,9 +55,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
-
+    const url = parseUrlFromHeaders(req.url, req.headers);
     const response = await requestHandler({
       nativeRequest: toWebRequest(req, url),
       originalRequest: req,
