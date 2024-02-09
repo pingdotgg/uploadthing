@@ -3,18 +3,19 @@ import { process } from "std-env";
 import { logger } from "../logger";
 
 type IncomingMessageLike = {
+  url?: string;
   method?: string;
   headers?: Record<string, string | string[] | undefined>;
   body?: any;
 };
 
-export function parseUrlFromHeaders(
+function parseUrlFromHeaders(
   relativeUrl: string | undefined,
-  headers: Record<string, string | string[] | undefined>,
+  headers: Record<string, string | string[] | undefined> | undefined,
 ): URL {
-  const proto = (headers["x-forwarded-proto"] as string) ?? "http";
-  const host = headers.host as string;
-  const origin = headers.origin as string;
+  const proto = (headers?.["x-forwarded-proto"] as string) ?? "http";
+  const host = headers?.host as string;
+  const origin = headers?.origin as string;
   try {
     // proto and host headers are standard in HTTP/1.1
     return new URL(relativeUrl ?? "/", `${proto}://${host}`);
@@ -51,12 +52,12 @@ export function parseUrlFromHeaders(
   }
 }
 
-export function toWebRequest(req: IncomingMessageLike, url: URL, body?: any) {
+export function toWebRequest(req: IncomingMessageLike, body?: any) {
   body ??= req.body;
   const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
   const method = req.method ?? "GET";
   const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
-  return new Request(url, {
+  return new Request(parseUrlFromHeaders(req.url, req.headers), {
     method,
     headers: req.headers as HeadersInit,
     ...(allowsBody ? { body: bodyStr } : {}),

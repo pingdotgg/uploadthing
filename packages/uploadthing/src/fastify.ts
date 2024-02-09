@@ -50,11 +50,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST: RouteHandlerMethod = async (req, res) => {
-    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = new URL(req.url, `${proto}://${req.headers.host}`);
-
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, url),
+      nativeRequest: toWebRequest(req),
       originalRequest: req,
       res,
       event: undefined,

@@ -14,10 +14,7 @@ import {
 import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import {
-  parseUrlFromHeaders,
-  toWebRequest,
-} from "./internal/node-http/toWebRequest";
+import { toWebRequest } from "./internal/node-http/toWebRequest";
 import type { FileRouter } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -55,9 +52,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const url = parseUrlFromHeaders(req.url, req.headers);
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, url),
+      nativeRequest: toWebRequest(req),
       originalRequest: req,
       res,
       event: undefined,
