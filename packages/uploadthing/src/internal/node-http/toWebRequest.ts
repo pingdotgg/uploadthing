@@ -13,11 +13,19 @@ function parseURL(req: IncomingMessageLike): URL {
   const { url: relativeUrl = "/", headers } = req;
 
   if (!headers) {
-    logger.warn(
-      "No headers found in request. Using UPLOADTHING_URL as base URL:",
-      process.env.UPLOADTHING_URL,
-    );
-    return new URL(relativeUrl, process.env.UPLOADTHING_URL);
+    const host = process.env.UPLOADTHING_URL;
+    try {
+      logger.debug(
+        "No headers found in request. Using UPLOADTHING_URL environment variable as base URL:",
+        host,
+      );
+      return new URL(relativeUrl, host);
+    } catch (e) {
+      logger.error(
+        `Failed to parse URL from request. '${host}' is not a valid URL.`,
+      );
+      throw e;
+    }
   }
 
   const proto = (headers["x-forwarded-proto"] as string) ?? "http";
