@@ -366,15 +366,10 @@ function fetchWithProgress(
   return new Promise<XMLHttpRequest>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open(opts.method ?? "get", url);
-    opts.headers &&
-      Object.entries(opts.headers).forEach(
-        ([k, v]) => opts.headers && xhr.setRequestHeader(k, v as string),
-      );
-
+    opts.headers?.forEach(([k, v]) => xhr.setRequestHeader(k, v));
     xhr.upload.onprogress = opts.onProgress ?? null;
     xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
     xhr.onerror = (e) => reject(e);
-
     xhr.send(opts.body);
   });
 }
