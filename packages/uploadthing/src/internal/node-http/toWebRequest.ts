@@ -1,5 +1,3 @@
-import { process } from "std-env";
-
 import { logger } from "../logger";
 
 type IncomingMessageLike = {
@@ -13,42 +11,15 @@ function parseURL(req: IncomingMessageLike): URL {
   const { url: relativeUrl = "/", headers } = req;
 
   const proto = (headers?.["x-forwarded-proto"] as string) ?? "http";
-  const host = headers?.host as string;
-  const origin = headers?.origin as string;
+  const host = (headers?.["x-forwarded-host"] ?? headers?.host) as string;
+
   try {
-    // proto and host headers are standard in HTTP/1.1
-    return new URL(relativeUrl, `${proto}://${host}`);
-  } catch {
-    logger.warn(
-      "No valid URL could be parsed using proto+host headers. Trying origin.",
+    return new URL(`${proto}://${host}${relativeUrl}`);
+  } catch (e) {
+    logger.error(
+      `Failed to parse URL from request. '${proto}://${host}${relativeUrl}' is not a valid URL.`,
     );
-  }
-  try {
-    // e.g. FlightControl doesn't adhere to this and doesn't send a host header...
-    return new URL(relativeUrl, origin);
-  } catch {
-    logger.warn(
-      "No valid URL could be parsed using origin header. Trying environment variable.",
-    );
-  }
-  try {
-    // If we still didn't get any luck, try the environment variable
-    return new URL(relativeUrl, process.env.UPLOADTHING_URL);
-  } catch {
-    logger.fatal(
-      "No valid URL could be parsed using environment variable. Aborting.",
-    );
-    throw new Error(
-      `No valid URL could be parsed. Tried proto+host, origin, and environment variable: ${JSON.stringify(
-        {
-          relativeUrl,
-          proto,
-          host,
-          origin,
-          env: process.env.UPLOADTHING_URL,
-        },
-      )}`,
-    );
+    throw e;
   }
 }
 
