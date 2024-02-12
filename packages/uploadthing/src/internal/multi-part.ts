@@ -25,59 +25,59 @@ export function uploadPart(opts: {
   fileName: string;
   maxRetries: number;
 }) {
-  return fetchContext.pipe(
-    Effect.flatMap((context) =>
-      pipe(
-        fetchEff(context.fetch, opts.url, {
-          method: "PUT",
-          body: opts.chunk,
-          headers: {
-            "Content-Type": opts.contentType,
-            "Content-Disposition": contentDisposition(
-              opts.contentDisposition,
-              opts.fileName,
-            ),
-          },
-        }),
-        Effect.andThen((res) =>
-          res.ok && res.headers.get("Etag")
-            ? Effect.succeed(res.headers.get("Etag")!)
-            : Effect.fail({ _tag: "Retry" as const }),
-        ),
-        Effect.retry({
-          while: (res) => res._tag === "Retry",
-          schedule: exponentialBackoff,
-          times: opts.maxRetries,
-        }),
-        Effect.tapErrorTag("Retry", () =>
-          pipe(
-            // Max retries exceeded, tell UT server that upload failed
-            fetchEff(
-              context.fetch,
-              generateUploadThingURL("/api/failureCallback"),
-              {
-                method: "POST",
-                body: JSON.stringify({
-                  fileKey: opts.key,
-                }),
-                headers: context.utRequestHeaders,
-              },
-            ),
-            Effect.andThen(() =>
-              Effect.fail(
-                new UploadThingError({
-                  code: "UPLOAD_FAILED",
-                  // TODO: Add S3 error parsing back
-                  message: "Failed to upload file to storage provider",
-                  // cause: s3Res,
-                }),
-              ),
+  return Effect.gen(function* ($) {
+    const context = yield* $(fetchContext);
+
+    return yield* $(
+      fetchEff(context.fetch, opts.url, {
+        method: "PUT",
+        body: opts.chunk,
+        headers: {
+          "Content-Type": opts.contentType,
+          "Content-Disposition": contentDisposition(
+            opts.contentDisposition,
+            opts.fileName,
+          ),
+        },
+      }),
+      Effect.andThen((res) =>
+        res.ok && res.headers.get("Etag")
+          ? Effect.succeed(res.headers.get("Etag")!)
+          : Effect.fail({ _tag: "Retry" as const }),
+      ),
+      Effect.retry({
+        while: (res) => res._tag === "Retry",
+        schedule: exponentialBackoff,
+        times: opts.maxRetries,
+      }),
+      Effect.tapErrorTag("Retry", () =>
+        pipe(
+          // Max retries exceeded, tell UT server that upload failed
+          fetchEff(
+            context.fetch,
+            generateUploadThingURL("/api/failureCallback"),
+            {
+              method: "POST",
+              body: JSON.stringify({
+                fileKey: opts.key,
+              }),
+              headers: context.utRequestHeaders,
+            },
+          ),
+          Effect.andThen(() =>
+            Effect.fail(
+              new UploadThingError({
+                code: "UPLOAD_FAILED",
+                // TODO: Add S3 error parsing back
+                message: "Failed to upload file to storage provider",
+                // cause: s3Res,
+              }),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  });
 }
 
 /**
