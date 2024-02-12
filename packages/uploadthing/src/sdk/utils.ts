@@ -1,10 +1,20 @@
+/**
+ * These are imported to make TypeScript aware of the types.
+ * It's having a hard time resolving deeply nested stuff from transitive dependencies.
+ * You'll notice if you need to add more imports if you get build errors like:
+ * `The type of X cannot be inferred without a reference to <MODULE>`
+ */
+import "@effect/schema/ParseResult";
+import "effect/Cause";
+
 import { Schema as S } from "@effect/schema";
-import { Context, Effect, pipe } from "effect";
+import { Effect, pipe } from "effect";
 import { process } from "std-env";
 import type { File as UndiciFile } from "undici";
 
 import {
   exponentialBackoff,
+  fetchContext,
   fetchEff,
   fetchEffJson,
   generateUploadThingURL,
@@ -13,7 +23,6 @@ import {
 import type {
   ACL,
   ContentDisposition,
-  FetchEsque,
   Json,
   MaybeUrl,
 } from "@uploadthing/shared";
@@ -39,11 +48,6 @@ export function getApiKeyOrThrow(apiKey?: string) {
     message: "Missing `UPLOADTHING_SECRET` env variable.",
   });
 }
-
-export const fetchContext = Context.Tag<{
-  fetch: FetchEsque;
-  utRequestHeaders: Record<string, string>;
-}>("fetch-context");
 
 export type FileEsque =
   | (Blob & { name: string; customId?: string })

@@ -12,6 +12,7 @@ import type {
 } from "@uploadthing/shared";
 import {
   asArray,
+  fetchContext,
   fetchEffJson,
   generateUploadThingURL,
   UploadThingError,
@@ -23,7 +24,6 @@ import type { LogLevel } from "../internal/logger";
 import { initLogger, logger } from "../internal/logger";
 import {
   downloadFiles,
-  fetchContext,
   getApiKeyOrThrow,
   guardServerOnly,
   parseTimeToSeconds,

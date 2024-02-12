@@ -3,13 +3,12 @@ import { Effect, pipe } from "effect";
 import {
   contentDisposition,
   exponentialBackoff,
+  fetchContext,
   fetchEff,
   generateUploadThingURL,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
-
-import { fetchContext } from "../sdk/utils";
 
 // import { maybeParseResponseXML } from "./s3-error-parser";
 

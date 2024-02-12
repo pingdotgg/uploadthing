@@ -1,5 +1,5 @@
 import { Schema } from "@effect/schema";
-import { Data, Duration, Effect, pipe, Schedule } from "effect";
+import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
 
 import type { FetchEsque } from "./types";
 
@@ -7,6 +7,11 @@ export class FetchError extends Data.TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
   readonly error: unknown;
 }> {}
+
+export const fetchContext = Context.Tag<{
+  fetch: FetchEsque;
+  utRequestHeaders: Record<string, string>;
+}>("fetch-context");
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
