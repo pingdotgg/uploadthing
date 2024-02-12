@@ -120,7 +120,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-interface UploadThingBaseResponse  {
+interface UploadThingBaseResponse {
   key: string;
   fileName: string;
   fileType: FileRouterInputKey;
@@ -128,7 +128,7 @@ interface UploadThingBaseResponse  {
   contentDisposition: ContentDisposition;
   pollingJwt: string;
   pollingUrl: string;
-};
+}
 
 export interface PSPResponse extends UploadThingBaseResponse {
   url: string;
