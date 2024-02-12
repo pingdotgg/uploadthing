@@ -52,7 +52,7 @@
     "lint": "eslint src --max-warnings 0",
     "clean": "git clean -xdf dist hooks native next-ssr-plugin node_modules",
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
-    "build": "bunchee && pnpm build:css",
+    "build": "bunchee --tsconfig tsconfig.build.json && pnpm build:css",
     "typecheck": "tsc --noEmit",
     "dev": "wait-on ../uploadthing/dist/server.mjs && bunchee -w"
   },

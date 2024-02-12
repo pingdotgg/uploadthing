@@ -27,9 +27,9 @@
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "bunchee",
+    "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "bunchee -w",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
