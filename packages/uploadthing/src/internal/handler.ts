@@ -120,7 +120,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-type UploadThingBaseResponse = {
+interface UploadThingBaseResponse  {
   key: string;
   fileName: string;
   fileType: FileRouterInputKey;
