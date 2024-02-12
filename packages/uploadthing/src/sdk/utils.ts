@@ -79,9 +79,9 @@ export function downloadFiles(urls: MaybeUrl[]) {
       pipe(
         fetchEff(context.fetch, url),
         Effect.andThen((r) => r.blob()),
-        Effect.andThen((b) => {
+        Effect.andThen((blob) => {
           const name = url.toString().split("/").pop();
-          return Object.assign(b, { name: name ?? "unknown-filename" });
+          return Object.assign(blob, { name: name ?? "unknown-filename" });
         }),
       ),
     );
