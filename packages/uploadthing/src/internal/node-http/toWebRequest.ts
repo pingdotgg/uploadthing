@@ -13,8 +13,8 @@ function parseURL(req: IncomingMessageLike): URL {
   const { url: relativeUrl = "/", headers } = req;
 
   if (!headers) {
-    const host = process.env.UPLOADTHING_URL;
     try {
+      const host = process.env.UPLOADTHING_URL;
       logger.debug(
         "No headers found in request. Using UPLOADTHING_URL environment variable as base URL:",
         host,
@@ -22,7 +22,7 @@ function parseURL(req: IncomingMessageLike): URL {
       return new URL(relativeUrl, host);
     } catch (e) {
       logger.error(
-        `Failed to parse URL from request. '${host}' is not a valid URL.`,
+        `Failed to parse URL from request. UPLOADTHING_URL is not a valid URL.`,
       );
       throw e;
     }
