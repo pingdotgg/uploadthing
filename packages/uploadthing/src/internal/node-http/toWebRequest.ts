@@ -16,7 +16,10 @@ function parseURL(req: IncomingMessageLike): URL {
     relativeUrl = req.baseUrl + relativeUrl;
   }
 
-  if (!headers) {
+  const proto = headers?.["x-forwarded-proto"] ?? "http";
+  const host = headers?.["x-forwarded-host"] ?? headers?.host;
+
+  if (typeof proto !== "string" || typeof host !== "string") {
     try {
       const host = process.env.UPLOADTHING_URL;
       logger.debug(
@@ -31,9 +34,6 @@ function parseURL(req: IncomingMessageLike): URL {
       throw e;
     }
   }
-
-  const proto = (headers["x-forwarded-proto"] as string) ?? "http";
-  const host = (headers["x-forwarded-host"] ?? headers.host) as string;
 
   try {
     return new URL(`${proto}://${host}${relativeUrl}`);
