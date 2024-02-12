@@ -1,3 +1,5 @@
+import { process } from "std-env";
+
 import { logger } from "../logger";
 
 type IncomingMessageLike = {
@@ -10,8 +12,16 @@ type IncomingMessageLike = {
 function parseURL(req: IncomingMessageLike): URL {
   const { url: relativeUrl = "/", headers } = req;
 
-  const proto = (headers?.["x-forwarded-proto"] as string) ?? "http";
-  const host = (headers?.["x-forwarded-host"] ?? headers?.host) as string;
+  if (!headers) {
+    logger.warn(
+      "No headers found in request. Using UPLOADTHING_URL as base URL:",
+      process.env.UPLOADTHING_URL,
+    );
+    return new URL(relativeUrl, process.env.UPLOADTHING_URL);
+  }
+
+  const proto = (headers["x-forwarded-proto"] as string) ?? "http";
+  const host = (headers["x-forwarded-host"] ?? headers.host) as string;
 
   try {
     return new URL(`${proto}://${host}${relativeUrl}`);
