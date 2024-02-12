@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  bunchee@4.4.5:
+    hash: fqobhpxt7m2au3j2mth2bjpfii
+    path: patches/bunchee@4.4.5.patch
+
 importers:
 
   .:
@@ -709,7 +714,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -733,7 +738,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -776,7 +781,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -825,7 +830,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -911,7 +916,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -6048,7 +6053,7 @@ packages:
       '@vue/compiler-ssr': 3.4.15
       '@vue/shared': 3.4.15
       estree-walker: 2.0.2
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       postcss: 8.4.33
       source-map-js: 1.0.2
     dev: false
@@ -6873,7 +6878,7 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bunchee@4.4.5(typescript@5.3.3):
+  /bunchee@4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3):
     resolution: {integrity: sha512-PBqPDj58yw7XfDmhz+5XtuWXEg5puol1dBBI8kVgK3NbhcMTisZCe5rFP8v5TNoBVV/m8xfxx8N35Z7u1cSJCw==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
@@ -6905,6 +6910,7 @@ packages:
       tslib: 2.6.2
       typescript: 5.3.3
     dev: true
+    patched: true
 
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}
@@ -10922,7 +10928,6 @@ packages:
     engines: {node: '>=12'}
     dependencies:
       '@jridgewell/sourcemap-codec': 1.4.15
-    dev: true
 
   /map-obj@1.0.1:
     resolution: {integrity: sha512-7N/q3lyZ+LVCp7PzuxrJr4KMbBE2hW7BT7YNia330OFxIf4d3r5zVpicP2650l7CPN6RM9zOJRl3NGpqSiw3Eg==}
