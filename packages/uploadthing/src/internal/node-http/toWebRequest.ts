@@ -10,7 +10,11 @@ type IncomingMessageLike = {
 };
 
 function parseURL(req: IncomingMessageLike): URL {
-  const { url: relativeUrl = "/", headers } = req;
+  const headers = req.headers;
+  let relativeUrl = req.url ?? "/";
+  if ("baseUrl" in req && typeof req.baseUrl === "string") {
+    relativeUrl = req.baseUrl + relativeUrl;
+  }
 
   if (!headers) {
     try {
