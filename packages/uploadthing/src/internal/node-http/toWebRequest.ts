@@ -21,14 +21,10 @@ function parseURL(req: IncomingMessageLike): URL {
 
   if (typeof proto !== "string" || typeof host !== "string") {
     try {
-      logger.debug(
-        "No headers found in request. Using UPLOADTHING_URL environment variable as base URL:",
-        process.env.UPLOADTHING_URL,
-      );
       return new URL(relativeUrl, process.env.UPLOADTHING_URL);
     } catch (e) {
       logger.error(
-        `Failed to parse URL from request. UPLOADTHING_URL is not a valid URL.`,
+        `Failed to parse URL from request. No headers found and env.UPLOADTHING_URL is not a valid URL.`,
       );
       throw e;
     }
