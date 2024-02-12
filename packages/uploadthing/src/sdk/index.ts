@@ -418,7 +418,7 @@ export class UTApi {
 
   /** Request a presigned url for a private file(s) */
   getSignedURL = (
-    fileKey: string,
+    key: string,
     opts?: {
       /**
        * How long the URL will be valid for.
