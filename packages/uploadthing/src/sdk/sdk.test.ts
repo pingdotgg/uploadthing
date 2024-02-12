@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 
 import type { ResponseEsque } from "@uploadthing/shared";
 
-import { UTApi } from ".";
+import { UTApi, UTFile } from ".";
 import type { UploadError } from "./utils";
 
 const utapi = new UTApi({ apiKey: "sk_test_foo" });
@@ -15,6 +15,24 @@ async function ignoreErrors<T>(fn: () => T | Promise<T>) {
     // no-op
   }
 }
+
+describe("UTFile", () => {
+  test("can be constructed using Blob", async () => {
+    const blob = new Blob(["foo"], { type: "text/plain" });
+    const file = new UTFile([blob], "foo.txt");
+    expect(file.type).toBe("text/plain");
+    await expect(file.text()).resolves.toBe("foo");
+
+    const fileWithId = new UTFile([blob], "foo.txt", { customId: "foo" });
+    expect(fileWithId.customId).toBe("foo");
+  });
+
+  test("can be constructed using string", async () => {
+    const file = new UTFile(["foo"], "foo.txt");
+    expect(file.type).toBe("text/plain");
+    await expect(file.text()).resolves.toBe("foo");
+  });
+});
 
 describe("uploadFiles", () => {
   test("returns array if array is passed", () => {
@@ -37,6 +55,17 @@ describe("uploadFiles", () => {
         | { data: null; error: UploadError }
       >(result);
     });
+  });
+
+  test("accepts UTFile", () => {
+    const blob = new Blob(["foo"], { type: "text/plain" });
+    const file = new UTFile([blob], "foo.txt");
+    void ignoreErrors(() => utapi.uploadFiles(file));
+    expect(file.type).toBe("text/plain");
+
+    const fileWithId = new UTFile([blob], "foo.txt", { customId: "foo" });
+    void ignoreErrors(() => utapi.uploadFiles(fileWithId));
+    expect(fileWithId.customId).toBe("foo");
   });
 });
 

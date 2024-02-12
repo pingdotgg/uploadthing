@@ -21,8 +21,6 @@ import type {
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 
-export type FileEsque = (Blob & { name: string }) | UndiciFile;
-
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
     throw new UploadThingError({
@@ -46,6 +44,10 @@ export const fetchContext = Context.Tag<{
   fetch: FetchEsque;
   utRequestHeaders: Record<string, string>;
 }>("fetch-context");
+
+export type FileEsque =
+  | (Blob & { name: string; customId?: string })
+  | UndiciFile;
 
 export function uploadFilesInternal(
   input: Parameters<typeof getPresignedUrls>[0],
@@ -98,13 +100,14 @@ function getPresignedUrls(input: {
       name: file.name ?? "unnamed-blob",
       type: file.type,
       size: file.size,
+      ...("customId" in file ? { customId: file.customId } : {}),
     }));
     logger.debug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.struct({
       data: S.array(
         S.struct({
-          presignedUrls: S.array(S.string),
+          urls: S.array(S.string),
           key: S.string,
           fileUrl: S.string,
           fileType: S.string,
@@ -153,7 +156,7 @@ function uploadFile(
       "Uploading file",
       file.name,
       "with",
-      presigned.presignedUrls.length,
+      presigned.urls.length,
       "chunks of size",
       presigned.chunkSize,
       "bytes each",
@@ -161,7 +164,7 @@ function uploadFile(
 
     const etags = yield* $(
       Effect.all(
-        presigned.presignedUrls.map((url, index) => {
+        presigned.urls.map((url, index) => {
           const offset = presigned.chunkSize * index;
           const end = Math.min(offset + presigned.chunkSize, file.size);
           const chunk = file.slice(offset, end);

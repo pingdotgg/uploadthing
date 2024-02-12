@@ -20,6 +20,8 @@
 import { mimeTypes as mimeDB } from "./db";
 import type { FileExtension, MimeType } from "./db";
 
+export * from "./db";
+
 function extname(path: string) {
   const index = path.lastIndexOf(".");
   return index < 0 ? "" : path.substring(index);

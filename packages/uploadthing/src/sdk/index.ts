@@ -2,6 +2,7 @@ import { Schema } from "@effect/schema";
 import { Effect, pipe } from "effect";
 import { process } from "std-env";
 
+import { lookup } from "@uploadthing/mime-types";
 import type {
   ACL,
   ContentDisposition,
@@ -34,6 +35,33 @@ type Upload = Effect.Effect.Success<
   ReturnType<typeof uploadFilesInternal>
 >[number];
 
+interface UTFilePropertyBag extends BlobPropertyBag {
+  lastModified?: number;
+  customId?: string;
+}
+
+/**
+ * Extension of the Blob class that simplifies setting the `name` and `customId` properties,
+ * similar to the built-in File class from Node > 20.
+ */
+export class UTFile extends Blob {
+  name: string;
+  lastModified: number;
+  customId?: string;
+
+  constructor(parts: BlobPart[], name: string, options?: UTFilePropertyBag) {
+    const optionsWithDefaults = {
+      ...options,
+      type: options?.type ?? (lookup(name) || undefined),
+      lastModified: options?.lastModified ?? Date.now(),
+    };
+    super(parts, optionsWithDefaults);
+    this.name = name;
+    this.customId = optionsWithDefaults.customId;
+    this.lastModified = optionsWithDefaults.lastModified;
+  }
+}
+
 export interface UTApiOptions {
   /**
    * Provide a custom fetch function.
@@ -49,12 +77,19 @@ export interface UTApiOptions {
    * @default "info"
    */
   logLevel?: LogLevel;
+  /**
+   * Set the default key type for file operations. Allows you to set your preferred filter
+   * for file keys or custom identifiers without needing to specify it on every call.
+   * @default "fileKey"
+   */
+  defaultKeyType?: "fileKey" | "customId";
 }
 
 export class UTApi {
   private fetch: FetchEsque;
   private apiKey: string | undefined;
   private defaultHeaders: Record<string, string>;
+  private defaultKeyType: "fileKey" | "customId";
 
   constructor(opts?: UTApiOptions) {
     this.fetch = opts?.fetch ?? globalThis.fetch;
@@ -65,6 +100,7 @@ export class UTApi {
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
     };
+    this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
 
     initLogger(opts?.logLevel);
 
@@ -207,9 +243,25 @@ export class UTApi {
    *
    * @example
    * await deleteFiles(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
+   *
+   * @example
+   * await deleteFiles("myCustomIdentifier", { keyType: "customId" })
    */
-  deleteFiles = (fileKeys: string[] | string) => {
+  deleteFiles = (
+    keys: string[] | string,
+    opts?: {
+      /**
+       * Whether the provided keys are fileKeys or a custom identifier. fileKey is the
+       * identifier you get from UploadThing after uploading a file, customId is a
+       * custom identifier you provided when uploading a file.
+       * @default fileKey
+       */
+      keyType?: "fileKey" | "customId";
+    },
+  ) => {
     guardServerOnly();
+
+    const { keyType = this.defaultKeyType } = opts ?? {};
 
     const responseSchema = Schema.struct({
       success: Schema.boolean,
@@ -217,7 +269,9 @@ export class UTApi {
 
     return this.requestUploadThing(
       "/api/deleteFiles",
-      { fileKeys: asArray(fileKeys) },
+      keyType === "fileKey"
+        ? { fileKeys: asArray(keys) }
+        : { customIds: asArray(keys) },
       responseSchema,
     ).pipe(Effect.runPromise);
   };
@@ -234,8 +288,21 @@ export class UTApi {
    * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
    * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
    */
-  getFileUrls = (fileKeys: string[] | string) => {
+  getFileUrls = (
+    keys: string[] | string,
+    opts?: {
+      /**
+       * Whether the provided keys are fileKeys or a custom identifier. fileKey is the
+       * identifier you get from UploadThing after uploading a file, customId is a
+       * custom identifier you provided when uploading a file.
+       * @default fileKey
+       */
+      keyType?: "fileKey" | "customId";
+    },
+  ) => {
     guardServerOnly();
+
+    const { keyType = this.defaultKeyType } = opts ?? {};
 
     const responseSchema = Schema.struct({
       data: Schema.array(
@@ -248,7 +315,7 @@ export class UTApi {
 
     return this.requestUploadThing(
       "/api/getFileUrl",
-      { fileKeys: asArray(fileKeys) },
+      keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
       responseSchema,
     ).pipe(
       Effect.andThen((r) => r.data),
@@ -284,7 +351,11 @@ export class UTApi {
       ),
     });
 
-    return this.requestUploadThing("/api/listFiles", opts, responseSchema).pipe(
+    return this.requestUploadThing(
+      "/api/listFiles",
+      { ...opts },
+      responseSchema,
+    ).pipe(
       Effect.andThen((r) => r.files),
       Effect.runPromise,
     );
@@ -298,6 +369,14 @@ export class UTApi {
         }
       | {
           fileKey: string;
+          newName: string;
+        }[]
+      | {
+          customId: string;
+          newName: string;
+        }
+      | {
+          customId: string;
           newName: string;
         }[],
   ) => {
@@ -313,6 +392,7 @@ export class UTApi {
       responseSchema,
     ).pipe(Effect.runPromise);
   };
+
   /** @deprecated Use {@link renameFiles} instead. */
   renameFile = this.renameFiles;
 
@@ -347,6 +427,13 @@ export class UTApi {
        * @default app default on UploadThing dashboard
        */
       expiresIn?: Time;
+      /**
+       * Whether the provided key is a fileKey or a custom identifier. fileKey is the
+       * identifier you get from UploadThing after uploading a file, customId is a
+       * custom identifier you provided when uploading a file.
+       * @default fileKey
+       */
+      keyType?: "fileKey" | "customId";
     },
   ) => {
     guardServerOnly();
@@ -354,6 +441,7 @@ export class UTApi {
     const expiresIn = opts?.expiresIn
       ? parseTimeToSeconds(opts.expiresIn)
       : undefined;
+    const { keyType = this.defaultKeyType } = opts ?? {};
 
     if (opts?.expiresIn && isNaN(expiresIn!)) {
       throw new UploadThingError({
@@ -375,7 +463,9 @@ export class UTApi {
 
     return this.requestUploadThing(
       "/api/requestFileAccess",
-      { fileKey, expiresIn },
+      keyType === "fileKey"
+        ? { fileKey: key, expiresIn }
+        : { customId: key, expiresIn },
       responseSchema,
     ).pipe(
       Effect.andThen((r) => r.url),

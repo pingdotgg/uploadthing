@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Callout } from "nextra-theme-docs";
 
 ### The UploadThing components look all weird, what's going on?
 
@@ -42,6 +43,11 @@ or use the node runtime instead:
 // src/app/api/uploadthing/route.ts
 export const runtime = "nodejs";
 ```
+
+<Callout type="info">
+  Since `next@14.1.2-canary.38`, this limitation has been fixed and you should
+  safely be able to use the edge runtime in development.
+</Callout>
 
 ### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
 

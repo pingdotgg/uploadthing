@@ -43,3 +43,8 @@ dist
 # cf
 .wrangler
 .dev.vars
+
+# Ignore all folders except `src/` and `test/` in every published package
+packages/*/*/
+!packages/*/src/
+!packages/*/test/
