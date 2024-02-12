@@ -332,44 +332,26 @@ async function uploadPresignedPost(
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
   formData.append("file", file); // File data **MUST GO LAST**
 
-  const res = await fetchWithProgress(presigned.url, {
-    method: "POST",
-    body: formData,
-    headers: new Headers({
-      Accept: "application/xml",
-    }),
-    onProgress: (p) =>
+  const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", presigned.url);
+    xhr.setRequestHeader("Accept", "application/xml");
+    xhr.upload.onprogress = (p) => {
       opts.onUploadProgress?.({
         file: file.name,
         progress: (p.loaded / p.total) * 100,
-      }),
+      });
+    };
+    xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
+    xhr.onerror = (e) => reject(e);
+    xhr.send(formData);
   });
 
-  if (res.status > 299 || res.status < 200) {
+  if (response.status > 299 || response.status < 200) {
     throw new UploadThingError({
       code: "UPLOAD_FAILED",
       message: "Failed to upload file",
-      cause: res,
+      cause: response,
     });
   }
-}
-
-function fetchWithProgress(
-  url: string,
-  opts: {
-    headers?: Headers;
-    method?: string;
-    body?: string | FormData;
-    onProgress?: (this: XMLHttpRequest, progress: ProgressEvent) => void;
-  } = {},
-) {
-  return new Promise<XMLHttpRequest>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open(opts.method ?? "get", url);
-    opts.headers?.forEach(([k, v]) => xhr.setRequestHeader(k, v));
-    xhr.upload.onprogress = opts.onProgress ?? null;
-    xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
-    xhr.onerror = (e) => reject(e);
-    xhr.send(opts.body);
-  });
 }
