@@ -8,7 +8,11 @@ import type {
   Json,
   MaybeUrl,
 } from "@uploadthing/shared";
-import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
+import {
+  asArray,
+  generateUploadThingURL,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
@@ -160,12 +164,9 @@ export class UTApi {
   ) {
     guardServerOnly();
 
-    const filesToUpload: FileEsque[] = Array.isArray(files) ? files : [files];
-    logger.debug("Uploading files:", filesToUpload);
-
     const uploads = await uploadFilesInternal(
       {
-        files: filesToUpload,
+        files: asArray(files),
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
         acl: opts?.acl,
@@ -207,13 +208,11 @@ export class UTApi {
   ) {
     guardServerOnly();
 
-    const fileUrls: MaybeUrl[] = Array.isArray(urls) ? urls : [urls];
-
     const formData = new FormData();
     formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
     const filesToUpload = await Promise.all(
-      fileUrls.map(async (url) => {
+      asArray(urls).map(async (url) => {
         if (typeof url === "string") url = new URL(url);
         const filename = url.pathname.split("/").pop() ?? "unknown-filename";
 
@@ -283,13 +282,13 @@ export class UTApi {
     },
   ) {
     guardServerOnly();
-
-    if (!Array.isArray(keys)) keys = [keys];
     const { keyType = this.defaultKeyType } = opts ?? {};
 
     return this.requestUploadThing<{ success: boolean }>(
       "/api/deleteFile",
-      keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
+      keyType === "fileKey"
+        ? { fileKeys: asArray(keys) }
+        : { customIds: asArray(keys) },
       "An unknown error occured while deleting files.",
     );
   }
@@ -319,15 +318,15 @@ export class UTApi {
     },
   ) {
     guardServerOnly();
-
-    if (!Array.isArray(keys)) keys = [keys];
     const { keyType = this.defaultKeyType } = opts ?? {};
 
     const json = await this.requestUploadThing<{
       data: { key: string; url: string }[];
     }>(
       "/api/getFileUrl",
-      keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
+      keyType === "fileKey"
+        ? { fileKeys: asArray(keys) }
+        : { customIds: asArray(keys) },
       "An unknown error occured while retrieving file URLs.",
     );
 
@@ -384,11 +383,9 @@ export class UTApi {
   ) {
     guardServerOnly();
 
-    const ups = Array.isArray(updates) ? updates : [updates];
-
     return this.requestUploadThing<{ success: true }>(
       "/api/renameFiles",
-      { updates: ups },
+      { updates: asArray(updates) },
       "An unknown error occured while renaming files.",
     );
   }

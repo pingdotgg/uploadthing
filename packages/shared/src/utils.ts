@@ -249,6 +249,10 @@ export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && obj !== null && !Array.isArray(obj);
 }
 
+export function asArray<T>(val: T | T[]): T[] {
+  return Array.isArray(val) ? val : [val];
+}
+
 /** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,
