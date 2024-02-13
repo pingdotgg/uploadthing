@@ -1,6 +1,6 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
-import { Schema } from "@effect/schema";
+import * as S from "@effect/schema/Schema";
 import { Cause, Effect } from "effect";
 
 import {
@@ -170,15 +170,15 @@ const uploadFile = <
       yield* $(uploadPresignedPost(file, presigned, { ...opts }));
     }
 
-    const PollingResponse = Schema.union(
-      Schema.struct({
-        status: Schema.literal("done"),
-        callbackData: Schema.any as Schema.Schema<
+    const PollingResponse = S.union(
+      S.struct({
+        status: S.literal("done"),
+        callbackData: S.any as S.Schema<
           never,
           inferEndpointOutput<TRouter[TEndpoint]>
         >,
       }),
-      Schema.struct({ status: Schema.literal("still waiting") }),
+      S.struct({ status: S.literal("still waiting") }),
     );
 
     const serverData = yield* $(

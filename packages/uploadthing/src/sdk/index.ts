@@ -1,4 +1,4 @@
-import { Schema } from "@effect/schema";
+import * as S from "@effect/schema/Schema";
 import { Effect, pipe } from "effect";
 import type { Tag } from "effect/Context";
 import { process } from "std-env";
@@ -120,7 +120,7 @@ export class UTApi {
   private requestUploadThing = <T>(
     pathname: `/${string}`,
     body: Record<string, unknown>,
-    responseSchema: Schema.Schema<never, any, T>,
+    responseSchema: S.Schema<never, any, T>,
   ) => {
     const url = generateUploadThingURL(pathname);
     logger.debug("Requesting UploadThing:", {
@@ -267,8 +267,8 @@ export class UTApi {
 
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const responseSchema = Schema.struct({
-      success: Schema.boolean,
+    const responseSchema = S.struct({
+      success: S.boolean,
     });
 
     return this.executeAsync(
@@ -310,11 +310,11 @@ export class UTApi {
 
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const responseSchema = Schema.struct({
-      data: Schema.array(
-        Schema.struct({
-          key: Schema.string,
-          url: Schema.string,
+    const responseSchema = S.struct({
+      data: S.array(
+        S.struct({
+          key: S.string,
+          url: S.string,
         }),
       ),
     });
@@ -341,12 +341,12 @@ export class UTApi {
   listFiles = (opts: { limit?: number; offset?: number }) => {
     guardServerOnly();
 
-    const responseSchema = Schema.struct({
-      files: Schema.array(
-        Schema.struct({
-          key: Schema.string,
-          id: Schema.string,
-          status: Schema.literal(
+    const responseSchema = S.struct({
+      files: S.array(
+        S.struct({
+          key: S.string,
+          id: S.string,
+          status: S.literal(
             "Deletion Pending",
             "Failed",
             "Uploaded",
@@ -382,8 +382,8 @@ export class UTApi {
   ) => {
     guardServerOnly();
 
-    const responseSchema = Schema.struct({
-      success: Schema.boolean,
+    const responseSchema = S.struct({
+      success: S.boolean,
     });
 
     return this.executeAsync(
@@ -401,14 +401,14 @@ export class UTApi {
   getUsageInfo = () => {
     guardServerOnly();
 
-    const responseSchema = Schema.struct({
-      totalBytes: Schema.number,
-      totalReadable: Schema.string,
-      appTotalBytes: Schema.number,
-      appTotalReadable: Schema.string,
-      filesUploaded: Schema.number,
-      limitBytes: Schema.number,
-      limitReadable: Schema.string,
+    const responseSchema = S.struct({
+      totalBytes: S.number,
+      totalReadable: S.string,
+      appTotalBytes: S.number,
+      appTotalReadable: S.string,
+      filesUploaded: S.number,
+      limitBytes: S.number,
+      limitReadable: S.string,
     });
 
     return this.executeAsync(
@@ -457,8 +457,8 @@ export class UTApi {
       });
     }
 
-    const responseSchema = Schema.struct({
-      url: Schema.string,
+    const responseSchema = S.struct({
+      url: S.string,
     });
 
     return this.executeAsync(

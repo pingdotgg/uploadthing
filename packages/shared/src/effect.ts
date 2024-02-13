@@ -1,4 +1,4 @@
-import { Schema } from "@effect/schema";
+import * as S from "@effect/schema/Schema";
 import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
 
 import type { FetchEsque } from "./types";
@@ -40,7 +40,7 @@ export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
   );
 
 export const fetchEffJson = <Res>(
-  schema: Schema.Schema<never, any, Res>,
+  schema: S.Schema<never, any, Res>,
   input: RequestInfo | URL,
   init?: RequestInit,
 ) =>
@@ -52,7 +52,7 @@ export const fetchEffJson = <Res>(
         catch: (error) => new FetchError({ error, input }),
       }),
     ),
-    Effect.andThen(Schema.decode(schema)),
+    Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {
       attributes: { input: JSON.stringify(input) },
     }),
