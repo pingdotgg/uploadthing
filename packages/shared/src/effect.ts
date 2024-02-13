@@ -16,28 +16,24 @@ export const fetchContext = Context.Tag<{
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly
-
 export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
-  pipe(
-    fetchContext,
+  fetchContext.pipe(
     Effect.andThen(({ fetch, baseHeaders }) =>
-      pipe(
-        Effect.tryPromise({
-          try: () =>
-            fetch(input, {
-              ...init,
-              headers: {
-                ...baseHeaders,
-                ...init?.headers,
-              },
-            }),
-          catch: (error) => new FetchError({ error, input }),
-        }),
-        Effect.withSpan("fetch", {
-          attributes: { input: JSON.stringify(input) },
-        }),
-      ),
+      Effect.tryPromise({
+        try: () =>
+          fetch(input, {
+            ...init,
+            headers: {
+              ...baseHeaders,
+              ...init?.headers,
+            },
+          }),
+        catch: (error) => new FetchError({ error, input }),
+      }),
     ),
+    Effect.withSpan("fetch", {
+      attributes: { input: JSON.stringify(input) },
+    }),
   );
 
 export const fetchEffJson = <Res>(

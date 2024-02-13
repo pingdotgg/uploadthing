@@ -1,5 +1,5 @@
 import * as S from "@effect/schema/Schema";
-import { Effect, pipe } from "effect";
+import { Effect, Layer, pipe } from "effect";
 import type { Tag } from "effect/Context";
 import { process } from "std-env";
 
@@ -150,19 +150,16 @@ export class UTApi {
 
   private executeAsync = <E, A>(
     program: Effect.Effect<Tag.Identifier<typeof fetchContext>, E, A>,
-  ) => {
-    return pipe(
-      Effect.provideService(
-        program,
-        fetchContext,
-        fetchContext.of({
+  ) =>
+    program.pipe(
+      Effect.provide(
+        Layer.succeed(fetchContext, {
           fetch: this.fetch,
           baseHeaders: this.defaultHeaders,
         }),
       ),
       Effect.runPromise,
     );
-  };
 
   /**
    * Upload files to UploadThing storage.

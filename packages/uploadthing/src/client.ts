@@ -1,7 +1,7 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
 import * as S from "@effect/schema/Schema";
-import { Cause, Effect, pipe } from "effect";
+import { Cause, Effect, Layer, pipe } from "effect";
 
 import {
   exponentialBackoff,
@@ -139,21 +139,15 @@ export const DANGEROUS__uploadFiles = <
 
   // TODO: I think this can stay an Effect and not be run as a promise (especially once React package is Effect too)
   //       The `genUploader` can be the one who provides the service and the Promise-inferface for the public
-  return pipe(
-    Effect.provideService(
-      pipe(
-        uploadFiles,
-        // TODO maybe find a better way to handle the UTReporterError instead of just dying
-        Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
-        Effect.tapErrorCause(Effect.logError),
-      ),
-      fetchContext,
-      fetchContext.of({
-        fetch: globalThis.fetch.bind(globalThis),
-        baseHeaders: {},
-      }),
-    ),
-    Effect.runPromise,
+  const layer = Layer.succeed(fetchContext, {
+    fetch: globalThis.fetch.bind(globalThis),
+    baseHeaders: {},
+  });
+
+  return uploadFiles.pipe(
+    Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
+    Effect.tapErrorCause(Effect.logError),
+    Effect.provide(layer),
   );
 };
 

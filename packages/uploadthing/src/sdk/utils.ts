@@ -54,18 +54,27 @@ export type FileEsque =
   | (Blob & { name: string; customId?: string })
   | UndiciFile;
 
-export function uploadFilesInternal(
+export const uploadFilesInternal = (
   input: Parameters<typeof getPresignedUrls>[0],
-) {
-  return pipe(
+) =>
+  pipe(
     getPresignedUrls(input),
     Effect.andThen((presigneds) =>
       // TODO: Catch errors for each file and return data like
       // ({ data, error: null } | { data: null, error })[]
-      Effect.all(presigneds.map(uploadFile), { concurrency: 10 }),
+      Effect.forEach(
+        presigneds,
+        (file) =>
+          uploadFile(file).pipe(
+            Effect.match({
+              onFailure: (error) => ({ data: null, error }),
+              onSuccess: (data) => ({ data, error: null }),
+            }),
+          ),
+        { concurrency: 10 },
+      ),
     ),
   );
-}
 
 /**
  * FIXME: downloading everything into memory and then upload
@@ -131,10 +140,10 @@ function getPresignedUrls(input: {
   });
 }
 
-function uploadFile(
+const uploadFile = (
   input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
-) {
-  return Effect.gen(function* ($) {
+) =>
+  Effect.gen(function* ($) {
     const { file, presigned } = input;
 
     if ("urls" in presigned) {
@@ -157,6 +166,7 @@ function uploadFile(
         while: (err) => err._tag === "NotDone",
         schedule: exponentialBackoff,
       }),
+      Effect.catchTag("NotDone", (e) => Effect.die(e)),
     );
 
     return {
@@ -166,7 +176,6 @@ function uploadFile(
       size: file.size,
     };
   });
-}
 
 function uploadMultipart(file: FileEsque, presigned: MPUResponse) {
   logger.debug(
@@ -198,6 +207,7 @@ function uploadMultipart(file: FileEsque, presigned: MPUResponse) {
               key: presigned.key,
             }),
             Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
+            Effect.catchTag("Retry", (e) => Effect.die(e)),
           );
         }),
         { concurrency: "inherit" },
