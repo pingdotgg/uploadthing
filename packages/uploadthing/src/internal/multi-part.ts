@@ -17,7 +17,7 @@ import type { ContentDisposition } from "@uploadthing/shared";
  * Used by server uploads where progress is not needed.
  * Uses normal fetch API.
  */
-export function uploadPart(opts: {
+export const uploadPart = (opts: {
   url: string;
   key: string;
   chunk: Blob;
@@ -25,59 +25,57 @@ export function uploadPart(opts: {
   contentDisposition: ContentDisposition;
   fileName: string;
   maxRetries: number;
-}) {
-  return Effect.gen(function* ($) {
-    return yield* $(
-      fetchEff(opts.url, {
-        method: "PUT",
-        body: opts.chunk,
-        headers: {
-          "Content-Type": opts.contentType,
-          "Content-Disposition": contentDisposition(
-            opts.contentDisposition,
-            opts.fileName,
-          ),
-        },
-      }),
-      Effect.andThen((res) =>
-        res.ok && res.headers.get("Etag")
-          ? Effect.succeed(res.headers.get("Etag")!)
-          : Effect.fail({ _tag: "Retry" as const }),
+}) =>
+  fetchEff(opts.url, {
+    method: "PUT",
+    body: opts.chunk,
+    headers: {
+      "Content-Type": opts.contentType,
+      "Content-Disposition": contentDisposition(
+        opts.contentDisposition,
+        opts.fileName,
       ),
-      Effect.retry({
-        while: (res) => res._tag === "Retry",
-        schedule: exponentialBackoff,
-        times: opts.maxRetries,
-      }),
-      Effect.tapErrorTag("Retry", () =>
-        // Max retries exceeded, tell UT server that upload failed
-        fetchEff(generateUploadThingURL("/api/failureCallback"), {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: opts.key,
-          }),
-        }).pipe(
-          Effect.andThen(() =>
-            Effect.fail(
-              new UploadThingError({
-                code: "UPLOAD_FAILED",
-                // TODO: Add S3 error parsing back
-                message: "Failed to upload file to storage provider",
-                // cause: s3Res,
-              }),
-            ),
+    },
+  }).pipe(
+    Effect.andThen((res) =>
+      res.ok && res.headers.get("Etag")
+        ? Effect.succeed(res.headers.get("Etag")!)
+        : Effect.fail({ _tag: "Retry" as const }),
+    ),
+    Effect.retry({
+      while: (res) => res._tag === "Retry",
+      schedule: exponentialBackoff,
+      times: opts.maxRetries,
+    }),
+    Effect.tapErrorTag("Retry", () =>
+      // Max retries exceeded, tell UT server that upload failed
+      fetchEff(generateUploadThingURL("/api/failureCallback"), {
+        method: "POST",
+        body: JSON.stringify({
+          fileKey: opts.key,
+        }),
+      }).pipe(
+        Effect.andThen(() =>
+          Effect.fail(
+            new UploadThingError({
+              code: "UPLOAD_FAILED",
+              // TODO: Add S3 error parsing back
+              message: "Failed to upload file to storage provider",
+              // cause: s3Res,
+            }),
           ),
         ),
       ),
-    );
-  });
-}
+    ),
+  );
 
 /**
  * Used by client uploads where progress is needed.
  * Uses XMLHttpRequest.
+ *
+ * FIXME: Effecti-fy this. Maybe use `Effect.async` and use the AbortSignal to provide cancellation
  */
-async function uploadPartWithProgressInternal(
+const uploadPartWithProgressInternal = async (
   opts: {
     url: string;
     chunk: Blob;
@@ -88,8 +86,8 @@ async function uploadPartWithProgressInternal(
     onProgress: (progressDelta: number) => void;
   },
   retryCount = 0,
-) {
-  return new Promise<string>((resolve, reject) => {
+) =>
+  new Promise<string>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
 
     xhr.open("PUT", opts.url, true);
@@ -135,7 +133,6 @@ async function uploadPartWithProgressInternal(
 
     xhr.send(opts.chunk);
   });
-}
 
 export const uploadPartWithProgress = (
   opts: Parameters<typeof uploadPartWithProgressInternal>[0],

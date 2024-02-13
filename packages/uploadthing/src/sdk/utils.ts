@@ -80,11 +80,11 @@ export const uploadFilesInternal = (
  * isn't the best. We should support streams so we can download
  * just as much as we need at any time.
  */
-export function downloadFiles(urls: MaybeUrl[]) {
-  return Effect.gen(function* ($) {
+export const downloadFiles = (urls: MaybeUrl[]) =>
+  Effect.gen(function* ($) {
     const downloads = urls.map((url) =>
       fetchEff(url).pipe(
-        Effect.andThen((r) => r.blob()),
+        Effect.andThen((response) => response.blob()),
         Effect.andThen((blob) => {
           const name = url.toString().split("/").pop();
           return Object.assign(blob, { name: name ?? "unknown-filename" });
@@ -94,15 +94,14 @@ export function downloadFiles(urls: MaybeUrl[]) {
 
     return yield* $(Effect.all(downloads, { concurrency: 10 }));
   });
-}
 
-function getPresignedUrls(input: {
+const getPresignedUrls = (input: {
   files: FileEsque[];
   metadata: Json;
   contentDisposition: ContentDisposition;
   acl?: ACL;
-}) {
-  return Effect.gen(function* ($) {
+}) =>
+  Effect.gen(function* ($) {
     const { files, metadata, contentDisposition, acl } = input;
 
     const fileData = files.map((file) => ({
@@ -136,7 +135,6 @@ function getPresignedUrls(input: {
       presigned: presigneds.data[i],
     }));
   });
-}
 
 const uploadFile = (
   input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
@@ -175,18 +173,18 @@ const uploadFile = (
     };
   });
 
-function uploadMultipart(file: FileEsque, presigned: MPUResponse) {
-  logger.debug(
-    "Uploading file",
-    file.name,
-    "with",
-    presigned.urls.length,
-    "chunks of size",
-    presigned.chunkSize,
-    "bytes each",
-  );
+const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
+  Effect.gen(function* ($) {
+    logger.debug(
+      "Uploading file",
+      file.name,
+      "with",
+      presigned.urls.length,
+      "chunks of size",
+      presigned.chunkSize,
+      "bytes each",
+    );
 
-  return Effect.gen(function* ($) {
     const etags = yield* $(
       Effect.all(
         presigned.urls.map((url, index) => {
@@ -216,13 +214,12 @@ function uploadMultipart(file: FileEsque, presigned: MPUResponse) {
     yield* $(completeUpload(presigned, etags));
     logger.debug("Multipart upload complete.");
   });
-}
 
-function completeUpload(
+const completeUpload = (
   presigned: { key: string; uploadId: string },
   etags: { tag: string; partNumber: number }[],
-) {
-  return Effect.gen(function* ($) {
+) =>
+  Effect.gen(function* ($) {
     yield* $(
       fetchEff(generateUploadThingURL("/api/completeMultipart"), {
         method: "POST",
@@ -234,12 +231,10 @@ function completeUpload(
       }),
     );
   });
-}
 
-function uploadPresignedPost(file: FileEsque, presigned: PSPResponse) {
-  logger.debug("Uploading file", file.name, "using presigned POST URL");
-
-  return Effect.gen(function* ($) {
+const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
+  Effect.gen(function* ($) {
+    logger.debug("Uploading file", file.name, "using presigned POST URL");
     const formData = new FormData();
     Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
     formData.append("file", file as Blob); // File data **MUST GO LAST**
@@ -266,7 +261,6 @@ function uploadPresignedPost(file: FileEsque, presigned: PSPResponse) {
 
     logger.debug("File", file.name, "uploaded successfully");
   });
-}
 
 type TimeShort = "s" | "m" | "h" | "d";
 type TimeLong = "second" | "minute" | "hour" | "day";

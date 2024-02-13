@@ -196,8 +196,8 @@ const uploadFile = <
   slug: string,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
   presigned: UploadThingResponse[number],
-) => {
-  return Effect.gen(function* ($) {
+) =>
+  Effect.gen(function* ($) {
     const reportEventToUT = createUTReporter({
       endpoint: slug,
       ...opts,
@@ -211,9 +211,7 @@ const uploadFile = <
         new UploadThingError({
           code: "NOT_FOUND",
           message: "No file found for presigned URL",
-          cause: `Expected file with name ${
-            presigned.fileName
-          } but got '${opts.files.join(",")}'`,
+          cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
         }),
       );
     }
@@ -256,21 +254,19 @@ const uploadFile = <
       name: file.name,
       size: file.size,
       key: presigned.key,
-
       serverData,
       url: "https://utfs.io/f/" + presigned.key,
     } satisfies UploadFileResponse<TServerData>;
   });
-};
 
-function uploadMultipart(
+const uploadMultipart = (
   file: File,
   presigned: MPUResponse,
   opts: {
     reportEventToUT: ReturnType<typeof createUTReporter>;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
-) {
+) => {
   let uploadedBytes = 0;
 
   const uploadPart = (url: string, index: number) => {
@@ -324,16 +320,16 @@ function uploadMultipart(
       );
     }
   });
-}
+};
 
-function uploadPresignedPost(
+const uploadPresignedPost = (
   file: File,
   presigned: PSPResponse,
   opts: {
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
-) {
-  return Effect.gen(function* ($) {
+) =>
+  Effect.gen(function* ($) {
     const formData = new FormData();
     Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
     formData.append("file", file); // File data **MUST GO LAST**
@@ -366,4 +362,3 @@ function uploadPresignedPost(
       });
     }
   });
-}
