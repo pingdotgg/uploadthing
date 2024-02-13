@@ -117,11 +117,11 @@ export class UTApi {
     incompatibleNodeGuard();
   }
 
-  private requestUploadThing<T>(
+  private requestUploadThing = <T>(
     pathname: `/${string}`,
     body: Record<string, unknown>,
     responseSchema: Schema.Schema<never, any, T>,
-  ) {
+  ) => {
     const url = generateUploadThingURL(pathname);
     logger.debug("Requesting UploadThing:", {
       url,
@@ -145,7 +145,7 @@ export class UTApi {
       }),
       Effect.tap((res) => logger.debug("UploadThing response:", res)),
     );
-  }
+  };
 
   private executeAsync = <E, A>(
     program: Effect.Effect<Tag.Identifier<typeof fetchContext>, E, A>,
