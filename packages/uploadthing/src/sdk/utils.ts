@@ -111,7 +111,7 @@ function getPresignedUrls(input: {
     });
 
     const presigneds = yield* $(
-      fetchEffJson(responseSchema, generateUploadThingURL("/api/uploadFiles"), {
+      fetchEffJson(generateUploadThingURL("/api/uploadFiles"), responseSchema, {
         method: "POST",
         cache: "no-store",
         body: JSON.stringify({
@@ -145,8 +145,8 @@ function uploadFile(
 
     yield* $(
       fetchEffJson(
-        S.struct({ status: S.string }),
         generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
+        S.struct({ status: S.string }),
       ),
       Effect.andThen((res) =>
         res.status === "done"

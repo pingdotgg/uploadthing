@@ -1,7 +1,7 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
 import * as S from "@effect/schema/Schema";
-import { Cause, Effect } from "effect";
+import { Cause, Effect, pipe } from "effect";
 
 import {
   exponentialBackoff,
@@ -107,12 +107,12 @@ const DANGEROUS__uploadFiles_internal = <
   return Effect.gen(function* ($) {
     const presigneds = yield* $(
       fetchEffJson(
-        uploadThingResponseSchema,
         createAPIRequestUrl({
           url: opts.url,
           slug: slug,
           actionType: "upload",
         }),
+        uploadThingResponseSchema,
         {
           method: "POST",
           body: JSON.stringify({
@@ -184,7 +184,7 @@ const uploadFile = <
     const serverData = yield* $(
       // TODO: Figure out this lint error
 
-      fetchEffJson(PollingResponse, presigned.pollingUrl, {
+      fetchEffJson(presigned.pollingUrl, PollingResponse, {
         headers: { authorization: presigned.pollingJwt },
       }),
       Effect.andThen((res) =>
@@ -215,18 +215,22 @@ export const DANGEROUS__uploadFiles = <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
-  Effect.provideService(
-    DANGEROUS__uploadFiles_internal(endpoint, opts).pipe(
-      // TODO maybe find a better way to handle the UTReporterError instead of just dying
-      Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
-      Effect.tapErrorCause(Effect.logError),
+  pipe(
+    Effect.provideService(
+      pipe(
+        DANGEROUS__uploadFiles_internal(endpoint, opts),
+        // TODO maybe find a better way to handle the UTReporterError instead of just dying
+        Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
+        Effect.tapErrorCause(Effect.logError),
+      ),
+      fetchContext,
+      fetchContext.of({
+        fetch: globalThis.fetch.bind(globalThis),
+        baseHeaders: {},
+      }),
     ),
-    fetchContext,
-    fetchContext.of({
-      fetch: globalThis.fetch.bind(globalThis),
-      baseHeaders: {},
-    }),
-  ).pipe(Effect.runPromise);
+    Effect.runPromise,
+  );
 
 export const genUploader = <TRouter extends FileRouter>(initOpts: {
   /**

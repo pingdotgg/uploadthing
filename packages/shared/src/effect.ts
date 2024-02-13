@@ -20,28 +20,29 @@ export const fetchContext = Context.Tag<{
 export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
   pipe(
     fetchContext,
-    Effect.andThen(({ fetch, baseHeaders }) => {
-      return Effect.tryPromise({
-        try: () =>
-          fetch(input, {
-            ...init,
-            headers: {
-              ...baseHeaders,
-              ...init?.headers,
-            },
-          }),
-        catch: (error) => new FetchError({ error, input }),
-      }).pipe(
+    Effect.andThen(({ fetch, baseHeaders }) =>
+      pipe(
+        Effect.tryPromise({
+          try: () =>
+            fetch(input, {
+              ...init,
+              headers: {
+                ...baseHeaders,
+                ...init?.headers,
+              },
+            }),
+          catch: (error) => new FetchError({ error, input }),
+        }),
         Effect.withSpan("fetch", {
           attributes: { input: JSON.stringify(input) },
         }),
-      );
-    }),
+      ),
+    ),
   );
 
 export const fetchEffJson = <Res>(
-  schema: S.Schema<never, any, Res>,
   input: RequestInfo | URL,
+  schema: S.Schema<never, any, Res>,
   init?: RequestInit,
 ) =>
   pipe(

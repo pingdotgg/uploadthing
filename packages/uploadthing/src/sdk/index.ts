@@ -129,12 +129,13 @@ export class UTApi {
       headers: this.defaultHeaders,
     });
 
-    return fetchEffJson(responseSchema, url, {
-      method: "POST",
-      cache: "no-store",
-      body: JSON.stringify(body),
-      headers: this.defaultHeaders,
-    }).pipe(
+    return pipe(
+      fetchEffJson(url, responseSchema, {
+        method: "POST",
+        cache: "no-store",
+        body: JSON.stringify(body),
+        headers: this.defaultHeaders,
+      }),
       Effect.catchTag("FetchError", (err) => {
         logger.error("Request failed:", err);
         return Effect.die(err);
@@ -150,14 +151,17 @@ export class UTApi {
   private executeAsync = <E, A>(
     program: Effect.Effect<Tag.Identifier<typeof fetchContext>, E, A>,
   ) => {
-    return Effect.provideService(
-      program,
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    return pipe(
+      Effect.provideService(
+        program,
+        fetchContext,
+        fetchContext.of({
+          fetch: this.fetch,
+          baseHeaders: this.defaultHeaders,
+        }),
+      ),
+      Effect.runPromise,
+    );
   };
 
   /**
