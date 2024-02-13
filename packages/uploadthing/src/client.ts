@@ -8,7 +8,11 @@ import {
 } from "@uploadthing/shared";
 
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
-import type { UploadThingResponse } from "./internal/handler";
+import type {
+  MPUResponse,
+  PSPResponse,
+  UploadThingResponse,
+} from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
   DistributiveOmit,
@@ -152,70 +156,14 @@ export const DANGEROUS__uploadFiles = async <
       });
     }
 
-    const {
-      presignedUrls,
-      uploadId,
-      chunkSize,
-      contentDisposition,
-      key,
-      pollingUrl,
-      pollingJwt,
-    } = presigned;
-
-    let uploadedBytes = 0;
-
-    let etags: { tag: string; partNumber: number }[];
     opts.onUploadBegin?.({ file: file.name });
-    try {
-      etags = await Promise.all(
-        presignedUrls.map(async (url, index) => {
-          const offset = chunkSize * index;
-          const end = Math.min(offset + chunkSize, file.size);
-          const chunk = file.slice(offset, end);
-
-          const etag = await uploadPartWithProgress({
-            url,
-            chunk: chunk,
-            contentDisposition,
-            fileType: file.type,
-            fileName: file.name,
-            maxRetries: 10,
-            onProgress: (delta) => {
-              uploadedBytes += delta;
-              const percent = (uploadedBytes / file.size) * 100;
-              opts.onUploadProgress?.({ file: file.name, progress: percent });
-            },
-          });
-
-          return { tag: etag, partNumber: index + 1 };
-        }),
-      );
-    } catch (error) {
-      await reportEventToUT("failure", {
-        fileKey: key,
-        uploadId,
-        fileName: file.name,
-        s3Error: (error as Error).toString(),
-      });
-      throw "unreachable"; // failure event will throw for us
+    if ("urls" in presigned) {
+      await uploadMultipart(file, presigned, { reportEventToUT, ...opts });
+      // wait a bit as it's unsreasonable to expect the server to be done by now
+      await new Promise((r) => setTimeout(r, 750));
+    } else {
+      await uploadPresignedPost(file, presigned, { ...opts });
     }
-
-    // Tell the server that the upload is complete
-    const uploadOk = await reportEventToUT("multipart-complete", {
-      uploadId,
-      fileKey: key,
-      etags,
-    });
-    if (!uploadOk) {
-      console.log("Failed to alert UT of upload completion");
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to alert UT of upload completion",
-      });
-    }
-
-    // wait a bit as it's unsreasonable to expect the server to be done by now
-    await new Promise((r) => setTimeout(r, 750));
 
     const serverData = (await withExponentialBackoff(async () => {
       type PollingResponse =
@@ -225,8 +173,8 @@ export const DANGEROUS__uploadFiles = async <
           }
         | { status: "still waiting" };
 
-      const res = await fetch(pollingUrl, {
-        headers: { authorization: pollingJwt },
+      const res = await fetch(presigned.pollingUrl, {
+        headers: { authorization: presigned.pollingJwt },
       }).then((r) => r.json() as Promise<PollingResponse>);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -239,7 +187,7 @@ export const DANGEROUS__uploadFiles = async <
       key: presigned.key,
 
       serverData,
-      url: "https://utfs.io/f/" + key,
+      url: "https://utfs.io/f/" + presigned.key,
     } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
 
@@ -312,3 +260,98 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 };
 
 export { resolveMaybeUrlArg };
+
+async function uploadMultipart(
+  file: File,
+  presigned: MPUResponse,
+  opts: {
+    reportEventToUT: ReturnType<typeof createUTReporter>;
+    onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
+  },
+) {
+  let etags: { tag: string; partNumber: number }[];
+  let uploadedBytes = 0;
+
+  try {
+    etags = await Promise.all(
+      presigned.urls.map(async (url, index) => {
+        const offset = presigned.chunkSize * index;
+        const end = Math.min(offset + presigned.chunkSize, file.size);
+        const chunk = file.slice(offset, end);
+
+        const etag = await uploadPartWithProgress({
+          url,
+          chunk: chunk,
+          contentDisposition: presigned.contentDisposition,
+          fileType: file.type,
+          fileName: file.name,
+          maxRetries: 10,
+          onProgress: (delta) => {
+            uploadedBytes += delta;
+            const percent = (uploadedBytes / file.size) * 100;
+            opts.onUploadProgress?.({ file: file.name, progress: percent });
+          },
+        });
+
+        return { tag: etag, partNumber: index + 1 };
+      }),
+    );
+  } catch (error) {
+    await opts.reportEventToUT("failure", {
+      fileKey: presigned.key,
+      uploadId: presigned.uploadId,
+      fileName: file.name,
+      s3Error: (error as Error).toString(),
+    });
+    throw "unreachable"; // failure event will throw for us
+  }
+
+  // Tell the server that the upload is complete
+  const uploadOk = await opts.reportEventToUT("multipart-complete", {
+    uploadId: presigned.uploadId,
+    fileKey: presigned.key,
+    etags,
+  });
+  if (!uploadOk) {
+    console.log("Failed to alert UT of upload completion");
+    throw new UploadThingError({
+      code: "UPLOAD_FAILED",
+      message: "Failed to alert UT of upload completion",
+    });
+  }
+}
+
+async function uploadPresignedPost(
+  file: File,
+  presigned: PSPResponse,
+  opts: {
+    onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
+  },
+) {
+  const formData = new FormData();
+  Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
+  formData.append("file", file); // File data **MUST GO LAST**
+
+  const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", presigned.url);
+    xhr.setRequestHeader("Accept", "application/xml");
+    xhr.upload.onprogress = (p) => {
+      opts.onUploadProgress?.({
+        file: file.name,
+        progress: (p.loaded / p.total) * 100,
+      });
+    };
+    xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
+    xhr.onerror = (e) => reject(e);
+    xhr.send(formData);
+  });
+
+  if (response.status > 299 || response.status < 200) {
+    throw new UploadThingError({
+      code: "UPLOAD_FAILED",
+      message: "Failed to upload file",
+      cause: response,
+    });
+  }
+}

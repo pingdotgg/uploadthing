@@ -1,6 +1,5 @@
 import { isDevelopment, process } from "std-env";
 
-import type { MimeType } from "@uploadthing/mime-types";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
@@ -121,18 +120,29 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-export type UploadThingResponse = {
-  presignedUrls: string[];
-  pollingJwt: string;
+interface UploadThingBaseResponse {
   key: string;
-  pollingUrl: string;
-  uploadId: string;
   fileName: string;
-  fileType: MimeType;
+  fileType: FileRouterInputKey;
+  fileUrl: string;
   contentDisposition: ContentDisposition;
-  chunkCount: number;
+  pollingJwt: string;
+  pollingUrl: string;
+}
+
+export interface PSPResponse extends UploadThingBaseResponse {
+  url: string;
+  fields: Record<string, string>;
+}
+
+export interface MPUResponse extends UploadThingBaseResponse {
+  urls: string[];
+  uploadId: string;
   chunkSize: number;
-}[];
+  chunkCount: number;
+}
+
+export type UploadThingResponse = (PSPResponse | MPUResponse)[];
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,

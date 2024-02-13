@@ -1,4 +1,8 @@
-import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
+import {
+  contentDisposition,
+  generateUploadThingURL,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { ContentDisposition, FetchEsque } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -26,11 +30,10 @@ export async function uploadPart(
     body: opts.chunk,
     headers: {
       "Content-Type": opts.contentType,
-      "Content-Disposition": [
+      "Content-Disposition": contentDisposition(
         opts.contentDisposition,
-        `filename="${encodeURI(opts.fileName)}"`,
-        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
-      ].join("; "),
+        opts.fileName,
+      ),
     },
   });
 
@@ -99,11 +102,7 @@ export async function uploadPartWithProgress(
     xhr.setRequestHeader("Content-Type", opts.fileType);
     xhr.setRequestHeader(
       "Content-Disposition",
-      [
-        opts.contentDisposition,
-        `filename="${encodeURI(opts.fileName)}"`,
-        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
-      ].join("; "),
+      contentDisposition(opts.contentDisposition, opts.fileName),
     );
 
     xhr.onload = async () => {
