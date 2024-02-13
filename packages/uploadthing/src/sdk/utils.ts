@@ -17,6 +17,7 @@ import {
   fetchEff,
   fetchEffJson,
   generateUploadThingURL,
+  RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
@@ -156,13 +157,13 @@ const uploadFile = (
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(undefined)
-          : Effect.fail({ _tag: "NotDone" as const }),
+          : Effect.fail(new RetryError()),
       ),
       Effect.retry({
-        while: (err) => err._tag === "NotDone",
+        while: (err) => err instanceof RetryError,
         schedule: exponentialBackoff,
       }),
-      Effect.catchTag("NotDone", (e) => Effect.die(e)),
+      Effect.catchTag("RetryError", (e) => Effect.die(e)),
     );
 
     return {
@@ -202,7 +203,7 @@ const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
             key: presigned.key,
           }).pipe(
             Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
-            Effect.catchTag("Retry", (e) => Effect.die(e)),
+            Effect.catchTag("RetryError", (e) => Effect.die(e)),
           );
         }),
         { concurrency: "inherit" },

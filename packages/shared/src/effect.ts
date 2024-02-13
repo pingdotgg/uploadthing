@@ -68,3 +68,5 @@ export const exponentialBackoff: Schedule.Schedule<
   Schedule.compose(Schedule.elapsed),
   Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
 );
+
+export class RetryError extends Data.TaggedError("RetryError") {}

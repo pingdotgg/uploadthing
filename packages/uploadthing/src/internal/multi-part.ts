@@ -7,6 +7,7 @@ import {
   exponentialBackoff,
   fetchEff,
   generateUploadThingURL,
+  RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
@@ -40,14 +41,14 @@ export const uploadPart = (opts: {
     Effect.andThen((res) =>
       res.ok && res.headers.get("Etag")
         ? Effect.succeed(res.headers.get("Etag")!)
-        : Effect.fail({ _tag: "Retry" as const }),
+        : Effect.fail(new RetryError()),
     ),
     Effect.retry({
-      while: (res) => res._tag === "Retry",
+      while: (res) => res instanceof RetryError,
       schedule: exponentialBackoff,
       times: opts.maxRetries,
     }),
-    Effect.tapErrorTag("Retry", () =>
+    Effect.tapErrorTag("RetryError", () =>
       // Max retries exceeded, tell UT server that upload failed
       fetchEff(generateUploadThingURL("/api/failureCallback"), {
         method: "POST",

@@ -7,6 +7,7 @@ import {
   exponentialBackoff,
   fetchContext,
   fetchEffJson,
+  RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -243,10 +244,10 @@ const uploadFile = <
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(res.callbackData)
-          : Effect.fail({ _tag: "NotDone" as const }),
+          : Effect.fail(new RetryError()),
       ),
       Effect.retry({
-        while: (res) => res._tag === "NotDone",
+        while: (res) => res instanceof RetryError,
         schedule: exponentialBackoff,
       }),
     );
