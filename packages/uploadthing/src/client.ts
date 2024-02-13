@@ -141,10 +141,8 @@ const uploadFile = <
   presigned: UploadThingResponse[number],
 ) =>
   Effect.gen(function* ($) {
-    const { fetch } = yield* $(fetchContext);
     const reportEventToUT = createUTReporter({
       endpoint: slug,
-      fetch,
       ...opts,
     });
 

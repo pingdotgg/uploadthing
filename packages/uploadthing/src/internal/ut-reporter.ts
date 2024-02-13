@@ -1,6 +1,6 @@
 import { Data, Effect } from "effect";
 
-import type { FetchError, FetchEsque } from "@uploadthing/shared";
+import type { FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -31,7 +31,7 @@ export const createAPIRequestUrl = (config: {
  * Events are handled in "./handler.ts starting at L200"
  */
 export const createUTReporter =
-  (cfg: { url: URL; endpoint: string; package: string; fetch: FetchEsque }) =>
+  (cfg: { url: URL; endpoint: string; package: string }) =>
   <TEvent extends keyof UTEvents>(type: TEvent, payload: UTEvents[TEvent]) =>
     Effect.gen(function* ($) {
       const url = createAPIRequestUrl({
@@ -40,7 +40,7 @@ export const createUTReporter =
         actionType: type,
       });
       const response = yield* $(
-        fetchEff(cfg.fetch, url, {
+        fetchEff(url, {
           method: "POST",
           body: JSON.stringify(payload),
           headers: {
