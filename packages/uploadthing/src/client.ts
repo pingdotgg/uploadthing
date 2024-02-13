@@ -197,6 +197,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
 const uploadFile = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TServerData = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
   slug: string,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
@@ -237,10 +238,7 @@ const uploadFile = <
     const PollingResponse = S.union(
       S.struct({
         status: S.literal("done"),
-        callbackData: S.any as S.Schema<
-          never,
-          inferEndpointOutput<TRouter[TEndpoint]>
-        >,
+        callbackData: S.any as S.Schema<never, TServerData>,
       }),
       S.struct({ status: S.literal("still waiting") }),
     );
@@ -267,7 +265,7 @@ const uploadFile = <
 
       serverData,
       url: "https://utfs.io/f/" + presigned.key,
-    } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
+    } satisfies UploadFileResponse<TServerData>;
   });
 };
 
