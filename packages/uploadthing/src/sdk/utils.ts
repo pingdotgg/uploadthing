@@ -14,7 +14,6 @@ import type { File as UndiciFile } from "undici";
 
 import {
   exponentialBackoff,
-  fetchContext,
   fetchEff,
   fetchEffJson,
   generateUploadThingURL,
@@ -75,11 +74,9 @@ export function uploadFilesInternal(
  */
 export function downloadFiles(urls: MaybeUrl[]) {
   return Effect.gen(function* ($) {
-    const context = yield* $(fetchContext);
-
     const downloads = urls.map((url) =>
       pipe(
-        fetchEff(context.fetch, url),
+        fetchEff(url),
         Effect.andThen((r) => r.blob()),
         Effect.andThen((blob) => {
           const name = url.toString().split("/").pop();
@@ -100,7 +97,6 @@ function getPresignedUrls(input: {
 }) {
   return Effect.gen(function* ($) {
     const { files, metadata, contentDisposition, acl } = input;
-    const context = yield* $(fetchContext);
 
     const fileData = files.map((file) => ({
       name: file.name ?? "unnamed-blob",
@@ -115,22 +111,16 @@ function getPresignedUrls(input: {
     });
 
     const presigneds = yield* $(
-      fetchEffJson(
-        context.fetch,
-        responseSchema,
-        generateUploadThingURL("/api/uploadFiles"),
-        {
-          method: "POST",
-          headers: context.utRequestHeaders,
-          cache: "no-store",
-          body: JSON.stringify({
-            files: fileData,
-            metadata,
-            contentDisposition,
-            acl,
-          }),
-        },
-      ),
+      fetchEffJson(responseSchema, generateUploadThingURL("/api/uploadFiles"), {
+        method: "POST",
+        cache: "no-store",
+        body: JSON.stringify({
+          files: fileData,
+          metadata,
+          contentDisposition,
+          acl,
+        }),
+      }),
     );
     logger.debug("Got presigned URLs:", presigneds.data);
 
@@ -145,7 +135,6 @@ function uploadFile(
   input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
 ) {
   return Effect.gen(function* ($) {
-    const context = yield* $(fetchContext);
     const { file, presigned } = input;
 
     if ("urls" in presigned) {
@@ -156,10 +145,8 @@ function uploadFile(
 
     yield* $(
       fetchEffJson(
-        context.fetch,
         S.struct({ status: S.string }),
         generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        { headers: context.utRequestHeaders },
       ),
       Effect.andThen((res) =>
         res.status === "done"
@@ -229,22 +216,15 @@ function completeUpload(
   etags: { tag: string; partNumber: number }[],
 ) {
   return Effect.gen(function* ($) {
-    const context = yield* $(fetchContext);
-
     yield* $(
-      fetchEff(
-        context.fetch,
-        generateUploadThingURL("/api/completeMultipart"),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: presigned.key,
-            uploadId: presigned.uploadId,
-            etags,
-          }),
-          headers: context.utRequestHeaders,
-        },
-      ),
+      fetchEff(generateUploadThingURL("/api/completeMultipart"), {
+        method: "POST",
+        body: JSON.stringify({
+          fileKey: presigned.key,
+          uploadId: presigned.uploadId,
+          etags,
+        }),
+      }),
     );
   });
 }
@@ -253,14 +233,12 @@ function uploadPresignedPost(file: FileEsque, presigned: PSPResponse) {
   logger.debug("Uploading file", file.name, "using presigned POST URL");
 
   return Effect.gen(function* ($) {
-    const context = yield* $(fetchContext);
-
     const formData = new FormData();
     Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
     formData.append("file", file as Blob); // File data **MUST GO LAST**
 
     const res = yield* $(
-      fetchEff(context.fetch, presigned.url, {
+      fetchEff(presigned.url, {
         method: "POST",
         body: formData,
         headers: new Headers({

@@ -10,32 +10,41 @@ export class FetchError extends Data.TaggedError("FetchError")<{
 
 export const fetchContext = Context.Tag<{
   fetch: FetchEsque;
-  utRequestHeaders: Record<string, string>;
+  baseHeaders?: Record<string, string>;
 }>("fetch-context");
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly
 
-export const fetchEff = (
-  fetchFn: FetchEsque,
-  input: RequestInfo | URL,
-  init?: RequestInit,
-) =>
-  Effect.tryPromise({
-    try: () => fetchFn(input, init),
-    catch: (error) => new FetchError({ error, input }),
-  }).pipe(
-    Effect.withSpan("fetch", { attributes: { input: JSON.stringify(input) } }),
+export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
+  pipe(
+    fetchContext,
+    Effect.andThen((ctx) => {
+      return Effect.tryPromise({
+        try: () =>
+          ctx.fetch(input, {
+            ...init,
+            headers: {
+              ...ctx.baseHeaders,
+              ...init?.headers,
+            },
+          }),
+        catch: (error) => new FetchError({ error, input }),
+      }).pipe(
+        Effect.withSpan("fetch", {
+          attributes: { input: JSON.stringify(input) },
+        }),
+      );
+    }),
   );
 
 export const fetchEffJson = <Res>(
-  fetchFn: FetchEsque,
   schema: Schema.Schema<never, any, Res>,
   input: RequestInfo | URL,
   init?: RequestInit,
 ) =>
-  fetchEff(fetchFn, input, init).pipe(
+  fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
         try: () => res.json(),

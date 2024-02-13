@@ -5,6 +5,7 @@ import { Cause, Effect } from "effect";
 
 import {
   exponentialBackoff,
+  fetchContext,
   fetchEffJson,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -22,9 +23,7 @@ import type {
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
-  UTEvents,
 } from "./internal/types";
-import type { UTReporterError } from "./internal/ut-reporter";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 /*
@@ -103,23 +102,15 @@ const DANGEROUS__uploadFiles_internal = <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) => {
-  // Fine to use global fetch in browser
-  const fetch = globalThis.fetch.bind(globalThis);
-  const reportEventToUT = createUTReporter({
-    endpoint: String(endpoint),
-    url: opts?.url,
-    package: opts.package,
-    fetch,
-  });
+  const slug = String(endpoint);
 
   return Effect.gen(function* ($) {
     const presigneds = yield* $(
       fetchEffJson(
-        fetch,
         uploadThingResponseSchema,
         createAPIRequestUrl({
           url: opts.url,
-          slug: String(endpoint),
+          slug: slug,
           actionType: "upload",
         }),
         {
@@ -134,25 +125,29 @@ const DANGEROUS__uploadFiles_internal = <
     );
 
     return yield* $(
-      Effect.all(presigneds.map((d) => uploadFile(opts, d, reportEventToUT))),
+      Effect.all(
+        presigneds.map((presigned) => uploadFile(slug, opts, presigned)),
+      ),
     );
   });
 };
-
-type ReportEventToUT = <TEvent extends keyof UTEvents>(
-  type: TEvent,
-  payload: UTEvents[TEvent],
-) => Effect.Effect<never, UTReporterError, boolean>;
 
 const uploadFile = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 >(
+  slug: string,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
   presigned: UploadThingResponse[number],
-  reportEventToUT: ReportEventToUT,
 ) =>
   Effect.gen(function* ($) {
+    const { fetch } = yield* $(fetchContext);
+    const reportEventToUT = createUTReporter({
+      endpoint: slug,
+      fetch,
+      ...opts,
+    });
+
     const file = opts.files.find((f) => f.name === presigned.fileName);
 
     if (!file) {
@@ -190,8 +185,8 @@ const uploadFile = <
 
     const serverData = yield* $(
       // TODO: Figure out this lint error
-      // eslint-disable-next-line no-restricted-globals
-      fetchEffJson(fetch, PollingResponse, presigned.pollingUrl, {
+
+      fetchEffJson(PollingResponse, presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }),
       Effect.andThen((res) =>
@@ -222,12 +217,18 @@ export const DANGEROUS__uploadFiles = <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) =>
-  DANGEROUS__uploadFiles_internal(endpoint, opts).pipe(
-    // TODO maybe find a better way to handle the UTReporterError instead of just dying
-    Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
-    Effect.tapErrorCause(Effect.logError),
-    Effect.runPromise,
-  );
+  Effect.provideService(
+    DANGEROUS__uploadFiles_internal(endpoint, opts).pipe(
+      // TODO maybe find a better way to handle the UTReporterError instead of just dying
+      Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
+      Effect.tapErrorCause(Effect.logError),
+    ),
+    fetchContext,
+    fetchContext.of({
+      fetch: globalThis.fetch.bind(globalThis),
+      baseHeaders: {},
+    }),
+  ).pipe(Effect.runPromise);
 
 export const genUploader = <TRouter extends FileRouter>(initOpts: {
   /**

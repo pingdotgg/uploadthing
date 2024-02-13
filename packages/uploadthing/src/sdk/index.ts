@@ -128,7 +128,7 @@ export class UTApi {
       headers: this.defaultHeaders,
     });
 
-    return fetchEffJson(this.fetch, responseSchema, url, {
+    return fetchEffJson(responseSchema, url, {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
@@ -178,7 +178,7 @@ export class UTApi {
       fetchContext,
       fetchContext.of({
         fetch: this.fetch,
-        utRequestHeaders: this.defaultHeaders,
+        baseHeaders: this.defaultHeaders,
       }),
     ).pipe(Effect.runPromise);
 
@@ -225,7 +225,7 @@ export class UTApi {
       fetchContext,
       fetchContext.of({
         fetch: this.fetch,
-        utRequestHeaders: this.defaultHeaders,
+        baseHeaders: this.defaultHeaders,
       }),
     ).pipe(Effect.runPromise);
 
@@ -267,12 +267,19 @@ export class UTApi {
       success: Schema.boolean,
     });
 
-    return this.requestUploadThing(
-      "/api/deleteFiles",
-      keyType === "fileKey"
-        ? { fileKeys: asArray(keys) }
-        : { customIds: asArray(keys) },
-      responseSchema,
+    return Effect.provideService(
+      this.requestUploadThing(
+        "/api/deleteFiles",
+        keyType === "fileKey"
+          ? { fileKeys: asArray(keys) }
+          : { customIds: asArray(keys) },
+        responseSchema,
+      ),
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
     ).pipe(Effect.runPromise);
   };
 
@@ -313,14 +320,18 @@ export class UTApi {
       ),
     });
 
-    return this.requestUploadThing(
-      "/api/getFileUrl",
-      keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
-      responseSchema,
-    ).pipe(
-      Effect.andThen((r) => r.data),
-      Effect.runPromise,
-    );
+    return Effect.provideService(
+      this.requestUploadThing(
+        "/api/getFileUrl",
+        keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
+        responseSchema,
+      ),
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
+    ).pipe(Effect.runPromise);
   };
 
   /**
@@ -351,14 +362,14 @@ export class UTApi {
       ),
     });
 
-    return this.requestUploadThing(
-      "/api/listFiles",
-      { ...opts },
-      responseSchema,
-    ).pipe(
-      Effect.andThen((r) => r.files),
-      Effect.runPromise,
-    );
+    return Effect.provideService(
+      this.requestUploadThing("/api/listFiles", { ...opts }, responseSchema),
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
+    ).pipe(Effect.runPromise);
   };
 
   renameFiles = (
@@ -386,10 +397,17 @@ export class UTApi {
       success: Schema.boolean,
     });
 
-    return this.requestUploadThing(
-      "/api/renameFiles",
-      { updates: asArray(updates) },
-      responseSchema,
+    return Effect.provideService(
+      this.requestUploadThing(
+        "/api/renameFiles",
+        { updates: asArray(updates) },
+        responseSchema,
+      ),
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
     ).pipe(Effect.runPromise);
   };
 
@@ -409,10 +427,13 @@ export class UTApi {
       limitReadable: Schema.string,
     });
 
-    return this.requestUploadThing(
-      "/api/getUsageInfo",
-      {},
-      responseSchema,
+    return Effect.provideService(
+      this.requestUploadThing("/api/getUsageInfo", {}, responseSchema),
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
     ).pipe(Effect.runPromise);
   };
 
@@ -461,15 +482,19 @@ export class UTApi {
       url: Schema.string,
     });
 
-    return this.requestUploadThing(
-      "/api/requestFileAccess",
-      keyType === "fileKey"
-        ? { fileKey: key, expiresIn }
-        : { customId: key, expiresIn },
-      responseSchema,
-    ).pipe(
-      Effect.andThen((r) => r.url),
-      Effect.runPromise,
-    );
+    return Effect.provideService(
+      this.requestUploadThing(
+        "/api/requestFileAccess",
+        keyType === "fileKey"
+          ? { fileKey: key, expiresIn }
+          : { customId: key, expiresIn },
+        responseSchema,
+      ),
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
+    ).pipe(Effect.runPromise);
   };
 }
