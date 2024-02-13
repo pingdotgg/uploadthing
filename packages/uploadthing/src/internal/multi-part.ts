@@ -1,3 +1,4 @@
+import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
 import "@uploadthing/shared";
@@ -6,6 +7,7 @@ import {
   contentDisposition,
   exponentialBackoff,
   fetchEff,
+  fetchEffJson,
   generateUploadThingURL,
   RetryError,
   UploadThingError,
@@ -68,6 +70,23 @@ export const uploadPart = (opts: {
         ),
       ),
     ),
+  );
+
+export const completeMultipartUpload = (
+  presigned: { key: string; uploadId: string },
+  etags: { tag: string; partNumber: number }[],
+) =>
+  fetchEffJson(
+    generateUploadThingURL("/api/completeMultipart"),
+    S.struct({ success: S.boolean, message: S.optional(S.string) }),
+    {
+      method: "POST",
+      body: JSON.stringify({
+        fileKey: presigned.key,
+        uploadId: presigned.uploadId,
+        etags,
+      }),
+    },
   );
 
 /**

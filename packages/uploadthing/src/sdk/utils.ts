@@ -28,9 +28,10 @@ import type {
 } from "@uploadthing/shared";
 
 import { logger } from "../internal/logger";
-import { uploadPart } from "../internal/multi-part";
+import { completeMultipartUpload, uploadPart } from "../internal/multi-part";
 import { mpuSchema, pspSchema } from "../internal/shared-schemas";
 import type { MPUResponse, PSPResponse } from "../internal/shared-schemas";
+import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -82,19 +83,18 @@ export const uploadFilesInternal = (
  * just as much as we need at any time.
  */
 export const downloadFiles = (urls: MaybeUrl[]) =>
-  Effect.gen(function* ($) {
-    const downloads = urls.map((url) =>
+  Effect.forEach(
+    urls,
+    (url) =>
       fetchEff(url).pipe(
         Effect.andThen((response) => response.blob()),
         Effect.andThen((blob) => {
           const name = url.toString().split("/").pop();
-          return Object.assign(blob, { name: name ?? "unknown-filename" });
+          return new UTFile([blob], name ?? "unknown-filename");
         }),
       ),
-    );
-
-    return yield* $(Effect.all(downloads, { concurrency: 10 }));
-  });
+    { concurrency: 10 },
+  );
 
 const getPresignedUrls = (input: {
   files: FileEsque[];
@@ -212,25 +212,8 @@ const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
 
     logger.debug("File", file.name, "uploaded successfully.");
     logger.debug("Comleting multipart upload...");
-    yield* $(completeUpload(presigned, etags));
+    yield* $(completeMultipartUpload(presigned, etags));
     logger.debug("Multipart upload complete.");
-  });
-
-const completeUpload = (
-  presigned: { key: string; uploadId: string },
-  etags: { tag: string; partNumber: number }[],
-) =>
-  Effect.gen(function* ($) {
-    yield* $(
-      fetchEff(generateUploadThingURL("/api/completeMultipart"), {
-        method: "POST",
-        body: JSON.stringify({
-          fileKey: presigned.key,
-          uploadId: presigned.uploadId,
-          etags,
-        }),
-      }),
-    );
   });
 
 const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
