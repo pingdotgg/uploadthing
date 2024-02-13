@@ -1,7 +1,7 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
 import * as S from "@effect/schema/Schema";
-import { Cause, Effect, Layer, pipe } from "effect";
+import { Cause, Effect, Layer } from "effect";
 
 import {
   exponentialBackoff,
@@ -278,22 +278,19 @@ function uploadMultipart(
     const end = Math.min(offset + presigned.chunkSize, file.size);
     const chunk = file.slice(offset, end);
 
-    return pipe(
-      uploadPartWithProgress({
-        url,
-        chunk: chunk,
-        contentDisposition: presigned.contentDisposition,
-        fileType: file.type,
-        fileName: file.name,
-        maxRetries: 10,
-        onProgress: (delta) => {
-          uploadedBytes += delta;
-          const percent = (uploadedBytes / file.size) * 100;
-          opts.onUploadProgress?.({ file: file.name, progress: percent });
-        },
-      }),
-      Effect.andThen((tag) => ({ tag, partNumber: index + 1 })),
-    );
+    return uploadPartWithProgress({
+      url,
+      chunk: chunk,
+      contentDisposition: presigned.contentDisposition,
+      fileType: file.type,
+      fileName: file.name,
+      maxRetries: 10,
+      onProgress: (delta) => {
+        uploadedBytes += delta;
+        const percent = (uploadedBytes / file.size) * 100;
+        opts.onUploadProgress?.({ file: file.name, progress: percent });
+      },
+    }).pipe(Effect.andThen((tag) => ({ tag, partNumber: index + 1 })));
   };
 
   return Effect.gen(function* ($) {

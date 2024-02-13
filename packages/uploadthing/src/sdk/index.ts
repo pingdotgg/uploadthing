@@ -1,5 +1,5 @@
 import * as S from "@effect/schema/Schema";
-import { Effect, Layer, pipe } from "effect";
+import { Effect, Layer } from "effect";
 import type { Tag } from "effect/Context";
 import { process } from "std-env";
 
@@ -129,13 +129,12 @@ export class UTApi {
       headers: this.defaultHeaders,
     });
 
-    return pipe(
-      fetchEffJson(url, responseSchema, {
-        method: "POST",
-        cache: "no-store",
-        body: JSON.stringify(body),
-        headers: this.defaultHeaders,
-      }),
+    return fetchEffJson(url, responseSchema, {
+      method: "POST",
+      cache: "no-store",
+      body: JSON.stringify(body),
+      headers: this.defaultHeaders,
+    }).pipe(
       Effect.catchTag("FetchError", (err) => {
         logger.error("Request failed:", err);
         return Effect.die(err);
@@ -221,8 +220,7 @@ export class UTApi {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
-      pipe(
-        downloadFiles(asArray(urls)),
+      downloadFiles(asArray(urls)).pipe(
         Effect.andThen((files) =>
           uploadFilesInternal({
             files,

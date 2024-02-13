@@ -1,4 +1,4 @@
-import { Effect, pipe } from "effect";
+import { Effect } from "effect";
 
 import "@uploadthing/shared";
 
@@ -50,14 +50,13 @@ export function uploadPart(opts: {
         times: opts.maxRetries,
       }),
       Effect.tapErrorTag("Retry", () =>
-        pipe(
-          // Max retries exceeded, tell UT server that upload failed
-          fetchEff(generateUploadThingURL("/api/failureCallback"), {
-            method: "POST",
-            body: JSON.stringify({
-              fileKey: opts.key,
-            }),
+        // Max retries exceeded, tell UT server that upload failed
+        fetchEff(generateUploadThingURL("/api/failureCallback"), {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: opts.key,
           }),
+        }).pipe(
           Effect.andThen(() =>
             Effect.fail(
               new UploadThingError({

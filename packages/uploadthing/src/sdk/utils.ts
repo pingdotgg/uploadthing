@@ -8,7 +8,7 @@ import "@effect/schema/ParseResult";
 import "effect/Cause";
 
 import * as S from "@effect/schema/Schema";
-import { Effect, pipe } from "effect";
+import { Effect } from "effect";
 import { process } from "std-env";
 import type { File as UndiciFile } from "undici";
 
@@ -57,8 +57,7 @@ export type FileEsque =
 export const uploadFilesInternal = (
   input: Parameters<typeof getPresignedUrls>[0],
 ) =>
-  pipe(
-    getPresignedUrls(input),
+  getPresignedUrls(input).pipe(
     Effect.andThen((presigneds) =>
       // TODO: Catch errors for each file and return data like
       // ({ data, error: null } | { data: null, error })[]
@@ -84,8 +83,7 @@ export const uploadFilesInternal = (
 export function downloadFiles(urls: MaybeUrl[]) {
   return Effect.gen(function* ($) {
     const downloads = urls.map((url) =>
-      pipe(
-        fetchEff(url),
+      fetchEff(url).pipe(
         Effect.andThen((r) => r.blob()),
         Effect.andThen((blob) => {
           const name = url.toString().split("/").pop();
@@ -196,16 +194,15 @@ function uploadMultipart(file: FileEsque, presigned: MPUResponse) {
           const end = Math.min(offset + presigned.chunkSize, file.size);
           const chunk = file.slice(offset, end);
 
-          return pipe(
-            uploadPart({
-              url,
-              chunk: chunk as Blob,
-              contentDisposition: presigned.contentDisposition,
-              contentType: file.type,
-              fileName: file.name,
-              maxRetries: 10,
-              key: presigned.key,
-            }),
+          return uploadPart({
+            url,
+            chunk: chunk as Blob,
+            contentDisposition: presigned.contentDisposition,
+            contentType: file.type,
+            fileName: file.name,
+            maxRetries: 10,
+            key: presigned.key,
+          }).pipe(
             Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
             Effect.catchTag("Retry", (e) => Effect.die(e)),
           );

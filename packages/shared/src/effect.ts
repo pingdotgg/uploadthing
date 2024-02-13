@@ -41,8 +41,7 @@ export const fetchEffJson = <Res>(
   schema: S.Schema<never, any, Res>,
   init?: RequestInit,
 ) =>
-  pipe(
-    fetchEff(input, init),
+  fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
         try: () => res.json(),
