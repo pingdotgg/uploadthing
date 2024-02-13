@@ -74,9 +74,8 @@ export class UploadThingError<
       (opts.cause as ResponseEsque)?.status &&
       (opts.cause as ResponseEsque)?.statusText
     ) {
-      this.cause = new Error(
-        `Response ${(opts.cause as ResponseEsque).status} ${(opts.cause as ResponseEsque).statusText}`,
-      );
+      const cause = opts.cause as ResponseEsque;
+      this.cause = new Error(`Response ${cause.status} ${cause.statusText}`);
     } else if (typeof opts.cause === "string") {
       this.cause = new Error(opts.cause);
     } else {
