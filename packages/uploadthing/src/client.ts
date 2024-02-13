@@ -226,12 +226,13 @@ const uploadFile = <
     opts.onUploadBegin?.({ file: file.name });
     if ("urls" in presigned) {
       yield* $(uploadMultipart(file, presigned, { reportEventToUT, ...opts }));
-      // wait a bit as it's unsreasonable to expect the server to be done by now
-      yield* $(Effect.sleep(500));
     } else {
       yield* $(uploadPresignedPost(file, presigned, { ...opts }));
-      yield* $(Effect.sleep(200)); // presigned posts don't take as long to post-process
     }
+    // wait a bit as it's unsreasonable to expect the server to be done by now
+    // TODO: We should have an option on the client to opt-out of waiting for server callback
+    // to finish if it doesn't return anything...
+    yield* $(Effect.sleep(500));
 
     const PollingResponse = S.union(
       S.struct({
