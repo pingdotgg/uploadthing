@@ -3,7 +3,8 @@ import { beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 
 import type { ResponseEsque } from "@uploadthing/shared";
 
-import { UTApi, UTFile } from ".";
+import { UTApi } from ".";
+import { UTFile } from "./ut-file";
 import type { UploadError } from "./utils";
 
 const utapi = new UTApi({ apiKey: "sk_test_foo" });
