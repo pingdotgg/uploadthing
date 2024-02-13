@@ -1,3 +1,5 @@
+import * as S from "@effect/schema/Schema";
+
 import type { MimeType } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
@@ -92,8 +94,11 @@ type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
-export type ContentDisposition = "inline" | "attachment";
-export type ACL = "public-read" | "private";
+export const ContentDisposition = S.literal("inline", "attachment");
+export type ContentDisposition = S.Schema.To<typeof ContentDisposition>;
+export const ACL = S.literal("public-read", "private");
+export type ACL = S.Schema.To<typeof ACL>;
+
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;

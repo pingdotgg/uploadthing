@@ -7,7 +7,7 @@
 import "@effect/schema/ParseResult";
 import "effect/Cause";
 
-import { Schema as S } from "@effect/schema";
+import * as S from "@effect/schema/Schema";
 import { Effect, pipe } from "effect";
 import { process } from "std-env";
 import type { File as UndiciFile } from "undici";
@@ -27,6 +27,8 @@ import type {
   MaybeUrl,
 } from "@uploadthing/shared";
 
+import { mpuSchema, pspSchema } from "../internal/handler";
+import type { MPUResponse, PSPResponse } from "../internal/handler";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 
@@ -109,17 +111,7 @@ function getPresignedUrls(input: {
     logger.debug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.struct({
-      data: S.array(
-        S.struct({
-          urls: S.array(S.string),
-          key: S.string,
-          fileUrl: S.string,
-          fileType: S.string,
-          uploadId: S.string,
-          chunkSize: S.number,
-          chunkCount: S.number,
-        }),
-      ),
+      data: S.array(S.union(mpuSchema, pspSchema)),
     });
 
     const presigneds = yield* $(
@@ -145,7 +137,6 @@ function getPresignedUrls(input: {
     return files.map((file, i) => ({
       file,
       presigned: presigneds.data[i],
-      contentDisposition,
     }));
   });
 }
@@ -154,18 +145,54 @@ function uploadFile(
   input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
 ) {
   return Effect.gen(function* ($) {
-    const { file, presigned, contentDisposition } = input;
+    const context = yield* $(fetchContext);
+    const { file, presigned } = input;
 
-    logger.debug(
-      "Uploading file",
-      file.name,
-      "with",
-      presigned.urls.length,
-      "chunks of size",
-      presigned.chunkSize,
-      "bytes each",
+    if ("urls" in presigned) {
+      yield* $(uploadMultipart(file, presigned));
+    } else {
+      yield* $(uploadPresignedPost(file, presigned));
+    }
+
+    yield* $(
+      fetchEffJson(
+        context.fetch,
+        S.struct({ status: S.string }),
+        generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
+        { headers: context.utRequestHeaders },
+      ),
+      Effect.andThen((res) =>
+        res.status === "done"
+          ? Effect.succeed(undefined)
+          : Effect.fail({ _tag: "NotDone" as const }),
+      ),
+      Effect.retry({
+        while: (err) => err._tag === "NotDone",
+        schedule: exponentialBackoff,
+      }),
     );
 
+    return {
+      key: presigned.key,
+      url: presigned.fileUrl,
+      name: file.name,
+      size: file.size,
+    };
+  });
+}
+
+function uploadMultipart(file: FileEsque, presigned: MPUResponse) {
+  logger.debug(
+    "Uploading file",
+    file.name,
+    "with",
+    presigned.urls.length,
+    "chunks of size",
+    presigned.chunkSize,
+    "bytes each",
+  );
+
+  return Effect.gen(function* ($) {
     const etags = yield* $(
       Effect.all(
         presigned.urls.map((url, index) => {
@@ -177,7 +204,7 @@ function uploadFile(
             uploadPart({
               url,
               chunk: chunk as Blob,
-              contentDisposition,
+              contentDisposition: presigned.contentDisposition,
               contentType: file.type,
               fileName: file.name,
               maxRetries: 10,
@@ -194,13 +221,6 @@ function uploadFile(
     logger.debug("Comleting multipart upload...");
     yield* $(completeUpload(presigned, etags));
     logger.debug("Multipart upload complete.");
-
-    return {
-      key: presigned.key,
-      url: presigned.fileUrl,
-      name: file.name,
-      size: file.size,
-    };
   });
 }
 
@@ -226,24 +246,40 @@ function completeUpload(
         },
       ),
     );
+  });
+}
 
-    yield* $(
-      fetchEffJson(
-        context.fetch,
-        S.struct({ status: S.string }),
-        generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        { headers: context.utRequestHeaders },
-      ),
-      Effect.andThen((res) =>
-        res.status === "done"
-          ? Effect.succeed(undefined)
-          : Effect.fail({ _tag: "NotDone" as const }),
-      ),
-      Effect.retry({
-        while: (err) => err._tag === "NotDone",
-        schedule: exponentialBackoff,
+function uploadPresignedPost(file: FileEsque, presigned: PSPResponse) {
+  logger.debug("Uploading file", file.name, "using presigned POST URL");
+
+  return Effect.gen(function* ($) {
+    const context = yield* $(fetchContext);
+
+    const formData = new FormData();
+    Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
+    formData.append("file", file as Blob); // File data **MUST GO LAST**
+
+    const res = yield* $(
+      fetchEff(context.fetch, presigned.url, {
+        method: "POST",
+        body: formData,
+        headers: new Headers({
+          Accept: "application/xml",
+        }),
       }),
     );
+
+    if (!res.ok) {
+      const text = yield* $(Effect.promise(() => res.text()));
+      logger.error("Failed to upload file:", text);
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "Failed to upload file",
+        cause: text,
+      });
+    }
+
+    logger.debug("File", file.name, "uploaded successfully");
   });
 }
 

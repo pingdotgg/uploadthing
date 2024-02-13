@@ -253,6 +253,7 @@ export function asArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
+/** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,
   fileName: string,

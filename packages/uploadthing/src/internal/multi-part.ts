@@ -1,5 +1,7 @@
 import { Effect, pipe } from "effect";
 
+import "@uploadthing/shared";
+
 import {
   contentDisposition,
   exponentialBackoff,
