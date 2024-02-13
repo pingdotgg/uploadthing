@@ -54,6 +54,32 @@ export const allowedContentTextLabelGenerator = (
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
+export const classNames = (...classes: (string | boolean)[]) => {
+  return classes.filter(Boolean).join(" ");
+};
+
+export const generateMimeTypes = (fileTypes: string[]) => {
+  const accepted = fileTypes.map((type) => {
+    if (type === "blob") return "blob";
+    if (type === "pdf") return "application/pdf";
+    if (type.includes("/")) return type;
+    else return `${type}/*`;
+  });
+
+  if (accepted.includes("blob")) {
+    return undefined;
+  }
+  return accepted;
+};
+
+export const generateClientDropzoneAccept = (fileTypes: string[]) => {
+  const mimeTypes = generateMimeTypes(fileTypes);
+
+  if (!mimeTypes) return undefined;
+
+  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
+};
+
 type AnyRuntime = "react" | "solid";
 type MinCallbackArg = { __runtime: AnyRuntime };
 type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"

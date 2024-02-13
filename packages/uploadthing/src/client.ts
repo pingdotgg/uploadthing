@@ -26,6 +26,8 @@ import type {
 } from "./internal/types";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
+export { resolveMaybeUrlArg };
+
 /*
 
 More Effect refactoring:
@@ -79,6 +81,10 @@ type UploadFilesOptions<
       input: inferEndpointInput<TRouter[TEndpoint]>;
     });
 
+/**
+ * @internal - used to catch errors we've forgotton to wrap in UploadThingError
+ * FIXME: Should not be needed after Effect migration
+ */
 export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
   new UploadThingError({
     code: "INTERNAL_CLIENT_ERROR",
@@ -95,21 +101,19 @@ export type UploadFileResponse<TServerOutput> = {
   serverData: TServerOutput;
 };
 
-const DANGEROUS__uploadFiles_internal = <
+export const DANGEROUS__uploadFiles = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) => {
-  const slug = String(endpoint);
-
-  return Effect.gen(function* ($) {
+  const uploadFiles = Effect.gen(function* ($) {
     const presigneds = yield* $(
       fetchEffJson(
         createAPIRequestUrl({
           url: opts.url,
-          slug: slug,
+          slug: String(endpoint),
           actionType: "upload",
         }),
         uploadThingResponseSchema,
@@ -126,10 +130,68 @@ const DANGEROUS__uploadFiles_internal = <
 
     return yield* $(
       Effect.all(
-        presigneds.map((presigned) => uploadFile(slug, opts, presigned)),
+        presigneds.map((presigned) =>
+          uploadFile(String(endpoint), opts, presigned),
+        ),
       ),
     );
   });
+
+  // TODO: I think this can stay an Effect and not be run as a promise (especially once React package is Effect too)
+  //       The `genUploader` can be the one who provides the service and the Promise-inferface for the public
+  return pipe(
+    Effect.provideService(
+      pipe(
+        uploadFiles,
+        // TODO maybe find a better way to handle the UTReporterError instead of just dying
+        Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
+        Effect.tapErrorCause(Effect.logError),
+      ),
+      fetchContext,
+      fetchContext.of({
+        fetch: globalThis.fetch.bind(globalThis),
+        baseHeaders: {},
+      }),
+    ),
+    Effect.runPromise,
+  );
+};
+
+export const genUploader = <TRouter extends FileRouter>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { /api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+
+  /**
+   * The uploadthing package that is making this request
+   * @example "@uploadthing/react"
+   *
+   * This is used to identify the client in the server logs
+   */
+  package: string;
+}) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
+
+  return <TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts: DistributiveOmit<
+      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+      "url" | "package"
+    >,
+  ) =>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+      ...opts,
+      url,
+      package: initOpts.package,
+    } as any);
 };
 
 const uploadFile = <
@@ -139,8 +201,8 @@ const uploadFile = <
   slug: string,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
   presigned: UploadThingResponse[number],
-) =>
-  Effect.gen(function* ($) {
+) => {
+  return Effect.gen(function* ($) {
     const reportEventToUT = createUTReporter({
       endpoint: slug,
       ...opts,
@@ -168,6 +230,7 @@ const uploadFile = <
       yield* $(Effect.sleep(500));
     } else {
       yield* $(uploadPresignedPost(file, presigned, { ...opts }));
+      yield* $(Effect.sleep(200)); // presigned posts don't take as long to post-process
     }
 
     const PollingResponse = S.union(
@@ -182,8 +245,6 @@ const uploadFile = <
     );
 
     const serverData = yield* $(
-      // TODO: Figure out this lint error
-
       fetchEffJson(presigned.pollingUrl, PollingResponse, {
         headers: { authorization: presigned.pollingJwt },
       }),
@@ -207,102 +268,7 @@ const uploadFile = <
       url: "https://utfs.io/f/" + presigned.key,
     } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
   });
-
-export const DANGEROUS__uploadFiles = <
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
->(
-  endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
-) =>
-  pipe(
-    Effect.provideService(
-      pipe(
-        DANGEROUS__uploadFiles_internal(endpoint, opts),
-        // TODO maybe find a better way to handle the UTReporterError instead of just dying
-        Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
-        Effect.tapErrorCause(Effect.logError),
-      ),
-      fetchContext,
-      fetchContext.of({
-        fetch: globalThis.fetch.bind(globalThis),
-        baseHeaders: {},
-      }),
-    ),
-    Effect.runPromise,
-  );
-
-export const genUploader = <TRouter extends FileRouter>(initOpts: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { /api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-
-  /**
-   * The uploadthing package that is making this request
-   * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
-   */
-  package: string;
-}) => {
-  const url = resolveMaybeUrlArg(initOpts?.url);
-
-  const utPkg = initOpts.package;
-
-  return <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
-    opts: DistributiveOmit<
-      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-      "url"
-    >,
-  ) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
-      ...opts,
-      url,
-      package: utPkg,
-    } as any);
 };
-
-export const classNames = (...classes: (string | boolean)[]) => {
-  return classes.filter(Boolean).join(" ");
-};
-
-export const generateMimeTypes = (fileTypes: string[]) => {
-  const accepted = fileTypes.map((type) => {
-    if (type === "blob") return "blob";
-    if (type === "pdf") return "application/pdf";
-    if (type.includes("/")) return type;
-    else return `${type}/*`;
-  });
-
-  if (accepted.includes("blob")) {
-    return undefined;
-  }
-  return accepted;
-};
-
-export const generateClientDropzoneAccept = (fileTypes: string[]) => {
-  const mimeTypes = generateMimeTypes(fileTypes);
-
-  if (!mimeTypes) return undefined;
-
-  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
-};
-
-const uploadPartWithProgressEff = (
-  opts: Parameters<typeof uploadPartWithProgress>[0],
-  retryCount?: number,
-) => Effect.promise(() => uploadPartWithProgress(opts, retryCount));
-
-export { resolveMaybeUrlArg };
 
 function uploadMultipart(
   file: File,
@@ -314,34 +280,32 @@ function uploadMultipart(
 ) {
   let uploadedBytes = 0;
 
-  const innerEffect = (url: string, index: number) =>
-    Effect.gen(function* ($) {
-      const offset = presigned.chunkSize * index;
-      const end = Math.min(offset + presigned.chunkSize, file.size);
-      const chunk = file.slice(offset, end);
+  const uploadPart = (url: string, index: number) => {
+    const offset = presigned.chunkSize * index;
+    const end = Math.min(offset + presigned.chunkSize, file.size);
+    const chunk = file.slice(offset, end);
 
-      const etag = yield* $(
-        uploadPartWithProgressEff({
-          url,
-          chunk: chunk,
-          contentDisposition: presigned.contentDisposition,
-          fileType: file.type,
-          fileName: file.name,
-          maxRetries: 10,
-          onProgress: (delta) => {
-            uploadedBytes += delta;
-            const percent = (uploadedBytes / file.size) * 100;
-            opts.onUploadProgress?.({ file: file.name, progress: percent });
-          },
-        }),
-      );
-
-      return { tag: etag, partNumber: index + 1 };
-    });
+    return pipe(
+      uploadPartWithProgress({
+        url,
+        chunk: chunk,
+        contentDisposition: presigned.contentDisposition,
+        fileType: file.type,
+        fileName: file.name,
+        maxRetries: 10,
+        onProgress: (delta) => {
+          uploadedBytes += delta;
+          const percent = (uploadedBytes / file.size) * 100;
+          opts.onUploadProgress?.({ file: file.name, progress: percent });
+        },
+      }),
+      Effect.andThen((tag) => ({ tag, partNumber: index + 1 })),
+    );
+  };
 
   return Effect.gen(function* ($) {
     const etags = yield* $(
-      Effect.all(presigned.urls.map(innerEffect)),
+      Effect.all(presigned.urls.map(uploadPart)),
       Effect.tapErrorCause((error) =>
         opts.reportEventToUT("failure", {
           fileKey: presigned.key,

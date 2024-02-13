@@ -78,7 +78,7 @@ export function uploadPart(opts: {
  * Used by client uploads where progress is needed.
  * Uses XMLHttpRequest.
  */
-export async function uploadPartWithProgress(
+async function uploadPartWithProgressInternal(
   opts: {
     url: string;
     chunk: Blob;
@@ -108,7 +108,7 @@ export async function uploadPartWithProgress(
         // Add a delay before retrying (exponential backoff can be used)
         const delay = Math.pow(2, retryCount) * 1000;
         await new Promise((res) => setTimeout(res, delay));
-        await uploadPartWithProgress(opts, retryCount + 1); // Retry the request
+        await uploadPartWithProgressInternal(opts, retryCount + 1); // Retry the request
       } else {
         reject("Max retries exceeded");
       }
@@ -122,7 +122,7 @@ export async function uploadPartWithProgress(
         // Add a delay before retrying (exponential backoff can be used)
         const delay = Math.pow(2, retryCount) * 100;
         await new Promise((res) => setTimeout(res, delay));
-        await uploadPartWithProgress(opts, retryCount + 1); // Retry the request
+        await uploadPartWithProgressInternal(opts, retryCount + 1); // Retry the request
       } else {
         reject("Max retries exceeded");
       }
@@ -137,3 +137,8 @@ export async function uploadPartWithProgress(
     xhr.send(opts.chunk);
   });
 }
+
+export const uploadPartWithProgress = (
+  opts: Parameters<typeof uploadPartWithProgressInternal>[0],
+  retryCount?: number,
+) => Effect.promise(() => uploadPartWithProgressInternal(opts, retryCount));
