@@ -1,5 +1,6 @@
 import { Schema } from "@effect/schema";
 import { Effect, pipe } from "effect";
+import type { Tag } from "effect/Context";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
@@ -146,6 +147,19 @@ export class UTApi {
     );
   }
 
+  private executeAsync = <E, A>(
+    program: Effect.Effect<Tag.Identifier<typeof fetchContext>, E, A>,
+  ) => {
+    return Effect.provideService(
+      program,
+      fetchContext,
+      fetchContext.of({
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
+    ).pipe(Effect.runPromise);
+  };
+
   /**
    * Upload files to UploadThing storage.
    *
@@ -168,19 +182,14 @@ export class UTApi {
   ) => {
     guardServerOnly();
 
-    const uploads = await Effect.provideService(
+    const uploads = await this.executeAsync(
       uploadFilesInternal({
         files: asArray(files),
         contentDisposition: opts?.contentDisposition ?? "inline",
         metadata: opts?.metadata ?? {},
         acl: opts?.acl,
       }),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
 
     const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
     logger.debug("Finished uploading:", uploadFileResponse);
@@ -210,7 +219,7 @@ export class UTApi {
   ) => {
     guardServerOnly();
 
-    const uploads = await Effect.provideService(
+    const uploads = await this.executeAsync(
       pipe(
         downloadFiles(asArray(urls)),
         Effect.andThen((files) =>
@@ -222,12 +231,7 @@ export class UTApi {
           }),
         ),
       ),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
 
     const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
     logger.debug("Finished uploading:", uploadFileResponse);
@@ -267,7 +271,7 @@ export class UTApi {
       success: Schema.boolean,
     });
 
-    return Effect.provideService(
+    return this.executeAsync(
       this.requestUploadThing(
         "/api/deleteFiles",
         keyType === "fileKey"
@@ -275,12 +279,7 @@ export class UTApi {
           : { customIds: asArray(keys) },
         responseSchema,
       ),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
   };
 
   /**
@@ -320,18 +319,13 @@ export class UTApi {
       ),
     });
 
-    return Effect.provideService(
+    return this.executeAsync(
       this.requestUploadThing(
         "/api/getFileUrl",
         keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
         responseSchema,
       ),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
   };
 
   /**
@@ -362,14 +356,9 @@ export class UTApi {
       ),
     });
 
-    return Effect.provideService(
+    return this.executeAsync(
       this.requestUploadThing("/api/listFiles", { ...opts }, responseSchema),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
   };
 
   renameFiles = (
@@ -397,18 +386,13 @@ export class UTApi {
       success: Schema.boolean,
     });
 
-    return Effect.provideService(
+    return this.executeAsync(
       this.requestUploadThing(
         "/api/renameFiles",
         { updates: asArray(updates) },
         responseSchema,
       ),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
   };
 
   /** @deprecated Use {@link renameFiles} instead. */
@@ -427,14 +411,9 @@ export class UTApi {
       limitReadable: Schema.string,
     });
 
-    return Effect.provideService(
+    return this.executeAsync(
       this.requestUploadThing("/api/getUsageInfo", {}, responseSchema),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
   };
 
   /** Request a presigned url for a private file(s) */
@@ -482,7 +461,7 @@ export class UTApi {
       url: Schema.string,
     });
 
-    return Effect.provideService(
+    return this.executeAsync(
       this.requestUploadThing(
         "/api/requestFileAccess",
         keyType === "fileKey"
@@ -490,11 +469,6 @@ export class UTApi {
           : { customId: key, expiresIn },
         responseSchema,
       ),
-      fetchContext,
-      fetchContext.of({
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
-    ).pipe(Effect.runPromise);
+    );
   };
 }
