@@ -53,7 +53,7 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
 export class UploadThingError<
   TShape extends Json = { message: string },
 > extends TaggedError("UploadThingError")<{ message: string }> {
-  public readonly cause?: Error;
+  public readonly cause?: unknown;
   public readonly code: ErrorCode;
   public readonly data?: TShape;
 
@@ -79,6 +79,8 @@ export class UploadThingError<
       this.cause = new Error(
         `Response ${(opts.cause as ResponseEsque).status} ${(opts.cause as ResponseEsque).statusText}`,
       );
+    } else {
+      this.cause = opts.cause;
     }
   }
 
