@@ -1,8 +1,6 @@
-import * as S from "@effect/schema/Schema";
 import { isDevelopment, process } from "std-env";
 
 import {
-  ContentDisposition,
   generateUploadThingURL,
   getTypeFromFileName,
   isObject,
@@ -25,6 +23,7 @@ import { getFullApiUrl } from "./get-full-api-url";
 import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
+import type { UploadThingResponse } from "./shared-schemas";
 import { UTFiles, VALID_ACTION_TYPES } from "./types";
 import type {
   ActionType,
@@ -120,38 +119,6 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: RouteHandlerConfig;
 };
-
-const baseResponseSchema = S.struct({
-  key: S.string,
-  fileName: S.string,
-  fileType: S.string as S.Schema<never, FileRouterInputKey>,
-  fileUrl: S.string,
-  contentDisposition: ContentDisposition,
-  pollingJwt: S.string,
-  pollingUrl: S.string,
-});
-
-export const mpuSchema = S.extend(
-  baseResponseSchema,
-  S.struct({
-    urls: S.array(S.string),
-    uploadId: S.string,
-    chunkSize: S.number,
-    chunkCount: S.number,
-  }),
-);
-export type MPUResponse = S.Schema.To<typeof mpuSchema>;
-
-export const pspSchema = S.extend(
-  baseResponseSchema,
-  S.struct({
-    url: S.string,
-    fields: S.record(S.string, S.string),
-  }),
-);
-export type PSPResponse = S.Schema.To<typeof pspSchema>;
-
-export type UploadThingResponse = (PSPResponse | MPUResponse)[];
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,

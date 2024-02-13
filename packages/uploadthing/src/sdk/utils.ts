@@ -27,10 +27,10 @@ import type {
   MaybeUrl,
 } from "@uploadthing/shared";
 
-import { mpuSchema, pspSchema } from "../internal/handler";
-import type { MPUResponse, PSPResponse } from "../internal/handler";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
+import { mpuSchema, pspSchema } from "../internal/shared-schemas";
+import type { MPUResponse, PSPResponse } from "../internal/shared-schemas";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {

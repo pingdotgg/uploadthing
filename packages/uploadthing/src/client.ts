@@ -3,22 +3,20 @@
 import { Schema } from "@effect/schema";
 import { Cause, Effect } from "effect";
 
-import type { ResponseEsque } from "@uploadthing/shared";
 import {
   exponentialBackoff,
-  fetchEff,
   fetchEffJson,
-  safeParseJSON,
   UploadThingError,
 } from "@uploadthing/shared";
 
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
+import { uploadPartWithProgress } from "./internal/multi-part";
+import { uploadThingResponseSchema } from "./internal/shared-schemas";
 import type {
   MPUResponse,
   PSPResponse,
   UploadThingResponse,
-} from "./internal/handler";
-import { uploadPartWithProgress } from "./internal/multi-part";
+} from "./internal/shared-schemas";
 import type {
   DistributiveOmit,
   FileRouter,
@@ -115,10 +113,10 @@ const DANGEROUS__uploadFiles_internal = <
   });
 
   return Effect.gen(function* ($) {
-    // Get presigned URL for S3 upload
-    const s3ConnectionRes_ = yield* $(
-      fetchEff(
+    const presigneds = yield* $(
+      fetchEffJson(
         fetch,
+        uploadThingResponseSchema,
         createAPIRequestUrl({
           url: opts.url,
           slug: String(endpoint),
@@ -135,30 +133,8 @@ const DANGEROUS__uploadFiles_internal = <
       ),
     );
 
-    if (!s3ConnectionRes_.ok) {
-      return yield* $(
-        Effect.promise(() => UploadThingError.fromResponse(s3ConnectionRes_)),
-      );
-    }
-
-    const s3ConnectionRes = yield* $(
-      safeParseJSONEff<UploadThingResponse>(s3ConnectionRes_),
-    );
-
-    if (s3ConnectionRes instanceof Error) {
-      return yield* $(
-        new UploadThingError({
-          code: "BAD_REQUEST",
-          message: s3ConnectionRes.message,
-          cause: s3ConnectionRes_,
-        }),
-      );
-    }
-
     return yield* $(
-      Effect.all(
-        s3ConnectionRes.map((d) => uploadFile(opts, d, reportEventToUT)),
-      ),
+      Effect.all(presigneds.map((d) => uploadFile(opts, d, reportEventToUT))),
     );
   });
 };
@@ -317,9 +293,6 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
-
-const safeParseJSONEff = <T>(res: ResponseEsque) =>
-  Effect.promise<T | Error>(() => safeParseJSON<T>(res));
 
 const uploadPartWithProgressEff = (
   opts: Parameters<typeof uploadPartWithProgress>[0],
