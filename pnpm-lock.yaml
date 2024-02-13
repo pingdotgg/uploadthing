@@ -810,11 +810,11 @@ importers:
   packages/shared:
     dependencies:
       '@effect/schema':
-        specifier: ^0.61.5
-        version: 0.61.5(effect@2.2.3)(fast-check@3.15.0)
+        specifier: ^0.62.6
+        version: 0.62.6(effect@2.3.5)(fast-check@3.15.0)
       effect:
-        specifier: ^2.2.3
-        version: 2.2.3
+        specifier: ^2.3.5
+        version: 2.3.5
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -840,12 +840,18 @@ importers:
 
   packages/solid:
     dependencies:
+      '@effect/schema':
+        specifier: ^0.62.6
+        version: 0.62.6(effect@2.3.5)(fast-check@3.15.0)
       '@uploadthing/dropzone':
         specifier: ^0.1.1
         version: link:../dropzone
       '@uploadthing/shared':
         specifier: ^6.2.1
         version: link:../shared
+      effect:
+        specifier: ^2.3.5
+        version: 2.3.5
       tailwind-merge:
         specifier: ^1.14.0
         version: 1.14.0
@@ -881,8 +887,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/schema':
-        specifier: ^0.61.5
-        version: 0.61.5(effect@2.2.3)(fast-check@3.15.0)
+        specifier: ^0.62.6
+        version: 0.62.6(effect@2.3.5)(fast-check@3.15.0)
       '@uploadthing/mime-types':
         specifier: ^0.2.2
         version: link:../mime-types
@@ -893,8 +899,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: ^2.2.3
-        version: 2.2.3
+        specifier: ^2.3.5
+        version: 2.3.5
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -2976,13 +2982,13 @@ packages:
     resolution: {integrity: sha512-ps5qF0tMxWRVu+V5gvCRrQNqlY92aTnIKdq27gm9LZMSdaKYZt6AVvSK1dlUMzs6Rt0Jm80b+eWct6xShBKhIw==}
     dev: true
 
-  /@effect/schema@0.61.5(effect@2.2.3)(fast-check@3.15.0):
-    resolution: {integrity: sha512-Z+16tlYGSMQIcurMsIyhR1zlJnIRKxKc+/a0+sTums9VN52FXjQcDEhfhInYUWjhI81k8QkeG4TV6B3GyFKKMw==}
+  /@effect/schema@0.62.6(effect@2.3.5)(fast-check@3.15.0):
+    resolution: {integrity: sha512-Y/vkQ63EXcQUiJM01lbZ5lb7wCEK8gTcM5wZ1L20TvqFuAXHLp0cs66L3Sk3eIbiX0mv4aYxBWSKhwvhWAhc6g==}
     peerDependencies:
-      effect: ^2.2.3
+      effect: ^2.3.5
       fast-check: ^3.13.2
     dependencies:
-      effect: 2.2.3
+      effect: 2.3.5
       fast-check: 3.15.0
     dev: false
 
@@ -8203,8 +8209,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@2.2.3:
-    resolution: {integrity: sha512-9h1YbGAjmT0A6HLseMmp1OI7VIg8Ee1go+FVjilDvNAWoxvlzudu/eYSo3lqJz1/TjUxj115AytTmI3CeuaUCA==}
+  /effect@2.3.5:
+    resolution: {integrity: sha512-qarp/WBRty4VM//ZEKDY8Bu3Tolr1afEIwFVZtU3eMOtBZpRIQkLVQMTOjUTt3qeJAAIHfYfEk7GiKg6ABCWlg==}
     dev: false
 
   /electron-to-chromium@1.4.419:

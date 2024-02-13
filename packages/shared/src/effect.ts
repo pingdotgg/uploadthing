@@ -8,7 +8,7 @@ export class FetchError extends Data.TaggedError("FetchError")<{
   readonly error: unknown;
 }> {}
 
-export const fetchContext = Context.Tag<{
+export const fetchContext = Context.GenericTag<{
   fetch: FetchEsque;
   baseHeaders?: Record<string, string>;
 }>("fetch-context");
@@ -38,7 +38,7 @@ export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
 
 export const fetchEffJson = <Res>(
   input: RequestInfo | URL,
-  schema: S.Schema<never, any, Res>,
+  schema: S.Schema<Res, any>,
   init?: RequestInit,
 ) =>
   fetchEff(input, init).pipe(

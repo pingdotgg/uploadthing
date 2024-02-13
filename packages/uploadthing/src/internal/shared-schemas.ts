@@ -6,7 +6,7 @@ import { ContentDisposition } from "@uploadthing/shared";
 const baseResponseSchema = S.struct({
   key: S.string,
   fileName: S.string,
-  fileType: S.string as S.Schema<never, FileRouterInputKey>,
+  fileType: S.string as S.Schema<FileRouterInputKey>,
   fileUrl: S.string,
 
   pollingJwt: S.string,

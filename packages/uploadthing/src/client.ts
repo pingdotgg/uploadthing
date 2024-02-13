@@ -148,6 +148,7 @@ export const DANGEROUS__uploadFiles = <
     Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
     Effect.tapErrorCause(Effect.logError),
     Effect.provide(layer),
+    Effect.runPromise,
   );
 };
 
@@ -230,7 +231,7 @@ const uploadFile = <
     const PollingResponse = S.union(
       S.struct({
         status: S.literal("done"),
-        callbackData: S.any as S.Schema<never, TServerData>,
+        callbackData: S.any as S.Schema<TServerData, any>,
       }),
       S.struct({ status: S.literal("still waiting") }),
     );

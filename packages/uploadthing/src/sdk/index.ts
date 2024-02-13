@@ -120,7 +120,7 @@ export class UTApi {
   private requestUploadThing = <T>(
     pathname: `/${string}`,
     body: Record<string, unknown>,
-    responseSchema: S.Schema<never, any, T>,
+    responseSchema: S.Schema<T, any>,
   ) => {
     const url = generateUploadThingURL(pathname);
     logger.debug("Requesting UploadThing:", {
@@ -147,8 +147,8 @@ export class UTApi {
     );
   };
 
-  private executeAsync = <E, A>(
-    program: Effect.Effect<Tag.Identifier<typeof fetchContext>, E, A>,
+  private executeAsync = <A, E>(
+    program: Effect.Effect<A, E, Tag.Identifier<typeof fetchContext>>,
   ) =>
     program.pipe(
       Effect.provide(
