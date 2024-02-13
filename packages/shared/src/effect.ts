@@ -44,7 +44,8 @@ export const fetchEffJson = <Res>(
   input: RequestInfo | URL,
   init?: RequestInit,
 ) =>
-  fetchEff(input, init).pipe(
+  pipe(
+    fetchEff(input, init),
     Effect.andThen((res) =>
       Effect.tryPromise({
         try: () => res.json(),
