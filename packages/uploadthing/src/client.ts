@@ -231,8 +231,8 @@ const uploadFile = <
       yield* $(uploadPresignedPost(file, presigned, { ...opts }));
     }
     // wait a bit as it's unsreasonable to expect the server to be done by now
-    // TODO: We should have an option on the client to opt-out of waiting for server callback
-    // to finish if it doesn't return anything...
+    // (UT should call user's server, then user's server may do some async work before responding with some data that should be sent back to UT)
+    // TODO: We should have an option on the client to opt-out of waiting for server callback  to finish if it doesn't return anything...
     yield* $(Effect.sleep(500));
 
     const PollingResponse = S.union(
