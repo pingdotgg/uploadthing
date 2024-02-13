@@ -124,7 +124,7 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
 const baseResponseSchema = S.struct({
   key: S.string,
   fileName: S.string,
-  fileType: S.string as S.Schema<never, string, FileRouterInputKey>,
+  fileType: S.string as S.Schema<never, FileRouterInputKey>,
   fileUrl: S.string,
   contentDisposition: ContentDisposition,
   pollingJwt: S.string,

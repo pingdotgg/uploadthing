@@ -105,16 +105,16 @@ const DANGEROUS__uploadFiles_internal = <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ) => {
-  return Effect.gen(function* ($) {
-    // Fine to use global fetch in browser
-    const fetch = globalThis.fetch.bind(globalThis);
-    const reportEventToUT = createUTReporter({
-      endpoint: String(endpoint),
-      url: opts?.url,
-      package: opts.package,
-      fetch,
-    });
+  // Fine to use global fetch in browser
+  const fetch = globalThis.fetch.bind(globalThis);
+  const reportEventToUT = createUTReporter({
+    endpoint: String(endpoint),
+    url: opts?.url,
+    package: opts.package,
+    fetch,
+  });
 
+  return Effect.gen(function* ($) {
     // Get presigned URL for S3 upload
     const s3ConnectionRes_ = yield* $(
       fetchEff(
@@ -130,19 +130,15 @@ const DANGEROUS__uploadFiles_internal = <
             input: "input" in opts ? opts.input : null,
             files: opts.files.map((f) => ({ name: f.name, size: f.size })),
           }),
-          // Express requires Content-Type to be explicitly set to parse body properly
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         },
       ),
     );
 
     if (!s3ConnectionRes_.ok) {
-      const error = yield* $(
+      return yield* $(
         Effect.promise(() => UploadThingError.fromResponse(s3ConnectionRes_)),
       );
-      return yield* $(error);
     }
 
     const s3ConnectionRes = yield* $(
