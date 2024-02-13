@@ -5,7 +5,6 @@ import "@uploadthing/shared";
 import {
   contentDisposition,
   exponentialBackoff,
-  fetchContext,
   fetchEff,
   generateUploadThingURL,
   UploadThingError,
@@ -28,10 +27,8 @@ export function uploadPart(opts: {
   maxRetries: number;
 }) {
   return Effect.gen(function* ($) {
-    const context = yield* $(fetchContext);
-
     return yield* $(
-      fetchEff(context.fetch, opts.url, {
+      fetchEff(opts.url, {
         method: "PUT",
         body: opts.chunk,
         headers: {
@@ -55,17 +52,12 @@ export function uploadPart(opts: {
       Effect.tapErrorTag("Retry", () =>
         pipe(
           // Max retries exceeded, tell UT server that upload failed
-          fetchEff(
-            context.fetch,
-            generateUploadThingURL("/api/failureCallback"),
-            {
-              method: "POST",
-              body: JSON.stringify({
-                fileKey: opts.key,
-              }),
-              headers: context.utRequestHeaders,
-            },
-          ),
+          fetchEff(generateUploadThingURL("/api/failureCallback"), {
+            method: "POST",
+            body: JSON.stringify({
+              fileKey: opts.key,
+            }),
+          }),
           Effect.andThen(() =>
             Effect.fail(
               new UploadThingError({

@@ -20,13 +20,13 @@ export const fetchContext = Context.Tag<{
 export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
   pipe(
     fetchContext,
-    Effect.andThen((ctx) => {
+    Effect.andThen(({ fetch, baseHeaders }) => {
       return Effect.tryPromise({
         try: () =>
-          ctx.fetch(input, {
+          fetch(input, {
             ...init,
             headers: {
-              ...ctx.baseHeaders,
+              ...baseHeaders,
               ...init?.headers,
             },
           }),
