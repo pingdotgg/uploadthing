@@ -44,13 +44,13 @@ export interface ResponseEsque {
    * that's not as type-safe as unknown. We use unknown because we're
    * more type-safe. You do want more type safety, right? 😉
    */
-  json<T = unknown>(): Promise<T>;
-  text(): Promise<string>;
-  blob(): Promise<Blob>;
+  json: <T = unknown>() => Promise<T>;
+  text: () => Promise<string>;
+  blob: () => Promise<Blob>;
 
   headers: Headers;
 
-  clone(): ResponseEsque;
+  clone: () => ResponseEsque;
 }
 
 export type MaybeUrl = string | URL;
