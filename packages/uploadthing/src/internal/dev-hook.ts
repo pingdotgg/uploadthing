@@ -13,11 +13,12 @@ import {
   exponentialBackoff,
   fetchEff,
   fetchEffJson,
+  FileData,
   generateUploadThingURL,
   RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
-import type { FileData, ResponseEsque } from "@uploadthing/shared";
+import type { ResponseEsque } from "@uploadthing/shared";
 
 import { logger } from "./logger";
 
@@ -36,7 +37,7 @@ export const conditionalDevServer = (fileKey: string) => {
         generateUploadThingURL(`/api/pollUpload/${fileKey}`),
         S.struct({
           status: S.string,
-          fileData: S.optional(S.any as S.Schema<FileData>), // TODO: actually validate
+          fileData: S.optional(FileData),
         }),
       ),
       Effect.andThen((res) =>

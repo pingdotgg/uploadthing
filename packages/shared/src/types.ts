@@ -68,19 +68,20 @@ export type FetchEsque = (
 ) => Promise<ResponseEsque>;
 
 /** This matches the return type from the infra */
-export interface FileData {
-  id: string;
-  createdAt: string;
+export const FileData = S.struct({
+  id: S.string,
+  createdAt: S.string,
 
-  fileKey: string | null;
-  fileName: string;
-  fileSize: number;
-  metadata: string | null;
-  customId: string | null;
+  fileKey: S.nullable(S.string),
+  fileName: S.string,
+  fileSize: S.number,
+  metadata: S.nullable(S.string),
+  customId: S.nullable(S.string),
 
-  callbackUrl: string;
-  callbackSlug: string;
-}
+  callbackUrl: S.string,
+  callbackSlug: S.string,
+});
+export type FileData = S.Schema.To<typeof FileData>;
 
 export const UploadedFile = S.struct({
   name: S.string,
