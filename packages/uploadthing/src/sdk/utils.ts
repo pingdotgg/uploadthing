@@ -1,15 +1,14 @@
 /**
- * These are imported to make TypeScript aware of the types.
+ * The `import type * as _MAKE_TS_AWARE_X from` are imported to make TypeScript aware of the types.
  * It's having a hard time resolving deeply nested stuff from transitive dependencies.
  * You'll notice if you need to add more imports if you get build errors like:
  * `The type of X cannot be inferred without a reference to <MODULE>`
  */
-import "@effect/schema/ParseResult";
-import "effect/Cause";
 
+import type * as _MAKE_TS_AWARE_1 from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
-
+import type * as _MAKE_TS_AWARE_2 from "effect/Cause";
 
 import {
   exponentialBackoff,
@@ -35,8 +34,8 @@ import {
   MpuResponseSchema,
   PSPResponseSchema,
 } from "../internal/shared-schemas";
-import { UTFile } from "./ut-file";
 import type { FileEsque } from "./types";
+import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -46,8 +45,6 @@ export function guardServerOnly() {
     });
   }
 }
-
-
 
 type UploadData = {
   key: string;
