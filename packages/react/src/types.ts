@@ -28,9 +28,13 @@ export type UseUploadthingProps<
     res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
   ) => void;
   onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
-  onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
+  onUploadError?:
+    | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
+    | undefined;
+  onUploadBegin?: ((fileName: string) => void) | undefined;
+  onBeforeUploadBegin?:
+    | ((files: File[]) => Promise<File[]> | File[])
+    | undefined;
 };
 
 export type UploadthingComponentProps<

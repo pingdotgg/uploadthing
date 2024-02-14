@@ -28,10 +28,10 @@ import type {
   Time,
   TimeShort,
 } from "@uploadthing/shared";
-import { uploadPresignedPost } from "uploadthing/internal/presigned-post";
 
 import { logger } from "../internal/logger";
 import { uploadMultipart } from "../internal/multi-part";
+import { uploadPresignedPost } from "../internal/presigned-post";
 import { mpuSchema, pspSchema } from "../internal/shared-schemas";
 import { UTFile } from "./ut-file";
 
@@ -66,9 +66,14 @@ type UploadData = {
   size: number;
 };
 
-export const uploadFilesInternal = (
-  input: Parameters<typeof getPresignedUrls>[0],
-) =>
+type UploadFilesInternalOptions = {
+  files: FileEsque[];
+  metadata: Json;
+  contentDisposition: ContentDisposition;
+  acl: ACL | undefined;
+};
+
+export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
   getPresignedUrls(input).pipe(
     Effect.andThen((presigneds) =>
       // TODO: Catch errors for each file and return data like
@@ -112,12 +117,7 @@ export const downloadFiles = (urls: MaybeUrl[]) =>
     { concurrency: 10 },
   );
 
-const getPresignedUrls = (input: {
-  files: FileEsque[];
-  metadata: Json;
-  contentDisposition: ContentDisposition;
-  acl: ACL | undefined;
-}) =>
+const getPresignedUrls = (input: UploadFilesInternalOptions) =>
   Effect.gen(function* ($) {
     const { files, metadata, contentDisposition, acl } = input;
 
@@ -144,6 +144,8 @@ const getPresignedUrls = (input: {
           acl,
         }),
       }),
+      Effect.catchTag("ParseError", (e) => Effect.die(e)),
+      Effect.catchTag("FetchError", (e) => Effect.die(e)),
     );
     logger.debug("Got presigned URLs:", presigneds.data);
 
