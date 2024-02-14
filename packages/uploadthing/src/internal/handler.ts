@@ -65,9 +65,9 @@ type RequestHandler<TArgs extends AnyMiddlewareFnArgs> = (
   input: RequestHandlerInput<TArgs>,
 ) => RequestHandlerOutput;
 
-export const runRequestHandlerAsync = (
-  handler: RequestHandler<AnyMiddlewareFnArgs>,
-  args: RequestHandlerInput<AnyMiddlewareFnArgs>,
+export const runRequestHandlerAsync = <TArgs extends AnyMiddlewareFnArgs>(
+  handler: RequestHandler<TArgs>,
+  args: RequestHandlerInput<TArgs>,
   config?: RouteHandlerConfig | undefined,
 ) => {
   const layer = Layer.succeed(fetchContext, {
