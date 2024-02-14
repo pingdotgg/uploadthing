@@ -1,8 +1,8 @@
 import { lookup } from "@uploadthing/mime-types";
 
 interface UTFilePropertyBag extends BlobPropertyBag {
-  lastModified?: number;
-  customId?: string;
+  lastModified?: number | undefined;
+  customId?: string | undefined;
 }
 
 /**
@@ -12,12 +12,12 @@ interface UTFilePropertyBag extends BlobPropertyBag {
 export class UTFile extends Blob {
   name: string;
   lastModified: number;
-  customId?: string;
+  customId: string | undefined;
 
   constructor(parts: BlobPart[], name: string, options?: UTFilePropertyBag) {
     const optionsWithDefaults = {
       ...options,
-      type: options?.type ?? (lookup(name) || undefined),
+      type: options?.type ?? (lookup(name) || "application/octet-stream"),
       lastModified: options?.lastModified ?? Date.now(),
     };
     super(parts, optionsWithDefaults);

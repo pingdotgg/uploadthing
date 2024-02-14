@@ -1,3 +1,5 @@
+import "effect/Types";
+
 import { Data, Effect } from "effect";
 
 import type { FetchError } from "@uploadthing/shared";

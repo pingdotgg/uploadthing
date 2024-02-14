@@ -1,7 +1,4 @@
 {
   "extends": "@uploadthing/tsconfig/base",
-  "compilerOptions": {
-    "noErrorTruncation": true,
-  },
   "include": ["src/**/*", "*.ts", "test"],
 }

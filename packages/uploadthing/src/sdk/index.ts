@@ -3,13 +3,7 @@ import { Effect, Layer } from "effect";
 import type { Tag } from "effect/Context";
 import { process } from "std-env";
 
-import type {
-  ACL,
-  ContentDisposition,
-  FetchEsque,
-  Json,
-  MaybeUrl,
-} from "@uploadthing/shared";
+import type { FetchContext, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import {
   asArray,
   fetchContext,
@@ -20,8 +14,16 @@ import {
 
 import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { LogLevel } from "../internal/logger";
 import { initLogger, logger } from "../internal/logger";
+import type {
+  DeleteFilesOptions,
+  GetFileUrlsOptions,
+  GetSignedURLOptions,
+  ListFilesOptions,
+  RenameFileUpdate,
+  UploadFilesOptions,
+  UTApiOptions,
+} from "./types";
 import {
   downloadFiles,
   getApiKeyOrThrow,
@@ -29,34 +31,7 @@ import {
   parseTimeToSeconds,
   uploadFilesInternal,
 } from "./utils";
-import type { FileEsque, Time } from "./utils";
-
-type Upload = Effect.Effect.Success<
-  ReturnType<typeof uploadFilesInternal>
->[number];
-
-export interface UTApiOptions {
-  /**
-   * Provide a custom fetch function.
-   * @default globalThis.fetch
-   */
-  fetch?: FetchEsque;
-  /**
-   * Provide a custom UploadThing API key.
-   * @default process.env.UPLOADTHING_SECRET
-   */
-  apiKey?: string;
-  /**
-   * @default "info"
-   */
-  logLevel?: LogLevel;
-  /**
-   * Set the default key type for file operations. Allows you to set your preferred filter
-   * for file keys or custom identifiers without needing to specify it on every call.
-   * @default "fileKey"
-   */
-  defaultKeyType?: "fileKey" | "customId";
-}
+import type { FileEsque, UploadFileResponse } from "./utils";
 
 export class UTApi {
   private fetch: FetchEsque;
@@ -120,7 +95,7 @@ export class UTApi {
   };
 
   private executeAsync = <A, E>(
-    program: Effect.Effect<A, E, Tag.Identifier<typeof fetchContext>>,
+    program: Effect.Effect<A, E, Tag.Identifier<FetchContext>>,
   ) =>
     program.pipe(
       Effect.provide(
@@ -144,14 +119,18 @@ export class UTApi {
    *   new File(["bar"], "bar.txt"),
    * ]);
    */
-  uploadFiles = async <T extends FileEsque | FileEsque[]>(
-    files: T,
-    opts?: {
-      metadata?: Json;
-      contentDisposition?: ContentDisposition;
-      acl?: ACL;
-    },
-  ) => {
+  uploadFiles(
+    files: FileEsque,
+    opts?: UploadFilesOptions,
+  ): Promise<UploadFileResponse>;
+  uploadFiles(
+    files: FileEsque[],
+    opts?: UploadFilesOptions,
+  ): Promise<UploadFileResponse[]>;
+  async uploadFiles(
+    files: FileEsque | FileEsque[],
+    opts?: UploadFilesOptions,
+  ): Promise<UploadFileResponse | UploadFileResponse[]> {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
@@ -165,8 +144,8 @@ export class UTApi {
 
     const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
     logger.debug("Finished uploading:", uploadFileResponse);
-    return uploadFileResponse as T extends FileEsque[] ? Upload[] : Upload;
-  };
+    return uploadFileResponse;
+  }
 
   /**
    * @param {string} url The URL of the file to upload
@@ -181,14 +160,18 @@ export class UTApi {
    *   "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"
    * ])
    */
-  uploadFilesFromUrl = async <T extends MaybeUrl | MaybeUrl[]>(
-    urls: T,
-    opts?: {
-      metadata: Json;
-      contentDisposition: ContentDisposition;
-      acl?: ACL;
-    },
-  ) => {
+  uploadFilesFromUrl(
+    urls: MaybeUrl,
+    opts?: UploadFilesOptions,
+  ): Promise<UploadFileResponse>;
+  uploadFilesFromUrl(
+    urls: MaybeUrl[],
+    opts?: UploadFilesOptions,
+  ): Promise<UploadFileResponse[]>;
+  async uploadFilesFromUrl(
+    urls: MaybeUrl | MaybeUrl[],
+    opts?: UploadFilesOptions,
+  ): Promise<UploadFileResponse | UploadFileResponse[]> {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
@@ -206,8 +189,8 @@ export class UTApi {
 
     const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
     logger.debug("Finished uploading:", uploadFileResponse);
-    return uploadFileResponse as T extends MaybeUrl[] ? Upload[] : Upload;
-  };
+    return uploadFileResponse;
+  }
 
   /**
    * Request to delete files from UploadThing storage.
@@ -222,20 +205,8 @@ export class UTApi {
    * @example
    * await deleteFiles("myCustomIdentifier", { keyType: "customId" })
    */
-  deleteFiles = (
-    keys: string[] | string,
-    opts?: {
-      /**
-       * Whether the provided keys are fileKeys or a custom identifier. fileKey is the
-       * identifier you get from UploadThing after uploading a file, customId is a
-       * custom identifier you provided when uploading a file.
-       * @default fileKey
-       */
-      keyType?: "fileKey" | "customId";
-    },
-  ) => {
+  deleteFiles = (keys: string[] | string, opts?: DeleteFilesOptions) => {
     guardServerOnly();
-
     const { keyType = this.defaultKeyType } = opts ?? {};
 
     const responseSchema = S.struct({
@@ -265,18 +236,7 @@ export class UTApi {
    * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
    * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
    */
-  getFileUrls = (
-    keys: string[] | string,
-    opts?: {
-      /**
-       * Whether the provided keys are fileKeys or a custom identifier. fileKey is the
-       * identifier you get from UploadThing after uploading a file, customId is a
-       * custom identifier you provided when uploading a file.
-       * @default fileKey
-       */
-      keyType?: "fileKey" | "customId";
-    },
-  ) => {
+  getFileUrls = (keys: string[] | string, opts?: GetFileUrlsOptions) => {
     guardServerOnly();
 
     const { keyType = this.defaultKeyType } = opts ?? {};
@@ -309,7 +269,7 @@ export class UTApi {
    * const data = await listFiles({ limit: 1 });
    * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
    */
-  listFiles = (opts: { limit?: number; offset?: number }) => {
+  listFiles = (opts?: ListFilesOptions) => {
     guardServerOnly();
 
     const responseSchema = S.struct({
@@ -332,25 +292,7 @@ export class UTApi {
     );
   };
 
-  renameFiles = (
-    updates:
-      | {
-          fileKey: string;
-          newName: string;
-        }
-      | {
-          fileKey: string;
-          newName: string;
-        }[]
-      | {
-          customId: string;
-          newName: string;
-        }
-      | {
-          customId: string;
-          newName: string;
-        }[],
-  ) => {
+  renameFiles = (updates: RenameFileUpdate | RenameFileUpdate[]) => {
     guardServerOnly();
 
     const responseSchema = S.struct({
@@ -388,25 +330,7 @@ export class UTApi {
   };
 
   /** Request a presigned url for a private file(s) */
-  getSignedURL = (
-    key: string,
-    opts?: {
-      /**
-       * How long the URL will be valid for.
-       * - Must be positive and less than 7 days (604800 seconds).
-       * - You must accept overrides on the UploadThing dashboard for this option to be accepted.
-       * @default app default on UploadThing dashboard
-       */
-      expiresIn?: Time;
-      /**
-       * Whether the provided key is a fileKey or a custom identifier. fileKey is the
-       * identifier you get from UploadThing after uploading a file, customId is a
-       * custom identifier you provided when uploading a file.
-       * @default fileKey
-       */
-      keyType?: "fileKey" | "customId";
-    },
-  ) => {
+  getSignedURL = (key: string, opts?: GetSignedURLOptions) => {
     guardServerOnly();
 
     const expiresIn = opts?.expiresIn

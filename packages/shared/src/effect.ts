@@ -10,8 +10,9 @@ export class FetchError extends Data.TaggedError("FetchError")<{
 
 export const fetchContext = Context.GenericTag<{
   fetch: FetchEsque;
-  baseHeaders?: Record<string, string>;
+  baseHeaders: Record<string, string>;
 }>("fetch-context");
+export type FetchContext = typeof fetchContext;
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love

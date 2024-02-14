@@ -27,7 +27,7 @@ const ERROR_CODES = {
 type ErrorCode = keyof typeof ERROR_CODES;
 type UploadThingErrorOptions<T> = {
   code: keyof typeof ERROR_CODES;
-  message?: string;
+  message?: string | undefined;
   cause?: unknown;
   data?: T;
 };
@@ -50,12 +50,18 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
   return fallback ?? "An unknown error occurred";
 }
 
+export type SerializedUploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+
 export class UploadThingError<
   TShape extends Json = { message: string },
 > extends TaggedError("UploadThingError")<{ message: string }> {
   public readonly cause?: unknown;
   public readonly code: ErrorCode;
-  public readonly data?: TShape;
+  public readonly data: TShape | undefined;
 
   constructor(initOpts: UploadThingErrorOptions<TShape> | string) {
     const opts: UploadThingErrorOptions<TShape> =
@@ -111,7 +117,7 @@ export class UploadThingError<
     });
   }
 
-  public static toObject(error: UploadThingError) {
+  public static toObject(error: UploadThingError): SerializedUploadError {
     return {
       code: error.code,
       message: error.message,

@@ -1,11 +1,10 @@
 import { process } from "std-env";
 import { beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 
-import type { ResponseEsque } from "@uploadthing/shared";
+import type { ResponseEsque, SerializedUploadError } from "@uploadthing/shared";
 
 import { UTApi } from ".";
 import { UTFile } from "./ut-file";
-import type { UploadError } from "./utils";
 
 const utapi = new UTApi({ apiKey: "sk_test_foo" });
 
@@ -42,7 +41,7 @@ describe("uploadFiles", () => {
       expectTypeOf<
         (
           | { data: { key: string; url: string }; error: null }
-          | { data: null; error: UploadError }
+          | { data: null; error: SerializedUploadError }
         )[]
       >(result);
     });
@@ -53,7 +52,7 @@ describe("uploadFiles", () => {
       const result = await utapi.uploadFiles({} as File);
       expectTypeOf<
         | { data: { key: string; url: string }; error: null }
-        | { data: null; error: UploadError }
+        | { data: null; error: SerializedUploadError }
       >(result);
     });
   });
@@ -77,7 +76,7 @@ describe("uploadFilesFromUrl", () => {
       expectTypeOf<
         (
           | { data: { key: string; url: string }; error: null }
-          | { data: null; error: UploadError }
+          | { data: null; error: SerializedUploadError }
         )[]
       >(result);
     });
@@ -88,7 +87,7 @@ describe("uploadFilesFromUrl", () => {
       const result = await utapi.uploadFilesFromUrl("foo");
       expectTypeOf<
         | { data: { key: string; url: string }; error: null }
-        | { data: null; error: UploadError }
+        | { data: null; error: SerializedUploadError }
       >(result);
     });
   });

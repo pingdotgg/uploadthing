@@ -136,7 +136,11 @@ export const buildRequestHandler = <
     event: Args["event"];
   }): Promise<
     | UploadThingError
-    | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
+    | {
+        status: 200;
+        body?: UploadThingResponse;
+        cleanup?: Promise<unknown> | undefined;
+      }
   > => {
     const isDev = opts.config?.isDev ?? isDevelopment;
     const fetch = opts.config?.fetch ?? globalThis.fetch;

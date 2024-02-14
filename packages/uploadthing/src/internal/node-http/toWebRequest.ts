@@ -1,5 +1,5 @@
 type IncomingMessageLike = {
-  method?: string;
+  method?: string | undefined;
   headers?: Record<string, string | string[] | undefined>;
   body?: any;
 };

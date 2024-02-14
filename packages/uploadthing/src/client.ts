@@ -1,7 +1,7 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
 import * as S from "@effect/schema/Schema";
-import { Cause, Effect, Layer } from "effect";
+import { Effect, Layer } from "effect";
 
 import {
   exponentialBackoff,
@@ -12,20 +12,17 @@ import {
 } from "@uploadthing/shared";
 
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
-import { uploadPartWithProgress } from "./internal/multi-part";
+import { uploadMultipartWithProgress } from "./internal/multi-part";
+import { uploadPresignedPostWithProgress } from "./internal/presigned-post";
 import { uploadThingResponseSchema } from "./internal/shared-schemas";
-import type {
-  MPUResponse,
-  PSPResponse,
-  UploadThingResponse,
-} from "./internal/shared-schemas";
+import type { UploadThingResponse } from "./internal/shared-schemas";
 import type {
   DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import { createAPIRequestUrl } from "./internal/ut-reporter";
 
 export { resolveMaybeUrlArg };
 
@@ -200,11 +197,6 @@ const uploadFile = <
   presigned: UploadThingResponse[number],
 ) =>
   Effect.gen(function* ($) {
-    const reportEventToUT = createUTReporter({
-      endpoint: slug,
-      ...opts,
-    });
-
     const file = opts.files.find((f) => f.name === presigned.fileName);
 
     if (!file) {
@@ -220,9 +212,14 @@ const uploadFile = <
 
     opts.onUploadBegin?.({ file: file.name });
     if ("urls" in presigned) {
-      yield* $(uploadMultipart(file, presigned, { reportEventToUT, ...opts }));
+      yield* $(
+        uploadMultipartWithProgress(file, presigned, {
+          endpoint: slug,
+          ...opts,
+        }),
+      );
     } else {
-      yield* $(uploadPresignedPost(file, presigned, { ...opts }));
+      yield* $(uploadPresignedPostWithProgress(file, presigned, { ...opts }));
     }
     // wait a bit as it's unsreasonable to expect the server to be done by now
     // (UT should call user's server, then user's server may do some async work before responding with some data that should be sent back to UT)
@@ -259,108 +256,4 @@ const uploadFile = <
       serverData,
       url: "https://utfs.io/f/" + presigned.key,
     } satisfies UploadFileResponse<TServerData>;
-  });
-
-const uploadMultipart = (
-  file: File,
-  presigned: MPUResponse,
-  opts: {
-    reportEventToUT: ReturnType<typeof createUTReporter>;
-    onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
-  },
-) => {
-  let uploadedBytes = 0;
-
-  const uploadPart = (url: string, index: number) => {
-    const offset = presigned.chunkSize * index;
-    const end = Math.min(offset + presigned.chunkSize, file.size);
-    const chunk = file.slice(offset, end);
-
-    return uploadPartWithProgress({
-      url,
-      chunk: chunk,
-      contentDisposition: presigned.contentDisposition,
-      fileType: file.type,
-      fileName: file.name,
-      maxRetries: 10,
-      onProgress: (delta) => {
-        uploadedBytes += delta;
-        const percent = (uploadedBytes / file.size) * 100;
-        opts.onUploadProgress?.({ file: file.name, progress: percent });
-      },
-    }).pipe(Effect.andThen((tag) => ({ tag, partNumber: index + 1 })));
-  };
-
-  return Effect.gen(function* ($) {
-    const etags = yield* $(
-      Effect.all(presigned.urls.map(uploadPart)),
-      Effect.tapErrorCause((error) =>
-        opts.reportEventToUT("failure", {
-          fileKey: presigned.key,
-          uploadId: presigned.uploadId,
-          fileName: file.name,
-          s3Error: Cause.pretty(error).toString(),
-        }),
-      ),
-    );
-
-    // Tell the server that the upload is complete
-    const uploadOk = yield* $(
-      opts.reportEventToUT("multipart-complete", {
-        uploadId: presigned.uploadId,
-        fileKey: presigned.key,
-        etags,
-      }),
-    );
-    if (!uploadOk) {
-      console.log("Failed to alert UT of upload completion");
-      return yield* $(
-        new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "Failed to alert UT of upload completion",
-        }),
-      );
-    }
-  });
-};
-
-const uploadPresignedPost = (
-  file: File,
-  presigned: PSPResponse,
-  opts: {
-    onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
-  },
-) =>
-  Effect.gen(function* ($) {
-    const formData = new FormData();
-    Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
-    formData.append("file", file); // File data **MUST GO LAST**
-
-    const response = yield* $(
-      Effect.promise(
-        () =>
-          new Promise<XMLHttpRequest>((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", presigned.url);
-            xhr.setRequestHeader("Accept", "application/xml");
-            xhr.upload.onprogress = (p) => {
-              opts.onUploadProgress?.({
-                file: file.name,
-                progress: (p.loaded / p.total) * 100,
-              });
-            };
-            xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
-            xhr.onerror = (e) => reject(e);
-            xhr.send(formData);
-          }),
-      ),
-    );
-
-    if (response.status > 299 || response.status < 200) {
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to upload file",
-        cause: response,
-      });
-    }
   });

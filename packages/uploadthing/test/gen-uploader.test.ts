@@ -36,7 +36,7 @@ it("genuploader", () => {
 
   doNotExecute(async () => {
     // No input should be required here
-    const res = await uploader("uploadable1", { files: [], package: "test" });
+    const res = await uploader("uploadable1", { files: [] });
     expectTypeOf<UploadFileResponse<{ foo: "bar" }>[]>(res);
   });
 

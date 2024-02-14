@@ -25,12 +25,14 @@ import type {
   ContentDisposition,
   Json,
   MaybeUrl,
+  Time,
+  TimeShort,
 } from "@uploadthing/shared";
+import { uploadPresignedPost } from "uploadthing/internal/presigned-post";
 
 import { logger } from "../internal/logger";
-import { completeMultipartUpload, uploadPart } from "../internal/multi-part";
+import { uploadMultipart } from "../internal/multi-part";
 import { mpuSchema, pspSchema } from "../internal/shared-schemas";
-import type { MPUResponse, PSPResponse } from "../internal/shared-schemas";
 import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
@@ -53,8 +55,16 @@ export function getApiKeyOrThrow(apiKey?: string) {
 }
 
 export type FileEsque =
-  | (Blob & { name: string; customId?: string })
-  | UndiciFile;
+  | (Blob & { name: string; customId?: string | undefined })
+  | UndiciFile
+  | UTFile;
+
+type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
 
 export const uploadFilesInternal = (
   input: Parameters<typeof getPresignedUrls>[0],
@@ -68,14 +78,20 @@ export const uploadFilesInternal = (
         (file) =>
           uploadFile(file).pipe(
             Effect.match({
-              onFailure: (error) => ({ data: null, error }),
-              onSuccess: (data) => ({ data, error: null }),
+              onFailure: (_error) => ({
+                data: null,
+                error: UploadThingError.toObject(new UploadThingError("Foo")),
+              }),
+              onSuccess: (data: UploadData) => ({ data, error: null }),
             }),
           ),
         { concurrency: 10 },
       ),
     ),
   );
+export type UploadFileResponse = Effect.Effect.Success<
+  ReturnType<typeof uploadFilesInternal>
+>[number];
 
 /**
  * FIXME: downloading everything into memory and then upload
@@ -100,7 +116,7 @@ const getPresignedUrls = (input: {
   files: FileEsque[];
   metadata: Json;
   contentDisposition: ContentDisposition;
-  acl?: ACL;
+  acl: ACL | undefined;
 }) =>
   Effect.gen(function* ($) {
     const { files, metadata, contentDisposition, acl } = input;
@@ -173,90 +189,6 @@ const uploadFile = (
       size: file.size,
     };
   });
-
-const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
-  Effect.gen(function* ($) {
-    logger.debug(
-      "Uploading file",
-      file.name,
-      "with",
-      presigned.urls.length,
-      "chunks of size",
-      presigned.chunkSize,
-      "bytes each",
-    );
-
-    const etags = yield* $(
-      Effect.all(
-        presigned.urls.map((url, index) => {
-          const offset = presigned.chunkSize * index;
-          const end = Math.min(offset + presigned.chunkSize, file.size);
-          const chunk = file.slice(offset, end);
-
-          return uploadPart({
-            url,
-            chunk: chunk as Blob,
-            contentDisposition: presigned.contentDisposition,
-            contentType: file.type,
-            fileName: file.name,
-            maxRetries: 10,
-            key: presigned.key,
-          }).pipe(
-            Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
-            Effect.catchTag("RetryError", (e) => Effect.die(e)),
-          );
-        }),
-        { concurrency: "inherit" },
-      ),
-    );
-
-    logger.debug("File", file.name, "uploaded successfully.");
-    logger.debug("Comleting multipart upload...");
-    yield* $(completeMultipartUpload(presigned, etags));
-    logger.debug("Multipart upload complete.");
-  });
-
-const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
-  Effect.gen(function* ($) {
-    logger.debug("Uploading file", file.name, "using presigned POST URL");
-    const formData = new FormData();
-    Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
-    formData.append("file", file as Blob); // File data **MUST GO LAST**
-
-    const res = yield* $(
-      fetchEff(presigned.url, {
-        method: "POST",
-        body: formData,
-        headers: new Headers({
-          Accept: "application/xml",
-        }),
-      }),
-    );
-
-    if (!res.ok) {
-      const text = yield* $(Effect.promise(res.text));
-      logger.error("Failed to upload file:", text);
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to upload file",
-        cause: text,
-      });
-    }
-
-    logger.debug("File", file.name, "uploaded successfully");
-  });
-
-type TimeShort = "s" | "m" | "h" | "d";
-type TimeLong = "second" | "minute" | "hour" | "day";
-type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
-// eslint-disable-next-line @typescript-eslint/ban-types
-type AutoCompleteableNumber = SuggestedNumbers | (number & {});
-export type Time =
-  | number
-  | `1${TimeShort}`
-  | `${AutoCompleteableNumber}${TimeShort}`
-  | `1 ${TimeLong}`
-  | `${AutoCompleteableNumber} ${TimeLong}s`;
 
 export function parseTimeToSeconds(time: Time) {
   const match = time.toString().split(/(\d+)/).filter(Boolean);
