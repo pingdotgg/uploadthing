@@ -371,6 +371,7 @@ const handleUploadAction = (opts: {
       config: opts.config,
       req: opts.req,
       isDev: opts.isDev,
+      logWarning: logger.warn,
     });
     logger.debug(
       "Retrieving presigned URLs from UploadThing. Callback URL is:",

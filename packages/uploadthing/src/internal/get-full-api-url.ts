@@ -1,6 +1,5 @@
 import { process } from "std-env";
 
-import { logger } from "./logger";
 import type { FileRouter, RouterWithConfig } from "./types";
 
 /*
@@ -36,8 +35,8 @@ export function resolveMaybeUrlArg(maybeUrl: string | URL | undefined) {
 export function resolveCallbackUrl(opts: {
   config: RouterWithConfig<FileRouter>["config"];
   req: Request;
-
   isDev: boolean;
+  logWarning: (typeof console)["warn"];
 }): URL {
   let callbackUrl = new URL(opts.req.url);
   if (opts.config?.callbackUrl) {
@@ -66,7 +65,7 @@ export function resolveCallbackUrl(opts: {
 
   if (!parsedFromHeaders || parsedFromHeaders.includes("localhost")) {
     // Didn't find a valid URL in the headers, log a warning and use the original url anyway
-    logger.warn(
+    opts.logWarning(
       "You are using a localhost callback url in production which is not supported.",
       "Read more and learn how to fix it here: https://docs.uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
     );
