@@ -2,6 +2,10 @@ import type { Json } from "@uploadthing/shared";
 
 import type { MaybePromise } from "./types";
 
+/**
+ * TODO: Do we wanna support effect/schema parsers now??
+ */
+
 // Don't want to use Zod cause it's an optional dependency
 export type ParseFn<TType> = (input: unknown) => MaybePromise<TType>;
 export type ParserZodEsque<TInput, TParsedInput extends Json> = {

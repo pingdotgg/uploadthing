@@ -172,7 +172,7 @@ const uploadPartWithProgressInternal = async (
     xhr.send(opts.chunk);
   });
 
-export const uploadPartWithProgress = (
+const uploadPartWithProgress = (
   opts: Parameters<typeof uploadPartWithProgressInternal>[0],
   retryCount?: number,
 ) => Effect.promise(() => uploadPartWithProgressInternal(opts, retryCount));

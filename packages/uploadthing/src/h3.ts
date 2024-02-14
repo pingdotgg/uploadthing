@@ -11,7 +11,7 @@ import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
-import { defaultErrorFormatter } from "./internal/error-formatter";
+import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
@@ -65,10 +65,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
     if (response instanceof UploadThingError) {
       setResponseStatus(event, getStatusCodeFromError(response));
-      const errorFormatter =
-        opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
-        defaultErrorFormatter;
-      return errorFormatter(response) as unknown;
+      return formatError(response, opts.router);
     }
 
     return response.body ?? "OK";

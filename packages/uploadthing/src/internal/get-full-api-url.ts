@@ -1,6 +1,6 @@
 import { process } from "std-env";
 
-import type { FileRouter, RouterWithConfig } from "./types";
+import type { RouteHandlerConfig } from "./types";
 
 /*
  * Returns a full URL to the dev's uploadthing endpoint
@@ -33,7 +33,7 @@ export function resolveMaybeUrlArg(maybeUrl: string | URL | undefined) {
 }
 
 export function resolveCallbackUrl(opts: {
-  config: RouterWithConfig<FileRouter>["config"];
+  config: RouteHandlerConfig | undefined;
   req: Request;
   isDev: boolean;
   logWarning: (typeof console)["warn"];

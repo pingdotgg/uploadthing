@@ -1,3 +1,4 @@
+import type { Schema } from "@effect/schema/Schema";
 import { Data, Effect } from "effect";
 import type * as _unused from "effect/Types";
 
@@ -5,7 +6,18 @@ import type { FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
-import type { ActionType, UTEvents } from "./types";
+import type {
+  MultipartCompleteActionPayload,
+  MultipartFailureActionPayload,
+  UploadActionPayload,
+} from "./shared-schemas";
+import type { ActionType } from "./types";
+
+type UTEvents = {
+  upload: Schema.To<typeof UploadActionPayload>;
+  failure: Schema.To<typeof MultipartFailureActionPayload>;
+  "multipart-complete": Schema.To<typeof MultipartCompleteActionPayload>;
+};
 
 export const createAPIRequestUrl = (config: {
   /**

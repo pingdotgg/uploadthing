@@ -12,11 +12,7 @@ import type {
 
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
-import type {
-  MultipartCompleteActionPayload,
-  MultipartFailureActionPayload,
-  UploadActionPayload,
-} from "./shared-schemas";
+import type { UploadActionPayload } from "./shared-schemas";
 
 //
 // Utils
@@ -79,7 +75,7 @@ type MiddlewareFn<
   TArgs extends AnyMiddlewareFnArgs,
 > = (
   opts: TArgs & {
-    files: UTEvents["upload"]["files"];
+    files: Schema.To<typeof UploadActionPayload>["files"];
     input: TInput extends UnsetMarker ? undefined : TInput;
   },
 ) => MaybePromise<TOutput>;
@@ -156,18 +152,19 @@ export interface Uploader<TParams extends AnyParams> {
   _def: TParams & UploadBuilderDef<TParams>;
   resolver: ResolverFn<TParams["_output"], TParams>;
 }
+export type AnyUploader = Uploader<AnyParams>;
 
 export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   string,
   Uploader<TParams>
 >;
 
-export type inferEndpointInput<TUploader extends Uploader<any>> =
+export type inferEndpointInput<TUploader extends AnyUploader> =
   TUploader["_def"]["_input"] extends UnsetMarker
     ? undefined
     : TUploader["_def"]["_input"];
 
-export type inferEndpointOutput<TUploader extends Uploader<any>> =
+export type inferEndpointOutput<TUploader extends AnyUploader> =
   TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
     ? null
     : TUploader["_def"]["_output"];
@@ -181,12 +178,6 @@ export const VALID_ACTION_TYPES = [
   "multipart-complete",
 ] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
-
-export type UTEvents = {
-  upload: Schema.To<typeof UploadActionPayload>;
-  failure: Schema.To<typeof MultipartFailureActionPayload>;
-  "multipart-complete": Schema.To<typeof MultipartCompleteActionPayload>;
-};
 
 export type RouteHandlerConfig = {
   logLevel?: LogLevel;

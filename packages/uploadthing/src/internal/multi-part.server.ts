@@ -71,7 +71,7 @@ export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
  * Used by server uploads where progress is not needed.
  * Uses normal fetch API.
  */
-export const uploadPart = (opts: {
+const uploadPart = (opts: {
   url: string;
   key: string;
   chunk: Blob;

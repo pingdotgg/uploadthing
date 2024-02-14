@@ -208,6 +208,7 @@ export const parseAndValidateRequest = (opts: {
     // partially in the `runRequestHandlerAsync` and partially in here...
     // Ref: https://discord.com/channels/@me/1201977154577891369/1207441839972548669
     const contextValue = yield* $(fetchContext);
+    contextValue.baseHeaders["x-uploadthing-api-key"] = apiKey;
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = opts.adapter;
 

@@ -17,7 +17,6 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { getApiKeyOrThrow } from "./get-api-key";
 import { resolveCallbackUrl } from "./get-full-api-url";
 import { logger } from "./logger";
 import {
@@ -35,11 +34,10 @@ import {
 import { UTFiles } from "./types";
 import type {
   AnyMiddlewareFnArgs,
-  AnyParams,
+  AnyUploader,
   FileRouter,
   RouteHandlerConfig,
   RouterWithConfig,
-  Uploader,
   ValidMiddlewareObject,
 } from "./types";
 import {
@@ -78,7 +76,6 @@ export const runRequestHandlerAsync = <TArgs extends AnyMiddlewareFnArgs>(
     baseHeaders: {
       "Content-Type": "application/json",
       "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-api-key": getApiKeyOrThrow(config?.uploadthingSecret),
     },
   });
 
@@ -179,7 +176,7 @@ export const buildRequestHandler =
 
 const handleCallbackRequest = (opts: {
   req: Request;
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
 }) =>
   Effect.gen(function* ($) {
     const requestInput = yield* $(
@@ -229,7 +226,7 @@ const handleCallbackRequest = (opts: {
   });
 
 const runRouteMiddleware = (opts: {
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
   middlewareArgs: AnyMiddlewareFnArgs;
   routeInput: S.Schema.To<typeof UploadActionPayload>["input"];
   files: S.Schema.To<typeof UploadActionPayload>["files"];
@@ -290,9 +287,9 @@ const runRouteMiddleware = (opts: {
 
 const handleUploadAction = (opts: {
   req: Request;
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
   middlewareArgs: AnyMiddlewareFnArgs;
-  config: RouterWithConfig<FileRouter>["config"];
+  config: RouteHandlerConfig | undefined;
 
   isDev: boolean;
   slug: string;
@@ -443,7 +440,7 @@ const handleMultipartCompleteAction = (opts: { req: Request }) =>
 
 const handleMultipartFailureAction = (opts: {
   req: Request;
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
 }) =>
   Effect.gen(function* ($) {
     const { fileKey, uploadId } = yield* $(
