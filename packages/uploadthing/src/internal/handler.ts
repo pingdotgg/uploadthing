@@ -65,6 +65,9 @@ type RequestHandler<TArgs extends AnyMiddlewareFnArgs> = (
   input: RequestHandlerInput<TArgs>,
 ) => RequestHandlerOutput;
 
+/**
+ * Allows adapters to be fully async/await instead of providing services and running Effect programs
+ */
 export const runRequestHandlerAsync = <TArgs extends AnyMiddlewareFnArgs>(
   handler: RequestHandler<TArgs>,
   args: RequestHandlerInput<TArgs>,
