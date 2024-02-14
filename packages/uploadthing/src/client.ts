@@ -12,8 +12,8 @@ import {
 } from "@uploadthing/shared";
 
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
-import { uploadMultipartWithProgress } from "./internal/multi-part";
-import { uploadPresignedPostWithProgress } from "./internal/presigned-post";
+import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
+import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
 import { uploadThingResponseSchema } from "./internal/shared-schemas";
 import type { UploadThingResponse } from "./internal/shared-schemas";
 import type {

@@ -30,8 +30,8 @@ import type {
 } from "@uploadthing/shared";
 
 import { logger } from "../internal/logger";
-import { uploadMultipart } from "../internal/multi-part";
-import { uploadPresignedPost } from "../internal/presigned-post";
+import { uploadMultipart } from "../internal/multi-part.server";
+import { uploadPresignedPost } from "../internal/presigned-post.server";
 import { mpuSchema, pspSchema } from "../internal/shared-schemas";
 import { UTFile } from "./ut-file";
 

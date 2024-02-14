@@ -1,6 +1,5 @@
-import "effect/Types";
-
 import { Data, Effect } from "effect";
+import type * as _unused from "effect/Types";
 
 import type { FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
