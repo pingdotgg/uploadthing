@@ -117,8 +117,10 @@ describe("getSignedURL", () => {
       mockFetch(url, init);
       return Promise.resolve({
         ok: true,
+        status: 200,
+        statusText: "ok",
         json: () => Promise.resolve({ url: "https://example.com" }),
-      }) as unknown as Promise<ResponseEsque>;
+      }) as Promise<ResponseEsque>;
     },
   });
 
@@ -189,20 +191,20 @@ describe("getSignedURL", () => {
     );
   });
 
-  test("throws if expiresIn is invalid", async () => {
-    await expect(() =>
+  test("throws if expiresIn is invalid", () => {
+    expect(() =>
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    ).toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
     expect(mockFetch).toHaveBeenCalledTimes(0);
   });
 
-  test("throws if expiresIn is longer than 7 days", async () => {
-    await expect(() =>
+  test("throws if expiresIn is longer than 7 days", () => {
+    expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+    ).toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: expiresIn must be less than 7 days (604800 seconds).]`,
     );
     expect(mockFetch).toHaveBeenCalledTimes(0);
