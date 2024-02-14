@@ -1,16 +1,16 @@
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
-import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -50,25 +50,18 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     request: Request | { request: Request },
   ): Promise<Response | ResponseWithCleanup> => {
     const req = request instanceof Request ? request : request.request;
-    const response = await requestHandler({
-      nativeRequest: req,
-      originalRequest: req,
-      event: undefined,
-      res: undefined,
-    });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: req,
+        middlewareArgs: { req, event: undefined, res: undefined },
+      },
+      opts.config,
+    );
 
     if (response instanceof UploadThingError) {
       return new Response(JSON.stringify(formatError(response, opts.router)), {
         status: getStatusCodeFromError(response),
-        headers: {
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        },
-      });
-    }
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      return new Response("An unknown error occured", {
-        status: 500,
         headers: {
           "x-uploadthing-version": UPLOADTHING_VERSION,
         },

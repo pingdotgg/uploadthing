@@ -1,8 +1,8 @@
 import { Effect } from "effect";
 
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
-import type { FileEsque } from "uploadthing/sdk/utils";
 
+import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
 import type { PSPResponse } from "./shared-schemas";
 

@@ -203,7 +203,7 @@ it("smoke", async () => {
     .middleware((opts) => {
       expect(opts.input).toEqual({ foo: "bar" });
       expectTypeOf<{ foo: string }>(opts.input);
-      expectTypeOf<{ name: string; size: number }[]>(opts.files);
+      expectTypeOf<readonly { name: string; size: number }[]>(opts.files);
 
       const header1 = opts.req.headers.get("header1");
 

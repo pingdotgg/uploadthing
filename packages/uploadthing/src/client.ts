@@ -14,8 +14,8 @@ import {
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import { uploadThingResponseSchema } from "./internal/shared-schemas";
-import type { UploadThingResponse } from "./internal/shared-schemas";
+import { PresignedURLResponseSchema } from "./internal/shared-schemas";
+import type { PresignedURLResponse } from "./internal/shared-schemas";
 import type {
   DistributiveOmit,
   FileRouter,
@@ -114,7 +114,7 @@ export const DANGEROUS__uploadFiles = <
           slug: String(endpoint),
           actionType: "upload",
         }),
-        uploadThingResponseSchema,
+        PresignedURLResponseSchema,
         {
           method: "POST",
           body: JSON.stringify({
@@ -194,7 +194,7 @@ const uploadFile = <
 >(
   slug: string,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
-  presigned: UploadThingResponse[number],
+  presigned: PresignedURLResponse[number],
 ) =>
   Effect.gen(function* ($) {
     const file = opts.files.find((f) => f.name === presigned.fileName);

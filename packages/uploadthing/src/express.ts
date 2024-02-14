@@ -7,18 +7,18 @@ import type {
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
-import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger, logger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -74,26 +74,19 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       `${proto}://${req.headers.host}`,
     );
 
-    const response = await requestHandler({
-      nativeRequest: toWebRequest(req, url, bodyResult.data),
-      originalRequest: req,
-      res,
-      event: undefined,
-    });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: toWebRequest(req, url, bodyResult.data),
+        middlewareArgs: { req, res, event: undefined },
+      },
+      opts.config,
+    );
 
     if (response instanceof UploadThingError) {
       res.status(getStatusCodeFromError(response));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
       res.send(JSON.stringify(formatError(response, opts.router)));
-      return;
-    }
-
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      res.status(500);
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send("An unknown error occured");
-
       return;
     }
 

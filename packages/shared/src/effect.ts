@@ -55,6 +55,15 @@ export const fetchEffJson = <Res>(
     }),
   );
 
+export const parseRequestJson = <Req>(
+  req: Request,
+  schema: S.Schema<Req, any>,
+) =>
+  Effect.tryPromise({
+    try: () => req.json(),
+    catch: (error) => new FetchError({ error, input: req.url }),
+  }).pipe(Effect.andThen(S.decode(schema)));
+
 /**
  * Schedule that retries with exponential backoff, up to 1 minute.
  * 10ms * 4^n, where n is the number of retries.

@@ -9,8 +9,7 @@ import "effect/Cause";
 
 import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
-import { process } from "std-env";
-import type { File as UndiciFile } from "undici";
+
 
 import {
   exponentialBackoff,
@@ -32,8 +31,12 @@ import type {
 import { logger } from "../internal/logger";
 import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
-import { mpuSchema, pspSchema } from "../internal/shared-schemas";
+import {
+  MpuResponseSchema,
+  PSPResponseSchema,
+} from "../internal/shared-schemas";
 import { UTFile } from "./ut-file";
+import type { FileEsque } from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -44,20 +47,7 @@ export function guardServerOnly() {
   }
 }
 
-export function getApiKeyOrThrow(apiKey?: string) {
-  if (apiKey) return apiKey;
-  if (process.env.UPLOADTHING_SECRET) return process.env.UPLOADTHING_SECRET;
 
-  throw new UploadThingError({
-    code: "MISSING_ENV",
-    message: "Missing `UPLOADTHING_SECRET` env variable.",
-  });
-}
-
-export type FileEsque =
-  | (Blob & { name: string; customId?: string | undefined })
-  | UndiciFile
-  | UTFile;
 
 type UploadData = {
   key: string;
@@ -130,7 +120,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
     logger.debug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.struct({
-      data: S.array(S.union(mpuSchema, pspSchema)),
+      data: S.array(S.union(MpuResponseSchema, PSPResponseSchema)),
     });
 
     const presigneds = yield* $(

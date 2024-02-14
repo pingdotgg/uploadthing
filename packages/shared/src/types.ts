@@ -82,13 +82,14 @@ export interface FileData {
   callbackSlug: string;
 }
 
-export type UploadedFile = {
-  name: string;
-  key: string;
-  url: string;
-  size: number;
-  customId: string | null;
-};
+export const UploadedFile = S.struct({
+  name: S.string,
+  key: S.string,
+  url: S.string,
+  size: S.number,
+  customId: S.nullable(S.string),
+});
+export type UploadedFile = S.Schema.To<typeof UploadedFile>;
 
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";

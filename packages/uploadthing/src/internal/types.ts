@@ -1,13 +1,22 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
+import type { Schema } from "@effect/schema/Schema";
+
 import type {
+  FetchEsque,
   FileRouterInputConfig,
   Json,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
+import type {
+  MultipartCompleteActionPayload,
+  MultipartFailureActionPayload,
+  UploadActionPayload,
+} from "./shared-schemas";
 
 //
 // Utils
@@ -53,10 +62,12 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
   res: TResponse;
   event: TEvent;
 };
+export type AnyMiddlewareFnArgs = MiddlewareFnArgs<any, any, any>;
+
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
-  _middlewareArgs: MiddlewareFnArgs<any, any, any>;
+  _middlewareArgs: AnyMiddlewareFnArgs;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
   _output: any;
@@ -65,7 +76,7 @@ export interface AnyParams {
 type MiddlewareFn<
   TInput extends Json | UnsetMarker,
   TOutput extends ValidMiddlewareObject,
-  TArgs extends MiddlewareFnArgs<any, any, any>,
+  TArgs extends AnyMiddlewareFnArgs,
 > = (
   opts: TArgs & {
     files: UTEvents["upload"]["files"];
@@ -172,22 +183,29 @@ export const VALID_ACTION_TYPES = [
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
 
 export type UTEvents = {
-  upload: {
-    files: { name: string; size: number }[];
-    input: Json;
-  };
-  failure: {
-    fileKey: string;
-    uploadId: string;
-    s3Error?: string;
-    fileName: string;
-  };
-  "multipart-complete": {
-    fileKey: string;
-    uploadId: string;
-    etags: {
-      tag: string;
-      partNumber: number;
-    }[];
-  };
+  upload: Schema.To<typeof UploadActionPayload>;
+  failure: Schema.To<typeof MultipartFailureActionPayload>;
+  "multipart-complete": Schema.To<typeof MultipartCompleteActionPayload>;
+};
+
+export type RouteHandlerConfig = {
+  logLevel?: LogLevel;
+  callbackUrl?: string;
+  uploadthingId?: string;
+  uploadthingSecret?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+};
+
+export type RouterWithConfig<TRouter extends FileRouter> = {
+  router: TRouter;
+  config?: RouteHandlerConfig;
 };

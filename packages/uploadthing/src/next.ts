@@ -2,8 +2,7 @@ import type { NextRequest } from "next/server";
 
 import type { Json } from "@uploadthing/shared";
 
-import type { RouterWithConfig } from "./internal/handler";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 import { INTERNAL_DO_NOT_USE_createRouteHandlerCore } from "./server";

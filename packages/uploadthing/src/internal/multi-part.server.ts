@@ -1,3 +1,11 @@
+/**
+ * These are imported to make TypeScript aware of the types.
+ * It's having a hard time resolving deeply nested stuff from transitive dependencies.
+ * You'll notice if you need to add more imports if you get build errors like:
+ * `The type of X cannot be inferred without a reference to <MODULE>`
+ */
+import "effect/Cause";
+
 import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
@@ -11,8 +19,8 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
-import type { FileEsque } from "uploadthing/sdk/utils";
 
+import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type { MPUResponse } from "./shared-schemas";
@@ -120,7 +128,7 @@ export const uploadPart = (opts: {
 
 export const completeMultipartUpload = (
   presigned: { key: string; uploadId: string },
-  etags: { tag: string; partNumber: number }[],
+  etags: readonly { tag: string; partNumber: number }[],
 ) =>
   fetchEffJson(
     generateUploadThingURL("/api/completeMultipart"),
@@ -131,6 +139,22 @@ export const completeMultipartUpload = (
         fileKey: presigned.key,
         uploadId: presigned.uploadId,
         etags,
+      }),
+    },
+  );
+
+export const abortMultipartUpload = (presigned: {
+  key: string;
+  uploadId: string;
+}) =>
+  fetchEffJson(
+    generateUploadThingURL("/api/failMultipart"),
+    S.struct({ success: S.boolean, message: S.optional(S.string) }),
+    {
+      method: "POST",
+      body: JSON.stringify({
+        fileKey: presigned.key,
+        uploadId: presigned.uploadId,
       }),
     },
   );

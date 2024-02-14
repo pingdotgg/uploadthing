@@ -1,7 +1,6 @@
 import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
 import type { Tag } from "effect/Context";
-import { process } from "std-env";
 
 import type { FetchContext, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import {
@@ -12,11 +11,13 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../internal/constants";
+import { getApiKeyOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import { initLogger, logger } from "../internal/logger";
 import type {
   DeleteFilesOptions,
+  FileEsque,
   GetFileUrlsOptions,
   GetSignedURLOptions,
   ListFilesOptions,
@@ -26,25 +27,24 @@ import type {
 } from "./types";
 import {
   downloadFiles,
-  getApiKeyOrThrow,
   guardServerOnly,
   parseTimeToSeconds,
   uploadFilesInternal,
 } from "./utils";
-import type { FileEsque, UploadFileResponse } from "./utils";
+import type { UploadFileResponse } from "./utils";
 
 export class UTApi {
   private fetch: FetchEsque;
-  private apiKey: string | undefined;
+  private apiKey: string;
   private defaultHeaders: Record<string, string>;
   private defaultKeyType: "fileKey" | "customId";
 
   constructor(opts?: UTApiOptions) {
     this.fetch = opts?.fetch ?? globalThis.fetch;
-    this.apiKey = opts?.apiKey ?? process.env.UPLOADTHING_SECRET;
+    this.apiKey = getApiKeyOrThrow(opts?.apiKey);
     this.defaultHeaders = {
       "Content-Type": "application/json",
-      "x-uploadthing-api-key": this.apiKey!,
+      "x-uploadthing-api-key": this.apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
     };
@@ -54,7 +54,6 @@ export class UTApi {
 
     // Assert some stuff
     guardServerOnly();
-    getApiKeyOrThrow(this.apiKey);
     if (!this.apiKey?.startsWith("sk_")) {
       throw new UploadThingError({
         code: "MISSING_ENV",

@@ -1,11 +1,24 @@
+/**
+ * These are imported to make TypeScript aware of the types.
+ * It's having a hard time resolving deeply nested stuff from transitive dependencies.
+ * You'll notice if you need to add more imports if you get build errors like:
+ * `The type of X cannot be inferred without a reference to <MODULE>`
+ */
+import "@effect/schema/ParseResult";
+
+import * as S from "@effect/schema/Schema";
+import { Effect } from "effect";
+
 import {
+  exponentialBackoff,
+  fetchEff,
+  fetchEffJson,
   generateUploadThingURL,
-  pollForFileData,
+  RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
-import type { FetchEsque, FileData, ResponseEsque } from "@uploadthing/shared";
+import type { FileData, ResponseEsque } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
 import { logger } from "./logger";
 
 const isValidResponse = (response: ResponseEsque) => {
@@ -16,35 +29,50 @@ const isValidResponse = (response: ResponseEsque) => {
   return true;
 };
 
-export const conditionalDevServer = async (opts: {
-  fileKey: string;
-  apiKey: string;
-  fetch: FetchEsque;
-}) => {
-  const fileData = await pollForFileData(
-    {
-      url: generateUploadThingURL(`/api/pollUpload/${opts.fileKey}`),
-      apiKey: opts.apiKey,
-      sdkVersion: UPLOADTHING_VERSION,
-      fetch: opts.fetch,
-    },
-    async (json: { fileData: FileData }) => {
-      const file = json.fileData;
+export const conditionalDevServer = (fileKey: string) => {
+  return Effect.gen(function* ($) {
+    const file = yield* $(
+      fetchEffJson(
+        generateUploadThingURL(`/api/pollUpload/${fileKey}`),
+        S.struct({
+          status: S.string,
+          fileData: S.optional(S.any as S.Schema<FileData>), // TODO: actually validate
+        }),
+      ),
+      Effect.andThen((res) =>
+        res.status === "done"
+          ? Effect.succeed(res.fileData)
+          : Effect.fail(new RetryError()),
+      ),
+      Effect.retry({
+        while: (err) => err instanceof RetryError,
+        schedule: exponentialBackoff,
+      }),
+      Effect.catchTag("RetryError", (e) => Effect.die(e)),
+    );
 
-      let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
-      if (!callbackUrl.startsWith("http"))
-        callbackUrl = "http://" + callbackUrl;
+    if (file === undefined) {
+      logger.error(`Failed to simulate callback for file ${fileKey}`);
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "File took too long to upload",
+      });
+    }
 
-      logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+    let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
+    if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
 
-      const response = await opts.fetch(callbackUrl, {
+    logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+
+    const callbackResponse = yield* $(
+      fetchEff(callbackUrl, {
         method: "POST",
         body: JSON.stringify({
           status: "uploaded",
           metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
           file: {
-            url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
-            key: opts.fileKey,
+            url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
+            key: fileKey,
             name: file.fileName,
             size: file.fileSize,
             customId: file.customId,
@@ -53,27 +81,17 @@ export const conditionalDevServer = async (opts: {
         headers: {
           "uploadthing-hook": "callback",
         },
-      });
-      if (isValidResponse(response)) {
-        logger.success(
-          "Successfully simulated callback for file",
-          opts.fileKey,
-        );
-      } else {
-        logger.error(
-          "Failed to simulate callback for file. Is your webhook configured correctly?",
-          opts.fileKey,
-        );
-      }
-      return file;
-    },
-  );
+      }),
+    );
 
-  if (fileData !== undefined) return fileData;
-
-  logger.error(`Failed to simulate callback for file ${opts.fileKey}`);
-  throw new UploadThingError({
-    code: "UPLOAD_FAILED",
-    message: "File took too long to upload",
+    if (isValidResponse(callbackResponse)) {
+      logger.success("Successfully simulated callback for file", fileKey);
+    } else {
+      logger.error(
+        "Failed to simulate callback for file. Is your webhook configured correctly?",
+        fileKey,
+      );
+    }
+    return file;
   });
 };

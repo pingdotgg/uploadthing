@@ -10,16 +10,16 @@ import {
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { defaultErrorFormatter } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
-import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -54,12 +54,14 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     }
 
     // POST
-    const response = await requestHandler({
-      nativeRequest: toWebRequest(event),
-      event,
-      originalRequest: undefined,
-      res: undefined,
-    });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: toWebRequest(event),
+        middlewareArgs: { req: undefined, res: undefined, event },
+      },
+      opts.config,
+    );
 
     if (response instanceof UploadThingError) {
       setResponseStatus(event, getStatusCodeFromError(response));
@@ -67,12 +69,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
         opts.router[Object.keys(opts.router)[0]]?._def.errorFormatter ??
         defaultErrorFormatter;
       return errorFormatter(response) as unknown;
-    }
-
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      setResponseStatus(event, 500);
-      return "An unknown error occurred";
     }
 
     return response.body ?? "OK";

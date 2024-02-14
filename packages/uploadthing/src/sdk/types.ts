@@ -1,3 +1,5 @@
+import type { File as UndiciFile } from "undici";
+
 import type {
   ACL,
   ContentDisposition,
@@ -7,6 +9,12 @@ import type {
 } from "@uploadthing/shared";
 
 import type { LogLevel } from "../internal/logger";
+import type { UTFile } from "./ut-file";
+
+export type FileEsque =
+  | (Blob & { name: string; customId?: string | undefined })
+  | UndiciFile
+  | UTFile;
 
 export interface UTApiOptions {
   /**
