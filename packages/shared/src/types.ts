@@ -69,9 +69,6 @@ export type FetchEsque = (
 
 /** This matches the return type from the infra */
 export const FileData = S.struct({
-  id: S.string,
-  createdAt: S.string,
-
   fileKey: S.nullable(S.string),
   fileName: S.string,
   fileSize: S.number,

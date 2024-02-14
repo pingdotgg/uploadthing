@@ -6,8 +6,6 @@ import type { AllowedFileType } from "./file-types";
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
-  FetchEsque,
-  FileData,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
@@ -118,79 +116,6 @@ export function generateUploadThingURL(path: `/${string}`) {
     host = process.env.CUSTOM_INFRA_URL;
   }
   return `${host}${path}`;
-}
-
-/**
- * RETURN UNDEFINED TO KEEP GOING
- * SO MAKE SURE YOUR FUNCTION RETURNS SOMETHING
- * OTHERWISE IT'S AN IMPLICIT UNDEFINED AND WILL CAUSE
- * AN INFINITE LOOP
- */
-export const withExponentialBackoff = async <T>(
-  doTheThing: () => Promise<T | undefined>,
-  MAXIMUM_BACKOFF_MS = 64 * 1000,
-  MAX_RETRIES = 20,
-): Promise<T | null> => {
-  let tries = 0;
-  let backoffMs = 500;
-  let backoffFuzzMs = 0;
-
-  let result = undefined;
-  while (tries <= MAX_RETRIES) {
-    result = await doTheThing();
-    if (result !== undefined) return result;
-
-    tries += 1;
-    backoffMs = Math.min(MAXIMUM_BACKOFF_MS, backoffMs * 2);
-    backoffFuzzMs = Math.floor(Math.random() * 500);
-
-    if (tries > 3) {
-      console.error(
-        `[UT] Call unsuccessful after ${tries} tries. Retrying in ${Math.floor(
-          backoffMs / 1000,
-        )} seconds...`,
-      );
-    }
-
-    await new Promise((r) => setTimeout(r, backoffMs + backoffFuzzMs));
-  }
-
-  return null;
-};
-
-export async function pollForFileData(
-  opts: {
-    url: string;
-    // no apikey => no filedata will be returned, just status
-    apiKey: string | null;
-    sdkVersion: string;
-    fetch: FetchEsque;
-  },
-  callback?: (json: any) => Promise<any>,
-) {
-  return withExponentialBackoff(async () => {
-    const res = await opts.fetch(opts.url, {
-      headers: {
-        ...(opts.apiKey && { "x-uploadthing-api-key": opts.apiKey }),
-        "x-uploadthing-version": opts.sdkVersion,
-      },
-    });
-    const maybeJson = await safeParseJSON<
-      { status: "done"; fileData?: FileData } | { status: "something else" }
-    >(res);
-
-    if (maybeJson instanceof Error) {
-      console.error(
-        `[UT] Error polling for file data for ${opts.url}: ${maybeJson.message}`,
-      );
-      return null;
-    }
-
-    if (maybeJson.status !== "done") return undefined;
-    await callback?.(maybeJson);
-
-    return Symbol("backoff done without response");
-  });
 }
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;

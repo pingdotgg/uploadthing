@@ -11,7 +11,6 @@ const BaseResponseSchema = S.struct({
   fileName: S.string,
   fileType: S.string as S.Schema<FileRouterInputKey>,
   fileUrl: S.string,
-
   pollingJwt: S.string,
   pollingUrl: S.string,
 });

@@ -192,7 +192,8 @@ const handleCallbackRequest = (opts: {
 
     const serverData = yield* $(
       Effect.tryPromise({
-        try: () => opts.uploadable.resolver(requestInput) as Promise<unknown>,
+        try: async () =>
+          opts.uploadable.resolver(requestInput) as Promise<unknown>,
         catch: (error) => {
           logger.error(
             "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
@@ -408,12 +409,7 @@ const handleUploadAction = (opts: {
       );
     }
 
-    const body: PresignedURLResponse = presignedUrls.map((x) => ({
-      ...x,
-      pollingUrl: generateUploadThingURL(`/api/serverCallback`),
-    }));
-
-    return { status: 200, body, cleanup: promise };
+    return { status: 200, body: presignedUrls, cleanup: promise };
   });
 
 const handleMultipartCompleteAction = (opts: { req: Request }) =>
