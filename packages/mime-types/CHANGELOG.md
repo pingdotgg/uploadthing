@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.2.3
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
 ## 0.2.2
 
 ### Patch Changes

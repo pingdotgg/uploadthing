@@ -1,5 +1,46 @@
 # uploadthing
 
+## 6.4.0
+
+### Minor Changes
+
+- [#587](https://github.com/pingdotgg/uploadthing/pull/587) [`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to provide custom identifiers when uploading files
+
+  also adds ability for UTApi methods to filter based on custom identifiers
+
+  ```ts
+  // bind custom id when uploading
+  f(["image"]).middleware(({ files }) => {
+    const filesWithIds = files.map((f) => ({
+      ...f,
+      customId: uuid(),
+    }));
+    return { my: "metadata", [UTFiles]: filesWithIds };
+  });
+
+  // filter based on custom id
+  const utapi = new UTApi();
+  utapi.getFileUrl("my-uuid", { keyType: "customId" });
+
+  // or, set a global keyType default
+  const utapi = new UTApi({ defaultKeyType: "customId" });
+  utapi.getFileUrl("my-uuid");
+  ```
+
+- [#598](https://github.com/pingdotgg/uploadthing/pull/598) [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: use presigned post uploads for small files to reduce overhead time of multipart
+
+- [#602](https://github.com/pingdotgg/uploadthing/pull/602) [`3fe3271`](https://github.com/pingdotgg/uploadthing/commit/3fe32711abeb5b1332e848454341c396db69cfc2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add `UTFile` utility to simplify usage of Blobs with properties
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
+- [#587](https://github.com/pingdotgg/uploadthing/pull/587) [`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: make pagination object on `utapi.listFiles` optional
+
+- Updated dependencies [[`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e), [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7), [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a)]:
+  - @uploadthing/shared@6.3.0
+  - @uploadthing/mime-types@0.2.3
+
 ## 6.3.3
 
 ### Patch Changes

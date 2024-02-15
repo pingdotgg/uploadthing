@@ -1,5 +1,17 @@
 # @uploadthing/react
 
+## 6.2.3
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
+- [#609](https://github.com/pingdotgg/uploadthing/pull/609) [`6a53c7b`](https://github.com/pingdotgg/uploadthing/commit/6a53c7bca6ab60bdfeb6ef95c76f0b8e884e605c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix ssr plugin to update global when router config changes
+
+- Updated dependencies [[`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e), [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7), [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a)]:
+  - @uploadthing/shared@6.3.0
+  - @uploadthing/dropzone@0.1.2
+
 ## 6.2.2
 
 ### Patch Changes
@@ -452,7 +464,7 @@
     ```ts
     // before
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
-    uploadFiles(files, endpoint, { url: "" })
+    uploadFiles(files, endpoint, { url: "" });
 
     // after
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
@@ -461,7 +473,7 @@
       endpoint,
       input, // <-- new option
       url,
-    })
+    });
     ```
 
 ### Minor Changes
