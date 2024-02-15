@@ -1,11 +1,23 @@
-import { Effect } from "effect";
+/**
+ * The `import type * as _MAKE_TS_AWARE_1 from` are imported to make TypeScript aware of the types.
+ * It's having a hard time resolving deeply nested stuff from transitive dependencies.
+ * You'll notice if you need to add more imports if you get build errors like:
+ * `The type of X cannot be inferred without a reference to <MODULE>`
+ */
+import type * as S from "@effect/schema/Schema";
+import { Effect, Unify } from "effect";
+import { TaggedError } from "effect/Data";
+import type * as _MAKE_TS_AWARE_1 from "effect/Types";
 
 import type {
   ExpandedRouteConfig,
   FileRouterInputKey,
+  FileSize,
 } from "@uploadthing/shared";
 import {
+  bytesToFileSize,
   fetchContext,
+  fileSizeToBytes,
   getTypeFromFileName,
   objectKeys,
   UploadThingError,
@@ -13,53 +25,85 @@ import {
 
 import { getApiKey } from "./get-api-key";
 import { logger } from "./logger";
+import type { UploadActionPayload } from "./shared-schemas";
 import type { ActionType, FileRouter, RouterWithConfig } from "./types";
 import { VALID_ACTION_TYPES } from "./types";
 
-export const fileCountLimitHit = (
-  files: readonly { name: string }[],
-  routeConfig: ExpandedRouteConfig,
-) => {
-  const counts: Record<string, number> = {};
+class FileSizeMismatch extends TaggedError("FileSizeMismatch")<{
+  reason: string;
+}> {
+  constructor(type: FileRouterInputKey, max: FileSize, actual: number) {
+    const reason = `You uploaded a ${type} file that was ${bytesToFileSize(actual)}, but the limit for that type is ${max}`;
+    super({ reason });
+  }
+}
 
-  files.forEach((file) => {
-    const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
+class FileCountMismatch extends TaggedError("FileCountMismatch")<{
+  reason: string;
+}> {
+  constructor(type: FileRouterInputKey, max: number, actual: number) {
+    const reason = `You uploaded ${actual} files of type '${type}', but the limit for that type is ${max}`;
+    super({ reason });
+  }
+}
 
-    if (!counts[type]) {
-      counts[type] = 1;
-    } else {
-      counts[type] += 1;
-    }
+const invalidRouteConfigError = (type: string, field: string) =>
+  new UploadThingError({
+    code: "INTERNAL_SERVER_ERROR",
+    message: "Invalid config during file upload validation.",
+    cause: `Expected route config to have a ${field} for key ${type} but none was found.`,
   });
 
-  for (const _key in counts) {
-    const key = _key as FileRouterInputKey;
-    const count = counts[key];
-    const limit = routeConfig[key]?.maxFileCount;
+// Verify that the uploaded files doesn't violate the route config,
+// e.g. uploading more videos than allowed, or a file that is larger than allowed.
+// This is double-checked on infra side, but we want to fail early to avoid network latency.
+export const assertFilesMeetConfig = Unify.unify(
+  (
+    files: S.Schema.To<typeof UploadActionPayload>["files"],
+    routeConfig: ExpandedRouteConfig,
+  ) => {
+    const counts: Record<string, number> = {};
 
-    if (!limit) {
-      logger.error(routeConfig, key);
-      throw new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "Invalid config during file count",
-        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`,
-      });
+    for (const file of files) {
+      const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
+      counts[type] = (counts[type] ?? 0) + 1;
+
+      const sizeLimit = routeConfig[type]?.maxFileSize;
+      if (!sizeLimit) {
+        return Effect.fail(invalidRouteConfigError(type, "maxFileSize"));
+      }
+      const sizeLimitBytes = fileSizeToBytes(sizeLimit);
+
+      if (file.size > sizeLimitBytes) {
+        return Effect.fail(new FileSizeMismatch(type, sizeLimit, file.size));
+      }
     }
 
-    if (count > limit) {
-      return { limitHit: true, type: key, limit, count };
-    }
-  }
+    for (const _key in counts) {
+      const key = _key as FileRouterInputKey;
+      const count = counts[key];
+      const limit = routeConfig[key]?.maxFileCount;
 
-  return { limitHit: false };
-};
+      if (!limit) {
+        logger.error(routeConfig, key);
+        return Effect.fail(invalidRouteConfigError(key, "maxFileCount"));
+      }
+
+      if (count > limit) {
+        return Effect.fail(new FileCountMismatch(key, limit, count));
+      }
+    }
+
+    return Effect.succeed(null);
+  },
+);
 
 export const parseAndValidateRequest = (opts: {
   req: Request;
   opts: RouterWithConfig<FileRouter>;
   adapter: string;
-}) => {
-  return Effect.gen(function* ($) {
+}) =>
+  Effect.gen(function* ($) {
     // Get inputs from query and params
     const url = new URL(opts.req.url);
     const headers = opts.req.headers;
@@ -219,4 +263,3 @@ export const parseAndValidateRequest = (opts: {
       action: actionType,
     };
   });
-};

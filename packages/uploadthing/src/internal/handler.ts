@@ -41,7 +41,7 @@ import type {
   ValidMiddlewareObject,
 } from "./types";
 import {
-  fileCountLimitHit,
+  assertFilesMeetConfig,
   parseAndValidateRequest,
 } from "./validate-request-input";
 
@@ -341,31 +341,29 @@ const handleUploadAction = (opts: {
         },
       }),
     );
+    logger.debug("Route config parsed successfully", parsedConfig);
 
-    logger.debug("Checking file count limit", files);
+    logger.debug("Validating files meet the config requirements", files);
     yield* $(
-      Effect.try({
-        try: () => fileCountLimitHit(files, parsedConfig),
-        catch: (error) => {
-          if (error instanceof UploadThingError) return error;
-          return new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run file count limit check.",
-            cause: error,
-          });
-        },
-      }),
-      Effect.andThen(({ limitHit, count, type, limit }) => {
-        if (!limitHit) return;
-
-        const msg = `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`;
-        logger.error(msg);
-        return new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "File limit exceeded",
-          cause: msg,
-        });
-      }),
+      assertFilesMeetConfig(files, parsedConfig),
+      Effect.catchTag("FileSizeMismatch", (err) =>
+        Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "File size mismatch",
+            cause: err.reason,
+          }),
+        ),
+      ),
+      Effect.catchTag("FileCountMismatch", (err) =>
+        Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "File count mismatch",
+            cause: err.reason,
+          }),
+        ),
+      ),
     );
 
     const callbackUrl = resolveCallbackUrl({

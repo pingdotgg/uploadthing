@@ -120,25 +120,25 @@ export function generateUploadThingURL(path: `/${string}`) {
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
-export const fileSizeToBytes = (input: string) => {
-  const regex = new RegExp(
-    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
-    "i",
-  );
-  const match = input.match(regex);
-
-  if (!match) {
-    return new Error("Invalid file size format");
+export const fileSizeToBytes = (fileSize: FileSize) => {
+  // make sure the string is in the format of 123KB
+  if (!fileSize.match(/([+-]?(?:\d*\.)?\d+)(\w+)/)) {
+    throw new Error(`Invalid fileSize string: ${fileSize}`);
   }
 
-  const sizeValue = parseFloat(match[1]);
-  const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
+  const [value, unit] =
+    fileSize?.match(/([+-]?(?:\d*\.)?\d+)(\w+)/)?.slice(1) ?? [];
+  const i = FILESIZE_UNITS.indexOf(unit as FileSizeUnit);
+  return Number(value) * Math.pow(1000, i);
+};
 
-  if (!FILESIZE_UNITS.includes(sizeUnit)) {
-    throw new Error("Invalid file size unit");
+export const bytesToFileSize = (bytes: number) => {
+  if (bytes === 0 || bytes === -1) {
+    return "0B";
   }
-  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
-  return Math.floor(bytes);
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1000));
+  return `${(bytes / Math.pow(1000, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
 };
 
 export async function safeParseJSON<T>(
