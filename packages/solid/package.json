@@ -88,9 +88,8 @@
   },
   "dependencies": {
     "@effect/schema": "^0.62.6",
-    "@uploadthing/dropzone": "^0.1.1",
-    "@uploadthing/shared": "^6.2.1",
-    "effect": "^2.3.5",
+    "@uploadthing/dropzone": "^0.1.2",
+    "@uploadthing/shared": "^6.3.0",
     "tailwind-merge": "^1.14.0"
   },
   "devDependencies": {
@@ -101,7 +100,7 @@
     "tsup": "6.7.0",
     "tsup-preset-solid": "0.1.8",
     "typescript": "^5.3.3",
-    "uploadthing": "6.3.3",
+    "uploadthing": "6.4.0",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {

@@ -1,5 +1,38 @@
 # @uploadthing/shared
 
+## 6.3.0
+
+### Minor Changes
+
+- [#587](https://github.com/pingdotgg/uploadthing/pull/587) [`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to provide custom identifiers when uploading files
+
+  also adds ability for UTApi methods to filter based on custom identifiers
+
+  ```ts
+  // bind custom id when uploading
+  f(["image"]).middleware(({ files }) => {
+    const filesWithIds = files.map((f) => ({
+      ...f,
+      customId: uuid(),
+    }));
+    return { my: "metadata", [UTFiles]: filesWithIds };
+  });
+
+  // filter based on custom id
+  const utapi = new UTApi();
+  utapi.getFileUrl("my-uuid", { keyType: "customId" });
+
+  // or, set a global keyType default
+  const utapi = new UTApi({ defaultKeyType: "customId" });
+  utapi.getFileUrl("my-uuid");
+  ```
+
+- [#598](https://github.com/pingdotgg/uploadthing/pull/598) [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: use presigned post uploads for small files to reduce overhead time of multipart
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
 ## 6.2.1
 
 ### Patch Changes

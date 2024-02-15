@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/mime-types": "0.2.2",
+    "@uploadthing/mime-types": "0.2.3",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.5",
     "eslint": "^8.56.0",

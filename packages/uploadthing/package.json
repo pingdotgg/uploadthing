@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.3.3",
+  "version": "6.4.0",
   "type": "module",
   "engines": {
     "node": ">=18.13.0"
@@ -122,8 +122,8 @@
   },
   "dependencies": {
     "@effect/schema": "^0.62.6",
-    "@uploadthing/mime-types": "^0.2.2",
-    "@uploadthing/shared": "^6.2.1",
+    "@uploadthing/mime-types": "^0.2.3",
+    "@uploadthing/shared": "^6.3.0",
     "consola": "^3.2.3",
     "effect": "^2.3.5",
     "std-env": "^3.7.0"
