@@ -35,3 +35,19 @@ This repository contains the packages, docs and examples for uploadthing
   server/client stuff (framework agnostic)
 
 [Report an Issue](https://github.com/pingdotgg/uploadthing/issues/new)
+
+## Contributing
+
+All UploadThing SDKs are open source and we welcome contributions from the
+community.
+
+1. Fork and clone the repository
+2. Ensure you have the LTS version of Node.js installed, as well as a compatible
+   version of pnpm as specified in
+   [package.json#packageManager](./package.json#L5). The easiest way to do this
+   is to install [corepack](https://github.com/nodejs/corepack) by running
+   `corepack enable`.
+3. Install the project dependencies by running `pnpm install`.
+4. Implement your changes
+5. Create a changeset for your changes by running `pnpm changeset`.
+6. Open a pull request with your changes and changeset.
