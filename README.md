@@ -48,6 +48,7 @@ community.
    is to install [corepack](https://github.com/nodejs/corepack) by running
    `corepack enable`.
 3. Install the project dependencies by running `pnpm install`.
-4. Implement your changes
+4. Implement your changes, as well as any documentation or tests that are
+   required.
 5. Create a changeset for your changes by running `pnpm changeset`.
 6. Open a pull request with your changes and changeset.
