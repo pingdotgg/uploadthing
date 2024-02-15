@@ -41,9 +41,12 @@ This repository contains the packages, docs and examples for uploadthing
 All UploadThing SDKs are open source and we welcome contributions from the
 community.
 
-> [!NOTE]
-> If your change also requires infrastructure changes, please reach out and
-> we can work together to make the necessary changes on our end.
+<!-- prettier-ignore -->
+> [!NOTE] 
+> If your change also requires infrastructure changes, please reach out
+> and we can work together to make the necessary changes on our end.
+
+<!-- prettier-ignore-end -->
 
 1. Fork and clone the repository
 2. Ensure you have the LTS version of Node.js installed, as well as a compatible
