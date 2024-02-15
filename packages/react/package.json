@@ -60,6 +60,7 @@
     "@uploadthing/dropzone": "^0.1.1",
     "@uploadthing/shared": "^6.2.1",
     "attr-accept": "^2.2.2",
+    "effect": "^2.3.5",
     "file-selector": "^0.6.0",
     "tailwind-merge": "^1.14.0"
   },

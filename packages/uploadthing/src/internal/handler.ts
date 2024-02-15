@@ -7,9 +7,9 @@ import type { FetchContext } from "@uploadthing/shared";
 import {
   fetchContext,
   fetchEffJson,
+  fillInputRouteConfig,
   generateUploadThingURL,
   objectKeys,
-  fillInputRouteConfig as parseAndExpandInputConfig,
   parseRequestJson,
   UploadedFile,
   UploadThingError,
@@ -329,17 +329,16 @@ const handleUploadAction = (opts: {
 
     logger.debug("Parsing route config", opts.uploadable._def.routerConfig);
     const parsedConfig = yield* $(
-      Effect.try({
-        try: () => parseAndExpandInputConfig(opts.uploadable._def.routerConfig),
-        catch: (error) => {
-          logger.error("Invalid route config", error);
-          return new UploadThingError({
+      fillInputRouteConfig(opts.uploadable._def.routerConfig),
+      Effect.catchTag("InvalidRouteConfig", (err) =>
+        Effect.fail(
+          new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid config.",
-            cause: error,
-          });
-        },
-      }),
+            cause: err,
+          }),
+        ),
+      ),
     );
     logger.debug("Route config parsed successfully", parsedConfig);
 
@@ -364,14 +363,34 @@ const handleUploadAction = (opts: {
           }),
         ),
       ),
+      Effect.catchTag("InvalidRouteConfig", (err) =>
+        Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid config.",
+            cause: err,
+          }),
+        ),
+      ),
     );
 
-    const callbackUrl = resolveCallbackUrl({
-      config: opts.config,
-      req: opts.req,
-      isDev: opts.isDev,
-      logWarning: logger.warn,
-    });
+    const callbackUrl = yield* $(
+      resolveCallbackUrl({
+        config: opts.config,
+        req: opts.req,
+        isDev: opts.isDev,
+        logWarning: logger.warn,
+      }),
+      Effect.catchTag("InvalidURL", (err) => {
+        logger.error("Failed to resolve callback URL", err);
+        return Effect.fail(
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: err.message,
+          }),
+        );
+      }),
+    );
     logger.debug(
       "Retrieving presigned URLs from UploadThing. Callback URL is:",
       callbackUrl.href,
@@ -487,7 +506,7 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
   return () => {
     const permissions = objectKeys(opts.router).map((slug) => {
       const route = opts.router[slug];
-      const config = parseAndExpandInputConfig(route._def.routerConfig);
+      const config = fillInputRouteConfig(route._def.routerConfig);
       return {
         slug,
         config,

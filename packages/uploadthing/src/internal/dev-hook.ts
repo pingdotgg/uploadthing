@@ -53,10 +53,12 @@ export const conditionalDevServer = (fileKey: string) => {
 
     if (file === undefined) {
       logger.error(`Failed to simulate callback for file ${fileKey}`);
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "File took too long to upload",
-      });
+      return yield* $(
+        new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: "File took too long to upload",
+        }),
+      );
     }
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;

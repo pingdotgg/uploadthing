@@ -43,10 +43,12 @@ export const uploadPresignedPostWithProgress = (
     );
 
     if (response.status > 299 || response.status < 200) {
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to upload file",
-        cause: response,
-      });
+      return yield* $(
+        new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: "Failed to upload file",
+          cause: response,
+        }),
+      );
     }
   });

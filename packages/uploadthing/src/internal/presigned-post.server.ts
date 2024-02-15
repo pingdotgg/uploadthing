@@ -26,11 +26,13 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
     if (!res.ok) {
       const text = yield* $(Effect.promise(res.text));
       logger.error("Failed to upload file:", text);
-      throw new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to upload file",
-        cause: text,
-      });
+      return yield* $(
+        new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: "Failed to upload file",
+          cause: text,
+        }),
+      );
     }
 
     logger.debug("File", file.name, "uploaded successfully");

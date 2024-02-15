@@ -19,6 +19,7 @@ import {
   fetchContext,
   fileSizeToBytes,
   getTypeFromFileName,
+  InvalidRouteConfigError,
   objectKeys,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -47,13 +48,6 @@ class FileCountMismatch extends TaggedError("FileCountMismatch")<{
   }
 }
 
-const invalidRouteConfigError = (type: string, field: string) =>
-  new UploadThingError({
-    code: "INTERNAL_SERVER_ERROR",
-    message: "Invalid config during file upload validation.",
-    cause: `Expected route config to have a ${field} for key ${type} but none was found.`,
-  });
-
 // Verify that the uploaded files doesn't violate the route config,
 // e.g. uploading more videos than allowed, or a file that is larger than allowed.
 // This is double-checked on infra side, but we want to fail early to avoid network latency.
@@ -70,7 +64,7 @@ export const assertFilesMeetConfig = Unify.unify(
 
       const sizeLimit = routeConfig[type]?.maxFileSize;
       if (!sizeLimit) {
-        return Effect.fail(invalidRouteConfigError(type, "maxFileSize"));
+        return Effect.fail(new InvalidRouteConfigError(type, "maxFileSize"));
       }
       const sizeLimitBytes = fileSizeToBytes(sizeLimit);
 
@@ -85,10 +79,8 @@ export const assertFilesMeetConfig = Unify.unify(
       const limit = routeConfig[key]?.maxFileCount;
 
       if (!limit) {
-        logger.error(routeConfig, key);
-        return Effect.fail(invalidRouteConfigError(key, "maxFileCount"));
+        return Effect.fail(new InvalidRouteConfigError(key, "maxFileCount"));
       }
-
       if (count > limit) {
         return Effect.fail(new FileCountMismatch(key, limit, count));
       }

@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { createSignal } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
@@ -65,7 +66,7 @@ export const UploadDropzone = <
   const { mode = "manual" } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
+    url: Effect.runSync(resolveMaybeUrlArg($props?.url)),
   });
   const uploadThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {

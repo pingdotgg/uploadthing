@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { createSignal } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
@@ -60,7 +61,7 @@ export function UploadButton<
   let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint>;
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
+    url: Effect.runSync(resolveMaybeUrlArg($props?.url)),
   });
   const uploadedThing = useUploadThing($props.endpoint, {
     onClientUploadComplete: (res) => {

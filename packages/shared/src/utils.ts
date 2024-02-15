@@ -1,3 +1,5 @@
+import { Effect, Unify } from "effect";
+import { TaggedError } from "effect/Data";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
@@ -37,40 +39,57 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
  * ["image"] => { image: { maxFileSize: "4MB", limit: 1 } }
  * ```
  */
-export function fillInputRouteConfig(
-  routeConfig: FileRouterInputConfig,
-): ExpandedRouteConfig {
-  // If array, apply defaults
-  if (isRouteArray(routeConfig)) {
-    return routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
-      acc[fileType] = {
-        // Apply defaults
-        maxFileSize: getDefaultSizeForType(fileType),
-        maxFileCount: 1,
-        contentDisposition: "inline",
-      };
-      return acc;
-    }, {});
+
+export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
+  reason: string;
+}> {
+  constructor(type: string, field?: string) {
+    if (field) {
+      super({
+        reason: `Expected route config to have a ${field} for key ${type} but none was found.`,
+      });
+    }
+    super({
+      reason: "Encountered an invalid route config during backfilling.",
+    });
   }
-
-  // Backfill defaults onto config
-  const newConfig: ExpandedRouteConfig = {};
-  const inputKeys = objectKeys(routeConfig);
-  inputKeys.forEach((key) => {
-    const value = routeConfig[key];
-    if (!value) throw new Error("Invalid config during fill");
-
-    const defaultValues = {
-      maxFileSize: getDefaultSizeForType(key),
-      maxFileCount: 1,
-      contentDisposition: "inline" as const,
-    };
-
-    newConfig[key] = { ...defaultValues, ...value };
-  }, {} as ExpandedRouteConfig);
-
-  return newConfig;
 }
+
+export const fillInputRouteConfig = Unify.unify(
+  (routeConfig: FileRouterInputConfig) => {
+    // If array, apply defaults
+    if (isRouteArray(routeConfig)) {
+      return Effect.succeed(
+        routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
+          acc[fileType] = {
+            // Apply defaults
+            maxFileSize: getDefaultSizeForType(fileType),
+            maxFileCount: 1,
+            contentDisposition: "inline",
+          };
+          return acc;
+        }, {}),
+      );
+    }
+
+    // Backfill defaults onto config
+    const newConfig: ExpandedRouteConfig = {};
+    for (const key of objectKeys(routeConfig)) {
+      const value = routeConfig[key];
+      if (!value) return Effect.fail(new InvalidRouteConfigError(key));
+
+      const defaultValues = {
+        maxFileSize: getDefaultSizeForType(key),
+        maxFileCount: 1,
+        contentDisposition: "inline" as const,
+      };
+
+      newConfig[key] = { ...defaultValues, ...value };
+    }
+
+    return Effect.succeed(newConfig);
+  },
+);
 
 export function getTypeFromFileName(
   fileName: string,

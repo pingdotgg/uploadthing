@@ -757,6 +757,9 @@ importers:
       attr-accept:
         specifier: ^2.2.2
         version: 2.2.2
+      effect:
+        specifier: ^2.3.5
+        version: 2.3.5
       file-selector:
         specifier: ^0.6.0
         version: 0.6.0

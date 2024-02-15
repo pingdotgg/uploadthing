@@ -96,7 +96,7 @@ describe("uploadFilesFromUrl", () => {
 describe("constructor throws if no apiKey or secret is set", () => {
   test("no secret or apikey", () => {
     expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      `[UploadThingError: Missing \`UPLOADTHING_SECRET\` env variable.]`,
+      `[UploadThingError: Missing or invalid API key. API keys must start with \`sk_\`.]`,
     );
   });
   test("env is set", () => {
