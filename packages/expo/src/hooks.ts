@@ -29,10 +29,8 @@ export const GENERATE_useImageUploader =
     );
     const mediaTypes = generateMediaTypes(fileTypes);
 
-    type InferredInput = inferEndpointInput<TRouter[TEndpoint]>;
-
     const openImagePicker = async (
-      opts: undefined extends InferredInput
+      opts: undefined extends inferEndpointInput<TRouter[TEndpoint]>
         ? void
         : {
             input: inferEndpointInput<TRouter[TEndpoint]>;
