@@ -87,7 +87,7 @@
   "devDependencies": {
     "@types/node": "^20.11.10",
     "@types/react": "18.2.55",
-    "@types/react-dom": "18.2.14",
+    "@types/react-dom": "18.2.19",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.5",
