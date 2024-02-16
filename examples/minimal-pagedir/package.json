@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "6.2.2",
+    "@uploadthing/react": "6.2.3",
     "next": "14.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "6.3.3"
+    "uploadthing": "6.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.10",

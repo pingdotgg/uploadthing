@@ -4,6 +4,7 @@ import { lookup } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
 import type {
+  ContentDisposition,
   ExpandedRouteConfig,
   FetchEsque,
   FileData,
@@ -246,4 +247,20 @@ export function objectKeys<T extends Record<string, unknown>>(
 /** checks if obj is a valid, non-null object */
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+}
+
+export function asArray<T>(val: T | T[]): T[] {
+  return Array.isArray(val) ? val : [val];
+}
+
+/** construct content-disposition header */
+export function contentDisposition(
+  contentDisposition: ContentDisposition,
+  fileName: string,
+) {
+  return [
+    contentDisposition,
+    `filename="${encodeURI(fileName)}"`,
+    `filename*=UTF-8''${encodeURI(fileName)}`,
+  ].join("; ");
 }

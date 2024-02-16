@@ -1,6 +1,5 @@
 import { isDevelopment, process } from "std-env";
 
-import type { MimeType } from "@uploadthing/mime-types";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
@@ -25,12 +24,13 @@ import { getFullApiUrl } from "./get-full-api-url";
 import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
-import { VALID_ACTION_TYPES } from "./types";
+import { UTFiles, VALID_ACTION_TYPES } from "./types";
 import type {
   ActionType,
   FileRouter,
   MiddlewareFnArgs,
   UTEvents,
+  ValidMiddlewareObject,
 } from "./types";
 
 /**
@@ -120,18 +120,29 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-export type UploadThingResponse = {
-  presignedUrls: string[];
-  pollingJwt: string;
+interface UploadThingBaseResponse {
   key: string;
-  pollingUrl: string;
-  uploadId: string;
   fileName: string;
-  fileType: MimeType;
+  fileType: FileRouterInputKey;
+  fileUrl: string;
   contentDisposition: ContentDisposition;
-  chunkCount: number;
+  pollingJwt: string;
+  pollingUrl: string;
+}
+
+export interface PSPResponse extends UploadThingBaseResponse {
+  url: string;
+  fields: Record<string, string>;
+}
+
+export interface MPUResponse extends UploadThingBaseResponse {
+  urls: string[];
+  uploadId: string;
   chunkSize: number;
-}[];
+  chunkCount: number;
+}
+
+export type UploadThingResponse = (PSPResponse | MPUResponse)[];
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,
@@ -336,43 +347,6 @@ export const buildRequestHandler = <
         logger.debug("Handling upload request with input:", maybeInput);
         const { files, input: userInput } = maybeInput;
 
-        // validate the input
-        let parsedInput: Json = {};
-        try {
-          logger.debug("Parsing input");
-          const inputParser = uploadable._def.inputParser;
-          parsedInput = await getParseFn(inputParser)(userInput);
-          logger.debug("Input parsed successfully", parsedInput);
-        } catch (error) {
-          logger.error("An error occured trying to parse input", error);
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid input.",
-            cause: error,
-          });
-        }
-
-        let metadata: Json = {};
-        try {
-          logger.debug("Running middleware");
-          metadata = await uploadable._def.middleware({
-            req: input.originalRequest,
-            res: input.res,
-            event: input.event,
-            input: parsedInput,
-            files,
-          });
-          logger.debug("Middleware finished successfully with:", metadata);
-        } catch (error) {
-          logger.error("An error occured in your middleware function", error);
-          if (error instanceof UploadThingError) return error;
-          return new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run middleware.",
-            cause: error,
-          });
-        }
-
         // Validate without Zod (for now)
         if (
           !Array.isArray(files) ||
@@ -393,6 +367,66 @@ export const buildRequestHandler = <
             cause: msg,
           });
         }
+
+        // validate the input
+        let parsedInput: Json = {};
+        try {
+          logger.debug("Parsing input");
+          const inputParser = uploadable._def.inputParser;
+          parsedInput = await getParseFn(inputParser)(userInput);
+          logger.debug("Input parsed successfully", parsedInput);
+        } catch (error) {
+          logger.error("An error occured trying to parse input", error);
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid input.",
+            cause: error,
+          });
+        }
+
+        let metadata: ValidMiddlewareObject = {};
+        try {
+          logger.debug("Running middleware");
+          metadata = await uploadable._def.middleware({
+            req: input.originalRequest,
+            res: input.res,
+            event: input.event,
+            input: parsedInput,
+            files,
+          });
+          logger.debug("Middleware finished successfully with:", metadata);
+        } catch (error) {
+          logger.error("An error occured in your middleware function", error);
+          if (error instanceof UploadThingError) return error;
+          return new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to run middleware.",
+            cause: error,
+          });
+        }
+
+        if (metadata[UTFiles] && metadata[UTFiles].length !== files.length) {
+          const msg = `Expected files override to have the same length as original files, got ${metadata[UTFiles].length} but expected ${files.length}`;
+          logger.error(msg);
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Files override must have the same length as files",
+            cause: msg,
+          });
+        }
+
+        // Attach customIds from middleware to the files
+        const filesWithCustomIds = files.map((file, idx) => {
+          const theirs = metadata[UTFiles]?.[idx];
+          if (theirs && theirs.size !== file.size) {
+            logger.warn("File size mismatch. Reverting to original size");
+          }
+          return {
+            ...file,
+            ...theirs,
+            size: file.size,
+          };
+        });
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
         let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
@@ -442,7 +476,7 @@ export const buildRequestHandler = <
           callbackUrl.href,
         );
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
-          files: files,
+          files: filesWithCustomIds,
 
           routeConfig: parsedConfig,
 

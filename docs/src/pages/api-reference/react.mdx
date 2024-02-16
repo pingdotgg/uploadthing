@@ -1,5 +1,12 @@
 import { Callout } from "nextra-theme-docs";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../../components/accordion";
+
 ## Generated Components
 
 ### generateComponents
@@ -222,11 +229,44 @@ export const { useUploadThing, uploadFiles } =
 
 > Added in `v5.6`
 
-This hook is currently a 1:1 fork of
+This hook is currently a minified fork of
 [react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
 ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
 
-You can import the hook from `@uploadthing/react`.
+export const removed = ["test1", "test2"];
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Several features have been removed:</AccordionTrigger>
+    <AccordionContent>
+      <ul className="nx-mt-6 nx-list-disc first:nx-mt-0 ltr:nx-ml-6 rtl:nx-mr-6">
+        <li className="nx-my-2">`autofocus` Option</li>
+        <li className="nx-my-2">`children` Option</li>
+        <li className="nx-my-2">`getFilesFromEvent` Option</li>
+        <li className="nx-my-2">`noClick` Option</li>
+        <li className="nx-my-2">`noDrag` Option</li>
+        <li className="nx-my-2">`noDragEventsBubbling` Option</li>
+        <li className="nx-my-2">`noKeyboard` Option</li>
+        <li className="nx-my-2">`onDragEnter` Option</li>
+        <li className="nx-my-2">`onDragLeave` Option</li>
+        <li className="nx-my-2">`onDragOver` Option</li>
+        <li className="nx-my-2">`onDropAccepted` Option</li>
+        <li className="nx-my-2">`onDropRejected` Option</li>
+        <li className="nx-my-2">`onError` Option</li>
+        <li className="nx-my-2">`onFileDialogCancel` Option</li>
+        <li className="nx-my-2">`onFileDialogOpen` Option</li>
+        <li className="nx-my-2">`preventDropOnDocument` Option</li>
+        <li className="nx-my-2">`useFsAccessApi` Option</li>
+        <li className="nx-my-2">`validator` Option</li>
+        <li className="nx-my-2">`open` Method</li>
+      </ul>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>
+
+You can import the minified hook from `@uploadthing/react`. If you need access
+to any of the removed APIs, you should import the original hook from
+`react-dropzone`.
 
 <Callout type="info">
   This hook isn't strictly covered by semver as we might make changes to tailor

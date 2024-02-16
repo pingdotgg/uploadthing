@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  bunchee@4.4.5:
+    hash: fqobhpxt7m2au3j2mth2bjpfii
+    path: patches/bunchee@4.4.5.patch
+
 importers:
 
   .:
@@ -54,7 +59,7 @@ importers:
         specifier: ^1.13.5
         version: 1.13.5(@codemirror/lang-html@6.4.8)(@codemirror/lang-java@6.0.1)(@codemirror/lang-javascript@6.2.1)(@codemirror/lang-json@6.0.1)(@codemirror/lang-python@6.1.3)(@codemirror/language@6.10.0)(@codemirror/legacy-modes@6.3.3)(@codemirror/state@6.4.0)(@codemirror/view@6.23.1)(@lezer/common@1.2.1)(@lezer/highlight@1.2.0)(@lezer/lr@1.4.0)(@uiw/codemirror-themes@4.21.21)(codemirror@6.0.1)(nanoid@5.0.4)(postcss@8.4.31)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.15)
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../packages/react
       next:
         specifier: 14.0.1
@@ -72,7 +77,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../packages/uploadthing
       veaury:
         specifier: ^2.3.12
@@ -97,7 +102,7 @@ importers:
   examples/backend-adapters:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       concurrently:
         specifier: ^8.2.1
@@ -106,13 +111,13 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: ^6.3.3
+        specifier: ^6.4.0
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../../packages/react
       react:
         specifier: 18.2.0
@@ -121,7 +126,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: ^6.3.3
+        specifier: ^6.4.0
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -170,7 +175,7 @@ importers:
         specifier: ^1.5.5
         version: 1.5.5
       uploadthing:
-        specifier: ^6.3.3
+        specifier: ^6.4.0
         version: link:../../../packages/uploadthing
     devDependencies:
       '@cloudflare/workers-types':
@@ -195,7 +200,7 @@ importers:
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -207,7 +212,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -232,7 +237,7 @@ importers:
         specifier: ^3.0.9
         version: 3.0.9(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(vite@5.0.12)
       '@uploadthing/react':
-        specifier: ^6.2.2
+        specifier: ^6.2.3
         version: link:../../packages/react
       astro:
         specifier: ^4.2.4
@@ -244,7 +249,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: ^6.3.3
+        specifier: ^6.4.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -315,7 +320,7 @@ importers:
   examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -327,7 +332,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -370,7 +375,7 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -407,7 +412,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -419,7 +424,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -465,7 +470,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -477,7 +482,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -520,7 +525,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -538,7 +543,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -584,7 +589,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -605,7 +610,7 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -648,7 +653,7 @@ importers:
   examples/with-react-image-crop:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -663,7 +668,7 @@ importers:
         specifier: ^10.1.5
         version: 10.1.5(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -691,7 +696,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -710,7 +715,7 @@ importers:
   examples/with-tailwindcss:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.2
+        specifier: 6.2.3
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -722,7 +727,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -767,7 +772,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -791,7 +796,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -802,10 +807,10 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/dropzone':
-        specifier: ^0.1.1
+        specifier: ^0.1.2
         version: link:../dropzone
       '@uploadthing/shared':
-        specifier: ^6.2.1
+        specifier: ^6.3.0
         version: link:../shared
       attr-accept:
         specifier: ^2.2.2
@@ -834,7 +839,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -851,7 +856,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../uploadthing
       wait-on:
         specifier: ^7.2.0
@@ -870,14 +875,14 @@ importers:
         specifier: 0.2.0
         version: link:../../tooling/eslint-config
       '@uploadthing/mime-types':
-        specifier: 0.2.2
+        specifier: 0.2.3
         version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -888,10 +893,10 @@ importers:
   packages/solid:
     dependencies:
       '@uploadthing/dropzone':
-        specifier: ^0.1.1
+        specifier: ^0.1.2
         version: link:../dropzone
       '@uploadthing/shared':
-        specifier: ^6.2.1
+        specifier: ^6.3.0
         version: link:../shared
       tailwind-merge:
         specifier: ^1.14.0
@@ -919,7 +924,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: 6.3.3
+        specifier: 6.4.0
         version: link:../uploadthing
       wait-on:
         specifier: ^7.2.0
@@ -928,10 +933,10 @@ importers:
   packages/uploadthing:
     dependencies:
       '@uploadthing/mime-types':
-        specifier: ^0.2.2
+        specifier: ^0.2.3
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: ^6.2.1
+        specifier: ^6.3.0
         version: link:../shared
       consola:
         specifier: ^3.2.3
@@ -957,7 +962,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^4.4.5
-        version: 4.4.5(typescript@5.3.3)
+        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -8438,7 +8443,7 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bunchee@4.4.5(typescript@5.3.3):
+  /bunchee@4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3):
     resolution: {integrity: sha512-PBqPDj58yw7XfDmhz+5XtuWXEg5puol1dBBI8kVgK3NbhcMTisZCe5rFP8v5TNoBVV/m8xfxx8N35Z7u1cSJCw==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
@@ -8470,6 +8475,7 @@ packages:
       tslib: 2.6.2
       typescript: 5.3.3
     dev: true
+    patched: true
 
   /bundle-name@3.0.0:
     resolution: {integrity: sha512-PKA4BeSvBpQKQ8iPOGCSiell+N8P+Tf1DlwqmYhpe2gAhKPHn8EYOxVT+ShuGmhg8lN8XiSlS80yiExKXrURlw==}

@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/dropzone",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -46,9 +46,9 @@
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "bunchee",
+    "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf core react solid node_modules",
-    "dev": "bunchee -w",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
