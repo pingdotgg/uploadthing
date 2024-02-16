@@ -9,8 +9,6 @@ export default (): ExpoConfig => ({
   scheme: "myapp",
   userInterfaceStyle: "automatic",
   splash: {
-    image: "./assets/splash.jpg",
-    resizeMode: "contain",
     backgroundColor: "#ffffff",
   },
   assetBundlePatterns: ["**/*"],
