@@ -205,14 +205,22 @@ of 6.0.5, you can optionally pass an `options` object to paginate the results
 
 ```ts
 type ListFilesOptions = {
-  limit?: number; // The maximum number of files to return
-  offset?: number; // The number of files to skip
+  /**
+   * The maximum number of files to return
+   * @default 500
+   */
+  limit?: number;
+  /**
+   * The number of files to skip
+   * @default 0
+   */
+  offset?: number;
 };
 ```
 
-| Arguments | Type             | Required | Notes             | Description                                                                   |
-| :-------- | :--------------- | :------- | :---------------- | :---------------------------------------------------------------------------- |
-| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files (up to 100k) will be returned. |
+| Arguments | Type             | Required | Notes             | Description             |
+| :-------- | :--------------- | :------- | :---------------- | :---------------------- |
+| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. |
 
 ```ts
 import { utapi } from "~/server/uploadthing.ts";
