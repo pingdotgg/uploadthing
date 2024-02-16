@@ -205,14 +205,22 @@ of 6.0.5, you can optionally pass an `options` object to paginate the results
 
 ```ts
 type ListFilesOptions = {
-  limit?: number; // The maximum number of files to return
-  offset?: number; // The number of files to skip
+  /**
+   * The maximum number of files to return
+   * @default 500
+   */
+  limit?: number;
+  /**
+   * The number of files to skip
+   * @default 0
+   */
+  offset?: number;
 };
 ```
 
-| Arguments | Type             | Required | Notes             | Description                                                                   |
-| :-------- | :--------------- | :------- | :---------------- | :---------------------------------------------------------------------------- |
-| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files (up to 100k) will be returned. |
+| Arguments | Type             | Required | Notes             | Description             |
+| :-------- | :--------------- | :------- | :---------------- | :---------------------- |
+| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. |
 
 ```ts
 import { utapi } from "~/server/uploadthing.ts";
@@ -223,9 +231,10 @@ console.log(files);
 /*
  * [
  *  {
- *    id: "2e0fdb64-9957-4262-8e45-f372ba903ac8",
- *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+ *    id: "7099d109-39ec-43fe-a887-4a4fd87cad88 ,
  *    customId: null, // whatever you set it to when uploading
+ *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+ *    name: "image.jpg",
  *    status: "uploaded",
  *  }
  * ]
