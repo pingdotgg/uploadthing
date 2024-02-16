@@ -4,7 +4,10 @@ import { generateReactHelpers } from "@uploadthing/react/native";
 import type * as _TS_FIND_ME_1 from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/internal/types";
 
-import { GENERATE_useImageUploader } from "./hooks";
+import {
+  GENERATE_useDocumentUploader,
+  GENERATE_useImageUploader,
+} from "./hooks";
 
 export interface GenerateTypedHelpersOptions {
   /**
@@ -41,6 +44,7 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
     url,
   });
   const useImageUploader = GENERATE_useImageUploader<TRouter>({ url });
+  const useDocumentUploader = GENERATE_useDocumentUploader<TRouter>({ url });
 
-  return { ...vanillaHelpers, useImageUploader };
+  return { ...vanillaHelpers, useImageUploader, useDocumentUploader };
 };

@@ -24,8 +24,14 @@ export const uploadRouter = {
       maxFileSize: "4MB",
       maxFileCount: 4,
     },
-    video: {
+  }).onUploadComplete((data) => {
+    console.log("upload completed", data);
+  }),
+  document: f({
+    blob: {
       maxFileSize: "16MB",
+      maxFileCount: 1,
+      contentDisposition: "inline",
     },
   }).onUploadComplete((data) => {
     console.log("upload completed", data);

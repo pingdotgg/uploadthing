@@ -810,6 +810,9 @@ importers:
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
+      expo-document-picker:
+        specifier: ^11.10.1
+        version: 11.10.1(expo@50.0.6)
       expo-image-picker:
         specifier: ^14.7.1
         version: 14.7.1(expo@50.0.6)
@@ -10768,6 +10771,14 @@ packages:
       expo: 50.0.6(@babel/core@7.23.9)(@react-native/babel-preset@0.73.21)
     transitivePeerDependencies:
       - supports-color
+
+  /expo-document-picker@11.10.1(expo@50.0.6):
+    resolution: {integrity: sha512-A1MiLfyXQ+KxanRO5lYxYQy3ryV+25JHe5Ai/BLV+FJU0QXByUF+Y/dn35WVPx5gpdZXC8UJ4ejg5SKSoeconw==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 50.0.6(@babel/core@7.23.9)(@react-native/babel-preset@0.73.21)
+    dev: true
 
   /expo-file-system@16.0.6(expo@50.0.6):
     resolution: {integrity: sha512-ATCHL7nEg2WwKeamW/SDTR9jBEqM5wncFq594ftKS5QFmhKIrX48d9jyPFGnNq+6h8AGPg4QKh2KCA4OY49L4g==}

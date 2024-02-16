@@ -5,10 +5,12 @@ import { generateReactNativeHelpers } from "@uploadthing/expo";
 
 import type { UploadRouter } from "./api/uploadthing+api";
 
-const { useImageUploader } = generateReactNativeHelpers<UploadRouter>();
+const { useImageUploader, useDocumentUploader } =
+  generateReactNativeHelpers<UploadRouter>();
 
 export default function ModalScreen() {
   const { openImagePicker } = useImageUploader("videoAndImage");
+  const { openDocumentPicker } = useDocumentUploader("document");
 
   return (
     <>
@@ -16,6 +18,7 @@ export default function ModalScreen() {
       <View style={styles.container}>
         <Text style={styles.title}>Modal</Text>
         <Button title="Open Gallery" onPress={() => openImagePicker()} />
+        <Button title="Select File" onPress={() => openDocumentPicker()} />
         <View style={styles.separator} />
       </View>
     </>
