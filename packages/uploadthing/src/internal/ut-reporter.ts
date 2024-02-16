@@ -1,5 +1,6 @@
 import type { FetchEsque } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
+import { UPLOADTHING_VERSION } from "uploadthing/constants";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type { ActionType, UTEvents } from "./types";
@@ -49,6 +50,7 @@ export const createUTReporter = (cfg: {
       headers: {
         "Content-Type": "application/json",
         "x-uploadthing-package": cfg.package,
+        "x-uploadthing-version": UPLOADTHING_VERSION,
       },
     });
 
