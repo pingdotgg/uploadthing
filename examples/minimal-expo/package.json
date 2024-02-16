@@ -1,7 +1,6 @@
 {
-  "name": "minimal-expo",
+  "name": "@example/minimal-expo",
   "main": "expo-router/entry",
-  "version": "1.0.0",
   "scripts": {
     "dev": "expo start --ios",
     "start": "expo start",
@@ -9,8 +8,7 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
-    "@uploadthing/mime-types": "^0.2.2",
-    "@uploadthing/react": "^6.2.2",
+    "@uploadthing/expo": "^6.3.0",
     "expo": "~50.0.6",
     "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",

@@ -1,0 +1,67 @@
+{
+  "name": "@uploadthing/expo",
+  "version": "6.3.0",
+  "type": "module",
+  "license": "MIT",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint src --max-warnings 0",
+    "build": "bunchee --tsconfig tsconfig.build.json",
+    "clean": "git clean -xdf dist node_modules",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uploadthing/shared": "6.3.0",
+    "@uploadthing/react": "6.2.3"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.55",
+    "@uploadthing/eslint-config": "0.2.0",
+    "@uploadthing/tsconfig": "0.1.0",
+    "bunchee": "^4.4.5",
+    "eslint": "^8.56.0",
+    "expo-image-picker": "^14.7.1",
+    "react": "18.2.0",
+    "react-native": "^0.73.4",
+    "typescript": "^5.3.3",
+    "uploadthing": "6.4.0"
+  },
+  "peerDependencies": {
+    "expo-constants": "^15.4.5",
+    "expo-image-picker": "^14.0.0",
+    "uploadthing": "^6.4.0"
+  },
+  "peerDependenciesMeta": {
+    "@uploadthing/mime-types": {
+      "optional": true
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ]
+  }
+}

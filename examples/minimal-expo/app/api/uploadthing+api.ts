@@ -32,11 +32,8 @@ export const uploadRouter = {
   }),
 } satisfies FileRouter;
 
-export type OurFileRouter = typeof uploadRouter;
+export type UploadRouter = typeof uploadRouter;
 
 export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
-  config: {
-    uploadthingSecret: "sk_live_xxx",
-  },
 });
