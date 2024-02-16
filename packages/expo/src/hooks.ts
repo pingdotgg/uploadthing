@@ -6,8 +6,8 @@ import { generatePermittedFileTypes } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
 const generateMediaTypes = (fileTypes: string[]) => {
-  const allowsImages = fileTypes.includes("image");
-  const allowsVideos = fileTypes.includes("video");
+  const allowsImages = fileTypes.some((t) => t.startsWith("image"));
+  const allowsVideos = fileTypes.some((t) => t.startsWith("video"));
 
   if (allowsImages && allowsVideos) return ImagePicker.MediaTypeOptions.All;
   if (allowsImages) return ImagePicker.MediaTypeOptions.Images;
