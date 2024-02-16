@@ -348,9 +348,10 @@ export class UTApi {
 
     const json = await this.requestUploadThing<{
       files: {
-        key: string;
         id: string;
         customId: string | null;
+        key: string;
+        name: string;
         status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
       }[];
     }>(
