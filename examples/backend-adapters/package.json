@@ -18,9 +18,9 @@
     "start": "concurrently \"npm run -w client start\" \"npm run -w server start\""
   },
   "dependencies": {
-    "@uploadthing/react": "6.2.3",
+    "@uploadthing/react": "6.2.4",
     "concurrently": "^8.2.1",
     "typescript": "^5.3.3",
-    "uploadthing": "^6.4.0"
+    "uploadthing": "^6.4.1"
   }
 }
