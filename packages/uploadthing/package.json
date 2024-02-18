@@ -132,7 +132,7 @@
     "@types/react": "18.2.55",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.4.5",
+    "bunchee": "^4.4.8",
     "eslint": "^8.56.0",
     "express": "^4.18.2",
     "fastify": "^4.23.2",

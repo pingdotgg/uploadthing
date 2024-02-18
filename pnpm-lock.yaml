@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  bunchee@4.4.5:
+  bunchee@4.4.8:
     hash: fqobhpxt7m2au3j2mth2bjpfii
     path: patches/bunchee@4.4.5.patch
 
@@ -713,8 +713,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -737,8 +737,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -780,8 +780,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -823,8 +823,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -903,8 +903,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -6017,7 +6017,7 @@ packages:
       '@vue/compiler-ssr': 3.4.14
       '@vue/shared': 3.4.14
       estree-walker: 2.0.2
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       postcss: 8.4.33
       source-map-js: 1.0.2
     dev: false
@@ -6856,8 +6856,8 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bunchee@4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3):
-    resolution: {integrity: sha512-PBqPDj58yw7XfDmhz+5XtuWXEg5puol1dBBI8kVgK3NbhcMTisZCe5rFP8v5TNoBVV/m8xfxx8N35Z7u1cSJCw==}
+  /bunchee@4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3):
+    resolution: {integrity: sha512-YfGENthKSPF94+vJqnV51yDwTv5r6YZoBISJBe6ZeD167QL+iwgpMk2IaZzLgawJGCcoybOqII5sRchALWHhEw==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
     peerDependencies:
