@@ -1,5 +1,11 @@
 # @uploadthing/dropzone
 
+## 0.1.3
+
+### Patch Changes
+
+- [#620](https://github.com/pingdotgg/uploadthing/pull/620) [`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(cjs bundling): force client splitting in .cjs output files
+
 ## 0.1.2
 
 ### Patch Changes
