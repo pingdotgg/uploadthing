@@ -1,3 +1,4 @@
+import { inspect } from "util";
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
 import { process } from "std-env";
@@ -73,15 +74,7 @@ function formatArgs(args: any[]) {
     if (typeof arg === "string") {
       return arg;
     }
-    try {
-      // prefer inspect over JSON.stringify because it handles circular references, prints classes etc
-      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/consistent-type-imports
-      const util = require("util") as typeof import("util");
-      return util.inspect(arg, { depth: 4 });
-    } catch {
-      // fallback to JSON.stringify if inspect fails e.g. if runtime doesn't have util module
-      return JSON.stringify(arg, null, 4);
-    }
+    return inspect(arg, { depth: 4 });
   });
 }
 

@@ -48,3 +48,4 @@ dist
 packages/*/*/
 !packages/*/src/
 !packages/*/test/
+!packages/*/shims/
