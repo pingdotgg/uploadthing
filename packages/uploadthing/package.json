@@ -111,6 +111,7 @@
     "next",
     "next-legacy",
     "server",
+    "shims",
     "tw"
   ],
   "publishConfig": {
