@@ -276,8 +276,9 @@ export class UTApi {
     const responseSchema = S.struct({
       files: S.array(
         S.struct({
-          key: S.string,
           id: S.string,
+          key: S.string,
+          name: S.string,
           status: S.literal(
             "Deletion Pending",
             "Failed",

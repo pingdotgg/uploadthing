@@ -9,17 +9,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "6.2.3",
+    "@uploadthing/react": "6.2.4",
     "next": "14.0.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-image-crop": "^10.1.5",
-    "uploadthing": "6.4.0"
+    "uploadthing": "6.4.1"
   },
   "devDependencies": {
     "@types/node": "^20.11.10",
-    "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14",
+    "@types/react": "18.2.55",
+    "@types/react-dom": "18.2.19",
     "typescript": "^5.3.3"
   }
 }

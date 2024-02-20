@@ -1,5 +1,17 @@
 # uploadthing
 
+## 6.4.1
+
+### Patch Changes
+
+- [#620](https://github.com/pingdotgg/uploadthing/pull/620) [`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(cjs bundling): force client splitting in .cjs output files
+
+- [#617](https://github.com/pingdotgg/uploadthing/pull/617) [`8ce67f7`](https://github.com/pingdotgg/uploadthing/commit/8ce67f74b56b34fbee5781743aa9bc9506ef8f27) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add `name` prop to `utapi.listFiles` return type
+
+- Updated dependencies [[`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668)]:
+  - @uploadthing/mime-types@0.2.4
+  - @uploadthing/shared@6.3.1
+
 ## 6.4.0
 
 ### Minor Changes

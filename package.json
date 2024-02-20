@@ -36,7 +36,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "bunchee@4.4.5": "patches/bunchee@4.4.5.patch"
+      "bunchee@4.4.8": "patches/bunchee@4.4.5.patch"
     }
   }
 }

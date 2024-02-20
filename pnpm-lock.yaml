@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  bunchee@4.4.5:
+  bunchee@4.4.8:
     hash: fqobhpxt7m2au3j2mth2bjpfii
     path: patches/bunchee@4.4.5.patch
 
@@ -54,12 +54,12 @@ importers:
     dependencies:
       '@radix-ui/react-accordion':
         specifier: ^1.1.2
-        version: 1.1.2(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
+        version: 1.1.2(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       '@scalar/api-reference':
         specifier: ^1.13.5
         version: 1.13.5(@codemirror/lang-html@6.4.8)(@codemirror/lang-java@6.0.1)(@codemirror/lang-javascript@6.2.1)(@codemirror/lang-json@6.0.1)(@codemirror/lang-python@6.1.3)(@codemirror/language@6.10.0)(@codemirror/legacy-modes@6.3.3)(@codemirror/state@6.4.0)(@codemirror/view@6.23.1)(@lezer/common@1.2.1)(@lezer/highlight@1.2.0)(@lezer/lr@1.4.0)(@uiw/codemirror-themes@4.21.21)(codemirror@6.0.1)(nanoid@5.0.4)(postcss@8.4.31)(typescript@5.3.3)(unified@11.0.4)(vue@3.4.15)
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../packages/react
       next:
         specifier: 14.0.1
@@ -77,18 +77,18 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../packages/uploadthing
       veaury:
         specifier: ^2.3.12
         version: 2.3.12(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.31)
@@ -102,7 +102,7 @@ importers:
   examples/backend-adapters:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       concurrently:
         specifier: ^8.2.1
@@ -111,13 +111,13 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: ^6.4.0
+        specifier: ^6.4.1
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../../packages/react
       react:
         specifier: 18.2.0
@@ -126,15 +126,15 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: ^6.4.0
+        specifier: ^6.4.1
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       '@vitejs/plugin-react-swc':
         specifier: ^3.5.0
         version: 3.5.0(vite@5.0.12)
@@ -175,7 +175,7 @@ importers:
         specifier: ^1.5.5
         version: 1.5.5
       uploadthing:
-        specifier: ^6.4.0
+        specifier: ^6.4.1
         version: link:../../../packages/uploadthing
     devDependencies:
       '@cloudflare/workers-types':
@@ -200,7 +200,7 @@ importers:
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -212,18 +212,18 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -235,9 +235,9 @@ importers:
         version: 8.1.0(astro@4.2.6)
       '@astrojs/react':
         specifier: ^3.0.9
-        version: 3.0.9(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(vite@5.0.12)
+        version: 3.0.9(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(vite@5.0.12)
       '@uploadthing/react':
-        specifier: ^6.2.3
+        specifier: ^6.2.4
         version: link:../../packages/react
       astro:
         specifier: ^4.2.4
@@ -249,20 +249,20 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: ^6.4.0
+        specifier: ^6.4.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
 
   examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -274,18 +274,18 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -317,7 +317,7 @@ importers:
         specifier: ^6.5.0
         version: 6.5.0
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -354,7 +354,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -366,7 +366,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -379,11 +379,11 @@ importers:
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.19.1
         version: 6.19.1(@typescript-eslint/parser@6.19.1)(eslint@8.56.0)(typescript@5.3.3)
@@ -412,7 +412,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -424,7 +424,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -437,11 +437,11 @@ importers:
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.19.1
         version: 6.19.1(@typescript-eslint/parser@6.19.1)(eslint@8.56.0)(typescript@5.3.3)
@@ -467,7 +467,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -485,7 +485,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -501,11 +501,11 @@ importers:
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.19.1
         version: 6.19.1(@typescript-eslint/parser@6.19.1)(eslint@8.56.0)(typescript@5.3.3)
@@ -531,7 +531,7 @@ importers:
         specifier: ^0.6.0
         version: 0.6.1(typescript@5.3.3)(zod@3.22.4)
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       better-sqlite3:
         specifier: ^8.6.0
@@ -552,7 +552,7 @@ importers:
         specifier: ^2.2.2
         version: 2.2.2(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
@@ -568,11 +568,11 @@ importers:
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.19.1
         version: 6.19.1(@typescript-eslint/parser@6.19.1)(eslint@8.56.0)(typescript@5.3.3)
@@ -595,7 +595,7 @@ importers:
   examples/with-react-image-crop:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -610,18 +610,18 @@ importers:
         specifier: ^10.1.5
         version: 10.1.5(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -638,18 +638,18 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
@@ -657,7 +657,7 @@ importers:
   examples/with-tailwindcss:
     dependencies:
       '@uploadthing/react':
-        specifier: 6.2.3
+        specifier: 6.2.4
         version: link:../../packages/react
       next:
         specifier: 14.0.1
@@ -669,18 +669,18 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       autoprefixer:
         specifier: 10.4.14
         version: 10.4.14(postcss@8.4.31)
@@ -704,8 +704,8 @@ importers:
         version: 0.6.0
     devDependencies:
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../../tooling/eslint-config
@@ -713,8 +713,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -737,8 +737,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -749,10 +749,10 @@ importers:
   packages/react:
     dependencies:
       '@uploadthing/dropzone':
-        specifier: ^0.1.2
+        specifier: ^0.1.3
         version: link:../dropzone
       '@uploadthing/shared':
-        specifier: ^6.3.0
+        specifier: ^6.3.1
         version: link:../shared
       attr-accept:
         specifier: ^2.2.2
@@ -771,11 +771,11 @@ importers:
         specifier: ^20.11.10
         version: 20.11.10
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@types/react-dom':
-        specifier: 18.2.14
-        version: 18.2.14
+        specifier: 18.2.19
+        version: 18.2.19
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../../tooling/eslint-config
@@ -783,8 +783,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -801,7 +801,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../uploadthing
       wait-on:
         specifier: ^7.2.0
@@ -826,14 +826,14 @@ importers:
         specifier: 0.2.0
         version: link:../../tooling/eslint-config
       '@uploadthing/mime-types':
-        specifier: 0.2.3
+        specifier: 0.2.4
         version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -847,10 +847,10 @@ importers:
         specifier: ^0.62.6
         version: 0.62.6(effect@2.3.5)(fast-check@3.15.0)
       '@uploadthing/dropzone':
-        specifier: ^0.1.2
+        specifier: ^0.1.3
         version: link:../dropzone
       '@uploadthing/shared':
-        specifier: ^6.3.0
+        specifier: ^6.3.1
         version: link:../shared
       tailwind-merge:
         specifier: ^1.14.0
@@ -878,7 +878,7 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: 6.4.0
+        specifier: 6.4.1
         version: link:../uploadthing
       wait-on:
         specifier: ^7.2.0
@@ -890,10 +890,10 @@ importers:
         specifier: ^0.62.6
         version: 0.62.6(effect@2.3.5)(fast-check@3.15.0)
       '@uploadthing/mime-types':
-        specifier: ^0.2.3
+        specifier: ^0.2.4
         version: link:../mime-types
       '@uploadthing/shared':
-        specifier: ^6.3.0
+        specifier: ^6.3.1
         version: link:../shared
       consola:
         specifier: ^3.2.3
@@ -912,8 +912,8 @@ importers:
         specifier: ^4.17.42
         version: 4.17.42
       '@types/react':
-        specifier: 18.2.33
-        version: 18.2.33
+        specifier: 18.2.55
+        version: 18.2.55
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../../tooling/eslint-config
@@ -921,8 +921,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
-        version: 4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
+        specifier: ^4.4.8
+        version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -1125,7 +1125,7 @@ packages:
       prismjs: 1.29.0
     dev: false
 
-  /@astrojs/react@3.0.9(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)(vite@5.0.12):
+  /@astrojs/react@3.0.9(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(vite@5.0.12):
     resolution: {integrity: sha512-31J5yF5p9yBFV1axBooLA9PB4B2+MYm7swWhtlezSsJiUNXRFo5Is9qI3teJ7cKgmaCv+ZA593Smskko0NGaDQ==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
@@ -1134,8 +1134,8 @@ packages:
       react: ^17.0.2 || ^18.0.0
       react-dom: ^17.0.2 || ^18.0.0
     dependencies:
-      '@types/react': 18.2.33
-      '@types/react-dom': 18.2.14
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.19
       '@vitejs/plugin-react': 4.2.1(vite@5.0.12)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -3992,7 +3992,7 @@ packages:
       react: '>=16'
     dependencies:
       '@types/mdx': 2.0.5
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
@@ -4418,7 +4418,7 @@ packages:
       '@babel/runtime': 7.22.3
     dev: false
 
-  /@radix-ui/react-accordion@1.1.2(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0):
+  /@radix-ui/react-accordion@1.1.2(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-fDG7jcoNKVjSK6yfmuAs0EnPDro0WMXIhMtXdTBWqEioVW206ku+4Lw07e+13lUkFkpoEQ2PdeMIAGpdqEAmDg==}
     peerDependencies:
       '@types/react': '*'
@@ -4433,21 +4433,21 @@ packages:
     dependencies:
       '@babel/runtime': 7.22.3
       '@radix-ui/primitive': 1.0.1
-      '@radix-ui/react-collapsible': 1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-collection': 1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-context': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-direction': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-id': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
-      '@types/react-dom': 18.2.14
+      '@radix-ui/react-collapsible': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-collection': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-direction': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-id': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.19
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@radix-ui/react-collapsible@1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0):
+  /@radix-ui/react-collapsible@1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-UBmVDkmR6IvDsloHVN+3rtx4Mi5TFvylYXpluuv0f37dtaz3H99bp8No0LGXRigVpl3UAT4l9j6bIchh42S/Gg==}
     peerDependencies:
       '@types/react': '*'
@@ -4462,20 +4462,20 @@ packages:
     dependencies:
       '@babel/runtime': 7.22.3
       '@radix-ui/primitive': 1.0.1
-      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-context': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-id': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-presence': 1.0.1(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
-      '@types/react-dom': 18.2.14
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-id': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-presence': 1.0.1(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-use-controllable-state': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.19
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@radix-ui/react-collection@1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0):
+  /@radix-ui/react-collection@1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-3SzW+0PW7yBBoQlT8wNcGtaxaD0XSu0uLUFgrtHY08Acx05TaHaOmVLR73c0j/cqpDy53KBMO7s0dx2wmOIDIA==}
     peerDependencies:
       '@types/react': '*'
@@ -4489,17 +4489,17 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-context': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0)
-      '@radix-ui/react-slot': 1.0.2(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
-      '@types/react-dom': 18.2.14
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-slot': 1.0.2(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.19
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@radix-ui/react-compose-refs@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-compose-refs@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-fDSBgd44FKHa1FRMU59qBMPFcl2PZE+2nmqunj+BWFyYYjnhIDWL2ItDs3rrbJDQOtzt5nIebLCQc4QRfz6LJw==}
     peerDependencies:
       '@types/react': '*'
@@ -4509,11 +4509,11 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-context@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-context@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-ebbrdFoYTcuZ0v4wG5tedGnp9tzcV8awzsxYph7gXUyvnNLuTIcCk1q17JEbnVhXAKG9oX3KtchwiMIAYp9NLg==}
     peerDependencies:
       '@types/react': '*'
@@ -4523,11 +4523,11 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-direction@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-direction@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-RXcvnXgyvYvBEOhCBuddKecVkoMiI10Jcm5cTI7abJRAHYfFxeu+FBQs/DvdxSYucxR5mna0dNsL6QFlds5TMA==}
     peerDependencies:
       '@types/react': '*'
@@ -4537,11 +4537,11 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-id@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-id@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-tI7sT/kqYp8p96yGWY1OAnLHrqDgzHefRBKQ2YAkBS5ja7QLcZ9Z/uY7bEjPUatf8RomoXM8/1sMj1IJaE5UzQ==}
     peerDependencies:
       '@types/react': '*'
@@ -4551,12 +4551,12 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
+      '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-presence@1.0.1(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0):
+  /@radix-ui/react-presence@1.0.1(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-UXLW4UAbIY5ZjcvzjfRFo5gxva8QirC9hF7wRE4U5gz+TP0DbRk+//qyuAQ1McDxBt1xNMBTaciFGvEmJvAZCg==}
     peerDependencies:
       '@types/react': '*'
@@ -4570,15 +4570,15 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
-      '@types/react-dom': 18.2.14
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-use-layout-effect': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.19
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@radix-ui/react-primitive@1.0.3(@types/react-dom@18.2.14)(@types/react@18.2.33)(react-dom@18.2.0)(react@18.2.0):
+  /@radix-ui/react-primitive@1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-yi58uVyoAcK/Nq1inRY56ZSjKypBNKTa/1mcL8qdl6oJeEaDbOldlzrGn7P6Q3Id5d+SYNGc5AJgc4vGhjs5+g==}
     peerDependencies:
       '@types/react': '*'
@@ -4592,14 +4592,14 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@radix-ui/react-slot': 1.0.2(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
-      '@types/react-dom': 18.2.14
+      '@radix-ui/react-slot': 1.0.2(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.19
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@radix-ui/react-slot@1.0.2(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-slot@1.0.2(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-YeTpuq4deV+6DusvVUW4ivBgnkHwECUu0BiN43L5UCDFgdhsRUWAghhTF5MbvNTPzmiFOx90asDSUjWuCNapwg==}
     peerDependencies:
       '@types/react': '*'
@@ -4609,12 +4609,12 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
+      '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-use-callback-ref@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-use-callback-ref@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-D94LjX4Sp0xJFVaoQOd3OO9k7tpBYNOXdVhkltUbGv2Qb9OXdrg/CpsjlZv7ia14Sylv398LswWBVVu5nqKzAQ==}
     peerDependencies:
       '@types/react': '*'
@@ -4624,11 +4624,11 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-use-controllable-state@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-use-controllable-state@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-Svl5GY5FQeN758fWKrjM6Qb7asvXeiZltlT4U2gVfl8Gx5UAv2sMR0LWo8yhsIZh2oQ0eFdZ59aoOOMV7b47VA==}
     peerDependencies:
       '@types/react': '*'
@@ -4638,12 +4638,12 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.33)(react@18.2.0)
-      '@types/react': 18.2.33
+      '@radix-ui/react-use-callback-ref': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
-  /@radix-ui/react-use-layout-effect@1.0.1(@types/react@18.2.33)(react@18.2.0):
+  /@radix-ui/react-use-layout-effect@1.0.1(@types/react@18.2.55)(react@18.2.0):
     resolution: {integrity: sha512-v/5RegiJWYdoCvMnITBkNNx6bCj20fiaJnWtRkU18yITptraXjffz5Qbn05uOiQnOvi+dbkznkoaMltz1GnszQ==}
     peerDependencies:
       '@types/react': '*'
@@ -4653,7 +4653,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.3
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
       react: 18.2.0
     dev: false
 
@@ -5720,17 +5720,17 @@ packages:
   /@types/range-parser@1.2.7:
     resolution: {integrity: sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==}
 
-  /@types/react-dom@18.2.14:
-    resolution: {integrity: sha512-V835xgdSVmyQmI1KLV2BEIUgqEuinxp9O4G6g3FqO/SqLac049E53aysv0oEFD2kHfejeKU+ZqL2bcFWj9gLAQ==}
+  /@types/react-dom@18.2.19:
+    resolution: {integrity: sha512-aZvQL6uUbIJpjZk4U8JZGbau9KDeAwMfmhyWorxgBkqDIEf6ROjRozcmPIicqsUwPUjbkDfHKgGee1Lq65APcA==}
     dependencies:
-      '@types/react': 18.2.33
+      '@types/react': 18.2.55
 
-  /@types/react@18.2.33:
-    resolution: {integrity: sha512-v+I7S+hu3PIBoVkKGpSYYpiBT1ijqEzWpzQD62/jm4K74hPpSP7FF9BnKG6+fg2+62weJYkkBWDJlZt5JO/9hg==}
+  /@types/react@18.2.55:
+    resolution: {integrity: sha512-Y2Tz5P4yz23brwm2d7jNon39qoAtMMmalOQv6+fEFt1mT+FcM3D841wDpoUvFXhaYenuROCy3FZYqdTjM7qVyA==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
-      csstype: 3.1.2
+      csstype: 3.1.3
 
   /@types/resolve@1.20.2:
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -6045,7 +6045,7 @@ packages:
       '@vue/compiler-ssr': 3.4.14
       '@vue/shared': 3.4.14
       estree-walker: 2.0.2
-      magic-string: 0.30.5
+      magic-string: 0.30.6
       postcss: 8.4.33
       source-map-js: 1.0.2
     dev: false
@@ -6884,8 +6884,8 @@ packages:
     resolution: {integrity: sha512-uYBjakWipfaO/bXI7E8rq6kpwHRZK5cNYrUv2OzZSI/FvmdMyXJ2tG9dKcjEC5YHmHpUAwsargWIZNWdxb/bnQ==}
     dev: false
 
-  /bunchee@4.4.5(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3):
-    resolution: {integrity: sha512-PBqPDj58yw7XfDmhz+5XtuWXEg5puol1dBBI8kVgK3NbhcMTisZCe5rFP8v5TNoBVV/m8xfxx8N35Z7u1cSJCw==}
+  /bunchee@4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3):
+    resolution: {integrity: sha512-YfGENthKSPF94+vJqnV51yDwTv5r6YZoBISJBe6ZeD167QL+iwgpMk2IaZzLgawJGCcoybOqII5sRchALWHhEw==}
     engines: {node: '>= 18.0.0'}
     hasBin: true
     peerDependencies:
@@ -7474,7 +7474,6 @@ packages:
 
   /csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
-    dev: false
 
   /csv-generate@3.4.3:
     resolution: {integrity: sha512-w/T+rqR0vwvHqWs/1ZyMDWtHHSJaN06klRqJXBEpDJaM/+dZkso0OKh1VcuuYvK3XM53KysVNq8Ko/epCK8wOw==}
