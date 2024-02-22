@@ -7,6 +7,7 @@ import {
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "./constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type {
   MPUResponse,
@@ -114,6 +115,7 @@ export const DANGEROUS__uploadFiles = async <
       headers: {
         "Content-Type": "application/json",
         "x-uploadthing-package": opts.package,
+        "x-uploadthing-version": UPLOADTHING_VERSION,
       },
     },
   ).then(async (res) => {
