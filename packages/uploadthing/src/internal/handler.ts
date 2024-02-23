@@ -506,7 +506,9 @@ export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
   return () => {
     const permissions = objectKeys(opts.router).map((slug) => {
       const route = opts.router[slug];
-      const config = fillInputRouteConfig(route._def.routerConfig);
+      const config = Effect.runSync(
+        fillInputRouteConfig(route._def.routerConfig),
+      );
       return {
         slug,
         config,
