@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+import { TaggedError } from "effect/Data";
 import { process } from "std-env";
 
 import { logger } from "../logger";
@@ -9,7 +11,20 @@ type IncomingMessageLike = {
   body?: any;
 };
 
-function parseURL(req: IncomingMessageLike): URL {
+class InvalidURL extends TaggedError("InvalidURL")<{
+  reason: string;
+}> {
+  constructor(attemptedUrl: string, base?: string) {
+    logger.error(
+      `Failed to parse URL from request. '${attemptedUrl}' is not a valid URL with base '${base}'.`,
+    );
+    super({
+      reason: `Failed to parse URL from request. '${attemptedUrl}' is not a valid URL with base '${base}'.`,
+    });
+  }
+}
+
+function parseURL(req: IncomingMessageLike) {
   const headers = req.headers;
   let relativeUrl = req.url ?? "/";
   if ("baseUrl" in req && typeof req.baseUrl === "string") {
@@ -20,24 +35,16 @@ function parseURL(req: IncomingMessageLike): URL {
   const host = headers?.["x-forwarded-host"] ?? headers?.host;
 
   if (typeof proto !== "string" || typeof host !== "string") {
-    try {
-      return new URL(relativeUrl, process.env.UPLOADTHING_URL);
-    } catch (e) {
-      logger.error(
-        `Failed to parse URL from request. No headers found and env.UPLOADTHING_URL is not a valid URL.`,
-      );
-      throw e;
-    }
+    return Effect.try({
+      try: () => new URL(relativeUrl, process.env.UPLOADTHING_URL),
+      catch: () => new InvalidURL(relativeUrl, process.env.UPLOADTHING_URL),
+    });
   }
 
-  try {
-    return new URL(`${proto}://${host}${relativeUrl}`);
-  } catch (e) {
-    logger.error(
-      `Failed to parse URL from request. '${proto}://${host}${relativeUrl}' is not a valid URL.`,
-    );
-    throw e;
-  }
+  return Effect.try({
+    try: () => new URL(`${proto}://${host}${relativeUrl}`),
+    catch: () => new InvalidURL(`${proto}://${host}${relativeUrl}`),
+  });
 }
 
 export function toWebRequest(req: IncomingMessageLike, body?: any) {
@@ -45,9 +52,16 @@ export function toWebRequest(req: IncomingMessageLike, body?: any) {
   const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
   const method = req.method ?? "GET";
   const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
-  return new Request(parseURL(req), {
-    method,
-    headers: req.headers as HeadersInit,
-    ...(allowsBody ? { body: bodyStr } : {}),
-  });
+
+  return parseURL(req).pipe(
+    Effect.catchTag("InvalidURL", (e) => Effect.die(e)),
+    Effect.andThen(
+      (url) =>
+        new Request(url, {
+          method,
+          headers: req.headers as HeadersInit,
+          ...(allowsBody ? { body: bodyStr } : {}),
+        }),
+    ),
+  );
 }

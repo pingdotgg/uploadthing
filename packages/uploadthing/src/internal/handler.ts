@@ -46,7 +46,7 @@ import {
 } from "./validate-request-input";
 
 type RequestHandlerInput<TArgs extends AnyMiddlewareFnArgs> = {
-  req: Request;
+  req: Request | Effect.Effect<Request>;
   middlewareArgs: TArgs;
 };
 type RequestHandlerOutput = Effect.Effect<
@@ -98,8 +98,10 @@ export const buildRequestHandler =
   ): RequestHandler<Args> =>
   (input) =>
     Effect.gen(function* ($) {
+      const request =
+        input.req instanceof Request ? input.req : yield* $(input.req);
       const { slug, uploadable, hook, action } = yield* $(
-        parseAndValidateRequest({ req: input.req, opts, adapter }),
+        parseAndValidateRequest({ req: request, opts, adapter }),
       );
 
       const { isDev = isDevelopment } = opts.config ?? {};
@@ -111,7 +113,7 @@ export const buildRequestHandler =
         // This is when we receive the webhook from uploadthing
         return yield* $(
           handleCallbackRequest({
-            req: input.req,
+            req: request,
             uploadable,
           }),
         );
@@ -121,7 +123,7 @@ export const buildRequestHandler =
         case "upload": {
           return yield* $(
             handleUploadAction({
-              req: input.req,
+              req: request,
               middlewareArgs: input.middlewareArgs,
               uploadable,
               config: opts.config,
@@ -133,14 +135,14 @@ export const buildRequestHandler =
         case "multipart-complete": {
           return yield* $(
             handleMultipartCompleteAction({
-              req: input.req,
+              req: request,
             }),
           );
         }
         case "failure": {
           return yield* $(
             handleMultipartFailureAction({
-              req: input.req,
+              req: request,
               uploadable,
             }),
           );
