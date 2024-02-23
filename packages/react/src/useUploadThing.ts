@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import { semverLite, UploadThingError } from "@uploadthing/shared";
 import {
   DANGEROUS__uploadFiles,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
 } from "uploadthing/client";
+import utPkgJson from "uploadthing/package.json";
 import type {
   DistributiveOmit,
   FileRouter,
@@ -14,6 +15,7 @@ import type {
   inferErrorShape,
 } from "uploadthing/server";
 
+import { peerDependencies } from "../package.json";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -41,6 +43,17 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
+  console.log(
+    "Checking semver",
+    peerDependencies.uploadthing,
+    utPkgJson.version,
+  );
+  if (!semverLite(peerDependencies.uploadthing, utPkgJson.version)) {
+    console.error(
+      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${utPkgJson.version}" is installed`,
+    );
+  }
+
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,

@@ -264,3 +264,36 @@ export function contentDisposition(
     `filename*=UTF-8''${encodeURI(fileName)}`,
   ].join("; ");
 }
+
+export function semverLite(required: string, toCheck: string) {
+  // Pull out numbers from strings like `6.0.0`, `^6.4`, `~6.4.0`
+  const semverRegex = /(\d+)\.?(\d+)?\.?(\d+)?/;
+  const requiredMatch = required.match(semverRegex);
+  if (!requiredMatch?.[0]) {
+    throw new Error(`Invalid semver requirement: ${required}`);
+  }
+  const toCheckMatch = toCheck.match(semverRegex);
+  if (!toCheckMatch?.[0]) {
+    throw new Error(`Invalid semver to check: ${toCheck}`);
+  }
+
+  const [_1, rMajor, rMinor, rPatch] = requiredMatch;
+  const [_2, cMajor, cMinor, cPatch] = toCheckMatch;
+
+  if (required.startsWith("^")) {
+    // Major must be equal, minor must be greater or equal
+    if (rMajor !== cMajor) return false;
+    if (rMinor > cMinor) return false;
+    return true;
+  }
+
+  if (required.startsWith("~")) {
+    // Major must be equal, minor must be equal
+    if (rMajor !== cMajor) return false;
+    if (rMinor !== cMinor) return false;
+    return true;
+  }
+
+  // Exact match
+  return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
+}
