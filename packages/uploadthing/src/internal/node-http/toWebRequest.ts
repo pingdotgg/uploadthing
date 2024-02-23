@@ -1,15 +1,51 @@
+import { process } from "std-env";
+
+import { logger } from "../logger";
+
 type IncomingMessageLike = {
   method?: string | undefined;
+  url?: string | undefined;
   headers?: Record<string, string | string[] | undefined>;
   body?: any;
 };
 
-export function toWebRequest(req: IncomingMessageLike, url: URL, body?: any) {
+function parseURL(req: IncomingMessageLike): URL {
+  const headers = req.headers;
+  let relativeUrl = req.url ?? "/";
+  if ("baseUrl" in req && typeof req.baseUrl === "string") {
+    relativeUrl = req.baseUrl + relativeUrl;
+  }
+
+  const proto = headers?.["x-forwarded-proto"] ?? "http";
+  const host = headers?.["x-forwarded-host"] ?? headers?.host;
+
+  if (typeof proto !== "string" || typeof host !== "string") {
+    try {
+      return new URL(relativeUrl, process.env.UPLOADTHING_URL);
+    } catch (e) {
+      logger.error(
+        `Failed to parse URL from request. No headers found and env.UPLOADTHING_URL is not a valid URL.`,
+      );
+      throw e;
+    }
+  }
+
+  try {
+    return new URL(`${proto}://${host}${relativeUrl}`);
+  } catch (e) {
+    logger.error(
+      `Failed to parse URL from request. '${proto}://${host}${relativeUrl}' is not a valid URL.`,
+    );
+    throw e;
+  }
+}
+
+export function toWebRequest(req: IncomingMessageLike, body?: any) {
   body ??= req.body;
   const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
   const method = req.method ?? "GET";
   const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
-  return new Request(url, {
+  return new Request(parseURL(req), {
     method,
     headers: req.headers as HeadersInit,
     ...(allowsBody ? { body: bodyStr } : {}),

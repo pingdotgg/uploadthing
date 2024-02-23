@@ -11,6 +11,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
@@ -139,7 +140,9 @@ export const DANGEROUS__uploadFiles = <
   //       The `genUploader` can be the one who provides the service and the Promise-inferface for the public
   const layer = Layer.succeed(fetchContext, {
     fetch: globalThis.fetch.bind(globalThis),
-    baseHeaders: {},
+    baseHeaders: {
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+    },
   });
 
   return uploadFiles.pipe(

@@ -150,13 +150,17 @@ export function UploadDropzone<
       if (document.activeElement !== rootRef.current) return;
 
       const pastedFiles = getFilesFromClipboardEvent(event);
-      if (!pastedFiles) return;
+      if (!pastedFiles?.length) return;
 
-      setFiles((prev) => [...prev, ...pastedFiles]);
+      let filesToUpload = pastedFiles;
+      setFiles((prev) => {
+        filesToUpload = [...prev, ...pastedFiles];
+        return filesToUpload;
+      });
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        void startUpload(files, input);
+        void startUpload(filesToUpload, input);
       }
     };
 

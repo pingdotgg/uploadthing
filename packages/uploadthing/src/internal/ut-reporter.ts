@@ -5,6 +5,7 @@ import type * as _unused from "effect/Types";
 import type { FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type {
   MultipartCompleteActionPayload,
@@ -59,6 +60,7 @@ export const createUTReporter =
           headers: {
             "Content-Type": "application/json",
             "x-uploadthing-package": cfg.package,
+            "x-uploadthing-version": UPLOADTHING_VERSION,
           },
         }),
       );

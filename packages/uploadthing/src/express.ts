@@ -68,16 +68,10 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = new URL(
-      req.baseUrl + req.url, // baseUrl is the mount point for the router, url is the path
-      `${proto}://${req.headers.host}`,
-    );
-
     const response = await runRequestHandlerAsync(
       requestHandler,
       {
-        req: toWebRequest(req, url, bodyResult.data),
+        req: toWebRequest(req, bodyResult.data),
         middlewareArgs: { req, res, event: undefined },
       },
       opts.config,

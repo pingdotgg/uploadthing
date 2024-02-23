@@ -24,6 +24,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import { UPLOADTHING_VERSION } from "./constants";
 import { getApiKey } from "./get-api-key";
 import { logger } from "./logger";
 import type { UploadActionPayload } from "./shared-schemas";
@@ -105,15 +106,25 @@ export const parseAndValidateRequest = (opts: {
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
 
+    const clientVersion = headers.get("x-uploadthing-version");
+    if (clientVersion !== UPLOADTHING_VERSION) {
+      logger.error("Client version mismatch");
+      return yield* $(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Client version mismatch",
+          cause: `Serve version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
+        }),
+      );
+    }
+
     if (!slug) {
       logger.error("No slug provided in params:", params);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "No slug provided in params",
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "No slug provided in params",
+        }),
       );
     }
 
@@ -121,38 +132,32 @@ export const parseAndValidateRequest = (opts: {
       const msg = `Expected slug to be of type 'string', got '${typeof slug}'`;
       logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "`slug` must be a string",
-            cause: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "`slug` must be a string",
+          cause: msg,
+        }),
       );
     }
     if (actionType && typeof actionType !== "string") {
       const msg = `Expected actionType to be of type 'string', got '${typeof actionType}'`;
       logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "`actionType` must be a string",
-            cause: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "`actionType` must be a string",
+          cause: msg,
+        }),
       );
     }
     if (uploadthingHook && typeof uploadthingHook !== "string") {
       const msg = `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`;
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "`uploadthingHook` must be a string",
-            cause: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "`uploadthingHook` must be a string",
+          cause: msg,
+        }),
       );
     }
 
@@ -161,13 +166,11 @@ export const parseAndValidateRequest = (opts: {
       const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
       logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "MISSING_ENV",
-            message: `No secret provided`,
-            cause: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "MISSING_ENV",
+          message: `No secret provided`,
+          cause: msg,
+        }),
       );
     }
 
@@ -175,13 +178,11 @@ export const parseAndValidateRequest = (opts: {
       const msg = `Invalid secret provided, UPLOADTHING_SECRET must start with 'sk_'`;
       logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "MISSING_ENV",
-            message: "Invalid API key. API keys must start with 'sk_'.",
-            cause: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "MISSING_ENV",
+          message: "Invalid API key. API keys must start with 'sk_'.",
+          cause: msg,
+        }),
       );
     }
 
@@ -189,14 +190,12 @@ export const parseAndValidateRequest = (opts: {
       const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utFrontendPackage}'`;
       logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message:
-              "`x-uploadthing-package` must be a string. eg. '@uploadthing/react'",
-            cause: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message:
+            "`x-uploadthing-package` must be a string. eg. '@uploadthing/react'",
+          cause: msg,
+        }),
       );
     }
 
@@ -205,12 +204,10 @@ export const parseAndValidateRequest = (opts: {
       const msg = `No file route found for slug ${slug}`;
       logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "NOT_FOUND",
-            message: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "NOT_FOUND",
+          message: msg,
+        }),
       );
     }
 
@@ -224,13 +221,11 @@ export const parseAndValidateRequest = (opts: {
         .replace(/,(?!.*,)/, " or")} but got "${actionType}"`;
       logger.error("Invalid action type.", msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            cause: `Invalid action type ${actionType}`,
-            message: msg,
-          }),
-        ),
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          cause: `Invalid action type ${actionType}`,
+          message: msg,
+        }),
       );
     }
 
