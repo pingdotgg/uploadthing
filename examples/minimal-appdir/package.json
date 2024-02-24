@@ -9,16 +9,16 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "6.2.4",
-    "next": "14.0.1",
+    "@uploadthing/react": "6.2.3",
+    "next": "14.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "6.4.1"
+    "uploadthing": "6.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.10",
-    "@types/react": "18.2.55",
-    "@types/react-dom": "18.2.19",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
     "typescript": "^5.3.3"
   }
 }
