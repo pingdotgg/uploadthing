@@ -20,7 +20,7 @@ export const baseHeaders = {
   "x-uploadthing-package": "vitest",
 };
 
-export const mockExternalRequests = (): FetchEsque => async (_url, init) => {
+export const mockExternalRequests: FetchEsque = async (_url, init) => {
   fetchMock(_url, init);
   if (typeof _url !== "string") throw new Error("eh?");
 

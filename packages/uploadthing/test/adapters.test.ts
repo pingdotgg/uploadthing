@@ -37,7 +37,7 @@ describe("adapters:h3", async () => {
     router,
     config: {
       uploadthingSecret: "sk_live_test",
-      fetch: mockExternalRequests(),
+      fetch: mockExternalRequests,
     },
   });
 

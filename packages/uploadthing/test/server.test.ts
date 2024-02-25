@@ -51,7 +51,7 @@ const handlers = createRouteHandler({
   config: {
     uploadthingSecret: "sk_live_test123",
     logLevel: "silent",
-    fetch: mockExternalRequests(),
+    fetch: mockExternalRequests,
   },
 });
 beforeEach(() => fetchMock.mockClear());
