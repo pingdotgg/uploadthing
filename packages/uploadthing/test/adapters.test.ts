@@ -108,19 +108,18 @@ describe("adapters:server", async () => {
   });
 
   it("gets Request in middleware args", async () => {
-    const res = await handlers.POST(
-      new Request(createApiUrl("middleware", "upload"), {
-        method: "POST",
-        headers: baseHeaders,
-        body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
-        }),
+    const req = new Request(createApiUrl("middleware", "upload"), {
+      method: "POST",
+      headers: baseHeaders,
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48 }],
       }),
-    );
+    });
+    const res = await handlers.POST(req);
     expect(res.status).toBe(200);
 
     expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].req).toBeInstanceOf(Request);
+    expect(middlewareMock.mock.calls[0][0].req).toBe(req);
     expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
 
     // Should proceed to have requested URLs
@@ -169,19 +168,18 @@ describe("adapters:next", async () => {
   });
 
   it("gets NextRequest in middleware args", async () => {
-    const res = await handlers.POST(
-      new NextRequest(createApiUrl("middleware", "upload"), {
-        method: "POST",
-        headers: baseHeaders,
-        body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
-        }),
+    const req = new NextRequest(createApiUrl("middleware", "upload"), {
+      method: "POST",
+      headers: baseHeaders,
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48 }],
       }),
-    );
+    });
+    const res = await handlers.POST(req);
     expect(res.status).toBe(200);
 
     expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].req).toBeInstanceOf(NextRequest);
+    expect(middlewareMock.mock.calls[0][0].req).toBe(req);
     expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
 
     // Should proceed to have requested URLs
@@ -280,8 +278,8 @@ describe("adapters:next-legacy", async () => {
     expect(status).toHaveBeenCalledWith(200);
 
     expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].req).toHaveProperty("query");
-    expect(middlewareMock.mock.calls[0][0].res).toHaveProperty("json");
+    expect(middlewareMock.mock.calls[0][0].req).toBe(req);
+    expect(middlewareMock.mock.calls[0][0].res).toBe(res);
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
