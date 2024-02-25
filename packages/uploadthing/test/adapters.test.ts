@@ -34,7 +34,7 @@ describe("adapters:h3", async () => {
         expect(opts.res).toBeUndefined();
         expectTypeOf<undefined>(opts.res);
 
-        //   expect(opts.input).toBeUndefined();
+        expect(opts.input).toBeUndefined();
         expectTypeOf<undefined>(opts.input);
 
         return {};
@@ -102,7 +102,7 @@ describe("adapters:server", async () => {
         expect(opts.res).toBeUndefined();
         expectTypeOf<undefined>(opts.res);
 
-        //   expect(opts.input).toBeUndefined();
+        expect(opts.input).toBeUndefined();
         expectTypeOf<undefined>(opts.input);
 
         return {};
@@ -165,7 +165,7 @@ describe("adapters:next", async () => {
         expect(opts.res).toBeUndefined();
         expectTypeOf<undefined>(opts.res);
 
-        //   expect(opts.input).toBeUndefined();
+        expect(opts.input).toBeUndefined();
         expectTypeOf<undefined>(opts.input);
 
         return {};
@@ -230,7 +230,7 @@ describe("adapters:next-legacy", async () => {
         expect(typeof opts.res.send).toBe("function");
         expectTypeOf<NextApiResponse>(opts.res);
 
-        //   expect(opts.input).toBeUndefined();
+        expect(opts.input).toBeUndefined();
         expectTypeOf<undefined>(opts.input);
 
         return {};
