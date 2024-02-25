@@ -41,7 +41,7 @@ describe("h3", async () => {
     },
   });
 
-  it("gets expected arguments in middleware", async () => {
+  it("gets H3Event in middleware args", async () => {
     // FIXME: Didn't know how to declaratively create a H3Event to
     // call the handler with directly, so I used the web-handler converter
     // and sent in a Request and let H3 create one for me 🤷‍♂️
