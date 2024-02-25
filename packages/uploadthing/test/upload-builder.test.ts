@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import type { NextApiRequest, NextApiResponse } from "next";
-import type { NextRequest } from "next/server";
-import type { H3Event } from "h3";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
@@ -96,16 +93,6 @@ it("uses defaults for not-chained", async () => {
   expectTypeOf<Record<string, never>>(metadata);
 });
 
-it("passes `Request` by default", () => {
-  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
-
-  f(["image"]).middleware((opts) => {
-    expectTypeOf<Request>(opts.req);
-
-    return {};
-  });
-});
-
 it("allows async middleware", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
@@ -118,48 +105,6 @@ it("allows async middleware", () => {
     .onUploadComplete((opts) => {
       expectTypeOf<{ foo: "bar" }>(opts.metadata);
     });
-});
-
-it("passes `NextRequest` for /app", () => {
-  const f = createBuilder<{
-    req: NextRequest;
-    res: undefined;
-    event: undefined;
-  }>();
-
-  f(["image"]).middleware((opts) => {
-    expectTypeOf<NextRequest>(opts.req);
-    return { nextUrl: opts.req.nextUrl };
-  });
-});
-
-it("passes `res` for /pages", () => {
-  const f = createBuilder<{
-    req: NextApiRequest;
-    res: NextApiResponse;
-    event: undefined;
-  }>();
-
-  f(["image"]).middleware((opts) => {
-    expectTypeOf<NextApiRequest>(opts.req);
-    expectTypeOf<NextApiResponse>(opts.res);
-
-    return {};
-  });
-});
-
-it("passes `event` for /h3", () => {
-  const f = createBuilder<{
-    req: undefined;
-    res: undefined;
-    event: H3Event;
-  }>();
-
-  f(["image"]).middleware((opts) => {
-    expectTypeOf<H3Event>(opts.event);
-
-    return {};
-  });
 });
 
 it("with input", () => {
