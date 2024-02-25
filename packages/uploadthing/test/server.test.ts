@@ -218,7 +218,7 @@ it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
       method: "POST",
       headers: baseHeaders,
       body: JSON.stringify({
-        files: [{ name: "foo.png", size: 5 * 1024 * 1024 }],
+        files: [{ name: "foo.png", size: 3 * 1024 * 1024 }],
       }),
     }),
   );
