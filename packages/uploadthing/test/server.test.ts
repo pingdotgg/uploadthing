@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import { beforeEach, expect, expectTypeOf, it, vi } from "vitest";
 import { z } from "zod";
 
-import { UPLOADTHING_VERSION } from "uploadthing/constants";
-
-import { createAPIRequestUrl } from "../src/internal/ut-reporter";
-import type { ActionType } from "../src/server";
 import { createRouteHandler, createUploadthing } from "../src/server";
+import {
+  baseHeaders,
+  createApiUrl,
+  mockExternalRequests,
+  noop,
+} from "./__test-helpers";
 
 const f = createUploadthing({
   errorFormatter: (e) => ({
@@ -33,15 +34,15 @@ const router = {
         throw new Error("didn't get header");
       return { should: "never return" };
     })
-    .onUploadComplete(() => {}),
+    .onUploadComplete(noop),
 
   imageUploader: f({
     image: { maxFileCount: 1, maxFileSize: "2MB" },
-  }).onUploadComplete(() => {}),
+  }).onUploadComplete(noop),
 
   withInput: f({ blob: {} })
     .input(z.object({ foo: z.enum(["BAR", "BAZ"]) }))
-    .onUploadComplete(() => {}),
+    .onUploadComplete(noop),
 };
 
 const fetchMock = vi.fn();
@@ -50,41 +51,10 @@ const handlers = createRouteHandler({
   config: {
     uploadthingSecret: "sk_live_test123",
     logLevel: "silent",
-    fetch: async (_url, init) => {
-      fetchMock(_url, init);
-      if (typeof _url !== "string") throw new Error("eh?");
-
-      // If request is going to uploadthing, mock the response
-      const url = new URL(_url);
-      if (url.host === "uploadthing.com") {
-        switch (url.pathname) {
-          case "/api/prepareUpload": {
-            return Response.json({});
-          }
-          case "/api/completeMultipart": {
-            return Response.json({});
-          }
-        }
-      }
-
-      // Else forward the request
-      // eslint-disable-next-line no-restricted-globals
-      return fetch(url, init);
-    },
+    fetch: mockExternalRequests(),
   },
 });
 beforeEach(() => fetchMock.mockClear());
-
-const createApiUrl = (slug: string, action: ActionType) =>
-  createAPIRequestUrl({
-    url: new URL("https://not-used.com"),
-    slug,
-    actionType: action,
-  });
-const baseHeaders = {
-  "x-uploadthing-version": UPLOADTHING_VERSION,
-  "x-uploadthing-package": "vitest",
-};
 
 it("404s for invalid slugs", async () => {
   const res = await handlers.POST(
