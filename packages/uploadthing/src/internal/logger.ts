@@ -4,7 +4,7 @@ import { process } from "std-env";
 
 import { isObject } from "@uploadthing/shared";
 
-export type LogLevel = "silent" | "error" | "warn" | "info" | "debug" | "trace";
+export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 
 const colorize = (str: string, level: LogType) => {
   // TODO: Maybe check is shell supports colors

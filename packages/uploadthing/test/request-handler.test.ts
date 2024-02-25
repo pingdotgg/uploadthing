@@ -51,6 +51,7 @@ const handlers = createRouteHandler({
   router,
   config: {
     uploadthingSecret: "sk_live_test123",
+    // @ts-expect-error - annoying to see error logs
     logLevel: "silent",
     fetch: mockExternalRequests,
   },
