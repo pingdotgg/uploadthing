@@ -26,13 +26,11 @@ describe("adapters:h3", async () => {
     middleware: f({ blob: {} })
       .middleware((opts) => {
         middlewareMock(opts);
-        expect(opts.event).toBeInstanceOf(H3Event);
         expectTypeOf<{
           event: H3Event;
           req: undefined;
           res: undefined;
         }>(opts);
-
         return {};
       })
       .onUploadComplete(uploadCompleteMock),
@@ -60,6 +58,10 @@ describe("adapters:h3", async () => {
       }),
     );
     expect(res.status).toBe(200);
+
+    expect(middlewareMock.mock.calls[0][0].event).toBeInstanceOf(H3Event);
+    expect(middlewareMock.mock.calls[0][0].req).toBeUndefined();
+    expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -90,13 +92,11 @@ describe("adapters:server", async () => {
     middleware: f({ blob: {} })
       .middleware((opts) => {
         middlewareMock(opts);
-        expect(opts.req).toBeInstanceOf(Request);
         expectTypeOf<{
           event: undefined;
           req: Request;
           res: undefined;
         }>(opts);
-
         return {};
       })
       .onUploadComplete(uploadCompleteMock),
@@ -110,7 +110,7 @@ describe("adapters:server", async () => {
     },
   });
 
-  it("gets NextRequest in middleware args", async () => {
+  it("gets Request in middleware args", async () => {
     const res = await handlers.POST(
       new Request(createApiUrl("middleware", "upload"), {
         method: "POST",
@@ -121,6 +121,10 @@ describe("adapters:server", async () => {
       }),
     );
     expect(res.status).toBe(200);
+
+    expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
+    expect(middlewareMock.mock.calls[0][0].req).toBeInstanceOf(Request);
+    expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -149,13 +153,11 @@ describe("adapters:next", async () => {
     middleware: f({ blob: {} })
       .middleware((opts) => {
         middlewareMock(opts);
-        expect(opts.req).toBeInstanceOf(NextRequest);
         expectTypeOf<{
           event: undefined;
           req: NextRequest;
           res: undefined;
         }>(opts);
-
         return {};
       })
       .onUploadComplete(uploadCompleteMock),
@@ -180,6 +182,10 @@ describe("adapters:next", async () => {
       }),
     );
     expect(res.status).toBe(200);
+
+    expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
+    expect(middlewareMock.mock.calls[0][0].req).toBeInstanceOf(NextRequest);
+    expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -210,14 +216,11 @@ describe("adapters:next-legacy", async () => {
     middleware: f({ blob: {} })
       .middleware((opts) => {
         middlewareMock(opts);
-        expect(opts.req).toHaveProperty("query");
-        expect(opts.res).toHaveProperty("json");
         expectTypeOf<{
           event: undefined;
           req: NextApiRequest;
           res: NextApiResponse;
         }>(opts);
-
         return {};
       })
       .onUploadComplete(uploadCompleteMock),
@@ -282,6 +285,10 @@ describe("adapters:next-legacy", async () => {
 
     await handler(req, res);
     expect(status).toHaveBeenCalledWith(200);
+
+    expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
+    expect(middlewareMock.mock.calls[0][0].req).toHaveProperty("query");
+    expect(middlewareMock.mock.calls[0][0].res).toHaveProperty("json");
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
