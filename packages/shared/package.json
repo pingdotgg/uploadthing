@@ -50,6 +50,17 @@
   },
   "eslintConfig": {
     "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/shared",
+            "@uploadthing/shared/*"
+          ]
+        }
+      ]
+    },
     "extends": [
       "@uploadthing/eslint-config/base"
     ]
