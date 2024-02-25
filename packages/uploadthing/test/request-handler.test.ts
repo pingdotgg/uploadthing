@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "../src/server";
@@ -6,7 +6,9 @@ import {
   baseHeaders,
   createApiUrl,
   fetchMock,
+  middlewareMock,
   mockExternalRequests,
+  uploadCompleteMock,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -14,13 +16,6 @@ const f = createUploadthing({
     message: e.message,
     cause: (e.cause as Error)?.toString(),
   }),
-});
-
-const middlewareMock = vi.fn();
-const uploadCompleteMock = vi.fn();
-beforeEach(() => {
-  middlewareMock.mockClear();
-  uploadCompleteMock.mockClear();
 });
 
 const router = {

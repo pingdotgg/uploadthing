@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
@@ -15,7 +14,9 @@ import {
   baseHeaders,
   createApiUrl,
   fetchMock,
+  middlewareMock,
   mockExternalRequests,
+  uploadCompleteMock,
 } from "./__test-helpers";
 
 describe("adapters:h3", async () => {
@@ -25,21 +26,17 @@ describe("adapters:h3", async () => {
   const router = {
     middleware: f({ blob: {} })
       .middleware((opts) => {
-        expect(opts.req).toBeUndefined();
-        expectTypeOf<undefined>(opts.req);
-
+        middlewareMock(opts);
         expect(opts.event).toBeInstanceOf(H3Event);
-        expectTypeOf<H3Event>(opts.event);
-
-        expect(opts.res).toBeUndefined();
-        expectTypeOf<undefined>(opts.res);
-
-        expect(opts.input).toBeUndefined();
-        expectTypeOf<undefined>(opts.input);
+        expectTypeOf<{
+          event: H3Event;
+          req: undefined;
+          res: undefined;
+        }>(opts);
 
         return {};
       })
-      .onUploadComplete(() => {}),
+      .onUploadComplete(uploadCompleteMock),
   };
 
   const eventHandler = createRouteHandler({
@@ -93,21 +90,17 @@ describe("adapters:server", async () => {
   const router = {
     middleware: f({ blob: {} })
       .middleware((opts) => {
+        middlewareMock(opts);
         expect(opts.req).toBeInstanceOf(Request);
-        expectTypeOf<Request>(opts.req);
-
-        expect(opts.event).toBeUndefined();
-        expectTypeOf<undefined>(opts.event);
-
-        expect(opts.res).toBeUndefined();
-        expectTypeOf<undefined>(opts.res);
-
-        expect(opts.input).toBeUndefined();
-        expectTypeOf<undefined>(opts.input);
+        expectTypeOf<{
+          event: undefined;
+          req: Request;
+          res: undefined;
+        }>(opts);
 
         return {};
       })
-      .onUploadComplete(() => {}),
+      .onUploadComplete(uploadCompleteMock),
   };
 
   const handlers = createRouteHandler({
@@ -156,21 +149,17 @@ describe("adapters:next", async () => {
   const router = {
     middleware: f({ blob: {} })
       .middleware((opts) => {
+        middlewareMock(opts);
         expect(opts.req).toBeInstanceOf(NextRequest);
-        expectTypeOf<NextRequest>(opts.req);
-
-        expect(opts.event).toBeUndefined();
-        expectTypeOf<undefined>(opts.event);
-
-        expect(opts.res).toBeUndefined();
-        expectTypeOf<undefined>(opts.res);
-
-        expect(opts.input).toBeUndefined();
-        expectTypeOf<undefined>(opts.input);
+        expectTypeOf<{
+          event: undefined;
+          req: NextRequest;
+          res: undefined;
+        }>(opts);
 
         return {};
       })
-      .onUploadComplete(() => {}),
+      .onUploadComplete(uploadCompleteMock),
   };
 
   const handlers = createRouteHandler({
@@ -221,21 +210,18 @@ describe("adapters:next-legacy", async () => {
   const router = {
     middleware: f({ blob: {} })
       .middleware((opts) => {
+        middlewareMock(opts);
         expect(opts.req).toHaveProperty("query");
-        expectTypeOf<NextApiRequest>(opts.req);
-
-        expect(opts.event).toBeUndefined();
-        expectTypeOf<undefined>(opts.event);
-
-        expect(typeof opts.res.send).toBe("function");
-        expectTypeOf<NextApiResponse>(opts.res);
-
-        expect(opts.input).toBeUndefined();
-        expectTypeOf<undefined>(opts.input);
+        expect(opts.res).toHaveProperty("json");
+        expectTypeOf<{
+          event: undefined;
+          req: NextApiRequest;
+          res: NextApiResponse;
+        }>(opts);
 
         return {};
       })
-      .onUploadComplete(() => {}),
+      .onUploadComplete(uploadCompleteMock),
   };
 
   const handler = createRouteHandler({
@@ -269,30 +255,19 @@ describe("adapters:next-legacy", async () => {
     };
     req.socket = socket;
 
-    setTimeout(() => {
-      if (opts.body) {
-        req.emit("data", JSON.stringify(opts.body));
-      }
-      req.emit("end");
-    });
-
     return { req, socket };
   }
   function mockRes() {
     const res = new EventEmitter() as any;
 
     const json = vi.fn(() => res);
-    const send = vi.fn(() => res);
     const setHeader = vi.fn(() => res);
-    const end = vi.fn(() => res);
     const status = vi.fn(() => res);
     res.json = json;
-    res.send = send;
     res.setHeader = setHeader;
-    res.end = end;
     res.status = status;
 
-    return { res, json, setHeader, end, status, send };
+    return { res, json, setHeader, status };
   }
 
   it("gets NextApiRequest and NextApiResponse in middleware args", async () => {

@@ -6,7 +6,11 @@ import { UPLOADTHING_VERSION } from "../src/constants";
 import type { ActionType } from "../src/server";
 
 export const fetchMock = vi.fn();
+export const middlewareMock = vi.fn();
+export const uploadCompleteMock = vi.fn();
 beforeEach(() => {
+  middlewareMock.mockClear();
+  uploadCompleteMock.mockClear();
   fetchMock.mockClear();
 });
 
