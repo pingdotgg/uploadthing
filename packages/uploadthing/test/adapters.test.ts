@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
-import EventEmitter from "events";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
 import { createApp, H3Event, toWebHandler } from "h3";
@@ -236,38 +233,34 @@ describe("adapters:next-legacy", async () => {
 
   function mockReq(opts: {
     query: Record<string, any>;
-    headers?: Record<string, string>;
-    method?: string;
+    method: string;
     body?: unknown;
+    headers?: Record<string, string>;
   }) {
-    const req = new EventEmitter() as any;
+    const req = {
+      url: "/?" + new URLSearchParams(opts.query).toString(),
+      method: opts.method,
+      query: opts.query,
+      headers: {
+        "x-forwarded-host": "not-used.com",
+        "x-forwarded-proto": "https",
+        ...opts.headers,
+      },
+      body: opts.body,
+    } as unknown as NextApiRequest;
 
-    req.url = "/?" + new URLSearchParams(opts.query).toString();
-    req.method = opts.method;
-    req.query = opts.query;
-    req.headers = {
-      "x-forwarded-host": "not-used.com",
-      "x-forwarded-proto": "https",
-      ...opts.headers,
-    };
-    req.body = opts.body;
-
-    const socket = {
-      destroy: vi.fn(),
-    };
-    req.socket = socket;
-
-    return { req, socket };
+    return { req };
   }
   function mockRes() {
-    const res = new EventEmitter() as any;
-
     const json = vi.fn(() => res);
     const setHeader = vi.fn(() => res);
     const status = vi.fn(() => res);
-    res.json = json;
-    res.setHeader = setHeader;
-    res.status = status;
+
+    const res = {
+      json,
+      setHeader,
+      status,
+    } as unknown as NextApiResponse;
 
     return { res, json, setHeader, status };
   }
