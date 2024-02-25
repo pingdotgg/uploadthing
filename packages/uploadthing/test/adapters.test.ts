@@ -9,7 +9,7 @@ import {
   noop,
 } from "./__test-helpers";
 
-describe("h3", async () => {
+describe("adapters:h3", async () => {
   const { createUploadthing, createRouteHandler } = await import("../src/h3");
   const f = createUploadthing();
 
