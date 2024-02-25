@@ -186,6 +186,15 @@
           "name": "process",
           "message": "Use `import { process } from 'std-env` instead"
         }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "uploadthing",
+            "uploadthing/*"
+          ]
+        }
       ]
     }
   }

@@ -82,6 +82,17 @@
     "extends": [
       "@uploadthing/eslint-config/base"
     ],
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/dropzone",
+            "@uploadthing/dropzone/*"
+          ]
+        }
+      ]
+    },
     "overrides": [
       {
         "files": [
