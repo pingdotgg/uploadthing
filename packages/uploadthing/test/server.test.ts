@@ -1,4 +1,4 @@
-import { beforeEach, expect, expectTypeOf, it, vi } from "vitest";
+import { expect, expectTypeOf, it, vi } from "vitest";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "../src/server";
@@ -54,7 +54,6 @@ const handlers = createRouteHandler({
     fetch: mockExternalRequests,
   },
 });
-beforeEach(() => fetchMock.mockClear());
 
 it("404s for invalid slugs", async () => {
   const res = await handlers.POST(

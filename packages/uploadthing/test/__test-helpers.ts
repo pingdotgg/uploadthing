@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { beforeEach, vi } from "vitest";
 
 import type { FetchEsque } from "@uploadthing/shared";
 
@@ -8,6 +8,10 @@ import type { ActionType } from "../src/server";
 
 export const noop = vi.fn();
 export const fetchMock = vi.fn();
+beforeEach(() => {
+  noop.mockClear();
+  fetchMock.mockClear();
+});
 
 export const createApiUrl = (slug: string, action: ActionType) =>
   createAPIRequestUrl({
