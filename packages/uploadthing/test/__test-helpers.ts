@@ -3,22 +3,20 @@ import { beforeEach, vi } from "vitest";
 import type { FetchEsque } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../src/constants";
-import { createAPIRequestUrl } from "../src/internal/ut-reporter";
 import type { ActionType } from "../src/server";
 
-export const noop = vi.fn();
 export const fetchMock = vi.fn();
 beforeEach(() => {
-  noop.mockClear();
   fetchMock.mockClear();
 });
 
-export const createApiUrl = (slug: string, action: ActionType) =>
-  createAPIRequestUrl({
-    url: new URL("https://not-used.com"),
-    slug,
-    actionType: action,
-  });
+export const createApiUrl = (slug: string, action?: ActionType) => {
+  const url = new URL("https://not-used.com");
+  url.searchParams.set("slug", slug);
+  if (action) url.searchParams.set("actionType", action);
+  return url;
+};
+
 export const baseHeaders = {
   "x-uploadthing-version": UPLOADTHING_VERSION,
   "x-uploadthing-package": "vitest",

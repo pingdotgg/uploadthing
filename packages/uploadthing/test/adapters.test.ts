@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -15,7 +16,6 @@ import {
   createApiUrl,
   fetchMock,
   mockExternalRequests,
-  noop,
 } from "./__test-helpers";
 
 describe("adapters:h3", async () => {
@@ -39,7 +39,7 @@ describe("adapters:h3", async () => {
 
         return {};
       })
-      .onUploadComplete(noop),
+      .onUploadComplete(() => {}),
   };
 
   const eventHandler = createRouteHandler({
@@ -84,6 +84,71 @@ describe("adapters:h3", async () => {
   });
 });
 
+describe("adapters:server", async () => {
+  const { createUploadthing, createRouteHandler } = await import(
+    "../src/server"
+  );
+  const f = createUploadthing();
+
+  const router = {
+    middleware: f({ blob: {} })
+      .middleware((opts) => {
+        expect(opts.req).toBeInstanceOf(Request);
+        expectTypeOf<Request>(opts.req);
+
+        expect(opts.event).toBeUndefined();
+        expectTypeOf<undefined>(opts.event);
+
+        expect(opts.res).toBeUndefined();
+        expectTypeOf<undefined>(opts.res);
+
+        //   expect(opts.input).toBeUndefined();
+        expectTypeOf<undefined>(opts.input);
+
+        return {};
+      })
+      .onUploadComplete(() => {}),
+  };
+
+  const handlers = createRouteHandler({
+    router,
+    config: {
+      uploadthingSecret: "sk_live_test",
+      fetch: mockExternalRequests,
+    },
+  });
+
+  it("gets NextRequest in middleware args", async () => {
+    const res = await handlers.POST(
+      new Request(createApiUrl("middleware", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48 }],
+        }),
+      }),
+    );
+    expect(res.status).toBe(200);
+
+    // Should proceed to have requested URLs
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/prepareUpload",
+      {
+        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"https://not-used.com/","callbackSlug":"middleware"}',
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_live_test",
+          "x-uploadthing-be-adapter": "server",
+          "x-uploadthing-fe-package": "vitest",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
+});
+
 describe("adapters:next", async () => {
   const { createUploadthing, createRouteHandler } = await import("../src/next");
   const f = createUploadthing();
@@ -105,7 +170,7 @@ describe("adapters:next", async () => {
 
         return {};
       })
-      .onUploadComplete(noop),
+      .onUploadComplete(() => {}),
   };
 
   const handlers = createRouteHandler({
@@ -170,7 +235,7 @@ describe("adapters:next-legacy", async () => {
 
         return {};
       })
-      .onUploadComplete(noop),
+      .onUploadComplete(() => {}),
   };
 
   const handler = createRouteHandler({

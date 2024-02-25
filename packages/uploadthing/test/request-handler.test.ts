@@ -1,12 +1,12 @@
-import { expect, expectTypeOf, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "../src/server";
 import {
   baseHeaders,
   createApiUrl,
+  fetchMock,
   mockExternalRequests,
-  noop,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -15,37 +15,43 @@ const f = createUploadthing({
     cause: (e.cause as Error)?.toString(),
   }),
 });
+
+const middlewareMock = vi.fn();
+const uploadCompleteMock = vi.fn();
+beforeEach(() => {
+  middlewareMock.mockClear();
+  uploadCompleteMock.mockClear();
+});
+
 const router = {
   middlewareThrows: f({ blob: {} })
     .middleware((opts) => {
-      expect(opts.req).toBeInstanceOf(Request);
-      expectTypeOf<Request>(opts.req);
-
-      expect(opts.event).toBeUndefined();
-      expectTypeOf<undefined>(opts.event);
-
-      expect(opts.res).toBeUndefined();
-      expectTypeOf<undefined>(opts.res);
-
-      //   expect(opts.input).toBeUndefined();
-      expectTypeOf<undefined>(opts.input);
+      middlewareMock(opts);
 
       if (!opts.req.headers.get("i dont exist"))
         throw new Error("didn't get header");
       return { should: "never return" };
     })
-    .onUploadComplete(noop),
+    .onUploadComplete(uploadCompleteMock),
 
   imageUploader: f({
     image: { maxFileCount: 1, maxFileSize: "2MB" },
-  }).onUploadComplete(noop),
+  })
+    .middleware((opts) => {
+      middlewareMock(opts);
+      return {};
+    })
+    .onUploadComplete(uploadCompleteMock),
 
   withInput: f({ blob: {} })
     .input(z.object({ foo: z.enum(["BAR", "BAZ"]) }))
-    .onUploadComplete(noop),
+    .middleware((opts) => {
+      middlewareMock(opts);
+      return {};
+    })
+    .onUploadComplete(uploadCompleteMock),
 };
 
-const fetchMock = vi.fn();
 const handlers = createRouteHandler({
   router,
   config: {
@@ -75,6 +81,27 @@ it("404s for invalid slugs", async () => {
   `);
 });
 
+it("forwards files to middleware", async () => {
+  const res = await handlers.POST(
+    new Request(createApiUrl("imageUploader", "upload"), {
+      method: "POST",
+      headers: baseHeaders,
+      body: JSON.stringify({
+        files: [{ name: "foo.png", size: 48 }],
+      }),
+    }),
+  );
+
+  expect(middlewareMock).toBeCalledTimes(1);
+  expect(middlewareMock).toHaveBeenCalledWith(
+    expect.objectContaining({
+      files: [{ name: "foo.png", size: 48 }],
+    }),
+  );
+
+  expect(res.status).toBe(200);
+});
+
 it("early exits if middleware throws", async () => {
   const res = await handlers.POST(
     new Request(createApiUrl("middlewareThrows", "upload"), {
@@ -83,6 +110,14 @@ it("early exits if middleware throws", async () => {
       body: JSON.stringify({
         files: [{ name: "foo.txt", size: 48 }],
       }),
+    }),
+  );
+
+  expect(middlewareMock).toBeCalledTimes(1);
+  expect(middlewareMock).toHaveBeenCalledWith(
+    expect.objectContaining({
+      input: undefined,
+      files: [{ name: "foo.txt", size: 48 }],
     }),
   );
 
@@ -128,6 +163,7 @@ it("blocks missing input", async () => {
     }),
   );
 
+  expect(middlewareMock).toHaveBeenCalledTimes(0);
   expect(fetchMock).toHaveBeenCalledTimes(0);
   expect(res.status).toBe(400);
   await expect(res.json()).resolves.toMatchInlineSnapshot(`
@@ -158,6 +194,7 @@ it("blocks invalid input", async () => {
     }),
   );
 
+  expect(middlewareMock).toHaveBeenCalledTimes(0);
   expect(fetchMock).toHaveBeenCalledTimes(0);
   expect(res.status).toBe(400);
   await expect(res.json()).resolves.toMatchInlineSnapshot(`
@@ -179,6 +216,26 @@ it("blocks invalid input", async () => {
       "message": "Invalid input.",
     }
   `);
+});
+
+it("fowards input to middleware", async () => {
+  const res = await handlers.POST(
+    new Request(createApiUrl("withInput", "upload"), {
+      method: "POST",
+      headers: baseHeaders,
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48 }],
+        input: { foo: "BAR" },
+      }),
+    }),
+  );
+  expect(res.status).toBe(200);
+
+  expect(middlewareMock).toHaveBeenCalledWith(
+    expect.objectContaining({
+      input: { foo: "BAR" },
+    }),
+  );
 });
 
 it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
@@ -219,4 +276,40 @@ it("blocks for too many files", async () => {
       "message": "File limit exceeded",
     }
   `);
+});
+
+it("forwards correct args to onUploadComplete handler", async () => {
+  const res = await handlers.POST(
+    new Request(createApiUrl("imageUploader"), {
+      method: "POST",
+      headers: {
+        "uploadthing-hook": "callback",
+      },
+      body: JSON.stringify({
+        status: "uploaded",
+        metadata: {},
+        file: {
+          url: "https://utfs.io/f/some-random-key.png",
+          name: "foo.png",
+          key: "some-random-key.png",
+          size: 48,
+          customId: null,
+        },
+      }),
+    }),
+  );
+
+  expect(res.status).toBe(200);
+  // await expect(res.json()).resolves.toBe(null);
+  expect(uploadCompleteMock).toHaveBeenCalledTimes(1);
+  expect(uploadCompleteMock).toHaveBeenCalledWith({
+    file: {
+      customId: null,
+      key: "some-random-key.png",
+      name: "foo.png",
+      size: 48,
+      url: "https://utfs.io/f/some-random-key.png",
+    },
+    metadata: {},
+  });
 });
