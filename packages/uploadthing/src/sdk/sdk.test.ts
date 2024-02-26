@@ -128,7 +128,6 @@ describe("uploadFilesFromUrl", () => {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
         method: "POST",
@@ -183,7 +182,6 @@ describe("getSignedURL", () => {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
         method: "POST",
@@ -204,7 +202,6 @@ describe("getSignedURL", () => {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
         method: "POST",
@@ -225,7 +222,6 @@ describe("getSignedURL", () => {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
         method: "POST",

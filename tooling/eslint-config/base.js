@@ -39,6 +39,15 @@ const config = {
     ],
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
   },
+  overrides: [
+    {
+      files: ["**/test/**", "**/*.test.ts", "**/*.test.tsx"],
+      extends: ["plugin:@typescript-eslint/disable-type-checked"],
+      rules: {
+        "@uploadthing/no-throwing-promises": "off",
+      },
+    },
+  ],
   ignorePatterns: [
     "**/.eslintrc.cjs",
     "**/*.config.js",

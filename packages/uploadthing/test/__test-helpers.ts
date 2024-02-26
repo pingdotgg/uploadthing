@@ -26,12 +26,12 @@ export const baseHeaders = {
   "x-uploadthing-package": "vitest",
 };
 
-export const mockExternalRequests: FetchEsque = async (_url, init) => {
-  fetchMock(_url, init);
-  if (typeof _url !== "string") throw new Error("eh?");
+export const mockExternalRequests: FetchEsque = async (url, init) => {
+  fetchMock(url, init);
+  if (url instanceof Request) return new Response("Wut?", { status: 500 });
+  url = new URL(url);
 
   // If request is going to uploadthing, mock the response
-  const url = new URL(_url);
   if (url.host === "uploadthing.com") {
     switch (url.pathname) {
       case "/api/prepareUpload": {
@@ -46,7 +46,6 @@ export const mockExternalRequests: FetchEsque = async (_url, init) => {
     }
   }
 
-  // Else forward the requests ???
-  // eslint-disable-next-line no-restricted-globals
-  return fetch(url, init);
+  // Else 404 (shouldn't happen, mock the requests we expect to make)
+  return new Response("Not Found", { status: 404 });
 };

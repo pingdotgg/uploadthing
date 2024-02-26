@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
 import { createApp, H3Event, toWebHandler } from "h3";
