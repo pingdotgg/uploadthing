@@ -1,6 +1,7 @@
-import type { ExpoConfig } from "expo/config";
+import type { ConfigContext, ExpoConfig } from "expo/config";
 
-export default (): ExpoConfig => ({
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
   name: "Minimal Expo x UploadThing",
   slug: "minimal-expo",
   version: "1.0.0",
@@ -21,7 +22,6 @@ export default (): ExpoConfig => ({
       backgroundColor: "#ffffff",
     },
   },
-
   web: {
     bundler: "metro",
     output: "server",
