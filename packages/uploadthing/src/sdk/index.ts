@@ -219,7 +219,19 @@ export class UTApi {
     const filesToUpload = await Promise.all(
       asArray(urls).map(async (_url) => {
         let url = isObject(_url) ? _url.url : _url;
-        if (typeof url === "string") url = new URL(url);
+
+        if (typeof url === "string") {
+          // since dataurls will result in name being too long, tell the user
+          // to use uploadFiles instead.
+          if (url.startsWith("data:")) {
+            throw new UploadThingError({
+              code: "BAD_REQUEST",
+              message:
+                "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+            });
+          }
+          url = new URL(url);
+        }
         const filename = isObject(_url)
           ? _url.name
           : url.pathname.split("/").pop() ?? "unknown-filename";
