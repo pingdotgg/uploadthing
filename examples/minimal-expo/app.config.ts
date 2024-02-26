@@ -14,6 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   assetBundlePatterns: ["**/*"],
   ios: {
+    bundleIdentifier: "your.bundle.identifier",
     supportsTablet: true,
   },
   android: {
@@ -30,4 +31,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   experiments: {
     typedRoutes: true,
   },
+  // extra: {
+  //   eas: {
+  //     projectId: "",
+  //   },
+  // },
 });
