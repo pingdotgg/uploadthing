@@ -4,10 +4,8 @@ import { generateReactHelpers } from "@uploadthing/react/native";
 import type * as _TS_FIND_ME_1 from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/internal/types";
 
-import {
-  GENERATE_useDocumentUploader,
-  GENERATE_useImageUploader,
-} from "./hooks";
+import { GENERATE_useDocumentUploader } from "./document-picker";
+import { GENERATE_useImageUploader } from "./image-picker";
 
 export interface GenerateTypedHelpersOptions {
   /**

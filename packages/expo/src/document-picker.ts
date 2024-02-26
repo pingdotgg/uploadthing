@@ -1,0 +1,69 @@
+import * as DocumentPicker from "expo-document-picker";
+
+import type { UseUploadthingProps } from "@uploadthing/react";
+import { INTERNAL_uploadthingHookGen } from "@uploadthing/react/native";
+import { generatePermittedFileTypes } from "uploadthing/client";
+import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+
+function generateFileTypes(fileTypes: string[]) {
+  // Forward mime-types from route config
+  const allowedMimeTypes = fileTypes;
+
+  // Handle special UploadThing types
+  if (fileTypes.includes("image")) allowedMimeTypes.push("image/*");
+  if (fileTypes.includes("video")) allowedMimeTypes.push("video/*");
+  if (fileTypes.includes("audio")) allowedMimeTypes.push("audio/*");
+  if (fileTypes.includes("pdf")) allowedMimeTypes.push("application/pdf");
+  if (fileTypes.includes("text")) allowedMimeTypes.push("text/*");
+
+  if (fileTypes.includes("blob")) {
+    allowedMimeTypes.push("&ast;/*");
+    allowedMimeTypes.push("*/*");
+  }
+
+  return allowedMimeTypes;
+}
+
+export const GENERATE_useDocumentUploader =
+  <TRouter extends FileRouter>(initOpts: { url: URL }) =>
+  <TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+  ) => {
+    const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+      url: initOpts.url,
+    });
+    const uploadthing = useUploadThing(endpoint, opts);
+    const { fileTypes, multiple } = generatePermittedFileTypes(
+      uploadthing.permittedFileInfo?.config,
+    );
+
+    const openDocumentPicker = async (
+      opts: undefined extends inferEndpointInput<TRouter[TEndpoint]>
+        ? void
+        : {
+            input: inferEndpointInput<TRouter[TEndpoint]>;
+          },
+    ) => {
+      const response = await DocumentPicker.getDocumentAsync({
+        multiple,
+        type: generateFileTypes(fileTypes),
+      });
+      if (response.canceled) {
+        console.log("User cancelled document picker");
+        return;
+      }
+
+      const files = response.assets.map((ass) => ({
+        uri: ass.uri,
+        name: ass.name,
+        type: ass.mimeType,
+        size: ass.size,
+      }));
+
+      // This cast works cause you can append { uri, type, name } as FormData
+      return uploadthing.startUpload(files as unknown as File[], opts?.input);
+    };
+
+    return { openDocumentPicker };
+  };
