@@ -71,11 +71,9 @@ describe("errors for invalid request input", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(404);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-      {
-        "message": "No file route found for slug i-dont-exist",
-      }
-    `);
+    await expect(res.json()).resolves.toEqual({
+      message: "No file route found for slug i-dont-exist",
+    });
   });
 
   it("400s for invalid action type", async () => {
@@ -92,12 +90,11 @@ describe("errors for invalid request input", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-      {
-        "cause": "Error: Invalid action type invalid",
-        "message": "Expected "upload", "failure" or "multipart-complete" but got "invalid"",
-      }
-    `);
+    await expect(res.json()).resolves.toEqual({
+      cause: "Error: Invalid action type invalid",
+      message:
+        'Expected "upload", "failure" or "multipart-complete" but got "invalid"',
+    });
   });
 });
 
@@ -115,12 +112,10 @@ describe("file route config", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-    {
-      "cause": "Error: File type text not allowed for foo.txt",
-      "message": "Invalid config.",
-    }
-  `);
+    await expect(res.json()).resolves.toEqual({
+      cause: "Error: File type text not allowed for foo.txt",
+      message: "Invalid config.",
+    });
   });
 
   it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
@@ -136,7 +131,7 @@ describe("file route config", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchInlineSnapshot();
+    await expect(res.json()).resolves.toEqual({});
   });
 
   it("blocks for too many files", async () => {
@@ -155,12 +150,11 @@ describe("file route config", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-    {
-      "cause": "Error: You uploaded 2 files of type 'image', but the limit for that type is 1",
-      "message": "File limit exceeded",
-    }
-  `);
+    await expect(res.json()).resolves.toEqual({
+      cause:
+        "Error: You uploaded 2 files of type 'image', but the limit for that type is 1",
+      message: "File limit exceeded",
+    });
   });
 });
 
@@ -179,20 +173,19 @@ describe(".input()", () => {
     expect(middlewareMock).toHaveBeenCalledTimes(0);
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-    {
-      "cause": "[
-      {
-        "code": "invalid_type",
-        "expected": "object",
-        "received": "undefined",
-        "path": [],
-        "message": "Required"
-      }
-    ]",
-      "message": "Invalid input.",
-    }
-  `);
+    await expect(res.json()).resolves.toEqual({
+      message: "Invalid input.",
+      cause:
+        "[\n" +
+        "  {\n" +
+        '    "code": "invalid_type",\n' +
+        '    "expected": "object",\n' +
+        '    "received": "undefined",\n' +
+        '    "path": [],\n' +
+        '    "message": "Required"\n' +
+        "  }\n" +
+        "]",
+    });
   });
 
   it("blocks when input doesn't match schema", async () => {
@@ -210,25 +203,24 @@ describe(".input()", () => {
     expect(middlewareMock).toHaveBeenCalledTimes(0);
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-    {
-      "cause": "[
-      {
-        "received": "QUX",
-        "code": "invalid_enum_value",
-        "options": [
-          "BAR",
-          "BAZ"
-        ],
-        "path": [
-          "foo"
-        ],
-        "message": "Invalid enum value. Expected 'BAR' | 'BAZ', received 'QUX'"
-      }
-    ]",
-      "message": "Invalid input.",
-    }
-  `);
+    await expect(res.json()).resolves.toEqual({
+      message: "Invalid input.",
+      cause:
+        "[\n" +
+        "  {\n" +
+        '    "received": "QUX",\n' +
+        '    "code": "invalid_enum_value",\n' +
+        '    "options": [\n' +
+        '      "BAR",\n' +
+        '      "BAZ"\n' +
+        "    ],\n" +
+        '    "path": [\n' +
+        '      "foo"\n' +
+        "    ],\n" +
+        `    "message": "Invalid enum value. Expected 'BAR' | 'BAZ', received 'QUX'"\n` +
+        "  }\n" +
+        "]",
+    });
   });
 
   it("forwards input to middleware", async () => {
@@ -295,12 +287,11 @@ describe(".middleware()", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(500);
-    await expect(res.json()).resolves.toMatchInlineSnapshot(`
-    {
-      "cause": "TypeError: Headers.get: "i dont exist" is an invalid header name.",
-      "message": "Failed to run middleware.",
-    }
-  `);
+    await expect(res.json()).resolves.toEqual({
+      cause:
+        'TypeError: Headers.get: "i dont exist" is an invalid header name.',
+      message: "Failed to run middleware.",
+    });
   });
 });
 
