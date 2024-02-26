@@ -52,7 +52,7 @@ const mockExternalRequests: FetchEsque = async (url, init) => {
 
   // Mock S3
   if (url.host === "bucket.s3.amazonaws.com") {
-    return new Response("OK", { status: 200 });
+    return new Response(null, { status: 204 });
   }
 
   return new Response("Not Found", { status: 404 });
