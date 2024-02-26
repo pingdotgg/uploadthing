@@ -14,7 +14,10 @@ import {
 const f = createUploadthing({
   errorFormatter: (e) => ({
     message: e.message,
-    cause: (e.cause as Error)?.toString(),
+    cause:
+      e.cause instanceof z.ZodError
+        ? e.cause.flatten()
+        : (e.cause as Error)?.toString(),
   }),
 });
 
@@ -175,16 +178,10 @@ describe(".input()", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
-      cause:
-        "[\n" +
-        "  {\n" +
-        '    "code": "invalid_type",\n' +
-        '    "expected": "object",\n' +
-        '    "received": "undefined",\n' +
-        '    "path": [],\n' +
-        '    "message": "Required"\n' +
-        "  }\n" +
-        "]",
+      cause: {
+        fieldErrors: {},
+        formErrors: ["Required"],
+      },
     });
   });
 
@@ -205,21 +202,12 @@ describe(".input()", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
-      cause:
-        "[\n" +
-        "  {\n" +
-        '    "received": "QUX",\n' +
-        '    "code": "invalid_enum_value",\n' +
-        '    "options": [\n' +
-        '      "BAR",\n' +
-        '      "BAZ"\n' +
-        "    ],\n" +
-        '    "path": [\n' +
-        '      "foo"\n' +
-        "    ],\n" +
-        `    "message": "Invalid enum value. Expected 'BAR' | 'BAZ', received 'QUX'"\n` +
-        "  }\n" +
-        "]",
+      cause: {
+        fieldErrors: {
+          foo: ["Invalid enum value. Expected 'BAR' | 'BAZ', received 'QUX'"],
+        },
+        formErrors: [],
+      },
     });
   });
 
