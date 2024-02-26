@@ -184,7 +184,7 @@ describe("uploadFilesFromUrl", () => {
     fetch: mockExternalRequests,
   });
 
-  it("uploads successfully", async () => {
+  it("downloads, then uploads successfully", async () => {
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
     );
