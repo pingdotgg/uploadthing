@@ -831,6 +831,9 @@ importers:
       typescript:
         specifier: ^5.3.3
         version: 5.3.3
+      wait-on:
+        specifier: ^7.2.0
+        version: 7.2.0
 
   packages/solid:
     dependencies:
@@ -935,6 +938,9 @@ importers:
       undici:
         specifier: ^6.5.0
         version: 6.5.0
+      wait-on:
+        specifier: ^7.2.0
+        version: 7.2.0
       zod:
         specifier: ^3.22.4
         version: 3.22.4
@@ -6863,6 +6869,8 @@ packages:
     peerDependencies:
       typescript: ^4.1 || ^5.0
     peerDependenciesMeta:
+      '@swc/helpers':
+        optional: true
       typescript:
         optional: true
     dependencies:
@@ -10514,16 +10522,6 @@ packages:
 
   /joi@17.12.0:
     resolution: {integrity: sha512-HSLsmSmXz+PV9PYoi3p7cgIbj06WnEBNT28n+bbBNcPZXZFqCzzvGqpTBPujx/Z0nh1+KNQPDrNgdmQ8dq0qYw==}
-    dependencies:
-      '@hapi/hoek': 9.3.0
-      '@hapi/topo': 5.1.0
-      '@sideway/address': 4.1.4
-      '@sideway/formula': 3.0.1
-      '@sideway/pinpoint': 2.0.0
-    dev: true
-
-  /joi@17.9.2:
-    resolution: {integrity: sha512-Itk/r+V4Dx0V3c7RLFdRh12IOjySm2/WGPMubBT92cQvRfYZhPM2W0hZlctjj72iES8jsRCwp7S/cRmWBnJ4nw==}
     dependencies:
       '@hapi/hoek': 9.3.0
       '@hapi/topo': 5.1.0
@@ -15988,7 +15986,7 @@ packages:
     hasBin: true
     dependencies:
       axios: 0.25.0(debug@4.3.4)
-      joi: 17.9.2
+      joi: 17.12.0
       lodash: 4.17.21
       minimist: 1.2.8
       rxjs: 7.8.1

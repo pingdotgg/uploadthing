@@ -29,7 +29,7 @@
     "lint": "eslint src --max-warnings 0",
     "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "bunchee -w --tsconfig tsconfig.build.json",
+    "dev": "wait-on ../mime-types/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
@@ -38,7 +38,8 @@
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.8",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "wait-on": "^7.2.0"
   },
   "peerDependencies": {
     "@uploadthing/mime-types": "^0.2.2"

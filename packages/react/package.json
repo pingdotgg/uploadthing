@@ -54,7 +54,7 @@
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css",
     "build": "bunchee --tsconfig tsconfig.build.json && pnpm build:css",
     "typecheck": "tsc --noEmit",
-    "dev": "wait-on ../uploadthing/dist/server.mjs && bunchee -w"
+    "dev": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean"
   },
   "dependencies": {
     "@uploadthing/dropzone": "^0.1.3",
