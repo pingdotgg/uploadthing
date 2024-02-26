@@ -289,7 +289,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0(react@18.2.0)
       react-native:
-        specifier: 0.73.4
+        specifier: ^0.73.4
         version: 0.73.4(@babel/core@7.23.9)(@babel/preset-env@7.22.10)(react@18.2.0)
       react-native-safe-area-context:
         specifier: 4.8.2
@@ -791,9 +791,6 @@ importers:
       '@uploadthing/shared':
         specifier: 6.3.1
         version: link:../shared
-      expo-constants:
-        specifier: ^15.4.5
-        version: 15.4.5(expo@50.0.7)
     devDependencies:
       '@types/react':
         specifier: 18.2.55
@@ -805,11 +802,14 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.5
+        specifier: ^4.4.8
         version: 4.4.8(patch_hash=fqobhpxt7m2au3j2mth2bjpfii)(typescript@5.3.3)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
+      expo-constants:
+        specifier: ^15.4.5
+        version: 15.4.5(expo@50.0.7)
       expo-document-picker:
         specifier: ^11.10.1
         version: 11.10.1(expo@50.0.7)
@@ -826,8 +826,8 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
       uploadthing:
-        specifier: 6.4.0
-        version: 6.4.0
+        specifier: 6.4.1
+        version: link:../uploadthing
       wait-on:
         specifier: ^7.2.0
         version: 7.2.0
@@ -5437,7 +5437,7 @@ packages:
       chalk: 4.1.2
       find-up: 5.0.0
       mime: 2.6.0
-      node-fetch: 2.6.11
+      node-fetch: 2.7.0
       open: 6.4.0
       ora: 5.4.1
       semver: 7.5.4
@@ -5575,7 +5575,7 @@ packages:
       metro: 0.80.6
       metro-config: 0.80.6
       metro-core: 0.80.6
-      node-fetch: 2.6.11
+      node-fetch: 2.7.0
       readline: 1.3.0
     transitivePeerDependencies:
       - '@babel/core'
@@ -7141,22 +7141,6 @@ packages:
     dependencies:
       '@unhead/schema': 1.8.10
     dev: false
-
-  /@uploadthing/mime-types@0.2.4:
-    resolution: {integrity: sha512-P8rcS++LA8x9DTcL5FFAY7FB4z4frSWaSKztxv2duT4Mea/GxZe9pAXyMWX+ZfGYbt3n12SlSfvV28ZvC5XLqw==}
-    dev: true
-
-  /@uploadthing/shared@6.3.1(@uploadthing/mime-types@0.2.4):
-    resolution: {integrity: sha512-4RH1ZD/FuVxU/wYstx5VGR20ZGEWi4NlTRUCufFsllRurwKcT9spf1mMcZjKwm0hQ0fPGj1mXjh6UouormZ8jA==}
-    peerDependencies:
-      '@uploadthing/mime-types': ^0.2.2
-    peerDependenciesMeta:
-      '@uploadthing/mime-types':
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.4
-      std-env: 3.7.0
-    dev: true
 
   /@urql/core@2.3.6(graphql@15.8.0):
     resolution: {integrity: sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw==}
@@ -13994,7 +13978,7 @@ packages:
       metro-transform-plugins: 0.80.6
       metro-transform-worker: 0.80.6
       mime-types: 2.1.35
-      node-fetch: 2.6.11
+      node-fetch: 2.7.0
       nullthrows: 1.1.1
       rimraf: 3.0.2
       serialize-error: 2.1.0
@@ -17706,6 +17690,7 @@ packages:
 
   /std-env@3.7.0:
     resolution: {integrity: sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==}
+    dev: false
 
   /stdin-discarder@0.1.0:
     resolution: {integrity: sha512-xhV7w8S+bUwlPTb4bAOUQhv8/cSS5offJuX8GQGq32ONF0ZtDWKfkdomM3HMRA+LhX6um/FZ0COqlwsjD53LeQ==}
@@ -18966,33 +18951,6 @@ packages:
       browserslist: 4.22.3
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@6.4.0:
-    resolution: {integrity: sha512-qGK6e8Y58a3nBCTZCk/dJZiGhKHhtz752khZ41Fa7D+s5trNLVWwNfs9f6KKMC5uj2GIttmFUntBt1VtPTKPYQ==}
-    engines: {node: '>=18.13.0'}
-    peerDependencies:
-      express: '*'
-      fastify: '*'
-      h3: '*'
-      next: '*'
-      tailwindcss: '*'
-    peerDependenciesMeta:
-      express:
-        optional: true
-      fastify:
-        optional: true
-      h3:
-        optional: true
-      next:
-        optional: true
-      tailwindcss:
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.4
-      '@uploadthing/shared': 6.3.1(@uploadthing/mime-types@0.2.4)
-      consola: 3.2.3
-      std-env: 3.7.0
-    dev: true
 
   /uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
