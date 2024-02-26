@@ -331,9 +331,8 @@ async function uploadPresignedPost(
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
   formData.append("file", file); // File data **MUST GO LAST**
 
-  let response: XMLHttpRequest;
-  try {
-    response = await new Promise<XMLHttpRequest>((resolve, reject) => {
+  const response: XMLHttpRequest = await new Promise<XMLHttpRequest>(
+    (resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", presigned.url);
       xhr.setRequestHeader("Accept", "application/xml");
@@ -346,8 +345,8 @@ async function uploadPresignedPost(
       xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
       xhr.onerror = (e) => reject(e);
       xhr.send(formData);
-    });
-  } catch (error) {
+    },
+  ).catch(async (error) => {
     await opts.reportEventToUT("failure", {
       fileKey: presigned.key,
       uploadId: null,
@@ -355,7 +354,7 @@ async function uploadPresignedPost(
       s3Error: (error as Error).toString(),
     });
     throw "unreachable"; // failure event will throw for us
-  }
+  });
 
   if (response.status > 299 || response.status < 200) {
     await opts.reportEventToUT("failure", {
