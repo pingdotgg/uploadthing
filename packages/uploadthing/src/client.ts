@@ -164,7 +164,7 @@ export const DANGEROUS__uploadFiles = async <
       // wait a bit as it's unsreasonable to expect the server to be done by now
       await new Promise((r) => setTimeout(r, 750));
     } else {
-      await uploadPresignedPost(file, presigned, { ...opts });
+      await uploadPresignedPost(file, presigned, { reportEventToUT, ...opts });
     }
 
     const serverData = (await withExponentialBackoff(async () => {
@@ -327,6 +327,7 @@ async function uploadPresignedPost(
   file: File,
   presigned: PSPResponse,
   opts: {
+    reportEventToUT: ReturnType<typeof createUTReporter>;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
 ) {
@@ -334,26 +335,34 @@ async function uploadPresignedPost(
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
   formData.append("file", file); // File data **MUST GO LAST**
 
-  const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", presigned.url);
-    xhr.setRequestHeader("Accept", "application/xml");
-    xhr.upload.onprogress = (p) => {
-      opts.onUploadProgress?.({
-        file: file.name,
-        progress: (p.loaded / p.total) * 100,
+  try {
+    const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", presigned.url);
+      xhr.setRequestHeader("Accept", "application/xml");
+      xhr.upload.onprogress = (p) => {
+        opts.onUploadProgress?.({
+          file: file.name,
+          progress: (p.loaded / p.total) * 100,
+        });
+      };
+      xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
+      xhr.onerror = (e) => reject(e);
+      xhr.send(formData);
+    });
+    if (response.status > 299 || response.status < 200) {
+      await opts.reportEventToUT("failure", {
+        fileKey: presigned.key,
+        uploadId: null,
+        fileName: file.name,
       });
-    };
-    xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
-    xhr.onerror = (e) => reject(e);
-    xhr.send(formData);
-  });
-
-  if (response.status > 299 || response.status < 200) {
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: "Failed to upload file",
-      cause: response,
+    }
+  } catch (error) {
+    await opts.reportEventToUT("failure", {
+      fileKey: presigned.key,
+      uploadId: null,
+      fileName: file.name,
+      s3Error: (error as Error).toString(),
     });
   }
 }

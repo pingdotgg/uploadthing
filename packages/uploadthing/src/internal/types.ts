@@ -178,7 +178,7 @@ export type UTEvents = {
   };
   failure: {
     fileKey: string;
-    uploadId: string;
+    uploadId: string | null;
     s3Error?: string;
     fileName: string;
   };
