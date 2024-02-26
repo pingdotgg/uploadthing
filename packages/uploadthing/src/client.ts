@@ -235,10 +235,6 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
     } as any);
 };
 
-export const classNames = (...classes: (string | boolean)[]) => {
-  return classes.filter(Boolean).join(" ");
-};
-
 export const generateMimeTypes = (fileTypes: string[]) => {
   const accepted = fileTypes.map((type) => {
     if (type === "blob") return "blob";

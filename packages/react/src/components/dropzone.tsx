@@ -6,7 +6,6 @@ import { twMerge } from "tailwind-merge";
 import { useDropzone } from "@uploadthing/dropzone/react";
 import {
   allowedContentTextLabelGenerator,
-  classNames,
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
@@ -223,10 +222,8 @@ export function UploadDropzone<
       <label
         htmlFor="file-upload"
         className={twMerge(
-          classNames(
-            "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-            ready ? "text-blue-600" : "text-gray-500",
-          ),
+          "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+          ready ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
@@ -258,12 +255,10 @@ export function UploadDropzone<
       {($props.__internal_show_button ?? files.length > 0) && (
         <button
           className={twMerge(
-            classNames(
-              "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-              state === "uploading"
-                ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`
-                : "bg-blue-600",
-            ),
+            "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+            state === "uploading"
+              ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`
+              : "bg-blue-600",
             styleFieldToClassName($props.appearance?.button, styleFieldArg),
           )}
           style={styleFieldToCssObject(
