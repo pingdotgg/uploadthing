@@ -52,11 +52,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
-
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, url),
+      nativeRequest: toWebRequest(req),
       originalRequest: req,
       res,
       event: undefined,

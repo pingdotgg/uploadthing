@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "6.3.0",
+  "version": "6.3.1",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
@@ -34,9 +34,9 @@
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/mime-types": "0.2.3",
+    "@uploadthing/mime-types": "0.2.4",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.4.5",
+    "bunchee": "^4.4.8",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"
   },
@@ -50,6 +50,17 @@
   },
   "eslintConfig": {
     "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/shared",
+            "@uploadthing/shared/*"
+          ]
+        }
+      ]
+    },
     "extends": [
       "@uploadthing/eslint-config/base"
     ]

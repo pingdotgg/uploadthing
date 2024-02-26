@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.4.5",
+    "bunchee": "^4.4.8",
     "eslint": "^8.56.0",
     "typescript": "^5.3.3"
   },
@@ -41,6 +41,17 @@
   },
   "eslintConfig": {
     "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/mime-types",
+            "@uploadthing/mime-types/*"
+          ]
+        }
+      ]
+    },
     "extends": [
       "@uploadthing/eslint-config/base"
     ]

@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "type": "module",
   "engines": {
     "node": ">=18.13.0"
@@ -121,8 +121,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/mime-types": "^0.2.3",
-    "@uploadthing/shared": "^6.3.0",
+    "@uploadthing/mime-types": "^0.2.4",
+    "@uploadthing/shared": "^6.3.1",
     "consola": "^3.2.3",
     "std-env": "^3.7.0"
   },
@@ -132,12 +132,12 @@
     "@types/react": "18.2.55",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.4.5",
+    "bunchee": "^4.4.8",
     "eslint": "^8.56.0",
     "express": "^4.18.2",
     "fastify": "^4.23.2",
     "h3": "^1.8.1",
-    "next": "14.0.1",
+    "next": "14.1.0",
     "solid-js": "^1.7.11",
     "tailwindcss": "^3.4.1",
     "type-fest": "^3.11.1",
@@ -185,6 +185,15 @@
         {
           "name": "process",
           "message": "Use `import { process } from 'std-env` instead"
+        }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "uploadthing",
+            "uploadthing/*"
+          ]
         }
       ]
     }

@@ -15,6 +15,7 @@ import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
 export type * from "./internal/types";
+export { UTFiles } from "./internal/types";
 export { UTApi, UTFile } from "./sdk";
 export { UploadThingError };
 
