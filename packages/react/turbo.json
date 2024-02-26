@@ -3,7 +3,7 @@
   "extends": ["//"],
   "pipeline": {
     "build": {
-      "outputs": ["dist/**", "hooks/**", "next-ssr-plugin/**"]
+      "outputs": ["dist/**", "hooks/**", "native/**", "next-ssr-plugin/**"]
     }
   }
 }
