@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -56,9 +55,14 @@ describe("adapters:h3", async () => {
     );
     expect(res.status).toBe(200);
 
-    expect(middlewareMock.mock.calls[0][0].event).toBeInstanceOf(H3Event);
-    expect(middlewareMock.mock.calls[0][0].req).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
+    expect(middlewareMock).toHaveBeenCalledOnce();
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: expect.any(H3Event),
+        req: undefined,
+        res: undefined,
+      }),
+    );
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -118,9 +122,10 @@ describe("adapters:server", async () => {
     const res = await handlers.POST(req);
     expect(res.status).toBe(200);
 
-    expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].req).toBe(req);
-    expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
+    expect(middlewareMock).toHaveBeenCalledOnce();
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({ event: undefined, req, res: undefined }),
+    );
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -178,10 +183,10 @@ describe("adapters:next", async () => {
     const res = await handlers.POST(req);
     expect(res.status).toBe(200);
 
-    expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].req).toBe(req);
-    expect(middlewareMock.mock.calls[0][0].res).toBeUndefined();
-
+    expect(middlewareMock).toHaveBeenCalledOnce();
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({ event: undefined, req, res: undefined }),
+    );
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock).toHaveBeenCalledWith(
@@ -277,9 +282,10 @@ describe("adapters:next-legacy", async () => {
     await handler(req, res);
     expect(status).toHaveBeenCalledWith(200);
 
-    expect(middlewareMock.mock.calls[0][0].event).toBeUndefined();
-    expect(middlewareMock.mock.calls[0][0].req).toBe(req);
-    expect(middlewareMock.mock.calls[0][0].res).toBe(res);
+    expect(middlewareMock).toHaveBeenCalledOnce();
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({ event: undefined, req, res }),
+    );
 
     // Should proceed to have requested URLs
     expect(fetchMock).toHaveBeenCalledTimes(1);
