@@ -135,6 +135,14 @@ describe("uploadFilesFromUrl", () => {
       },
     );
   });
+
+  test("rejects data URLs", async () => {
+    await expect(() =>
+      utapi.uploadFilesFromUrl("data:text/plain,foo"),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[Error: Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.]`,
+    );
+  });
 });
 
 describe("constructor throws if no apiKey or secret is set", () => {
