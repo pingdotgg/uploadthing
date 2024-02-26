@@ -91,6 +91,50 @@ describe("uploadFilesFromUrl", () => {
       >(result);
     });
   });
+
+  test("can override name", async () => {
+    const mockFetch = vi.fn();
+    const utapi = new UTApi({
+      apiKey: "sk_foo",
+      fetch: (url, init) => {
+        mockFetch(url, init);
+
+        // Mock file download
+        if (url instanceof URL && url.host === "cdn.foo.com") {
+          return Promise.resolve(
+            new Response("Lorem ipsum doler sit amet", {
+              headers: { "Content-Type": "text/plain" },
+            }),
+          );
+        }
+
+        // Mock presigned URL return
+        return Promise.resolve(Response.json([]));
+      },
+    });
+
+    await utapi.uploadFilesFromUrl({
+      url: "https://cdn.foo.com/my-super-long-pathname-thats-too-long-for-ut.txt",
+      name: "bar.txt",
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+    expect(mockFetch).toHaveBeenLastCalledWith(
+      "https://uploadthing.com/api/uploadFiles",
+      {
+        body: '{"files":[{"name":"bar.txt","type":"text/plain","size":26}],"metadata":{},"contentDisposition":"inline"}',
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
 });
 
 describe("constructor throws if no apiKey or secret is set", () => {

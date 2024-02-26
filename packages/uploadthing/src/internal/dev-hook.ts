@@ -37,32 +37,41 @@ export const conditionalDevServer = async (opts: {
 
       logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
-      const response = await opts.fetch(callbackUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
-          file: {
-            url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
-            key: opts.fileKey,
-            name: file.fileName,
-            size: file.fileSize,
-            customId: file.customId,
+      try {
+        const response = await opts.fetch(callbackUrl, {
+          method: "POST",
+          body: JSON.stringify({
+            status: "uploaded",
+            metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
+            file: {
+              url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
+              key: opts.fileKey,
+              name: file.fileName,
+              size: file.fileSize,
+              customId: file.customId,
+            },
+          }),
+          headers: {
+            "uploadthing-hook": "callback",
           },
-        }),
-        headers: {
-          "uploadthing-hook": "callback",
-        },
-      });
-      if (isValidResponse(response)) {
-        logger.success(
-          "Successfully simulated callback for file",
-          opts.fileKey,
-        );
-      } else {
+        });
+        if (isValidResponse(response)) {
+          logger.success(
+            "Successfully simulated callback for file",
+            opts.fileKey,
+          );
+        } else {
+          throw new Error("Invalid response");
+        }
+      } catch (e) {
         logger.error(
-          "Failed to simulate callback for file. Is your webhook configured correctly?",
-          opts.fileKey,
+          `Failed to simulate callback for file '${file.fileKey}'. Is your webhook configured correctly?`,
+        );
+        logger.error(
+          `  - Make sure the URL '${callbackUrl}' is accessible without any authentication. You can verify this by running 'curl -X POST ${callbackUrl}' in your terminal`,
+        );
+        logger.error(
+          `  - Still facing issues? Read https://docs.uploadthing.com/faq for common issues`,
         );
       }
       return file;

@@ -11,6 +11,7 @@ import type {
 import {
   asArray,
   generateUploadThingURL,
+  isObject,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -75,6 +76,8 @@ export interface UTApiOptions {
    */
   defaultKeyType?: "fileKey" | "customId";
 }
+
+type UrlWithName = { url: MaybeUrl; name: string };
 
 export class UTApi {
   private fetch: FetchEsque;
@@ -198,7 +201,9 @@ export class UTApi {
    *   "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"
    * ])
    */
-  async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
+  async uploadFilesFromUrl<
+    T extends MaybeUrl | UrlWithName | (MaybeUrl | UrlWithName)[],
+  >(
     urls: T,
     opts?: {
       metadata: Json;
@@ -212,9 +217,12 @@ export class UTApi {
     formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
     const filesToUpload = await Promise.all(
-      asArray(urls).map(async (url) => {
+      asArray(urls).map(async (_url) => {
+        let url = isObject(_url) ? _url.url : _url;
         if (typeof url === "string") url = new URL(url);
-        const filename = url.pathname.split("/").pop() ?? "unknown-filename";
+        const filename = isObject(_url)
+          ? _url.name
+          : url.pathname.split("/").pop() ?? "unknown-filename";
 
         // Download the file on the user's server to avoid egress charges
         logger.debug("Downloading file:", url);
