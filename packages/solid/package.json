@@ -82,7 +82,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "rm -rf dist && tsup --config ./tsup.config.js",
-    "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch --config ./tsup.config.js",
+    "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch --config ./tsup.config.js",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
   },
