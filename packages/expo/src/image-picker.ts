@@ -2,16 +2,21 @@ import * as ImagePicker from "expo-image-picker";
 
 import type { UseUploadthingProps } from "@uploadthing/react";
 import { INTERNAL_uploadthingHookGen } from "@uploadthing/react/native";
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { generatePermittedFileTypes } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
-const generateMediaTypes = (fileTypes: string[]) => {
-  const allowsImages = fileTypes.some((t) => t.startsWith("image"));
-  const allowsVideos = fileTypes.some((t) => t.startsWith("video"));
+const generateMediaTypes = (config: ExpandedRouteConfig | undefined) => {
+  const { fileTypes, multiple } = generatePermittedFileTypes(config);
+  const allowsImg = fileTypes.some((t) => t.startsWith("image"));
+  const allowsVid = fileTypes.some((t) => t.startsWith("video"));
 
-  if (allowsImages && allowsVideos) return ImagePicker.MediaTypeOptions.All;
-  if (allowsImages) return ImagePicker.MediaTypeOptions.Images;
-  if (allowsVideos) return ImagePicker.MediaTypeOptions.Videos;
+  let mediaTypes: ImagePicker.MediaTypeOptions | undefined = undefined;
+  if (allowsImg && allowsVid) mediaTypes = ImagePicker.MediaTypeOptions.All;
+  if (allowsImg) mediaTypes = ImagePicker.MediaTypeOptions.Images;
+  if (allowsVid) mediaTypes = ImagePicker.MediaTypeOptions.Videos;
+
+  return { mediaTypes, multiple };
 };
 
 export const GENERATE_useImageUploader =
@@ -24,10 +29,9 @@ export const GENERATE_useImageUploader =
       url: initOpts.url,
     });
     const uploadthing = useUploadThing(endpoint, opts);
-    const { fileTypes, multiple } = generatePermittedFileTypes(
+    const { mediaTypes, multiple } = generateMediaTypes(
       uploadthing.permittedFileInfo?.config,
     );
-    const mediaTypes = generateMediaTypes(fileTypes);
 
     const openImagePicker = async (
       opts: undefined extends inferEndpointInput<TRouter[TEndpoint]>

@@ -2,12 +2,15 @@ import * as DocumentPicker from "expo-document-picker";
 
 import type { UseUploadthingProps } from "@uploadthing/react";
 import { INTERNAL_uploadthingHookGen } from "@uploadthing/react/native";
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import { generatePermittedFileTypes } from "uploadthing/client";
 import type { FileRouter, inferEndpointInput } from "uploadthing/server";
 
-function generateFileTypes(fileTypes: string[]) {
+const generateFileTypes = (config: ExpandedRouteConfig | undefined) => {
+  const { fileTypes, multiple } = generatePermittedFileTypes(config);
+
   // Forward mime-types from route config
-  const allowedMimeTypes = fileTypes;
+  const allowedMimeTypes: string[] = fileTypes;
 
   // Handle special UploadThing types
   if (fileTypes.includes("image")) allowedMimeTypes.push("image/*");
@@ -21,8 +24,8 @@ function generateFileTypes(fileTypes: string[]) {
     allowedMimeTypes.push("*/*");
   }
 
-  return allowedMimeTypes;
-}
+  return { mimeTypes: allowedMimeTypes, multiple };
+};
 
 export const GENERATE_useDocumentUploader =
   <TRouter extends FileRouter>(initOpts: { url: URL }) =>
@@ -34,7 +37,7 @@ export const GENERATE_useDocumentUploader =
       url: initOpts.url,
     });
     const uploadthing = useUploadThing(endpoint, opts);
-    const { fileTypes, multiple } = generatePermittedFileTypes(
+    const { mimeTypes, multiple } = generateFileTypes(
       uploadthing.permittedFileInfo?.config,
     );
 
@@ -47,7 +50,7 @@ export const GENERATE_useDocumentUploader =
     ) => {
       const response = await DocumentPicker.getDocumentAsync({
         multiple,
-        type: generateFileTypes(fileTypes),
+        type: mimeTypes,
       });
       if (response.canceled) {
         console.log("User cancelled document picker");
