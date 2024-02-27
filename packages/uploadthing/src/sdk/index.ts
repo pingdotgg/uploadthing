@@ -277,9 +277,7 @@ export class UTApi {
 
     const uploads = await uploadFilesInternal(
       {
-        files: maybeFiles.filter(
-          (f) => !(f instanceof UploadThingError),
-        ) as (Blob & { name: string })[],
+        files,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
         acl: opts?.acl,
