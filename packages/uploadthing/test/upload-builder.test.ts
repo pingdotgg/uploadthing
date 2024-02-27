@@ -6,15 +6,6 @@ import { z } from "zod";
 import { UTFiles } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
 
-const badReqMock = {
-  headers: {
-    get(key: string) {
-      if (key === "header1") return "woohoo";
-      return null;
-    },
-  },
-} as unknown as Request;
-
 it("typeerrors for invalid input", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
@@ -83,7 +74,9 @@ it("uses defaults for not-chained", async () => {
   expect(uploadable._def.routerConfig).toEqual(["image"]);
 
   const metadata = await uploadable._def.middleware({
-    req: badReqMock,
+    req: new Request("http://localhost", {
+      headers: { header1: "woohoo" },
+    }),
     res: undefined,
     event: undefined,
     input: undefined,
@@ -168,7 +161,9 @@ it("smoke", async () => {
   expect(uploadable._def.routerConfig).toEqual(["image", "video"]);
 
   const metadata = await uploadable._def.middleware({
-    req: badReqMock,
+    req: new Request("http://localhost", {
+      headers: { header1: "woohoo" },
+    }),
     input: { foo: "bar" },
     res: undefined,
     event: undefined,
