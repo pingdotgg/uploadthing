@@ -1,3 +1,4 @@
+import { error } from "console";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
@@ -216,7 +217,7 @@ export class UTApi {
     const formData = new FormData();
     formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
-    const filesToUpload = await Promise.all(
+    const maybeFiles = await Promise.all(
       asArray(urls).map(async (_url) => {
         let url = isObject(_url) ? _url.url : _url;
 
@@ -224,7 +225,7 @@ export class UTApi {
           // since dataurls will result in name being too long, tell the user
           // to use uploadFiles instead.
           if (url.startsWith("data:")) {
-            throw new UploadThingError({
+            return new UploadThingError({
               code: "BAD_REQUEST",
               message:
                 "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
@@ -240,7 +241,7 @@ export class UTApi {
         logger.debug("Downloading file:", url);
         const fileResponse = await this.fetch(url);
         if (!fileResponse.ok) {
-          throw new UploadThingError({
+          return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Failed to download requested file.",
             cause: fileResponse,
@@ -253,11 +254,32 @@ export class UTApi {
       }),
     );
 
-    logger.debug("All files downloaded, uploading...");
+    const { files, errors } = maybeFiles.reduce(
+      (acc, file) => {
+        if (file instanceof UploadThingError) {
+          acc.errors.push(file);
+        } else {
+          acc.files.push(file);
+        }
+        return acc;
+      },
+      { files: [] as FileEsque[], errors: [] as UploadThingError[] },
+    );
+
+    if (errors.length > 0) {
+      logger.debug(
+        "Some files failed to download:",
+        maybeFiles.filter((x) => x instanceof UploadThingError),
+      );
+    }
+
+    logger.debug("Uploading files:", files);
 
     const uploads = await uploadFilesInternal(
       {
-        files: filesToUpload,
+        files: maybeFiles.filter(
+          (f) => !(f instanceof UploadThingError),
+        ) as (Blob & { name: string })[],
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
         acl: opts?.acl,
@@ -268,7 +290,9 @@ export class UTApi {
       },
     );
 
-    const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
+    const uploadFileResponse = Array.isArray(urls)
+      ? [...errors, ...uploads]
+      : [...errors, ...uploads][0];
 
     logger.debug("Finished uploading:", uploadFileResponse);
     return uploadFileResponse as T extends MaybeUrl[]
