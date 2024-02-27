@@ -150,7 +150,7 @@ const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
 
 ```ts
 type MaybeUrl = string | URL;
-type UrlWithOverrides = { url: MaybeUrl; name: string; customId?: string };
+type UrlWithOverrides = { url: MaybeUrl; name?: string; customId?: string };
 ```
 
 ### `deleteFiles`
