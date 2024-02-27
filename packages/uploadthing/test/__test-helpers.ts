@@ -74,7 +74,7 @@ export const mockExternalRequests: FetchEsque = async (url, init) => {
       return Response.json({ url: "https://example.com" });
     }
     if (url.pathname === "/api/serverCallback") {
-      return Response.json({ success: true });
+      return Response.json({ status: "ok" });
     }
   }
 
