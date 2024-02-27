@@ -214,7 +214,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   // if passed data url, array contains UploadThingError
-  it("return is error if data url is passed", async () => {
+  it("returns error if data url is passed", async () => {
     const result = await utapi.uploadFilesFromUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
     );
