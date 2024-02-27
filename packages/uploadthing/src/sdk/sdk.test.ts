@@ -161,9 +161,12 @@ describe("uploadFilesFromUrl", () => {
     const result = await utapi.uploadFilesFromUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
     );
-    expect(result).toMatchInlineSnapshot(
-      `[Error: Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.]`,
-    );
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": null,
+        "error": [Error: Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.],
+      }
+    `);
   });
 });
 
