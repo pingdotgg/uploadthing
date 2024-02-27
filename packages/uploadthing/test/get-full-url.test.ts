@@ -4,8 +4,6 @@ import { describe, expect, it } from "vitest";
 
 import { resolveMaybeUrlArg } from "../src/internal/get-full-api-url";
 
-// TODO: Fix these to run effects
-
 describe("getFullApiUrl", () => {
   it("should return the provided url if it is already absolute", () => {
     const url = "https://example.com/foo/bar";
