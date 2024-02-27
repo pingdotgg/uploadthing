@@ -22,5 +22,6 @@ export default defineConfig({
       exclude: ["**/docs/**", "**/examples/**", "**/tooling/**"],
     },
   },
+  esbuild: { target: "es2020" },
   resolve: { alias: aliases },
 });
