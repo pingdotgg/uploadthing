@@ -1,62 +1,9 @@
 import { process } from "std-env";
-import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
-
-import type { FetchEsque } from "@uploadthing/shared";
+import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { UTApi, UTFile } from ".";
-import type { PSPResponse } from "../internal/handler";
+import { fetchMock, mockExternalRequests } from "../../test/__test-helpers";
 import type { UploadFileResponse } from "./utils";
-
-const mockFetch = vi.fn();
-beforeEach(() => mockFetch.mockClear());
-
-const mockedPresignedPost: PSPResponse = {
-  key: "abc-123.txt",
-  url: "https://bucket.s3.amazonaws.com/abc-123.txt",
-  fields: { key: "abc-123.txt" },
-  fileUrl: "https://utfs.io/f/abc-123.txt",
-  contentDisposition: "inline",
-  fileName: "foo.txt",
-  fileType: "text/plain",
-  pollingUrl: "https://uploadthing.com/api/serverCallback",
-  pollingJwt: "random-jwt",
-};
-
-const mockExternalRequests: FetchEsque = async (url, init) => {
-  mockFetch(url, init);
-  if (url instanceof Request) return new Response("Wut?", { status: 500 });
-  url = new URL(url);
-
-  // Mock file download
-  if (url.host === "cdn.foo.com") {
-    return new Response("Lorem ipsum doler sit amet", {
-      headers: { "Content-Type": "text/plain" },
-    });
-  }
-
-  // Mock UT Api
-  if (url.host === "uploadthing.com") {
-    if (url.pathname === "/api/uploadFiles") {
-      return Response.json({
-        // FIXME: Read body and return a better response?
-        data: [mockedPresignedPost, mockedPresignedPost],
-      });
-    }
-    if (url.pathname.startsWith("/api/pollUpload")) {
-      return Response.json({ status: "done" });
-    }
-    if (url.pathname === "/api/requestFileAccess") {
-      return Response.json({ url: "https://example.com" });
-    }
-  }
-
-  // Mock S3
-  if (url.host === "bucket.s3.amazonaws.com") {
-    return new Response(null, { status: 204 });
-  }
-
-  return new Response("Not Found", { status: 404 });
-};
 
 describe("UTFile", () => {
   it("can be constructed using Blob", async () => {
@@ -87,8 +34,8 @@ describe("uploadFiles", () => {
   it("uploads successfully", async () => {
     const result = await utapi.uploadFiles(fooFile);
 
-    expect(mockFetch).toHaveBeenCalledTimes(3);
-    expect(mockFetch).toHaveBeenNthCalledWith(
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    expect(fetchMock).toHaveBeenNthCalledWith(
       1,
       "https://uploadthing.com/api/uploadFiles",
       {
@@ -103,7 +50,7 @@ describe("uploadFiles", () => {
         method: "POST",
       },
     );
-    expect(mockFetch).toHaveBeenNthCalledWith(
+    expect(fetchMock).toHaveBeenNthCalledWith(
       2,
       "https://bucket.s3.amazonaws.com/abc-123.txt",
       expect.objectContaining({
@@ -111,7 +58,7 @@ describe("uploadFiles", () => {
         method: "POST",
       }),
     );
-    expect(mockFetch).toHaveBeenNthCalledWith(
+    expect(fetchMock).toHaveBeenNthCalledWith(
       3,
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       {
@@ -150,7 +97,7 @@ describe("uploadFiles", () => {
     await utapi.uploadFiles(file);
     expect(file.type).toBe("text/plain");
 
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       expect.objectContaining({}),
     );
@@ -161,7 +108,7 @@ describe("uploadFiles", () => {
     await utapi.uploadFiles(fileWithId);
     expect(fileWithId.customId).toBe("foo");
 
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"foo.txt","type":"text/plain","size":3,"customId":"foo"}],"metadata":{},"contentDisposition":"inline"}',
@@ -189,8 +136,8 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/foo.txt",
     );
 
-    expect(mockFetch).toHaveBeenCalledTimes(4); // download, request url, upload, poll
-    expect(mockFetch).toHaveBeenNthCalledWith(
+    expect(fetchMock).toHaveBeenCalledTimes(4); // download, request url, upload, poll
+    expect(fetchMock).toHaveBeenNthCalledWith(
       2,
       "https://uploadthing.com/api/uploadFiles",
       {
@@ -205,12 +152,12 @@ describe("uploadFilesFromUrl", () => {
         method: "POST",
       },
     );
-    expect(mockFetch).toHaveBeenNthCalledWith(
+    expect(fetchMock).toHaveBeenNthCalledWith(
       3,
       "https://bucket.s3.amazonaws.com/abc-123.txt",
       expect.objectContaining({}),
     );
-    expect(mockFetch).toHaveBeenNthCalledWith(
+    expect(fetchMock).toHaveBeenNthCalledWith(
       4,
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       expect.objectContaining({}),
@@ -250,7 +197,7 @@ describe("uploadFilesFromUrl", () => {
       name: "bar.txt",
     });
 
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"bar.txt","type":"text/plain","size":26}],"metadata":{},"contentDisposition":"inline"}',
@@ -291,8 +238,8 @@ describe("getSignedURL", () => {
   it("sends request without expiresIn", async () => {
     await utapi.getSignedURL("foo");
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
         body: `{"fileKey":"foo"}`,
@@ -311,8 +258,8 @@ describe("getSignedURL", () => {
   it("sends request with valid expiresIn (1)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
         body: `{"fileKey":"foo","expiresIn":86400}`,
@@ -331,8 +278,8 @@ describe("getSignedURL", () => {
   it("sends request with valid expiresIn (2)", async () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
 
-    expect(mockFetch).toHaveBeenCalledTimes(1);
-    expect(mockFetch).toHaveBeenCalledWith(
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
         body: `{"fileKey":"foo","expiresIn":180}`,
@@ -355,7 +302,7 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
-    expect(mockFetch).toHaveBeenCalledTimes(0);
+    expect(fetchMock).toHaveBeenCalledTimes(0);
   });
 
   it("throws if expiresIn is longer than 7 days", async () => {
@@ -364,6 +311,6 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
     );
-    expect(mockFetch).toHaveBeenCalledTimes(0);
+    expect(fetchMock).toHaveBeenCalledTimes(0);
   });
 });

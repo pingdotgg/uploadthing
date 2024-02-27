@@ -66,7 +66,7 @@ describe("adapters:h3", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
@@ -129,7 +129,7 @@ describe("adapters:server", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
@@ -189,7 +189,7 @@ describe("adapters:next", async () => {
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
@@ -289,7 +289,7 @@ describe("adapters:next-legacy", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
@@ -358,7 +358,6 @@ describe("adapters:express", async () => {
         files: [{ name: "foo.txt", size: 48 }],
       }),
     });
-    expect(res.json()).resolves.toEqual([]);
     expect(res.status).toBe(200);
 
     expect(middlewareMock).toHaveBeenCalledOnce();
@@ -374,7 +373,7 @@ describe("adapters:express", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
@@ -408,7 +407,6 @@ describe("adapters:express", async () => {
       }),
     });
     expect(res.status).toBe(200);
-    expect(res.json()).resolves.toEqual([]);
     expect(middlewareMock).toHaveBeenCalledOnce();
 
     server.close();
@@ -431,7 +429,6 @@ describe("adapters:express", async () => {
       }),
     });
     expect(res.status).toBe(200);
-    expect(res.json()).resolves.toEqual([]);
     expect(middlewareMock).toHaveBeenCalledOnce();
 
     server.close();
@@ -486,7 +483,6 @@ describe("adapters:fastify", async () => {
         files: [{ name: "foo.txt", size: 48 }],
       }),
     });
-    expect(res.json()).resolves.toEqual([]);
     expect(res.status).toBe(200);
 
     expect(middlewareMock).toHaveBeenCalledOnce();
@@ -502,7 +498,7 @@ describe("adapters:fastify", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {

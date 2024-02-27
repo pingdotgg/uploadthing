@@ -307,7 +307,7 @@ describe(".onUploadComplete()", () => {
 
     expect(res.status).toBe(200);
     // await expect(res.json()).resolves.toBe(null);
-    expect(uploadCompleteMock).toHaveBeenCalledTimes(1);
+    expect(uploadCompleteMock).toHaveBeenCalledOnce();
     expect(uploadCompleteMock).toHaveBeenCalledWith({
       file: {
         customId: null,
