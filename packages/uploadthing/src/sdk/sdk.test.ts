@@ -168,6 +168,61 @@ describe("uploadFilesFromUrl", () => {
       }
     `);
   });
+
+  test("order is preserved if some download fails", async () => {
+    const mockFetch = vi.fn();
+    const utapi = new UTApi({
+      apiKey: "sk_foo",
+      fetch: (url, init) => {
+        mockFetch(url, init);
+
+        // Mock file download
+        if (url instanceof URL && url.host === "cdn.foo.com") {
+          return Promise.resolve(
+            new Response("Lorem ipsum doler sit amet", {
+              headers: { "Content-Type": "text/plain" },
+            }),
+          );
+        }
+
+        // Mock presigned URL return
+        return Promise.resolve(Response.json([]));
+      },
+    });
+
+    const result = await utapi.uploadFilesFromUrl([
+      "https://cdn.foo.com/foo.txt",
+      "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
+      "https://cdn.foo.com/bar.txt",
+    ]);
+    /**
+     * FIXME: Update snap ones the upload fetches are mocked properly. This shows the order is preserved even if the uploads fail.
+     */
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "data": null,
+          "error": {
+            "code": undefined,
+            "data": undefined,
+            "message": "Cannot read properties of undefined (reading '0')",
+          },
+        },
+        {
+          "data": null,
+          "error": [Error: Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.],
+        },
+        {
+          "data": null,
+          "error": {
+            "code": undefined,
+            "data": undefined,
+            "message": "Cannot read properties of undefined (reading '1')",
+          },
+        },
+      ]
+    `);
+  });
 });
 
 describe("constructor throws if no apiKey or secret is set", () => {
