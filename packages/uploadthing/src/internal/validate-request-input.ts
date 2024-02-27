@@ -107,7 +107,7 @@ export const parseAndValidateRequest = (opts: {
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
 
     const clientVersion = headers.get("x-uploadthing-version");
-    if (clientVersion !== UPLOADTHING_VERSION) {
+    if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       logger.error("Client version mismatch");
       return yield* $(
         new UploadThingError({
