@@ -1,6 +1,12 @@
+import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
-import { fetchEff, UploadThingError } from "@uploadthing/shared";
+import {
+  fetchEff,
+  fetchEffJson,
+  generateUploadThingURL,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
@@ -21,6 +27,15 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
           Accept: "application/xml",
         }),
       }),
+      Effect.tapErrorCause(() =>
+        fetchEffJson(generateUploadThingURL("/api/failureCallback"), S.any, {
+          method: "POST",
+          body: JSON.stringify({
+            fileKey: presigned.key,
+            uploadId: null,
+          }),
+        }),
+      ),
     );
 
     if (!res.ok) {

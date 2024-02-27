@@ -59,7 +59,7 @@ export const UploadActionPayload = S.struct({
 
 export const MultipartFailureActionPayload = S.struct({
   fileKey: S.string,
-  uploadId: S.string,
+  uploadId: S.nullable(S.string),
   s3Error: S.optional(S.string),
   fileName: S.string,
 });

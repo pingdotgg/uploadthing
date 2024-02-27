@@ -10,15 +10,13 @@ import {
 import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { MPUResponse } from "./shared-schemas";
-import { createUTReporter } from "./ut-reporter";
+import type { createUTReporter } from "./ut-reporter";
 
 export const uploadMultipartWithProgress = (
   file: File,
   presigned: MPUResponse,
   opts: {
-    endpoint: string;
-    package: string;
-    url: URL;
+    reportEventToUT: ReturnType<typeof createUTReporter>;
     onUploadProgress?: ({
       file,
       progress,
@@ -29,12 +27,6 @@ export const uploadMultipartWithProgress = (
   },
 ) => {
   let uploadedBytes = 0;
-
-  const reportEventToUT = createUTReporter({
-    endpoint: opts.endpoint,
-    package: opts.package,
-    url: opts.url,
-  });
 
   return Effect.gen(function* ($) {
     const etags = yield* $(
@@ -62,7 +54,7 @@ export const uploadMultipartWithProgress = (
         { concurrency: "inherit" },
       ),
       Effect.tapErrorCause((error) =>
-        reportEventToUT("failure", {
+        opts.reportEventToUT("failure", {
           fileKey: presigned.key,
           uploadId: presigned.uploadId,
           fileName: file.name,
@@ -73,7 +65,7 @@ export const uploadMultipartWithProgress = (
 
     // Tell the server that the upload is complete
     const uploadOk = yield* $(
-      reportEventToUT("multipart-complete", {
+      opts.reportEventToUT("multipart-complete", {
         uploadId: presigned.uploadId,
         fileKey: presigned.key,
         etags,

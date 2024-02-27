@@ -21,7 +21,6 @@ import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
-import { maybeParseResponseXML } from "./s3-error-parser";
 import type { MPUResponse } from "./shared-schemas";
 
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
@@ -52,6 +51,7 @@ export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
             fileName: file.name,
             maxRetries: 10,
             key: presigned.key,
+            uploadId: presigned.uploadId,
           }).pipe(
             Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
             Effect.catchTag("RetryError", (e) => Effect.die(e)),
@@ -74,6 +74,7 @@ export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
 const uploadPart = (opts: {
   url: string;
   key: string;
+  uploadId: string;
   chunk: Blob;
   contentType: string;
   contentDisposition: ContentDisposition;
@@ -103,20 +104,12 @@ const uploadPart = (opts: {
     }),
     Effect.tapErrorTag("RetryError", () =>
       // Max retries exceeded, tell UT server that upload failed
-      fetchEff(generateUploadThingURL("/api/failureCallback"), {
-        method: "POST",
-        body: JSON.stringify({
-          fileKey: opts.key,
-        }),
-      }).pipe(
-        Effect.andThen(async (res) => {
-          const parsed = maybeParseResponseXML(await res.text());
+      abortMultipartUpload({ key: opts.key, uploadId: opts.uploadId }).pipe(
+        Effect.andThen((res) => {
           Effect.fail(
             new UploadThingError({
-              code: parsed?.code ?? "UPLOAD_FAILED",
-              message:
-                parsed?.message ??
-                `Failed to upload file ${opts.fileName} to S3`,
+              code: "UPLOAD_FAILED",
+              message: `Failed to upload file ${opts.fileName} to S3`,
               cause: res,
             }),
           );
@@ -147,7 +140,7 @@ export const abortMultipartUpload = (presigned: {
   uploadId: string;
 }) =>
   fetchEffJson(
-    generateUploadThingURL("/api/failMultipart"),
+    generateUploadThingURL("/api/failureCallback"),
     S.struct({ success: S.boolean, message: S.optional(S.string) }),
     {
       method: "POST",

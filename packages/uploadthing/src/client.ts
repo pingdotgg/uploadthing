@@ -23,7 +23,7 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
-import { createAPIRequestUrl } from "./internal/ut-reporter";
+import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 export { resolveMaybeUrlArg };
 
@@ -213,16 +213,27 @@ const uploadFile = <
       );
     }
 
+    const reportEventToUT = createUTReporter({
+      url: opts.url,
+      endpoint: slug,
+      package: opts.package,
+    });
+
     opts.onUploadBegin?.({ file: file.name });
     if ("urls" in presigned) {
       yield* $(
         uploadMultipartWithProgress(file, presigned, {
-          endpoint: slug,
+          reportEventToUT,
           ...opts,
         }),
       );
     } else {
-      yield* $(uploadPresignedPostWithProgress(file, presigned, { ...opts }));
+      yield* $(
+        uploadPresignedPostWithProgress(file, presigned, {
+          reportEventToUT,
+          ...opts,
+        }),
+      );
     }
     // wait a bit as it's unsreasonable to expect the server to be done by now
     // (UT should call user's server, then user's server may do some async work before responding with some data that should be sent back to UT)

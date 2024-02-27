@@ -1,13 +1,13 @@
-import { Effect } from "effect";
-
-import { UploadThingError } from "@uploadthing/shared";
+import { Cause, Effect } from "effect";
 
 import type { PSPResponse } from "./shared-schemas";
+import type { createUTReporter } from "./ut-reporter";
 
 export const uploadPresignedPostWithProgress = (
   file: File,
   presigned: PSPResponse,
   opts: {
+    reportEventToUT: ReturnType<typeof createUTReporter>;
     onUploadProgress?: ({
       file,
       progress,
@@ -40,14 +40,22 @@ export const uploadPresignedPostWithProgress = (
             xhr.send(formData);
           }),
       ),
+      Effect.tapErrorCause((error) =>
+        opts.reportEventToUT("failure", {
+          fileKey: presigned.key,
+          uploadId: null,
+          fileName: file.name,
+          s3Error: Cause.pretty(error).toString(),
+        }),
+      ),
     );
 
     if (response.status > 299 || response.status < 200) {
       return yield* $(
-        new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "Failed to upload file",
-          cause: response,
+        opts.reportEventToUT("failure", {
+          fileKey: presigned.key,
+          uploadId: null,
+          fileName: file.name,
         }),
       );
     }
