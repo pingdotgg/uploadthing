@@ -10,3 +10,12 @@ utapi.uploadFilesFromUrl({
     name: "my-custom-name.jpg"
 })
 ```
+
+you can also set a customId for the file by passing the `customId` option.
+
+```ts
+utapi.uploadFilesFromUrl({
+    url: 'https://example.com/foo.jpg',
+    customId: "my-custom-id"
+})
+```

@@ -77,7 +77,7 @@ export interface UTApiOptions {
   defaultKeyType?: "fileKey" | "customId";
 }
 
-type UrlWithName = { url: MaybeUrl; name: string };
+type UrlWithOverrides = { url: MaybeUrl; name?: string; customId?: string };
 
 export class UTApi {
   private fetch: FetchEsque;
@@ -202,7 +202,7 @@ export class UTApi {
    * ])
    */
   async uploadFilesFromUrl<
-    T extends MaybeUrl | UrlWithName | (MaybeUrl | UrlWithName)[],
+    T extends MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
   >(
     urls: T,
     opts?: {
@@ -237,9 +237,11 @@ export class UTApi {
           }
           url = new URL(url);
         }
-        const filename = isObject(_url)
-          ? _url.name
-          : url.pathname.split("/").pop() ?? "unknown-filename";
+
+        const {
+          name = url.pathname.split("/").pop() ?? "unknown-filename",
+          customId = undefined,
+        } = isObject(_url) ? _url : {};
 
         // Download the file on the user's server to avoid egress charges
         logger.debug("Downloading file:", url);
@@ -257,7 +259,7 @@ export class UTApi {
         logger.debug("Finished downloading file. Reading blob...");
         const blob = await fileResponse.blob();
         logger.debug("Finished reading blob.");
-        return new UTFile([blob], filename);
+        return new UTFile([blob], name, { customId });
       }),
     ).then((files) => files.filter((x): x is UTFile => x !== undefined));
 
