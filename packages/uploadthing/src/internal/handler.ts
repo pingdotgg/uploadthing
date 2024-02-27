@@ -360,7 +360,7 @@ const handleUploadAction = (opts: {
         Effect.fail(
           new UploadThingError({
             code: "BAD_REQUEST",
-            message: "File count mismatch",
+            message: "File count exceeded",
             cause: err.reason,
           }),
         ),

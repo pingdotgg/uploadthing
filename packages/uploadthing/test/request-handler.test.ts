@@ -121,7 +121,7 @@ describe("file route config", () => {
     });
   });
 
-  it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
+  it("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -134,7 +134,11 @@ describe("file route config", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toEqual({});
+    await expect(res.json()).resolves.toEqual({
+      cause:
+        "Error: You uploaded a image file that was 3.15MB, but the limit for that type is 2MB",
+      message: "File size mismatch",
+    });
   });
 
   it("blocks for too many files", async () => {
@@ -156,7 +160,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded 2 files of type 'image', but the limit for that type is 1",
-      message: "File count mismatch",
+      message: "File count exceeded",
     });
   });
 });

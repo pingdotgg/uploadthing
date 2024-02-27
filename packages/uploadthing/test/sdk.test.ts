@@ -24,7 +24,7 @@ describe("UTFile", () => {
   });
 });
 
-describe.only("uploadFiles", () => {
+describe("uploadFiles", () => {
   const utapi = new UTApi({
     apiKey: "sk_foo",
     logLevel: "debug",
