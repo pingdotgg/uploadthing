@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
 import * as express from "express";
+import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
 
@@ -389,5 +390,89 @@ describe("adapters:express", async () => {
     );
 
     server.close();
+  });
+});
+
+describe("adapters:fastify", async () => {
+  const { createUploadthing, createRouteHandler } = await import(
+    "../src/fastify"
+  );
+  const f = createUploadthing();
+
+  const router = {
+    middleware: f({ blob: {} })
+      .middleware((opts) => {
+        middlewareMock(opts);
+        expectTypeOf<{
+          event: undefined;
+          req: fastify.FastifyRequest;
+          res: fastify.FastifyReply;
+        }>(opts);
+        return {};
+      })
+      .onUploadComplete(uploadCompleteMock),
+  };
+
+  const startServer = async () => {
+    const app = fastify.default();
+    app.register(createRouteHandler, {
+      router,
+      config: {
+        uploadthingSecret: "sk_live_test",
+        fetch: mockExternalRequests,
+      },
+    });
+
+    const addr = await app.listen();
+    const port = addr.split(":").pop();
+    const url = `http://localhost:${port}/`;
+
+    return { url, close: () => app.close() };
+  };
+
+  it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async () => {
+    const server = await startServer();
+
+    const url = `${server.url}api/uploadthing`;
+    const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
+      method: "POST",
+      headers: baseHeaders,
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48 }],
+      }),
+    });
+    expect(res.json()).resolves.toEqual([]);
+    expect(res.status).toBe(200);
+
+    expect(middlewareMock).toHaveBeenCalledOnce();
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: undefined,
+        req: expect.objectContaining({
+          id: "req-1",
+          params: {},
+        }),
+        res: expect.objectContaining({}),
+      }),
+    );
+
+    // Should proceed to have requested URLs
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/prepareUpload",
+      {
+        body: `{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"${url}","callbackSlug":"middleware"}`,
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_live_test",
+          "x-uploadthing-be-adapter": "fastify",
+          "x-uploadthing-fe-package": "vitest",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+
+    await server.close();
   });
 });
