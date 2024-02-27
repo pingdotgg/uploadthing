@@ -121,7 +121,7 @@ describe("file route config", () => {
     });
   });
 
-  it("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
+  it("blocks for too big files", async () => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
