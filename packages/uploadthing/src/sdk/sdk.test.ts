@@ -1,6 +1,7 @@
 import { process } from "std-env";
 import { beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 
+import { UploadThingError } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
 import { UTApi, UTFile } from ".";
@@ -136,10 +137,32 @@ describe("uploadFilesFromUrl", () => {
     );
   });
 
-  test("rejects data URLs", async () => {
-    await expect(() =>
-      utapi.uploadFilesFromUrl("data:text/plain,foo"),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
+  // if passed data url, array contains UploadThingError
+  test("return is error if data url is passed", async () => {
+    const mockFetch = vi.fn();
+    const utapi = new UTApi({
+      apiKey: "sk_foo",
+      fetch: (url, init) => {
+        mockFetch(url, init);
+
+        // Mock file download
+        if (url instanceof URL && url.host === "cdn.foo.com") {
+          return Promise.resolve(
+            new Response("Lorem ipsum doler sit amet", {
+              headers: { "Content-Type": "text/plain" },
+            }),
+          );
+        }
+
+        // Mock presigned URL return
+        return Promise.resolve(Response.json([]));
+      },
+    });
+
+    const result = await utapi.uploadFilesFromUrl(
+      "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
+    );
+    expect(result).toMatchInlineSnapshot(
       `[Error: Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.]`,
     );
   });
