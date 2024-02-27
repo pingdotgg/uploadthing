@@ -185,7 +185,7 @@ export const buildRequestHandler = <
       req.headers.get("x-uploadthing-package") ?? "unknown";
 
     const clientVersion = req.headers.get("x-uploadthing-version");
-    if (clientVersion !== UPLOADTHING_VERSION) {
+    if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       logger.error("Client version mismatch");
       return new UploadThingError({
         code: "BAD_REQUEST",
