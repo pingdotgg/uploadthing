@@ -216,19 +216,22 @@ export class UTApi {
     const formData = new FormData();
     formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
-    const maybeFiles = await Promise.all(
-      asArray(urls).map(async (_url) => {
+    const downloadErrors: Record<number, UploadThingError> = {};
+
+    const files = await Promise.all(
+      asArray(urls).map(async (_url, index) => {
         let url = isObject(_url) ? _url.url : _url;
 
         if (typeof url === "string") {
           // since dataurls will result in name being too long, tell the user
           // to use uploadFiles instead.
           if (url.startsWith("data:")) {
-            return new UploadThingError({
+            downloadErrors[index] = new UploadThingError({
               code: "BAD_REQUEST",
               message:
                 "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
             });
+            return undefined;
           }
           url = new URL(url);
         }
@@ -240,37 +243,19 @@ export class UTApi {
         logger.debug("Downloading file:", url);
         const fileResponse = await this.fetch(url);
         if (!fileResponse.ok) {
-          return new UploadThingError({
+          downloadErrors[index] = new UploadThingError({
             code: "BAD_REQUEST",
             message: "Failed to download requested file.",
             cause: fileResponse,
           });
+          return undefined;
         }
         logger.debug("Finished downloading file. Reading blob...");
         const blob = await fileResponse.blob();
         logger.debug("Finished reading blob.");
-        return Object.assign(blob, { name: filename });
+        return new UTFile([blob], filename);
       }),
-    );
-
-    const { files, errors } = maybeFiles.reduce(
-      (acc, file) => {
-        if (file instanceof UploadThingError) {
-          acc.errors.push(file);
-        } else {
-          acc.files.push(file);
-        }
-        return acc;
-      },
-      { files: [] as FileEsque[], errors: [] as UploadThingError[] },
-    );
-
-    if (errors.length > 0) {
-      logger.debug(
-        "Some files failed to download:",
-        maybeFiles.filter((x) => x instanceof UploadThingError),
-      );
-    }
+    ).then((files) => files.filter((x): x is UTFile => x !== undefined));
 
     logger.debug("Uploading files:", files);
 
@@ -287,9 +272,14 @@ export class UTApi {
       },
     );
 
-    const uploadFileResponse = Array.isArray(urls)
-      ? [...errors, ...uploads]
-      : [...errors, ...uploads][0];
+    const responses = asArray(urls).map((_, index) => {
+      if (downloadErrors[index]) {
+        return { data: null, error: downloadErrors[index] };
+      }
+      return uploads.shift()!;
+    });
+
+    const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
 
     logger.debug("Finished uploading:", uploadFileResponse);
     return uploadFileResponse as T extends MaybeUrl[]
