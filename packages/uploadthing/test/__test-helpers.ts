@@ -2,8 +2,8 @@ import { beforeEach, vi } from "vitest";
 
 import type { FetchEsque } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../src/constants";
-import type { PSPResponse } from "../src/internal/handler";
+import { UPLOADTHING_VERSION } from "../src//internal/constants";
+import type { PSPResponse } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/server";
 
 export const fetchMock = vi.fn();
@@ -32,7 +32,6 @@ const mockedPresignedPost: PSPResponse = {
   url: "https://bucket.s3.amazonaws.com/abc-123.txt",
   fields: { key: "abc-123.txt" },
   fileUrl: "https://utfs.io/f/abc-123.txt",
-  contentDisposition: "inline",
   fileName: "foo.txt",
   fileType: "text/plain",
   pollingUrl: "https://uploadthing.com/api/serverCallback",
