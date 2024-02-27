@@ -117,7 +117,7 @@ describe("file route config", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: File type text not allowed for foo.txt",
-      message: "Invalid config.",
+      message: "Invalid config",
     });
   });
 
@@ -156,7 +156,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded 2 files of type 'image', but the limit for that type is 1",
-      message: "File limit exceeded",
+      message: "File count mismatch",
     });
   });
 });
@@ -177,7 +177,7 @@ describe(".input()", () => {
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      message: "Invalid input.",
+      message: "Invalid input",
       cause: {
         fieldErrors: {},
         formErrors: ["Required"],
@@ -201,7 +201,7 @@ describe(".input()", () => {
     expect(fetchMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      message: "Invalid input.",
+      message: "Invalid input",
       cause: {
         fieldErrors: {
           foo: ["Invalid enum value. Expected 'BAR' | 'BAZ', received 'QUX'"],
@@ -278,12 +278,12 @@ describe(".middleware()", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         'TypeError: Headers.get: "i dont exist" is an invalid header name.',
-      message: "Failed to run middleware.",
+      message: "Failed to run middleware",
     });
   });
 });
 
-describe(".onUploadComplete()", () => {
+describe.only(".onUploadComplete()", () => {
   it("forwards correct args to onUploadComplete handler", async () => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {

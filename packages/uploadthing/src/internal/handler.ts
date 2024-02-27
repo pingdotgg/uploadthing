@@ -26,8 +26,8 @@ import {
 import { getParseFn } from "./parser";
 import type { PresignedURLResponse } from "./shared-schemas";
 import {
+  FailureActionPayload,
   MultipartCompleteActionPayload,
-  MultipartFailureActionPayload,
   PresignedURLResponseSchema,
   UploadActionPayload,
 } from "./shared-schemas";
@@ -250,7 +250,7 @@ const runRouteMiddleware = (opts: {
           if (error instanceof UploadThingError) return error;
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run middleware.",
+            message: "Failed to run middleware",
             cause: error,
           });
         },
@@ -312,7 +312,7 @@ const handleUploadAction = (opts: {
           logger.error("An error occured trying to parse input", error);
           return new UploadThingError({
             code: "BAD_REQUEST",
-            message: "Invalid input.",
+            message: "Invalid input",
             cause: error,
           });
         },
@@ -336,7 +336,7 @@ const handleUploadAction = (opts: {
         Effect.fail(
           new UploadThingError({
             code: "BAD_REQUEST",
-            message: "Invalid config.",
+            message: "Invalid config",
             cause: err,
           }),
         ),
@@ -369,8 +369,35 @@ const handleUploadAction = (opts: {
         Effect.fail(
           new UploadThingError({
             code: "BAD_REQUEST",
-            message: "Invalid config.",
-            cause: err,
+            message: "Invalid config",
+            cause: err.reason,
+          }),
+        ),
+      ),
+      Effect.catchTag("InvalidFileSize", (err) =>
+        Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid config",
+            cause: err.reason,
+          }),
+        ),
+      ),
+      Effect.catchTag("InvalidFileType", (err) =>
+        Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid config",
+            cause: err.reason,
+          }),
+        ),
+      ),
+      Effect.catchTag("UnknownFileType", (err) =>
+        Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Unknown file type",
+            cause: err.reason,
           }),
         ),
       ),
@@ -463,7 +490,7 @@ const handleMultipartFailureAction = (opts: {
 }) =>
   Effect.gen(function* ($) {
     const { fileKey, uploadId } = yield* $(
-      parseRequestJson(opts.req, MultipartFailureActionPayload),
+      parseRequestJson(opts.req, FailureActionPayload),
     );
     logger.debug("Handling failure request with input:", { fileKey, uploadId });
     logger.debug("Notifying UploadThing that upload failed");

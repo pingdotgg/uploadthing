@@ -57,7 +57,7 @@ export const UploadActionPayload = S.struct({
   input: S.unknown as S.Schema<Json>,
 });
 
-export const MultipartFailureActionPayload = S.struct({
+export const FailureActionPayload = S.struct({
   fileKey: S.string,
   uploadId: S.nullable(S.string),
   s3Error: S.optional(S.string),

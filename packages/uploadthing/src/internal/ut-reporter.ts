@@ -8,15 +8,15 @@ import { fetchEff, UploadThingError } from "@uploadthing/shared";
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type {
+  FailureActionPayload,
   MultipartCompleteActionPayload,
-  MultipartFailureActionPayload,
   UploadActionPayload,
 } from "./shared-schemas";
 import type { ActionType } from "./types";
 
 type UTEvents = {
   upload: Schema.To<typeof UploadActionPayload>;
-  failure: Schema.To<typeof MultipartFailureActionPayload>;
+  failure: Schema.To<typeof FailureActionPayload>;
   "multipart-complete": Schema.To<typeof MultipartCompleteActionPayload>;
 };
 

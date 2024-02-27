@@ -207,7 +207,7 @@ export class UTApi {
    * @example
    * await deleteFiles("myCustomIdentifier", { keyType: "customId" })
    */
-  deleteFiles = (keys: string[] | string, opts?: DeleteFilesOptions) => {
+  deleteFiles = async (keys: string[] | string, opts?: DeleteFilesOptions) => {
     guardServerOnly();
     const { keyType = this.defaultKeyType } = opts ?? {};
 
@@ -215,7 +215,7 @@ export class UTApi {
       success: S.boolean,
     });
 
-    return this.executeAsync(
+    return await this.executeAsync(
       this.requestUploadThing(
         "/api/deleteFiles",
         keyType === "fileKey"
@@ -238,7 +238,7 @@ export class UTApi {
    * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
    * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
    */
-  getFileUrls = (keys: string[] | string, opts?: GetFileUrlsOptions) => {
+  getFileUrls = async (keys: string[] | string, opts?: GetFileUrlsOptions) => {
     guardServerOnly();
 
     const { keyType = this.defaultKeyType } = opts ?? {};
@@ -252,7 +252,7 @@ export class UTApi {
       ),
     });
 
-    return this.executeAsync(
+    return await this.executeAsync(
       this.requestUploadThing(
         "/api/getFileUrl",
         keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
@@ -271,7 +271,7 @@ export class UTApi {
    * const data = await listFiles({ limit: 1 });
    * console.log(data); // { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", id: "2e0fdb64-9957-4262-8e45-f372ba903ac8" }
    */
-  listFiles = (opts?: ListFilesOptions) => {
+  listFiles = async (opts?: ListFilesOptions) => {
     guardServerOnly();
 
     const responseSchema = S.struct({
@@ -290,19 +290,19 @@ export class UTApi {
       ),
     });
 
-    return this.executeAsync(
+    return await this.executeAsync(
       this.requestUploadThing("/api/listFiles", { ...opts }, responseSchema),
     );
   };
 
-  renameFiles = (updates: RenameFileUpdate | RenameFileUpdate[]) => {
+  renameFiles = async (updates: RenameFileUpdate | RenameFileUpdate[]) => {
     guardServerOnly();
 
     const responseSchema = S.struct({
       success: S.boolean,
     });
 
-    return this.executeAsync(
+    return await this.executeAsync(
       this.requestUploadThing(
         "/api/renameFiles",
         { updates: asArray(updates) },
@@ -314,7 +314,7 @@ export class UTApi {
   /** @deprecated Use {@link renameFiles} instead. */
   renameFile = this.renameFiles;
 
-  getUsageInfo = () => {
+  getUsageInfo = async () => {
     guardServerOnly();
 
     const responseSchema = S.struct({
@@ -327,13 +327,13 @@ export class UTApi {
       limitReadable: S.string,
     });
 
-    return this.executeAsync(
+    return await this.executeAsync(
       this.requestUploadThing("/api/getUsageInfo", {}, responseSchema),
     );
   };
 
   /** Request a presigned url for a private file(s) */
-  getSignedURL = (key: string, opts?: GetSignedURLOptions) => {
+  getSignedURL = async (key: string, opts?: GetSignedURLOptions) => {
     guardServerOnly();
 
     const expiresIn = opts?.expiresIn
@@ -359,7 +359,7 @@ export class UTApi {
       url: S.string,
     });
 
-    return this.executeAsync(
+    return await this.executeAsync(
       this.requestUploadThing(
         "/api/requestFileAccess",
         keyType === "fileKey"

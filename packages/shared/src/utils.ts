@@ -44,14 +44,28 @@ export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
   reason: string;
 }> {
   constructor(type: string, field?: string) {
-    if (field) {
-      super({
-        reason: `Expected route config to have a ${field} for key ${type} but none was found.`,
-      });
-    }
-    super({
-      reason: "Encountered an invalid route config during backfilling.",
-    });
+    const reason = field
+      ? `Expected route config to have a ${field} for key ${type} but none was found.`
+      : "Encountered an invalid route config during backfilling.";
+    super({ reason });
+  }
+}
+
+export class UnknownFileTypeError extends TaggedError("UnknownFileType")<{
+  reason: string;
+}> {
+  constructor(fileName: string) {
+    const reason = `Could not determine type for ${fileName}`;
+    super({ reason });
+  }
+}
+
+export class InvalidFileTypeError extends TaggedError("InvalidFileType")<{
+  reason: string;
+}> {
+  constructor(fileType: string, fileName: string) {
+    const reason = `File type ${fileType} not allowed for ${fileName}`;
+    super({ reason });
   }
 }
 
@@ -91,43 +105,46 @@ export const fillInputRouteConfig = Unify.unify(
   },
 );
 
-export function getTypeFromFileName(
-  fileName: string,
-  allowedTypes: FileRouterInputKey[],
-) {
-  const mimeType = lookup(fileName);
-  if (!mimeType) {
-    if (allowedTypes.includes("blob")) return "blob";
-    throw new Error(
-      `Could not determine type for ${fileName}, presigned URL generation failed`,
-    );
-  }
-
-  // If the user has specified a specific mime type, use that
-  if (allowedTypes.some((type) => type.includes("/"))) {
-    if (allowedTypes.includes(mimeType)) {
-      return mimeType;
+export const getTypeFromFileName = Unify.unify(
+  (
+    fileName: string,
+    allowedTypes: FileRouterInputKey[],
+  ): Effect.Effect<
+    FileRouterInputKey,
+    UnknownFileTypeError | InvalidFileTypeError
+  > => {
+    const mimeType = lookup(fileName);
+    if (!mimeType) {
+      if (allowedTypes.includes("blob")) return Effect.succeed("blob");
+      return Effect.fail(new UnknownFileTypeError(fileName));
     }
-  }
 
-  // Otherwise, we have a "magic" type eg. "image" or "video"
-  const type = (
-    mimeType.toLowerCase() === "application/pdf"
-      ? "pdf"
-      : mimeType.split("/")[0]
-  ) as AllowedFileType;
-
-  if (!allowedTypes.includes(type)) {
-    // Blob is a catch-all for any file type not explicitly supported
-    if (allowedTypes.includes("blob")) {
-      return "blob";
-    } else {
-      throw new Error(`File type ${type} not allowed for ${fileName}`);
+    // If the user has specified a specific mime type, use that
+    if (allowedTypes.some((type) => type.includes("/"))) {
+      if (allowedTypes.includes(mimeType)) {
+        return Effect.succeed(mimeType);
+      }
     }
-  }
 
-  return type;
-}
+    // Otherwise, we have a "magic" type eg. "image" or "video"
+    const type = (
+      mimeType.toLowerCase() === "application/pdf"
+        ? "pdf"
+        : mimeType.split("/")[0]
+    ) as AllowedFileType;
+
+    if (!allowedTypes.includes(type)) {
+      // Blob is a catch-all for any file type not explicitly supported
+      if (allowedTypes.includes("blob")) {
+        return Effect.succeed("blob");
+      } else {
+        return Effect.fail(new InvalidFileTypeError(type, fileName));
+      }
+    }
+
+    return Effect.succeed(type);
+  },
+);
 
 export function generateUploadThingURL(path: `/${string}`) {
   let host = "https://uploadthing.com";
@@ -137,19 +154,28 @@ export function generateUploadThingURL(path: `/${string}`) {
   return `${host}${path}`;
 }
 
+export class InvalidFileSizeError extends TaggedError("InvalidFileSize")<{
+  reason: string;
+}> {
+  constructor(fileSize: string) {
+    const reason = `Invalid file size: ${fileSize}`;
+    super({ reason });
+  }
+}
+
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
-export const fileSizeToBytes = (fileSize: FileSize) => {
+export const fileSizeToBytes = Unify.unify((fileSize: FileSize) => {
   // make sure the string is in the format of 123KB
   if (!fileSize.match(/([+-]?(?:\d*\.)?\d+)(\w+)/)) {
-    throw new Error(`Invalid fileSize string: ${fileSize}`);
+    return Effect.fail(new InvalidFileSizeError(fileSize));
   }
 
   const [value, unit] =
     fileSize?.match(/([+-]?(?:\d*\.)?\d+)(\w+)/)?.slice(1) ?? [];
   const i = FILESIZE_UNITS.indexOf(unit as FileSizeUnit);
-  return Number(value) * Math.pow(1000, i);
-};
+  return Effect.succeed(Number(value) * Math.pow(1000, i));
+});
 
 export const bytesToFileSize = (bytes: number) => {
   if (bytes === 0 || bytes === -1) {

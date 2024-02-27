@@ -137,7 +137,7 @@ export const completeMultipartUpload = (
 
 export const abortMultipartUpload = (presigned: {
   key: string;
-  uploadId: string;
+  uploadId: string | null;
 }) =>
   fetchEffJson(
     generateUploadThingURL("/api/failureCallback"),

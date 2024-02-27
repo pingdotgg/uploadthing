@@ -5,7 +5,7 @@
  * `The type of X cannot be inferred without a reference to <MODULE>`
  */
 import type * as S from "@effect/schema/Schema";
-import { Effect, Unify } from "effect";
+import { Effect } from "effect";
 import { TaggedError } from "effect/Data";
 import type * as _MAKE_TS_AWARE_1 from "effect/Types";
 
@@ -52,25 +52,27 @@ class FileCountMismatch extends TaggedError("FileCountMismatch")<{
 // Verify that the uploaded files doesn't violate the route config,
 // e.g. uploading more videos than allowed, or a file that is larger than allowed.
 // This is double-checked on infra side, but we want to fail early to avoid network latency.
-export const assertFilesMeetConfig = Unify.unify(
-  (
-    files: S.Schema.To<typeof UploadActionPayload>["files"],
-    routeConfig: ExpandedRouteConfig,
-  ) => {
+export const assertFilesMeetConfig = (
+  files: S.Schema.To<typeof UploadActionPayload>["files"],
+  routeConfig: ExpandedRouteConfig,
+) =>
+  Effect.gen(function* ($) {
     const counts: Record<string, number> = {};
 
     for (const file of files) {
-      const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
+      const type = yield* $(
+        getTypeFromFileName(file.name, objectKeys(routeConfig)),
+      );
       counts[type] = (counts[type] ?? 0) + 1;
 
       const sizeLimit = routeConfig[type]?.maxFileSize;
       if (!sizeLimit) {
-        return Effect.fail(new InvalidRouteConfigError(type, "maxFileSize"));
+        return yield* $(new InvalidRouteConfigError(type, "maxFileSize"));
       }
-      const sizeLimitBytes = fileSizeToBytes(sizeLimit);
+      const sizeLimitBytes = yield* $(fileSizeToBytes(sizeLimit));
 
       if (file.size > sizeLimitBytes) {
-        return Effect.fail(new FileSizeMismatch(type, sizeLimit, file.size));
+        return yield* $(new FileSizeMismatch(type, sizeLimit, file.size));
       }
     }
 
@@ -80,16 +82,15 @@ export const assertFilesMeetConfig = Unify.unify(
       const limit = routeConfig[key]?.maxFileCount;
 
       if (!limit) {
-        return Effect.fail(new InvalidRouteConfigError(key, "maxFileCount"));
+        return yield* $(new InvalidRouteConfigError(key, "maxFileCount"));
       }
       if (count > limit) {
-        return Effect.fail(new FileCountMismatch(key, limit, count));
+        return yield* $(new FileCountMismatch(key, limit, count));
       }
     }
 
-    return Effect.succeed(null);
-  },
-);
+    return null;
+  });
 
 export const parseAndValidateRequest = (opts: {
   req: Request;
@@ -219,7 +220,7 @@ export const parseAndValidateRequest = (opts: {
       const msg = `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
         .join(", ")
         .replace(/,(?!.*,)/, " or")} but got "${actionType}"`;
-      logger.error("Invalid action type.", msg);
+      logger.error("Invalid action type", msg);
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
