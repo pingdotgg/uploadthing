@@ -24,7 +24,7 @@ describe("UTFile", () => {
   });
 });
 
-describe("uploadFiles", () => {
+describe.only("uploadFiles", () => {
   const utapi = new UTApi({
     apiKey: "sk_foo",
     logLevel: "debug",
@@ -43,12 +43,12 @@ describe("uploadFiles", () => {
       {
         body: '{"files":[{"name":"foo.txt","type":"text/plain","size":3}],"metadata":{},"contentDisposition":"inline"}',
         cache: "no-store",
-        headers: expect.objectContaining({
-          // "Content-Type": "application/json",
-          // "x-uploadthing-api-key": "sk_foo",
-          // "x-uploadthing-be-adapter": "server-sdk",
-          // "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
         method: "POST",
       },
     );
@@ -65,7 +65,9 @@ describe("uploadFiles", () => {
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       {
         headers: {
+          "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": "6.4.1",
         },
       },

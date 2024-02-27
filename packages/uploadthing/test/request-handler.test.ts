@@ -283,7 +283,7 @@ describe(".middleware()", () => {
   });
 });
 
-describe.only(".onUploadComplete()", () => {
+describe(".onUploadComplete()", () => {
   it("forwards correct args to onUploadComplete handler", async () => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {
