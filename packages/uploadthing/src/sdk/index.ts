@@ -2,7 +2,12 @@ import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
 import type { Tag } from "effect/Context";
 
-import type { FetchContext, FetchEsque, MaybeUrl } from "@uploadthing/shared";
+import type {
+  FetchContext,
+  FetchEsque,
+  MaybeUrl,
+  SerializedUploadError,
+} from "@uploadthing/shared";
 import {
   asArray,
   fetchContext,
@@ -26,6 +31,7 @@ import type {
   UrlWithName,
   UTApiOptions,
 } from "./types";
+import type { UTFile } from "./ut-file";
 import {
   downloadFiles,
   guardServerOnly,
@@ -176,8 +182,11 @@ export class UTApi {
   ): Promise<UploadFileResponse | UploadFileResponse[]> {
     guardServerOnly();
 
+    const downloadErrors: Record<number, SerializedUploadError> = {};
+
     const uploads = await this.executeAsync(
-      downloadFiles(asArray(urls)).pipe(
+      downloadFiles(asArray(urls), downloadErrors).pipe(
+        Effect.andThen((files) => files.filter((f): f is UTFile => f !== null)),
         Effect.andThen((files) =>
           uploadFilesInternal({
             files,
@@ -189,7 +198,17 @@ export class UTApi {
       ),
     );
 
-    const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
+    /** Put it all back together, preserve the order of files */
+    const responses = asArray(urls).map((_, index) => {
+      if (downloadErrors[index]) {
+        return { data: null, error: downloadErrors[index] };
+      }
+      return uploads.shift()!;
+    });
+
+    /** Return single object or array based on input urls */
+    const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
+
     logger.debug("Finished uploading:", uploadFileResponse);
     return uploadFileResponse;
   }

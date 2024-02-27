@@ -215,6 +215,61 @@ describe("uploadFilesFromUrl", () => {
       },
     );
   });
+
+  // if passed data url, array contains UploadThingError
+  it("returns error if data url is passed", async () => {
+    const result = await utapi.uploadFilesFromUrl(
+      "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
+    );
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "data": null,
+        "error": {
+          "code": "BAD_REQUEST",
+          "data": undefined,
+          "message": "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+        },
+      }
+    `);
+  });
+
+  it("preserves order if some download fails", async () => {
+    const result = await utapi.uploadFilesFromUrl([
+      "https://cdn.foo.com/foo.txt",
+      "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
+      "https://cdn.foo.com/bar.txt",
+    ]);
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "data": {
+            "key": "abc-123.txt",
+            "name": "foo.txt",
+            "size": 26,
+            "url": "https://utfs.io/f/abc-123.txt",
+          },
+          "error": null,
+        },
+        {
+          "data": null,
+          "error": {
+            "code": "BAD_REQUEST",
+            "data": undefined,
+            "message": "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+          },
+        },
+        {
+          "data": {
+            "key": "abc-123.txt",
+            "name": "bar.txt",
+            "size": 26,
+            "url": "https://utfs.io/f/abc-123.txt",
+          },
+          "error": null,
+        },
+      ]
+    `);
+  });
 });
 
 describe("constructor throws if no apiKey or secret is set", () => {

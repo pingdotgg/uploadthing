@@ -24,6 +24,7 @@ import type {
   ContentDisposition,
   Json,
   MaybeUrl,
+  SerializedUploadError,
   Time,
   TimeShort,
 } from "@uploadthing/shared";
@@ -91,19 +92,53 @@ export type UploadFileResponse = Effect.Effect.Success<
  * isn't the best. We should support streams so we can download
  * just as much as we need at any time.
  */
-export const downloadFiles = (urls: (MaybeUrl | UrlWithName)[]) =>
+export const downloadFiles = (
+  urls: (MaybeUrl | UrlWithName)[],
+  downloadErrors: Record<number, SerializedUploadError>,
+) =>
   Effect.forEach(
     urls,
-    (url) =>
-      fetchEff(isObject(url) ? url.url : url).pipe(
-        Effect.andThen((response) => response.blob()),
-        Effect.andThen((blob) => {
-          const fileName = isObject(url)
-            ? url.name
-            : url.toString().split("/").pop() ?? "unknown-filename";
-          return new UTFile([blob], fileName);
-        }),
-      ),
+    (_url, idx) =>
+      Effect.gen(function* ($) {
+        let url = isObject(_url) ? _url.url : _url;
+        if (typeof url === "string") {
+          // since dataurls will result in name being too long, tell the user
+          // to use uploadFiles instead.
+          if (url.startsWith("data:")) {
+            downloadErrors[idx] = UploadThingError.toObject(
+              new UploadThingError({
+                code: "BAD_REQUEST",
+                message:
+                  "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+              }),
+            );
+            return null;
+          }
+          url = new URL(url);
+        }
+
+        const response = yield* $(fetchEff(url));
+        if (!response.ok) {
+          downloadErrors[idx] = UploadThingError.toObject(
+            new UploadThingError({
+              code: "BAD_REQUEST",
+              message: "Failed to download requested file.",
+              cause: response,
+            }),
+          );
+          return undefined;
+        }
+
+        return yield* $(
+          Effect.promise(() => response.blob()),
+          Effect.andThen((blob) => {
+            const fileName = isObject(_url)
+              ? _url.name
+              : url.toString().split("/").pop() ?? "unknown-filename";
+            return new UTFile([blob], fileName);
+          }),
+        );
+      }),
     { concurrency: 10 },
   );
 
