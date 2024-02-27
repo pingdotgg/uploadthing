@@ -327,8 +327,9 @@ describe("adapters:express", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = () => {
+  const startServer = (preregisters?: (app: express.Express) => void) => {
     const app = express.default();
+    preregisters?.(app);
     app.use(
       "/api/uploadthing",
       createRouteHandler({
@@ -352,7 +353,7 @@ describe("adapters:express", async () => {
     const url = `${server.url}/api/uploadthing/`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
       method: "POST",
-      headers: baseHeaders,
+      headers: { "content-type": "application/json", ...baseHeaders },
       body: JSON.stringify({
         files: [{ name: "foo.txt", size: 48 }],
       }),
@@ -388,6 +389,50 @@ describe("adapters:express", async () => {
         method: "POST",
       },
     );
+
+    server.close();
+  });
+
+  it("works with some standard built-in middlewares", async () => {
+    const server = startServer((app) => {
+      app.use(express.json());
+      app.use(express.urlencoded({ extended: true }));
+    });
+    const url = `${server.url}/api/uploadthing/`;
+
+    const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...baseHeaders },
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48 }],
+      }),
+    });
+    expect(res.status).toBe(200);
+    expect(res.json()).resolves.toEqual([]);
+    expect(middlewareMock).toHaveBeenCalledOnce();
+
+    server.close();
+  });
+
+  it("works with body-parser middleware", async () => {
+    // @ts-expect-error - no types
+    const bodyParser = await import("body-parser");
+    const server = startServer((app) => {
+      app.use(bodyParser.json());
+      app.use(bodyParser.urlencoded({ extended: true }));
+    });
+
+    const url = `${server.url}/api/uploadthing/`;
+    const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...baseHeaders },
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48 }],
+      }),
+    });
+    expect(res.status).toBe(200);
+    expect(res.json()).resolves.toEqual([]);
+    expect(middlewareMock).toHaveBeenCalledOnce();
 
     server.close();
   });
@@ -436,7 +481,7 @@ describe("adapters:fastify", async () => {
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
       method: "POST",
-      headers: baseHeaders,
+      headers: { "content-type": "application/json", ...baseHeaders },
       body: JSON.stringify({
         files: [{ name: "foo.txt", size: 48 }],
       }),
