@@ -1,4 +1,3 @@
-import { error } from "console";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";

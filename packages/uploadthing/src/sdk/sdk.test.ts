@@ -1,7 +1,6 @@
 import { process } from "std-env";
 import { beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest";
 
-import { UploadThingError } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
 import { UTApi, UTFile } from ".";
