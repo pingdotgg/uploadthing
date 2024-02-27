@@ -230,7 +230,7 @@ describe("uploadFilesFromUrl", () => {
     `);
   });
 
-  it("order is preserved if some download fails", async () => {
+  it("preserves order if some download fails", async () => {
     const result = await utapi.uploadFilesFromUrl([
       "https://cdn.foo.com/foo.txt",
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
