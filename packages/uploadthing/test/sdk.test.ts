@@ -299,7 +299,7 @@ describe("getSignedURL", () => {
   });
 
   it("throws if expiresIn is invalid", async () => {
-    await expect(
+    await expect(() =>
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
