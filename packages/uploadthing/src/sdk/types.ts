@@ -5,6 +5,7 @@ import type {
   ContentDisposition,
   FetchEsque,
   Json,
+  MaybeUrl,
   Time,
 } from "@uploadthing/shared";
 
@@ -15,6 +16,8 @@ export type FileEsque =
   | (Blob & { name: string; customId?: string | undefined })
   | UndiciFile
   | UTFile;
+
+export type UrlWithName = { url: MaybeUrl; name: string };
 
 export interface UTApiOptions {
   /**

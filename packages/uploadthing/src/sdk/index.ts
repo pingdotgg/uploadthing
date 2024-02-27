@@ -23,6 +23,7 @@ import type {
   ListFilesOptions,
   RenameFileUpdate,
   UploadFilesOptions,
+  UrlWithName,
   UTApiOptions,
 } from "./types";
 import {
@@ -162,15 +163,15 @@ export class UTApi {
    * ])
    */
   uploadFilesFromUrl(
-    urls: MaybeUrl,
+    urls: MaybeUrl | UrlWithName,
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResponse>;
   uploadFilesFromUrl(
-    urls: MaybeUrl[],
+    urls: (MaybeUrl | UrlWithName)[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResponse[]>;
   async uploadFilesFromUrl(
-    urls: MaybeUrl | MaybeUrl[],
+    urls: MaybeUrl | UrlWithName | (MaybeUrl | UrlWithName)[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResponse | UploadFileResponse[]> {
     guardServerOnly();

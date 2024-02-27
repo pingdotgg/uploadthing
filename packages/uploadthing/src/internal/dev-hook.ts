@@ -84,14 +84,22 @@ export const conditionalDevServer = (fileKey: string) => {
           "uploadthing-hook": "callback",
         },
       }),
+      Effect.catchTag("FetchError", () =>
+        Effect.succeed(new Response(null, { status: 500 })),
+      ),
     );
 
     if (isValidResponse(callbackResponse)) {
       logger.success("Successfully simulated callback for file", fileKey);
     } else {
       logger.error(
-        "Failed to simulate callback for file. Is your webhook configured correctly?",
-        fileKey,
+        `Failed to simulate callback for file '${file.fileKey}'. Is your webhook configured correctly?`,
+      );
+      logger.error(
+        `  - Make sure the URL '${callbackUrl}' is accessible without any authentication. You can verify this by running 'curl -X POST ${callbackUrl}' in your terminal`,
+      );
+      logger.error(
+        `  - Still facing issues? Read https://docs.uploadthing.com/faq for common issues`,
       );
     }
     return file;

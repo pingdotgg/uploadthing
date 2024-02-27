@@ -117,7 +117,7 @@
     "lint": "eslint src --max-warnings 0",
     "build": "NODE_OPTIONS=--max_old_space_size=16384 bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
-    "dev": "bunchee -w --tsconfig tsconfig.build.json",
+    "dev": "wait-on ../shared/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -134,17 +134,19 @@
     "@types/react": "18.2.55",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
+    "body-parser": "^1.20.2",
     "bunchee": "^4.4.8",
     "eslint": "^8.56.0",
     "express": "^4.18.2",
     "fastify": "^4.23.2",
     "h3": "^1.8.1",
-    "next": "14.0.1",
+    "next": "14.1.0",
     "solid-js": "^1.7.11",
     "tailwindcss": "^3.4.1",
     "type-fest": "^3.11.1",
     "typescript": "^5.3.3",
     "undici": "^6.5.0",
+    "wait-on": "^7.2.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
@@ -187,6 +189,15 @@
         {
           "name": "process",
           "message": "Use `import { process } from 'std-env` instead"
+        }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "uploadthing",
+            "uploadthing/*"
+          ]
         }
       ]
     }

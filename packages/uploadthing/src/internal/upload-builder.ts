@@ -35,7 +35,11 @@ function internalCreateBuilder<
       },
     },
 
-    inputParser: { parse: () => ({}), _input: {}, _output: {} },
+    inputParser: {
+      parse: () => undefined,
+      _input: undefined,
+      _output: undefined,
+    },
 
     middleware: () => ({}),
     onUploadError: () => ({}),

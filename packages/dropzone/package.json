@@ -48,7 +48,7 @@
     "lint": "eslint src --max-warnings 0",
     "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf core react solid node_modules",
-    "dev": "bunchee -w --tsconfig tsconfig.build.json",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -82,6 +82,17 @@
     "extends": [
       "@uploadthing/eslint-config/base"
     ],
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/dropzone",
+            "@uploadthing/dropzone/*"
+          ]
+        }
+      ]
+    },
     "overrides": [
       {
         "files": [

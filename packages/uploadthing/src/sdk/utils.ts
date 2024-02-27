@@ -15,6 +15,7 @@ import {
   fetchEff,
   fetchEffJson,
   generateUploadThingURL,
+  isObject,
   RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -34,7 +35,7 @@ import {
   MpuResponseSchema,
   PSPResponseSchema,
 } from "../internal/shared-schemas";
-import type { FileEsque } from "./types";
+import type { FileEsque, UrlWithName } from "./types";
 import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
@@ -90,15 +91,17 @@ export type UploadFileResponse = Effect.Effect.Success<
  * isn't the best. We should support streams so we can download
  * just as much as we need at any time.
  */
-export const downloadFiles = (urls: MaybeUrl[]) =>
+export const downloadFiles = (urls: (MaybeUrl | UrlWithName)[]) =>
   Effect.forEach(
     urls,
     (url) =>
-      fetchEff(url).pipe(
+      fetchEff(isObject(url) ? url.url : url).pipe(
         Effect.andThen((response) => response.blob()),
         Effect.andThen((blob) => {
-          const name = url.toString().split("/").pop();
-          return new UTFile([blob], name ?? "unknown-filename");
+          const fileName = isObject(url)
+            ? url.name
+            : url.toString().split("/").pop() ?? "unknown-filename";
+          return new UTFile([blob], fileName);
         }),
       ),
     { concurrency: 10 },
