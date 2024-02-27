@@ -1,7 +1,7 @@
 import { TaggedError } from "effect/Data";
 
-import type { Json, ResponseEsque } from "./types";
-import { isObject, safeParseJSON } from "./utils";
+import type { Json } from "./types";
+import { isObject } from "./utils";
 
 const ERROR_CODES = {
   // Generic
@@ -91,32 +91,6 @@ export class UploadThingError<
     }
   }
 
-  public static async fromResponse(response: ResponseEsque) {
-    const jsonOrError = await safeParseJSON<Json>(response);
-    if (jsonOrError instanceof Error) {
-      return new UploadThingError({
-        message: jsonOrError.message,
-        code: getErrorTypeFromStatusCode(response.status),
-        cause: response,
-      });
-    }
-
-    let message: string | undefined = undefined;
-    if (isObject(jsonOrError)) {
-      if (typeof jsonOrError.message === "string") {
-        message = jsonOrError.message;
-      } else if (typeof jsonOrError.error === "string") {
-        message = jsonOrError.error;
-      }
-    }
-    return new UploadThingError({
-      message,
-      code: getErrorTypeFromStatusCode(response.status),
-      cause: response,
-      data: jsonOrError,
-    });
-  }
-
   public static toObject(error: UploadThingError): SerializedUploadError {
     return {
       code: error.code,
@@ -132,13 +106,4 @@ export class UploadThingError<
 
 export function getStatusCodeFromError(error: UploadThingError<any>) {
   return ERROR_CODES[error.code] ?? 500;
-}
-
-function getErrorTypeFromStatusCode(statusCode: number): ErrorCode {
-  for (const [code, status] of Object.entries(ERROR_CODES)) {
-    if (status === statusCode) {
-      return code as ErrorCode;
-    }
-  }
-  return "INTERNAL_SERVER_ERROR";
 }
