@@ -7,6 +7,7 @@ import type {
   FetchEsque,
   Json,
   MaybeUrl,
+  Time,
 } from "@uploadthing/shared";
 import {
   asArray,
@@ -15,11 +16,16 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../internal/constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import type { LogLevel } from "../internal/logger";
 import { initLogger, logger } from "../internal/logger";
-import type { FileEsque, Time, UploadError, UploadFileResponse } from "./utils";
+import type {
+  FileEsque,
+  UploadError,
+  UploadFileResponse,
+  UrlWithOverrides,
+  UTApiOptions,
+} from "./types";
 import {
   getApiKeyOrThrow,
   guardServerOnly,
@@ -53,31 +59,6 @@ export class UTFile extends Blob {
     this.lastModified = optionsWithDefaults.lastModified;
   }
 }
-
-export interface UTApiOptions {
-  /**
-   * Provide a custom fetch function.
-   * @default globalThis.fetch
-   */
-  fetch?: FetchEsque;
-  /**
-   * Provide a custom UploadThing API key.
-   * @default process.env.UPLOADTHING_SECRET
-   */
-  apiKey?: string;
-  /**
-   * @default "info"
-   */
-  logLevel?: LogLevel;
-  /**
-   * Set the default key type for file operations. Allows you to set your preferred filter
-   * for file keys or custom identifiers without needing to specify it on every call.
-   * @default "fileKey"
-   */
-  defaultKeyType?: "fileKey" | "customId";
-}
-
-type UrlWithOverrides = { url: MaybeUrl; name?: string; customId?: string };
 
 export class UTApi {
   private fetch: FetchEsque;

@@ -7,7 +7,7 @@ import {
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type {
   MPUResponse,
