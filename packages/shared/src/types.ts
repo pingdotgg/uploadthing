@@ -91,6 +91,18 @@ type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
+export type TimeShort = "s" | "m" | "h" | "d";
+export type TimeLong = "second" | "minute" | "hour" | "day";
+type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type AutoCompleteableNumber = SuggestedNumbers | (number & {});
+export type Time =
+  | number
+  | `1${TimeShort}`
+  | `${AutoCompleteableNumber}${TimeShort}`
+  | `1 ${TimeLong}`
+  | `${AutoCompleteableNumber} ${TimeLong}s`;
+
 export type ContentDisposition = "inline" | "attachment";
 export type ACL = "public-read" | "private";
 type RouteConfig = {

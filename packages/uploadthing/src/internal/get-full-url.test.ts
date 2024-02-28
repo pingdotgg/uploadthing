@@ -1,7 +1,7 @@
 import { process } from "std-env";
 import { describe, expect, it } from "vitest";
 
-import { getFullApiUrl } from "../src/internal/get-full-api-url";
+import { getFullApiUrl } from "./get-full-api-url";
 
 describe("getFullApiUrl", () => {
   it("should return the provided url if it is already absolute", () => {
