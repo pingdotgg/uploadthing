@@ -28,6 +28,7 @@ import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */
 export * from "./internal/component-theming";
+export { version } from "../package.json";
 
 type UploadFilesOptions<
   TRouter extends FileRouter,

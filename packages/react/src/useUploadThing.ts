@@ -6,8 +6,8 @@ import {
   DANGEROUS__uploadFiles,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  version as uploadthingClientVersion,
 } from "uploadthing/client";
-import utPkgJson from "uploadthing/package.json";
 import type {
   DistributiveOmit,
   FileRouter,
@@ -46,11 +46,11 @@ export const INTERNAL_uploadthingHookGen = <
   console.log(
     "Checking semver",
     peerDependencies.uploadthing,
-    utPkgJson.version,
+    uploadthingClientVersion,
   );
-  if (!semverLite(peerDependencies.uploadthing, utPkgJson.version)) {
+  if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
     console.error(
-      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${utPkgJson.version}" is installed`,
+      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
     );
   }
 
