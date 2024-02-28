@@ -17,7 +17,11 @@ export type FileEsque =
   | UndiciFile
   | UTFile;
 
-export type UrlWithName = { url: MaybeUrl; name: string };
+export type UrlWithOverrides = {
+  url: MaybeUrl;
+  name?: string;
+  customId?: string;
+};
 
 export interface UTApiOptions {
   /**

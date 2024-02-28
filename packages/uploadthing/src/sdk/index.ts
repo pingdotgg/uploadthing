@@ -28,7 +28,7 @@ import type {
   ListFilesOptions,
   RenameFileUpdate,
   UploadFilesOptions,
-  UrlWithName,
+  UrlWithOverrides,
   UTApiOptions,
 } from "./types";
 import type { UTFile } from "./ut-file";
@@ -169,15 +169,15 @@ export class UTApi {
    * ])
    */
   uploadFilesFromUrl(
-    urls: MaybeUrl | UrlWithName,
+    urls: MaybeUrl | UrlWithOverrides,
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResponse>;
   uploadFilesFromUrl(
-    urls: (MaybeUrl | UrlWithName)[],
+    urls: (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResponse[]>;
   async uploadFilesFromUrl(
-    urls: MaybeUrl | UrlWithName | (MaybeUrl | UrlWithName)[],
+    urls: MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResponse | UploadFileResponse[]> {
     guardServerOnly();

@@ -216,6 +216,28 @@ describe("uploadFilesFromUrl", () => {
     );
   });
 
+  it("can provide a customId", async () => {
+    await utapi.uploadFilesFromUrl({
+      url: "https://cdn.foo.com/foo.txt",
+      customId: "my-custom-id",
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/uploadFiles",
+      {
+        body: '{"files":[{"name":"foo.txt","type":"text/plain","size":26,"customId":"my-custom-id"}],"metadata":{},"contentDisposition":"inline"}',
+        cache: "no-store",
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
+
   // if passed data url, array contains UploadThingError
   it("returns error if data url is passed", async () => {
     const result = await utapi.uploadFilesFromUrl(

@@ -36,7 +36,7 @@ import {
   MpuResponseSchema,
   PSPResponseSchema,
 } from "../internal/shared-schemas";
-import type { FileEsque, UrlWithName } from "./types";
+import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
@@ -93,7 +93,7 @@ export type UploadFileResponse = Effect.Effect.Success<
  * just as much as we need at any time.
  */
 export const downloadFiles = (
-  urls: (MaybeUrl | UrlWithName)[],
+  urls: (MaybeUrl | UrlWithOverrides)[],
   downloadErrors: Record<number, SerializedUploadError>,
 ) =>
   Effect.forEach(
@@ -114,8 +114,13 @@ export const downloadFiles = (
             );
             return null;
           }
-          url = new URL(url);
         }
+        url = new URL(url);
+
+        const {
+          name = url.pathname.split("/").pop() ?? "unknown-filename",
+          customId = undefined,
+        } = isObject(_url) ? _url : {};
 
         const response = yield* $(fetchEff(url));
         if (!response.ok) {
@@ -131,12 +136,7 @@ export const downloadFiles = (
 
         return yield* $(
           Effect.promise(() => response.blob()),
-          Effect.andThen((blob) => {
-            const fileName = isObject(_url)
-              ? _url.name
-              : url.toString().split("/").pop() ?? "unknown-filename";
-            return new UTFile([blob], fileName);
-          }),
+          Effect.andThen((blob) => new UTFile([blob], name, { customId })),
         );
       }),
     { concurrency: 10 },
