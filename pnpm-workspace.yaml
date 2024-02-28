@@ -1,5 +1,6 @@
 packages:
   - "docs"
+  - "fumadocs"
   - "examples/*"
   - "examples/backend-adapters/*"
   - "packages/*"

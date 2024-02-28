@@ -28,12 +28,18 @@ export type UseUploadthingProps<
     ? inferEndpointOutput<TRouter[TEndpoint]>
     : null,
 > = {
+  /** @default false */
   skipPolling?: TSkipPolling;
   onClientUploadComplete?: (res: UploadFileResponse<TServerOutput>[]) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
   onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
+};
+
+export type UploadThingComponentConfig = {
+  mode?: "auto" | "manual";
+  appendOnPaste?: boolean;
 };
 
 export type UploadthingComponentProps<
@@ -52,10 +58,7 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
-  config?: {
-    mode?: "auto" | "manual";
-    appendOnPaste?: boolean;
-  };
+  config?: UploadThingComponentConfig;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? // eslint-disable-next-line @typescript-eslint/ban-types
       {}

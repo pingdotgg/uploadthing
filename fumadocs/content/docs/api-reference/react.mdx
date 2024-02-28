@@ -1,0 +1,397 @@
+---
+title: Hello World
+description: Your first document
+---
+
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
+import { AutoTypeTable } from "fumadocs-ui/components/auto-type-table";
+import { Callout } from "fumadocs-ui/components/callout";
+import { TypeTable } from "fumadocs-ui/components/type-table";
+
+## Generated Components
+
+### generateComponents
+
+<Callout type="warn">
+
+As of `v6.2.1`, the `generateComponents` function has been deprecated in favor
+of the `generateUploadButton` and `generateUploadDropzone` functions to improve
+tree-shaking.
+
+</Callout>
+
+The `generateComponents` function is used to generate the UploadButton and
+UploadDropzone components you use to interact with UploadThing. Generating
+components allows for fully typesafe components bound to the type of your file
+router.
+
+```tsx copy filename="utils/uploadthing.tsx"
+import { generateComponents } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { UploadButton, UploadDropzone } =
+  generateComponents<OurFileRouter>();
+```
+
+### generateUploadButton
+
+The `generateUploadButton` function is used to generate the UploadButton
+component you use to interact with UploadThing. Generating components allows for
+fully typesafe components bound to the type of your file router.
+
+```tsx copy filename="utils/uploadthing.tsx"
+import { generateUploadButton } from "@uploadthing/react";
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
+```
+
+### generateUploadDropzone
+
+The `generateUploadDropzone` function is used to generate the UploadDropzone
+component you use to interact with UploadThing. Generating components allows for
+fully typesafe components bound to the type of your file router.
+
+```tsx copy filename="utils/uploadthing.tsx"
+import { generateUploadDropzone } from "@uploadthing/react";
+
+export const UploadButton = generateUploadDropzone<OurFileRouter>();
+```
+
+### UploadButton
+
+A simple button that opens the native file picker and uploads the selected
+files. The default button is shown below. See [Theming](/theming) on how to
+customize it.
+
+import { UploadButton } from "~/components/uploadthing";
+
+<UploadButton
+  className="mt-5"
+  __internal_button_disabled
+  __internal_state="ready"
+  content={{
+    allowedContent: "Allowed content",
+    button: "Choose file(s)",
+  }}
+/>
+
+```tsx copy filename="app/example-uploader.tsx"
+import { UploadButton } from "@uploadthing/react";
+
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export const OurUploadButton = () => (
+  <UploadButton<OurFileRouter>
+    endpoint="imageUploader"
+    onClientUploadComplete={(res) => {
+      // Do something with the response
+      console.log("Files: ", res);
+      alert("Upload Completed");
+    }}
+    onUploadError={(error: Error) => {
+      // Do something with the error.
+      alert(`ERROR! ${error.message}`);
+    }}
+    onBeforeUploadBegin={(files) => {
+      // Preprocess files before uploading (e.g. rename them)
+      return files.map(
+        (f) => new File([f], "renamed-" + f.name, { type: f.type }),
+      );
+    }}
+    onUploadBegin={(name) => {
+      // Do something once upload begins
+      console.log("Uploading: ", name);
+    }}
+  />
+);
+```
+
+#### Configuration
+
+<AutoTypeTable path="mdx-components.tsx" name="UploadButtonProps" />
+
+Config object
+
+<AutoTypeTable path="mdx-components.tsx" name="UploadThingComponentConfig" />
+
+| Attribute     | Type    | Required | Notes           | Description                                   |
+| :------------ | :------ | :------- | :-------------- | :-------------------------------------------- |
+| appendOnPaste | boolean | No       | Added in `v5.7` | enables ability to paste files from clipboard |
+
+The interface for `UploadFileResponse` is:
+
+```ts
+export type UploadFileResponse<TServerOutput> = {
+  name: string;
+  size: number;
+  key: string;
+  url: string;
+
+  // Matches what's returned from the serverside `onUploadComplete` callback
+  serverdata: TServerOutput;
+};
+```
+
+### UploadDropzone
+
+A `react-dropzone` powered dropzone that let's you drag and drop files to
+upload. The default dropzone is shown below. See [Theming](/theming) on how to
+customize it.
+
+import { UploadDropzone } from "~/components/uploadthing";
+
+<UploadDropzone
+  __internal_state="ready"
+  __internal_button_disabled
+  __internal_dropzone_disabled
+  __internal_show_button
+  content={{
+    allowedContent: "Allowed content",
+    button: "Ready",
+  }}
+/>
+
+```tsx copy filename="app/example-uploader.tsx"
+import { UploadDropzone } from "@uploadthing/react";
+
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export const OurUploadDropzone = () => (
+  <UploadDropzone<OurFileRouter>
+    endpoint="withoutMdwr"
+    onClientUploadComplete={(res) => {
+      // Do something with the response
+      console.log("Files: ", res);
+      alert("Upload Completed");
+    }}
+    onUploadError={(error: Error) => {
+      alert(`ERROR! ${error.message}`);
+    }}
+    onUploadBegin={(name) => {
+      // Do something once upload begins
+      console.log("Uploading: ", name);
+    }}
+  />
+);
+```
+
+#### Configuration
+
+| Prop                     | Type                                  | Required                | Notes           | Description                                                                                                                 |
+| :----------------------- | :------------------------------------ | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `<FileRouter>`           | generic                               | Yes                     |                 | The type from the FileRouter you defined in your backend                                                                    |
+| `endpoint`               | string                                | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to                                              |
+| `url`                    | string \| URL                         | No                      | Added in `v6.0` | The url to where you are serving your uploadthing file router, required if you're not serving from `/api/uploadthing`       |
+| `input`                  | string                                | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router                                         |
+| `onClientUploadComplete` | (res: UploadedFileResponse[]) => void | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
+| `onUploadError`          | function                              | No                      |                 | callback function when upload fails                                                                                         |
+| `onUploadProgress`       | function                              | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
+| `onBeforeUploadBegin`    | `(files: File[]) => File[]`           | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| `onUploadBegin`          | function                              | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
+| `config`                 | object                                | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                                                        |
+
+Config object
+
+| Attribute     | Type               | Required | Notes           | Description                                                                             |
+| :------------ | :----------------- | :------- | :-------------- | :-------------------------------------------------------------------------------------- |
+| mode          | 'auto' \| 'manual' | No       | Added in `v5.4` | mode of dropzone. 'manual' is default one. 'auto' triggers upload right after selection |
+| appendOnPaste | boolean            | No       | Added in `v5.7` | enables ability to paste files from clipboard                                           |
+
+## generateReactHelpers
+
+The `generateReactHelpers` function is used to generate the useUploadThing hook
+and the uploadFiles functions you use to interact with UploadThing in custom
+components. It takes your File Router as a generic
+
+```tsx copy
+import { generateReactHelpers } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { useUploadThing, uploadFiles } =
+  generateReactHelpers<OurFileRouter>();
+```
+
+### Configuration
+
+<AutoTypeTable path="mdx-components.tsx" name="GenerateTypedHelpersOptions" />
+
+| Prop | Type          | Required | Notes           | Description                                                                                                           |
+| :--- | :------------ | :------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| url  | string \| URL | No       | Added in `v6.0` | The url to where you are serving your uploadthing file router, required if you're not serving from `/api/uploadthing` |
+
+## useDropzone
+
+> Added in `v5.6`
+
+This hook is currently a minified fork of
+[react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
+ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
+
+export const removed = ["test1", "test2"];
+
+<Accordions type="single">
+  <Accordion title="Several features have been removed:">
+    <ul className="nx-mt-6 nx-list-disc first:nx-mt-0 ltr:nx-ml-6 rtl:nx-mr-6">
+      <li className="nx-my-2">`autofocus` Option</li>
+      <li className="nx-my-2">`children` Option</li>
+      <li className="nx-my-2">`getFilesFromEvent` Option</li>
+      <li className="nx-my-2">`noClick` Option</li>
+      <li className="nx-my-2">`noDrag` Option</li>
+      <li className="nx-my-2">`noDragEventsBubbling` Option</li>
+      <li className="nx-my-2">`noKeyboard` Option</li>
+      <li className="nx-my-2">`onDragEnter` Option</li>
+      <li className="nx-my-2">`onDragLeave` Option</li>
+      <li className="nx-my-2">`onDragOver` Option</li>
+      <li className="nx-my-2">`onDropAccepted` Option</li>
+      <li className="nx-my-2">`onDropRejected` Option</li>
+      <li className="nx-my-2">`onError` Option</li>
+      <li className="nx-my-2">`onFileDialogCancel` Option</li>
+      <li className="nx-my-2">`onFileDialogOpen` Option</li>
+      <li className="nx-my-2">`preventDropOnDocument` Option</li>
+      <li className="nx-my-2">`useFsAccessApi` Option</li>
+      <li className="nx-my-2">`validator` Option</li>
+      <li className="nx-my-2">`open` Method</li>
+    </ul>
+  </Accordion>
+</Accordions>
+
+You can import the minified hook from `@uploadthing/react`. If you need access
+to any of the removed APIs, you should import the original hook from
+`react-dropzone`.
+
+<Callout type="info">
+  This hook isn't strictly covered by semver as we might make changes to tailor
+  it to our needs in a future minor release. Migration guides will be provided
+  if this happens.
+</Callout>
+
+## useUploadThing
+
+This hook provides a function to start uploading, an `isUploading` state, and
+the `permittedFileInfo` which gives information about what file types, sizes and
+counts are allowed by the endpoint. See example below for a simple dropzone
+using the `useDropzone` and `useUploadThing` hooks. For a more complete example,
+take a look at
+[our provided components](https://github.com/pingdotgg/uploadthing/blob/11c5ab317203c5e13253bd90c6d57075feaed06f/packages/react/src/component.tsx)
+
+```tsx copy filename="app/example-custom-uploader.tsx"
+// Note: `useUploadThing` is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
+import { useDropzone } from "@uploadthing/react";
+import { generateClientDropzoneAccept } from "uploadthing/client";
+
+import { useUploadThing } from "~/utils/uploadthing";
+
+export function MultiUploader() {
+  const [files, setFiles] = useState<File[]>([]);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(acceptedFiles);
+  }, []);
+
+  const { startUpload, permittedFileInfo } = useUploadThing(
+    "myUploadEndpoint",
+    {
+      onClientUploadComplete: () => {
+        alert("uploaded successfully!");
+      },
+      onUploadError: () => {
+        alert("error occurred while uploading");
+      },
+      onUploadBegin: () => {
+        alert("upload has begun");
+      },
+    },
+  );
+
+  const fileTypes = permittedFileInfo?.config
+    ? Object.keys(permittedFileInfo?.config)
+    : [];
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+  });
+
+  return (
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
+      <div>
+        {files.length > 0 && (
+          <button onClick={() => startUpload(files)}>
+            Upload {files.length} files
+          </button>
+        )}
+      </div>
+      Drop files here!
+    </div>
+  );
+}
+```
+
+### Configuration
+
+```tsx
+const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+  endpoint,
+  opts: {
+    onClientUploadComplete: ({fileKey: string, fileUrl: string}[]) => void
+    onUploadError: (error: Error) => void
+    onUploadProgress: (progress: number) => void
+    onUploadBegin: (fileName: string) => void
+  },
+);
+```
+
+- `endpoint`: The name of the route you want this button to upload to
+
+| Option                 | Type                                  | Required | Notes           | Description                                                                                                                 |
+| :--------------------- | :------------------------------------ | :------- | :-------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| onClientUploadComplete | (res: UploadedFileResponse[]) => void | No       |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
+| onUploadError          | function                              | No       |                 | callback function when upload fails                                                                                         |
+| onUploadProgress       | function                              | No       | Added in `v5.1` | callback function for upload progress                                                                                       |
+| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No       | Added in `v5.8` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| onUploadBegin          | function                              | No       | Added in `v5.4` | callback function for upload begin                                                                                          |
+
+### Returns
+
+| Prop              | Type     | Description                                                                                                                                                                                |
+| :---------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| startUpload       | function | `(files: File[], input?: TInput) => void` function to start a file upload. `TInput` is inferred from what you've defined on [the fileroute](/api-reference/server#input-1) on the backend. |
+| isUploading       | function | if file(s) are currently uploading                                                                                                                                                         |
+| permittedFileInfo | function | information on permitted file types, sizes, and counts                                                                                                                                     |
+
+## uploadFiles
+
+```tsx copy
+// Note: this is IMPORTED FROM YOUR CODEBASE using the `generateReactHelpers` function
+import { uploadFiles } from "~/utils/uploadthing";
+
+const uploadSomeFiles = async () => {
+  const files = [
+    new File(["foo"], "foo.txt", {
+      type: "text/plain",
+    }),
+  ];
+
+  const res = await uploadFiles("yourEndpoint", {
+    files,
+    input: {}, // will be typesafe to match the input set for `imageUploader` in your FileRouter
+  });
+};
+```
+
+### Configuration
+
+```tsx
+uploadFiles(endpoint: string, opts: {
+  files: File[],
+  input?: {} // will be typesafe to match the input set for `endpoint` in your FileRouter
+})
+```
+
+| Arguments | Type   | Required                | Notes           | Description                                                                         |
+| :-------- | :----- | :---------------------- | :-------------- | :---------------------------------------------------------------------------------- |
+| files     | File[] | Yes                     |                 | The files you intend to upload                                                      |
+| endpoint  | string | Yes                     |                 | The name of the [route](./server#FileRouter) you want to upload to                  |
+| input     | string | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router |

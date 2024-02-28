@@ -27,22 +27,35 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
+type UploadButtonAppearance = {
+  container?: StyleField<ButtonStyleFieldCallbackArgs>;
+  button?: StyleField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
+};
+
+type UploadButtonContent = {
+  button?: ContentField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
+};
+
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
 > = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
-  appearance?: {
-    container?: StyleField<ButtonStyleFieldCallbackArgs>;
-    button?: StyleField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-    clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
-  };
-  content?: {
-    button?: ContentField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-    clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
-  };
+  /**
+   * See https://docs.uploadthing.com/theming#appearance-prop
+   */
+  appearance?: UploadButtonAppearance;
+  /**
+   * See https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: UploadButtonContent;
+  /**
+   * See https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   className?: string;
 };
 
