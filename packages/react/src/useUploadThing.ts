@@ -1,12 +1,13 @@
 import { useRef, useState } from "react";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import { semverLite, UploadThingError } from "@uploadthing/shared";
 import type { UploadFilesOptions } from "uploadthing/client";
 import {
   DANGEROUS__uploadFiles,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  version as uploadthingClientVersion,
 } from "uploadthing/client";
 import type {
   DistributiveOmit,
@@ -15,6 +16,7 @@ import type {
   inferErrorShape,
 } from "uploadthing/server";
 
+import { peerDependencies } from "../package.json";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -42,6 +44,12 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
+  if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
+    console.error(
+      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
+    );
+  }
+
   const useUploadThing = <
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
