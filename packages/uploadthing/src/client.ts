@@ -8,7 +8,7 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type {
   MPUResponse,
@@ -182,7 +182,6 @@ export const DANGEROUS__uploadFiles = async <
         headers: { authorization: presigned.pollingJwt },
       }).then((r) => r.json() as Promise<PollingResponse>);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return res.status === "done" ? res.callbackData : undefined;
     })) as inferEndpointOutput<TRouter[TEndpoint]>;
 

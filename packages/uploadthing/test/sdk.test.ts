@@ -2,7 +2,7 @@ import { process } from "std-env";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
-import type { UploadFileResponse } from "../src/sdk/utils";
+import type { UploadFileResponse } from "../src/sdk/types";
 import { fetchMock, mockExternalRequests } from "./__test-helpers";
 
 describe("UTFile", () => {

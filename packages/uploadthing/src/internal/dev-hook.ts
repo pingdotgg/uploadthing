@@ -5,7 +5,7 @@ import {
 } from "@uploadthing/shared";
 import type { FetchEsque, FileData, ResponseEsque } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "./constants";
 import { logger } from "./logger";
 
 const isValidResponse = (response: ResponseEsque) => {
