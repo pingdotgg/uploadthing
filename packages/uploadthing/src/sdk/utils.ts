@@ -76,9 +76,6 @@ export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
       ),
     ),
   );
-export type UploadFileResponse = Effect.Effect.Success<
-  ReturnType<typeof uploadFilesInternal>
->[number];
 
 /**
  * FIXME: downloading everything into memory and then upload

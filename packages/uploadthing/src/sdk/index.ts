@@ -27,6 +27,7 @@ import type {
   GetSignedURLOptions,
   ListFilesOptions,
   RenameFileUpdate,
+  UploadFileResponse,
   UploadFilesOptions,
   UrlWithOverrides,
   UTApiOptions,
@@ -38,7 +39,6 @@ import {
   parseTimeToSeconds,
   uploadFilesInternal,
 } from "./utils";
-import type { UploadFileResponse } from "./utils";
 
 export { UTFile };
 

@@ -6,6 +6,7 @@ import type {
   FetchEsque,
   Json,
   MaybeUrl,
+  SerializedUploadError,
   Time,
 } from "@uploadthing/shared";
 
@@ -52,6 +53,10 @@ export type UploadData = {
   name: string;
   size: number;
 };
+
+export type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: SerializedUploadError };
 
 export interface UploadFilesOptions {
   metadata?: Json;
