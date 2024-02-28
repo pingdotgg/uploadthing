@@ -12,24 +12,6 @@ import type {
 import type { LogLevel } from "../internal/logger";
 import type { UTFile } from "./ut-file";
 
-export type FileEsque =
-  | (Blob & { name: string; customId?: string | undefined })
-  | UndiciFile
-  | UTFile;
-
-export type UploadData = {
-  key: string;
-  url: string;
-  name: string;
-  size: number;
-};
-
-export type UrlWithOverrides = {
-  url: MaybeUrl;
-  name?: string;
-  customId?: string;
-};
-
 export interface UTApiOptions {
   /**
    * Provide a custom fetch function.
@@ -52,6 +34,24 @@ export interface UTApiOptions {
    */
   defaultKeyType?: "fileKey" | "customId";
 }
+
+export type UrlWithOverrides = {
+  url: MaybeUrl;
+  name?: string;
+  customId?: string;
+};
+
+export type FileEsque =
+  | (Blob & { name: string; customId?: string | undefined })
+  | UndiciFile
+  | UTFile;
+
+export type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
 
 export interface UploadFilesOptions {
   metadata?: Json;
