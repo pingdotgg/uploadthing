@@ -11,7 +11,7 @@ export default function Home() {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
-    onClientUploadComplete: () => {
+    onClientUploadComplete: (res) => {
       alert("Upload Completed");
     },
   });
@@ -23,6 +23,7 @@ export default function Home() {
          * @see https://docs.uploadthing.com/api-reference/react#uploadbutton
          */
         endpoint="videoAndImage"
+        skipPolling={true}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");

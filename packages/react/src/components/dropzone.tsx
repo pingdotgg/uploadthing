@@ -32,7 +32,8 @@ type DropzoneStyleFieldCallbackArgs = {
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
   appearance?: {
     container?: StyleField<DropzoneStyleFieldCallbackArgs>;
     uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
@@ -52,14 +53,19 @@ export type UploadDropzoneProps<
 export function UploadDropzone<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter, TEndpoint>,
+    : UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadDropzoneProps<TRouter, TEndpoint> & {
+  const $props = props as unknown as UploadDropzoneProps<
+    TRouter,
+    TEndpoint,
+    TSkipPolling
+  > & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";
@@ -90,6 +96,7 @@ export function UploadDropzone<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      skipPolling: $props.skipPolling,
       onClientUploadComplete: (res) => {
         setFiles([]);
         $props.onClientUploadComplete?.(res);
