@@ -44,11 +44,6 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  console.log(
-    "Checking semver",
-    peerDependencies.uploadthing,
-    uploadthingClientVersion,
-  );
   if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
     console.error(
       `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
