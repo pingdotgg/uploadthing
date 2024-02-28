@@ -1,5 +1,4 @@
 ---
-"docs": patch
 "@uploadthing/react": patch
 "uploadthing": patch
 ---
