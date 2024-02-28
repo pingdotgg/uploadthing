@@ -33,5 +33,10 @@
   },
   "ct3aMetadata": {
     "initVersion": "7.20.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "next/core-web-vitals"
+    ]
   }
 }
