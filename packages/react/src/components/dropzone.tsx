@@ -112,7 +112,9 @@ export function UploadDropzone<
     },
   );
 
-  const { fileTypes } = generatePermittedFileTypes(permittedFileInfo?.config);
+  const { fileTypes, multiple } = generatePermittedFileTypes(
+    permittedFileInfo?.config,
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -176,10 +178,10 @@ export function UploadDropzone<
   }, [startUpload, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
   const getUploadButtonText = (fileTypes: string[]) => {
-    if (fileTypes.length > 0)
+    if (files.length > 0)
       return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
     if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${fileTypes.length > 1 ? `s` : ``}`;
+    return `Choose File${multiple ? `(s)` : ``}`;
   };
 
   const getUploadButtonContents = (fileTypes: string[]) => {
@@ -276,29 +278,29 @@ export function UploadDropzone<
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
           allowedContentTextLabelGenerator(permittedFileInfo?.config)}
       </div>
-      {($props.__internal_show_button ?? files.length > 0) && (
-        <button
-          className={twMerge(
-            "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-            state === "readying" && "cursor-not-allowed bg-blue-400",
-            state === "uploading" &&
-              `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-            state === "ready" && "bg-blue-600",
-            styleFieldToClassName($props.appearance?.button, styleFieldArg),
-          )}
-          style={styleFieldToCssObject(
-            $props.appearance?.button,
-            styleFieldArg,
-          )}
-          onClick={onUploadClick}
-          data-ut-element="button"
-          data-state={state}
-          disabled={$props.__internal_button_disabled ?? state === "uploading"}
-        >
-          {contentFieldToContent($props.content?.button, styleFieldArg) ??
-            getUploadButtonContents(fileTypes)}
-        </button>
-      )}
+
+      <button
+        className={twMerge(
+          "relative mt-2 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          state === "readying" && "cursor-not-allowed bg-blue-400",
+          state === "uploading" &&
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
+          state === "ready" && "bg-blue-600",
+          "disabled:cursor-not-allowed disabled:bg-blue-400",
+          styleFieldToClassName($props.appearance?.button, styleFieldArg),
+        )}
+        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        onClick={onUploadClick}
+        data-ut-element="button"
+        data-state={state}
+        disabled={
+          $props.__internal_button_disabled ??
+          (!files.length || state === "uploading")
+        }
+      >
+        {contentFieldToContent($props.content?.button, styleFieldArg) ??
+          getUploadButtonContents(fileTypes)}
+      </button>
     </div>
   );
 }
