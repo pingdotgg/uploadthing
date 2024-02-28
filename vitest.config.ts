@@ -15,6 +15,13 @@ const aliases = readdirSync(
 );
 
 export default defineConfig({
-  test: {},
+  test: {
+    coverage: {
+      provider: "v8",
+      include: ["**/src/**"],
+      exclude: ["**/docs/**", "**/examples/**", "**/tooling/**"],
+    },
+  },
+  esbuild: { target: "es2020" },
   resolve: { alias: aliases },
 });
