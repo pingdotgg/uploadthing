@@ -186,7 +186,7 @@ export class UTApi {
 
     const uploads = await this.executeAsync(
       downloadFiles(asArray(urls), downloadErrors).pipe(
-        Effect.andThen((files) => files.filter((f): f is UTFile => f !== null)),
+        Effect.andThen((files) => files.filter((f): f is UTFile => f != null)),
         Effect.andThen((files) =>
           uploadFilesInternal({
             files,
