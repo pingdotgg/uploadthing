@@ -128,4 +128,26 @@ it("infers output properly", () => {
     const res = await startUpload(files);
     expectTypeOf<UploadFileResponse<null>[] | undefined>(res);
   });
+
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing("withFooInput", {
+      skipPolling: true,
+      onClientUploadComplete: (res) => {
+        expectTypeOf<UploadFileResponse<null>[]>(res);
+      },
+    });
+    const res = await startUpload(files, { foo: "bar" });
+    expectTypeOf<UploadFileResponse<null>[] | undefined>(res);
+  });
+
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing("withBarInput", {
+      skipPolling: true,
+      onClientUploadComplete: (res) => {
+        expectTypeOf<UploadFileResponse<null>[]>(res);
+      },
+    });
+    const res = await startUpload(files, { bar: 1 });
+    expectTypeOf<UploadFileResponse<null>[] | undefined>(res);
+  });
 });
