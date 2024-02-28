@@ -164,7 +164,7 @@ export const DANGEROUS__uploadFiles = async <
       // wait a bit as it's unsreasonable to expect the server to be done by now
       await new Promise((r) => setTimeout(r, 750));
     } else {
-      await uploadPresignedPost(file, presigned, { ...opts });
+      await uploadPresignedPost(file, presigned, { reportEventToUT, ...opts });
     }
 
     const serverData = (await withExponentialBackoff(async () => {
@@ -233,10 +233,6 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
       url,
       package: utPkg,
     } as any);
-};
-
-export const classNames = (...classes: (string | boolean)[]) => {
-  return classes.filter(Boolean).join(" ");
 };
 
 export const generateMimeTypes = (fileTypes: string[]) => {
@@ -327,6 +323,7 @@ async function uploadPresignedPost(
   file: File,
   presigned: PSPResponse,
   opts: {
+    reportEventToUT: ReturnType<typeof createUTReporter>;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
 ) {
@@ -347,13 +344,21 @@ async function uploadPresignedPost(
     xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
     xhr.onerror = (e) => reject(e);
     xhr.send(formData);
+  }).catch(async (error) => {
+    await opts.reportEventToUT("failure", {
+      fileKey: presigned.key,
+      uploadId: null,
+      fileName: file.name,
+      s3Error: (error as Error).toString(),
+    });
+    throw "unreachable"; // failure event will throw for us
   });
 
   if (response.status > 299 || response.status < 200) {
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: "Failed to upload file",
-      cause: response,
+    await opts.reportEventToUT("failure", {
+      fileKey: presigned.key,
+      uploadId: null,
+      fileName: file.name,
     });
   }
 }
