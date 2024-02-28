@@ -1,6 +1,5 @@
 {
   "name": "@example/with-drizzle-pagesdir",
-  "version": "0.1.0",
   "private": true,
   "scripts": {
     "build": "pnpm db:push && next build",
