@@ -33,11 +33,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "6.2.4",
-    "@uploadthing/shared": "6.3.1"
+    "@uploadthing/react": "^6.2.4",
+    "@uploadthing/shared": "^6.3.1"
   },
   "devDependencies": {
-    "@types/react": "18.2.55",
+    "@types/react": "18.2.60",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.8",
