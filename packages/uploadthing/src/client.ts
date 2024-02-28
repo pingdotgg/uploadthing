@@ -7,6 +7,7 @@ import {
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
+import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type {
@@ -28,7 +29,8 @@ import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */
 export * from "./internal/component-theming";
-export { version } from "../package.json";
+
+export const version = pkgJson.version;
 
 type UploadFilesOptions<
   TRouter extends FileRouter,
