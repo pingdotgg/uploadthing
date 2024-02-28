@@ -54,8 +54,6 @@ export const uploadRouter = {
       file.customId;
       //   ^?
       console.log("upload completed", file);
-
-      return { foo: "bar" as const };
     }),
 } satisfies FileRouter;
 
