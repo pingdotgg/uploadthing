@@ -165,7 +165,7 @@ export function UploadButton<
     if (uploadProgress === 100) {
       return <Spinner />;
     }
-    return `${uploadProgress}%`;
+    return <span className="z-50">{uploadProgress}%</span>;
   };
 
   const getInputProps = () => ({
