@@ -26,14 +26,14 @@
     "lint": "eslint src --max-warnings 0",
     "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "bunchee -w --tsconfig tsconfig.build.json",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.8",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "typescript": "^5.3.3"
   },
   "publishConfig": {
@@ -41,6 +41,17 @@
   },
   "eslintConfig": {
     "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/mime-types",
+            "@uploadthing/mime-types/*"
+          ]
+        }
+      ]
+    },
     "extends": [
       "@uploadthing/eslint-config/base"
     ]

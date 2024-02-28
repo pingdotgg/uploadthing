@@ -10,7 +10,6 @@ describe("getFullApiUrl", () => {
   });
 
   it("should add `window.location.origin` if the url is relative and request is clientside", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     global.window = {
       location: {
         origin: "http://example.com",

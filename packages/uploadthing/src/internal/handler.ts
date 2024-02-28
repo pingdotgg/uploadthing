@@ -184,6 +184,16 @@ export const buildRequestHandler = <
     const utFrontendPackage =
       req.headers.get("x-uploadthing-package") ?? "unknown";
 
+    const clientVersion = req.headers.get("x-uploadthing-version");
+    if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
+      logger.error("Client version mismatch");
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Client version mismatch",
+        cause: `Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
+      });
+    }
+
     // Validate inputs
     if (!slug) {
       logger.error("No slug provided in params:", params);

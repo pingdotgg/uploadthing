@@ -11,6 +11,7 @@ import type {
 import {
   asArray,
   generateUploadThingURL,
+  isObject,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -18,7 +19,7 @@ import { UPLOADTHING_VERSION } from "../constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { LogLevel } from "../internal/logger";
 import { initLogger, logger } from "../internal/logger";
-import type { FileEsque, Time, UploadFileResponse } from "./utils";
+import type { FileEsque, Time, UploadError, UploadFileResponse } from "./utils";
 import {
   getApiKeyOrThrow,
   guardServerOnly,
@@ -75,6 +76,8 @@ export interface UTApiOptions {
    */
   defaultKeyType?: "fileKey" | "customId";
 }
+
+type UrlWithOverrides = { url: MaybeUrl; name?: string; customId?: string };
 
 export class UTApi {
   private fetch: FetchEsque;
@@ -198,7 +201,9 @@ export class UTApi {
    *   "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"
    * ])
    */
-  async uploadFilesFromUrl<T extends MaybeUrl | MaybeUrl[]>(
+  async uploadFilesFromUrl<
+    T extends MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
+  >(
     urls: T,
     opts?: {
       metadata: Json;
@@ -211,33 +216,58 @@ export class UTApi {
     const formData = new FormData();
     formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
-    const filesToUpload = await Promise.all(
-      asArray(urls).map(async (url) => {
-        if (typeof url === "string") url = new URL(url);
-        const filename = url.pathname.split("/").pop() ?? "unknown-filename";
+    const downloadErrors: Record<number, UploadError> = {};
+
+    const files = await Promise.all(
+      asArray(urls).map(async (_url, index) => {
+        let url = isObject(_url) ? _url.url : _url;
+
+        if (typeof url === "string") {
+          // since dataurls will result in name being too long, tell the user
+          // to use uploadFiles instead.
+          if (url.startsWith("data:")) {
+            downloadErrors[index] = UploadThingError.toObject(
+              new UploadThingError({
+                code: "BAD_REQUEST",
+                message:
+                  "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+              }),
+            );
+            return undefined;
+          }
+          url = new URL(url);
+        }
+
+        const {
+          name = url.pathname.split("/").pop() ?? "unknown-filename",
+          customId = undefined,
+        } = isObject(_url) ? _url : {};
 
         // Download the file on the user's server to avoid egress charges
         logger.debug("Downloading file:", url);
         const fileResponse = await this.fetch(url);
         if (!fileResponse.ok) {
-          throw new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Failed to download requested file.",
-            cause: fileResponse,
-          });
+          downloadErrors[index] = UploadThingError.toObject(
+            new UploadThingError({
+              code: "BAD_REQUEST",
+              message: "Failed to download requested file.",
+              cause: fileResponse,
+            }),
+          );
+          return undefined;
         }
         logger.debug("Finished downloading file. Reading blob...");
         const blob = await fileResponse.blob();
         logger.debug("Finished reading blob.");
-        return Object.assign(blob, { name: filename });
+        return new UTFile([blob], name, { customId });
       }),
-    );
+    ).then((files) => files.filter((x): x is UTFile => x !== undefined));
 
-    logger.debug("All files downloaded, uploading...");
+    logger.debug("Uploading files:", files);
 
     const uploads = await uploadFilesInternal(
       {
-        files: filesToUpload,
+        files,
         metadata: opts?.metadata ?? {},
         contentDisposition: opts?.contentDisposition ?? "inline",
         acl: opts?.acl,
@@ -248,7 +278,16 @@ export class UTApi {
       },
     );
 
-    const uploadFileResponse = Array.isArray(urls) ? uploads : uploads[0];
+    /** Put it all back together, preserve the order of files */
+    const responses = asArray(urls).map((_, index) => {
+      if (downloadErrors[index]) {
+        return { data: null, error: downloadErrors[index] };
+      }
+      return uploads.shift()!;
+    });
+
+    /** Return single object or array based on input urls */
+    const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
 
     logger.debug("Finished uploading:", uploadFileResponse);
     return uploadFileResponse as T extends MaybeUrl[]
