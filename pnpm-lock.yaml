@@ -1013,8 +1013,6 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
-  tooling/gh-actions: {}
-
   tooling/tsconfig: {}
 
 packages:
