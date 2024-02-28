@@ -12,9 +12,9 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
-import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
+import { resolveMaybeUrlArg } from "./internal/resolve-url";
 import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type { PresignedURLResponse } from "./internal/shared-schemas";
 import type {

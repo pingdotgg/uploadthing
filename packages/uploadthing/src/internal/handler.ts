@@ -17,13 +17,13 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { resolveCallbackUrl } from "./get-full-api-url";
 import { logger } from "./logger";
 import {
   abortMultipartUpload,
   completeMultipartUpload,
 } from "./multi-part.server";
 import { getParseFn } from "./parser";
+import { resolveCallbackUrl } from "./resolve-url";
 import type { PresignedURLResponse } from "./shared-schemas";
 import {
   FailureActionPayload,

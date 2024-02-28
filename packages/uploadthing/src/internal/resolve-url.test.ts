@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { process } from "std-env";
 import { describe, expect, it } from "vitest";
 
-import { resolveMaybeUrlArg } from "../src/internal/get-full-api-url";
+import { resolveMaybeUrlArg } from "./resolve-url";
 
 describe("getFullApiUrl", () => {
   it("should return the provided url if it is already absolute", () => {

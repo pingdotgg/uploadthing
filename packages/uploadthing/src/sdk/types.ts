@@ -17,6 +17,13 @@ export type FileEsque =
   | UndiciFile
   | UTFile;
 
+export type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
+
 export type UrlWithOverrides = {
   url: MaybeUrl;
   name?: string;

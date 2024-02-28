@@ -36,7 +36,7 @@ import {
   MpuResponseSchema,
   PSPResponseSchema,
 } from "../internal/shared-schemas";
-import type { FileEsque, UrlWithOverrides } from "./types";
+import type { FileEsque, UploadData, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
@@ -47,13 +47,6 @@ export function guardServerOnly() {
     });
   }
 }
-
-type UploadData = {
-  key: string;
-  url: string;
-  name: string;
-  size: number;
-};
 
 type UploadFilesInternalOptions = {
   files: FileEsque[];
