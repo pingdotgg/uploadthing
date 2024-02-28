@@ -14,9 +14,9 @@
     "incremental": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "~/*": ["./src/*"],
-    },
+      "~/*": ["./src/*"]
+    }
   },
   "include": [".next/types/**/*.ts", "next-env.d.ts", "src", "*.mjs"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }
