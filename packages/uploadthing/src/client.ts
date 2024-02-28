@@ -100,7 +100,7 @@ export const DANGEROUS__uploadFiles = async <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-) => {
+): Promise<UploadFileResponse<TServerOutput>[]> => {
   // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
@@ -180,13 +180,13 @@ export const DANGEROUS__uploadFiles = async <
       await uploadPresignedPost(file, presigned, { reportEventToUT, ...opts });
     }
 
-    let serverData: TServerOutput | null = null;
+    let serverData: inferEndpointOutput<TRouter[TEndpoint]> | null = null;
     if (!opts.skipPolling) {
       serverData = await withExponentialBackoff(async () => {
         type PollingResponse =
           | {
               status: "done";
-              callbackData: TServerOutput;
+              callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
             }
           | { status: "still waiting" };
 
@@ -194,6 +194,7 @@ export const DANGEROUS__uploadFiles = async <
           headers: { authorization: presigned.pollingJwt },
         }).then((r) => r.json() as Promise<PollingResponse>);
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.status === "done" ? res.callbackData : undefined;
       });
     }
@@ -208,7 +209,8 @@ export const DANGEROUS__uploadFiles = async <
     };
   });
 
-  return Promise.all(fileUploadPromises);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return Promise.all(fileUploadPromises) as any;
 };
 
 export const genUploader = <TRouter extends FileRouter>(initOpts: {
