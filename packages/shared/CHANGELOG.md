@@ -1,5 +1,13 @@
 # @uploadthing/shared
 
+## 6.3.2
+
+### Patch Changes
+
+- [#641](https://github.com/pingdotgg/uploadthing/pull/641) [`f0a4ae4`](https://github.com/pingdotgg/uploadthing/commit/f0a4ae4f491c4e2a5c4517b27e5d76617d5db004) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: move some types to `@uploadthing/shared`
+
+- [#630](https://github.com/pingdotgg/uploadthing/pull/630) [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: enforce compatible `uploadthing` version for `@uploadthing/react`
+
 ## 6.3.1
 
 ### Patch Changes
