@@ -31,7 +31,7 @@ import type {
   UrlWithOverrides,
   UTApiOptions,
 } from "./types";
-import type { UTFile } from "./ut-file";
+import { UTFile } from "./ut-file";
 import {
   downloadFiles,
   guardServerOnly,
@@ -39,6 +39,8 @@ import {
   uploadFilesInternal,
 } from "./utils";
 import type { UploadFileResponse } from "./utils";
+
+export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
