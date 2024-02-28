@@ -1,11 +1,12 @@
 import { process } from "std-env";
-import type { File as UndiciFile } from "undici";
 
 import type {
   ACL,
   ContentDisposition,
   FetchEsque,
   Json,
+  Time,
+  TimeShort,
 } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
@@ -13,7 +14,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../internal/constants";
 import type {
   MPUResponse,
   PSPResponse,
@@ -22,6 +23,7 @@ import type {
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../internal/types";
+import type { FileEsque, UploadData, UploadError } from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -41,27 +43,6 @@ export function getApiKeyOrThrow(apiKey?: string) {
     message: "Missing `UPLOADTHING_SECRET` env variable.",
   });
 }
-
-export type FileEsque =
-  | (Blob & { name: string; customId?: string })
-  | UndiciFile;
-
-export type UploadData = {
-  key: string;
-  url: string;
-  name: string;
-  size: number;
-};
-
-export type UploadError = {
-  code: string;
-  message: string;
-  data: any;
-};
-
-export type UploadFileResponse =
-  | { data: UploadData; error: null }
-  | { data: null; error: UploadError };
 
 export const uploadFilesInternal = async (
   data: {
@@ -263,18 +244,6 @@ async function uploadPresignedPost(
 
   logger.debug("File", file.name, "uploaded successfully");
 }
-
-type TimeShort = "s" | "m" | "h" | "d";
-type TimeLong = "second" | "minute" | "hour" | "day";
-type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
-// eslint-disable-next-line @typescript-eslint/ban-types
-type AutoCompleteableNumber = SuggestedNumbers | (number & {});
-export type Time =
-  | number
-  | `1${TimeShort}`
-  | `${AutoCompleteableNumber}${TimeShort}`
-  | `1 ${TimeLong}`
-  | `${AutoCompleteableNumber} ${TimeLong}s`;
 
 export function parseTimeToSeconds(time: Time) {
   const match = time.toString().split(/(\d+)/).filter(Boolean);
