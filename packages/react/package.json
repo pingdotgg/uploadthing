@@ -61,7 +61,7 @@
     "@uploadthing/shared": "^6.3.1",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
-    "tailwind-merge": "^1.14.0"
+    "tailwind-merge": "^2.2.1"
   },
   "peerDependencies": {
     "next": "*",
@@ -74,13 +74,13 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^20.11.10",
-    "@types/react": "18.2.55",
+    "@types/node": "^20.11.21",
+    "@types/react": "18.2.60",
     "@types/react-dom": "18.2.19",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.8",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "next": "14.1.0",
     "react": "18.2.0",
     "tailwindcss": "^3.4.1",
