@@ -1,7 +1,6 @@
 {
   "name": "@example/backend-adapters",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "workspaces": [
     "client",
@@ -19,8 +18,8 @@
   },
   "dependencies": {
     "@uploadthing/react": "6.2.4",
-    "concurrently": "^8.2.1",
+    "concurrently": "^8.2.2",
     "typescript": "^5.3.3",
-    "uploadthing": "^6.4.1"
+    "uploadthing": "6.4.1"
   }
 }

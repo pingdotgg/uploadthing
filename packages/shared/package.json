@@ -42,7 +42,7 @@
     "@uploadthing/mime-types": "0.2.4",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.8",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "typescript": "^5.3.3",
     "wait-on": "^7.2.0"
   },

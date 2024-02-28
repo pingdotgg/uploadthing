@@ -61,7 +61,7 @@ export default function Page() {
         {isLoading && <div>Waiting for files...</div>}
         {files?.length === 0 && <i>No files uploaded yet</i>}
         {files?.map((file) => (
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8 }} key={file.id}>
             <div>Name: {file.name}</div>
             <a href={file.url} target="_blank">
               View

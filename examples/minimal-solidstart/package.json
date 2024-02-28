@@ -14,21 +14,21 @@
     "@solidjs/router": "^0.8.3",
     "@uploadthing/solid": "6.1.3",
     "attr-accept": "^2.2.2",
-    "solid-js": "^1.7.11",
-    "solid-start": "^0.3.5",
+    "solid-js": "^1.8.15",
+    "solid-start": "^0.3.10",
     "solidjs-dropzone": "^1.0.0",
-    "undici": "^6.5.0",
+    "undici": "^6.6.2",
     "uploadthing": "6.4.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^20.11.10",
-    "@typescript-eslint/parser": "^6.19.1",
-    "eslint": "^8.56.0",
+    "@types/node": "^20.11.21",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
     "eslint-plugin-solid": "^0.13.1",
-    "solid-start-node": "^0.3.4",
+    "solid-start-node": "^0.3.10",
     "typescript": "^5.3.3",
-    "vite": "^5.0.12"
+    "vite": "^5.1.4"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
