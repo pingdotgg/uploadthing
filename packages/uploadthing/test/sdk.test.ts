@@ -64,7 +64,7 @@ describe("uploadFiles", () => {
       {
         headers: {
           "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-version": "6.4.1",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
       },
     );

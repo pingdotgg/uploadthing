@@ -7,6 +7,7 @@ import {
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
+import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import type {
@@ -29,9 +30,12 @@ import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
  */
 export * from "./internal/component-theming";
 
-type UploadFilesOptions<
+export const version = pkgJson.version;
+
+export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 > = {
   onUploadProgress?: ({
     file,
@@ -40,7 +44,7 @@ type UploadFilesOptions<
     file: string;
     progress: number;
   }) => void;
-  onUploadBegin?: ({ file }: { file: string }) => void;
+  onUploadBegin?: (opts: { file: string }) => void;
 
   files: File[];
 
@@ -50,6 +54,14 @@ type UploadFilesOptions<
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+
+  /**
+   * Skip polling for server data after upload is complete
+   * Useful if you want faster response times and don't need
+   * any data returned from the server `onUploadComplete` callback
+   * @default false
+   */
+  skipPolling?: TSkipPolling;
 
   /**
    * The uploadthing package that is making this request
@@ -84,10 +96,14 @@ export type UploadFileResponse<TServerOutput> = {
 export const DANGEROUS__uploadFiles = async <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
 >(
   endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
-) => {
+  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
+): Promise<UploadFileResponse<TServerOutput>[]> => {
   // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
@@ -167,21 +183,24 @@ export const DANGEROUS__uploadFiles = async <
       await uploadPresignedPost(file, presigned, { reportEventToUT, ...opts });
     }
 
-    const serverData = (await withExponentialBackoff(async () => {
-      type PollingResponse =
-        | {
-            status: "done";
-            callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
-          }
-        | { status: "still waiting" };
+    let serverData: inferEndpointOutput<TRouter[TEndpoint]> | null = null;
+    if (!opts.skipPolling) {
+      serverData = await withExponentialBackoff(async () => {
+        type PollingResponse =
+          | {
+              status: "done";
+              callbackData: inferEndpointOutput<TRouter[TEndpoint]>;
+            }
+          | { status: "still waiting" };
 
-      const res = await fetch(presigned.pollingUrl, {
-        headers: { authorization: presigned.pollingJwt },
-      }).then((r) => r.json() as Promise<PollingResponse>);
+        const res = await fetch(presigned.pollingUrl, {
+          headers: { authorization: presigned.pollingJwt },
+        }).then((r) => r.json() as Promise<PollingResponse>);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return res.status === "done" ? res.callbackData : undefined;
-    })) as inferEndpointOutput<TRouter[TEndpoint]>;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return res.status === "done" ? res.callbackData : undefined;
+      });
+    }
 
     return {
       name: file.name,
@@ -190,10 +209,11 @@ export const DANGEROUS__uploadFiles = async <
 
       serverData,
       url: "https://utfs.io/f/" + presigned.key,
-    } satisfies UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>;
+    };
   });
 
-  return Promise.all(fileUploadPromises);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return Promise.all(fileUploadPromises) as any;
 };
 
 export const genUploader = <TRouter extends FileRouter>(initOpts: {
@@ -220,15 +240,18 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
 
   const utPkg = initOpts.package;
 
-  return <TEndpoint extends keyof TRouter>(
+  return <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
     opts: DistributiveOmit<
-      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-      "url"
+      UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
+      "url" | "package"
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+    DANGEROUS__uploadFiles<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
       url,
       package: utPkg,
