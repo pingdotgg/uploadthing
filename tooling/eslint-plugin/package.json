@@ -1,13 +1,15 @@
 {
   "name": "@uploadthing/eslint-plugin",
   "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
   "exports": {
     ".": {
-      "require": "./dist/index.js"
+      "import": "./dist/index.js"
     }
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target bun",
+    "build": "bun build.ts",
     "clean": "git clean -xdf dist node_modules"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 {
   "extends": "@uploadthing/tsconfig/base.json",
-  "include": ["src"],
+  "include": ["src", "*.ts"],
   "exclude": ["dist"],
   "compilerOptions": {
     "declaration": false,

@@ -23,9 +23,8 @@ jobs:
           ]
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Install necessary deps
         run: bun i
