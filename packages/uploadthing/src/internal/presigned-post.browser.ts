@@ -8,13 +8,7 @@ export const uploadPresignedPostWithProgress = (
   presigned: PSPResponse,
   opts: {
     reportEventToUT: ReturnType<typeof createUTReporter>;
-    onUploadProgress?: ({
-      file,
-      progress,
-    }: {
-      file: string;
-      progress: number;
-    }) => void;
+    onUploadProgress?: (opts: { file: string; progress: number }) => void;
   },
 ) =>
   Effect.gen(function* ($) {

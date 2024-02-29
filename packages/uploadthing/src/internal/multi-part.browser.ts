@@ -17,13 +17,7 @@ export const uploadMultipartWithProgress = (
   presigned: MPUResponse,
   opts: {
     reportEventToUT: ReturnType<typeof createUTReporter>;
-    onUploadProgress?: ({
-      file,
-      progress,
-    }: {
-      file: string;
-      progress: number;
-    }) => void;
+    onUploadProgress?: (opts: { file: string; progress: number }) => void;
   },
 ) => {
   let uploadedBytes = 0;
