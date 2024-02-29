@@ -19,11 +19,6 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Use PNPM (for publish step)
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.15
-
       - name: Check packages for common errors
         run: bun turbo --filter "./packages/*" build lint test typecheck
 

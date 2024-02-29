@@ -55,7 +55,6 @@ const config = {
     "packages/config/**",
     ".next",
     "dist",
-    "pnpm-lock.yaml",
   ],
   reportUnusedDisableDirectives: true,
 };
