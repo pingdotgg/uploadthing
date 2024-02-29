@@ -8,7 +8,7 @@
 import type { AcceptProp, DropzoneState } from "./types";
 
 /**
- * Copyright (c) 2015 Andrey Okonetchnikov MIT
+ * Copyright (c) (MIT License) 2015 Andrey Okonetchnikov
  * https://github.com/react-dropzone/attr-accept/blob/master/src/index.js
  */
 function accepts(file: File, acceptedFiles: string | string[]): boolean {
