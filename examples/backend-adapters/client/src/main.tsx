@@ -27,7 +27,7 @@ function App() {
 function WhatServer() {
   const [serverResponse, setServerResponse] = React.useState<string>("");
   useEffect(() => {
-    fetch("/api")
+    fetch("http://localhost:3000/api")
       .then((res) => res.text())
       .then(setServerResponse);
   }, []);

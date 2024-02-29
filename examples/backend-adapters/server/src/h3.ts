@@ -1,12 +1,21 @@
 import "dotenv/config";
 
-import { createApp, createRouter, eventHandler } from "h3";
+import {
+  appendCorsPreflightHeaders,
+  createApp,
+  createRouter,
+  eventHandler,
+} from "h3";
 
 import { createRouteHandler } from "uploadthing/h3";
 
 import { uploadRouter } from "./router";
 
-const app = createApp();
+const app = createApp({
+  onRequest(event) {
+    appendCorsPreflightHeaders(event, {});
+  },
+});
 const router = createRouter();
 
 router.get(

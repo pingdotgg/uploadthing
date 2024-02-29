@@ -11,6 +11,8 @@
     "dev:h3": "NODE_ENV=development listhen -w src/h3.ts"
   },
   "dependencies": {
+    "@elysiajs/cors": "^0.8.0",
+    "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
