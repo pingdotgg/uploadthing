@@ -1,5 +1,11 @@
 # @uploadthing/react
 
+## 6.3.1
+
+### Patch Changes
+
+- [#645](https://github.com/pingdotgg/uploadthing/pull/645) [`c7070c1`](https://github.com/pingdotgg/uploadthing/commit/c7070c1ef58d3be12639b1c7af468eb0b961b3aa) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: make dropzone less confusing
+
 ## 6.3.0
 
 ### Minor Changes
