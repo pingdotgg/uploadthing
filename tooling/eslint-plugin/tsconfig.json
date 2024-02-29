@@ -1,11 +1,12 @@
 {
   "extends": "@uploadthing/tsconfig/base.json",
-  "include": ["*.ts", "src"],
+  "include": ["src"],
   "exclude": ["dist"],
   "compilerOptions": {
     "declaration": false,
     "declarationMap": false,
-    "moduleResolution": "nodenext",
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
     "allowJs": true,
     "checkJs": true
   }

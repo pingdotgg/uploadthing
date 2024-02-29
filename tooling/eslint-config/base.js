@@ -1,6 +1,3 @@
-// https://github.com/microsoft/rushstack/tree/main/eslint/eslint-patch
-require("@rushstack/eslint-patch/modern-module-resolution");
-
 /** @type {import("eslint").Linter.Config} */
 const config = {
   extends: [
@@ -55,7 +52,6 @@ const config = {
     "packages/config/**",
     ".next",
     "dist",
-    "pnpm-lock.yaml",
   ],
   reportUnusedDisableDirectives: true,
 };

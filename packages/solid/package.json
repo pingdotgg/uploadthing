@@ -102,7 +102,7 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsup",
+    "build": "tsup",
     "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
