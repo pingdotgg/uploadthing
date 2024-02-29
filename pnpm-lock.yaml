@@ -314,6 +314,9 @@ importers:
         specifier: 0.3.4
         version: 0.3.4(@types/node@20.11.21)(preact@10.19.6)
     devDependencies:
+      '@types/node':
+        specifier: ^20.11.21
+        version: 20.11.21
       postcss:
         specifier: ^8.4.35
         version: 8.4.35
