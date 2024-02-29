@@ -5,14 +5,34 @@
  * The original package is licensed under the MIT license.
  */
 
-import attrAccepts from "attr-accept";
-
 import type { AcceptProp, DropzoneState } from "./types";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const accepts: typeof attrAccepts =
-  // @ts-expect-error - ESM interop
-  typeof attrAccepts === "function" ? attrAccepts : attrAccepts.default;
+/**
+ * Copyright (c) (MIT License) 2015 Andrey Okonetchnikov
+ * https://github.com/react-dropzone/attr-accept/blob/master/src/index.js
+ */
+function accepts(file: File, acceptedFiles: string | string[]): boolean {
+  if (file && acceptedFiles) {
+    const acceptedFilesArray = Array.isArray(acceptedFiles)
+      ? acceptedFiles
+      : acceptedFiles.split(",");
+    const fileName = file.name ?? "";
+    const mimeType = (file.type ?? "").toLowerCase();
+    const baseMimeType = mimeType.replace(/\/.*$/, "");
+
+    return acceptedFilesArray.some((type) => {
+      const validType = type.trim().toLowerCase();
+      if (validType.startsWith(".")) {
+        return fileName.toLowerCase().endsWith(validType);
+      } else if (validType.endsWith("/*")) {
+        // This is something like a image/* mime type
+        return baseMimeType === validType.replace(/\/.*$/, "");
+      }
+      return mimeType === validType;
+    });
+  }
+  return true;
+}
 
 // Firefox versions prior to 53 return a bogus MIME type for every file drag, so dragovers with
 // that MIME type will always be accepted
