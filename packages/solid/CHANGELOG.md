@@ -1,5 +1,12 @@
 # @uploadthing/solid
 
+## 6.1.5
+
+### Patch Changes
+
+- Updated dependencies [[`9ae82cd`](https://github.com/pingdotgg/uploadthing/commit/9ae82cd70ddca34f3e2547132d3b505fd665c205)]:
+  - @uploadthing/dropzone@0.2.0
+
 ## 6.1.4
 
 ### Patch Changes

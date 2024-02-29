@@ -4,9 +4,15 @@ import {
   generateUploadDropzone,
 } from "@uploadthing/solid";
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import { OurFileRouter } from "~/server/uploadthing";
 
-export const UploadButton = generateUploadButton<OurFileRouter>();
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
+const initOpts = {
+  /**
+   * Set absolute URL to have SSR working properly
+   */
+  url: "http://localhost:3000",
+};
 
-export const { useUploadThing } = generateSolidHelpers<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>(initOpts);
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>(initOpts);
+export const { useUploadThing } = generateSolidHelpers<OurFileRouter>(initOpts);
