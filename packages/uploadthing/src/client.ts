@@ -11,6 +11,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
@@ -44,9 +45,12 @@ More Effect refactoring:
  */
 export * from "./internal/component-theming";
 
-type UploadFilesOptions<
+export const version = pkgJson.version;
+
+export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 > = {
   onUploadProgress?: ({
     file,
@@ -55,7 +59,7 @@ type UploadFilesOptions<
     file: string;
     progress: number;
   }) => void;
-  onUploadBegin?: ({ file }: { file: string }) => void;
+  onUploadBegin?: (opts: { file: string }) => void;
 
   files: File[];
 
@@ -65,6 +69,14 @@ type UploadFilesOptions<
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+
+  /**
+   * Skip polling for server data after upload is complete
+   * Useful if you want faster response times and don't need
+   * any data returned from the server `onUploadComplete` callback
+   * @default false
+   */
+  skipPolling?: TSkipPolling;
 
   /**
    * The uploadthing package that is making this request
@@ -103,9 +115,10 @@ export type UploadFileResponse<TServerOutput> = {
 export const DANGEROUS__uploadFiles = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
+  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
 ) => {
   const uploadFiles = Effect.gen(function* ($) {
     const presigneds = yield* $(
@@ -174,29 +187,36 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
   package: string;
 }) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const utPkg = initOpts.package;
 
-  return <TEndpoint extends keyof TRouter>(
+  return <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
     opts: DistributiveOmit<
-      Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+      UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
       "url" | "package"
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+    DANGEROUS__uploadFiles<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
       url,
-      package: initOpts.package,
+      package: utPkg,
     } as any);
 };
 
 const uploadFile = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TServerData = inferEndpointOutput<TRouter[TEndpoint]>,
+  TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
 >(
   slug: string,
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
+  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
   presigned: PresignedURLResponse[number],
 ) =>
   Effect.gen(function* ($) {
@@ -243,31 +263,36 @@ const uploadFile = <
     const PollingResponse = S.union(
       S.struct({
         status: S.literal("done"),
-        callbackData: S.any as S.Schema<TServerData, any>,
+        callbackData: S.any as S.Schema<TServerOutput, any>,
       }),
       S.struct({ status: S.literal("still waiting") }),
     );
 
-    const serverData = yield* $(
-      fetchEffJson(presigned.pollingUrl, PollingResponse, {
-        headers: { authorization: presigned.pollingJwt },
-      }),
-      Effect.andThen((res) =>
-        res.status === "done"
-          ? Effect.succeed(res.callbackData)
-          : Effect.fail(new RetryError()),
-      ),
-      Effect.retry({
-        while: (res) => res instanceof RetryError,
-        schedule: exponentialBackoff,
-      }),
-    );
+    let serverData: TServerOutput | null = null;
+    if (!opts.skipPolling) {
+      serverData = yield* $(
+        fetchEffJson(presigned.pollingUrl, PollingResponse, {
+          headers: { authorization: presigned.pollingJwt },
+        }),
+        Effect.andThen((res) =>
+          res.status === "done"
+            ? Effect.succeed(res.callbackData)
+            : Effect.fail(new RetryError()),
+        ),
+        Effect.retry({
+          while: (res) => res instanceof RetryError,
+          schedule: exponentialBackoff,
+        }),
+      );
+    }
 
-    return {
+    const ret: UploadFileResponse<TServerOutput> = {
       name: file.name,
       size: file.size,
       key: presigned.key,
-      serverData,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      serverData: serverData as any,
       url: "https://utfs.io/f/" + presigned.key,
-    } satisfies UploadFileResponse<TServerData>;
+    };
+    return ret;
   });

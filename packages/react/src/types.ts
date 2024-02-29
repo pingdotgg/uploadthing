@@ -23,10 +23,13 @@ export interface GenerateTypedHelpersOptions {
 export type UseUploadthingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
 > = {
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
+  skipPolling?: TSkipPolling;
+  onClientUploadComplete?: (res: UploadFileResponse<TServerOutput>[]) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?:
     | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
@@ -40,7 +43,8 @@ export type UseUploadthingProps<
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UseUploadthingProps<TRouter, TEndpoint> & {
+  TSkipPolling extends boolean = false,
+> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
   endpoint: TEndpoint;
   /**
    * URL to the UploadThing API endpoint

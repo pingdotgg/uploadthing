@@ -31,7 +31,8 @@ type ButtonStyleFieldCallbackArgs = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
   appearance?: {
     container?: StyleField<ButtonStyleFieldCallbackArgs>;
     button?: StyleField<ButtonStyleFieldCallbackArgs>;
@@ -57,14 +58,19 @@ export type UploadButtonProps<
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint>,
+    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> & {
+  const $props = props as unknown as UploadButtonProps<
+    TRouter,
+    TEndpoint,
+    TSkipPolling
+  > & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";
@@ -96,6 +102,7 @@ export function UploadButton<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -159,7 +166,7 @@ export function UploadButton<
     if (uploadProgress === 100) {
       return <Spinner />;
     }
-    return `${uploadProgress}%`;
+    return <span className="z-50">{uploadProgress}%</span>;
   };
 
   const getInputProps = () => ({
