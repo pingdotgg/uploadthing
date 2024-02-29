@@ -16,7 +16,10 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/server.js"
         },
-        "require": "./dist/server.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/server.cjs"
+        }
       },
       "browser": {
         "solid": {
@@ -28,13 +31,19 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/dev.js"
           },
-          "require": "./dist/dev.cjs"
+          "require": {
+            "types": "./dist/index.d.cts",
+            "default": "./dist/dev.cjs"
+          }
         },
         "import": {
           "types": "./dist/index.d.ts",
           "default": "./dist/index.js"
         },
-        "require": "./dist/index.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/index.cjs"
+        }
       },
       "deno": {
         "solid": "./dist/server.jsx",
@@ -42,7 +51,10 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/server.js"
         },
-        "require": "./dist/server.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/server.cjs"
+        }
       },
       "node": {
         "solid": "./dist/server.jsx",
@@ -50,7 +62,10 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/server.js"
         },
-        "require": "./dist/server.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/server.cjs"
+        }
       },
       "solid": {
         "development": "./dist/dev.jsx",
@@ -61,13 +76,19 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/dev.js"
         },
-        "require": "./dist/dev.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/dev.cjs"
+        }
       },
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
-      "require": "./dist/index.cjs"
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./styles.css": "./dist/index.css"
   },
@@ -81,8 +102,8 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsup --config ./tsup.config.js",
-    "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch --config ./tsup.config.js",
+    "build": "rm -rf dist && tsup",
+    "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit"
   },
@@ -97,7 +118,7 @@
     "solid-js": "^1.8.15",
     "tailwindcss": "^3.4.1",
     "tsup": "8.0.2",
-    "tsup-preset-solid": "0.1.8",
+    "tsup-preset-solid": "2.2.0",
     "typescript": "^5.3.3",
     "uploadthing": "6.5.0",
     "wait-on": "^7.2.0"
