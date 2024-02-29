@@ -191,6 +191,7 @@ export const DANGEROUS__uploadFiles = async <
           headers: { authorization: presigned.pollingJwt },
         }).then((r) => r.json() as Promise<PollingResponse>);
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.status === "done" ? res.callbackData : undefined;
       });
     }
