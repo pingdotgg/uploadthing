@@ -37,10 +37,7 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
     );
   }
 
-  const vanillaHelpers = generateReactHelpers<TRouter>({
-    ...initOpts,
-    url,
-  });
+  const vanillaHelpers = generateReactHelpers<TRouter>({ ...initOpts, url });
   const useImageUploader = GENERATE_useImageUploader<TRouter>({ url });
   const useDocumentUploader = GENERATE_useDocumentUploader<TRouter>({ url });
 
