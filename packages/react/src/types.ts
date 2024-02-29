@@ -28,7 +28,7 @@ export type UseUploadthingProps<
     ? inferEndpointOutput<TRouter[TEndpoint]>
     : null,
 > = {
-  skipPolling?: TSkipPolling;
+  skipPolling?: TSkipPolling | undefined;
   onClientUploadComplete?: (res: UploadFileResponse<TServerOutput>[]) => void;
   onUploadProgress?: (p: number) => void;
   onUploadError?:
