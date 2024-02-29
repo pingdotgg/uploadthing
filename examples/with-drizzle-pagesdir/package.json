@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.9.2",
-    "@uploadthing/react": "6.3.0",
+    "@uploadthing/react": "6.3.1",
     "better-sqlite3": "^9.4.3",
     "drizzle-orm": "^0.29.4",
     "next": "14.1.0",
