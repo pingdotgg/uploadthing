@@ -1,6 +1,7 @@
 {
   "name": "@example/minimal-solidstart",
   "type": "module",
+  "private": true,
   "scripts": {
     "dev": "NODE_ENV=development vinxi dev",
     "build": "vinxi build",
