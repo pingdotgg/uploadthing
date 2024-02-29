@@ -52,13 +52,7 @@ export type UploadFilesOptions<
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
 > = {
-  onUploadProgress?: ({
-    file,
-    progress,
-  }: {
-    file: string;
-    progress: number;
-  }) => void;
+  onUploadProgress?: (opts: { file: string; progress: number }) => void;
   onUploadBegin?: (opts: { file: string }) => void;
 
   files: File[];
