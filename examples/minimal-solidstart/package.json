@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development vinxi dev",
+    "clean": "git clean -xdf .solid node_modules",
     "build": "vinxi build",
     "start": "vinxi start"
   },

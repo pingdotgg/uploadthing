@@ -7,6 +7,7 @@
     "server"
   ],
   "scripts": {
+    "clean": "git clean -xdf node_modules client/node_modules client/dist server/node_modules server/dist",
     "dev:cf": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:cf\"",
     "dev:elysia": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:elysia\"",
     "dev:express": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:express\"",
