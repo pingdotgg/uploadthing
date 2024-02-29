@@ -76,7 +76,7 @@ export type UploadFilesOptions<
    * any data returned from the server `onUploadComplete` callback
    * @default false
    */
-  skipPolling?: TSkipPolling;
+  skipPolling?: TSkipPolling | undefined;
 
   /**
    * The uploadthing package that is making this request
