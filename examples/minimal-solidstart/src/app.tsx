@@ -1,11 +1,12 @@
 // @refresh reload
 import "./global.css";
 
-import { generateUploadButton } from "@uploadthing/solid";
-import { Router } from "@solidjs/router";
 import { MetaProvider, Title } from "@solidjs/meta";
-import { Suspense } from "solid-js";
+import { Router } from "@solidjs/router";
 import { FileRoutes } from "@solidjs/start";
+import { Suspense } from "solid-js";
+
+import { generateUploadButton } from "@uploadthing/solid";
 
 export default function App() {
   return (

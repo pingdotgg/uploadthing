@@ -1,22 +1,22 @@
 {
-  "exclude": ["node_modules"],
-  "include": ["src", "*.ts"],
   "compilerOptions": {
+    "target": "ESNext",
     "module": "ESNext",
+    "moduleResolution": "Bundler",
     "lib": ["ESNext", "DOM"],
-    "importHelpers": true,
-    "declaration": true,
-    "sourceMap": true,
-    "rootDir": "./src",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "moduleResolution": "node",
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
+    "types": ["node"],
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
-    "target": "ES2017"
-  }
+    "noEmit": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src", "./tsup.config.ts"]
 }
