@@ -97,6 +97,7 @@ export const UploadDropzone = <
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
+    multiple: fileInfo().multiple,
     get accept() {
       return fileInfo().fileTypes
         ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
