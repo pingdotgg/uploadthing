@@ -37,13 +37,7 @@ export type UploadFilesOptions<
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
 > = {
-  onUploadProgress?: ({
-    file,
-    progress,
-  }: {
-    file: string;
-    progress: number;
-  }) => void;
+  onUploadProgress?: (opts: { file: string; progress: number }) => void;
   onUploadBegin?: (opts: { file: string }) => void;
 
   files: File[];
@@ -197,7 +191,6 @@ export const DANGEROUS__uploadFiles = async <
           headers: { authorization: presigned.pollingJwt },
         }).then((r) => r.json() as Promise<PollingResponse>);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.status === "done" ? res.callbackData : undefined;
       });
     }
