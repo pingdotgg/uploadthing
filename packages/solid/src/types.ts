@@ -23,20 +23,24 @@ export interface GenerateTypedHelpersOptions {
 export type UseUploadthingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
 > = {
+  skipPolling?: TSkipPolling;
+  onClientUploadComplete?: (res: UploadFileResponse<TServerOutput>[]) => void;
   onUploadProgress?: (p: number) => void;
+  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   onUploadBegin?: (fileName: string) => void;
   onBeforeUploadBegin?: (files: File[]) => File[] | Promise<File[]>;
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
 
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UseUploadthingProps<TRouter, TEndpoint> & {
+  TSkipPolling extends boolean = false,
+> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
   endpoint: TEndpoint;
   /**
    * URL to the UploadThing API endpoint
@@ -48,8 +52,6 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
-
-  multiple?: boolean;
 } & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
     ? // eslint-disable-next-line @typescript-eslint/ban-types
       {}
