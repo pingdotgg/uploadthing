@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.3.1",
+  "version": "6.3.2",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -50,8 +50,8 @@
   },
   "scripts": {
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --minify",
-    "build:js": "bunchee --tsconfig tsconfig.build.json && pnpm build:css",
-    "build": "pnpm build:js && pnpm build:css",
+    "build:js": "bunchee --tsconfig tsconfig.build.json && bun build:css",
+    "build": "bun build:js && bun build:css",
     "dev:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "dev:js": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "dev": "conc npm:dev:*",
@@ -60,7 +60,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "^0.1.3",
+    "@uploadthing/dropzone": "^0.2.0",
     "@uploadthing/shared": "^6.3.2",
     "attr-accept": "^2.2.2",
     "effect": "^2.3.5",

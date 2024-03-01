@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/dropzone",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -52,7 +52,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0"
   },
   "devDependencies": {

@@ -413,7 +413,6 @@ describe("adapters:express", async () => {
   });
 
   it("works with body-parser middleware", async () => {
-    // @ts-expect-error - no types
     const bodyParser = await import("body-parser");
     const server = startServer((app) => {
       app.use(bodyParser.json());
