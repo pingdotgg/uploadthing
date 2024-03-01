@@ -43,6 +43,8 @@ export const uploadRouter = {
       metadata;
       // ^?
       console.log("upload completed", file);
+
+      return { foo: "bar" as const };
     }),
 } satisfies FileRouter;
 
