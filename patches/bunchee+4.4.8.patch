@@ -1,22 +1,21 @@
-diff --git a/dist/bin/cli.js b/dist/bin/cli.js
-index 07deb2df89c071d34e7bd8cd18a45cc5a143da89..e7af4c16bb146c7252899ed99b18a4e4c5a85e69 100755
---- a/dist/bin/cli.js
-+++ b/dist/bin/cli.js
-@@ -820,6 +820,7 @@ function parseCliArgs(argv) {
+diff --git a/node_modules/bunchee/dist/bin/cli.js b/node_modules/bunchee/dist/bin/cli.js
+index 732cb6c..bcd1d5d 100755
+--- a/node_modules/bunchee/dist/bin/cli.js
++++ b/node_modules/bunchee/dist/bin/cli.js
+@@ -823,6 +823,7 @@ function parseCliArgs(argv) {
+         '--external': String,
          '--no-external': Boolean,
          '--no-clean': Boolean,
-         '--prepare': Boolean,
 +        '--tsconfig': String,
+         '--prepare': Boolean,
          '-h': '--help',
          '-v': '--version',
-         '-w': '--watch',
-@@ -847,13 +848,14 @@ function parseCliArgs(argv) {
+@@ -851,13 +852,14 @@ function parseCliArgs(argv) {
          external: !!args['--no-external'] ? null : args['--external'],
          clean: !args['--no-clean'],
          env: args['--env'],
--        prepare: !!args['--prepare']
-+        prepare: !!args['--prepare'],
-+        tsconfigPath: args['--tsconfig']
++        tsconfigPath: args['--tsconfig'],
+         prepare: !!args['--prepare']
      };
      return parsedArgs;
  }
@@ -27,20 +26,18 @@ index 07deb2df89c071d34e7bd8cd18a45cc5a143da89..e7af4c16bb146c7252899ed99b18a4e4
      const cwd = args.cwd || process.cwd();
      const file = args.file ? path__default.default.resolve(cwd, args.file) : undefined;
      const bundleConfig = {
-@@ -868,7 +870,8 @@ async function run(args) {
+@@ -872,6 +874,7 @@ async function run(args) {
          minify: !!minify,
          sourcemap: sourcemap === false ? false : true,
          env: (env == null ? void 0 : env.split(',')) || [],
--        clean
-+        clean,
 +        tsconfigPath,
+         clean
      };
      if (args.version) {
-         return logger.log(version);
-diff --git a/dist/index.js b/dist/index.js
-index b068361b6c5b69d5bfff9c80d78b8e62b24ef5f3..7aca7926bc632d53d520863d52361492a5bea019 100644
---- a/dist/index.js
-+++ b/dist/index.js
+diff --git a/node_modules/bunchee/dist/index.js b/node_modules/bunchee/dist/index.js
+index 8e062fa..cd00018 100644
+--- a/node_modules/bunchee/dist/index.js
++++ b/node_modules/bunchee/dist/index.js
 @@ -277,10 +277,10 @@ function resolveTypescriptHandler(cwd) {
      return ts;
  }
@@ -54,7 +51,7 @@ index b068361b6c5b69d5bfff9c80d78b8e62b24ef5f3..7aca7926bc632d53d520863d52361492
      if (fileExists(tsConfigPath)) {
          const ts = resolveTypescript(cwd);
          const basePath = tsConfigPath ? path.dirname(tsConfigPath) : cwd;
-@@ -1581,7 +1581,7 @@ async function bundle(cliEntryPath, { cwd: _cwd, ...options } = {}) {
+@@ -1589,7 +1589,7 @@ async function bundle(cliEntryPath, { cwd: _cwd, ...options } = {}) {
      ;
      const hasBin = Boolean(pkg.bin);
      const isFromCli = Boolean(cliEntryPath);

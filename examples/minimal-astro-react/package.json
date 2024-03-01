@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
+    "clean": "git clean -xdf dist node_modules",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
