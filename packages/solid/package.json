@@ -109,10 +109,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.62.6",
+    "@effect/schema": "^0.63.2",
     "@uploadthing/dropzone": "^0.2.0",
     "@uploadthing/shared": "^6.3.2",
-    "effect": "^2.3.5",
+    "effect": "^2.4.1",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {

@@ -121,11 +121,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.62.6",
+    "@effect/schema": "^0.63.2",
     "@uploadthing/mime-types": "^0.2.4",
     "@uploadthing/shared": "^6.3.2",
     "consola": "^3.2.3",
-    "effect": "^2.3.5",
+    "effect": "^2.4.1",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
