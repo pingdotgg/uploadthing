@@ -6,9 +6,6 @@
     "node": ">=18.13.0"
   },
   "license": "MIT",
-  "browser": {
-    "util": "./shims/util.js"
-  },
   "exports": {
     "./package.json": "./package.json",
     "./client": {

@@ -1,4 +1,3 @@
-import { inspect } from "util";
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
 import { process } from "std-env";
@@ -74,7 +73,7 @@ function formatArgs(args: any[]) {
     if (typeof arg === "string") {
       return arg;
     }
-    return inspect(arg, { depth: 4 });
+    return JSON.stringify(arg, null, 4);
   });
 }
 
