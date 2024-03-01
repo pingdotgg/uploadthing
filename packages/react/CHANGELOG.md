@@ -1,5 +1,39 @@
 # @uploadthing/react
 
+## 6.3.2
+
+### Patch Changes
+
+- Updated dependencies [[`9ae82cd`](https://github.com/pingdotgg/uploadthing/commit/9ae82cd70ddca34f3e2547132d3b505fd665c205)]:
+  - @uploadthing/dropzone@0.2.0
+
+## 6.3.1
+
+### Patch Changes
+
+- [#645](https://github.com/pingdotgg/uploadthing/pull/645) [`c7070c1`](https://github.com/pingdotgg/uploadthing/commit/c7070c1ef58d3be12639b1c7af468eb0b961b3aa) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: make dropzone less confusing
+
+## 6.3.0
+
+### Minor Changes
+
+- [#643](https://github.com/pingdotgg/uploadthing/pull/643) [`ccdd847`](https://github.com/pingdotgg/uploadthing/commit/ccdd847136b1b72994656929d4c9d99e40a86585) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add progress bar to UploadDropzone
+
+- [#642](https://github.com/pingdotgg/uploadthing/pull/642) [`4e1cb0d`](https://github.com/pingdotgg/uploadthing/commit/4e1cb0d2ccd9ac0ef4917e318d5c29c35d42cfda) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat(client): add `skipPolling` option
+
+### Patch Changes
+
+- [#633](https://github.com/pingdotgg/uploadthing/pull/633) [`60d18c0`](https://github.com/pingdotgg/uploadthing/commit/60d18c0e6c6956d3f63d0ea07f52310dd0fd7868) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove unused classNames utility
+
+- [#622](https://github.com/pingdotgg/uploadthing/pull/622) [`a4b7357`](https://github.com/pingdotgg/uploadthing/commit/a4b7357e1c33d885fbf738343009c083d2148ec3) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - appendOnPaste and mode=auto not working together
+
+- [#630](https://github.com/pingdotgg/uploadthing/pull/630) [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: enforce compatible `uploadthing` version for `@uploadthing/react`
+
+- [#643](https://github.com/pingdotgg/uploadthing/pull/643) [`ccdd847`](https://github.com/pingdotgg/uploadthing/commit/ccdd847136b1b72994656929d4c9d99e40a86585) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix UploadButton progress text going under progress bar
+
+- Updated dependencies [[`f0a4ae4`](https://github.com/pingdotgg/uploadthing/commit/f0a4ae4f491c4e2a5c4517b27e5d76617d5db004), [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1)]:
+  - @uploadthing/shared@6.3.2
+
 ## 6.2.4
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @uploadthing/dropzone
 
+## 0.2.0
+
+### Minor Changes
+
+- [#649](https://github.com/pingdotgg/uploadthing/pull/649) [`9ae82cd`](https://github.com/pingdotgg/uploadthing/commit/9ae82cd70ddca34f3e2547132d3b505fd665c205) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - bundle attr-accepts cause to improve ESM support
+
 ## 0.1.3
 
 ### Patch Changes

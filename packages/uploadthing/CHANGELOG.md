@@ -1,5 +1,48 @@
 # uploadthing
 
+## 6.5.0
+
+### Minor Changes
+
+- [#619](https://github.com/pingdotgg/uploadthing/pull/619) [`7d23dd0`](https://github.com/pingdotgg/uploadthing/commit/7d23dd067bbe3bbbf495604af7e3c030d460d76b) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add version lock to ensure `uploadthing/client` and `uploadthing/server`uses same version
+
+- [#637](https://github.com/pingdotgg/uploadthing/pull/637) [`7fef94e`](https://github.com/pingdotgg/uploadthing/commit/7fef94ec53c178181b37669b2470df28e462b104) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - allow overriding filename when using `utapi.uploadFilesFromUrl`. This is useful when the pathname is too long, or when you just want to set your own name.
+
+  ```ts
+  utapi.uploadFilesFromUrl({
+    url: "https://example.com/super-long-pathname-that-exceeds-the-limit.jpg",
+    name: "my-custom-name.jpg",
+  });
+  ```
+
+  you can also set a customId for the file by passing the `customId` option.
+
+  ```ts
+  utapi.uploadFilesFromUrl({
+    url: "https://example.com/foo.jpg",
+    customId: "my-custom-id",
+  });
+  ```
+
+- [#642](https://github.com/pingdotgg/uploadthing/pull/642) [`4e1cb0d`](https://github.com/pingdotgg/uploadthing/commit/4e1cb0d2ccd9ac0ef4917e318d5c29c35d42cfda) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat(client): add `skipPolling` option
+
+### Patch Changes
+
+- [#633](https://github.com/pingdotgg/uploadthing/pull/633) [`60d18c0`](https://github.com/pingdotgg/uploadthing/commit/60d18c0e6c6956d3f63d0ea07f52310dd0fd7868) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove unused classNames utility
+
+- [#607](https://github.com/pingdotgg/uploadthing/pull/607) [`8e9d502`](https://github.com/pingdotgg/uploadthing/commit/8e9d5022fa54f1472baa1c1460069a6888157097) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix url parsing and prefer x-forwarded-host before host header
+
+- [#630](https://github.com/pingdotgg/uploadthing/pull/630) [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: enforce compatible `uploadthing` version for `@uploadthing/react`
+
+- [#635](https://github.com/pingdotgg/uploadthing/pull/635) [`09dfa6a`](https://github.com/pingdotgg/uploadthing/commit/09dfa6a6d20d59167c7b3fff4bff20795e710c57) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more elaborate log when dev callback fails
+
+- [#636](https://github.com/pingdotgg/uploadthing/pull/636) [`6ca94fc`](https://github.com/pingdotgg/uploadthing/commit/6ca94fc9a9ba575219ed983dd8d1cc962df089eb) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: report failed PSP uplaods as failed to UploadThing
+
+- [#624](https://github.com/pingdotgg/uploadthing/pull/624) [`14d190d`](https://github.com/pingdotgg/uploadthing/commit/14d190d9d9099b9cb5bf938808f9dc8e6a886e82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - export UTFiles from server entrypoint
+
+- Updated dependencies [[`f0a4ae4`](https://github.com/pingdotgg/uploadthing/commit/f0a4ae4f491c4e2a5c4517b27e5d76617d5db004), [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1)]:
+  - @uploadthing/shared@6.3.2
+
 ## 6.4.1
 
 ### Patch Changes

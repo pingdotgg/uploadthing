@@ -1,11 +1,13 @@
 import { useRef, useState } from "react";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import { semverLite, UploadThingError } from "@uploadthing/shared";
+import type { UploadFilesOptions } from "uploadthing/client";
 import {
   DANGEROUS__uploadFiles,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  version as uploadthingClientVersion,
 } from "uploadthing/client";
 import type {
   DistributiveOmit,
@@ -14,6 +16,7 @@ import type {
   inferErrorShape,
 } from "uploadthing/server";
 
+import { peerDependencies } from "../package.json";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
@@ -41,9 +44,18 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const useUploadThing = <TEndpoint extends keyof TRouter>(
+  if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
+    console.error(
+      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
+    );
+  }
+
+  const useUploadThing = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
@@ -66,9 +78,14 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+        const res = await DANGEROUS__uploadFiles<
+          TRouter,
+          TEndpoint,
+          TSkipPolling
+        >(endpoint, {
           files,
           input,
+          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.current.set(progress.file, progress.progress);
@@ -130,10 +147,13 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: <TEndpoint extends keyof TRouter>(
+    uploadFiles: <
+      TEndpoint extends keyof TRouter,
+      TSkipPolling extends boolean = false,
+    >(
       endpoint: TEndpoint,
       opts: DistributiveOmit<
-        Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+        UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
         "url" | "package"
       >,
     ) =>

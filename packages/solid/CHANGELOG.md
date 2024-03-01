@@ -1,5 +1,21 @@
 # @uploadthing/solid
 
+## 6.1.5
+
+### Patch Changes
+
+- Updated dependencies [[`9ae82cd`](https://github.com/pingdotgg/uploadthing/commit/9ae82cd70ddca34f3e2547132d3b505fd665c205)]:
+  - @uploadthing/dropzone@0.2.0
+
+## 6.1.4
+
+### Patch Changes
+
+- [#633](https://github.com/pingdotgg/uploadthing/pull/633) [`60d18c0`](https://github.com/pingdotgg/uploadthing/commit/60d18c0e6c6956d3f63d0ea07f52310dd0fd7868) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove unused classNames utility
+
+- Updated dependencies [[`f0a4ae4`](https://github.com/pingdotgg/uploadthing/commit/f0a4ae4f491c4e2a5c4517b27e5d76617d5db004), [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1)]:
+  - @uploadthing/shared@6.3.2
+
 ## 6.1.3
 
 ### Patch Changes
@@ -371,7 +387,7 @@
     ```ts
     // before
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
-    uploadFiles(files, endpoint, { url: "" })
+    uploadFiles(files, endpoint, { url: "" });
 
     // after
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
@@ -380,7 +396,7 @@
       endpoint,
       input, // <-- new option
       url,
-    })
+    });
     ```
 
 ### Minor Changes

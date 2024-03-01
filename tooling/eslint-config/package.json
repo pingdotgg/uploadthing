@@ -12,8 +12,7 @@
     "eslint-config-turbo": "^1.12.4",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "modern-module-resolution": "link:@rushstack/eslint-patch/modern-module-resolution"
+    "eslint-plugin-react-hooks": "^4.6.0"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
