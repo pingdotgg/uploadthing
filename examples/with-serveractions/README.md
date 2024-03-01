@@ -10,7 +10,7 @@
    https://uploadthing.com/dashboard
 2. `cp .env.example .env` and paste in your API key in the newly created `.env`
    file
-3. `pnpm dev`
+3. `bun dev`
 4. Upload files!
 
 ## Further reference
