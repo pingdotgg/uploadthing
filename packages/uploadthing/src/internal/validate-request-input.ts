@@ -1,13 +1,6 @@
-/**
- * The `import type * as _MAKE_TS_AWARE_1 from` are imported to make TypeScript aware of the types.
- * It's having a hard time resolving deeply nested stuff from transitive dependencies.
- * You'll notice if you need to add more imports if you get build errors like:
- * `The type of X cannot be inferred without a reference to <MODULE>`
- */
 import type * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 import { TaggedError } from "effect/Data";
-import type * as _MAKE_TS_AWARE_1 from "effect/Types";
 
 import type {
   ExpandedRouteConfig,
