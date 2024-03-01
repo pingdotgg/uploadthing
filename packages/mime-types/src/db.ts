@@ -3475,6 +3475,11 @@ const mimeTypesInternal = {
     extensions: ["wav"],
     compressible: null,
   },
+  "audio/x-gsm": {
+    source: "apache",
+    extensions: ["gsm"],
+    compressible: null,
+  },
   "audio/xm": {
     source: "apache",
     extensions: ["xm"],
