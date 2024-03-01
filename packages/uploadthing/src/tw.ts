@@ -1,11 +1,20 @@
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
+/**
+ * Add more here when additional UI packages are added
+ */
+const PACKAGES = ["react", "solid"];
+
 export function withUt(twConfig: Config) {
-  const contentPaths = [
-    "./node_modules/@uploadthing/react/dist/**",
-    "./node_modules/@uploadthing/solid/dist/**",
-  ];
+  const contentPaths = PACKAGES.flatMap((pkg) => {
+    // We assume a majority of monorepos are max 2 levels deep, but we can add more if needed
+    return [
+      `./node_modules/@uploadthing/${pkg}/dist/**`,
+      `../node_modules/@uploadthing/${pkg}/dist/**`,
+      `../../node_modules/@uploadthing/${pkg}/dist/**`,
+    ];
+  });
 
   if (Array.isArray(twConfig.content)) {
     twConfig.content.push(...contentPaths);
