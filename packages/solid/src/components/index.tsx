@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import type { ComponentProps, ValidComponent } from "solid-js";
 
 import { resolveMaybeUrlArg } from "uploadthing/client";
@@ -18,7 +19,7 @@ type OmitInitOpts<T extends ValidComponent> = Omit<
 export const generateUploadButton = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
-  const url = resolveMaybeUrlArg(opts?.url);
+  const url = Effect.runSync(resolveMaybeUrlArg(opts?.url));
 
   const TypedButton = <TEndpoint extends keyof TRouter>(
     props: OmitInitOpts<typeof UploadButton<TRouter, TEndpoint>>,
@@ -29,7 +30,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 export const generateUploadDropzone = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
-  const url = resolveMaybeUrlArg(opts?.url);
+  const url = Effect.runSync(resolveMaybeUrlArg(opts?.url));
 
   const TypedDropzone = <TEndpoint extends keyof TRouter>(
     props: OmitInitOpts<typeof UploadDropzone<TRouter, TEndpoint>>,
@@ -40,7 +41,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 export const generateUploader = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
-  const url = resolveMaybeUrlArg(opts?.url);
+  const url = Effect.runSync(resolveMaybeUrlArg(opts?.url));
 
   const TypedUploader = <TEndpoint extends keyof TRouter>(
     props: OmitInitOpts<typeof Uploader<TRouter, TEndpoint>>,
