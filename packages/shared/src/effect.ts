@@ -68,11 +68,7 @@ export const parseRequestJson = <Req>(
  * Schedule that retries with exponential backoff, up to 1 minute.
  * 10ms * 4^n, where n is the number of retries.
  */
-export const exponentialBackoff: Schedule.Schedule<
-  never,
-  unknown,
-  Duration.DurationInput
-> = pipe(
+export const exponentialBackoff = pipe(
   Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms...
   Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
   Schedule.compose(Schedule.elapsed),
