@@ -22,6 +22,7 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
+import type { UTReporter } from "./internal/ut-reporter";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 export const version = pkgJson.version;
@@ -74,7 +75,7 @@ export type UploadFileResponse<TServerOutput> = {
   serverData: TServerOutput;
 };
 
-const DANGEROUS__uploadFiles = async <
+const uploadFilesInternal = async <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
@@ -232,7 +233,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    DANGEROUS__uploadFiles<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
       url,
       package: utPkg,
@@ -251,7 +252,7 @@ async function uploadMultipart(
   file: File,
   presigned: MPUResponse,
   opts: {
-    reportEventToUT: ReturnType<typeof createUTReporter>;
+    reportEventToUT: UTReporter;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
 ) {
@@ -311,7 +312,7 @@ async function uploadPresignedPost(
   file: File,
   presigned: PSPResponse,
   opts: {
-    reportEventToUT: ReturnType<typeof createUTReporter>;
+    reportEventToUT: UTReporter;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
 ) {
