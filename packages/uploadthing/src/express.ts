@@ -17,7 +17,7 @@ import {
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import { getPostBody, toWebRequest } from "./internal/node-http/toWebRequest";
+import { getPostBody, toWebRequest } from "./internal/toWebRequest";
 import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";

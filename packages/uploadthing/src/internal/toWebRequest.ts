@@ -4,14 +4,13 @@ import { process } from "std-env";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-import { logger } from "../logger";
+import { logger } from "./logger";
 
 type IncomingMessageLike = {
   method?: string | undefined;
   url?: string | undefined;
   headers?: Record<string, string | string[] | undefined>;
   body?: any;
-  on: (event: string, listener: (data: any) => void) => void;
 };
 
 class InvalidURL extends TaggedError("InvalidURL")<{
@@ -27,7 +26,7 @@ class InvalidURL extends TaggedError("InvalidURL")<{
   }
 }
 
-function parseURL(req: IncomingMessageLike) {
+const parseURL = (req: IncomingMessageLike): Effect.Effect<URL, InvalidURL> => {
   const headers = req.headers;
   let relativeUrl = req.url ?? "/";
   if ("baseUrl" in req && typeof req.baseUrl === "string") {
@@ -48,10 +47,12 @@ function parseURL(req: IncomingMessageLike) {
     try: () => new URL(`${proto}://${host}${relativeUrl}`),
     catch: () => new InvalidURL(`${proto}://${host}${relativeUrl}`),
   });
-}
+};
 
 export const getPostBody = <TBody = unknown>(opts: {
-  req: IncomingMessageLike;
+  req: IncomingMessageLike & {
+    on: (event: string, listener: (data: any) => void) => void;
+  };
 }) =>
   Effect.async<TBody, UploadThingError>((resume) => {
     const { req } = opts;
@@ -105,7 +106,10 @@ export const getPostBody = <TBody = unknown>(opts: {
     });
   });
 
-export function toWebRequest(req: IncomingMessageLike, body?: any) {
+export const toWebRequest = (
+  req: IncomingMessageLike,
+  body?: any,
+): Effect.Effect<Request, never> => {
   body ??= req.body;
   const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
   const method = req.method ?? "GET";
@@ -122,4 +126,4 @@ export function toWebRequest(req: IncomingMessageLike, body?: any) {
         }),
     ),
   );
-}
+};
