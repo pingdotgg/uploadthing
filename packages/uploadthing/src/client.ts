@@ -1,6 +1,7 @@
 // Don't want to ship our logger to the client, keep size down
 /* eslint-disable no-console */
 
+import type { ExtendObjectIf } from "@uploadthing/shared";
 import {
   generateMimeTypes,
   safeParseJSON,
@@ -32,18 +33,18 @@ export type UploadFilesOptions<
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
 > = {
-  onUploadProgress?: (opts: { file: string; progress: number }) => void;
-  onUploadBegin?: (opts: { file: string }) => void;
-
-  files: File[];
-
   /**
-   * URL to the UploadThing API endpoint
-   * @example URL { http://localhost:3000/api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
+   * The files to upload
    */
-  url: URL;
-
+  files: File[];
+  /**
+   * Called when presigned URLs have been retrieved and the file upload is about to begin
+   */
+  onUploadBegin?: (opts: { file: string }) => void;
+  /**
+   * Called continuously as the file is uploaded to the storage provider
+   */
+  onUploadProgress?: (opts: { file: string; progress: number }) => void;
   /**
    * Skip polling for server data after upload is complete
    * Useful if you want faster response times and don't need
@@ -51,20 +52,23 @@ export type UploadFilesOptions<
    * @default false
    */
   skipPolling?: TSkipPolling;
-
   /**
-   * The uploadthing package that is making this request
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
+   */
+  url: URL;
+  /**
+   * The uploadthing package that is making this request, used to identify the client in the server logs
    * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
+   * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
    */
   package: string;
-} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-  ? // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
-  : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
+} & ExtendObjectIf<
+  inferEndpointInput<TRouter[TEndpoint]>,
+  { input: inferEndpointInput<TRouter[TEndpoint]> }
+>;
 
 export type UploadFileResponse<TServerOutput> = {
   name: string;
@@ -198,10 +202,10 @@ const uploadFilesInternal = async <
   return Promise.all(fileUploadPromises) as any;
 };
 
-export const genUploader = <TRouter extends FileRouter>(initOpts: {
+export type GenerateTypedHelpersOptions = {
   /**
    * URL to the UploadThing API endpoint
-   * @example URL { /api/uploadthing }
+   * @example /api/uploadthing
    * @example URL { https://www.example.com/api/uploadthing }
    *
    * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
@@ -209,7 +213,6 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
-
   /**
    * The uploadthing package that is making this request
    * @example "@uploadthing/react"
@@ -217,11 +220,11 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
    * This is used to identify the client in the server logs
    */
   package: string;
-}) => {
-  const url = resolveMaybeUrlArg(initOpts?.url);
+};
 
-  const utPkg = initOpts.package;
-
+export const genUploader = <TRouter extends FileRouter>(
+  initOpts: GenerateTypedHelpersOptions,
+) => {
   return <
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
@@ -229,14 +232,14 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
     endpoint: TEndpoint,
     opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-      "url" | "package"
+      keyof GenerateTypedHelpersOptions
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
-      url,
-      package: utPkg,
+      url: resolveMaybeUrlArg(initOpts?.url),
+      package: initOpts.package,
     } as any);
 };
 
