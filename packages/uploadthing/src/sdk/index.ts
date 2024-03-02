@@ -11,6 +11,7 @@ import {
   asArray,
   fetchContext,
   fetchEffJson,
+  filterObjectValues,
   generateUploadThingURL,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -43,8 +44,7 @@ export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
-  private apiKey: string;
-  private defaultHeaders: Record<string, string>;
+  private defaultHeaders: FetchContextTag["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
 
   constructor(opts?: UTApiOptions) {
@@ -61,12 +61,13 @@ export class UTApi {
     }
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
-    this.apiKey = apiKey;
+
     this.defaultHeaders = {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
+      "x-uploadthing-fe-package": undefined,
     };
     this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
 
@@ -89,7 +90,10 @@ export class UTApi {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
-      headers: this.defaultHeaders,
+      headers: filterObjectValues(
+        this.defaultHeaders,
+        (v): v is string => typeof v === "string",
+      ),
     }).pipe(
       Effect.catchTag("FetchError", (err) => {
         logger.error("Request failed:", err);

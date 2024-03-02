@@ -3,6 +3,7 @@ import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
 import type { Tag } from "effect/Context";
 
 import type { FetchEsque } from "./types";
+import { filterObjectValues } from "./utils";
 
 export class FetchError extends Data.TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
@@ -11,7 +12,12 @@ export class FetchError extends Data.TaggedError("FetchError")<{
 
 export const fetchContext = Context.GenericTag<{
   fetch: FetchEsque;
-  baseHeaders: Record<string, string>;
+  baseHeaders: Record<string, string | undefined> & {
+    "x-uploadthing-version": string;
+    "x-uploadthing-api-key": string | undefined;
+    "x-uploadthing-fe-package": string | undefined;
+    "x-uploadthing-be-adapter": string | undefined;
+  };
 }>("fetch-context");
 export type FetchContextTag = Tag.Identifier<typeof fetchContext>;
 
@@ -26,7 +32,7 @@ export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
           fetch(input, {
             ...init,
             headers: {
-              ...baseHeaders,
+              ...filterObjectValues(baseHeaders, (v): v is string => v != null),
               ...init?.headers,
             },
           }),

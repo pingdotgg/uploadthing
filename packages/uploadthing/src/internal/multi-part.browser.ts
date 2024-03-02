@@ -1,10 +1,11 @@
 import * as S from "@effect/schema/Schema";
-import { Cause, Effect } from "effect";
+import { Cause, Effect, Schedule } from "effect";
 
 import {
   contentDisposition,
   fetchEffJson,
   generateUploadThingURL,
+  RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
@@ -19,10 +20,9 @@ export const uploadMultipartWithProgress = (
     reportEventToUT: ReturnType<typeof createUTReporter>;
     onUploadProgress?: (opts: { file: string; progress: number }) => void;
   },
-) => {
-  let uploadedBytes = 0;
-
-  return Effect.gen(function* ($) {
+) =>
+  Effect.gen(function* ($) {
+    let uploadedBytes = 0;
     const etags = yield* $(
       Effect.forEach(
         presigned.urls,
@@ -31,19 +31,25 @@ export const uploadMultipartWithProgress = (
           const end = Math.min(offset + presigned.chunkSize, file.size);
           const chunk = file.slice(offset, end);
 
-          return uploadPartWithProgress({
+          return uploadPart({
             url,
             chunk: chunk,
             contentDisposition: presigned.contentDisposition,
             fileType: file.type,
             fileName: file.name,
-            maxRetries: 10,
             onProgress: (delta) => {
               uploadedBytes += delta;
               const percent = (uploadedBytes / file.size) * 100;
               opts.onUploadProgress?.({ file: file.name, progress: percent });
             },
-          }).pipe(Effect.andThen((tag) => ({ tag, partNumber: index + 1 })));
+          }).pipe(
+            Effect.andThen((tag) => ({ tag, partNumber: index + 1 })),
+            Effect.retry({
+              while: (error) => error instanceof RetryError,
+              times: 10,
+              schedule: Schedule.fixed(2000),
+            }),
+          );
         },
         { concurrency: "inherit" },
       ),
@@ -74,7 +80,6 @@ export const uploadMultipartWithProgress = (
       );
     }
   });
-};
 
 export const completeMultipartUpload = (
   presigned: { key: string; uploadId: string },
@@ -93,25 +98,17 @@ export const completeMultipartUpload = (
     },
   );
 
-/**
- * Used by client uploads where progress is needed.
- * Uses XMLHttpRequest.
- *
- * FIXME: Effecti-fy this. Maybe use `Effect.async` and use the AbortSignal to provide cancellation
- */
-const uploadPartWithProgressInternal = async (
-  opts: {
-    url: string;
-    chunk: Blob;
-    fileType: string;
-    fileName: string;
-    contentDisposition: ContentDisposition;
-    maxRetries: number;
-    onProgress: (progressDelta: number) => void;
-  },
-  retryCount = 0,
-) =>
-  new Promise<string>((resolve, reject) => {
+interface UploadPartOptions {
+  url: string;
+  chunk: Blob;
+  fileType: string;
+  fileName: string;
+  contentDisposition: ContentDisposition;
+  onProgress: (progressDelta: number) => void;
+}
+
+const uploadPart = (opts: UploadPartOptions) =>
+  Effect.async<string, RetryError>((resume) => {
     const xhr = new XMLHttpRequest();
 
     xhr.open("PUT", opts.url, true);
@@ -121,34 +118,16 @@ const uploadPartWithProgressInternal = async (
       contentDisposition(opts.contentDisposition, opts.fileName),
     );
 
-    xhr.onload = async () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        const etag = xhr.getResponseHeader("Etag");
-        etag ? resolve(etag) : reject("NO ETAG");
-      } else if (retryCount < opts.maxRetries) {
-        // Add a delay before retrying (exponential backoff can be used)
-        const delay = Math.pow(2, retryCount) * 1000;
-        await new Promise((res) => setTimeout(res, delay));
-        await uploadPartWithProgressInternal(opts, retryCount + 1); // Retry the request
-      } else {
-        reject("Max retries exceeded");
+    xhr.onload = () => {
+      const etag = xhr.getResponseHeader("Etag");
+      if (xhr.status >= 200 && xhr.status <= 299 && etag) {
+        return resume(Effect.succeed(etag));
       }
+      return resume(Effect.fail(new RetryError()));
     };
+    xhr.onerror = () => resume(Effect.fail(new RetryError()));
 
     let lastProgress = 0;
-
-    xhr.onerror = async () => {
-      lastProgress = 0;
-      if (retryCount < opts.maxRetries) {
-        // Add a delay before retrying (exponential backoff can be used)
-        const delay = Math.pow(2, retryCount) * 100;
-        await new Promise((res) => setTimeout(res, delay));
-        await uploadPartWithProgressInternal(opts, retryCount + 1); // Retry the request
-      } else {
-        reject("Max retries exceeded");
-      }
-    };
-
     xhr.upload.onprogress = (e) => {
       const delta = e.loaded - lastProgress;
       lastProgress += delta;
@@ -157,8 +136,3 @@ const uploadPartWithProgressInternal = async (
 
     xhr.send(opts.chunk);
   });
-
-const uploadPartWithProgress = (
-  opts: Parameters<typeof uploadPartWithProgressInternal>[0],
-  retryCount?: number,
-) => Effect.promise(() => uploadPartWithProgressInternal(opts, retryCount));

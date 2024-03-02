@@ -1,8 +1,6 @@
 import type { Schema } from "@effect/schema/Schema";
-import { Data, Effect } from "effect";
-import type * as _unused from "effect/Types";
+import { Effect } from "effect";
 
-import type { FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -90,8 +88,4 @@ export const createUTReporter =
       }
 
       return response.ok;
-    }).pipe(Effect.mapError((error) => new UTReporterError({ error })));
-
-export class UTReporterError extends Data.TaggedError("UTReporterError")<{
-  readonly error: FetchError | UploadThingError;
-}> {}
+    });

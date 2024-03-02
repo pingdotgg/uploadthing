@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { TaggedError } from "effect/Data";
 import { process } from "std-env";
 
-import { UploadThingError } from "@uploadthing/shared";
+import { filterObjectValues, UploadThingError } from "@uploadthing/shared";
 
 import { logger } from "./logger";
 
@@ -121,7 +121,10 @@ export const toWebRequest = (
       (url) =>
         new Request(url, {
           method,
-          headers: req.headers as HeadersInit,
+          headers: filterObjectValues(
+            req.headers ?? {},
+            (v): v is string => typeof v === "string",
+          ),
           ...(allowsBody ? { body: bodyStr } : {}),
         }),
     ),

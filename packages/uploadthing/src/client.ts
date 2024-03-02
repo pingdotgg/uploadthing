@@ -149,6 +149,9 @@ export const DANGEROUS__uploadFiles = <
     fetch: globalThis.fetch.bind(globalThis),
     baseHeaders: {
       "x-uploadthing-version": UPLOADTHING_VERSION,
+      "x-uploadthing-api-key": undefined,
+      "x-uploadthing-fe-package": opts.package,
+      "x-uploadthing-be-adapter": undefined,
     },
   });
 

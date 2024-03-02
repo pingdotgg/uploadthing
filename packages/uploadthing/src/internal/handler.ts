@@ -75,6 +75,10 @@ export const runRequestHandlerAsync = <TArgs extends AnyMiddlewareFnArgs>(
     baseHeaders: {
       "Content-Type": "application/json",
       "x-uploadthing-version": UPLOADTHING_VERSION,
+      // These are filled in later in `parseAndValidateRequest`
+      "x-uploadthing-api-key": undefined,
+      "x-uploadthing-be-adapter": undefined,
+      "x-uploadthing-fe-package": undefined,
     },
   });
 
