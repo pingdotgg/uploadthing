@@ -52,10 +52,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     }
 
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req),
-      originalRequest: req,
-      res,
-      event: undefined,
+      req: toWebRequest(req),
+      middlewareArgs: { req, res, event: undefined },
     });
 
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);

@@ -28,6 +28,7 @@ import type {
   ActionType,
   FileRouter,
   MiddlewareFnArgs,
+  RequestHandler,
   RouterWithConfig,
   UTEvents,
   ValidMiddlewareObject,
@@ -104,18 +105,8 @@ export const buildRequestHandler = <
 >(
   opts: RouterWithConfig<TRouter>,
   adapter: string,
-) => {
-  return async (input: {
-    nativeRequest: Request;
-
-    // Forward to middleware handler
-    originalRequest: Args["req"];
-    res: Args["res"];
-    event: Args["event"];
-  }): Promise<
-    | UploadThingError
-    | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
-  > => {
+): RequestHandler<Args> => {
+  return async (input) => {
     const isDev = opts.config?.isDev ?? isDevelopment;
     const fetch = opts.config?.fetch ?? globalThis.fetch;
 
@@ -127,7 +118,7 @@ export const buildRequestHandler = <
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
-    const req = input.nativeRequest;
+    const req = input.req;
     const url = new URL(req.url);
 
     // Get inputs from query and params
@@ -352,9 +343,7 @@ export const buildRequestHandler = <
         try {
           logger.debug("Running middleware");
           metadata = await uploadable._def.middleware({
-            req: input.originalRequest,
-            res: input.res,
-            event: input.event,
+            ...input.middlewareArgs,
             input: parsedInput,
             files,
           });

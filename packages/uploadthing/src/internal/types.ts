@@ -11,6 +11,7 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { UploadThingResponse } from "../types";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 
@@ -46,6 +47,8 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
   res: TResponse;
   event: TEvent;
 };
+export type AnyMiddlewareFnArgs = MiddlewareFnArgs<any, any, any>;
+
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -163,6 +166,23 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: RouteHandlerConfig;
 };
+
+type RequestHandlerInput<TArgs extends AnyMiddlewareFnArgs> = {
+  req: Request;
+  middlewareArgs: TArgs;
+};
+type RequestHandlerOutput = Promise<
+  | {
+      status: number;
+      body?: UploadThingResponse;
+      cleanup?: Promise<unknown>;
+    }
+  | UploadThingError
+>;
+
+export type RequestHandler<TArgs extends AnyMiddlewareFnArgs> = (
+  input: RequestHandlerInput<TArgs>,
+) => RequestHandlerOutput;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker

@@ -68,10 +68,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     }
 
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, bodyResult.data),
-      originalRequest: req,
-      res,
-      event: undefined,
+      req: toWebRequest(req, bodyResult.data),
+      middlewareArgs: { req, res, event: undefined },
     });
 
     if (response instanceof UploadThingError) {

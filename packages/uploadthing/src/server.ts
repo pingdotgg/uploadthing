@@ -49,10 +49,8 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   ): Promise<Response | ResponseWithCleanup> => {
     const req = request instanceof Request ? request : request.request;
     const response = await requestHandler({
-      nativeRequest: req,
-      originalRequest: req,
-      event: undefined,
-      res: undefined,
+      req,
+      middlewareArgs: { req, res: undefined, event: undefined },
     });
 
     if (response instanceof UploadThingError) {
