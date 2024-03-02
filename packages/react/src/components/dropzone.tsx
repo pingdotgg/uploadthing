@@ -133,6 +133,7 @@ export function UploadDropzone<
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
+    multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: $props.__internal_dropzone_disabled,
   });

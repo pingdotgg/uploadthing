@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 
 import { UploadThingError } from "@uploadthing/shared";
 import type { EndpointMetadata } from "@uploadthing/shared";
+import type { UploadFilesOptions } from "uploadthing/client";
 import {
   DANGEROUS__uploadFiles,
   INTERNAL_DO_NOT_USE__fatalClientError,
@@ -33,9 +34,12 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const useUploadThing = <TEndpoint extends keyof TRouter>(
+  const useUploadThing = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
@@ -57,9 +61,14 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+        const res = await DANGEROUS__uploadFiles<
+          TRouter,
+          TEndpoint,
+          TSkipPolling
+        >(endpoint, {
           files,
           input,
+          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.set(progress.file, progress.progress);
@@ -122,10 +131,13 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: <TEndpoint extends keyof TRouter>(
+    uploadFiles: <
+      TEndpoint extends keyof TRouter,
+      TSkipPolling extends boolean = false,
+    >(
       endpoint: TEndpoint,
       opts: DistributiveOmit<
-        Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
+        UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
         "url" | "package"
       >,
     ) =>

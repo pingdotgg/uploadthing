@@ -21,9 +21,17 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 ) => {
   const url = Effect.runSync(resolveMaybeUrlArg(opts?.url));
 
-  const TypedButton = <TEndpoint extends keyof TRouter>(
-    props: OmitInitOpts<typeof UploadButton<TRouter, TEndpoint>>,
-  ) => <UploadButton<TRouter, TEndpoint> {...(props as any)} url={url} />;
+  const TypedButton = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
+    props: OmitInitOpts<typeof UploadButton<TRouter, TEndpoint, TSkipPolling>>,
+  ) => (
+    <UploadButton<TRouter, TEndpoint, TSkipPolling>
+      {...(props as any)}
+      url={url}
+    />
+  );
   return TypedButton;
 };
 
@@ -32,9 +40,19 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 ) => {
   const url = Effect.runSync(resolveMaybeUrlArg(opts?.url));
 
-  const TypedDropzone = <TEndpoint extends keyof TRouter>(
-    props: OmitInitOpts<typeof UploadDropzone<TRouter, TEndpoint>>,
-  ) => <UploadDropzone<TRouter, TEndpoint> {...(props as any)} url={url} />;
+  const TypedDropzone = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
+    props: OmitInitOpts<
+      typeof UploadDropzone<TRouter, TEndpoint, TSkipPolling>
+    >,
+  ) => (
+    <UploadDropzone<TRouter, TEndpoint, TSkipPolling>
+      {...(props as any)}
+      url={url}
+    />
+  );
   return TypedDropzone;
 };
 
@@ -43,9 +61,14 @@ export const generateUploader = <TRouter extends FileRouter>(
 ) => {
   const url = Effect.runSync(resolveMaybeUrlArg(opts?.url));
 
-  const TypedUploader = <TEndpoint extends keyof TRouter>(
-    props: OmitInitOpts<typeof Uploader<TRouter, TEndpoint>>,
-  ) => <Uploader<TRouter, TEndpoint> {...(props as any)} url={url} />;
+  const TypedUploader = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
+    props: OmitInitOpts<typeof Uploader<TRouter, TEndpoint, TSkipPolling>>,
+  ) => (
+    <Uploader<TRouter, TEndpoint, TSkipPolling> {...(props as any)} url={url} />
+  );
   return TypedUploader;
 };
 

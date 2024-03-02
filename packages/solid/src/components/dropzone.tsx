@@ -31,7 +31,8 @@ type DropzoneStyleFieldCallbackArgs = {
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
   appearance?: {
     container?: StyleField<DropzoneStyleFieldCallbackArgs>;
     uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
@@ -54,13 +55,14 @@ export type UploadDropzoneProps<
 export const UploadDropzone = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter, TEndpoint>,
+    : UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
-  const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
+  const $props = props as UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
 
   const { mode = "manual" } = $props.config ?? {};
 
@@ -68,6 +70,7 @@ export const UploadDropzone = <
     url: Effect.runSync(resolveMaybeUrlArg($props?.url)),
   });
   const uploadThing = useUploadThing($props.endpoint, {
+    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);
       $props.onClientUploadComplete?.(res);
@@ -98,6 +101,7 @@ export const UploadDropzone = <
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
+    multiple: fileInfo().multiple,
     get accept() {
       return fileInfo().fileTypes
         ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
