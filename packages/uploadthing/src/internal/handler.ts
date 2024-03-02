@@ -10,7 +10,6 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
-  ContentDisposition,
   ExpandedRouteConfig,
   FetchEsque,
   FileRouterInputKey,
@@ -18,10 +17,10 @@ import type {
   UploadedFile,
 } from "@uploadthing/shared";
 
+import type { UploadThingResponse } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { getFullApiUrl } from "./get-full-api-url";
-import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
 import { UTFiles, VALID_ACTION_TYPES } from "./types";
@@ -29,6 +28,7 @@ import type {
   ActionType,
   FileRouter,
   MiddlewareFnArgs,
+  RouterWithConfig,
   UTEvents,
   ValidMiddlewareObject,
 } from "./types";
@@ -97,52 +97,6 @@ const fileCountLimitHit = (
 
   return { limitHit: false };
 };
-
-type RouteHandlerConfig = {
-  logLevel?: LogLevel;
-  callbackUrl?: string;
-  uploadthingId?: string;
-  uploadthingSecret?: string;
-  /**
-   * Used to determine whether to run dev hook or not
-   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
-   */
-  isDev?: boolean;
-  /**
-   * Used to override the fetch implementation
-   * @default `globalThis.fetch`
-   */
-  fetch?: FetchEsque;
-};
-
-export type RouterWithConfig<TRouter extends FileRouter> = {
-  router: TRouter;
-  config?: RouteHandlerConfig;
-};
-
-interface UploadThingBaseResponse {
-  key: string;
-  fileName: string;
-  fileType: FileRouterInputKey;
-  fileUrl: string;
-  contentDisposition: ContentDisposition;
-  pollingJwt: string;
-  pollingUrl: string;
-}
-
-export interface PSPResponse extends UploadThingBaseResponse {
-  url: string;
-  fields: Record<string, string>;
-}
-
-export interface MPUResponse extends UploadThingBaseResponse {
-  urls: string[];
-  uploadId: string;
-  chunkSize: number;
-  chunkCount: number;
-}
-
-export type UploadThingResponse = (PSPResponse | MPUResponse)[];
 
 export const buildRequestHandler = <
   TRouter extends FileRouter,

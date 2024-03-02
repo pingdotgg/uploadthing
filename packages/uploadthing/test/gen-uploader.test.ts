@@ -1,10 +1,10 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import type { UploadFileResponse } from "../src/client";
 import { genUploader } from "../src/client";
 import type { FileRouter } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
+import type { UploadFileResponse } from "../src/types";
 
 const doNotExecute = (_fn: (...args: any[]) => any) => {
   // noop

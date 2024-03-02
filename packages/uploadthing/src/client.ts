@@ -1,7 +1,6 @@
 // Don't want to ship our logger to the client, keep size down
 /* eslint-disable no-console */
 
-import type { ExtendObjectIf } from "@uploadthing/shared";
 import {
   safeParseJSON,
   UploadThingError,
@@ -11,19 +10,18 @@ import {
 import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
-import type {
-  MPUResponse,
-  PSPResponse,
-  UploadThingResponse,
-} from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import type {
-  FileRouter,
-  inferEndpointInput,
-  inferEndpointOutput,
-} from "./internal/types";
+import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import type { UTReporter } from "./internal/ut-reporter";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import type {
+  GenerateUploaderOptions,
+  MPUResponse,
+  PSPResponse,
+  UploadFileResponse,
+  UploadFilesOptions,
+  UploadThingResponse,
+} from "./types";
 
 export {
   /** @public */
@@ -33,57 +31,6 @@ export {
 } from "@uploadthing/shared";
 
 export const version = pkgJson.version;
-
-export type UploadFilesOptions<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = {
-  /**
-   * The files to upload
-   */
-  files: File[];
-  /**
-   * Called when presigned URLs have been retrieved and the file upload is about to begin
-   */
-  onUploadBegin?: (opts: { file: string }) => void;
-  /**
-   * Called continuously as the file is uploaded to the storage provider
-   */
-  onUploadProgress?: (opts: { file: string; progress: number }) => void;
-  /**
-   * Skip polling for server data after upload is complete
-   * Useful if you want faster response times and don't need
-   * any data returned from the server `onUploadComplete` callback
-   * @default false
-   */
-  skipPolling?: TSkipPolling;
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { http://localhost:3000/api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
-   */
-  url: URL;
-  /**
-   * The uploadthing package that is making this request, used to identify the client in the server logs
-   * @example "@uploadthing/react"
-   * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
-   */
-  package: string;
-} & ExtendObjectIf<
-  inferEndpointInput<TRouter[TEndpoint]>,
-  { input: inferEndpointInput<TRouter[TEndpoint]> }
->;
-
-export type UploadFileResponse<TServerOutput> = {
-  name: string;
-  size: number;
-  key: string;
-  url: string;
-  // Matches what's returned from the serverside `onUploadComplete` callback
-  serverData: TServerOutput;
-};
 
 const uploadFilesInternal = async <
   TRouter extends FileRouter,
@@ -206,26 +153,6 @@ const uploadFilesInternal = async <
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return Promise.all(fileUploadPromises) as any;
-};
-
-type GenerateUploaderOptions = {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example /api/uploadthing
-   * @example URL { https://www.example.com/api/uploadthing }
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-  /**
-   * The uploadthing package that is making this request
-   * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
-   */
-  package: string;
 };
 
 export const genUploader = <TRouter extends FileRouter>(

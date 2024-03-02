@@ -11,8 +11,12 @@ import {
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "@uploadthing/shared";
-import type { ContentField, StyleField } from "@uploadthing/shared";
-import type { ErrorMessage, FileRouter } from "uploadthing/server";
+import type {
+  ContentField,
+  ErrorMessage,
+  StyleField,
+} from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";

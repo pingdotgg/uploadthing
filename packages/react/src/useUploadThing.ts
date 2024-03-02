@@ -15,7 +15,7 @@ import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
-} from "uploadthing/server";
+} from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";

@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import type {
+  ErrorMessage,
+  FetchEsque,
   FileRouterInputConfig,
   Json,
+  MaybePromise,
+  Simplify,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 
 //
@@ -15,10 +20,6 @@ export const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
 };
 export type UnsetMarker = typeof unsetMarker;
-
-export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
-
-export type MaybePromise<TType> = TType | Promise<TType>;
 
 //
 // Package
@@ -73,8 +74,6 @@ type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
 }) => void;
-
-export type ErrorMessage<TError extends string> = TError;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -142,6 +141,28 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   string,
   Uploader<TParams>
 >;
+
+type RouteHandlerConfig = {
+  logLevel?: LogLevel;
+  callbackUrl?: string;
+  uploadthingId?: string;
+  uploadthingSecret?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+};
+
+export type RouterWithConfig<TRouter extends FileRouter> = {
+  router: TRouter;
+  config?: RouteHandlerConfig;
+};
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker

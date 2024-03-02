@@ -11,7 +11,7 @@ import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
-} from "uploadthing/server";
+} from "uploadthing/types";
 
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { createFetch } from "./utils/createFetch";

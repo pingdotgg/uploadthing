@@ -15,14 +15,10 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
-import type {
-  MPUResponse,
-  PSPResponse,
-  UploadThingResponse,
-} from "../internal/handler";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../internal/types";
+import type { MPUResponse, PSPResponse, UploadThingResponse } from "../types";
 import type { FileEsque, UploadData, UploadError } from "./types";
 
 export function guardServerOnly() {

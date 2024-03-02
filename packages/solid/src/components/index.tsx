@@ -1,5 +1,5 @@
 import { resolveMaybeUrlArg } from "@uploadthing/shared";
-import type { FileRouter } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/types";
 
 import type {
   GenerateTypedHelpersOptions,

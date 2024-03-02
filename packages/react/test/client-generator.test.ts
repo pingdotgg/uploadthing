@@ -1,8 +1,8 @@
 import { expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
-import type { UploadFileResponse } from "uploadthing/client";
 import { createUploadthing } from "uploadthing/server";
+import type { UploadFileResponse } from "uploadthing/types";
 
 import { generateReactHelpers } from "../src";
 
