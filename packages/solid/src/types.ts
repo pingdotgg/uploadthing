@@ -4,7 +4,7 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
   inferErrorShape,
-  UploadFileResponse,
+  UploadedFile,
 } from "uploadthing/types";
 
 export interface GenerateTypedHelpersOptions {
@@ -55,7 +55,7 @@ export type UseUploadthingProps<
    * - If `skipPolling` is `false`, this will be called after
    *   the serverside `onUploadComplete` callback has finished
    */
-  onClientUploadComplete?: (res: UploadFileResponse<TServerOutput>[]) => void;
+  onClientUploadComplete?: (res: UploadedFile<TServerOutput>[]) => void;
   /**
    * Called if the upload fails
    */

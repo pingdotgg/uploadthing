@@ -58,7 +58,7 @@ export type UploadFilesOptions<
   { input: inferEndpointInput<TRouter[TEndpoint]> }
 >;
 
-export type UploadFileResponse<TServerOutput> = {
+export type UploadedFile<TServerOutput> = {
   name: string;
   size: number;
   key: string;

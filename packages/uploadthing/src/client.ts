@@ -18,7 +18,7 @@ import type {
   GenerateUploaderOptions,
   MPUResponse,
   PSPResponse,
-  UploadFileResponse,
+  UploadedFile,
   UploadFilesOptions,
   UploadThingResponse,
 } from "./types";
@@ -42,7 +42,7 @@ const uploadFilesInternal = async <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-): Promise<UploadFileResponse<TServerOutput>[]> => {
+): Promise<UploadedFile<TServerOutput>[]> => {
   // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
