@@ -1,6 +1,5 @@
 import * as S from "@effect/schema/Schema";
 import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
-import type { Tag } from "effect/Context";
 
 import type { FetchEsque } from "./types";
 import { filterObjectValues } from "./utils";
@@ -10,7 +9,7 @@ export class FetchError extends Data.TaggedError("FetchError")<{
   readonly error: unknown;
 }> {}
 
-export const fetchContext = Context.GenericTag<{
+export type FetchContextTag = {
   fetch: FetchEsque;
   baseHeaders: Record<string, string | undefined> & {
     "x-uploadthing-version": string;
@@ -18,8 +17,9 @@ export const fetchContext = Context.GenericTag<{
     "x-uploadthing-fe-package": string | undefined;
     "x-uploadthing-be-adapter": string | undefined;
   };
-}>("fetch-context");
-export type FetchContextTag = Tag.Identifier<typeof fetchContext>;
+};
+export const fetchContext =
+  Context.GenericTag<FetchContextTag>("fetch-context");
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
