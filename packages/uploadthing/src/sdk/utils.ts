@@ -1,13 +1,6 @@
 import { process } from "std-env";
 
-import type {
-  ACL,
-  ContentDisposition,
-  FetchEsque,
-  Json,
-  Time,
-  TimeShort,
-} from "@uploadthing/shared";
+import type { FetchEsque, Time, TimeShort } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -15,15 +8,16 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
-import type {
-  MPUResponse,
-  PSPResponse,
-  UploadThingResponse,
-} from "../internal/handler";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../internal/types";
-import type { FileEsque, UploadData, UploadError } from "./types";
+import type { MPUResponse, PSPResponse, UploadThingResponse } from "../types";
+import type {
+  FileEsque,
+  UploadData,
+  UploadError,
+  UploadFilesOptions,
+} from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -45,11 +39,8 @@ export function getApiKeyOrThrow(apiKey?: string) {
 }
 
 export const uploadFilesInternal = async (
-  data: {
+  data: UploadFilesOptions & {
     files: FileEsque[];
-    metadata: Json;
-    contentDisposition: ContentDisposition;
-    acl?: ACL;
   },
   opts: {
     fetch: FetchEsque;

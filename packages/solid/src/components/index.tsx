@@ -1,19 +1,17 @@
-import type { ComponentProps, ValidComponent } from "solid-js";
+import { resolveMaybeUrlArg } from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
-import { resolveMaybeUrlArg } from "uploadthing/client";
-import type { FileRouter } from "uploadthing/server";
-
-import type { GenerateTypedHelpersOptions } from "../types";
+import type {
+  GenerateTypedHelpersOptions,
+  UploadthingComponentProps,
+} from "../types";
+import type { UploadButtonProps } from "./button";
 import { UploadButton } from "./button";
+import type { UploadDropzoneProps } from "./dropzone";
 import { UploadDropzone } from "./dropzone";
 import { Uploader } from "./uploader";
 
 export { UploadButton, UploadDropzone, Uploader };
-
-type OmitInitOpts<T extends ValidComponent> = Omit<
-  ComponentProps<T>,
-  keyof GenerateTypedHelpersOptions
->;
 
 export const generateUploadButton = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
@@ -24,7 +22,10 @@ export const generateUploadButton = <TRouter extends FileRouter>(
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
-    props: OmitInitOpts<typeof UploadButton<TRouter, TEndpoint, TSkipPolling>>,
+    props: Omit<
+      UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
+      keyof GenerateTypedHelpersOptions
+    >,
   ) => (
     <UploadButton<TRouter, TEndpoint, TSkipPolling>
       {...(props as any)}
@@ -43,8 +44,9 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
-    props: OmitInitOpts<
-      typeof UploadDropzone<TRouter, TEndpoint, TSkipPolling>
+    props: Omit<
+      UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
+      keyof GenerateTypedHelpersOptions
     >,
   ) => (
     <UploadDropzone<TRouter, TEndpoint, TSkipPolling>
@@ -64,7 +66,10 @@ export const generateUploader = <TRouter extends FileRouter>(
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
-    props: OmitInitOpts<typeof Uploader<TRouter, TEndpoint, TSkipPolling>>,
+    props: Omit<
+      UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
+      keyof GenerateTypedHelpersOptions
+    >,
   ) => (
     <Uploader<TRouter, TEndpoint, TSkipPolling> {...(props as any)} url={url} />
   );

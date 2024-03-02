@@ -69,7 +69,7 @@
   "peerDependencies": {
     "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^6.4.0"
+    "uploadthing": "^6.5.1"
   },
   "peerDependenciesMeta": {
     "next": {
