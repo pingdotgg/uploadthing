@@ -208,7 +208,7 @@ const uploadFilesInternal = async <
   return Promise.all(fileUploadPromises) as any;
 };
 
-export type GenerateTypedHelpersOptions = {
+type GenerateUploaderOptions = {
   /**
    * URL to the UploadThing API endpoint
    * @example /api/uploadthing
@@ -229,7 +229,7 @@ export type GenerateTypedHelpersOptions = {
 };
 
 export const genUploader = <TRouter extends FileRouter>(
-  initOpts: GenerateTypedHelpersOptions,
+  initOpts: GenerateUploaderOptions,
 ) => {
   return <
     TEndpoint extends keyof TRouter,
@@ -238,7 +238,7 @@ export const genUploader = <TRouter extends FileRouter>(
     endpoint: TEndpoint,
     opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-      keyof GenerateTypedHelpersOptions
+      keyof GenerateUploaderOptions
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
