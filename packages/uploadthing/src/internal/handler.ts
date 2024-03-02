@@ -46,7 +46,7 @@ import {
 } from "./validate-request-input";
 
 type RequestHandlerInput<TArgs extends AnyMiddlewareFnArgs> = {
-  req: Request | Effect.Effect<Request>;
+  req: Request | Effect.Effect<Request, UploadThingError>;
   middlewareArgs: TArgs;
 };
 type RequestHandlerOutput = Effect.Effect<
