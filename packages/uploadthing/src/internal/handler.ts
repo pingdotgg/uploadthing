@@ -1,9 +1,8 @@
 import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
-import type { Tag } from "effect/Context";
 import { isDevelopment } from "std-env";
 
-import type { FetchContext } from "@uploadthing/shared";
+import type { FetchContextTag } from "@uploadthing/shared";
 import {
   fetchContext,
   fetchEffJson,
@@ -57,7 +56,7 @@ type RequestHandlerOutput = Effect.Effect<
     }
   | UploadThingError,
   never,
-  Tag.Identifier<FetchContext>
+  FetchContextTag
 >;
 type RequestHandler<TArgs extends AnyMiddlewareFnArgs> = (
   input: RequestHandlerInput<TArgs>,

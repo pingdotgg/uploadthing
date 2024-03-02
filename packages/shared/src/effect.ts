@@ -1,5 +1,6 @@
 import * as S from "@effect/schema/Schema";
 import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
+import type { Tag } from "effect/Context";
 
 import type { FetchEsque } from "./types";
 
@@ -12,7 +13,7 @@ export const fetchContext = Context.GenericTag<{
   fetch: FetchEsque;
   baseHeaders: Record<string, string>;
 }>("fetch-context");
-export type FetchContext = typeof fetchContext;
+export type FetchContextTag = Tag.Identifier<typeof fetchContext>;
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love

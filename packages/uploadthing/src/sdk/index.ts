@@ -1,9 +1,8 @@
 import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
-import type { Tag } from "effect/Context";
 
 import type {
-  FetchContext,
+  FetchContextTag,
   FetchEsque,
   MaybeUrl,
   SerializedUploadError,
@@ -105,7 +104,7 @@ export class UTApi {
   };
 
   private executeAsync = <A, E>(
-    program: Effect.Effect<A, E, Tag.Identifier<FetchContext>>,
+    program: Effect.Effect<A, E, FetchContextTag>,
   ) =>
     program.pipe(
       Effect.provide(
