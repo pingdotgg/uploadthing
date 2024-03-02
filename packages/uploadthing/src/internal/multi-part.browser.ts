@@ -11,13 +11,13 @@ import {
 import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { MPUResponse } from "./shared-schemas";
-import type { createUTReporter } from "./ut-reporter";
+import type { UTReporter } from "./ut-reporter";
 
 export const uploadMultipartWithProgress = (
   file: File,
   presigned: MPUResponse,
   opts: {
-    reportEventToUT: ReturnType<typeof createUTReporter>;
+    reportEventToUT: UTReporter;
     onUploadProgress?: (opts: { file: string; progress: number }) => void;
   },
 ) =>

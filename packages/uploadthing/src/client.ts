@@ -156,7 +156,6 @@ export const DANGEROUS__uploadFiles = <
   });
 
   return uploadFiles.pipe(
-    Effect.catchTag("UTReporterError", (error) => Effect.die(error)),
     Effect.tapErrorCause(Effect.logError),
     Effect.provide(layer),
     Effect.runPromise,

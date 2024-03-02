@@ -1,6 +1,7 @@
 import type { Schema } from "@effect/schema/Schema";
 import { Effect } from "effect";
 
+import type { FetchContextTag } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -42,9 +43,14 @@ export const createAPIRequestUrl = (config: {
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
  * Events are handled in "./handler.ts starting at L200"
  */
+export type UTReporter = <TEvent extends keyof UTEvents>(
+  type: TEvent,
+  payload: UTEvents[TEvent],
+) => Effect.Effect<{ success: boolean }, UploadThingError, FetchContextTag>;
+
 export const createUTReporter =
-  (cfg: { url: URL; endpoint: string; package: string }) =>
-  <TEvent extends keyof UTEvents>(type: TEvent, payload: UTEvents[TEvent]) =>
+  (cfg: { url: URL; endpoint: string; package: string }): UTReporter =>
+  (type, payload) =>
     Effect.gen(function* ($) {
       const url = createAPIRequestUrl({
         url: cfg.url,
@@ -61,6 +67,15 @@ export const createUTReporter =
             "x-uploadthing-version": UPLOADTHING_VERSION,
           },
         }),
+        Effect.catchTag("FetchError", (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: "INTERNAL_CLIENT_ERROR",
+              message: "Failed to report event to UploadThing server",
+              cause: e,
+            }),
+          ),
+        ),
       );
 
       switch (type) {
@@ -87,5 +102,5 @@ export const createUTReporter =
         }
       }
 
-      return response.ok;
+      return { success: response.ok };
     });
