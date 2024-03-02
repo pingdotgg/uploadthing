@@ -18,6 +18,14 @@ export const generateMimeTypes = (fileTypes: string[]) => {
   return accepted;
 };
 
+export const generateClientDropzoneAccept = (fileTypes: string[]) => {
+  const mimeTypes = generateMimeTypes(fileTypes);
+
+  if (!mimeTypes) return undefined;
+
+  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
+};
+
 /**
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */

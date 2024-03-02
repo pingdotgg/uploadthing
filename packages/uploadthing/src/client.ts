@@ -3,7 +3,6 @@
 
 import type { ExtendObjectIf } from "@uploadthing/shared";
 import {
-  generateMimeTypes,
   safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
@@ -25,6 +24,13 @@ import type {
 } from "./internal/types";
 import type { UTReporter } from "./internal/ut-reporter";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+
+export {
+  /** @public */
+  generateMimeTypes,
+  /** @public */
+  generateClientDropzoneAccept,
+} from "@uploadthing/shared";
 
 export const version = pkgJson.version;
 
@@ -241,14 +247,6 @@ export const genUploader = <TRouter extends FileRouter>(
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
     } as any);
-};
-
-export const generateClientDropzoneAccept = (fileTypes: string[]) => {
-  const mimeTypes = generateMimeTypes(fileTypes);
-
-  if (!mimeTypes) return undefined;
-
-  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
 async function uploadMultipart(
