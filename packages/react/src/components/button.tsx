@@ -84,7 +84,7 @@ export function UploadButton<
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props?.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);

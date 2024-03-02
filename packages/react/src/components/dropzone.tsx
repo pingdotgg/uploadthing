@@ -83,7 +83,7 @@ export function UploadDropzone<
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props?.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const [files, setFiles] = useState<File[]>([]);
