@@ -1,6 +1,6 @@
 import type { ComponentProps, JSXElementConstructor } from "react";
 
-import { resolveMaybeUrlArg } from "uploadthing/client";
+import { resolveMaybeUrlArg } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
 import type { GenerateTypedHelpersOptions } from "../types";

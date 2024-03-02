@@ -1,8 +1,22 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
 
-import { objectKeys } from "@uploadthing/shared";
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { ExpandedRouteConfig } from "./types";
+import { objectKeys } from "./utils";
+
+export const generateMimeTypes = (fileTypes: string[]) => {
+  const accepted = fileTypes.map((type) => {
+    if (type === "blob") return "blob";
+    if (type === "pdf") return "application/pdf";
+    if (type.includes("/")) return type;
+    else return `${type}/*`;
+  });
+
+  if (accepted.includes("blob")) {
+    return undefined;
+  }
+  return accepted;
+};
 
 /**
  * Shared helpers for our premade components that's reusable by multiple frameworks

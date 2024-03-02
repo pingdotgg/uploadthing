@@ -5,13 +5,13 @@ import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
-  generateClientDropzoneAccept,
   generatePermittedFileTypes,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
+} from "@uploadthing/shared";
+import type { ContentField, StyleField } from "@uploadthing/shared";
+import { generateClientDropzoneAccept } from "uploadthing/client";
 import type { ErrorMessage, FileRouter } from "uploadthing/server";
 
 import type { UploadthingComponentProps } from "../types";

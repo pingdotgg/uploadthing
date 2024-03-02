@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 
 import {
+  generateMimeTypes,
   safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
@@ -17,18 +18,11 @@ import type {
 } from "./internal/handler";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
-
-/**
- * @internal
- * Shared helpers for our premade components that's reusable by multiple frameworks
- */
-export * from "./internal/component-theming";
 
 export const version = pkgJson.version;
 
@@ -71,13 +65,6 @@ export type UploadFilesOptions<
       input: inferEndpointInput<TRouter[TEndpoint]>;
     });
 
-export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
-  new UploadThingError({
-    code: "INTERNAL_CLIENT_ERROR",
-    message: "Something went wrong. Please report this to UploadThing.",
-    cause: e,
-  });
-
 export type UploadFileResponse<TServerOutput> = {
   name: string;
   size: number;
@@ -87,7 +74,7 @@ export type UploadFileResponse<TServerOutput> = {
   serverData: TServerOutput;
 };
 
-export const DANGEROUS__uploadFiles = async <
+const DANGEROUS__uploadFiles = async <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
@@ -239,7 +226,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
     TSkipPolling extends boolean = false,
   >(
     endpoint: TEndpoint,
-    opts: DistributiveOmit<
+    opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
       "url" | "package"
     >,
@@ -252,20 +239,6 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
     } as any);
 };
 
-export const generateMimeTypes = (fileTypes: string[]) => {
-  const accepted = fileTypes.map((type) => {
-    if (type === "blob") return "blob";
-    if (type === "pdf") return "application/pdf";
-    if (type.includes("/")) return type;
-    else return `${type}/*`;
-  });
-
-  if (accepted.includes("blob")) {
-    return undefined;
-  }
-  return accepted;
-};
-
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
 
@@ -273,8 +246,6 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
 
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
-
-export { resolveMaybeUrlArg };
 
 async function uploadMultipart(
   file: File,
