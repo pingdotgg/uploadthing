@@ -3,8 +3,6 @@ import { randomUUID } from "crypto";
 import { createUploadthing, UTFiles } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
 
-import "uploadthing/types";
-
 const f = createUploadthing({
   /**
    * Log out more information about the error, but don't return it to the client
