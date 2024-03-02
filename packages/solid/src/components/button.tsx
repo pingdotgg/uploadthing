@@ -28,7 +28,8 @@ type ButtonStyleFieldCallbackArgs = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
   appearance?: {
     container?: StyleField<ButtonStyleFieldCallbackArgs>;
     button?: StyleField<ButtonStyleFieldCallbackArgs>;
@@ -51,18 +52,22 @@ export type UploadButtonProps<
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint>,
+    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   let inputRef: HTMLInputElement;
-  const $props = props as UploadButtonProps<TRouter, TEndpoint>;
+  const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
+
   const uploadedThing = useUploadThing($props.endpoint, {
+    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       if (inputRef) {
         inputRef.value = "";
