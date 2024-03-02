@@ -32,8 +32,6 @@ import {
   uploadFilesInternal,
 } from "./utils";
 
-export type * from "./types";
-
 interface UTFilePropertyBag extends BlobPropertyBag {
   lastModified?: number;
   customId?: string;

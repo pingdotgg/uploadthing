@@ -14,7 +14,7 @@ import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
 export { UTFiles } from "./internal/types";
-export * from "./sdk";
+export { UTApi, UTFile } from "./sdk";
 export { UploadThingError, type FileRouter };
 
 type MiddlewareArgs = { req: Request; res: undefined; event: undefined };
