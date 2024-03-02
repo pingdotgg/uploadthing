@@ -28,17 +28,6 @@ import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 
 export { resolveMaybeUrlArg };
 
-/*
-
-More Effect refactoring:
-
-- Get rid of `Effect.promise`
-  - Either by refactoring promises to be effects (all the way down) with proper error handling
-  - Or use `Effect.tryPromise` instead with proper error handling
-- 
-
-*/
-
 /**
  * @internal
  * Shared helpers for our premade components that's reusable by multiple frameworks
