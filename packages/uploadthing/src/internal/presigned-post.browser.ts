@@ -34,13 +34,12 @@ export const uploadPresignedPostWithProgress = (
               s3Error: xhr.responseText,
             }),
       );
-    xhr.onerror = (_e) =>
+    xhr.onerror = () =>
       resume(
         opts.reportEventToUT("failure", {
           fileKey: presigned.key,
           uploadId: null,
           fileName: file.name,
-          // s3Error: _e.toString(),
         }),
       );
 
