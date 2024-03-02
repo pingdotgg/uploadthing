@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Effect } from "effect";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/dropzone/react";
@@ -84,7 +83,7 @@ export function UploadDropzone<
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: Effect.runSync(resolveMaybeUrlArg($props?.url)),
+    url: resolveMaybeUrlArg($props?.url),
   });
 
   const [files, setFiles] = useState<File[]>([]);

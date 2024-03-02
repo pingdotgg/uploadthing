@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Effect } from "effect";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -85,7 +84,7 @@ export function UploadButton<
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: Effect.runSync(resolveMaybeUrlArg($props?.url)),
+    url: resolveMaybeUrlArg($props?.url),
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);

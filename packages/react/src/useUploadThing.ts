@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { Effect } from "effect";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
 import { semverLite, UploadThingError } from "@uploadthing/shared";
@@ -144,7 +143,7 @@ export const INTERNAL_uploadthingHookGen = <
 export const generateReactHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  const url = Effect.runSync(resolveMaybeUrlArg(initOpts?.url));
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),

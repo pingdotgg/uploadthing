@@ -41,8 +41,8 @@ const getFullApiUrl = (maybeUrl?: string) =>
 
 export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined) => {
   return maybeUrl instanceof URL
-    ? Effect.succeed(maybeUrl)
-    : getFullApiUrl(maybeUrl);
+    ? maybeUrl
+    : Effect.runSync(getFullApiUrl(maybeUrl));
 };
 
 export const resolveCallbackUrl = (opts: {

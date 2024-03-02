@@ -1,4 +1,3 @@
-import { Effect } from "effect";
 import { createSignal } from "solid-js";
 
 import { UploadThingError } from "@uploadthing/shared";
@@ -127,7 +126,7 @@ export const INTERNAL_uploadthingHookGen = <
 export const generateSolidHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  const url = Effect.runSync(resolveMaybeUrlArg(initOpts?.url));
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),

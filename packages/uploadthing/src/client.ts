@@ -182,7 +182,7 @@ export const genUploader = <TRouter extends FileRouter>(initOpts: {
    */
   package: string;
 }) => {
-  const url = Effect.runSync(resolveMaybeUrlArg(initOpts.url));
+  const url = resolveMaybeUrlArg(initOpts.url);
 
   const utPkg = initOpts.package;
 
