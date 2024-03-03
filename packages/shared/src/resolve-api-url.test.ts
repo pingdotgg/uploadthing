@@ -10,7 +10,6 @@ describe("resolveMaybeUrlArg", () => {
   });
 
   it("should add `window.location.origin` if the url is relative and request is clientside", () => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     global.window = {
       location: {
         origin: "http://example.com",
@@ -43,7 +42,7 @@ describe("resolveMaybeUrlArg", () => {
 
   it("should use `/api/uploadthing` pathname if no url is provided", () => {
     expect(resolveMaybeUrlArg("http://example.com").href).toBe(
-      "http://localhost:3000/api/uploadthing",
+      "http://example.com/api/uploadthing",
     );
   });
 
