@@ -9,6 +9,8 @@ export type {
   FileRouter,
 } from "./internal/types";
 
+export * from "./sdk/types";
+
 export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
