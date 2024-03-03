@@ -12,7 +12,8 @@
         "next/**",
         "next-legacy/**",
         "server/**",
-        "tw/**"
+        "tw/**",
+        "types/**"
       ]
     }
   }
