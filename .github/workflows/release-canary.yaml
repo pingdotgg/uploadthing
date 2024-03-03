@@ -14,35 +14,12 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Use PNPM
-        uses: pnpm/action-setup@v2
-
-      - name: Use Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4.0.0
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install deps (with cache)
-        run: pnpm install
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Check packages for common errors
-        run: pnpm turbo --filter "./packages/*" build
+        run: bun turbo --filter "./packages/*" build
 
       - name: Bump version to canary
         run: node .github/canary-version.js
@@ -51,9 +28,7 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           for dir in packages/*/; do
-            if [ "$dir" != "packages/config/" ]; then
-              pnpm publish "$dir" --access public --tag canary --no-git-checks
-            fi
+              npm publish "$dir" --access public --tag canary
           done
 
       - name: Create a new comment notifying of the new canary version

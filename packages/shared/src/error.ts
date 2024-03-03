@@ -130,3 +130,10 @@ function getErrorTypeFromStatusCode(statusCode: number): ErrorCode {
   }
   return "INTERNAL_SERVER_ERROR";
 }
+
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });

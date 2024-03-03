@@ -50,8 +50,8 @@
   },
   "scripts": {
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --minify",
-    "build:js": "bunchee --tsconfig tsconfig.build.json && pnpm build:css",
-    "build": "pnpm build:js && pnpm build:css",
+    "build:js": "bunchee --tsconfig tsconfig.build.json && bun build:css",
+    "build": "bun build:js && bun build:css",
     "dev:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "dev:js": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "dev": "conc npm:dev:*",
@@ -69,7 +69,7 @@
   "peerDependencies": {
     "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^6.4.0"
+    "uploadthing": "^6.5.1"
   },
   "peerDependenciesMeta": {
     "next": {

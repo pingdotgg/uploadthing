@@ -16,10 +16,9 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -55,10 +54,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
     // POST
     const response = await requestHandler({
-      nativeRequest: toWebRequest(event),
-      event,
-      originalRequest: undefined,
-      res: undefined,
+      req: toWebRequest(event),
+      middlewareArgs: { req: undefined, res: undefined, event },
     });
 
     if (response instanceof UploadThingError) {

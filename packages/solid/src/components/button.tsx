@@ -9,9 +9,13 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
-import type { ErrorMessage, FileRouter } from "uploadthing/server";
+} from "@uploadthing/shared";
+import type {
+  ContentField,
+  ErrorMessage,
+  StyleField,
+} from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
@@ -25,20 +29,36 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: () => string[];
 };
 
+type ButtonAppearance = {
+  container?: StyleField<ButtonStyleFieldCallbackArgs>;
+  button?: StyleField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
+};
+
+type ButtonContent = {
+  button?: ContentField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
+};
+
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
-  appearance?: {
-    container?: StyleField<ButtonStyleFieldCallbackArgs>;
-    button?: StyleField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-  };
-  content?: {
-    button?: ContentField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-  };
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   class?: string;
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
+   */
+  appearance?: ButtonAppearance;
+  /**
+   * @see https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: ButtonContent;
 };
 
 /**
@@ -51,18 +71,22 @@ export type UploadButtonProps<
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint>,
+    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   let inputRef: HTMLInputElement;
-  const $props = props as UploadButtonProps<TRouter, TEndpoint>;
+  const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
+
   const uploadedThing = useUploadThing($props.endpoint, {
+    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       if (inputRef) {
         inputRef.value = "";

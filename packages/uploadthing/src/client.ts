@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 
 import {
+  resolveMaybeUrlArg,
   safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
@@ -9,85 +10,29 @@ import {
 
 import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
-import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
+import { uploadPartWithProgress } from "./internal/multi-part";
+import type { FileRouter, inferEndpointOutput } from "./internal/types";
+import type { UTReporter } from "./internal/ut-reporter";
+import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 import type {
+  GenerateUploaderOptions,
   MPUResponse,
   PSPResponse,
+  UploadedFile,
+  UploadFilesOptions,
   UploadThingResponse,
-} from "./internal/handler";
-import { uploadPartWithProgress } from "./internal/multi-part";
-import type {
-  DistributiveOmit,
-  FileRouter,
-  inferEndpointInput,
-  inferEndpointOutput,
-} from "./internal/types";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+} from "./types";
 
-/**
- * @internal
- * Shared helpers for our premade components that's reusable by multiple frameworks
- */
-export * from "./internal/component-theming";
+export {
+  /** @public */
+  generateMimeTypes,
+  /** @public */
+  generateClientDropzoneAccept,
+} from "@uploadthing/shared";
 
 export const version = pkgJson.version;
 
-export type UploadFilesOptions<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = {
-  onUploadProgress?: (opts: { file: string; progress: number }) => void;
-  onUploadBegin?: (opts: { file: string }) => void;
-
-  files: File[];
-
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { http://localhost:3000/api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   */
-  url: URL;
-
-  /**
-   * Skip polling for server data after upload is complete
-   * Useful if you want faster response times and don't need
-   * any data returned from the server `onUploadComplete` callback
-   * @default false
-   */
-  skipPolling?: TSkipPolling;
-
-  /**
-   * The uploadthing package that is making this request
-   * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
-   */
-  package: string;
-} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-  ? // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
-  : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
-
-export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
-  new UploadThingError({
-    code: "INTERNAL_CLIENT_ERROR",
-    message: "Something went wrong. Please report this to UploadThing.",
-    cause: e,
-  });
-
-export type UploadFileResponse<TServerOutput> = {
-  name: string;
-  size: number;
-  key: string;
-  url: string;
-  // Matches what's returned from the serverside `onUploadComplete` callback
-  serverData: TServerOutput;
-};
-
-export const DANGEROUS__uploadFiles = async <
+const uploadFilesInternal = async <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
@@ -97,7 +42,7 @@ export const DANGEROUS__uploadFiles = async <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-): Promise<UploadFileResponse<TServerOutput>[]> => {
+): Promise<UploadedFile<TServerOutput>[]> => {
   // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
@@ -210,77 +155,32 @@ export const DANGEROUS__uploadFiles = async <
   return Promise.all(fileUploadPromises) as any;
 };
 
-export const genUploader = <TRouter extends FileRouter>(initOpts: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { /api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-
-  /**
-   * The uploadthing package that is making this request
-   * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
-   */
-  package: string;
-}) => {
-  const url = resolveMaybeUrlArg(initOpts?.url);
-
-  const utPkg = initOpts.package;
-
+export const genUploader = <TRouter extends FileRouter>(
+  initOpts: GenerateUploaderOptions,
+) => {
   return <
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
     endpoint: TEndpoint,
-    opts: DistributiveOmit<
+    opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-      "url" | "package"
+      keyof GenerateUploaderOptions
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    DANGEROUS__uploadFiles<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
-      url,
-      package: utPkg,
+      url: resolveMaybeUrlArg(initOpts?.url),
+      package: initOpts.package,
     } as any);
 };
-
-export const generateMimeTypes = (fileTypes: string[]) => {
-  const accepted = fileTypes.map((type) => {
-    if (type === "blob") return "blob";
-    if (type === "pdf") return "application/pdf";
-    if (type.includes("/")) return type;
-    else return `${type}/*`;
-  });
-
-  if (accepted.includes("blob")) {
-    return undefined;
-  }
-  return accepted;
-};
-
-export const generateClientDropzoneAccept = (fileTypes: string[]) => {
-  const mimeTypes = generateMimeTypes(fileTypes);
-
-  if (!mimeTypes) return undefined;
-
-  return Object.fromEntries(mimeTypes.map((type) => [type, []]));
-};
-
-export { resolveMaybeUrlArg };
 
 async function uploadMultipart(
   file: File,
   presigned: MPUResponse,
   opts: {
-    reportEventToUT: ReturnType<typeof createUTReporter>;
+    reportEventToUT: UTReporter;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
 ) {
@@ -340,7 +240,7 @@ async function uploadPresignedPost(
   file: File,
   presigned: PSPResponse,
   opts: {
-    reportEventToUT: ReturnType<typeof createUTReporter>;
+    reportEventToUT: UTReporter;
     onUploadProgress?: UploadFilesOptions<any, any>["onUploadProgress"];
   },
 ) {

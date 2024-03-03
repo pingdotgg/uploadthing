@@ -25,6 +25,11 @@ export const createAPIRequestUrl = (config: {
   return url;
 };
 
+export type UTReporter = <TEvent extends keyof UTEvents>(
+  type: TEvent,
+  payload: UTEvents[TEvent],
+) => Promise<boolean>;
+
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
  * Events are handled in "./handler.ts starting at L200"
@@ -34,11 +39,8 @@ export const createUTReporter = (cfg: {
   endpoint: string;
   package: string;
   fetch: FetchEsque;
-}) => {
-  return async <TEvent extends keyof UTEvents>(
-    type: TEvent,
-    payload: UTEvents[TEvent],
-  ) => {
+}): UTReporter => {
+  return async (type, payload) => {
     const url = createAPIRequestUrl({
       url: cfg.url,
       slug: cfg.endpoint,

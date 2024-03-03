@@ -1,20 +1,21 @@
 import { useRef, useState } from "react";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
-import { semverLite, UploadThingError } from "@uploadthing/shared";
-import type { UploadFilesOptions } from "uploadthing/client";
 import {
-  DANGEROUS__uploadFiles,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  semverLite,
+  UploadThingError,
+} from "@uploadthing/shared";
+import {
+  genUploader,
   version as uploadthingClientVersion,
 } from "uploadthing/client";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
-} from "uploadthing/server";
+} from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
@@ -49,6 +50,10 @@ export const INTERNAL_uploadthingHookGen = <
       `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
     );
   }
+  const uploadFiles = genUploader<TRouter>({
+    url: initOpts.url,
+    package: "@uploadthing/react",
+  });
 
   const useUploadThing = <
     TEndpoint extends keyof TRouter,
@@ -78,13 +83,8 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles<
-          TRouter,
-          TEndpoint,
-          TSkipPolling
-        >(endpoint, {
+        const res = await uploadFiles(endpoint, {
           files,
-          input,
           skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
@@ -105,8 +105,8 @@ export const INTERNAL_uploadthingHookGen = <
 
             opts.onUploadBegin(file);
           },
-          url: initOpts.url,
-          package: "@uploadthing/react",
+          // @ts-expect-error - input may not be defined on the type
+          input,
         });
 
         opts?.onClientUploadComplete?.(res);
@@ -147,21 +147,9 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: <
-      TEndpoint extends keyof TRouter,
-      TSkipPolling extends boolean = false,
-    >(
-      endpoint: TEndpoint,
-      opts: DistributiveOmit<
-        UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-        "url" | "package"
-      >,
-    ) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
-        ...opts,
-        url,
-        package: "@uploadthing/react",
-      } as any),
+    uploadFiles: genUploader<TRouter>({
+      url,
+      package: "@uploadthing/react",
+    }),
   } as const;
 };
