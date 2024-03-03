@@ -6,6 +6,7 @@ import {
   isObject,
   objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
+  resolveMaybeUrlArg,
   safeParseJSON,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -20,7 +21,6 @@ import type {
 import type { UploadThingResponse } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { resolveMaybeUrlArg } from "@uploadthing/shared";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
 import { UTFiles, VALID_ACTION_TYPES } from "./types";
