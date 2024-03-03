@@ -106,54 +106,6 @@ export type UTEvents = {
 export const UTFiles = Symbol("uploadthing-custom-id-symbol");
 
 /**
- * Different frameworks have different request and response types
- */
-export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
-  req: TRequest;
-  res: TResponse;
-  event: TEvent;
-};
-
-export type RouteHandlerConfig = {
-  logLevel?: LogLevel;
-  callbackUrl?: string;
-  uploadthingId?: string;
-  uploadthingSecret?: string;
-  /**
-   * Used to determine whether to run dev hook or not
-   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
-   */
-  isDev?: boolean;
-  /**
-   * Used to override the fetch implementation
-   * @default `globalThis.fetch`
-   */
-  fetch?: FetchEsque;
-};
-
-export type RouteHandlerOptions<TRouter extends FileRouter> = {
-  router: TRouter;
-  config?: RouteHandlerConfig;
-};
-
-type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> = {
-  req: Request;
-  middlewareArgs: TArgs;
-};
-type RequestHandlerOutput = Promise<
-  | {
-      status: number;
-      body: UTEvents[keyof UTEvents]["out"];
-      cleanup?: Promise<unknown>;
-    }
-  | UploadThingError
->;
-
-export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
-  input: RequestHandlerInput<TArgs>,
-) => RequestHandlerOutput;
-
-/**
  * Builder types
  */
 
@@ -175,6 +127,15 @@ type ResolverOptions<TParams extends AnyParams> = {
   >;
 
   file: UploadedFileData;
+};
+
+/**
+ * Different frameworks have different request and response types
+ */
+export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
+  req: TRequest;
+  res: TResponse;
+  event: TEvent;
 };
 
 export interface AnyParams {
@@ -273,6 +234,45 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   string,
   Uploader<TParams>
 >;
+
+export type RouteHandlerConfig = {
+  logLevel?: LogLevel;
+  callbackUrl?: string;
+  uploadthingId?: string;
+  uploadthingSecret?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+};
+
+export type RouteHandlerOptions<TRouter extends FileRouter> = {
+  router: TRouter;
+  config?: RouteHandlerConfig;
+};
+
+type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> = {
+  req: Request;
+  middlewareArgs: TArgs;
+};
+type RequestHandlerOutput = Promise<
+  | {
+      status: number;
+      body: UTEvents[keyof UTEvents]["out"];
+      cleanup?: Promise<unknown>;
+    }
+  | UploadThingError
+>;
+
+export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
+  input: RequestHandlerInput<TArgs>,
+) => RequestHandlerOutput;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
