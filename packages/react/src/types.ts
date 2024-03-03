@@ -1,10 +1,10 @@
 import type { ExtendObjectIf, UploadThingError } from "@uploadthing/shared";
 import type {
+  ClientUploadFileResponse,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
   inferErrorShape,
-  ClientUploadFileResponse,
 } from "uploadthing/types";
 
 export interface GenerateTypedHelpersOptions {

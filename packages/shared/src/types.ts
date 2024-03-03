@@ -76,8 +76,6 @@ export type FetchEsque = (
   init?: RequestInit | RequestInitEsque,
 ) => Promise<ResponseEsque>;
 
-
-
 export const UploadedFile = S.struct({
   name: S.string,
   key: S.string,
