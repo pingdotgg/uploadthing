@@ -475,10 +475,7 @@ export const buildRequestHandler = <
 
         return {
           cleanup: promise,
-          body: parsedResponse.map((x) => ({
-            ...x,
-            pollingUrl: generateUploadThingURL(`/api/serverCallback`),
-          })) satisfies UTEvents["upload"]["out"],
+          body: parsedResponse satisfies UTEvents["upload"]["out"],
           status: 200,
         };
       }
