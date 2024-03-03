@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { resolveMaybeUrlArg } from "./utils";
 
-describe("getFullApiUrl", () => {
+describe("resolveMaybeUrlArg", () => {
   it("should return the provided url if it is already absolute", () => {
     const url = "https://example.com/foo/bar";
     expect(resolveMaybeUrlArg(url).href).toBe(url);
@@ -41,8 +41,8 @@ describe("getFullApiUrl", () => {
   });
 
   it("should use `/api/uploadthing` pathname if no url is provided", () => {
-    expect(resolveMaybeUrlArg("").href).toBe(
-      "http://localhost:3000/api/uploadthing",
+    expect(resolveMaybeUrlArg("http://example.com").href).toBe(
+      "http://example.com/api/uploadthing",
     );
   });
 
