@@ -11,16 +11,15 @@ import {
 import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import type { FileRouter, inferEndpointOutput } from "./internal/types";
+import type { MPUResponse, PresignedURLs, PSPResponse } from "./internal/types";
 import type { UTReporter } from "./internal/ut-reporter";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 import type {
+  ClientUploadedFileData,
+  FileRouter,
   GenerateUploaderOptions,
-  MPUResponse,
-  PSPResponse,
-  UploadedFile,
+  inferEndpointOutput,
   UploadFilesOptions,
-  UploadThingResponse,
 } from "./types";
 
 export {
@@ -42,7 +41,7 @@ const uploadFilesInternal = async <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-): Promise<UploadedFile<TServerOutput>[]> => {
+): Promise<ClientUploadedFileData<TServerOutput>[]> => {
   // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
@@ -80,7 +79,7 @@ const uploadFilesInternal = async <
       throw error;
     }
 
-    const jsonOrError = await safeParseJSON<UploadThingResponse>(res);
+    const jsonOrError = await safeParseJSON<PresignedURLs>(res);
     if (jsonOrError instanceof Error) {
       throw new UploadThingError({
         code: "BAD_REQUEST",

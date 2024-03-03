@@ -1,10 +1,10 @@
 import type { ExtendObjectIf, UploadThingError } from "@uploadthing/shared";
 import type {
+  ClientUploadedFileData,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
   inferErrorShape,
-  UploadedFile,
 } from "uploadthing/types";
 
 export interface GenerateTypedHelpersOptions {
@@ -55,7 +55,9 @@ export type UseUploadthingProps<
    * - If `skipPolling` is `false`, this will be called after
    *   the serverside `onUploadComplete` callback has finished
    */
-  onClientUploadComplete?: (res: UploadedFile<TServerOutput>[]) => void;
+  onClientUploadComplete?: (
+    res: ClientUploadedFileData<TServerOutput>[],
+  ) => void;
   /**
    * Called if the upload fails
    */

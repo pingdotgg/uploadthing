@@ -15,10 +15,13 @@ import type {
   FetchEsque,
   FileRouterInputKey,
   Json,
-  UploadedFile,
 } from "@uploadthing/shared";
 
-import type { UploadThingResponse } from "../types";
+import type {
+  FileRouter,
+  FileUploadDataWithCustomId,
+  UploadedFileData,
+} from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { logger } from "./logger";
@@ -26,13 +29,14 @@ import { getParseFn } from "./parser";
 import { UTFiles, VALID_ACTION_TYPES } from "./types";
 import type {
   ActionType,
-  FileRouter,
   MiddlewareFnArgs,
+  PresignedURLs,
   RequestHandler,
-  RouterWithConfig,
+  RouteHandlerConfig,
+  RouteHandlerOptions,
   UTEvents,
-  ValidMiddlewareObject,
 } from "./types";
+import type { ValidMiddlewareObject } from "./upload-builder";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
@@ -103,7 +107,7 @@ export const buildRequestHandler = <
   TRouter extends FileRouter,
   Args extends MiddlewareFnArgs<any, any, any>,
 >(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
   adapter: string,
 ): RequestHandler<Args> => {
   return async (input) => {
@@ -231,8 +235,7 @@ export const buildRequestHandler = <
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       const maybeReqBody = await safeParseJSON<{
-        file: UploadedFile;
-        files: unknown;
+        file: UploadedFileData;
         metadata: Record<string, unknown>;
         input?: Json;
       }>(req);
@@ -309,10 +312,11 @@ export const buildRequestHandler = <
             (f) =>
               isObject(f) &&
               typeof f.name === "string" &&
-              typeof f.size === "number",
+              typeof f.size === "number" &&
+              typeof f.type === "string",
           )
         ) {
-          const msg = `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
+          const msg = `Expected files to be of type '{name:string, size:number, type:string}[]', got '${JSON.stringify(
             files,
           )}'`;
           logger.error(msg);
@@ -369,20 +373,22 @@ export const buildRequestHandler = <
         }
 
         // Attach customIds from middleware to the files
-        const filesWithCustomIds = files.map((file, idx) => {
-          const theirs = metadata[UTFiles]?.[idx];
-          if (theirs && theirs.size !== file.size) {
-            logger.warn("File size mismatch. Reverting to original size");
-          }
-          return {
-            ...file,
-            ...theirs,
-            size: file.size,
-          };
-        });
+        const filesWithCustomIds: FileUploadDataWithCustomId[] = files.map(
+          (file, idx) => {
+            const theirs = metadata[UTFiles]?.[idx];
+            if (theirs && theirs.size !== file.size) {
+              logger.warn("File size mismatch. Reverting to original size");
+            }
+            return {
+              ...file,
+              ...theirs,
+              size: file.size,
+            };
+          },
+        );
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
-        let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
+        let parsedConfig: ExpandedRouteConfig;
         try {
           logger.debug("Parsing route config", uploadable._def.routerConfig);
           parsedConfig = parseAndExpandInputConfig(
@@ -439,7 +445,7 @@ export const buildRequestHandler = <
         });
 
         // This is when we send the response back to the user's form so they can submit the files
-        const parsedResponse = await safeParseJSON<UploadThingResponse>(
+        const parsedResponse = await safeParseJSON<PresignedURLs>(
           uploadthingApiResponse,
         );
 
@@ -540,9 +546,7 @@ export const buildRequestHandler = <
         });
 
         if (!uploadthingApiResponse.ok) {
-          const parsedResponse = await safeParseJSON<UploadThingResponse>(
-            uploadthingApiResponse,
-          );
+          const parsedResponse = await safeParseJSON(uploadthingApiResponse);
           logger.error("Failed to mark upload as failed", parsedResponse);
 
           return new UploadThingError({
@@ -591,7 +595,7 @@ export const buildRequestHandler = <
 };
 
 function resolveCallbackUrl(opts: {
-  config: RouterWithConfig<FileRouter>["config"];
+  config: RouteHandlerConfig | undefined;
   req: Request;
   url: URL;
   isDev: boolean;
@@ -634,7 +638,7 @@ function resolveCallbackUrl(opts: {
 }
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   return () => {
     const r = opts.router;

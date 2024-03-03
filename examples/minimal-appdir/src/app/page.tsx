@@ -11,7 +11,7 @@ export default function Home() {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
-    onClientUploadComplete: () => {
+    onClientUploadComplete: (res) => {
       alert("Upload Completed");
     },
   });

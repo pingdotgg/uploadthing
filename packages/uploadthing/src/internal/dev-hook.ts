@@ -3,7 +3,7 @@ import {
   pollForFileData,
   UploadThingError,
 } from "@uploadthing/shared";
-import type { FetchEsque, FileData, ResponseEsque } from "@uploadthing/shared";
+import type { FetchEsque, ResponseEsque } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { logger } from "./logger";
@@ -28,7 +28,16 @@ export const conditionalDevServer = async (opts: {
       sdkVersion: UPLOADTHING_VERSION,
       fetch: opts.fetch,
     },
-    async (json: { fileData: FileData }) => {
+    async (json: {
+      fileData: {
+        callbackUrl: string;
+        callbackSlug: string;
+        metadata: string | null;
+        fileName: string;
+        fileSize: number;
+        customId: string | null;
+      };
+    }) => {
       const file = json.fileData;
 
       let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
@@ -42,7 +51,7 @@ export const conditionalDevServer = async (opts: {
           method: "POST",
           body: JSON.stringify({
             status: "uploaded",
-            metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
+            metadata: JSON.parse(file.metadata ?? "{}") as unknown,
             file: {
               url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
               key: opts.fileKey,
@@ -65,7 +74,7 @@ export const conditionalDevServer = async (opts: {
         }
       } catch (e) {
         logger.error(
-          `Failed to simulate callback for file '${file.fileKey}'. Is your webhook configured correctly?`,
+          `Failed to simulate callback for file '${opts.fileKey}'. Is your webhook configured correctly?`,
         );
         logger.error(
           `  - Make sure the URL '${callbackUrl}' is accessible without any authentication. You can verify this by running 'curl -X POST ${callbackUrl}' in your terminal`,

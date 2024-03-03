@@ -11,7 +11,7 @@ import { UPLOADTHING_VERSION } from "../internal/constants";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
 import type { UTEvents } from "../internal/types";
-import type { MPUResponse, PSPResponse, UploadThingResponse } from "../types";
+import type { MPUResponse, PresignedURLs, PSPResponse } from "../types";
 import type {
   FileEsque,
   UploadData,
@@ -74,7 +74,7 @@ export const uploadFilesInternal = async (
   }
 
   const json = await res.json<{
-    data: UploadThingResponse;
+    data: PresignedURLs;
   }>();
 
   logger.debug("Got presigned URLs:", json.data);
