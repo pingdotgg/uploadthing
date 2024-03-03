@@ -1,8 +1,4 @@
-import type {
-  ContentDisposition,
-  ExtendObjectIf,
-  FileRouterInputKey,
-} from "@uploadthing/shared";
+import type { ExtendObjectIf } from "@uploadthing/shared";
 
 import type { FileRouter } from "./express";
 import type { inferEndpointInput } from "./internal/types";
@@ -28,18 +24,20 @@ export type UploadFilesOptions<
   /**
    * Called when presigned URLs have been retrieved and the file upload is about to begin
    */
-  onUploadBegin?: (opts: { file: string }) => void;
+  onUploadBegin?: ((opts: { file: string }) => void) | undefined;
   /**
    * Called continuously as the file is uploaded to the storage provider
    */
-  onUploadProgress?: (opts: { file: string; progress: number }) => void;
+  onUploadProgress?:
+    | ((opts: { file: string; progress: number }) => void)
+    | undefined;
   /**
    * Skip polling for server data after upload is complete
    * Useful if you want faster response times and don't need
    * any data returned from the server `onUploadComplete` callback
    * @default false
    */
-  skipPolling?: TSkipPolling;
+  skipPolling?: TSkipPolling | undefined;
   /**
    * URL to the UploadThing API endpoint
    * @example URL { http://localhost:3000/api/uploadthing }
@@ -86,27 +84,3 @@ export type GenerateUploaderOptions = {
    */
   package: string;
 };
-
-interface UploadThingBaseResponse {
-  key: string;
-  fileName: string;
-  fileType: FileRouterInputKey;
-  fileUrl: string;
-  contentDisposition: ContentDisposition;
-  pollingJwt: string;
-  pollingUrl: string;
-}
-
-export interface PSPResponse extends UploadThingBaseResponse {
-  url: string;
-  fields: Record<string, string>;
-}
-
-export interface MPUResponse extends UploadThingBaseResponse {
-  urls: string[];
-  uploadId: string;
-  chunkSize: number;
-  chunkCount: number;
-}
-
-export type UploadThingResponse = (PSPResponse | MPUResponse)[];

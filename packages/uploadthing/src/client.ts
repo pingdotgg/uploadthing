@@ -7,6 +7,7 @@ import {
   exponentialBackoff,
   fetchContext,
   fetchEffJson,
+  resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -15,7 +16,6 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import { resolveMaybeUrlArg } from "./internal/resolve-url";
 import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type { PresignedURLResponse } from "./internal/shared-schemas";
 import type { FileRouter, inferEndpointOutput } from "./internal/types";

@@ -10,7 +10,9 @@ export const uploadPresignedPostWithProgress = (
   presigned: PSPResponse,
   opts: {
     reportEventToUT: UTReporter;
-    onUploadProgress?: (opts: { file: string; progress: number }) => void;
+    onUploadProgress?:
+      | ((opts: { file: string; progress: number }) => void)
+      | undefined;
   },
 ) =>
   Effect.async<{ success: boolean }, UploadThingError, FetchContextTag>(

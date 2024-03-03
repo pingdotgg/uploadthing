@@ -18,7 +18,9 @@ export const uploadMultipartWithProgress = (
   presigned: MPUResponse,
   opts: {
     reportEventToUT: UTReporter;
-    onUploadProgress?: (opts: { file: string; progress: number }) => void;
+    onUploadProgress?:
+      | ((opts: { file: string; progress: number }) => void)
+      | undefined;
   },
 ) =>
   Effect.gen(function* ($) {

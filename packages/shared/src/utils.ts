@@ -291,7 +291,7 @@ export class InvalidURLError extends TaggedError("InvalidURL")<{
   }
 }
 
-const getFullApiUrl = (maybeUrl?: string) =>
+export const getFullApiUrl = (maybeUrl?: string) =>
   Effect.gen(function* ($) {
     const base = (() => {
       if (typeof window !== "undefined") return window.location.origin;
