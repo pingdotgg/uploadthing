@@ -18,84 +18,24 @@ import { uploadPresignedPostWithProgress } from "./internal/presigned-post.brows
 import { resolveMaybeUrlArg } from "./internal/resolve-url";
 import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type { PresignedURLResponse } from "./internal/shared-schemas";
-import type {
-  DistributiveOmit,
-  FileRouter,
-  inferEndpointInput,
-  inferEndpointOutput,
-} from "./internal/types";
+import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import type {
+  GenerateUploaderOptions,
+  UploadedFile,
+  UploadFilesOptions,
+} from "./types";
 
-export { resolveMaybeUrlArg };
-
-/**
- * @internal
- * Shared helpers for our premade components that's reusable by multiple frameworks
- */
-export * from "./internal/component-theming";
+export {
+  /** @public */
+  generateMimeTypes,
+  /** @public */
+  generateClientDropzoneAccept,
+} from "@uploadthing/shared";
 
 export const version = pkgJson.version;
 
-export type UploadFilesOptions<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = {
-  onUploadProgress?: (opts: { file: string; progress: number }) => void;
-  onUploadBegin?: (opts: { file: string }) => void;
-
-  files: File[];
-
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { http://localhost:3000/api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   */
-  url: URL;
-
-  /**
-   * Skip polling for server data after upload is complete
-   * Useful if you want faster response times and don't need
-   * any data returned from the server `onUploadComplete` callback
-   * @default false
-   */
-  skipPolling?: TSkipPolling | undefined;
-
-  /**
-   * The uploadthing package that is making this request
-   * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
-   */
-  package: string;
-} & (undefined extends inferEndpointInput<TRouter[TEndpoint]>
-  ? // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
-  : {
-      input: inferEndpointInput<TRouter[TEndpoint]>;
-    });
-
-/**
- * @internal - used to catch errors we've forgotton to wrap in UploadThingError
- * FIXME: Should not be needed after Effect migration
- */
-export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
-  new UploadThingError({
-    code: "INTERNAL_CLIENT_ERROR",
-    message: "Something went wrong. Please report this to UploadThing.",
-    cause: e,
-  });
-
-export type UploadFileResponse<TServerOutput> = {
-  name: string;
-  size: number;
-  key: string;
-  url: string;
-  // Matches what's returned from the serverside `onUploadComplete` callback
-  serverData: TServerOutput;
-};
-
-export const DANGEROUS__uploadFiles = <
+const uploadFilesInternal = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
@@ -151,45 +91,24 @@ export const DANGEROUS__uploadFiles = <
   );
 };
 
-export const genUploader = <TRouter extends FileRouter>(initOpts: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { /api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-
-  /**
-   * The uploadthing package that is making this request
-   * @example "@uploadthing/react"
-   *
-   * This is used to identify the client in the server logs
-   */
-  package: string;
-}) => {
-  const url = resolveMaybeUrlArg(initOpts.url);
-
-  const utPkg = initOpts.package;
-
+export const genUploader = <TRouter extends FileRouter>(
+  initOpts: GenerateUploaderOptions,
+) => {
   return <
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
     endpoint: TEndpoint,
-    opts: DistributiveOmit<
+    opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-      "url" | "package"
+      keyof GenerateUploaderOptions
     >,
   ) =>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    DANGEROUS__uploadFiles<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
-      url,
-      package: utPkg,
+      url: resolveMaybeUrlArg(initOpts?.url),
+      package: initOpts.package,
     } as any);
 };
 
@@ -272,7 +191,7 @@ const uploadFile = <
       );
     }
 
-    const ret: UploadFileResponse<TServerOutput> = {
+    const ret: UploadedFile<TServerOutput> = {
       name: file.name,
       size: file.size,
       key: presigned.key,

@@ -107,3 +107,10 @@ export class UploadThingError<
 export function getStatusCodeFromError(error: UploadThingError<any>) {
   return ERROR_CODES[error.code] ?? 500;
 }
+
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });

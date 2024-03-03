@@ -88,6 +88,10 @@
         "default": "./h3/index.cjs"
       }
     },
+    "./types": {
+      "types": "./types/index.d.ts",
+      "default": "./types/index.js"
+    },
     "./internal/types": {
       "import": {
         "types": "./internal/types.d.ts",
@@ -108,6 +112,7 @@
     "next",
     "next-legacy",
     "server",
+    "types",
     "tw"
   ],
   "publishConfig": {

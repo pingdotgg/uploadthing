@@ -1,18 +1,26 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
 import type { Schema } from "@effect/schema/Schema";
+import type { Effect } from "effect";
 
 import type {
+  ErrorMessage,
+  FetchContextTag,
   FetchEsque,
   FileRouterInputConfig,
   Json,
+  MaybePromise,
+  Simplify,
   UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
 
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
-import type { UploadActionPayload } from "./shared-schemas";
+import type {
+  PresignedURLResponse,
+  UploadActionPayload,
+} from "./shared-schemas";
 
 //
 // Utils
@@ -20,18 +28,6 @@ export const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
 };
 export type UnsetMarker = typeof unsetMarker;
-
-export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
-
-export type MaybePromise<TType> = TType | Promise<TType>;
-
-/**
- * Omits the key without removing a potential union
- * @internal
- */
-export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
-  ? Omit<TObj, TKey>
-  : never;
 
 //
 // Package
@@ -88,8 +84,6 @@ type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
 }) => void;
-
-export type ErrorMessage<TError extends string> = TError;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -159,26 +153,6 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   Uploader<TParams>
 >;
 
-export type inferEndpointInput<TUploader extends AnyUploader> =
-  TUploader["_def"]["_input"] extends UnsetMarker
-    ? undefined
-    : TUploader["_def"]["_input"];
-
-export type inferEndpointOutput<TUploader extends AnyUploader> =
-  TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
-    ? null
-    : TUploader["_def"]["_output"];
-
-export type inferErrorShape<TRouter extends FileRouter> =
-  TRouter[keyof TRouter]["_def"]["_errorShape"];
-
-export const VALID_ACTION_TYPES = [
-  "upload",
-  "failure",
-  "multipart-complete",
-] as const;
-export type ActionType = (typeof VALID_ACTION_TYPES)[number];
-
 export type RouteHandlerConfig = {
   logLevel?: LogLevel;
   callbackUrl?: string;
@@ -200,3 +174,41 @@ export type RouterWithConfig<TRouter extends FileRouter> = {
   router: TRouter;
   config?: RouteHandlerConfig;
 };
+
+export type RequestHandlerInput<TArgs extends AnyMiddlewareFnArgs> = {
+  req: Request | Effect.Effect<Request, UploadThingError>;
+  middlewareArgs: TArgs;
+};
+export type RequestHandlerOutput = Effect.Effect<
+  | {
+      status: number;
+      body?: PresignedURLResponse;
+      cleanup?: Promise<unknown>;
+    }
+  | UploadThingError,
+  never,
+  FetchContextTag
+>;
+export type RequestHandler<TArgs extends AnyMiddlewareFnArgs> = (
+  input: RequestHandlerInput<TArgs>,
+) => RequestHandlerOutput;
+
+export type inferEndpointInput<TUploader extends Uploader<any>> =
+  TUploader["_def"]["_input"] extends UnsetMarker
+    ? undefined
+    : TUploader["_def"]["_input"];
+
+export type inferEndpointOutput<TUploader extends AnyUploader> =
+  TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
+    ? null
+    : TUploader["_def"]["_output"];
+
+export type inferErrorShape<TRouter extends FileRouter> =
+  TRouter[keyof TRouter]["_def"]["_errorShape"];
+
+export const VALID_ACTION_TYPES = [
+  "upload",
+  "failure",
+  "multipart-complete",
+] as const;
+export type ActionType = (typeof VALID_ACTION_TYPES)[number];

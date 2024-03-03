@@ -336,7 +336,7 @@ export class UTApi {
   };
 
   /** @deprecated Use {@link renameFiles} instead. */
-  renameFile = this.renameFiles;
+  public renameFile = this.renameFiles;
 
   getUsageInfo = async () => {
     guardServerOnly();

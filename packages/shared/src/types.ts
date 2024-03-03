@@ -11,6 +11,15 @@ export type Json = JsonValue | JsonObject | JsonArray;
 
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type ErrorMessage<TError extends string> = TError;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
+export type MaybePromise<TType> = TType | Promise<TType>;
+
+export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
+  ? // eslint-disable-next-line @typescript-eslint/ban-types
+    {}
+  : ToAdd;
 
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.

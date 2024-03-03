@@ -39,15 +39,15 @@ export const createAPIRequestUrl = (config: {
   return url;
 };
 
-/**
- * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
- * Events are handled in "./handler.ts starting at L200"
- */
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent],
 ) => Effect.Effect<{ success: boolean }, UploadThingError, FetchContextTag>;
 
+/**
+ * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
+ * Events are handled in "./handler.ts starting at L200"
+ */
 export const createUTReporter =
   (cfg: { url: URL; endpoint: string; package: string }): UTReporter =>
   (type, payload) =>

@@ -1,6 +1,4 @@
-import type { Json } from "@uploadthing/shared";
-
-import type { MaybePromise } from "./types";
+import type { Json, MaybePromise } from "@uploadthing/shared";
 
 /**
  * TODO: Do we wanna support effect/schema parsers now??

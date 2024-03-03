@@ -14,7 +14,6 @@ import type { FileRouter, RouterWithConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type * from "./internal/types";
 export { UTFile } from "./sdk/ut-file";
 export { UTFiles } from "./internal/types";
 export { UTApi } from "./sdk";

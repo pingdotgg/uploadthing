@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import type { File as UndiciFile } from "undici";
 
 import type {
@@ -57,16 +58,10 @@ export type UploadData = {
 export type UploadFileResponse =
   | { data: UploadData; error: null }
   | { data: null; error: SerializedUploadError };
-
 export interface UploadFilesOptions {
   metadata?: Json;
   contentDisposition?: ContentDisposition;
   acl?: ACL;
-}
-
-export interface ListFilesOptions {
-  limit?: number;
-  offset?: number;
 }
 
 interface KeyTypeOptionsBase {
@@ -79,6 +74,19 @@ interface KeyTypeOptionsBase {
   keyType?: "fileKey" | "customId";
 }
 
+export interface DeleteFilesOptions extends KeyTypeOptionsBase {}
+
+export interface GetFileUrlsOptions extends KeyTypeOptionsBase {}
+
+export interface ListFilesOptions {
+  limit?: number;
+  offset?: number;
+}
+
+type KeyRename = { key: string; newName: string };
+type CustomIdRename = { customId: string; newName: string };
+export type RenameFileUpdate = KeyRename | CustomIdRename;
+
 export interface GetSignedURLOptions extends KeyTypeOptionsBase {
   /**
    * How long the URL will be valid for.
@@ -88,13 +96,3 @@ export interface GetSignedURLOptions extends KeyTypeOptionsBase {
    */
   expiresIn?: Time;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface GetFileUrlsOptions extends KeyTypeOptionsBase {}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface DeleteFilesOptions extends KeyTypeOptionsBase {}
-
-type KeyRename = { key: string; newName: string };
-type CustomIdRename = { customId: string; newName: string };
-export type RenameFileUpdate = KeyRename | CustomIdRename;

@@ -4,7 +4,7 @@ import type { FetchEsque } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
 import type { PSPResponse } from "../src/internal/shared-schemas";
-import type { ActionType } from "../src/server";
+import type { ActionType } from "../src/internal/types";
 
 export const fetchMock = vi.fn();
 export const middlewareMock = vi.fn();

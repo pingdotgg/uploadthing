@@ -2,7 +2,6 @@ import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
 import { isDevelopment } from "std-env";
 
-import type { FetchContextTag } from "@uploadthing/shared";
 import {
   fetchContext,
   fetchEffJson,
@@ -23,7 +22,6 @@ import {
 } from "./multi-part.server";
 import { getParseFn } from "./parser";
 import { resolveCallbackUrl } from "./resolve-url";
-import type { PresignedURLResponse } from "./shared-schemas";
 import {
   FailureActionPayload,
   MultipartCompleteActionPayload,
@@ -35,6 +33,8 @@ import type {
   AnyMiddlewareFnArgs,
   AnyUploader,
   FileRouter,
+  RequestHandler,
+  RequestHandlerInput,
   RouteHandlerConfig,
   RouterWithConfig,
   ValidMiddlewareObject,
@@ -43,24 +43,6 @@ import {
   assertFilesMeetConfig,
   parseAndValidateRequest,
 } from "./validate-request-input";
-
-type RequestHandlerInput<TArgs extends AnyMiddlewareFnArgs> = {
-  req: Request | Effect.Effect<Request, UploadThingError>;
-  middlewareArgs: TArgs;
-};
-type RequestHandlerOutput = Effect.Effect<
-  | {
-      status: number;
-      body?: PresignedURLResponse;
-      cleanup?: Promise<unknown>;
-    }
-  | UploadThingError,
-  never,
-  FetchContextTag
->;
-type RequestHandler<TArgs extends AnyMiddlewareFnArgs> = (
-  input: RequestHandlerInput<TArgs>,
-) => RequestHandlerOutput;
 
 /**
  * Allows adapters to be fully async/await instead of providing services and running Effect programs
