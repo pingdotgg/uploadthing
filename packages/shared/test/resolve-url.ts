@@ -1,7 +1,7 @@
 import { process } from "std-env";
 import { describe, expect, it } from "vitest";
 
-import { resolveMaybeUrlArg } from "./utils";
+import { resolveMaybeUrlArg } from "../src/utils";
 
 describe("resolveMaybeUrlArg", () => {
   it("should return the provided url if it is already absolute", () => {

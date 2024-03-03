@@ -6,6 +6,7 @@ import {
   isObject,
   objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
+  resolveMaybeUrlArg,
   safeParseJSON,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -20,7 +21,6 @@ import type {
 import type { UploadThingResponse } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { getFullApiUrl } from "./get-full-api-url";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
 import { UTFiles, VALID_ACTION_TYPES } from "./types";
@@ -598,9 +598,9 @@ function resolveCallbackUrl(opts: {
 }): URL {
   let callbackUrl = opts.url;
   if (opts.config?.callbackUrl) {
-    callbackUrl = getFullApiUrl(opts.config.callbackUrl);
+    callbackUrl = resolveMaybeUrlArg(opts.config.callbackUrl);
   } else if (process.env.UPLOADTHING_URL) {
-    callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
+    callbackUrl = resolveMaybeUrlArg(process.env.UPLOADTHING_URL);
   }
 
   if (opts.isDev || !callbackUrl.host.includes("localhost")) {
@@ -630,7 +630,7 @@ function resolveCallbackUrl(opts: {
     return callbackUrl;
   }
 
-  return getFullApiUrl(parsedFromHeaders);
+  return resolveMaybeUrlArg(parsedFromHeaders);
 }
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
