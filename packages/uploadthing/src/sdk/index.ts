@@ -1,7 +1,11 @@
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
-import type { FetchEsque, MaybeUrl } from "@uploadthing/shared";
+import type {
+  FetchEsque,
+  MaybeUrl,
+  SerializedUploadThingError,
+} from "@uploadthing/shared";
 import {
   asArray,
   generateUploadThingURL,
@@ -19,8 +23,7 @@ import type {
   GetSignedURLOptions,
   ListFilesOptions,
   RenameFileUpdate,
-  UploadError,
-  UploadFileResponse,
+  UploadFileResult,
   UploadFilesOptions,
   UrlWithOverrides,
   UTApiOptions,
@@ -140,15 +143,15 @@ export class UTApi {
   uploadFiles(
     files: FileEsque,
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse>;
+  ): Promise<UploadFileResult>;
   uploadFiles(
     files: FileEsque[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse[]>;
+  ): Promise<UploadFileResult[]>;
   async uploadFiles(
     files: FileEsque | FileEsque[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse | UploadFileResponse[]> {
+  ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
     const uploads = await uploadFilesInternal(
@@ -186,21 +189,21 @@ export class UTApi {
   uploadFilesFromUrl(
     urls: MaybeUrl | UrlWithOverrides,
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse>;
+  ): Promise<UploadFileResult>;
   uploadFilesFromUrl(
     urls: (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse[]>;
+  ): Promise<UploadFileResult[]>;
   async uploadFilesFromUrl(
     urls: MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse | UploadFileResponse[]> {
+  ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
     const formData = new FormData();
     formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
 
-    const downloadErrors: Record<number, UploadError> = {};
+    const downloadErrors: Record<number, SerializedUploadThingError> = {};
 
     const files = await Promise.all(
       asArray(urls).map(async (_url, index) => {

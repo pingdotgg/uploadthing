@@ -2,7 +2,7 @@ import { process } from "std-env";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
-import type { UploadFileResponse } from "../src/sdk/types";
+import type { UploadFileResult } from "../src/sdk/types";
 import { fetchMock, mockExternalRequests } from "./__test-helpers";
 
 describe("UTFile", () => {
@@ -82,13 +82,13 @@ describe("uploadFiles", () => {
 
   it("returns array if array is passed", async () => {
     const result = await utapi.uploadFiles([fooFile]);
-    expectTypeOf<UploadFileResponse[]>(result);
+    expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
   it("returns single object if no array is passed", async () => {
     const result = await utapi.uploadFiles(fooFile);
-    expectTypeOf<UploadFileResponse>(result);
+    expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
@@ -179,7 +179,7 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/foo.txt",
       "https://cdn.foo.com/bar.txt",
     ]);
-    expectTypeOf<UploadFileResponse[]>(result);
+    expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
@@ -187,7 +187,7 @@ describe("uploadFilesFromUrl", () => {
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
     );
-    expectTypeOf<UploadFileResponse>(result);
+    expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 

@@ -1,6 +1,11 @@
 import { process } from "std-env";
 
-import type { FetchEsque, Time, TimeShort } from "@uploadthing/shared";
+import type {
+  FetchEsque,
+  SerializedUploadThingError,
+  Time,
+  TimeShort,
+} from "@uploadthing/shared";
 import {
   generateUploadThingURL,
   pollForFileData,
@@ -16,12 +21,8 @@ import type {
   PSPResponse,
   UTEvents,
 } from "../internal/types";
-import type {
-  FileEsque,
-  UploadData,
-  UploadError,
-  UploadFilesOptions,
-} from "./types";
+import type { UploadedFileData } from "../types";
+import type { FileEsque, UploadFilesOptions } from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -123,6 +124,8 @@ export const uploadFilesInternal = async (
         url: presigned.fileUrl,
         name: file.name,
         size: file.size,
+        type: file.type,
+        customId: "customId" in file ? file.customId ?? null : null,
       };
     }),
   );
@@ -131,12 +134,12 @@ export const uploadFilesInternal = async (
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {
-      const data = upload.value satisfies UploadData;
+      const data: UploadedFileData = upload.value;
       return { data, error: null };
     }
     // We only throw UploadThingErrors, so this is safe
     const reason = upload.reason as UploadThingError;
-    const error = UploadThingError.toObject(reason) satisfies UploadError;
+    const error: SerializedUploadThingError = UploadThingError.toObject(reason);
     return { data: null, error };
   });
 };

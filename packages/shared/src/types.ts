@@ -13,6 +13,9 @@ export type ErrorMessage<TError extends string> = TError;
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 export type MaybePromise<TType> = TType | Promise<TType>;
+export type Either<Data, Error> =
+  | { data: Data; error: null }
+  | { data: null; error: Error };
 
 export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
   ? // eslint-disable-next-line @typescript-eslint/ban-types
