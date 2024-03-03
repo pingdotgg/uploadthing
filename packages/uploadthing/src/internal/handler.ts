@@ -17,11 +17,7 @@ import type {
   Json,
 } from "@uploadthing/shared";
 
-import type {
-  FileRouter,
-  FileUploadDataWithCustomId,
-  UploadedFileData,
-} from "../types";
+import type { UploadedFileData } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { logger } from "./logger";
@@ -29,14 +25,15 @@ import { getParseFn } from "./parser";
 import { UTFiles, VALID_ACTION_TYPES } from "./types";
 import type {
   ActionType,
+  FileRouter,
   MiddlewareFnArgs,
   PresignedURLs,
   RequestHandler,
   RouteHandlerConfig,
   RouteHandlerOptions,
   UTEvents,
+  ValidMiddlewareObject,
 } from "./types";
-import type { ValidMiddlewareObject } from "./upload-builder";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
@@ -291,7 +288,7 @@ export const buildRequestHandler = <
 
     switch (actionType) {
       case "upload": {
-        const maybeInput = await safeParseJSON<UTEvents["upload"]>(req);
+        const maybeInput = await safeParseJSON<UTEvents["upload"]["in"]>(req);
 
         if (maybeInput instanceof Error) {
           logger.error("Invalid request body", maybeInput);
@@ -373,19 +370,17 @@ export const buildRequestHandler = <
         }
 
         // Attach customIds from middleware to the files
-        const filesWithCustomIds: FileUploadDataWithCustomId[] = files.map(
-          (file, idx) => {
-            const theirs = metadata[UTFiles]?.[idx];
-            if (theirs && theirs.size !== file.size) {
-              logger.warn("File size mismatch. Reverting to original size");
-            }
-            return {
-              ...file,
-              ...theirs,
-              size: file.size,
-            };
-          },
-        );
+        const filesWithCustomIds = files.map((file, idx) => {
+          const theirs = metadata[UTFiles]?.[idx];
+          if (theirs && theirs.size !== file.size) {
+            logger.warn("File size mismatch. Reverting to original size");
+          }
+          return {
+            name: theirs?.name ?? file.name,
+            size: file.size,
+            customId: theirs?.customId,
+          };
+        });
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
         let parsedConfig: ExpandedRouteConfig;
@@ -489,7 +484,7 @@ export const buildRequestHandler = <
       }
       case "multipart-complete": {
         const maybeReqBody =
-          await safeParseJSON<UTEvents["multipart-complete"]>(req);
+          await safeParseJSON<UTEvents["multipart-complete"]["in"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
@@ -526,7 +521,8 @@ export const buildRequestHandler = <
         return { status: 200 };
       }
       case "failure": {
-        const maybeReqBody = await safeParseJSON<UTEvents["failure"]>(req);
+        const maybeReqBody =
+          await safeParseJSON<UTEvents["failure"]["in"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({

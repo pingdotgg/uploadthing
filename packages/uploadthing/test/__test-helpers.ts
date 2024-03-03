@@ -3,8 +3,7 @@ import { beforeEach, vi } from "vitest";
 import type { FetchEsque } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
-import type { ActionType } from "../src/internal/types";
-import type { PSPResponse } from "../src/types";
+import type { ActionType, PSPResponse } from "../src/internal/types";
 
 export const fetchMock = vi.fn();
 export const middlewareMock = vi.fn();

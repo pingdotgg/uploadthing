@@ -10,8 +10,12 @@ import {
 import { UPLOADTHING_VERSION } from "../internal/constants";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
-import type { UTEvents } from "../internal/types";
-import type { MPUResponse, PresignedURLs, PSPResponse } from "../types";
+import type {
+  MPUResponse,
+  PresignedURLs,
+  PSPResponse,
+  UTEvents,
+} from "../internal/types";
 import type {
   FileEsque,
   UploadData,
@@ -194,7 +198,7 @@ async function uploadMultipart(
         fileKey: presigned.key,
         uploadId: presigned.uploadId,
         etags,
-      } satisfies UTEvents["multipart-complete"]),
+      } satisfies UTEvents["multipart-complete"]["in"]),
       headers: opts.utRequestHeaders,
     },
   );

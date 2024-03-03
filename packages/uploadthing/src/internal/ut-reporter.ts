@@ -1,11 +1,11 @@
 import type { FetchEsque } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
 import type { ActionType, UTEvents } from "./types";
 
-export const createAPIRequestUrl = (config: {
+const createAPIRequestUrl = (config: {
   /**
    * URL to the UploadThing API endpoint
    * @example URL { /api/uploadthing }
@@ -27,8 +27,8 @@ export const createAPIRequestUrl = (config: {
 
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
-  payload: UTEvents[TEvent],
-) => Promise<boolean>;
+  payload: UTEvents[TEvent]["in"],
+) => Promise<UTEvents[TEvent]["out"]>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
@@ -59,7 +59,7 @@ export const createUTReporter = (cfg: {
     switch (type) {
       case "failure": {
         // why isn't this narrowed automatically?
-        const p = payload as UTEvents["failure"];
+        const p = payload as UTEvents["failure"]["in"];
         const parsed = maybeParseResponseXML(p.s3Error ?? "");
         if (parsed?.message) {
           throw new UploadThingError({
@@ -76,6 +76,21 @@ export const createUTReporter = (cfg: {
       }
     }
 
-    return response.ok;
+    if (!response.ok) {
+      const error = await UploadThingError.fromResponse(response);
+      throw error;
+    }
+
+    const jsonOrError =
+      await safeParseJSON<UTEvents[typeof type]["out"]>(response);
+    if (jsonOrError instanceof Error) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: jsonOrError.message,
+        cause: response,
+      });
+    }
+
+    return jsonOrError;
   };
 };

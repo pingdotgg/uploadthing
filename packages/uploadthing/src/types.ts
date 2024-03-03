@@ -1,28 +1,13 @@
 import type { ExtendObjectIf } from "@uploadthing/shared";
 
-import type {
-  AnyParams,
-  UnsetMarker,
-  Uploader,
-} from "./internal/upload-builder";
+import type { FileRouter, inferEndpointInput } from "./internal/types";
 
-export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
-  string,
-  Uploader<TParams>
->;
-
-export type inferEndpointInput<TUploader extends Uploader<any>> =
-  TUploader["_def"]["_input"] extends UnsetMarker
-    ? undefined
-    : TUploader["_def"]["_input"];
-
-export type inferEndpointOutput<TUploader extends Uploader<any>> =
-  TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
-    ? null
-    : TUploader["_def"]["_output"];
-
-export type inferErrorShape<TRouter extends FileRouter> =
-  TRouter[keyof TRouter]["_def"]["_errorShape"];
+export type {
+  inferEndpointInput,
+  inferEndpointOutput,
+  inferErrorShape,
+  FileRouter,
+} from "./internal/types";
 
 export type UploadFilesOptions<
   TRouter extends FileRouter,
@@ -102,7 +87,7 @@ export interface FileUploadDataWithCustomId extends FileUploadData {
   /**
    * As set by `.middleware()` using @link {UTFiles}
    */
-  customId?: string | null;
+  customId: string | null;
 }
 
 /**
@@ -116,7 +101,7 @@ export interface UploadedFileData extends FileUploadDataWithCustomId {
 /**
  * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
  */
-export interface ClientUploadedFileData<T> extends FileUploadData {
+export interface ClientUploadedFileData<T> extends UploadedFileData {
   /**
    * Matches what's returned from the serverside `onUploadComplete` callback
    */

@@ -18,10 +18,9 @@ import {
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { RouteHandlerOptions } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
-import type { FileRouter } from "./types";
 
 export type { FileRouter };
 export { UTFiles } from "./internal/types";

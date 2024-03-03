@@ -3,22 +3,23 @@
 
 import {
   resolveMaybeUrlArg,
-  safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
-import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import type { MPUResponse, PresignedURLs, PSPResponse } from "./internal/types";
+import type {
+  FileRouter,
+  inferEndpointOutput,
+  MPUResponse,
+  PSPResponse,
+} from "./internal/types";
 import type { UTReporter } from "./internal/ut-reporter";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
-  FileRouter,
   GenerateUploaderOptions,
-  inferEndpointOutput,
   UploadFilesOptions,
 } from "./types";
 
@@ -53,41 +54,13 @@ const uploadFilesInternal = async <
   });
 
   // Get presigned URL for S3 upload
-  const s3ConnectionRes = await fetch(
-    createAPIRequestUrl({
-      url: opts.url,
-      slug: String(endpoint),
-      actionType: "upload",
-    }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        input: "input" in opts ? opts.input : null,
-        files: opts.files.map((f) => ({ name: f.name, size: f.size })),
-      }),
-      // Express requires Content-Type to be explicitly set to parse body properly
-      headers: {
-        "Content-Type": "application/json",
-        "x-uploadthing-package": opts.package,
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      },
-    },
-  ).then(async (res) => {
-    // check for 200 response
-    if (!res.ok) {
-      const error = await UploadThingError.fromResponse(res);
-      throw error;
-    }
-
-    const jsonOrError = await safeParseJSON<PresignedURLs>(res);
-    if (jsonOrError instanceof Error) {
-      throw new UploadThingError({
-        code: "BAD_REQUEST",
-        message: jsonOrError.message,
-        cause: res,
-      });
-    }
-    return jsonOrError;
+  const s3ConnectionRes = await reportEventToUT("upload", {
+    input: "input" in opts ? opts.input : null,
+    files: opts.files.map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    })),
   });
 
   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
