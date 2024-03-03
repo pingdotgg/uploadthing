@@ -116,15 +116,16 @@ const uploadFilesInternal = async <
     return {
       name: file.name,
       size: file.size,
+      type: file.type,
       key: presigned.key,
-
-      serverData,
       url: "https://utfs.io/f/" + presigned.key,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      serverData: serverData as any,
+      customId: null,
     };
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Promise.all(fileUploadPromises) as any;
+  return Promise.all(fileUploadPromises);
 };
 
 export const genUploader = <TRouter extends FileRouter>(
