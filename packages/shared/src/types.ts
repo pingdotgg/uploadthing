@@ -76,18 +76,7 @@ export type FetchEsque = (
   init?: RequestInit | RequestInitEsque,
 ) => Promise<ResponseEsque>;
 
-/** This matches the return type from the infra */
-export const FileData = S.struct({
-  fileKey: S.nullable(S.string),
-  fileName: S.string,
-  fileSize: S.number,
-  metadata: S.nullable(S.string),
-  customId: S.nullable(S.string),
 
-  callbackUrl: S.string,
-  callbackSlug: S.string,
-});
-export type FileData = S.Schema.To<typeof FileData>;
 
 export const UploadedFile = S.struct({
   name: S.string,

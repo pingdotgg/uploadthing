@@ -5,7 +5,6 @@ import {
   exponentialBackoff,
   fetchEff,
   fetchEffJson,
-  FileData,
   generateUploadThingURL,
   RetryError,
   UploadThingError,
@@ -29,7 +28,18 @@ export const conditionalDevServer = (fileKey: string) => {
         generateUploadThingURL(`/api/pollUpload/${fileKey}`),
         S.struct({
           status: S.string,
-          fileData: S.optional(FileData),
+          fileData: S.optional(
+            S.struct({
+              fileKey: S.nullable(S.string),
+              fileName: S.string,
+              fileSize: S.number,
+              metadata: S.nullable(S.string),
+              customId: S.nullable(S.string),
+
+              callbackUrl: S.string,
+              callbackSlug: S.string,
+            }),
+          ),
         }),
       ),
       Effect.andThen((res) =>
@@ -64,7 +74,7 @@ export const conditionalDevServer = (fileKey: string) => {
         method: "POST",
         body: JSON.stringify({
           status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}") as FileData["metadata"],
+          metadata: JSON.parse(file.metadata ?? "{}") as unknown,
           file: {
             url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
             key: fileKey,
