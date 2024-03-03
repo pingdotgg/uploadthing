@@ -21,8 +21,8 @@ import type { PresignedURLResponse } from "./internal/shared-schemas";
 import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 import type {
+  ClientUploadFileResponse,
   GenerateUploaderOptions,
-  UploadedFile,
   UploadFilesOptions,
 } from "./types";
 
@@ -191,7 +191,7 @@ const uploadFile = <
       );
     }
 
-    const ret: UploadedFile<TServerOutput> = {
+    const ret: ClientUploadFileResponse<TServerOutput> = {
       name: file.name,
       size: file.size,
       key: presigned.key,

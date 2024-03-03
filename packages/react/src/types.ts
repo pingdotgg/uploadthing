@@ -4,7 +4,7 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
   inferErrorShape,
-  UploadedFile,
+  ClientUploadFileResponse,
 } from "uploadthing/types";
 
 export interface GenerateTypedHelpersOptions {
@@ -58,7 +58,7 @@ export type UseUploadthingProps<
    *   the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?:
-    | ((res: UploadedFile<TServerOutput>[]) => void)
+    | ((res: ClientUploadFileResponse<TServerOutput>[]) => void)
     | undefined;
   /**
    * Called if the upload fails
