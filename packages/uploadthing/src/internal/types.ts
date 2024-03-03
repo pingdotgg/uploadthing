@@ -26,6 +26,7 @@ interface UploadThingBaseResponse {
   contentDisposition: ContentDisposition;
   pollingJwt: string;
   pollingUrl: string;
+  customId: string | null;
 }
 
 export interface PSPResponse extends UploadThingBaseResponse {

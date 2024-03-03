@@ -121,7 +121,7 @@ const uploadFilesInternal = async <
       url: "https://utfs.io/f/" + presigned.key,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       serverData: serverData as any,
-      customId: null,
+      customId: presigned.customId,
     };
   });
 
