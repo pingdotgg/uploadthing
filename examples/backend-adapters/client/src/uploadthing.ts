@@ -2,13 +2,15 @@ import {
   generateReactHelpers,
   generateUploadButton,
   generateUploadDropzone,
+  type GenerateTypedHelpersOptions,
 } from "@uploadthing/react";
 
 import type { OurFileRouter } from "../../server/src/router";
+import { BACKEND_URL } from "./constants";
 
 const initOpts = {
-  url: "http://localhost:3000",
-};
+  url: BACKEND_URL,
+} satisfies GenerateTypedHelpersOptions;
 
 export const UploadButton = generateUploadButton<OurFileRouter>(initOpts);
 export const UploadDropzone = generateUploadDropzone<OurFileRouter>(initOpts);
