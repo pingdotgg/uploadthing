@@ -75,6 +75,8 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         url: "https://utfs.io/f/abc-123.txt",
+        customId: null,
+        type: "text/plain",
       },
       error: null,
     });
@@ -169,6 +171,8 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         url: "https://utfs.io/f/abc-123.txt",
+        customId: null,
+        type: "text/plain",
       },
       error: null,
     });
@@ -262,9 +266,11 @@ describe("uploadFilesFromUrl", () => {
       [
         {
           "data": {
+            "customId": null,
             "key": "abc-123.txt",
             "name": "foo.txt",
             "size": 26,
+            "type": "text/plain",
             "url": "https://utfs.io/f/abc-123.txt",
           },
           "error": null,
@@ -279,9 +285,11 @@ describe("uploadFilesFromUrl", () => {
         },
         {
           "data": {
+            "customId": null,
             "key": "abc-123.txt",
             "name": "bar.txt",
             "size": 26,
+            "type": "text/plain",
             "url": "https://utfs.io/f/abc-123.txt",
           },
           "error": null,
