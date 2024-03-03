@@ -18,7 +18,7 @@ import type {
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 
-interface UploadThingBaseResponse {
+interface PresignedBase {
   key: string;
   fileName: string;
   fileType: FileRouterInputKey;
@@ -29,12 +29,12 @@ interface UploadThingBaseResponse {
   customId: string | null;
 }
 
-export interface PSPResponse extends UploadThingBaseResponse {
+export interface PSPResponse extends PresignedBase {
   url: string;
   fields: Record<string, string>;
 }
 
-export interface MPUResponse extends UploadThingBaseResponse {
+export interface MPUResponse extends PresignedBase {
   urls: string[];
   uploadId: string;
   chunkSize: number;
@@ -104,10 +104,6 @@ export type UTEvents = {
  * ```
  */
 export const UTFiles = Symbol("uploadthing-custom-id-symbol");
-
-/**
- * Builder types
- */
 
 const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
