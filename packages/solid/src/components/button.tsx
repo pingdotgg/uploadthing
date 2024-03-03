@@ -82,7 +82,7 @@ export function UploadButton<
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props?.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const uploadedThing = useUploadThing($props.endpoint, {
