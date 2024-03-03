@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 
 import { createRouteHandler } from "uploadthing/server";
@@ -13,6 +14,7 @@ const { GET, POST } = createRouteHandler({
 });
 
 const app = new Hono();
+app.use("*", cors());
 app.use("*", logger());
 
 app.get("/api", (c) => c.text("Hello from Hono!"));
