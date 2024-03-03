@@ -195,18 +195,20 @@ async function uploadMultipart(
   }
 
   // Tell the server that the upload is complete
-  const uploadOk = await opts.reportEventToUT("multipart-complete", {
-    uploadId: presigned.uploadId,
-    fileKey: presigned.key,
-    etags,
-  });
-  if (!uploadOk) {
-    console.log("Failed to alert UT of upload completion");
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: "Failed to alert UT of upload completion",
+  await opts
+    .reportEventToUT("multipart-complete", {
+      uploadId: presigned.uploadId,
+      fileKey: presigned.key,
+      etags,
+    })
+    .catch((res) => {
+      console.log("Failed to alert UT of upload completion");
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "Failed to alert UT of upload completion",
+        cause: res,
+      });
     });
-  }
 }
 
 async function uploadPresignedPost(
