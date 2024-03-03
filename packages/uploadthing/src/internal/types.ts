@@ -142,7 +142,7 @@ type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> = {
 type RequestHandlerOutput = Promise<
   | {
       status: number;
-      body?: PresignedURLs;
+      body: UTEvents[keyof UTEvents]["out"];
       cleanup?: Promise<unknown>;
     }
   | UploadThingError

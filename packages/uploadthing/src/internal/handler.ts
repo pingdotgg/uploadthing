@@ -270,7 +270,7 @@ export const buildRequestHandler = <
         "UploadThing responded with status:",
         callbackResponse.status,
       );
-      return { status: 200 };
+      return { status: 200, body: null };
     }
 
     if (!actionType || !VALID_ACTION_TYPES.includes(actionType)) {
@@ -478,7 +478,7 @@ export const buildRequestHandler = <
           body: parsedResponse.map((x) => ({
             ...x,
             pollingUrl: generateUploadThingURL(`/api/serverCallback`),
-          })),
+          })) satisfies UTEvents["upload"]["out"],
           status: 200,
         };
       }
@@ -518,7 +518,10 @@ export const buildRequestHandler = <
 
         logger.debug("UploadThing responded with:", completeRes.status);
 
-        return { status: 200 };
+        return {
+          status: 200,
+          body: null satisfies UTEvents["multipart-complete"]["out"],
+        };
       }
       case "failure": {
         const maybeReqBody =
@@ -577,7 +580,7 @@ export const buildRequestHandler = <
           });
         }
 
-        return { status: 200 };
+        return { status: 200, body: null satisfies UTEvents["failure"]["out"] };
       }
       default: {
         // This should never happen

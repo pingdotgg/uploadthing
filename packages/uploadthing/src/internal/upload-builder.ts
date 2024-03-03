@@ -14,18 +14,6 @@ import type {
   Uploader,
 } from "./types";
 
-type InOut<
-  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
-  TErrorShape extends Json = { message: string },
-> = (input: FileRouterInputConfig) => UploadBuilder<{
-  _input: UnsetMarker;
-  _metadata: UnsetMarker;
-  _middlewareArgs: TMiddlewareArgs;
-  _errorShape: TErrorShape;
-  _errorFn: UnsetMarker;
-  _output: UnsetMarker;
-}>;
-
 function internalCreateBuilder<
   TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
@@ -89,6 +77,18 @@ function internalCreateBuilder<
     },
   };
 }
+
+type InOut<
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
+  TErrorShape extends Json = { message: string },
+> = (input: FileRouterInputConfig) => UploadBuilder<{
+  _input: UnsetMarker;
+  _metadata: UnsetMarker;
+  _middlewareArgs: TMiddlewareArgs;
+  _errorShape: TErrorShape;
+  _errorFn: UnsetMarker;
+  _output: UnsetMarker;
+}>;
 
 export type CreateBuilderOptions<TErrorShape extends Json> = {
   errorFormatter: (err: UploadThingError) => TErrorShape;
