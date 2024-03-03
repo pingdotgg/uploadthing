@@ -36,6 +36,7 @@ const mockedPresignedPost: PSPResponse = {
   fileType: "text/plain",
   pollingUrl: "https://uploadthing.com/api/serverCallback",
   pollingJwt: "random-jwt",
+  customId: "custom-id",
 };
 
 export const mockExternalRequests: FetchEsque = async (url, init) => {
