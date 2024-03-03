@@ -47,49 +47,6 @@ export interface MPUResponse extends PresignedBase {
 export type PresignedURLs = (PSPResponse | MPUResponse)[];
 
 /**
- * Valid options for the `?actionType` query param
- */
-export const VALID_ACTION_TYPES = [
-  "upload",
-  "failure",
-  "multipart-complete",
-] as const;
-export type ActionType = (typeof VALID_ACTION_TYPES)[number];
-
-/**
- * Map actionType to the required payload for that action
- */
-export type UTEvents = {
-  upload: {
-    in: {
-      files: FileUploadData[];
-      input: Json;
-    };
-    out: PresignedURLs;
-  };
-  failure: {
-    in: {
-      fileKey: string;
-      uploadId: string | null;
-      s3Error?: string;
-      fileName: string;
-    };
-    out: null;
-  };
-  "multipart-complete": {
-    in: {
-      fileKey: string;
-      uploadId: string;
-      etags: {
-        tag: string;
-        partNumber: number;
-      }[];
-    };
-    out: null;
-  };
-};
-
-/**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
  * @example
  * ```ts
@@ -282,3 +239,46 @@ export type inferEndpointOutput<TUploader extends Uploader<any>> =
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
+
+/**
+ * Valid options for the `?actionType` query param
+ */
+export const VALID_ACTION_TYPES = [
+  "upload",
+  "failure",
+  "multipart-complete",
+] as const;
+export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+
+/**
+ * Map actionType to the required payload for that action
+ */
+export type UTEvents = {
+  upload: {
+    in: {
+      files: FileUploadData[];
+      input: Json;
+    };
+    out: PresignedURLs;
+  };
+  failure: {
+    in: {
+      fileKey: string;
+      uploadId: string | null;
+      s3Error?: string;
+      fileName: string;
+    };
+    out: null;
+  };
+  "multipart-complete": {
+    in: {
+      fileKey: string;
+      uploadId: string;
+      etags: {
+        tag: string;
+        partNumber: number;
+      }[];
+    };
+    out: null;
+  };
+};
