@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 
 import {
+  resolveMaybeUrlArg,
   safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
@@ -9,7 +10,6 @@ import {
 
 import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
-import { resolveMaybeUrlArg } from "./internal/get-full-api-url";
 import { uploadPartWithProgress } from "./internal/multi-part";
 import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import type { UTReporter } from "./internal/ut-reporter";
