@@ -166,15 +166,24 @@ export class InvalidFileSizeError extends TaggedError("InvalidFileSize")<{
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = Unify.unify((fileSize: FileSize) => {
+  const regex = new RegExp(
+    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
+    "i",
+  );
+
   // make sure the string is in the format of 123KB
-  if (!fileSize.match(/([+-]?(?:\d*\.)?\d+)(\w+)/)) {
+  const match = fileSize.match(regex);
+  if (!match) {
     return Effect.fail(new InvalidFileSizeError(fileSize));
   }
 
-  const [value, unit] =
-    fileSize?.match(/([+-]?(?:\d*\.)?\d+)(\w+)/)?.slice(1) ?? [];
-  const i = FILESIZE_UNITS.indexOf(unit as FileSizeUnit);
-  return Effect.succeed(Number(value) * Math.pow(1000, i));
+  const sizeValue = parseFloat(match[1]);
+  const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
+  if (!FILESIZE_UNITS.includes(sizeUnit)) {
+    return Effect.fail(new InvalidFileSizeError(fileSize));
+  }
+  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
+  return Effect.succeed(Math.floor(bytes));
 });
 
 export const bytesToFileSize = (bytes: number) => {
