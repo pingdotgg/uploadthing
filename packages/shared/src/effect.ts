@@ -1,7 +1,6 @@
 import * as S from "@effect/schema/Schema";
 import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
 
-import { UploadThingError } from "./error";
 import type { FetchEsque, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
@@ -78,7 +77,11 @@ export const parseResponseJson = <Req>(
 ) =>
   Effect.tryPromise({
     try: () => res.json(),
-    catch: () => new UploadThingError("Invalid JSON "),
+    catch: (error) =>
+      new FetchError({
+        error,
+        input: `Response ${res.status} - ${res.statusText}`,
+      }),
   }).pipe(Effect.andThen(S.decode(schema)));
 
 /**
