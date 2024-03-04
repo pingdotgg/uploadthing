@@ -67,7 +67,7 @@ describe("errors for invalid request input", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
       }),
     );
@@ -86,7 +86,7 @@ describe("errors for invalid request input", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
       }),
     );
@@ -108,7 +108,7 @@ describe("file route config", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
       }),
     );
@@ -127,7 +127,9 @@ describe("file route config", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.png", size: 3 * 1024 * 1024 }],
+          files: [
+            { name: "foo.png", size: 3 * 1024 * 1024, type: "image/png" },
+          ],
         }),
       }),
     );
@@ -148,8 +150,8 @@ describe("file route config", () => {
         headers: baseHeaders,
         body: JSON.stringify({
           files: [
-            { name: "foo.png", size: 48 },
-            { name: "bar.png", size: 64 },
+            { name: "foo.png", size: 48, type: "image/png" },
+            { name: "bar.png", size: 64, type: "image/png" },
           ],
         }),
       }),
@@ -172,7 +174,7 @@ describe(".input()", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
       }),
     );
@@ -195,7 +197,7 @@ describe(".input()", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
           input: { foo: "QUX" },
         }),
       }),
@@ -221,7 +223,7 @@ describe(".input()", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
           input: { foo: "BAR" },
         }),
       }),
@@ -243,7 +245,7 @@ describe(".middleware()", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.png", size: 48 }],
+          files: [{ name: "foo.png", size: 48, type: "image/png" }],
         }),
       }),
     );
@@ -251,7 +253,7 @@ describe(".middleware()", () => {
     expect(middlewareMock).toBeCalledTimes(1);
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        files: [{ name: "foo.png", size: 48 }],
+        files: [{ name: "foo.png", size: 48, type: "image/png" }],
       }),
     );
 
@@ -264,7 +266,7 @@ describe(".middleware()", () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
       }),
     );
@@ -273,7 +275,7 @@ describe(".middleware()", () => {
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
         input: undefined,
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     );
 

@@ -9,10 +9,10 @@ import {
   generateUploadThingURL,
   objectKeys,
   parseRequestJson,
-  UploadedFile,
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { UploadedFileData } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { logger } from "./logger";
@@ -30,13 +30,13 @@ import {
 } from "./shared-schemas";
 import { UTFiles } from "./types";
 import type {
-  AnyMiddlewareFnArgs,
   AnyUploader,
   FileRouter,
+  MiddlewareFnArgs,
   RequestHandler,
   RequestHandlerInput,
   RouteHandlerConfig,
-  RouterWithConfig,
+  RouteHandlerOptions,
   ValidMiddlewareObject,
 } from "./types";
 import {
@@ -47,7 +47,9 @@ import {
 /**
  * Allows adapters to be fully async/await instead of providing services and running Effect programs
  */
-export const runRequestHandlerAsync = <TArgs extends AnyMiddlewareFnArgs>(
+export const runRequestHandlerAsync = <
+  TArgs extends MiddlewareFnArgs<any, any, any>,
+>(
   handler: RequestHandler<TArgs>,
   args: RequestHandlerInput<TArgs>,
   config?: RouteHandlerConfig | undefined,
@@ -77,8 +79,8 @@ export const runRequestHandlerAsync = <TArgs extends AnyMiddlewareFnArgs>(
 };
 
 export const buildRequestHandler =
-  <TRouter extends FileRouter, Args extends AnyMiddlewareFnArgs>(
-    opts: RouterWithConfig<TRouter>,
+  <TRouter extends FileRouter, Args extends MiddlewareFnArgs<any, any, any>>(
+    opts: RouteHandlerOptions<TRouter>,
     adapter: string,
   ): RequestHandler<Args> =>
   (input) =>
@@ -170,7 +172,7 @@ const handleCallbackRequest = (opts: {
       parseRequestJson(
         opts.req,
         S.struct({
-          file: UploadedFile,
+          file: S.any as S.Schema<UploadedFileData>,
           metadata: S.record(S.string, S.unknown),
         }),
       ),
@@ -214,7 +216,7 @@ const handleCallbackRequest = (opts: {
 
 const runRouteMiddleware = (opts: {
   uploadable: AnyUploader;
-  middlewareArgs: AnyMiddlewareFnArgs;
+  middlewareArgs: MiddlewareFnArgs<any, any, any>;
   routeInput: S.Schema.To<typeof UploadActionPayload>["input"];
   files: S.Schema.To<typeof UploadActionPayload>["files"];
 }) =>
@@ -275,7 +277,7 @@ const runRouteMiddleware = (opts: {
 const handleUploadAction = (opts: {
   req: Request;
   uploadable: AnyUploader;
-  middlewareArgs: AnyMiddlewareFnArgs;
+  middlewareArgs: MiddlewareFnArgs<any, any, any>;
   config: RouteHandlerConfig | undefined;
 
   isDev: boolean;
@@ -515,7 +517,7 @@ const handleMultipartFailureAction = (opts: {
   });
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   return () => {
     const permissions = objectKeys(opts.router).map((slug) => {

@@ -4,14 +4,16 @@ import type { File as UndiciFile } from "undici";
 import type {
   ACL,
   ContentDisposition,
+  Either,
   FetchEsque,
   Json,
   MaybeUrl,
-  SerializedUploadError,
+  SerializedUploadThingError,
   Time,
 } from "@uploadthing/shared";
 
 import type { LogLevel } from "../internal/logger";
+import type { UploadedFileData } from "../types";
 import type { UTFile } from "./ut-file";
 
 export interface UTApiOptions {
@@ -48,21 +50,15 @@ export type FileEsque =
   | UndiciFile
   | UTFile;
 
-export type UploadData = {
-  key: string;
-  url: string;
-  name: string;
-  size: number;
-};
-
-export type UploadFileResponse =
-  | { data: UploadData; error: null }
-  | { data: null; error: SerializedUploadError };
 export interface UploadFilesOptions {
   metadata?: Json;
   contentDisposition?: ContentDisposition;
   acl?: ACL;
 }
+export type UploadFileResult = Either<
+  UploadedFileData,
+  SerializedUploadThingError
+>;
 
 interface KeyTypeOptionsBase {
   /**

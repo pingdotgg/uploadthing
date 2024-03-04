@@ -50,7 +50,7 @@ describe("adapters:h3", async () => {
         method: "POST",
         headers: baseHeaders,
         body: JSON.stringify({
-          files: [{ name: "foo.txt", size: 48 }],
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
       }),
     );
@@ -117,7 +117,7 @@ describe("adapters:server", async () => {
       method: "POST",
       headers: baseHeaders,
       body: JSON.stringify({
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
     const res = await handlers.POST(req);
@@ -178,7 +178,7 @@ describe("adapters:next", async () => {
       method: "POST",
       headers: baseHeaders,
       body: JSON.stringify({
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
     const res = await handlers.POST(req);
@@ -273,7 +273,7 @@ describe("adapters:next-legacy", async () => {
     const { req } = mockReq({
       query: { slug: "middleware", actionType: "upload" },
       body: {
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       },
       method: "POST",
       headers: baseHeaders,
@@ -355,7 +355,7 @@ describe("adapters:express", async () => {
       method: "POST",
       headers: { "content-type": "application/json", ...baseHeaders },
       body: JSON.stringify({
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
     expect(res.status).toBe(200);
@@ -403,7 +403,7 @@ describe("adapters:express", async () => {
       method: "POST",
       headers: { "content-type": "application/json", ...baseHeaders },
       body: JSON.stringify({
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
     expect(res.status).toBe(200);
@@ -424,7 +424,7 @@ describe("adapters:express", async () => {
       method: "POST",
       headers: { "content-type": "application/json", ...baseHeaders },
       body: JSON.stringify({
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
     expect(res.status).toBe(200);
@@ -479,7 +479,7 @@ describe("adapters:fastify", async () => {
       method: "POST",
       headers: { "content-type": "application/json", ...baseHeaders },
       body: JSON.stringify({
-        files: [{ name: "foo.txt", size: 48 }],
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
     expect(res.status).toBe(200);

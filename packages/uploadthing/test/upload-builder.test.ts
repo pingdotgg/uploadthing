@@ -80,7 +80,7 @@ it("uses defaults for not-chained", async () => {
     res: undefined,
     event: undefined,
     input: undefined,
-    files: [{ name: "test.txt", size: 123456 }],
+    files: [{ name: "test.txt", size: 123456, type: "text/plain" }],
   });
   expect(metadata).toEqual({});
   expectTypeOf<Record<string, never>>(metadata);
@@ -167,7 +167,7 @@ it("smoke", async () => {
     input: { foo: "bar" },
     res: undefined,
     event: undefined,
-    files: [{ name: "test.txt", size: 123456 }],
+    files: [{ name: "test.txt", size: 123456, type: "text/plain" }],
   });
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
 });

@@ -1,7 +1,6 @@
 import type { ExtendObjectIf } from "@uploadthing/shared";
 
-import type { FileRouter } from "./express";
-import type { inferEndpointInput } from "./internal/types";
+import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 export type {
   inferEndpointInput,
@@ -56,15 +55,6 @@ export type UploadFilesOptions<
   { input: inferEndpointInput<TRouter[TEndpoint]> }
 >;
 
-export type ClientUploadFileResponse<TServerOutput> = {
-  name: string;
-  size: number;
-  key: string;
-  url: string;
-  // Matches what's returned from the serverside `onUploadComplete` callback
-  serverData: TServerOutput;
-};
-
 export type GenerateUploaderOptions = {
   /**
    * URL to the UploadThing API endpoint
@@ -84,3 +74,40 @@ export type GenerateUploaderOptions = {
    */
   package: string;
 };
+
+/**
+ * Properties from the web File object, this is what the client sends when initiating an upload
+ */
+export interface FileUploadData {
+  name: string;
+  size: number;
+  type: string;
+}
+
+/**
+ * `.middleware()` can add a customId to the incoming file data
+ */
+export interface FileUploadDataWithCustomId extends FileUploadData {
+  /**
+   * As set by `.middleware()` using @link {UTFiles}
+   */
+  customId: string | null;
+}
+
+/**
+ * When files are uploaded, we get back a key and a URL for the file
+ */
+export interface UploadedFileData extends FileUploadDataWithCustomId {
+  key: string;
+  url: string;
+}
+
+/**
+ * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
+ */
+export interface ClientUploadedFileData<T> extends UploadedFileData {
+  /**
+   * Matches what's returned from the serverside `onUploadComplete` callback
+   */
+  serverData: T;
+}

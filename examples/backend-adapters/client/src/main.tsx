@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
+import { BACKEND_URL } from "./constants";
 import { UploadButton } from "./uploadthing";
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
 function WhatServer() {
   const [serverResponse, setServerResponse] = React.useState<string>("");
   useEffect(() => {
-    fetch("/api")
+    fetch(new URL("/api", BACKEND_URL))
       .then((res) => res.text())
       .then(setServerResponse);
   }, []);

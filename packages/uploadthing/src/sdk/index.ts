@@ -27,7 +27,7 @@ import type {
   GetSignedURLOptions,
   ListFilesOptions,
   RenameFileUpdate,
-  UploadFileResponse,
+  UploadFileResult,
   UploadFilesOptions,
   UrlWithOverrides,
   UTApiOptions,
@@ -135,15 +135,15 @@ export class UTApi {
   uploadFiles(
     files: FileEsque,
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse>;
+  ): Promise<UploadFileResult>;
   uploadFiles(
     files: FileEsque[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse[]>;
+  ): Promise<UploadFileResult[]>;
   async uploadFiles(
     files: FileEsque | FileEsque[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse | UploadFileResponse[]> {
+  ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
@@ -176,15 +176,15 @@ export class UTApi {
   uploadFilesFromUrl(
     urls: MaybeUrl | UrlWithOverrides,
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse>;
+  ): Promise<UploadFileResult>;
   uploadFilesFromUrl(
     urls: (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse[]>;
+  ): Promise<UploadFileResult[]>;
   async uploadFilesFromUrl(
     urls: MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
-  ): Promise<UploadFileResponse | UploadFileResponse[]> {
+  ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
     const downloadErrors: Record<number, SerializedUploadError> = {};

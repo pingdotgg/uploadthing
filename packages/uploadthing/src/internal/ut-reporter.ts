@@ -1,8 +1,12 @@
-import type { Schema } from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
 import type { FetchContextTag } from "@uploadthing/shared";
-import { fetchEff, UploadThingError } from "@uploadthing/shared";
+import {
+  fetchEff,
+  parseResponseJson,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -11,15 +15,18 @@ import type {
   MultipartCompleteActionPayload,
   UploadActionPayload,
 } from "./shared-schemas";
-import type { ActionType } from "./types";
+import type { ActionType, PresignedURLs } from "./types";
 
 type UTEvents = {
-  upload: Schema.To<typeof UploadActionPayload>;
-  failure: Schema.To<typeof FailureActionPayload>;
-  "multipart-complete": Schema.To<typeof MultipartCompleteActionPayload>;
+  upload: { in: S.Schema.To<typeof UploadActionPayload>; out: PresignedURLs };
+  failure: { in: S.Schema.To<typeof FailureActionPayload>; out: null };
+  "multipart-complete": {
+    in: S.Schema.To<typeof MultipartCompleteActionPayload>;
+    out: null;
+  };
 };
 
-export const createAPIRequestUrl = (config: {
+const createAPIRequestUrl = (config: {
   /**
    * URL to the UploadThing API endpoint
    * @example URL { /api/uploadthing }
@@ -41,8 +48,8 @@ export const createAPIRequestUrl = (config: {
 
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
-  payload: UTEvents[TEvent],
-) => Effect.Effect<{ success: boolean }, UploadThingError, FetchContextTag>;
+  payload: UTEvents[TEvent]["in"],
+) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContextTag>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
@@ -81,7 +88,7 @@ export const createUTReporter =
       switch (type) {
         case "failure": {
           // why isn't this narrowed automatically?
-          const p = payload as UTEvents["failure"];
+          const p = payload as UTEvents["failure"]["in"];
           const parsed = maybeParseResponseXML(p.s3Error ?? "");
           if (parsed?.message) {
             return yield* $(
@@ -102,5 +109,31 @@ export const createUTReporter =
         }
       }
 
-      return { success: response.ok };
+      if (!response.ok) {
+        return yield* $(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: response.statusText,
+            cause: response,
+          }),
+        );
+      }
+
+      const jsonOrError = yield* $(
+        parseResponseJson(
+          response,
+          S.any as S.Schema<UTEvents[typeof type]["out"]>,
+        ),
+        Effect.catchTag("ParseError", (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: "INTERNAL_CLIENT_ERROR",
+              message: "Failed to report event to UploadThing server",
+              cause: e,
+            }),
+          ),
+        ),
+      );
+
+      return jsonOrError;
     });

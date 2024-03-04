@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 
 import { createRouteHandler } from "uploadthing/server";
@@ -8,13 +9,9 @@ const { GET, POST } = createRouteHandler({
   router: uploadRouter,
 });
 
-const app = new Elysia();
+const app = new Elysia().use(cors());
 app.get("/api", () => "Hello from Elysia!");
 
-app.group("/api/uploadthing", (app) =>
-  app
-    .post("/", (context) => POST(context.request))
-    .get("/", (context) => GET(context.request)),
-);
+app.group("/api/uploadthing", (app) => app.post("/", POST).get("/", GET));
 
 app.listen(3000);

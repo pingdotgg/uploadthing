@@ -15,7 +15,7 @@ import type {
   ContentDisposition,
   Json,
   MaybeUrl,
-  SerializedUploadError,
+  SerializedUploadThingError,
   Time,
   TimeShort,
 } from "@uploadthing/shared";
@@ -27,7 +27,8 @@ import {
   MpuResponseSchema,
   PSPResponseSchema,
 } from "../internal/shared-schemas";
-import type { FileEsque, UploadData, UrlWithOverrides } from "./types";
+import type { UploadedFileData } from "../types";
+import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
@@ -60,7 +61,7 @@ export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
                 data: null,
                 error: UploadThingError.toObject(new UploadThingError("Foo")),
               }),
-              onSuccess: (data: UploadData) => ({ data, error: null }),
+              onSuccess: (data: UploadedFileData) => ({ data, error: null }),
             }),
           ),
         { concurrency: 10 },
@@ -75,7 +76,7 @@ export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
  */
 export const downloadFiles = (
   urls: (MaybeUrl | UrlWithOverrides)[],
-  downloadErrors: Record<number, SerializedUploadError>,
+  downloadErrors: Record<number, SerializedUploadThingError>,
 ) =>
   Effect.forEach(
     urls,
@@ -195,6 +196,8 @@ const uploadFile = (
       url: presigned.fileUrl,
       name: file.name,
       size: file.size,
+      type: file.type,
+      customId: "customId" in file ? file.customId : null,
     };
   });
 

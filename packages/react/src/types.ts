@@ -1,6 +1,6 @@
 import type { ExtendObjectIf, UploadThingError } from "@uploadthing/shared";
 import type {
-  ClientUploadFileResponse,
+  ClientUploadedFileData,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
@@ -58,7 +58,7 @@ export type UseUploadthingProps<
    *   the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?:
-    | ((res: ClientUploadFileResponse<TServerOutput>[]) => void)
+    | ((res: ClientUploadedFileData<TServerOutput>[]) => void)
     | undefined;
   /**
    * Called if the upload fails

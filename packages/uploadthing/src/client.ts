@@ -16,12 +16,11 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type { PresignedURLResponse } from "./internal/shared-schemas";
 import type { FileRouter, inferEndpointOutput } from "./internal/types";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
+import { createUTReporter } from "./internal/ut-reporter";
 import type {
-  ClientUploadFileResponse,
+  ClientUploadedFileData,
   GenerateUploaderOptions,
   UploadFilesOptions,
 } from "./types";
@@ -43,31 +42,23 @@ const uploadFilesInternal = <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
 ) => {
+  const utReporter = createUTReporter({
+    endpoint: String(endpoint),
+    package: opts.package,
+    url: resolveMaybeUrlArg(opts.url),
+  });
+
   const uploadFiles = Effect.gen(function* ($) {
     const presigneds = yield* $(
-      fetchEffJson(
-        createAPIRequestUrl({
-          url: opts.url,
-          slug: String(endpoint),
-          actionType: "upload",
-        }),
-        PresignedURLResponseSchema,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            input: "input" in opts ? opts.input : null,
-            files: opts.files.map((f) => ({ name: f.name, size: f.size })),
-          }),
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
+      utReporter("upload", {
+        input: "input" in opts ? opts.input : null,
+        files: opts.files.map((f) => ({ name: f.name, size: f.size })),
+      }),
     );
 
     return yield* $(
-      Effect.all(
-        presigneds.map((presigned) =>
-          uploadFile(String(endpoint), opts, presigned),
-        ),
+      Effect.forEach(presigneds, (presigned) =>
+        uploadFile(String(endpoint), opts, presigned),
       ),
     );
   });
@@ -191,13 +182,15 @@ const uploadFile = <
       );
     }
 
-    const ret: ClientUploadFileResponse<TServerOutput> = {
+    const ret: ClientUploadedFileData<TServerOutput> = {
       name: file.name,
       size: file.size,
       key: presigned.key,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       serverData: serverData as any,
       url: "https://utfs.io/f/" + presigned.key,
+      customId: presigned.customId,
+      type: file.type,
     };
     return ret;
   });
