@@ -308,7 +308,7 @@ describe(".onUploadComplete()", () => {
             size: 48,
             type: "image/png",
             customId: null,
-          },
+          } satisfies UploadedFileData,
         }),
       }),
     );
