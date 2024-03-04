@@ -1,7 +1,8 @@
 import * as S from "@effect/schema/Schema";
 import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
 
-import type { FetchEsque } from "./types";
+import { UploadThingError } from ".";
+import type { FetchEsque, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
 export class FetchError extends Data.TaggedError("FetchError")<{
@@ -69,6 +70,15 @@ export const parseRequestJson = <Req>(
   Effect.tryPromise({
     try: () => req.json(),
     catch: (error) => new FetchError({ error, input: req.url }),
+  }).pipe(Effect.andThen(S.decode(schema)));
+
+export const parseResponseJson = <Req>(
+  res: ResponseEsque,
+  schema: S.Schema<Req, any>,
+) =>
+  Effect.tryPromise({
+    try: () => res.json(),
+    catch: () => new UploadThingError("Invalid JSON "),
   }).pipe(Effect.andThen(S.decode(schema)));
 
 /**

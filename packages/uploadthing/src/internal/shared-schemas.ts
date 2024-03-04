@@ -13,6 +13,7 @@ const BaseResponseSchema = S.struct({
   fileUrl: S.string,
   pollingJwt: S.string,
   pollingUrl: S.string,
+  customId: S.nullable(S.string),
 });
 
 export const MpuResponseSchema = S.extend(
