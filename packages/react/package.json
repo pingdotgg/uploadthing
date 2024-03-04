@@ -62,7 +62,6 @@
   "dependencies": {
     "@uploadthing/dropzone": "^0.2.0",
     "@uploadthing/shared": "^6.3.2",
-    "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
     "tailwind-merge": "^2.2.1"
   },
