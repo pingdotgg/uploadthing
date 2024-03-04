@@ -10,7 +10,7 @@ import {
 
 import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
-import type { PSPResponse } from "./shared-schemas";
+import type { PSPResponse } from "./types";
 
 export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
   Effect.gen(function* ($) {

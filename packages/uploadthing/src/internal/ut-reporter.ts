@@ -10,21 +10,7 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
-import type {
-  FailureActionPayload,
-  MultipartCompleteActionPayload,
-  UploadActionPayload,
-} from "./shared-schemas";
-import type { ActionType, PresignedURLs } from "./types";
-
-type UTEvents = {
-  upload: { in: S.Schema.To<typeof UploadActionPayload>; out: PresignedURLs };
-  failure: { in: S.Schema.To<typeof FailureActionPayload>; out: null };
-  "multipart-complete": {
-    in: S.Schema.To<typeof MultipartCompleteActionPayload>;
-    out: null;
-  };
-};
+import type { ActionType, UTEvents } from "./types";
 
 const createAPIRequestUrl = (config: {
   /**

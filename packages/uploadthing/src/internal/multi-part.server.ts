@@ -14,7 +14,7 @@ import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
-import type { MPUResponse } from "./shared-schemas";
+import type { MPUResponse } from "./types";
 
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
   Effect.gen(function* ($) {

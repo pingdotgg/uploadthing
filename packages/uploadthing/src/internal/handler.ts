@@ -37,6 +37,7 @@ import type {
   RequestHandlerInput,
   RouteHandlerConfig,
   RouteHandlerOptions,
+  UTEvents,
   ValidMiddlewareObject,
 } from "./types";
 import {
@@ -211,7 +212,7 @@ const handleCallbackRequest = (opts: {
         body: JSON.stringify(payload),
       }),
     );
-    return { status: 200 };
+    return { status: 200, body: null };
   });
 
 const runRouteMiddleware = (opts: {
@@ -265,9 +266,9 @@ const runRouteMiddleware = (opts: {
         logger.warn("File size mismatch. Reverting to original size");
       }
       return {
-        ...file,
-        ...theirs,
+        name: theirs?.name ?? file.name,
         size: file.size,
+        customId: theirs?.customId,
       };
     });
 
@@ -442,7 +443,11 @@ const handleUploadAction = (opts: {
       );
     }
 
-    return { status: 200, body: presignedUrls, cleanup: promise };
+    return {
+      status: 200,
+      body: presignedUrls satisfies UTEvents["upload"]["out"],
+      cleanup: promise,
+    };
   });
 
 const handleMultipartCompleteAction = (opts: { req: Request }) =>
@@ -468,7 +473,10 @@ const handleMultipartCompleteAction = (opts: { req: Request }) =>
     );
     logger.debug("UploadThing responded with:", completionResponse);
 
-    return { status: 200 };
+    return {
+      status: 200,
+      body: null satisfies UTEvents["multipart-complete"]["out"],
+    };
   });
 
 const handleMultipartFailureAction = (opts: {
@@ -513,7 +521,10 @@ const handleMultipartFailureAction = (opts: {
       }),
     );
 
-    return { status: 200 };
+    return {
+      status: 200,
+      body: null satisfies UTEvents["failure"]["out"],
+    };
   });
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(

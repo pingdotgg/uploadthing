@@ -1,55 +1,36 @@
 import type { Schema } from "@effect/schema/Schema";
+import type * as S from "@effect/schema/Schema";
 import type { Effect } from "effect";
 
 import type {
-  ContentDisposition,
   ErrorMessage,
   FetchContextTag,
   FetchEsque,
   FileRouterInputConfig,
-  FileRouterInputKey,
   Json,
   MaybePromise,
   Simplify,
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type {
-  FileUploadData,
-  FileUploadDataWithCustomId,
-  UploadedFileData,
-} from "../types";
+import type { FileUploadDataWithCustomId, UploadedFileData } from "../types";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
-import type { UploadActionPayload } from "./shared-schemas";
-
-interface PresignedBase {
-  key: string;
-  fileName: string;
-  fileType: FileRouterInputKey;
-  fileUrl: string;
-  contentDisposition: ContentDisposition;
-  pollingJwt: string;
-  pollingUrl: string;
-  customId: string | null;
-}
-
-export interface PSPResponse extends PresignedBase {
-  url: string;
-  fields: Record<string, string>;
-}
-
-export interface MPUResponse extends PresignedBase {
-  urls: string[];
-  uploadId: string;
-  chunkSize: number;
-  chunkCount: number;
-}
+import type {
+  FailureActionPayload,
+  MPUResponseSchema,
+  MultipartCompleteActionPayload,
+  PresignedURLResponseSchema,
+  PSPResponseSchema,
+  UploadActionPayload,
+} from "./shared-schemas";
 
 /**
  * Returned by `/api/prepareUpload` and `/api/uploadFiles`
  */
-export type PresignedURLs = (PSPResponse | MPUResponse)[];
+export type PSPResponse = S.Schema.To<typeof PSPResponseSchema>;
+export type MPUResponse = S.Schema.To<typeof MPUResponseSchema>;
+export type PresignedURLs = S.Schema.To<typeof PresignedURLResponseSchema>;
 
 /**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
@@ -216,15 +197,16 @@ export type RouteHandlerOptions<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> = {
-  req: Request;
-  middlewareArgs: TArgs;
-};
+export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
+  {
+    req: Request | Effect.Effect<Request, UploadThingError>;
+    middlewareArgs: TArgs;
+  };
 export type RequestHandlerOutput = Effect.Effect<
   | {
       status: number;
       body: UTEvents[keyof UTEvents]["out"];
-      cleanup?: Promise<unknown>;
+      cleanup?: Promise<unknown> | undefined;
     }
   | UploadThingError,
   never,
@@ -263,30 +245,15 @@ export type ActionType = (typeof VALID_ACTION_TYPES)[number];
  */
 export type UTEvents = {
   upload: {
-    in: {
-      files: FileUploadData[];
-      input: Json;
-    };
-    out: PresignedURLs;
+    in: S.Schema.To<typeof UploadActionPayload>;
+    out: S.Schema.To<typeof PresignedURLResponseSchema>;
   };
   failure: {
-    in: {
-      fileKey: string;
-      uploadId: string | null;
-      s3Error?: string;
-      fileName: string;
-    };
+    in: S.Schema.To<typeof FailureActionPayload>;
     out: null;
   };
   "multipart-complete": {
-    in: {
-      fileKey: string;
-      uploadId: string;
-      etags: {
-        tag: string;
-        partNumber: number;
-      }[];
-    };
+    in: S.Schema.To<typeof MultipartCompleteActionPayload>;
     out: null;
   };
 };

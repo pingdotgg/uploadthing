@@ -35,7 +35,6 @@ const mockedPresignedPost: PSPResponse = {
   fileType: "text/plain",
   pollingUrl: "https://uploadthing.com/api/serverCallback",
   pollingJwt: "random-jwt",
-  contentDisposition: "inline",
   customId: "custom-id",
 };
 

@@ -21,7 +21,7 @@ import { UPLOADTHING_VERSION } from "./constants";
 import { getApiKey } from "./get-api-key";
 import { logger } from "./logger";
 import type { UploadActionPayload } from "./shared-schemas";
-import type { ActionType, FileRouter, RouterWithConfig } from "./types";
+import type { ActionType, FileRouter, RouteHandlerOptions } from "./types";
 import { VALID_ACTION_TYPES } from "./types";
 
 class FileSizeMismatch extends TaggedError("FileSizeMismatch")<{
@@ -87,7 +87,7 @@ export const assertFilesMeetConfig = (
 
 export const parseAndValidateRequest = (opts: {
   req: Request;
-  opts: RouterWithConfig<FileRouter>;
+  opts: RouteHandlerOptions<FileRouter>;
   adapter: string;
 }) =>
   Effect.gen(function* ($) {

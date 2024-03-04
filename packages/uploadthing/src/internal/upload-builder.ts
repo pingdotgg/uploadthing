@@ -6,8 +6,8 @@ import type {
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
-  AnyMiddlewareFnArgs,
   AnyParams,
+  MiddlewareFnArgs,
   UnsetMarker,
   UploadBuilder,
   UploadBuilderDef,
@@ -15,7 +15,7 @@ import type {
 } from "./types";
 
 function internalCreateBuilder<
-  TMiddlewareArgs extends AnyMiddlewareFnArgs,
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
 >(
   initDef: Partial<UploadBuilderDef<any>> = {},
@@ -79,7 +79,7 @@ function internalCreateBuilder<
 }
 
 type InOut<
-  TMiddlewareArgs extends AnyMiddlewareFnArgs,
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
 > = (input: FileRouterInputConfig) => UploadBuilder<{
   _input: UnsetMarker;
@@ -95,7 +95,7 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
 };
 
 export function createBuilder<
-  TMiddlewareArgs extends AnyMiddlewareFnArgs,
+  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
 >(
   opts?: CreateBuilderOptions<TErrorShape>,

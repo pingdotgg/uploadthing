@@ -24,7 +24,7 @@ import { logger } from "../internal/logger";
 import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
 import {
-  MpuResponseSchema,
+  MPUResponseSchema,
   PSPResponseSchema,
 } from "../internal/shared-schemas";
 import type { UploadedFileData } from "../types";
@@ -137,7 +137,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
     logger.debug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.struct({
-      data: S.array(S.union(MpuResponseSchema, PSPResponseSchema)),
+      data: S.array(S.union(MPUResponseSchema, PSPResponseSchema)),
     });
 
     const presigneds = yield* $(
@@ -197,7 +197,7 @@ const uploadFile = (
       name: file.name,
       size: file.size,
       type: file.type,
-      customId: "customId" in file ? file.customId : null,
+      customId: "customId" in file ? file.customId ?? null : null,
     };
   });
 

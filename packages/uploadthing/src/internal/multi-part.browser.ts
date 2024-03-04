@@ -10,7 +10,7 @@ import {
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
 
-import type { MPUResponse } from "./shared-schemas";
+import type { MPUResponse } from "./types";
 import type { UTReporter } from "./ut-reporter";
 
 export const uploadMultipartWithProgress = (

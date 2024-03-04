@@ -5,7 +5,7 @@ import type {
   FetchContextTag,
   FetchEsque,
   MaybeUrl,
-  SerializedUploadError,
+  SerializedUploadThingError,
 } from "@uploadthing/shared";
 import {
   asArray,
@@ -187,7 +187,7 @@ export class UTApi {
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const downloadErrors: Record<number, SerializedUploadError> = {};
+    const downloadErrors: Record<number, SerializedUploadThingError> = {};
 
     const uploads = await this.executeAsync(
       downloadFiles(asArray(urls), downloadErrors).pipe(

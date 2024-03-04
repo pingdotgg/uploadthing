@@ -16,8 +16,11 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import type { PresignedURLResponse } from "./internal/shared-schemas";
-import type { FileRouter, inferEndpointOutput } from "./internal/types";
+import type {
+  FileRouter,
+  inferEndpointOutput,
+  PresignedURLs,
+} from "./internal/types";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
@@ -52,7 +55,11 @@ const uploadFilesInternal = <
     const presigneds = yield* $(
       utReporter("upload", {
         input: "input" in opts ? opts.input : null,
-        files: opts.files.map((f) => ({ name: f.name, size: f.size })),
+        files: opts.files.map((f) => ({
+          name: f.name,
+          size: f.size,
+          type: f.type,
+        })),
       }),
     );
 
@@ -113,7 +120,7 @@ const uploadFile = <
 >(
   slug: string,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-  presigned: PresignedURLResponse[number],
+  presigned: PresignedURLs[number],
 ) =>
   Effect.gen(function* ($) {
     const file = opts.files.find((f) => f.name === presigned.fileName);

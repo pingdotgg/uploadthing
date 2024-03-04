@@ -5,8 +5,9 @@ import { ContentDisposition } from "@uploadthing/shared";
 
 /**
  * These schemas are for validating input between the user's and UT server
+ * Returned by `/api/prepareUpload` and `/api/uploadFiles`
  */
-const BaseResponseSchema = S.struct({
+const PresignedBaseSchema = S.struct({
   key: S.string,
   fileName: S.string,
   fileType: S.string as S.Schema<FileRouterInputKey>,
@@ -16,8 +17,8 @@ const BaseResponseSchema = S.struct({
   customId: S.nullable(S.string),
 });
 
-export const MpuResponseSchema = S.extend(
-  BaseResponseSchema,
+export const MPUResponseSchema = S.extend(
+  PresignedBaseSchema,
   S.struct({
     urls: S.array(S.string),
     uploadId: S.string,
@@ -26,23 +27,18 @@ export const MpuResponseSchema = S.extend(
     contentDisposition: ContentDisposition,
   }),
 );
-export type MPUResponse = S.Schema.To<typeof MpuResponseSchema>;
 
 export const PSPResponseSchema = S.extend(
-  BaseResponseSchema,
+  PresignedBaseSchema,
   S.struct({
     url: S.string,
     fields: S.record(S.string, S.string),
   }),
 );
-export type PSPResponse = S.Schema.To<typeof PSPResponseSchema>;
 
 export const PresignedURLResponseSchema = S.array(
-  S.union(PSPResponseSchema, MpuResponseSchema),
+  S.union(PSPResponseSchema, MPUResponseSchema),
 );
-export type PresignedURLResponse = S.Schema.To<
-  typeof PresignedURLResponseSchema
->;
 
 /**
  * These schemas are for validating input between the client and user's server
@@ -53,6 +49,7 @@ export const UploadActionPayload = S.struct({
     S.struct({
       name: S.string,
       size: S.number,
+      type: S.string,
     }),
   ),
   input: S.unknown as S.Schema<Json>,

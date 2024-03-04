@@ -1,7 +1,7 @@
 import * as S from "@effect/schema/Schema";
 import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
 
-import { UploadThingError } from ".";
+import { UploadThingError } from "./error";
 import type { FetchEsque, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
