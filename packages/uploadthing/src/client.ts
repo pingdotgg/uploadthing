@@ -3,24 +3,24 @@
 
 import {
   resolveMaybeUrlArg,
-  safeParseJSON,
   UploadThingError,
   withExponentialBackoff,
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
-import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadPartWithProgress } from "./internal/multi-part";
-import type { FileRouter, inferEndpointOutput } from "./internal/types";
-import type { UTReporter } from "./internal/ut-reporter";
-import { createAPIRequestUrl, createUTReporter } from "./internal/ut-reporter";
 import type {
-  GenerateUploaderOptions,
+  FileRouter,
+  inferEndpointOutput,
   MPUResponse,
   PSPResponse,
-  UploadedFile,
+} from "./internal/types";
+import type { UTReporter } from "./internal/ut-reporter";
+import { createUTReporter } from "./internal/ut-reporter";
+import type {
+  ClientUploadedFileData,
+  GenerateUploaderOptions,
   UploadFilesOptions,
-  UploadThingResponse,
 } from "./types";
 
 export {
@@ -42,7 +42,7 @@ const uploadFilesInternal = async <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-): Promise<UploadedFile<TServerOutput>[]> => {
+): Promise<ClientUploadedFileData<TServerOutput>[]> => {
   // Fine to use global fetch in browser
   const fetch = globalThis.fetch.bind(globalThis);
 
@@ -54,41 +54,13 @@ const uploadFilesInternal = async <
   });
 
   // Get presigned URL for S3 upload
-  const s3ConnectionRes = await fetch(
-    createAPIRequestUrl({
-      url: opts.url,
-      slug: String(endpoint),
-      actionType: "upload",
-    }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        input: "input" in opts ? opts.input : null,
-        files: opts.files.map((f) => ({ name: f.name, size: f.size })),
-      }),
-      // Express requires Content-Type to be explicitly set to parse body properly
-      headers: {
-        "Content-Type": "application/json",
-        "x-uploadthing-package": opts.package,
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      },
-    },
-  ).then(async (res) => {
-    // check for 200 response
-    if (!res.ok) {
-      const error = await UploadThingError.fromResponse(res);
-      throw error;
-    }
-
-    const jsonOrError = await safeParseJSON<UploadThingResponse>(res);
-    if (jsonOrError instanceof Error) {
-      throw new UploadThingError({
-        code: "BAD_REQUEST",
-        message: jsonOrError.message,
-        cause: res,
-      });
-    }
-    return jsonOrError;
+  const s3ConnectionRes = await reportEventToUT("upload", {
+    input: "input" in opts ? opts.input : null,
+    files: opts.files.map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    })),
   });
 
   if (!s3ConnectionRes || !Array.isArray(s3ConnectionRes)) {
@@ -144,15 +116,16 @@ const uploadFilesInternal = async <
     return {
       name: file.name,
       size: file.size,
+      type: file.type,
       key: presigned.key,
-
-      serverData,
       url: "https://utfs.io/f/" + presigned.key,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      serverData: serverData as any,
+      customId: presigned.customId,
     };
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return Promise.all(fileUploadPromises) as any;
+  return Promise.all(fileUploadPromises);
 };
 
 export const genUploader = <TRouter extends FileRouter>(
@@ -222,18 +195,20 @@ async function uploadMultipart(
   }
 
   // Tell the server that the upload is complete
-  const uploadOk = await opts.reportEventToUT("multipart-complete", {
-    uploadId: presigned.uploadId,
-    fileKey: presigned.key,
-    etags,
-  });
-  if (!uploadOk) {
-    console.log("Failed to alert UT of upload completion");
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: "Failed to alert UT of upload completion",
+  await opts
+    .reportEventToUT("multipart-complete", {
+      uploadId: presigned.uploadId,
+      fileKey: presigned.key,
+      etags,
+    })
+    .catch((res) => {
+      console.log("Failed to alert UT of upload completion");
+      throw new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "Failed to alert UT of upload completion",
+        cause: res,
+      });
     });
-  }
 }
 
 async function uploadPresignedPost(

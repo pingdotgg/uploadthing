@@ -2,7 +2,7 @@ import { expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";
-import type { UploadedFile } from "uploadthing/types";
+import type { ClientUploadedFileData } from "uploadthing/types";
 
 import { generateReactHelpers } from "../src";
 
@@ -108,46 +108,46 @@ it("infers output properly", () => {
     const { startUpload } = useUploadThing("exampleRoute");
     const res = await startUpload(files);
     // Undefined cause upload can silently throw and don't return anything
-    expectTypeOf<UploadedFile<{ foo: "bar" }>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withFooInput");
     const res = await startUpload(files, { foo: "bar" });
-    expectTypeOf<UploadedFile<{ baz: "qux" }>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<{ baz: "qux" }>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withBarInput");
     const res = await startUpload(files, { bar: 1 });
-    expectTypeOf<UploadedFile<null>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("returningUndefined");
     const res = await startUpload(files);
-    expectTypeOf<UploadedFile<null>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withFooInput", {
       skipPolling: true,
       onClientUploadComplete: (res) => {
-        expectTypeOf<UploadedFile<null>[]>(res);
+        expectTypeOf<ClientUploadedFileData<null>[]>(res);
       },
     });
     const res = await startUpload(files, { foo: "bar" });
-    expectTypeOf<UploadedFile<null>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withBarInput", {
       skipPolling: true,
       onClientUploadComplete: (res) => {
-        expectTypeOf<UploadedFile<null>[]>(res);
+        expectTypeOf<ClientUploadedFileData<null>[]>(res);
       },
     });
     const res = await startUpload(files, { bar: 1 });
-    expectTypeOf<UploadedFile<null>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
   });
 });

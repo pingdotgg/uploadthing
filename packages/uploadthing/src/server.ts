@@ -9,7 +9,7 @@ import {
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter, RouterWithConfig } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -32,7 +32,7 @@ export interface ResponseWithCleanup extends Response {
 export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   TRouter extends FileRouter,
 >(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
   adapter: string,
 ) => {
   initLogger(opts.config?.logLevel);
@@ -97,7 +97,7 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
 };
 
 export const createRouteHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => INTERNAL_DO_NOT_USE_createRouteHandlerCore(opts, "server");
 
 export const extractRouterConfig = (router: FileRouter) =>

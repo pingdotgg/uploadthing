@@ -7,7 +7,6 @@ import type {
   ContentDisposition,
   ExpandedRouteConfig,
   FetchEsque,
-  FileData,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
@@ -176,7 +175,7 @@ export async function pollForFileData(
       },
     });
     const maybeJson = await safeParseJSON<
-      { status: "done"; fileData?: FileData } | { status: "something else" }
+      { status: "done"; fileData?: any } | { status: "something else" }
     >(res);
 
     if (maybeJson instanceof Error) {

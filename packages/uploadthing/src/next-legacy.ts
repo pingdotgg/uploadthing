@@ -14,7 +14,7 @@ import {
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
-import type { FileRouter, RouterWithConfig } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -32,7 +32,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 ) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();

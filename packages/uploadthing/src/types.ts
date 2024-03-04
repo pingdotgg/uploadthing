@@ -1,11 +1,6 @@
-import type {
-  ContentDisposition,
-  ExtendObjectIf,
-  FileRouterInputKey,
-} from "@uploadthing/shared";
+import type { ExtendObjectIf } from "@uploadthing/shared";
 
-import type { FileRouter } from "./express";
-import type { inferEndpointInput } from "./internal/types";
+import type { FileRouter, inferEndpointInput } from "./internal/types";
 
 export type {
   inferEndpointInput,
@@ -58,15 +53,6 @@ export type UploadFilesOptions<
   { input: inferEndpointInput<TRouter[TEndpoint]> }
 >;
 
-export type UploadedFile<TServerOutput> = {
-  name: string;
-  size: number;
-  key: string;
-  url: string;
-  // Matches what's returned from the serverside `onUploadComplete` callback
-  serverData: TServerOutput;
-};
-
 export type GenerateUploaderOptions = {
   /**
    * URL to the UploadThing API endpoint
@@ -87,26 +73,39 @@ export type GenerateUploaderOptions = {
   package: string;
 };
 
-interface UploadThingBaseResponse {
+/**
+ * Properties from the web File object, this is what the client sends when initiating an upload
+ */
+export interface FileUploadData {
+  name: string;
+  size: number;
+  type: string;
+}
+
+/**
+ * `.middleware()` can add a customId to the incoming file data
+ */
+export interface FileUploadDataWithCustomId extends FileUploadData {
+  /**
+   * As set by `.middleware()` using @link {UTFiles}
+   */
+  customId: string | null;
+}
+
+/**
+ * When files are uploaded, we get back a key and a URL for the file
+ */
+export interface UploadedFileData extends FileUploadDataWithCustomId {
   key: string;
-  fileName: string;
-  fileType: FileRouterInputKey;
-  fileUrl: string;
-  contentDisposition: ContentDisposition;
-  pollingJwt: string;
-  pollingUrl: string;
-}
-
-export interface PSPResponse extends UploadThingBaseResponse {
   url: string;
-  fields: Record<string, string>;
 }
 
-export interface MPUResponse extends UploadThingBaseResponse {
-  urls: string[];
-  uploadId: string;
-  chunkSize: number;
-  chunkCount: number;
+/**
+ * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
+ */
+export interface ClientUploadedFileData<T> extends UploadedFileData {
+  /**
+   * Matches what's returned from the serverside `onUploadComplete` callback
+   */
+  serverData: T;
 }
-
-export type UploadThingResponse = (PSPResponse | MPUResponse)[];

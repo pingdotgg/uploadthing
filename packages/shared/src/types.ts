@@ -13,6 +13,9 @@ export type ErrorMessage<TError extends string> = TError;
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 export type MaybePromise<TType> = TType | Promise<TType>;
+export type Either<TData, TError> =
+  | { data: TData; error: null }
+  | { data: null; error: TError };
 
 export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
   ? // eslint-disable-next-line @typescript-eslint/ban-types
@@ -72,29 +75,6 @@ export type FetchEsque = (
   input: RequestInfo | MaybeUrl,
   init?: RequestInit | RequestInitEsque,
 ) => Promise<ResponseEsque>;
-
-/** This matches the return type from the infra */
-export interface FileData {
-  id: string;
-  createdAt: string;
-
-  fileKey: string | null;
-  fileName: string;
-  fileSize: number;
-  metadata: string | null;
-  customId: string | null;
-
-  callbackUrl: string;
-  callbackSlug: string;
-}
-
-export type UploadedFile = {
-  name: string;
-  key: string;
-  url: string;
-  size: number;
-  customId: string | null;
-};
 
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";

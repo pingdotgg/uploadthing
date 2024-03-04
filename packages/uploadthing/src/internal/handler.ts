@@ -15,10 +15,9 @@ import type {
   FetchEsque,
   FileRouterInputKey,
   Json,
-  UploadedFile,
 } from "@uploadthing/shared";
 
-import type { UploadThingResponse } from "../types";
+import type { UploadedFileData } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { logger } from "./logger";
@@ -28,8 +27,10 @@ import type {
   ActionType,
   FileRouter,
   MiddlewareFnArgs,
+  PresignedURLs,
   RequestHandler,
-  RouterWithConfig,
+  RouteHandlerConfig,
+  RouteHandlerOptions,
   UTEvents,
   ValidMiddlewareObject,
 } from "./types";
@@ -103,7 +104,7 @@ export const buildRequestHandler = <
   TRouter extends FileRouter,
   Args extends MiddlewareFnArgs<any, any, any>,
 >(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
   adapter: string,
 ): RequestHandler<Args> => {
   return async (input) => {
@@ -231,8 +232,7 @@ export const buildRequestHandler = <
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       const maybeReqBody = await safeParseJSON<{
-        file: UploadedFile;
-        files: unknown;
+        file: UploadedFileData;
         metadata: Record<string, unknown>;
         input?: Json;
       }>(req);
@@ -270,7 +270,7 @@ export const buildRequestHandler = <
         "UploadThing responded with status:",
         callbackResponse.status,
       );
-      return { status: 200 };
+      return { status: 200, body: null };
     }
 
     if (!actionType || !VALID_ACTION_TYPES.includes(actionType)) {
@@ -288,7 +288,7 @@ export const buildRequestHandler = <
 
     switch (actionType) {
       case "upload": {
-        const maybeInput = await safeParseJSON<UTEvents["upload"]>(req);
+        const maybeInput = await safeParseJSON<UTEvents["upload"]["in"]>(req);
 
         if (maybeInput instanceof Error) {
           logger.error("Invalid request body", maybeInput);
@@ -309,10 +309,11 @@ export const buildRequestHandler = <
             (f) =>
               isObject(f) &&
               typeof f.name === "string" &&
-              typeof f.size === "number",
+              typeof f.size === "number" &&
+              typeof f.type === "string",
           )
         ) {
-          const msg = `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
+          const msg = `Expected files to be of type '{name:string, size:number, type:string}[]', got '${JSON.stringify(
             files,
           )}'`;
           logger.error(msg);
@@ -375,14 +376,14 @@ export const buildRequestHandler = <
             logger.warn("File size mismatch. Reverting to original size");
           }
           return {
-            ...file,
-            ...theirs,
+            name: theirs?.name ?? file.name,
             size: file.size,
+            customId: theirs?.customId,
           };
         });
 
         // FILL THE ROUTE CONFIG so the server only has one happy path
-        let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
+        let parsedConfig: ExpandedRouteConfig;
         try {
           logger.debug("Parsing route config", uploadable._def.routerConfig);
           parsedConfig = parseAndExpandInputConfig(
@@ -439,7 +440,7 @@ export const buildRequestHandler = <
         });
 
         // This is when we send the response back to the user's form so they can submit the files
-        const parsedResponse = await safeParseJSON<UploadThingResponse>(
+        const parsedResponse = await safeParseJSON<PresignedURLs>(
           uploadthingApiResponse,
         );
 
@@ -474,16 +475,13 @@ export const buildRequestHandler = <
 
         return {
           cleanup: promise,
-          body: parsedResponse.map((x) => ({
-            ...x,
-            pollingUrl: generateUploadThingURL(`/api/serverCallback`),
-          })),
+          body: parsedResponse satisfies UTEvents["upload"]["out"],
           status: 200,
         };
       }
       case "multipart-complete": {
         const maybeReqBody =
-          await safeParseJSON<UTEvents["multipart-complete"]>(req);
+          await safeParseJSON<UTEvents["multipart-complete"]["in"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
@@ -517,10 +515,14 @@ export const buildRequestHandler = <
 
         logger.debug("UploadThing responded with:", completeRes.status);
 
-        return { status: 200 };
+        return {
+          status: 200,
+          body: null satisfies UTEvents["multipart-complete"]["out"],
+        };
       }
       case "failure": {
-        const maybeReqBody = await safeParseJSON<UTEvents["failure"]>(req);
+        const maybeReqBody =
+          await safeParseJSON<UTEvents["failure"]["in"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
@@ -540,9 +542,7 @@ export const buildRequestHandler = <
         });
 
         if (!uploadthingApiResponse.ok) {
-          const parsedResponse = await safeParseJSON<UploadThingResponse>(
-            uploadthingApiResponse,
-          );
+          const parsedResponse = await safeParseJSON(uploadthingApiResponse);
           logger.error("Failed to mark upload as failed", parsedResponse);
 
           return new UploadThingError({
@@ -577,7 +577,7 @@ export const buildRequestHandler = <
           });
         }
 
-        return { status: 200 };
+        return { status: 200, body: null satisfies UTEvents["failure"]["out"] };
       }
       default: {
         // This should never happen
@@ -591,7 +591,7 @@ export const buildRequestHandler = <
 };
 
 function resolveCallbackUrl(opts: {
-  config: RouterWithConfig<FileRouter>["config"];
+  config: RouteHandlerConfig | undefined;
   req: Request;
   url: URL;
   isDev: boolean;
@@ -634,7 +634,7 @@ function resolveCallbackUrl(opts: {
 }
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   return () => {
     const r = opts.router;
