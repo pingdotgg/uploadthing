@@ -12,6 +12,7 @@ import {
 import type { ResponseEsque } from "@uploadthing/shared";
 
 import { logger } from "./logger";
+import type { UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
   if (!response.ok) return false;
@@ -33,6 +34,7 @@ export const conditionalDevServer = (fileKey: string) => {
               fileKey: S.nullable(S.string),
               fileName: S.string,
               fileSize: S.number,
+              fileType: S.string,
               metadata: S.nullable(S.string),
               customId: S.nullable(S.string),
 
@@ -81,7 +83,8 @@ export const conditionalDevServer = (fileKey: string) => {
             name: file.fileName,
             size: file.fileSize,
             customId: file.customId,
-          },
+            type: file.fileType,
+          } satisfies UploadedFileData,
         }),
         headers: {
           "uploadthing-hook": "callback",

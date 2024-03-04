@@ -56,22 +56,30 @@ export const uploadMultipartWithProgress = (
         { concurrency: "inherit" },
       ),
       Effect.tapErrorCause((error) =>
-        opts.reportEventToUT("failure", {
-          fileKey: presigned.key,
-          uploadId: presigned.uploadId,
-          fileName: file.name,
-          s3Error: Cause.pretty(error).toString(),
-        }),
+        opts.reportEventToUT(
+          "failure",
+          {
+            fileKey: presigned.key,
+            uploadId: presigned.uploadId,
+            fileName: file.name,
+            s3Error: Cause.pretty(error).toString(),
+          },
+          S.null,
+        ),
       ),
     );
 
     // Tell the server that the upload is complete
     const uploadOk = yield* $(
-      opts.reportEventToUT("multipart-complete", {
-        uploadId: presigned.uploadId,
-        fileKey: presigned.key,
-        etags,
-      }),
+      opts.reportEventToUT(
+        "multipart-complete",
+        {
+          uploadId: presigned.uploadId,
+          fileKey: presigned.key,
+          etags,
+        },
+        S.null,
+      ),
     );
     if (!uploadOk) {
       return yield* $(

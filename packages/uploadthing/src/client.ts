@@ -18,6 +18,7 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
+import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type {
   FileRouter,
   inferEndpointOutput,
@@ -56,14 +57,18 @@ const uploadFilesInternal = <
 
   const uploadFiles = Effect.gen(function* ($) {
     const presigneds = yield* $(
-      reportEventToUT("upload", {
-        input: "input" in opts ? opts.input : null,
-        files: opts.files.map((f) => ({
-          name: f.name,
-          size: f.size,
-          type: f.type,
-        })),
-      }),
+      reportEventToUT(
+        "upload",
+        {
+          input: "input" in opts ? opts.input : null,
+          files: opts.files.map((f) => ({
+            name: f.name,
+            size: f.size,
+            type: f.type,
+          })),
+        },
+        PresignedURLResponseSchema,
+      ),
     );
 
     return yield* $(

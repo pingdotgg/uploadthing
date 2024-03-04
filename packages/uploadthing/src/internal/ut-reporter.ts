@@ -1,12 +1,8 @@
-import * as S from "@effect/schema/Schema";
+import type * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
 import type { FetchContextTag } from "@uploadthing/shared";
-import {
-  fetchEff,
-  parseRequestJson,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -35,6 +31,7 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
+  responseSchema: S.Schema<UTEvents[TEvent]["out"]>,
 ) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContextTag>;
 
 /**
@@ -43,7 +40,7 @@ export type UTReporter = <TEvent extends keyof UTEvents>(
  */
 export const createUTReporter =
   (cfg: { url: URL; endpoint: string; package: string }): UTReporter =>
-  (type, payload) =>
+  (type, payload, responseSchema) =>
     Effect.gen(function* ($) {
       const url = createAPIRequestUrl({
         url: cfg.url,
@@ -51,7 +48,7 @@ export const createUTReporter =
         actionType: type,
       });
       const response = yield* $(
-        fetchEff(url, {
+        fetchEffJson(url, responseSchema, {
           method: "POST",
           body: JSON.stringify(payload),
           headers: {
@@ -65,6 +62,15 @@ export const createUTReporter =
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: "Failed to report event to UploadThing server",
+              cause: e,
+            }),
+          ),
+        ),
+        Effect.catchTag("ParseError", (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: "INTERNAL_CLIENT_ERROR",
+              message: "Failed to parse response from UploadThing server",
               cause: e,
             }),
           ),
@@ -95,40 +101,5 @@ export const createUTReporter =
         }
       }
 
-      if (!response.ok) {
-        return yield* $(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: response.statusText,
-            cause: response,
-          }),
-        );
-      }
-
-      const jsonOrError = yield* $(
-        parseRequestJson(
-          response,
-          S.any as S.Schema<UTEvents[typeof type]["out"]>,
-        ),
-        Effect.catchTag("FetchError", (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "BAD_REQUEST",
-              message: "Failed to parse response from UploadThing server",
-              cause: e,
-            }),
-          ),
-        ),
-        Effect.catchTag("ParseError", (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_CLIENT_ERROR",
-              message: "Failed to report event to UploadThing server",
-              cause: e,
-            }),
-          ),
-        ),
-      );
-
-      return jsonOrError;
+      return response;
     });
