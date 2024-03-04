@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "../src/server";
+import type { UploadedFileData } from "../src/types";
 import {
   baseHeaders,
   createApiUrl,
@@ -313,7 +314,7 @@ describe(".onUploadComplete()", () => {
     );
 
     expect(res.status).toBe(200);
-    // await expect(res.json()).resolves.toBe(null);
+    await expect(res.json()).resolves.toBe(null);
     expect(uploadCompleteMock).toHaveBeenCalledOnce();
     expect(uploadCompleteMock).toHaveBeenCalledWith({
       file: {
