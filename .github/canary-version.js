@@ -1,4 +1,4 @@
-import { exec, execSync } from "child_process";
+import { exec } from "child_process";
 import fs from "fs";
 import prettier from "@prettier/sync";
 
@@ -28,10 +28,7 @@ try {
 
     for (const pkgJsonPath of pkgJsonPaths) {
       const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
-      const oldVersion = pkg.version;
-      const newVersion = versions[pkg.name];
-    
-      pkg.version = newVersion;
+      pkg.version = versions[pkg.name];
 
       // Update dependencies
       for (const dep in pkg.dependencies) {
