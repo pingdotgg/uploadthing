@@ -1,3 +1,4 @@
+import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
 import type { FetchContextTag, UploadThingError } from "@uploadthing/shared";
@@ -33,20 +34,28 @@ export const uploadPresignedPostWithProgress = (
       resume(
         xhr.status >= 200 && xhr.status < 300
           ? Effect.succeed(null)
-          : opts.reportEventToUT("failure", {
-              fileKey: presigned.key,
-              uploadId: null,
-              fileName: file.name,
-              s3Error: xhr.responseText,
-            }),
+          : opts.reportEventToUT(
+              "failure",
+              {
+                fileKey: presigned.key,
+                uploadId: null,
+                fileName: file.name,
+                s3Error: xhr.responseText,
+              },
+              S.null,
+            ),
       );
     xhr.onerror = () =>
       resume(
-        opts.reportEventToUT("failure", {
-          fileKey: presigned.key,
-          uploadId: null,
-          fileName: file.name,
-        }),
+        opts.reportEventToUT(
+          "failure",
+          {
+            fileKey: presigned.key,
+            uploadId: null,
+            fileName: file.name,
+          },
+          S.null,
+        ),
       );
 
     const formData = new FormData();

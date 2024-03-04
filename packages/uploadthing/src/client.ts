@@ -45,6 +45,9 @@ const uploadFilesInternal = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
@@ -55,7 +58,12 @@ const uploadFilesInternal = <
     url: resolveMaybeUrlArg(opts.url),
   });
 
-  const uploadFiles = Effect.gen(function* ($) {
+  const uploadFiles: Effect.Effect<
+    ClientUploadedFileData<TServerOutput>[],
+    // TODO: Handle these errors instead of letting them bubble
+    UploadThingError | RetryError | FetchError | ParseError,
+    FetchContextTag
+  > = Effect.gen(function* ($) {
     const presigneds = yield* $(
       reportEventToUT(
         "upload",
@@ -131,12 +139,7 @@ const uploadFile = <
     reportEventToUT: UTReporter;
   },
   presigned: PresignedURLs[number],
-): Effect.Effect<
-  ClientUploadedFileData<TServerOutput>,
-  // TODO: Handle these errors instead of letting them bubble
-  UploadThingError | RetryError | FetchError | ParseError,
-  FetchContextTag
-> =>
+) =>
   Effect.gen(function* ($) {
     const file = opts.files.find((f) => f.name === presigned.fileName);
 
