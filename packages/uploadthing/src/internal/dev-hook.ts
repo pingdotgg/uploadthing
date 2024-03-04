@@ -35,6 +35,7 @@ export const conditionalDevServer = async (opts: {
         metadata: string | null;
         fileName: string;
         fileSize: number;
+        fileType: string;
         customId: string | null;
       };
     }) => {
@@ -57,6 +58,7 @@ export const conditionalDevServer = async (opts: {
               key: opts.fileKey,
               name: file.fileName,
               size: file.fileSize,
+              type: file.fileType,
               customId: file.customId,
             },
           }),

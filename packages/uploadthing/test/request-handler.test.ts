@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "../src/server";
+import type { UploadedFileData } from "../src/types";
 import {
   baseHeaders,
   createApiUrl,
@@ -301,14 +302,15 @@ describe(".onUploadComplete()", () => {
             name: "foo.png",
             key: "some-random-key.png",
             size: 48,
+            type: "image/png",
             customId: null,
-          },
+          } satisfies UploadedFileData,
         }),
       }),
     );
 
     expect(res.status).toBe(200);
-    // await expect(res.json()).resolves.toBe(null);
+    await expect(res.json()).resolves.toBe(null);
     expect(uploadCompleteMock).toHaveBeenCalledOnce();
     expect(uploadCompleteMock).toHaveBeenCalledWith({
       file: {
@@ -316,6 +318,7 @@ describe(".onUploadComplete()", () => {
         key: "some-random-key.png",
         name: "foo.png",
         size: 48,
+        type: "image/png",
         url: "https://utfs.io/f/some-random-key.png",
       },
       metadata: {},
