@@ -15,12 +15,16 @@
     "dev:hono": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:hono\"",
     "dev:h3": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:h3\"",
     "build": "bun --cwd client build && bun --cwd server build",
-    "start": "concurrently \"bun --cwd client start\" \"bun --cwd server start\""
+    "start": "concurrently \"bun --cwd client start\" \"bun --cwd server start\"",
+    "test": "playwright test"
   },
   "dependencies": {
     "@uploadthing/react": "6.3.2",
     "concurrently": "^8.2.2",
     "typescript": "^5.3.3",
     "uploadthing": "6.5.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.42.1"
   }
 }
