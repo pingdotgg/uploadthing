@@ -1,8 +1,10 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
+import type { ParseError } from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
 
+import type { FetchContextTag, FetchError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
   fetchContext,
@@ -21,6 +23,7 @@ import type {
   inferEndpointOutput,
   PresignedURLs,
 } from "./internal/types";
+import type { UTReporter } from "./internal/ut-reporter";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
@@ -45,7 +48,7 @@ const uploadFilesInternal = <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
 ) => {
-  const utReporter = createUTReporter({
+  const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     package: opts.package,
     url: resolveMaybeUrlArg(opts.url),
@@ -53,7 +56,7 @@ const uploadFilesInternal = <
 
   const uploadFiles = Effect.gen(function* ($) {
     const presigneds = yield* $(
-      utReporter("upload", {
+      reportEventToUT("upload", {
         input: "input" in opts ? opts.input : null,
         files: opts.files.map((f) => ({
           name: f.name,
@@ -65,7 +68,7 @@ const uploadFilesInternal = <
 
     return yield* $(
       Effect.forEach(presigneds, (presigned) =>
-        uploadFile(String(endpoint), opts, presigned),
+        uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
       ),
     );
   });
@@ -119,9 +122,16 @@ const uploadFile = <
     : null,
 >(
   slug: string,
-  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
+  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling> & {
+    reportEventToUT: UTReporter;
+  },
   presigned: PresignedURLs[number],
-) =>
+): Effect.Effect<
+  ClientUploadedFileData<TServerOutput>,
+  // TODO: Handle these errors instead of letting them bubble
+  UploadThingError | RetryError | FetchError | ParseError,
+  FetchContextTag
+> =>
   Effect.gen(function* ($) {
     const file = opts.files.find((f) => f.name === presigned.fileName);
 
@@ -136,32 +146,12 @@ const uploadFile = <
       );
     }
 
-    const reportEventToUT = createUTReporter({
-      url: opts.url,
-      endpoint: slug,
-      package: opts.package,
-    });
-
     opts.onUploadBegin?.({ file: file.name });
     if ("urls" in presigned) {
-      yield* $(
-        uploadMultipartWithProgress(file, presigned, {
-          reportEventToUT,
-          ...opts,
-        }),
-      );
+      yield* $(uploadMultipartWithProgress(file, presigned, opts));
     } else {
-      yield* $(
-        uploadPresignedPostWithProgress(file, presigned, {
-          reportEventToUT,
-          ...opts,
-        }),
-      );
+      yield* $(uploadPresignedPostWithProgress(file, presigned, opts));
     }
-    // wait a bit as it's unsreasonable to expect the server to be done by now
-    // (UT should call user's server, then user's server may do some async work before responding with some data that should be sent back to UT)
-    // TODO: We should have an option on the client to opt-out of waiting for server callback  to finish if it doesn't return anything...
-    yield* $(Effect.sleep(500));
 
     const PollingResponse = S.union(
       S.struct({
@@ -189,7 +179,7 @@ const uploadFile = <
       );
     }
 
-    const ret: ClientUploadedFileData<TServerOutput> = {
+    return {
       name: file.name,
       size: file.size,
       key: presigned.key,
@@ -199,5 +189,4 @@ const uploadFile = <
       customId: presigned.customId,
       type: file.type,
     };
-    return ret;
   });
