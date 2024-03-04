@@ -63,24 +63,18 @@ export const fetchEffJson = <Res>(
   );
 
 export const parseRequestJson = <Req>(
-  req: Request,
+  reqOrRes: Request | ResponseEsque,
   schema: S.Schema<Req, any>,
 ) =>
   Effect.tryPromise({
-    try: () => req.json(),
-    catch: (error) => new FetchError({ error, input: req.url }),
-  }).pipe(Effect.andThen(S.decode(schema)));
-
-export const parseResponseJson = <Req>(
-  res: ResponseEsque,
-  schema: S.Schema<Req, any>,
-) =>
-  Effect.tryPromise({
-    try: () => res.json(),
+    try: () => reqOrRes.json(),
     catch: (error) =>
       new FetchError({
         error,
-        input: `Response ${res.status} - ${res.statusText}`,
+        input:
+          "url" in reqOrRes
+            ? reqOrRes.url
+            : `Response ${reqOrRes.status} - ${reqOrRes.statusText}`,
       }),
   }).pipe(Effect.andThen(S.decode(schema)));
 

@@ -4,7 +4,7 @@ import { Effect } from "effect";
 import type { FetchContextTag } from "@uploadthing/shared";
 import {
   fetchEff,
-  parseResponseJson,
+  parseRequestJson,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -106,9 +106,18 @@ export const createUTReporter =
       }
 
       const jsonOrError = yield* $(
-        parseResponseJson(
+        parseRequestJson(
           response,
           S.any as S.Schema<UTEvents[typeof type]["out"]>,
+        ),
+        Effect.catchTag("FetchError", (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: "BAD_REQUEST",
+              message: "Failed to parse response from UploadThing server",
+              cause: e,
+            }),
+          ),
         ),
         Effect.catchTag("ParseError", (e) =>
           Effect.fail(
