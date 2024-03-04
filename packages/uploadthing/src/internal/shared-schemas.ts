@@ -4,9 +4,62 @@ import type { FileRouterInputKey, Json } from "@uploadthing/shared";
 import { ContentDisposition } from "@uploadthing/shared";
 
 /**
- * These schemas are for validating input between the user's and UT server
- * Returned by `/api/prepareUpload` and `/api/uploadFiles`
+ * =============================================================================
+ * ======================== File Type Hierarchy ===============================
+ * =============================================================================
  */
+
+export const FileUploadDataSchema = S.struct({
+  name: S.string,
+  size: S.number,
+  type: S.string,
+});
+/**
+ * Properties from the web File object, this is what the client sends when initiating an upload
+ */
+export type FileUploadData = S.Schema.To<typeof FileUploadDataSchema>;
+
+export const FileUploadDataWithCustomIdSchema = S.extend(
+  FileUploadDataSchema,
+  S.struct({
+    customId: S.nullable(S.string),
+  }),
+);
+/**
+ * `.middleware()` can add a customId to the incoming file data
+ */
+export type FileUploadDataWithCustomId = S.Schema.To<
+  typeof FileUploadDataWithCustomIdSchema
+>;
+
+export const UploadedFileDataSchema = S.extend(
+  FileUploadDataWithCustomIdSchema,
+  S.struct({
+    key: S.string,
+    url: S.string,
+  }),
+);
+/**
+ * When files are uploaded, we get back a key and a URL for the file
+ */
+export type UploadedFileData = S.Schema.To<typeof UploadedFileDataSchema>;
+
+/**
+ * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
+ */
+export interface ClientUploadedFileData<T> extends UploadedFileData {
+  /**
+   * Matches what's returned from the serverside `onUploadComplete` callback
+   */
+  readonly serverData: T;
+}
+
+/**
+ * =============================================================================
+ * ======================== Server Response Schemas ============================
+ * =============================================================================
+ */
+
 const PresignedBaseSchema = S.struct({
   key: S.string,
   fileName: S.string,
@@ -41,17 +94,13 @@ export const PresignedURLResponseSchema = S.array(
 );
 
 /**
- * These schemas are for validating input between the client and user's server
+ * =============================================================================
+ * ======================== Client Action Payloads ============================
+ * =============================================================================
  */
 
 export const UploadActionPayload = S.struct({
-  files: S.array(
-    S.struct({
-      name: S.string,
-      size: S.number,
-      type: S.string,
-    }),
-  ),
+  files: S.array(FileUploadDataSchema),
   input: S.unknown as S.Schema<Json>,
 });
 

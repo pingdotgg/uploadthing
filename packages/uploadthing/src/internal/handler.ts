@@ -12,7 +12,6 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { UploadedFileData } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { logger } from "./logger";
@@ -27,6 +26,7 @@ import {
   MultipartCompleteActionPayload,
   PresignedURLResponseSchema,
   UploadActionPayload,
+  UploadedFileDataSchema,
 } from "./shared-schemas";
 import { UTFiles } from "./types";
 import type {
@@ -173,7 +173,7 @@ const handleCallbackRequest = (opts: {
       parseRequestJson(
         opts.req,
         S.struct({
-          file: S.any as S.Schema<UploadedFileData>,
+          file: UploadedFileDataSchema,
           metadata: S.record(S.string, S.unknown),
         }),
       ),

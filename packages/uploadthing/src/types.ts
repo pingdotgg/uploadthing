@@ -11,6 +11,13 @@ export type {
 
 export * from "./sdk/types";
 
+export type {
+  FileUploadData,
+  FileUploadDataWithCustomId,
+  UploadedFileData,
+  ClientUploadedFileData,
+} from "./internal/shared-schemas";
+
 export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
@@ -74,40 +81,3 @@ export type GenerateUploaderOptions = {
    */
   package: string;
 };
-
-/**
- * Properties from the web File object, this is what the client sends when initiating an upload
- */
-export interface FileUploadData {
-  name: string;
-  size: number;
-  type: string;
-}
-
-/**
- * `.middleware()` can add a customId to the incoming file data
- */
-export interface FileUploadDataWithCustomId extends FileUploadData {
-  /**
-   * As set by `.middleware()` using @link {UTFiles}
-   */
-  customId: string | null;
-}
-
-/**
- * When files are uploaded, we get back a key and a URL for the file
- */
-export interface UploadedFileData extends FileUploadDataWithCustomId {
-  key: string;
-  url: string;
-}
-
-/**
- * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
- */
-export interface ClientUploadedFileData<T> extends UploadedFileData {
-  /**
-   * Matches what's returned from the serverside `onUploadComplete` callback
-   */
-  serverData: T;
-}
