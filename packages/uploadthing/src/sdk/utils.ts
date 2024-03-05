@@ -23,10 +23,7 @@ import type {
 import { logger } from "../internal/logger";
 import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
-import {
-  MPUResponseSchema,
-  PSPResponseSchema,
-} from "../internal/shared-schemas";
+import { PresignedURLResponseSchema } from "../internal/shared-schemas";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -135,7 +132,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
     logger.debug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.struct({
-      data: S.array(S.union(MPUResponseSchema, PSPResponseSchema)),
+      data: PresignedURLResponseSchema,
     });
 
     const presigneds = yield* $(
