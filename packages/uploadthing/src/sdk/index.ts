@@ -17,7 +17,7 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
-import { getApiKey } from "../internal/get-api-key";
+import { getApiKeyOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import { initLogger, logger } from "../internal/logger";
 import type {
@@ -48,20 +48,13 @@ export class UTApi {
   private defaultKeyType: "fileKey" | "customId";
 
   constructor(opts?: UTApiOptions) {
-    const apiKey = getApiKey(opts?.apiKey);
+    const apiKey = getApiKeyOrThrow(opts?.apiKey);
 
     // Assert some stuff
     guardServerOnly();
     incompatibleNodeGuard();
-    if (!apiKey?.startsWith("sk_")) {
-      throw new UploadThingError({
-        code: "MISSING_ENV",
-        message: "Missing or invalid API key. API keys must start with `sk_`.",
-      });
-    }
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
-
     this.defaultHeaders = {
       "Content-Type": "application/json",
       "x-uploadthing-api-key": apiKey,
