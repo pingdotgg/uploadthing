@@ -3,7 +3,7 @@ import * as DocumentPicker from "expo-document-picker";
 import type { UseUploadthingProps } from "@uploadthing/react";
 import { INTERNAL_uploadthingHookGen } from "@uploadthing/react/native";
 import { generatePermittedFileTypes } from "@uploadthing/shared";
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { ExpandedRouteConfig, ExtendObjectIf } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 import type { inferEndpointInput } from "uploadthing/types";
 
@@ -43,11 +43,12 @@ export const GENERATE_useDocumentUploader =
     );
 
     const openDocumentPicker = async (
-      opts: undefined extends inferEndpointInput<TRouter[TEndpoint]>
-        ? void
-        : {
-            input: inferEndpointInput<TRouter[TEndpoint]>;
-          },
+      opts: {
+        // Nothing here yet.
+      } & ExtendObjectIf<
+        inferEndpointInput<TRouter[TEndpoint]>,
+        { input: inferEndpointInput<TRouter[TEndpoint]> }
+      >,
     ) => {
       const response = await DocumentPicker.getDocumentAsync({
         multiple,
@@ -66,7 +67,10 @@ export const GENERATE_useDocumentUploader =
       }));
 
       // This cast works cause you can append { uri, type, name } as FormData
-      return uploadthing.startUpload(files as unknown as File[], opts?.input);
+      return uploadthing.startUpload(
+        files as unknown as File[],
+        "input" in opts ? opts.input : undefined,
+      );
     };
 
     return { openDocumentPicker };
