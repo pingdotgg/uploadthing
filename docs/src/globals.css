@@ -102,6 +102,10 @@
   background: var(--theme-color-accent) !important;
 }
 
+.scalar-codeblock-code {
+  display: unset;
+}
+
 :root {
   --theme-color-accent: hsla(4, 61%, 49%, 1);
   --theme-color-background: hsla(348, 71%, 93%, 1);

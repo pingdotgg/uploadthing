@@ -1,5 +1,6 @@
 import { exec } from "child_process";
 import fs from "fs";
+import prettier from "@prettier/sync";
 
 const pkgJsonPaths = fs
   .readdirSync("packages")
@@ -14,26 +15,30 @@ try {
     }
     const commitHash = stdout.trim();
 
-    for (const pkgJsonPath of pkgJsonPaths) {
-      const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+    // First pass to get the new version of everything
+    const versions = pkgJsonPaths.reduce((acc, curr) => {
+      const pkg = JSON.parse(fs.readFileSync(curr, "utf-8"));
       const oldVersion = pkg.version;
       const [major, minor, patch] = oldVersion.split(".").map(Number);
       const newVersion = `${major}.${minor}.${patch + 1}-canary.${commitHash}`;
 
-      pkg.version = newVersion;
+      acc[pkg.name] = newVersion;
+      return acc;
+    }, {})
 
-      const content = JSON.stringify(pkg, null, "\t") + "\n";
-      const newContent = content
-        .replace(
-          new RegExp(`"@uploadthing/\\*": "${oldVersion}"`, "g"),
-          `"@uploadthing/*": "${newVersion}"`,
-        )
-        .replace(
-          new RegExp(`"uploadthing": "${oldVersion}"`, "g"),
-          `"uploadthing": "${newVersion}"`,
-        );
+    for (const pkgJsonPath of pkgJsonPaths) {
+      const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+      pkg.version = versions[pkg.name];
 
-      fs.writeFileSync(pkgJsonPath, newContent);
+      // Update dependencies
+      for (const dep in pkg.dependencies) {
+        if (versions[dep]) {
+          pkg.dependencies[dep] = versions[dep];
+        }
+      }
+
+      const fmt = prettier.format(JSON.stringify(pkg), { filepath: pkgJsonPath })
+      fs.writeFileSync(pkgJsonPath, fmt)
     }
   });
 } catch (error) {
