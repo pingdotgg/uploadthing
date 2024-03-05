@@ -80,8 +80,11 @@ const uploadFilesInternal = <
     );
 
     return yield* $(
-      Effect.forEach(presigneds, (presigned) =>
-        uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
+      Effect.forEach(
+        presigneds,
+        (presigned) =>
+          uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
+        { concurrency: 6 }, // most browsers limits 6 fetch requests at a time
       ),
     );
   });

@@ -50,8 +50,6 @@ type UploadFilesInternalOptions = {
 export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
   getPresignedUrls(input).pipe(
     Effect.andThen((presigneds) =>
-      // TODO: Catch errors for each file and return data like
-      // ({ data, error: null } | { data: null, error })[]
       Effect.forEach(
         presigneds,
         (file) =>
