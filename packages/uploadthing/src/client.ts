@@ -28,6 +28,8 @@ export {
   generateMimeTypes,
   /** @public */
   generateClientDropzoneAccept,
+  /** @public */
+  generatePermittedFileTypes,
 } from "@uploadthing/shared";
 
 export const version = pkgJson.version;
