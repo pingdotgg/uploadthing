@@ -95,12 +95,12 @@ export const parseAndValidateRequest = (opts: {
     const url = new URL(opts.req.url);
     const headers = opts.req.headers;
     const params = url.searchParams;
-    const uploadthingHook = headers.get("uploadthing-hook") ?? undefined;
-    const slug = params.get("slug") ?? undefined;
-    const actionType = (params.get("actionType") as ActionType) ?? undefined;
+    const actionType = params.get("actionType") as ActionType | null;
+    const slug = params.get("slug");
+    const uploadthingHook = headers.get("uploadthing-hook");
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
-
     const clientVersion = headers.get("x-uploadthing-version");
+
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       logger.error("Client version mismatch");
       return yield* $(
