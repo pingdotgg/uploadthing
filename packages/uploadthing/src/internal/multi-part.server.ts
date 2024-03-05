@@ -19,13 +19,7 @@ import type { MPUResponse } from "./types";
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
   Effect.gen(function* ($) {
     logger.debug(
-      "Uploading file",
-      file.name,
-      "with",
-      presigned.urls.length,
-      "chunks of size",
-      presigned.chunkSize,
-      "bytes each",
+      `Uploading file ${file.name} with ${presigned.urls.length} chunks of size ${presigned.chunkSize} bytes each`,
     );
 
     const etags = yield* $(
