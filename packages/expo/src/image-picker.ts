@@ -2,9 +2,10 @@ import * as ImagePicker from "expo-image-picker";
 
 import type { UseUploadthingProps } from "@uploadthing/react";
 import { INTERNAL_uploadthingHookGen } from "@uploadthing/react/native";
+import { generatePermittedFileTypes } from "@uploadthing/shared";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { generatePermittedFileTypes } from "uploadthing/client";
-import type { FileRouter, inferEndpointInput } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
+import type { inferEndpointInput } from "uploadthing/types";
 
 const generateMediaTypes = (config: ExpandedRouteConfig | undefined) => {
   const { fileTypes, multiple } = generatePermittedFileTypes(config);
