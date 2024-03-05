@@ -1,0 +1,13 @@
+diff --git a/node_modules/vue-sonner/lib/vue-sonner.js b/node_modules/vue-sonner/lib/vue-sonner.js
+index 7c65663..7d56c36 100644
+--- a/node_modules/vue-sonner/lib/vue-sonner.js
++++ b/node_modules/vue-sonner/lib/vue-sonner.js
+@@ -572,7 +572,7 @@ const fe = /* @__PURE__ */ K(re, [["render", ue]]), pe = () => {
+         var $, b;
+         n.hotkey.every(
+           (z) => v[z] || v.code === z
+-        ) && (c.value = !0, ($ = I.value) == null || $.focus()), v.code === "Escape" && (document.activeElement === I.value || (b = I.value) != null && b.contains(document.activeElement)) && (c.value = !1);
++        ) && (c.value = !0, ($ = I.value) == null || $.focus()), v.code === "Escape" && (document.activeElement === I.value || (b = I.value) != null && b.contains && b.contains(document.activeElement)) && (c.value = !1);
+       }
+       Ee && (document.addEventListener("keydown", r), s(() => {
+         document.removeEventListener("keydown", r);
