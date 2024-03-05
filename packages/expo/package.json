@@ -33,7 +33,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "^6.3.1",
+    "@uploadthing/react": "^6.3.2",
     "@uploadthing/shared": "^6.3.2"
   },
   "devDependencies": {
@@ -55,7 +55,7 @@
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^11.0.0",
     "expo-image-picker": "^14.0.0",
-    "uploadthing": "^6.4.0"
+    "uploadthing": "^6.5.0"
   },
   "peerDependenciesMeta": {
     "@uploadthing/mime-types": {

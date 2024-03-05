@@ -9,7 +9,6 @@ import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
-import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
@@ -18,7 +17,7 @@ import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger, logger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -36,7 +35,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 ) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
@@ -69,10 +68,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     }
 
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, bodyResult.data),
-      originalRequest: req,
-      res,
-      event: undefined,
+      req: toWebRequest(req, bodyResult.data),
+      middlewareArgs: { req, res, event: undefined },
     });
 
     if (response instanceof UploadThingError) {

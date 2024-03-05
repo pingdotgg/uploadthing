@@ -1,16 +1,22 @@
-import type { ErrorMessage, FileRouter } from "uploadthing/server";
+import type { ErrorMessage } from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 
 export const Uploader = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadthingComponentProps<TRouter, TEndpoint>,
+    : UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
 ) => {
-  const $props = props as UploadthingComponentProps<TRouter, TEndpoint>;
+  const $props = props as UploadthingComponentProps<
+    TRouter,
+    TEndpoint,
+    TSkipPolling
+  >;
 
   return (
     <>

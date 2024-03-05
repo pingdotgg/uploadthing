@@ -3,21 +3,19 @@ import type { Json } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
-import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type * from "./internal/types";
 export { UTFiles } from "./internal/types";
 export { UTApi, UTFile } from "./sdk";
-export { UploadThingError };
+export { UploadThingError, type FileRouter };
 
 type MiddlewareArgs = { req: Request; res: undefined; event: undefined };
 
@@ -34,7 +32,7 @@ export interface ResponseWithCleanup extends Response {
 export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   TRouter extends FileRouter,
 >(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
   adapter: string,
 ) => {
   initLogger(opts.config?.logLevel);
@@ -51,10 +49,8 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   ): Promise<Response | ResponseWithCleanup> => {
     const req = request instanceof Request ? request : request.request;
     const response = await requestHandler({
-      nativeRequest: req,
-      originalRequest: req,
-      event: undefined,
-      res: undefined,
+      req,
+      middlewareArgs: { req, res: undefined, event: undefined },
     });
 
     if (response instanceof UploadThingError) {
@@ -101,7 +97,7 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
 };
 
 export const createRouteHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => INTERNAL_DO_NOT_USE_createRouteHandlerCore(opts, "server");
 
 export const extractRouterConfig = (router: FileRouter) =>

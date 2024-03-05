@@ -1,10 +1,9 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import type { UploadFileResponse } from "../src/client";
 import { genUploader } from "../src/client";
-import type { FileRouter } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
+import type { ClientUploadedFileData, FileRouter } from "../src/types";
 
 const doNotExecute = (_fn: (...args: any[]) => any) => {
   // noop
@@ -39,14 +38,14 @@ describe("genuploader", () => {
     doNotExecute(async () => {
       // @ts-expect-error - Input should be required here
       const res = await uploader("uploadable2", { files });
-      expectTypeOf<UploadFileResponse<{ baz: "qux" }>[]>(res);
+      expectTypeOf<ClientUploadedFileData<{ baz: "qux" }>[]>(res);
     });
   });
 
   it("types serverData as null if polling is skipped", () => {
     doNotExecute(async () => {
       const res = await uploader("uploadable1", { files, skipPolling: true });
-      expectTypeOf<UploadFileResponse<null>[]>(res);
+      expectTypeOf<ClientUploadedFileData<null>[]>(res);
     });
   });
 });

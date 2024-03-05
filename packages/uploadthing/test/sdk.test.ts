@@ -2,7 +2,7 @@ import { process } from "std-env";
 import { describe, expect, expectTypeOf, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
-import type { UploadFileResponse } from "../src/sdk/types";
+import type { UploadFileResult } from "../src/sdk/types";
 import { fetchMock, mockExternalRequests } from "./__test-helpers";
 
 describe("UTFile", () => {
@@ -75,6 +75,8 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         url: "https://utfs.io/f/abc-123.txt",
+        customId: null,
+        type: "text/plain",
       },
       error: null,
     });
@@ -82,13 +84,13 @@ describe("uploadFiles", () => {
 
   it("returns array if array is passed", async () => {
     const result = await utapi.uploadFiles([fooFile]);
-    expectTypeOf<UploadFileResponse[]>(result);
+    expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
   it("returns single object if no array is passed", async () => {
     const result = await utapi.uploadFiles(fooFile);
-    expectTypeOf<UploadFileResponse>(result);
+    expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
@@ -169,6 +171,8 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         url: "https://utfs.io/f/abc-123.txt",
+        customId: null,
+        type: "text/plain",
       },
       error: null,
     });
@@ -179,7 +183,7 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/foo.txt",
       "https://cdn.foo.com/bar.txt",
     ]);
-    expectTypeOf<UploadFileResponse[]>(result);
+    expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
@@ -187,7 +191,7 @@ describe("uploadFilesFromUrl", () => {
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
     );
-    expectTypeOf<UploadFileResponse>(result);
+    expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
@@ -262,9 +266,11 @@ describe("uploadFilesFromUrl", () => {
       [
         {
           "data": {
+            "customId": null,
             "key": "abc-123.txt",
             "name": "foo.txt",
             "size": 26,
+            "type": "text/plain",
             "url": "https://utfs.io/f/abc-123.txt",
           },
           "error": null,
@@ -279,9 +285,11 @@ describe("uploadFilesFromUrl", () => {
         },
         {
           "data": {
+            "customId": null,
             "key": "abc-123.txt",
             "name": "bar.txt",
             "size": 26,
+            "type": "text/plain",
             "url": "https://utfs.io/f/abc-123.txt",
           },
           "error": null,

@@ -23,8 +23,11 @@
     "typecheck": {
       "dependsOn": ["^topo", "^build"]
     },
+    "//#test": {
+      "dependsOn": []
+    },
     "test": {
-      "dependsOn": ["build"]
+      "dependsOn": []
     },
     "test:watch": {
       "cache": false

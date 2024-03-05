@@ -13,6 +13,10 @@ coverage
 out/
 build
 
+# solid
+.output
+.vinxi
+
 # misc
 .DS_Store
 *.pem

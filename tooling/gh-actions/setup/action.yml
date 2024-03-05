@@ -4,11 +4,9 @@ description: "Common setup steps for Actions"
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v2
     - uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: "pnpm"
 
     - name: Setup bun
       uses: oven-sh/setup-bun@v1
@@ -16,7 +14,7 @@ runs:
         bun-version: latest
 
     - shell: bash
-      run: pnpm install
+      run: bun install
 
     - name: Copy .env.example files
       shell: bash

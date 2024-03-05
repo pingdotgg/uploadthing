@@ -48,6 +48,12 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
   return fallback ?? "An unknown error occurred";
 }
 
+export interface SerializedUploadThingError {
+  code: ErrorCode;
+  message: string;
+  data?: Json;
+}
+
 export class UploadThingError<
   TShape extends Json = { message: string },
 > extends Error {
@@ -105,7 +111,7 @@ export class UploadThingError<
     });
   }
 
-  public static toObject(error: UploadThingError) {
+  public static toObject(error: UploadThingError): SerializedUploadThingError {
     return {
       code: error.code,
       message: error.message,
@@ -130,3 +136,10 @@ function getErrorTypeFromStatusCode(statusCode: number): ErrorCode {
   }
   return "INTERNAL_SERVER_ERROR";
 }
+
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });

@@ -12,9 +12,13 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
-import type { ErrorMessage, FileRouter } from "uploadthing/server";
+} from "@uploadthing/shared";
+import type {
+  ContentField,
+  ErrorMessage,
+  StyleField,
+} from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
@@ -29,25 +33,38 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: boolean;
 };
 
+type DropzoneAppearance = {
+  container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  button?: StyleField<DropzoneStyleFieldCallbackArgs>;
+};
+
+type DropzoneContent = {
+  uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+};
+
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
 > = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
-  appearance?: {
-    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-  };
-  content?: {
-    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-  };
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   className?: string;
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
+   */
+  appearance?: DropzoneAppearance;
+  /**
+   * @see https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: DropzoneContent;
 };
 
 export function UploadDropzone<
@@ -132,6 +149,7 @@ export function UploadDropzone<
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
+    multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: $props.__internal_dropzone_disabled,
   });

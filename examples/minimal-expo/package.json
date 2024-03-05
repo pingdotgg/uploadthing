@@ -8,7 +8,7 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
-    "@uploadthing/expo": "^6.3.0",
+    "@uploadthing/expo": "workspace:*",
     "expo": "~50.0.6",
     "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",

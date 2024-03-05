@@ -1,10 +1,8 @@
 import { process } from "std-env";
 
 import type {
-  ACL,
-  ContentDisposition,
   FetchEsque,
-  Json,
+  SerializedUploadThingError,
   Time,
   TimeShort,
 } from "@uploadthing/shared";
@@ -15,15 +13,16 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
-import type {
-  MPUResponse,
-  PSPResponse,
-  UploadThingResponse,
-} from "../internal/handler";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
-import type { UTEvents } from "../internal/types";
-import type { FileEsque, UploadData, UploadError } from "./types";
+import type {
+  MPUResponse,
+  PresignedURLs,
+  PSPResponse,
+  UTEvents,
+} from "../internal/types";
+import type { UploadedFileData } from "../types";
+import type { FileEsque, UploadFilesOptions } from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -45,11 +44,8 @@ export function getApiKeyOrThrow(apiKey?: string) {
 }
 
 export const uploadFilesInternal = async (
-  data: {
+  data: UploadFilesOptions & {
     files: FileEsque[];
-    metadata: Json;
-    contentDisposition: ContentDisposition;
-    acl?: ACL;
   },
   opts: {
     fetch: FetchEsque;
@@ -83,7 +79,7 @@ export const uploadFilesInternal = async (
   }
 
   const json = await res.json<{
-    data: UploadThingResponse;
+    data: PresignedURLs;
   }>();
 
   logger.debug("Got presigned URLs:", json.data);
@@ -128,6 +124,8 @@ export const uploadFilesInternal = async (
         url: presigned.fileUrl,
         name: file.name,
         size: file.size,
+        type: file.type,
+        customId: "customId" in file ? file.customId ?? null : null,
       };
     }),
   );
@@ -136,12 +134,12 @@ export const uploadFilesInternal = async (
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {
-      const data = upload.value satisfies UploadData;
+      const data: UploadedFileData = upload.value;
       return { data, error: null };
     }
     // We only throw UploadThingErrors, so this is safe
     const reason = upload.reason as UploadThingError;
-    const error = UploadThingError.toObject(reason) satisfies UploadError;
+    const error: SerializedUploadThingError = UploadThingError.toObject(reason);
     return { data: null, error };
   });
 };
@@ -203,7 +201,7 @@ async function uploadMultipart(
         fileKey: presigned.key,
         uploadId: presigned.uploadId,
         etags,
-      } satisfies UTEvents["multipart-complete"]),
+      } satisfies UTEvents["multipart-complete"]["in"]),
       headers: opts.utRequestHeaders,
     },
   );
