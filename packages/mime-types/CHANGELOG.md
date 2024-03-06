@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.2.5
+
+### Patch Changes
+
+- [#655](https://github.com/pingdotgg/uploadthing/pull/655) [`0adc3b8`](https://github.com/pingdotgg/uploadthing/commit/0adc3b8df67ea5c4a94db736d0aff1b489979393) Thanks [@ecwyne](https://github.com/ecwyne)! - add `audio/x-gsm` mime-type
+
 ## 0.2.4
 
 ### Patch Changes
