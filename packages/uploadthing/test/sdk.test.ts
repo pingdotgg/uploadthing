@@ -52,7 +52,7 @@ describe("uploadFiles", () => {
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       2,
-      "https://bucket.s3.amazonaws.com/abc-123.txt",
+      "https://bucket.s3.amazonaws.com",
       expect.objectContaining({
         body: expect.any(FormData),
         method: "POST",
@@ -156,7 +156,7 @@ describe("uploadFilesFromUrl", () => {
     );
     expect(fetchMock).toHaveBeenNthCalledWith(
       3,
-      "https://bucket.s3.amazonaws.com/abc-123.txt",
+      "https://bucket.s3.amazonaws.com",
       expect.objectContaining({}),
     );
     expect(fetchMock).toHaveBeenNthCalledWith(

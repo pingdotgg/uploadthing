@@ -18,7 +18,7 @@ import type {
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 
-interface PresignedBase {
+export interface PresignedBase {
   key: string;
   fileName: string;
   fileType: FileRouterInputKey;

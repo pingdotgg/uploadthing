@@ -225,7 +225,7 @@ async function uploadPresignedPost(
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
   formData.append("file", file); // File data **MUST GO LAST**
 
-  const response = await new Promise<XMLHttpRequest>((resolve, reject) => {
+  const response = await new Promise<{ status: number }>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", presigned.url);
     xhr.setRequestHeader("Accept", "application/xml");
@@ -235,7 +235,7 @@ async function uploadPresignedPost(
         progress: (p.loaded / p.total) * 100,
       });
     };
-    xhr.onload = (e) => resolve(e.target as XMLHttpRequest);
+    xhr.onload = () => resolve({ status: xhr.status });
     xhr.onerror = (e) => reject(e);
     xhr.send(formData);
   }).catch(async (error) => {
