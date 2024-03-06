@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { http, HttpResponse } from "msw";
 import { beforeEach, vi } from "vitest";
 
@@ -126,7 +125,7 @@ export const mockExternalRequests: FetchEsque = async (url, init) => {
 };
 
 const staticAssetServer = [
-  http.get("https://cdn.foo.com/:fileKey", ({ params, request }) => {
+  http.get("https://cdn.foo.com/:fileKey", () => {
     return HttpResponse.text("Lorem ipsum doler sit amet", {
       headers: { "Content-Type": "text/plain" },
     });
