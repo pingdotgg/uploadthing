@@ -3,8 +3,15 @@
 import express from "express";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { describe } from "node:test";
-import { afterAll, afterEach, beforeAll, expect, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it as itBase,
+  vi,
+} from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
 
@@ -13,7 +20,9 @@ import { createRouteHandler, createUploadthing } from "../src/express";
 import {
   fetchMock,
   handlers,
+  it,
   middlewareMock,
+  MockDbInterface,
   mockExternalRequests,
   onErrorMock,
   s3Mock,
@@ -25,8 +34,13 @@ beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
 afterEach(() => msw.resetHandlers());
 afterAll(() => msw.close());
 
-const setupUTServer = () => {
-  const f = createUploadthing();
+const setupUTServer = (db: MockDbInterface) => {
+  const f = createUploadthing({
+    errorFormatter(err) {
+      console.log(err, err.cause);
+      return { message: err.message };
+    },
+  });
   const router = {
     foo: f({ text: {} })
       .middleware(() => {
@@ -44,7 +58,8 @@ const setupUTServer = () => {
       router,
       config: {
         uploadthingSecret: "sk_test_123",
-        fetch: mockExternalRequests,
+        isDev: true,
+        fetch: mockExternalRequests(db),
       },
     }),
   );
@@ -60,9 +75,9 @@ const setupUTServer = () => {
   return { uploadFiles, close: () => server.close() };
 };
 
-describe("uploadFiles", () => {
-  it("uploads with presigned post", async () => {
-    const { uploadFiles, close } = setupUTServer();
+describe("uploadFiles", ({}) => {
+  it("uploads with presigned post", async ({ db }) => {
+    const { uploadFiles, close } = setupUTServer(db);
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -87,13 +102,13 @@ describe("uploadFiles", () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
-    // expect(uploadCompleteMock).toHaveBeenCalledOnce();
+    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0);
 
     close();
   });
 
-  it("uploads with multipart upload", async () => {
-    const { uploadFiles, close } = setupUTServer();
+  it("uploads with multipart upload", async ({ db }) => {
+    const { uploadFiles, close } = setupUTServer(db);
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
@@ -123,12 +138,12 @@ describe("uploadFiles", () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
-    // expect(uploadCompleteMock).toHaveBeenCalledOnce();
+    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0);
 
     close();
   });
 
-  it("reports of failed post upload", async () => {
+  it("reports of failed post upload", async ({ db }) => {
     msw.resetHandlers(
       http.post("https://bucket.s3.amazonaws.com", ({ params, request }) => {
         s3Mock(params, request);
@@ -136,7 +151,7 @@ describe("uploadFiles", () => {
       }),
     );
 
-    const { uploadFiles, close } = setupUTServer();
+    const { uploadFiles, close } = setupUTServer(db);
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -168,7 +183,7 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("reports of failed multipart upload", async () => {
+  it("reports of failed multipart upload", async ({ db }) => {
     msw.resetHandlers(
       http.put(
         "https://bucket.s3.amazonaws.com/:key",
@@ -179,7 +194,7 @@ describe("uploadFiles", () => {
       ),
     );
 
-    const { uploadFiles, close } = setupUTServer();
+    const { uploadFiles, close } = setupUTServer(db);
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
