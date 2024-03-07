@@ -22,7 +22,7 @@
     "h3": "^1.11.1",
     "hono": "^4.0.8",
     "listhen": "^1.7.2",
-    "uploadthing": "6.5.1"
+    "uploadthing": "workspace:6.5.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240222.0",
