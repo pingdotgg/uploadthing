@@ -57,6 +57,7 @@
     "dev": "conc npm:dev:*",
     "clean": "git clean -xdf dist hooks native next-ssr-plugin node_modules",
     "lint": "eslint src --max-warnings 0",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
