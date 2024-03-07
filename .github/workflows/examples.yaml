@@ -26,9 +26,6 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Install necessary deps
-        run: bun i
-
       - name: Build UT packages
         run: bun run build
 
