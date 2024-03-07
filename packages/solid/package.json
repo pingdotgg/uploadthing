@@ -106,7 +106,6 @@
     "clean": "git clean -xdf dist node_modules",
     "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
