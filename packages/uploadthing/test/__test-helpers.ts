@@ -124,6 +124,12 @@ export const mockExternalRequests: FetchEsque = async (url, init) => {
   return new Response("Not Found", { status: 404 });
 };
 
+const utApi = [
+  http.post("https://uploadthing.com/api/requestFileAccess", ({ request }) => {
+    return HttpResponse.json({ url: "https://example.com" });
+  }),
+];
+
 const staticAssetServer = [
   http.get("https://cdn.foo.com/:fileKey", () => {
     return HttpResponse.text("Lorem ipsum doler sit amet", {
@@ -146,4 +152,4 @@ const s3Api = [
   }),
 ];
 
-export const handlers = [...staticAssetServer, ...s3Api];
+export const handlers = [...utApi, ...staticAssetServer, ...s3Api];

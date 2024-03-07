@@ -314,10 +314,11 @@ describe("constructor throws if no apiKey or secret is set", () => {
   });
 });
 
-describe("getSignedURL", () => {
+describe.only("getSignedURL", () => {
   const utapi = new UTApi({
     apiKey: "sk_foo",
-    fetch: mockExternalRequests,
+    logLevel: "debug",
+    // fetch: mockExternalRequests,
   });
 
   it("sends request without expiresIn", async () => {
