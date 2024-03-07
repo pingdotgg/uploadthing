@@ -332,6 +332,10 @@ describe.only("getSignedURL", () => {
   const utapi = new UTApi({
     apiKey: "sk_foo",
     logLevel: "debug",
+    fetch: (url, init) => {
+      fetchMock(url, init);
+      return fetch(url, init);
+    },
     // fetch: mockExternalRequests,
   });
 
