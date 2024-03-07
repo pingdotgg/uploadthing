@@ -1,5 +1,15 @@
 # uploadthing
 
+## 6.5.2
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+- Updated dependencies [[`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939)]:
+  - @uploadthing/mime-types@0.2.6
+  - @uploadthing/shared@6.3.4
+
 ## 6.5.1
 
 ### Patch Changes
