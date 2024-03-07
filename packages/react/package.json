@@ -56,6 +56,7 @@
     "dev:js": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "dev": "conc npm:dev:*",
     "clean": "git clean -xdf dist hooks native next-ssr-plugin node_modules",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "lint": "eslint src --max-warnings 0",
     "typecheck": "tsc --noEmit"
   },

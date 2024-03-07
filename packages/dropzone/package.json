@@ -49,6 +49,7 @@
     "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf core react solid node_modules",
     "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
