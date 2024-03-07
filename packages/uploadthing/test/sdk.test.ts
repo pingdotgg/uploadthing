@@ -1,9 +1,23 @@
+import { setupServer } from "msw/node";
 import { process } from "std-env";
-import { describe, expect, expectTypeOf, it } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
-import { fetchMock, mockExternalRequests } from "./__test-helpers";
+import { fetchMock, handlers, mockExternalRequests } from "./__test-helpers";
+
+const msw = setupServer(...handlers);
+beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
+afterEach(() => msw.resetHandlers());
+afterAll(() => msw.close());
 
 describe("UTFile", () => {
   it("can be constructed using Blob", async () => {
