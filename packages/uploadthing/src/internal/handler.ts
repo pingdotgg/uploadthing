@@ -332,7 +332,7 @@ export const buildRequestHandler = <
           parsedInput = await getParseFn(inputParser)(userInput);
           logger.debug("Input parsed successfully", parsedInput);
         } catch (error) {
-          logger.error("An error occured trying to parse input:", error);
+          logger.error("An error occurred trying to parse input:", error);
           return new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid input.",
@@ -350,7 +350,7 @@ export const buildRequestHandler = <
           });
           logger.debug("Middleware finished successfully with:", metadata);
         } catch (error) {
-          logger.error("An error occured in your middleware function:", error);
+          logger.error("An error occurred in your middleware function:", error);
           if (error instanceof UploadThingError) return error;
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",

@@ -71,7 +71,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
         .headers({
           "x-uploadthing-version": UPLOADTHING_VERSION,
         })
-        .send("An unknown error occured");
+        .send("An unknown error occurred");
       return;
     }
 

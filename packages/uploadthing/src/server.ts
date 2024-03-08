@@ -63,7 +63,7 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     }
     if (response.status !== 200) {
       // We messed up - this should never happen
-      return new Response("An unknown error occured", {
+      return new Response("An unknown error occurred", {
         status: 500,
         headers: {
           "x-uploadthing-version": UPLOADTHING_VERSION,
