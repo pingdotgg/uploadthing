@@ -67,7 +67,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     if (response.status !== 200) {
       // We messed up - this should never happen
       res.status(500);
-      return res.send("An unknown error occured");
+      return res.send("An unknown error occurred");
     }
 
     res.status(response.status);

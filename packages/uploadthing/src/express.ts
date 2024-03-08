@@ -83,7 +83,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       // We messed up - this should never happen
       res.status(500);
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send("An unknown error occured");
+      res.send("An unknown error occurred");
 
       return;
     }

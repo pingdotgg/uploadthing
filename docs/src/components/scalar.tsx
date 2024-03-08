@@ -1,11 +1,8 @@
 import { useEffect } from "react";
-import { ApiReference as VueComponent } from "@scalar/api-reference";
+import { ApiReferenceReact } from "@scalar/api-reference-react";
 import { useTheme } from "nextra-theme-docs";
-import { applyVueInReact } from "veaury";
 
-const ApiReference = applyVueInReact(VueComponent);
-
-const specUrl = "https://uploadthing.com/openapi.json";
+const specUrl = "https://uploadthing.com/api/openapi-spec.json";
 
 export function ScalarApiRef() {
   const theme = useTheme();
@@ -20,10 +17,10 @@ export function ScalarApiRef() {
   }, []);
 
   return (
-    // @ts-ignore
-    <ApiReference
+    <ApiReferenceReact
       configuration={{
         layout: "classic",
+        // @ts-ignore
         searchHotKey: "", // doesn't look like it's disableable
         darkMode: isDark,
         spec: { url: specUrl },
