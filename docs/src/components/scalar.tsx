@@ -20,7 +20,6 @@ export function ScalarApiRef() {
     <ApiReferenceReact
       configuration={{
         layout: "classic",
-        // will release this as an option to disable search :)
         // @ts-ignore
         searchHotKey: "", // doesn't look like it's disableable
         darkMode: isDark,
