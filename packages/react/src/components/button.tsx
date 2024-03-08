@@ -285,7 +285,6 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
-        tabIndex={0}
         ref={labelRef}
         onClick={(e) => {
           if (isManualTriggerDisplayed) {
