@@ -7,14 +7,14 @@ import plugin from "tailwindcss/plugin";
 const PACKAGES = ["react", "solid"];
 
 export function withUt(twConfig: Config) {
-  const contentPaths = PACKAGES.flatMap((pkg) => {
-    // We assume a majority of monorepos are max 2 levels deep, but we can add more if needed
-    return [
-      `./node_modules/@uploadthing/${pkg}/dist/**`,
-      `../node_modules/@uploadthing/${pkg}/dist/**`,
-      `../../node_modules/@uploadthing/${pkg}/dist/**`,
-    ];
-  });
+  const contentPaths = PACKAGES.map((pkg) => {
+    try {
+      const resolved = require.resolve(`@uploadthing/${pkg}`);
+      return resolved.split("/").slice(0, -1).join("/") + "/**";
+    } catch {
+      return null;
+    }
+  }).filter(Boolean) as string[];
 
   if (Array.isArray(twConfig.content)) {
     twConfig.content.push(...contentPaths);
