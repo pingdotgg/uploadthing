@@ -163,6 +163,7 @@ const config = {
           { url: "https://docs.uploadthing.com/og.jpg?random=aaaaaaaaaaaaa" },
         ],
       },
+      noindex: !!process.env.DISABLE_INDEXING,
       titleTemplate: "%s – uploadthing",
       twitter: {
         cardType: "summary_large_image",
