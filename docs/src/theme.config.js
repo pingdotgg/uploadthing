@@ -166,7 +166,7 @@ const config = {
         ],
       },
       canonical: `https://docs.uploadthing.com${currentUrl}`,
-      noindex: !!process.env.DISABLE_INDEXING,
+      noindex: !!process.env.NEXT_PUBLIC_DISABLE_INDEXING,
       titleTemplate: "%s – uploadthing",
       twitter: {
         cardType: "summary_large_image",
