@@ -302,7 +302,7 @@ export class UTApi {
       keyType === "fileKey"
         ? { fileKeys: asArray(keys) }
         : { customIds: asArray(keys) },
-      "An unknown error occured while deleting files.",
+      "An unknown error occurred while deleting files.",
     );
   };
 
@@ -329,7 +329,7 @@ export class UTApi {
       keyType === "fileKey"
         ? { fileKeys: asArray(keys) }
         : { customIds: asArray(keys) },
-      "An unknown error occured while retrieving file URLs.",
+      "An unknown error occurred while retrieving file URLs.",
     );
 
     return json.data;
@@ -359,7 +359,7 @@ export class UTApi {
     }>(
       "/api/listFiles",
       { ...opts },
-      "An unknown error occured while listing files.",
+      "An unknown error occurred while listing files.",
     );
 
     return json.files;
@@ -371,7 +371,7 @@ export class UTApi {
     return this.requestUploadThing<{ success: true }>(
       "/api/renameFiles",
       { updates: asArray(updates) },
-      "An unknown error occured while renaming files.",
+      "An unknown error occurred while renaming files.",
     );
   };
   /** @deprecated Use {@link renameFiles} instead. */
@@ -391,7 +391,7 @@ export class UTApi {
     }>(
       "/api/getUsageInfo",
       {},
-      "An unknown error occured while getting usage info.",
+      "An unknown error occurred while getting usage info.",
     );
   };
 
@@ -423,7 +423,7 @@ export class UTApi {
       keyType === "fileKey"
         ? { fileKey: key, expiresIn }
         : { customId: key, expiresIn },
-      "An unknown error occured while retrieving presigned URLs.",
+      "An unknown error occurred while retrieving presigned URLs.",
     );
 
     return json.url;

@@ -90,7 +90,9 @@ import { uploadRouter } from "~/server/uploadthing";
 
 export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
-  config: { ... },
+
+  // Apply an (optional) custom config:
+  // config: { ... },
 });
 ```
 

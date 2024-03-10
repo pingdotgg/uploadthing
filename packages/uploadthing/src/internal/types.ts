@@ -68,7 +68,7 @@ const unsetMarker = "unsetMarker" as "unsetMarker" & {
 export type UnsetMarker = typeof unsetMarker;
 
 export type ValidMiddlewareObject = {
-  [UTFiles]?: FileUploadDataWithCustomId[];
+  [UTFiles]?: Partial<FileUploadDataWithCustomId>[];
   [key: string]: unknown;
 };
 
