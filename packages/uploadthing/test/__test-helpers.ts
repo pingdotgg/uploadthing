@@ -169,6 +169,10 @@ export const mockExternalRequests =
     }
 
     // Else 404 (shouldn't happen, mock the requests we expect to make)
+    console.warn(
+      "[UT FETCH MOCK] :: Unhandled request. Did you mean to mock this?",
+      { url, init },
+    );
     return new Response("Not Found", { status: 404 });
   };
 
