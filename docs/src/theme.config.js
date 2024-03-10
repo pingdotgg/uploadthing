@@ -129,7 +129,6 @@ const config = {
   },
   useNextSeoProps() {
     const currentUrl = usePathname();
-    console.log(process.env);
     return {
       additionalLinkTags: [
         {
