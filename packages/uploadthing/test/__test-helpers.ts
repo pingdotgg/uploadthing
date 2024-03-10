@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-console */
 import { http, HttpResponse } from "msw";
 import { beforeEach, it as itBase, vi } from "vitest";
 
@@ -20,6 +22,7 @@ export interface MockDbInterface {
 }
 
 export const it = itBase.extend<{ db: MockDbInterface }>({
+  // eslint-disable-next-line no-empty-pattern
   db: async ({}, use) => {
     const files: any[] = [];
     const db: MockDbInterface = {
