@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { useConfig } from "nextra-theme-docs";
 
@@ -127,6 +128,7 @@ const config = {
     link: "https://github.com/pingdotgg/uploadthing",
   },
   useNextSeoProps() {
+    const currentUrl = usePathname();
     return {
       additionalLinkTags: [
         {
@@ -163,6 +165,8 @@ const config = {
           { url: "https://docs.uploadthing.com/og.jpg?random=aaaaaaaaaaaaa" },
         ],
       },
+      canonical: `https://docs.uploadthing.com${currentUrl}`,
+      noindex: !!process.env.NEXT_PUBLIC_DISABLE_INDEXING,
       titleTemplate: "%s – uploadthing",
       twitter: {
         cardType: "summary_large_image",
