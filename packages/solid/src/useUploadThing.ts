@@ -5,7 +5,7 @@ import {
   resolveMaybeUrlArg,
   UploadThingError,
 } from "@uploadthing/shared";
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type { EndpointMetadata, FetchEsque } from "@uploadthing/shared";
 import { genUploader } from "uploadthing/client";
 import type {
   FileRouter,
@@ -16,8 +16,12 @@ import type {
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const createEndpointMetadata = (url: URL, endpoint: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(url.href);
+const createEndpointMetadata = (
+  fetch: FetchEsque,
+  url: URL,
+  endpoint: string,
+) => {
+  const dataGetter = createFetch<EndpointMetadata>(fetch, url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
@@ -30,6 +34,7 @@ export const INTERNAL_uploadthingHookGen = <
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+  fetch: FetchEsque;
 }) => {
   const uploadFiles = genUploader<TRouter>({
     url: initOpts.url,
@@ -45,6 +50,7 @@ export const INTERNAL_uploadthingHookGen = <
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
+      initOpts.fetch,
       initOpts.url,
       endpoint as string,
     );
@@ -125,9 +131,10 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const fetch = initOpts?.fetch ?? globalThis.fetch.bind(globalThis);
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url, fetch }),
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/solid",

@@ -49,6 +49,7 @@ export interface RequestInitEsque {
  */
 export interface ResponseEsque {
   status: number;
+  statusText: string;
   ok: boolean;
   /**
    * @remarks

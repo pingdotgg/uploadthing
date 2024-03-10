@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type { EndpointMetadata, FetchEsque } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
@@ -24,11 +24,13 @@ import useFetch from "./utils/useFetch";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
+  fetch: typeof fetch;
 };
 
-const useEndpointMetadata = (url: URL, endpoint: string) => {
+const useEndpointMetadata = (fetch: FetchEsque, url: URL, endpoint: string) => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
+    fetch,
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
@@ -44,6 +46,7 @@ export const INTERNAL_uploadthingHookGen = <
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+  fetch: FetchEsque;
 }) => {
   if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
     console.error(
@@ -67,6 +70,7 @@ export const INTERNAL_uploadthingHookGen = <
     const fileProgress = useRef<Map<string, number>>(new Map());
 
     const permittedFileInfo = useEndpointMetadata(
+      initOpts.fetch,
       initOpts.url,
       endpoint as string,
     );
@@ -144,9 +148,10 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const fetch = initOpts?.fetch ?? globalThis.fetch.bind(globalThis);
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url, fetch }),
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/react",

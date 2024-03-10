@@ -17,6 +17,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(opts?.url);
+  const fetch = opts?.fetch ?? globalThis.fetch.bind(globalThis);
 
   const TypedButton = <
     TEndpoint extends keyof TRouter,
@@ -30,6 +31,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
     <UploadButton<TRouter, TEndpoint, TSkipPolling>
       {...(props as any)}
       url={url}
+      fetch={fetch}
     />
   );
   return TypedButton;
@@ -39,6 +41,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(opts?.url);
+  const fetch = opts?.fetch ?? globalThis.fetch.bind(globalThis);
 
   const TypedDropzone = <
     TEndpoint extends keyof TRouter,
@@ -52,6 +55,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
     <UploadDropzone<TRouter, TEndpoint, TSkipPolling>
       {...(props as any)}
       url={url}
+      fetch={fetch}
     />
   );
   return TypedDropzone;
@@ -61,6 +65,7 @@ export const generateUploader = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(opts?.url);
+  const fetch = opts?.fetch ?? globalThis.fetch.bind(globalThis);
 
   const TypedUploader = <
     TEndpoint extends keyof TRouter,
@@ -71,7 +76,11 @@ export const generateUploader = <TRouter extends FileRouter>(
       keyof GenerateTypedHelpersOptions
     >,
   ) => (
-    <Uploader<TRouter, TEndpoint, TSkipPolling> {...(props as any)} url={url} />
+    <Uploader<TRouter, TEndpoint, TSkipPolling>
+      {...(props as any)}
+      url={url}
+      fetch={fetch}
+    />
   );
   return TypedUploader;
 };

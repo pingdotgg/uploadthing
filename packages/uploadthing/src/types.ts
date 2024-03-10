@@ -1,4 +1,4 @@
-import type { ExtendObjectIf } from "@uploadthing/shared";
+import type { ExtendObjectIf, FetchEsque } from "@uploadthing/shared";
 
 import type { FileRouter, inferEndpointInput } from "./internal/types";
 
@@ -43,6 +43,25 @@ export type UploadFilesOptions<
    */
   url: URL;
   /**
+   * Override the default fetch implementation
+   * Useful if you need to send custom headers etc.
+   * @example
+   * ```ts
+   * {
+   *   fetch: async (url, init) => {
+   *     const token = await getToken();
+   *     return fetch(url, {
+   *       ...init,
+   *       headers: { ...init.headers, Authorization: `Bearer ${token}` }
+   *     })
+   *   }
+   * }
+   * ```
+   *
+   * @default globalThis.fetch
+   */
+  fetch: FetchEsque;
+  /**
    * The uploadthing package that is making this request, used to identify the client in the server logs
    * @example "@uploadthing/react"
    * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
@@ -71,6 +90,25 @@ export type GenerateUploaderOptions = {
    * This is used to identify the client in the server logs
    */
   package: string;
+  /**
+   * Override the default fetch implementation
+   * Useful if you need to send custom headers etc.
+   * @example
+   * ```ts
+   * {
+   *   fetch: async (url, init) => {
+   *     const token = await getToken();
+   *     return fetch(url, {
+   *       ...init,
+   *       headers: { ...init.headers, Authorization: `Bearer ${token}` }
+   *     })
+   *   }
+   * }
+   * ```
+   *
+   * @default globalThis.fetch
+   */
+  fetch?: FetchEsque;
 };
 
 /**

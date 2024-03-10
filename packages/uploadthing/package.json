@@ -184,17 +184,6 @@
     ],
     "rules": {
       "no-console": "error",
-      "no-restricted-globals": [
-        "error",
-        {
-          "name": "fetch",
-          "message": "fetch should be passed as parameter to support overriding default behaviors"
-        },
-        {
-          "name": "process",
-          "message": "Use `import { process } from 'std-env` instead"
-        }
-      ],
       "no-restricted-imports": [
         "error",
         {

@@ -83,6 +83,7 @@ export const UploadDropzone = <
   const { mode = "manual" } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    fetch: $props.fetch ?? globalThis.fetch.bind(globalThis),
     url: resolveMaybeUrlArg($props.url),
   });
   const uploadThing = useUploadThing($props.endpoint, {

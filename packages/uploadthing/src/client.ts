@@ -45,14 +45,11 @@ const uploadFilesInternal = async <
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
 ): Promise<ClientUploadedFileData<TServerOutput>[]> => {
-  // Fine to use global fetch in browser
-  const fetch = globalThis.fetch.bind(globalThis);
-
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     url: opts.url,
     package: opts.package,
-    fetch,
+    fetch: opts.fetch,
   });
 
   // Get presigned URL for S3 upload
@@ -106,9 +103,11 @@ const uploadFilesInternal = async <
             }
           | { status: "still waiting" };
 
-        const res = await fetch(presigned.pollingUrl, {
-          headers: { authorization: presigned.pollingJwt },
-        }).then((r) => r.json() as Promise<PollingResponse>);
+        const res = await opts
+          .fetch(presigned.pollingUrl, {
+            headers: { authorization: presigned.pollingJwt },
+          })
+          .then((r) => r.json<PollingResponse>());
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return res.status === "done" ? res.callbackData : undefined;
@@ -148,6 +147,7 @@ export const genUploader = <TRouter extends FileRouter>(
       ...opts,
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
+      fetch: initOpts.fetch ?? globalThis.fetch.bind(globalThis),
     } as any);
 };
 
@@ -239,6 +239,7 @@ async function uploadPresignedPost(
     xhr.onerror = (e) => reject(e);
     xhr.send(formData);
   }).catch(async (error) => {
+    console.log("Failed to upload file", error);
     await opts.reportEventToUT("failure", {
       fileKey: presigned.key,
       uploadId: null,
@@ -248,6 +249,7 @@ async function uploadPresignedPost(
     throw "unreachable"; // failure event will throw for us
   });
 
+  console.log("Upload response", response);
   if (response.status > 299 || response.status < 200) {
     await opts.reportEventToUT("failure", {
       fileKey: presigned.key,

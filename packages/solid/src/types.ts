@@ -1,4 +1,8 @@
-import type { ExtendObjectIf, UploadThingError } from "@uploadthing/shared";
+import type {
+  ExtendObjectIf,
+  FetchEsque,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type {
   ClientUploadedFileData,
   FileRouter,
@@ -18,6 +22,25 @@ export interface GenerateTypedHelpersOptions {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Override the default fetch implementation
+   * Useful if you need to send custom headers etc.
+   * @example
+   * ```ts
+   * {
+   *   fetch: async (url, init) => {
+   *     const token = await getToken();
+   *     return fetch(url, {
+   *       ...init,
+   *       headers: { ...init.headers, Authorization: `Bearer ${token}` }
+   *     })
+   *   }
+   * }
+   * ```
+   *
+   * @default globalThis.fetch
+   */
+  fetch?: FetchEsque;
 }
 
 export type UseUploadthingProps<
@@ -83,6 +106,25 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Override the default fetch implementation
+   * Useful if you need to send custom headers etc.
+   * @example
+   * ```ts
+   * {
+   *   fetch: async (url, init) => {
+   *     const token = await getToken();
+   *     return fetch(url, {
+   *       ...init,
+   *       headers: { ...init.headers, Authorization: `Bearer ${token}` }
+   *     })
+   *   }
+   * }
+   * ```
+   *
+   * @default globalThis.fetch
+   */
+  fetch?: FetchEsque;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

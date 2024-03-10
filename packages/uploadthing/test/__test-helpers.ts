@@ -164,6 +164,9 @@ export const mockExternalRequests =
       if (url.pathname === "/api/requestFileAccess") {
         return Response.json({ url: "https://example.com" });
       }
+      if (url.pathname === "/api/serverCallback") {
+        return Response.json({ success: true });
+      }
     }
 
     // Mock S3

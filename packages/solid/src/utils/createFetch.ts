@@ -1,6 +1,7 @@
 import type { Resource } from "solid-js";
 import { createResource } from "solid-js";
 
+import type { FetchEsque } from "@uploadthing/shared";
 import { safeParseJSON } from "@uploadthing/shared";
 
 interface State<T> {
@@ -11,7 +12,11 @@ interface State<T> {
 
 type Cache<T> = Record<string, T>;
 
-export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
+export function createFetch<T = unknown>(
+  fetch: FetchEsque,
+  url?: string,
+  options?: RequestInit,
+) {
   const cache: Cache<T> = {};
   const [res] = createResource(async () => {
     if (!url)

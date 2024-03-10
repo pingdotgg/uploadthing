@@ -101,6 +101,7 @@ export function UploadButton<
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    fetch: $props.fetch ?? globalThis.fetch.bind(globalThis),
     url: resolveMaybeUrlArg($props.url),
   });
 

@@ -1,28 +1,23 @@
+/* eslint-disable no-restricted-globals */
+/* eslint-disable no-console */
 // @vitest-environment happy-dom
 
 import express from "express";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  describe,
-  expect,
-  it as itBase,
-  vi,
-} from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
+import type { GenerateUploaderOptions } from "../src/types";
+import type { MockDbInterface } from "./__test-helpers";
 import {
   fetchMock,
   handlers,
   it,
   middlewareMock,
-  MockDbInterface,
   mockExternalRequests,
   onErrorMock,
   s3Mock,
@@ -34,7 +29,10 @@ beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
 afterEach(() => msw.resetHandlers());
 afterAll(() => msw.close());
 
-const setupUTServer = (db: MockDbInterface) => {
+const setupUTServer = (
+  db: MockDbInterface,
+  clientOptions?: Partial<GenerateUploaderOptions>,
+) => {
   const f = createUploadthing({
     errorFormatter(err) {
       console.log(err, err.cause);
@@ -43,8 +41,8 @@ const setupUTServer = (db: MockDbInterface) => {
   });
   const router = {
     foo: f({ text: {} })
-      .middleware(() => {
-        middlewareMock();
+      .middleware((opts) => {
+        middlewareMock(opts);
         return {};
       })
       .onUploadError(onErrorMock)
@@ -68,14 +66,15 @@ const setupUTServer = (db: MockDbInterface) => {
   const port = (server.address() as { port: number }).port;
 
   const uploadFiles = genUploader<typeof router>({
-    package: "vitest",
     url: `http://localhost:${port}`,
+    package: "vitest",
+    ...clientOptions,
   });
 
   return { uploadFiles, close: () => server.close() };
 };
 
-describe("uploadFiles", ({}) => {
+describe("uploadFiles", () => {
   it("uploads with presigned post", async ({ db }) => {
     const { uploadFiles, close } = setupUTServer(db);
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -139,6 +138,47 @@ describe("uploadFiles", ({}) => {
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
     await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0);
+
+    close();
+  });
+
+  it("sends custom headers if set", async ({ db }) => {
+    const { uploadFiles, close } = setupUTServer(db, {
+      fetch: (url, init) => {
+        const token = "my-auth-token";
+        return fetch(url, {
+          ...init,
+          headers: {
+            ...init?.headers,
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      },
+    });
+
+    const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+    await expect(
+      uploadFiles("foo", {
+        files: [file],
+        skipPolling: true,
+      }),
+    ).resolves.toEqual([
+      {
+        name: "foo.txt",
+        size: 3,
+        type: "text/plain",
+        customId: null,
+        serverData: null,
+        key: "abc-123.txt",
+        url: "https://utfs.io/f/abc-123.txt",
+      },
+    ]);
+
+    expect(middlewareMock.mock.calls[0][0].req.headers).toMatchObject({
+      authorization: "Bearer my-auth-token",
+      "x-uploadthing-package": "vitest",
+      "x-uploadthing-version": "6.5.2",
+    });
 
     close();
   });
@@ -225,6 +265,7 @@ describe("uploadFiles", ({}) => {
       },
     );
 
+    msw.resetHandlers(...handlers);
     close();
   });
 });

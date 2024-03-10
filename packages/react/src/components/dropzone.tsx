@@ -100,6 +100,7 @@ export function UploadDropzone<
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    fetch: $props.fetch ?? globalThis.fetch.bind(globalThis),
     url: resolveMaybeUrlArg($props.url),
   });
 

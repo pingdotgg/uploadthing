@@ -45,6 +45,18 @@ const config = {
       extends: ["plugin:@typescript-eslint/disable-type-checked"],
       rules: {
         "@uploadthing/no-throwing-promises": "off",
+        "no-restricted-globals": [
+          "error",
+          {
+            name: "fetch",
+            message:
+              "fetch should be passed as parameter to support overriding default behaviors",
+          },
+          {
+            name: "process",
+            message: "Use `import { process } from 'std-env` instead",
+          },
+        ],
       },
     },
   ],

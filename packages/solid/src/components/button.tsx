@@ -82,6 +82,7 @@ export function UploadButton<
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    fetch: $props.fetch ?? globalThis.fetch.bind(globalThis),
     url: resolveMaybeUrlArg($props.url),
   });
 
