@@ -61,7 +61,7 @@ const Head = () => {
   const { asPath, defaultLocale, locale } = useRouter();
   const { frontMatter } = useConfig();
   const url =
-    "https://my-app.com" +
+    "https://docs.uploadthing.com" +
     (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
   return (
@@ -129,6 +129,7 @@ const config = {
   },
   useNextSeoProps() {
     const currentUrl = usePathname();
+    console.log(process.env);
     return {
       additionalLinkTags: [
         {
@@ -166,7 +167,8 @@ const config = {
         ],
       },
       canonical: `https://docs.uploadthing.com${currentUrl}`,
-      noindex: !!process.env.NEXT_PUBLIC_DISABLE_INDEXING,
+      noindex:
+        process.env.NEXT_PUBLIC_DISABLE_INDEXING === "true" ? true : false,
       titleTemplate: "%s – uploadthing",
       twitter: {
         cardType: "summary_large_image",
