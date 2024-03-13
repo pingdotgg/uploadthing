@@ -6,6 +6,7 @@ import {
   fetchEffJson,
   generateUploadThingURL,
   RetryError,
+  UploadThingError,
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
 
@@ -109,7 +110,7 @@ interface UploadPartOptions {
 }
 
 const uploadPart = (opts: UploadPartOptions) =>
-  Effect.async<string, RetryError>((resume) => {
+  Effect.async<string, UploadThingError | RetryError>((resume) => {
     const xhr = new XMLHttpRequest();
 
     xhr.open("PUT", opts.url, true);
@@ -124,7 +125,14 @@ const uploadPart = (opts: UploadPartOptions) =>
       if (xhr.status >= 200 && xhr.status <= 299 && etag) {
         return resume(Effect.succeed(etag));
       }
-      return resume(Effect.fail(new RetryError()));
+      return resume(
+        Effect.fail(
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: "Missing Etag header from uploaded part",
+          }),
+        ),
+      );
     };
     xhr.onerror = () => resume(Effect.fail(new RetryError()));
 
