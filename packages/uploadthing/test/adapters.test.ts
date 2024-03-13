@@ -6,13 +6,13 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
+import type { MockDbInterface } from "./__test-helpers";
 import {
   baseHeaders,
   createApiUrl,
   fetchMock,
   it,
   middlewareMock,
-  MockDbInterface,
   mockExternalRequests,
   uploadCompleteMock,
 } from "./__test-helpers";
@@ -465,7 +465,7 @@ describe("adapters:fastify", async () => {
 
   const startServer = async (db: MockDbInterface) => {
     const app = fastify.default();
-    app.register(createRouteHandler, {
+    await app.register(createRouteHandler, {
       router,
       config: {
         uploadthingSecret: "sk_live_test",

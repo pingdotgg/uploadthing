@@ -54,7 +54,7 @@ const router = {
 
 const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
   handlers: async ({ db }, use) => {
-    use(
+    await use(
       createRouteHandler({
         router,
         config: {
