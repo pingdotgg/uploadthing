@@ -10,13 +10,13 @@ this primarily allows you to authenticate the client when your server is deploye
 import { genUploader } from "uploadthing/client";
 
 const uploadFiles = genUploader<OurFileRouter>({
-    url: "https://my-server.com",
+  url: "https://my-server.com",
 });
 
 uploadFiles("endpoint", {
-    headers: async () => {
-        const token = await getToken();
-        return { Authorization: `Bearer ${token}` };
-    },
+  headers: async () => {
+    const token = await getToken();
+    return { Authorization: `Bearer ${token}` };
+  },
 });
 ```
