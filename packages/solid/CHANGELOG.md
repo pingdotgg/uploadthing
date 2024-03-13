@@ -1,5 +1,63 @@
 # @uploadthing/solid
 
+## 6.3.0
+
+### Minor Changes
+
+- [#705](https://github.com/pingdotgg/uploadthing/pull/705) [`a919d5a`](https://github.com/pingdotgg/uploadthing/commit/a919d5a9fde0680dfdba73d8d2947d229268fdb8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add client headers option
+
+  this primarily allows you to authenticate the client when your server is deployed separate from your client:
+
+  ```tsx
+  import { useUploadThing, UploadButton } from "~/utils/uploadthing";
+
+  // Using hook
+  const { startUpload } = useUploadThing("endpoint", {
+    headers: async () => {
+      const token = await getToken();
+      return { Authorization: `Bearer ${token}` };
+    },
+  });
+
+  // Using components
+  <UploadButton
+    endpoint="endpoint"
+    headers={async () => {
+      const token = await getToken();
+      return {
+        Authorization: `Bearer ${token}`,
+      };
+    }}
+  />;
+  ```
+
+## 6.2.1
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+- Updated dependencies [[`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939)]:
+  - @uploadthing/dropzone@0.2.1
+  - @uploadthing/shared@6.3.4
+
+## 6.2.0
+
+### Minor Changes
+
+- [#654](https://github.com/pingdotgg/uploadthing/pull/654) [`b42efc2`](https://github.com/pingdotgg/uploadthing/commit/b42efc226479cdee16eabd2ede3042f17bc102da) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: add skipPolling option
+
+### Patch Changes
+
+- [#662](https://github.com/pingdotgg/uploadthing/pull/662) [`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - make API more consistent with the available file data in different callbacks
+
+- [#659](https://github.com/pingdotgg/uploadthing/pull/659) [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: move some internally exported functions to `@uploadthing/shared`
+
+- [#654](https://github.com/pingdotgg/uploadthing/pull/654) [`b42efc2`](https://github.com/pingdotgg/uploadthing/commit/b42efc226479cdee16eabd2ede3042f17bc102da) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(dropzone): Proper handling of endpoints that only accept 1 file
+
+- Updated dependencies [[`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df), [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20)]:
+  - @uploadthing/shared@6.3.3
+
 ## 6.1.5
 
 ### Patch Changes

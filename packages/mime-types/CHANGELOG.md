@@ -1,5 +1,17 @@
 # @uploadthing/mime-types
 
+## 0.2.6
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+## 0.2.5
+
+### Patch Changes
+
+- [#655](https://github.com/pingdotgg/uploadthing/pull/655) [`0adc3b8`](https://github.com/pingdotgg/uploadthing/commit/0adc3b8df67ea5c4a94db736d0aff1b489979393) Thanks [@ecwyne](https://github.com/ecwyne)! - add `audio/x-gsm` mime-type
+
 ## 0.2.4
 
 ### Patch Changes

@@ -86,6 +86,7 @@ export const UploadDropzone = <
     url: resolveMaybeUrlArg($props.url),
   });
   const uploadThing = useUploadThing($props.endpoint, {
+    headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);

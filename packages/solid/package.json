@@ -3,7 +3,7 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "6.1.5",
+  "version": "6.3.0",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
@@ -106,12 +106,13 @@
     "clean": "git clean -xdf dist node_modules",
     "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@effect/schema": "^0.63.2",
-    "@uploadthing/dropzone": "^0.2.0",
-    "@uploadthing/shared": "^6.3.2",
+    "@uploadthing/dropzone": "workspace:0.2.1",
+    "@uploadthing/shared": "workspace:6.3.4",
     "effect": "^2.4.1",
     "tailwind-merge": "^2.2.1"
   },
@@ -122,8 +123,8 @@
     "tailwindcss": "^3.4.1",
     "tsup": "8.0.2",
     "tsup-preset-solid": "2.2.0",
-    "typescript": "^5.3.3",
-    "uploadthing": "6.5.0",
+    "typescript": "^5.4.2",
+    "uploadthing": "workspace:6.6.0",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {

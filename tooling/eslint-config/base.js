@@ -42,9 +42,14 @@ const config = {
   overrides: [
     {
       files: ["**/test/**", "**/*.test.ts", "**/*.test.tsx"],
-      extends: ["plugin:@typescript-eslint/disable-type-checked"],
       rules: {
-        "@uploadthing/no-throwing-promises": "off",
+        "@uploadthing/no-hard-coded-version-in-test": "error",
+        // Less strict type checking for tests
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/require-await": "off",
       },
     },
   ],

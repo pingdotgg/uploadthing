@@ -60,7 +60,7 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-const PresignedBaseSchema = S.struct({
+export const PresignedBaseSchema = S.struct({
   key: S.string,
   fileName: S.string,
   fileType: S.string as S.Schema<FileRouterInputKey>,

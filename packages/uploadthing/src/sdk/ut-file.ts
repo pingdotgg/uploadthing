@@ -12,7 +12,7 @@ interface UTFilePropertyBag extends BlobPropertyBag {
 export class UTFile extends Blob {
   name: string;
   lastModified: number;
-  customId: string | undefined;
+  customId: string | null;
 
   constructor(parts: BlobPart[], name: string, options?: UTFilePropertyBag) {
     const optionsWithDefaults = {
@@ -22,7 +22,7 @@ export class UTFile extends Blob {
     };
     super(parts, optionsWithDefaults);
     this.name = name;
-    this.customId = optionsWithDefaults.customId;
+    this.customId = optionsWithDefaults.customId ?? null;
     this.lastModified = optionsWithDefaults.lastModified;
   }
 }

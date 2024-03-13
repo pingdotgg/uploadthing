@@ -1,4 +1,8 @@
-import type { ExtendObjectIf, UploadThingError } from "@uploadthing/shared";
+import type {
+  ExtendObjectIf,
+  MaybePromise,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type {
   ClientUploadedFileData,
   FileRouter,
@@ -66,6 +70,11 @@ export type UseUploadthingProps<
   onUploadError?:
     | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
     | undefined;
+  /**
+   * Set custom headers that'll get sent with requests
+   * to your server
+   */
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
 };
 
 export type UploadthingComponentProps<

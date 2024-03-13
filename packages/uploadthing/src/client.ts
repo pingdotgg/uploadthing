@@ -58,6 +58,7 @@ const uploadFilesInternal = <
     endpoint: String(endpoint),
     package: opts.package,
     url: resolveMaybeUrlArg(opts.url),
+    headers: opts.headers,
   });
 
   const uploadFiles: Effect.Effect<

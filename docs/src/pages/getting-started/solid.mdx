@@ -46,10 +46,12 @@ FileRoute similar to an endpoint, it has:
 - `onUploadComplete` callback for when uploads are completed
 
 ```ts copy filename="src/server/uploadthing.ts"
-import { createUploadthing } from "uploadthing/server";
+import { createUploadthing, UploadThingError } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
 
 const f = createUploadthing();
+
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 export const uploadRouter = {
   profileImage: f({
@@ -57,19 +59,24 @@ export const uploadRouter = {
       maxFileSize: "4MB",
     },
   })
-    .middleware(({ req }) => {
-      // Check some condition based on the incoming requrest
-      if (!req.headers.get("x-some-header")) {
-        throw new Error("x-some-header is required");
-      }
+    .middleware(async ({ req }) => {
+      // This code runs on your server before upload
+      const user = await auth(req);
 
-      // Return some metadata to be stored with the file
-      return { foo: "bar" as const };
+      // If you throw, the user will not be able to upload
+      if (!user) throw new UploadThingError("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
     })
     .onUploadComplete(({ file, metadata }) => {
-      metadata;
-      // ^?
-      console.log("upload completed", file);
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
 
@@ -90,7 +97,9 @@ import { uploadRouter } from "~/server/uploadthing";
 
 export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
-  config: { ... },
+
+  // Apply an (optional) custom config:
+  // config: { ... },
 });
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.5.0",
+  "version": "6.6.0",
   "type": "module",
   "engines": {
     "node": ">=18.13.0"
@@ -119,16 +119,17 @@
     "access": "public"
   },
   "scripts": {
-    "lint": "eslint src --max-warnings 0",
+    "lint": "eslint src lint --max-warnings 0",
     "build": "NODE_OPTIONS=--max_old_space_size=16384 bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "wait-on ../shared/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@effect/schema": "^0.63.2",
-    "@uploadthing/mime-types": "^0.2.4",
-    "@uploadthing/shared": "^6.3.2",
+    "@uploadthing/mime-types": "workspace:0.2.6",
+    "@uploadthing/shared": "workspace:6.3.4",
     "consola": "^3.2.3",
     "effect": "^2.4.1",
     "std-env": "^3.7.0"
@@ -137,8 +138,8 @@
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
     "@types/react": "18.2.60",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
+    "@uploadthing/eslint-config": "workspace:0.2.0",
+    "@uploadthing/tsconfig": "workspace:0.1.0",
     "body-parser": "^1.20.2",
     "bunchee": "^4.4.8",
     "eslint": "^8.57.0",
@@ -149,7 +150,7 @@
     "solid-js": "^1.8.15",
     "tailwindcss": "^3.4.1",
     "type-fest": "^4.10.3",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.2",
     "undici": "^6.6.2",
     "wait-on": "^7.2.0",
     "zod": "^3.22.4"

@@ -1,7 +1,7 @@
 import type * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
-import type { FetchContextTag } from "@uploadthing/shared";
+import type { FetchContextTag, MaybePromise } from "@uploadthing/shared";
 import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -39,7 +39,12 @@ export type UTReporter = <TEvent extends keyof UTEvents>(
  * Events are handled in "./handler.ts starting at L200"
  */
 export const createUTReporter =
-  (cfg: { url: URL; endpoint: string; package: string }): UTReporter =>
+  (cfg: {
+    url: URL;
+    endpoint: string;
+    package: string;
+    headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+  }): UTReporter =>
   (type, payload, responseSchema) =>
     Effect.gen(function* ($) {
       const url = createAPIRequestUrl({
@@ -47,6 +52,14 @@ export const createUTReporter =
         slug: cfg.endpoint,
         actionType: type,
       });
+      let headers =
+        typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
+      if (headers instanceof Promise) {
+        headers = yield* $(
+          Effect.promise(() => headers as Promise<HeadersInit>),
+        );
+      }
+
       const response = yield* $(
         fetchEffJson(url, responseSchema, {
           method: "POST",
@@ -55,6 +68,7 @@ export const createUTReporter =
             "Content-Type": "application/json",
             "x-uploadthing-package": cfg.package,
             "x-uploadthing-version": UPLOADTHING_VERSION,
+            ...headers,
           },
         }),
         Effect.catchTag("FetchError", (e) =>

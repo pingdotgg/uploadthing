@@ -1,4 +1,4 @@
-import type { ExtendObjectIf } from "@uploadthing/shared";
+import type { ExtendObjectIf, MaybePromise } from "@uploadthing/shared";
 
 import type { FileRouter, inferEndpointInput } from "./internal/types";
 
@@ -51,6 +51,11 @@ export type UploadFilesOptions<
    * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
    */
   url: URL;
+  /**
+   * Set custom headers that'll get sent with requests
+   * to your server
+   */
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>);
   /**
    * The uploadthing package that is making this request, used to identify the client in the server logs
    * @example "@uploadthing/react"

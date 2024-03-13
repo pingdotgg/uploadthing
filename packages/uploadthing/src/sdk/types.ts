@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
-import type { File as UndiciFile } from "undici";
+
+import type { Blob as NodeBlob } from "buffer";
 
 import type {
   ACL,
@@ -14,7 +15,6 @@ import type {
 
 import type { LogLevel } from "../internal/logger";
 import type { UploadedFileData } from "../types";
-import type { UTFile } from "./ut-file";
 
 export interface UTApiOptions {
   /**
@@ -45,10 +45,11 @@ export type UrlWithOverrides = {
   customId?: string;
 };
 
-export type FileEsque =
-  | (Blob & { name: string; customId?: string | undefined })
-  | UndiciFile
-  | UTFile;
+type BlobEsque = NodeBlob | Blob;
+export type FileEsque = BlobEsque & {
+  name: string;
+  customId?: string | null;
+};
 
 export interface UploadFilesOptions {
   metadata?: Json;

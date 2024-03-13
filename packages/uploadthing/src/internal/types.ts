@@ -20,6 +20,7 @@ import type {
   FailureActionPayload,
   MPUResponseSchema,
   MultipartCompleteActionPayload,
+  PresignedBaseSchema,
   PresignedURLResponseSchema,
   PSPResponseSchema,
   UploadActionPayload,
@@ -28,6 +29,7 @@ import type {
 /**
  * Returned by `/api/prepareUpload` and `/api/uploadFiles`
  */
+export type PresignedBase = S.Schema.To<typeof PresignedBaseSchema>;
 export type PSPResponse = S.Schema.To<typeof PSPResponseSchema>;
 export type MPUResponse = S.Schema.To<typeof MPUResponseSchema>;
 export type PresignedURLs = S.Schema.To<typeof PresignedURLResponseSchema>;
@@ -54,7 +56,7 @@ const unsetMarker = "unsetMarker" as "unsetMarker" & {
 export type UnsetMarker = typeof unsetMarker;
 
 export type ValidMiddlewareObject = {
-  [UTFiles]?: FileUploadDataWithCustomId[];
+  [UTFiles]?: Partial<FileUploadDataWithCustomId>[];
   [key: string]: unknown;
 };
 
