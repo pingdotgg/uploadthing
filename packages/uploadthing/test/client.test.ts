@@ -219,7 +219,7 @@ describe("uploadFiles", () => {
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Failed to upload file foo.txt to S3]`,
+      `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
     expect(s3Mock).toHaveBeenCalledOnce();
@@ -264,7 +264,7 @@ describe("uploadFiles", () => {
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Failed to upload file foo.txt to S3]`,
+      `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
     expect(s3Mock).toHaveBeenCalledTimes(2);

@@ -138,9 +138,12 @@ export const mockExternalRequests =
           const presigned = mockPresigned(file);
           db.insertFile({
             ...file,
+            customId: file.customId ?? null,
+            type: presigned.fileType,
             key: presigned.key,
             callbackUrl: body!.callbackUrl,
             callbackSlug: body!.callbackSlug,
+            metadata: JSON.stringify(body!.metadata ?? "{}"),
           });
           return presigned;
         });
@@ -154,11 +157,17 @@ export const mockExternalRequests =
       }
       if (url.pathname.startsWith("/api/pollUpload")) {
         const key = url.pathname.slice("/api/pollUpload/".length);
-        console.log("Polled for key", key);
-        console.log("db contains", db.files);
+        const file = db.getFileByKey(key);
+        console.log("file", file);
         return Response.json({
           status: "done",
-          fileData: db.getFileByKey(key),
+          fileData: {
+            ...file,
+            fileName: file.name,
+            fileSize: file.size,
+            fileType: file.type,
+            fileKey: file.key,
+          },
         });
       }
       if (url.pathname === "/api/requestFileAccess") {
