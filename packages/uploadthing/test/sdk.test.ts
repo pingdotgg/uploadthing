@@ -29,7 +29,7 @@ describe("UTFile", () => {
 
 const it = itBase.extend<{ utapi: UTApi }>({
   utapi: async ({ db }, use) => {
-    use(
+    await use(
       new UTApi({
         apiKey: "sk_foo",
         fetch: mockExternalRequests(db),
