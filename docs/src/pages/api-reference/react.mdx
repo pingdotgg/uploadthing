@@ -126,19 +126,20 @@ export const OurUploadButton = () => (
 
 #### Configuration
 
-| Prop                   | Type                                  | Required                | Notes           | Description                                                                                                                 |
-| :--------------------- | :------------------------------------ | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic                               | Yes                     |                 | The type from the FileRouter you defined in your backend                                                                    |
-| endpoint               | string                                | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to                                              |
-| url                    | string \| URL                         | No                      | Added in `v6.0` | The url to where you are serving your uploadthing file router, required if you're not serving from `/api/uploadthing`       |
-| input                  | string                                | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router                                         |
-| skipPolling            | boolean                               | No                      | Added in `v6.3` | Skip polling for server data. Defaults to `true` if no `onClientUploadComplete` is set, else `false`.                       |
-| onClientUploadComplete | (res: UploadedFileResponse[]) => void | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
-| onUploadError          | function                              | No                      |                 | callback function when upload fails                                                                                         |
-| onUploadProgress       | function                              | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
-| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
-| onUploadBegin          | function                              | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
-| config                 | Config                                | No                      | Added in `v5.7` | object to pass additional configuration for button                                                                          |
+| Prop                   | Type                                                 | Required                | Notes           | Description                                                                                                                 |
+| :--------------------- | :--------------------------------------------------- | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic                                              | Yes                     |                 | The type from the FileRouter you defined in your backend                                                                    |
+| endpoint               | string                                               | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to                                              |
+| url                    | string \| URL                                        | No                      | Added in `v6.0` | The url to where you are serving your uploadthing file router, required if you're not serving from `/api/uploadthing`       |
+| input                  | string                                               | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router                                         |
+| headers                | `HeadersInit \| (() => MaybePromise\<HeadersInit\>)` | No                      | Added in `v6.4` | Send custom headers with the API requests to your server. Primarily for authentication when using a separate backend.       |
+| skipPolling            | boolean                                              | No                      | Added in `v6.3` | Skip polling for server data. Defaults to `true` if no `onClientUploadComplete` is set, else `false`.                       |
+| onClientUploadComplete | (res: UploadedFileResponse[]) => void                | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
+| onUploadError          | function                                             | No                      |                 | callback function when upload fails                                                                                         |
+| onUploadProgress       | function                                             | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
+| onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
+| config                 | Config                                               | No                      | Added in `v5.7` | object to pass additional configuration for button                                                                          |
 
 Config object
 
@@ -206,19 +207,20 @@ export const OurUploadDropzone = () => (
 
 #### Configuration
 
-| Prop                   | Type                                  | Required                | Notes           | Description                                                                                                                 |
-| :--------------------- | :------------------------------------ | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
-| `<FileRouter>`         | generic                               | Yes                     |                 | The type from the FileRouter you defined in your backend                                                                    |
-| endpoint               | string                                | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to                                              |
-| url                    | string \| URL                         | No                      | Added in `v6.0` | The url to where you are serving your uploadthing file router, required if you're not serving from `/api/uploadthing`       |
-| input                  | string                                | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router                                         |
-| skipPolling            | boolean                               | No                      | Added in `v6.3` | Skip polling for server data. Defaults to `true` if no `onClientUploadComplete` is set, else `false`.                       |
-| onClientUploadComplete | (res: UploadedFileResponse[]) => void | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
-| onUploadError          | function                              | No                      |                 | callback function when upload fails                                                                                         |
-| onUploadProgress       | function                              | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
-| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
-| onUploadBegin          | function                              | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
-| config                 | object                                | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                                                        |
+| Prop                   | Type                                                 | Required                | Notes           | Description                                                                                                                 |
+| :--------------------- | :--------------------------------------------------- | :---------------------- | :-------------- | :-------------------------------------------------------------------------------------------------------------------------- |
+| `<FileRouter>`         | generic                                              | Yes                     |                 | The type from the FileRouter you defined in your backend                                                                    |
+| endpoint               | string                                               | Yes                     |                 | The name of the [route](./server#FileRouter) you want this button to upload to                                              |
+| url                    | string \| URL                                        | No                      | Added in `v6.0` | The url to where you are serving your uploadthing file router, required if you're not serving from `/api/uploadthing`       |
+| input                  | string                                               | If set on the fileroute | Added in `v5.0` | Object matching the input schema that was set for this endpoint in your File Router                                         |
+| headers                | `HeadersInit \| (() => MaybePromise\<HeadersInit\>)` | No                      | Added in `v6.4` | Send custom headers with the API requests to your server. Primarily for authentication when using a separate backend.       |
+| skipPolling            | boolean                                              | No                      | Added in `v6.3` | Skip polling for server data. Defaults to `true` if no `onClientUploadComplete` is set, else `false`.                       |
+| onClientUploadComplete | (res: UploadedFileResponse[]) => void                | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
+| onUploadError          | function                                             | No                      |                 | callback function when upload fails                                                                                         |
+| onUploadProgress       | function                                             | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
+| onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
+| config                 | object                                               | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                                                        |
 
 Config object
 
@@ -375,14 +377,15 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 
 - `endpoint`: The name of the route you want this button to upload to
 
-| Option                 | Type                                  | Required | Notes           | Description                                                                                                                 |
-| :--------------------- | :------------------------------------ | :------- | :-------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| skipPolling            | boolean                               | No       | Added in `v6.3` | Skip polling for server data.                                                                                               |
-| onClientUploadComplete | (res: UploadedFileResponse[]) => void | No       |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
-| onUploadError          | function                              | No       |                 | callback function when upload fails                                                                                         |
-| onUploadProgress       | function                              | No       | Added in `v5.1` | callback function for upload progress                                                                                       |
-| onBeforeUploadBegin    | `(files: File[]) => File[]`           | No       | Added in `v5.8` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
-| onUploadBegin          | function                              | No       | Added in `v5.4` | callback function for upload begin                                                                                          |
+| Option                 | Type                                                 | Required | Notes           | Description                                                                                                                 |
+| :--------------------- | :--------------------------------------------------- | :------- | :-------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| headers                | `HeadersInit \| (() => MaybePromise\<HeadersInit\>)` | No       | Added in `v6.4` | Send custom headers with the API requests to your server. Primarily for authentication when using a separate backend.       |
+| skipPolling            | boolean                                              | No       | Added in `v6.3` | Skip polling for server data.                                                                                               |
+| onClientUploadComplete | (res: UploadedFileResponse[]) => void                | No       |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
+| onUploadError          | function                                             | No       |                 | callback function when upload fails                                                                                         |
+| onUploadProgress       | function                                             | No       | Added in `v5.1` | callback function for upload progress                                                                                       |
+| onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No       | Added in `v5.8` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
+| onUploadBegin          | function                                             | No       | Added in `v5.4` | callback function for upload begin                                                                                          |
 
 ### Returns
 

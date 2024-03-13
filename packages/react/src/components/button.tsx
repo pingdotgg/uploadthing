@@ -118,6 +118,7 @@ export function UploadButton<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {

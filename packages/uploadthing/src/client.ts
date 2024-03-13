@@ -53,6 +53,7 @@ const uploadFilesInternal = async <
     url: opts.url,
     package: opts.package,
     fetch,
+    headers: opts.headers,
   });
 
   // Get presigned URL for S3 upload
