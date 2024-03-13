@@ -35,7 +35,7 @@
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^4.4.8",
     "eslint": "^8.57.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
