@@ -163,7 +163,7 @@ describe("uploadFiles", () => {
     expect(middlewareMock.mock.calls[0][0].req.headers).toMatchObject({
       authorization: "Bearer my-auth-token",
       "x-uploadthing-package": "vitest",
-      "x-uploadthing-version": "6.5.2",
+      "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
 
     close();
@@ -196,7 +196,7 @@ describe("uploadFiles", () => {
     expect(middlewareMock.mock.calls[0][0].req.headers).toMatchObject({
       authorization: "Bearer my-auth-token",
       "x-uploadthing-package": "vitest",
-      "x-uploadthing-version": "6.5.2",
+      "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
 
     close();
