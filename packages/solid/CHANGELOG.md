@@ -1,5 +1,36 @@
 # @uploadthing/solid
 
+## 6.3.0
+
+### Minor Changes
+
+- [#705](https://github.com/pingdotgg/uploadthing/pull/705) [`a919d5a`](https://github.com/pingdotgg/uploadthing/commit/a919d5a9fde0680dfdba73d8d2947d229268fdb8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add client headers option
+
+  this primarily allows you to authenticate the client when your server is deployed separate from your client:
+
+  ```tsx
+  import { useUploadThing, UploadButton } from "~/utils/uploadthing";
+
+  // Using hook
+  const { startUpload } = useUploadThing("endpoint", {
+    headers: async () => {
+      const token = await getToken();
+      return { Authorization: `Bearer ${token}` };
+    },
+  });
+
+  // Using components
+  <UploadButton
+    endpoint="endpoint"
+    headers={async () => {
+      const token = await getToken();
+      return {
+        Authorization: `Bearer ${token}`,
+      };
+    }}
+  />;
+  ```
+
 ## 6.2.1
 
 ### Patch Changes

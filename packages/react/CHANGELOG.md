@@ -1,5 +1,40 @@
 # @uploadthing/react
 
+## 6.4.0
+
+### Minor Changes
+
+- [#705](https://github.com/pingdotgg/uploadthing/pull/705) [`a919d5a`](https://github.com/pingdotgg/uploadthing/commit/a919d5a9fde0680dfdba73d8d2947d229268fdb8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add client headers option
+
+  this primarily allows you to authenticate the client when your server is deployed separate from your client:
+
+  ```tsx
+  import { useUploadThing, UploadButton } from "~/utils/uploadthing";
+
+  // Using hook
+  const { startUpload } = useUploadThing("endpoint", {
+    headers: async () => {
+      const token = await getToken();
+      return { Authorization: `Bearer ${token}` };
+    },
+  });
+
+  // Using components
+  <UploadButton
+    endpoint="endpoint"
+    headers={async () => {
+      const token = await getToken();
+      return {
+        Authorization: `Bearer ${token}`,
+      };
+    }}
+  />;
+  ```
+
+### Patch Changes
+
+- [#684](https://github.com/pingdotgg/uploadthing/pull/684) [`58e5944`](https://github.com/pingdotgg/uploadthing/commit/58e5944c3f89510abd1842ed5d57cd0b3d97eede) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix(button): Remove extra tabindex on button
+
 ## 6.3.4
 
 ### Patch Changes

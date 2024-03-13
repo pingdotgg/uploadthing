@@ -3,7 +3,7 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
@@ -122,7 +122,7 @@
     "tsup": "8.0.2",
     "tsup-preset-solid": "2.2.0",
     "typescript": "^5.4.2",
-    "uploadthing": "workspace:6.5.2",
+    "uploadthing": "workspace:6.6.0",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {
