@@ -26,7 +26,7 @@
     "access": "public"
   },
   "scripts": {
-    "lint": "eslint src --max-warnings 0",
+    "lint": "eslint src test --max-warnings 0",
     "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf dist node_modules",
     "dev": "wait-on ../mime-types/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
