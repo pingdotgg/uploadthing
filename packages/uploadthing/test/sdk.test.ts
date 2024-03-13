@@ -115,6 +115,12 @@ describe("uploadFiles", () => {
     );
   });
 
+  it("accepts UndiciFile", async ({ utapi }) => {
+    const { File } = await import("undici");
+    const file = new File(["foo"], "foo.txt");
+    await utapi.uploadFiles(file);
+  });
+
   it("accepts UTFile with customId", async ({ utapi }) => {
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });
     await utapi.uploadFiles(fileWithId);
