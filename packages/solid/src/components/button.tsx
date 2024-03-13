@@ -86,6 +86,7 @@ export function UploadButton<
   });
 
   const uploadedThing = useUploadThing($props.endpoint, {
+    headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       if (inputRef) {
