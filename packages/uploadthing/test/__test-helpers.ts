@@ -159,7 +159,6 @@ export const mockExternalRequests =
       if (url.pathname.startsWith("/api/pollUpload")) {
         const key = url.pathname.slice("/api/pollUpload/".length);
         const file = db.getFileByKey(key);
-        console.log("file", file);
         return Response.json({
           status: "done",
           fileData: {
