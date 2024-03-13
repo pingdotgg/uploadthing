@@ -1,6 +1,12 @@
 {
   "react": "React",
   "server": "Server",
-  "openapi-spec": "OpenAPI Spec",
+  "openapi-spec": {
+    "title": "OpenAPI Spec",
+    "theme": {
+      "layout": "full",
+      "toc": false
+    }
+  },
   "ut-api": "UTApi (Server SDK)"
 }

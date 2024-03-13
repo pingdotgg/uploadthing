@@ -8,14 +8,6 @@ export function ScalarApiRef() {
   const theme = useTheme();
   const isDark = theme.resolvedTheme === "dark";
 
-  useEffect(() => {
-    const toc = document.querySelector('nav[aria-label="table of contents"]');
-    toc?.classList.add("hidden");
-    return () => {
-      toc?.classList.remove("hidden");
-    };
-  }, []);
-
   return (
     <ApiReferenceReact
       configuration={{
