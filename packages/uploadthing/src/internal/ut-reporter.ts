@@ -75,7 +75,7 @@ export const createUTReporter =
           Effect.fail(
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
-              message: "Failed to report event to UploadThing server",
+              message: `Failed to report event "${type}" to UploadThing server`,
               cause: e,
             }),
           ),

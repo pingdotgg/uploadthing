@@ -67,6 +67,7 @@ export const PresignedBaseSchema = S.struct({
   fileUrl: S.string,
   pollingJwt: S.string,
   pollingUrl: S.string,
+  contentDisposition: ContentDisposition,
   customId: S.nullable(S.string),
 });
 
@@ -77,7 +78,6 @@ export const MPUResponseSchema = S.extend(
     uploadId: S.string,
     chunkSize: S.number,
     chunkCount: S.number,
-    contentDisposition: ContentDisposition,
   }),
 );
 

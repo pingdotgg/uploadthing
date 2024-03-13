@@ -67,6 +67,7 @@ const mockPresigned = (file: {
 }): PSPResponse | MPUResponse => {
   const base: PresignedBase = {
     customId: file.customId ?? null,
+    contentDisposition: "inline",
     fileName: file.name,
     fileType: lookup(file.name) as any,
     fileUrl: "https://utfs.io/f/abc-123.txt",
@@ -80,7 +81,7 @@ const mockPresigned = (file: {
       chunkCount: 2,
       chunkSize: file.size / 2,
       uploadId: "random-upload-id",
-      contentDisposition: "inline",
+
       urls: [
         "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
         "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=2&uploadId=random-upload-id",
@@ -172,6 +173,9 @@ export const mockExternalRequests =
       }
       if (url.pathname === "/api/requestFileAccess") {
         return Response.json({ url: "https://example.com" });
+      }
+      if (url.pathname === "/api/serverCallback") {
+        return Response.json({ success: true });
       }
     }
 

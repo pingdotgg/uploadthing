@@ -35,7 +35,7 @@ const setupUTServer = (db: MockDbInterface) => {
     },
   });
   const router = {
-    foo: f({ text: {} })
+    foo: f({ text: { maxFileSize: "16MB" } })
       .middleware((opts) => {
         middlewareMock(opts);
         return {};

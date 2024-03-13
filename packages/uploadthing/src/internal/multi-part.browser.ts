@@ -6,7 +6,6 @@ import {
   fetchEffJson,
   generateUploadThingURL,
   RetryError,
-  UploadThingError,
 } from "@uploadthing/shared";
 import type { ContentDisposition } from "@uploadthing/shared";
 
@@ -70,7 +69,7 @@ export const uploadMultipartWithProgress = (
     );
 
     // Tell the server that the upload is complete
-    const uploadOk = yield* $(
+    yield* $(
       opts.reportEventToUT(
         "multipart-complete",
         {
@@ -81,14 +80,6 @@ export const uploadMultipartWithProgress = (
         S.null,
       ),
     );
-    if (!uploadOk) {
-      return yield* $(
-        new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "Failed to alert UT of upload completion",
-        }),
-      );
-    }
   });
 
 export const completeMultipartUpload = (
