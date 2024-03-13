@@ -1,5 +1,38 @@
 # uploadthing
 
+## 6.6.0
+
+### Minor Changes
+
+- [#705](https://github.com/pingdotgg/uploadthing/pull/705) [`a919d5a`](https://github.com/pingdotgg/uploadthing/commit/a919d5a9fde0680dfdba73d8d2947d229268fdb8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add client headers option
+
+  this primarily allows you to authenticate the client when your server is deployed separate from your client:
+
+  ```ts
+  import { genUploader } from "uploadthing/client";
+
+  const uploadFiles = genUploader<OurFileRouter>({
+    url: "https://my-server.com",
+  });
+
+  uploadFiles("endpoint", {
+    headers: async () => {
+      const token = await getToken();
+      return { Authorization: `Bearer ${token}` };
+    },
+  });
+  ```
+
+### Patch Changes
+
+- [#691](https://github.com/pingdotgg/uploadthing/pull/691) [`92e0b59`](https://github.com/pingdotgg/uploadthing/commit/92e0b59d2eeb6a8e035a264efa03f0b8abf3678d) Thanks [@ahkhanjani](https://github.com/ahkhanjani)! - fix: Slightly better server error messages
+
+- [#699](https://github.com/pingdotgg/uploadthing/pull/699) [`398866b`](https://github.com/pingdotgg/uploadthing/commit/398866bcdf2e05bda4a8b59a255090a7276e178c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(types): FileEsque resolved to any if undici was not in project
+
+- [#694](https://github.com/pingdotgg/uploadthing/pull/694) [`5f5a1ea`](https://github.com/pingdotgg/uploadthing/commit/5f5a1ea7bd8bf17b0d153f1f604b73f084686cf7) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: CustomId should be optional in middleware
+
+- [#696](https://github.com/pingdotgg/uploadthing/pull/696) [`8773859`](https://github.com/pingdotgg/uploadthing/commit/87738594f38a1f723f5c1c867af979441b95a722) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(tw plugin): support turbopack
+
 ## 6.5.2
 
 ### Patch Changes

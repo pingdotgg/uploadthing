@@ -19,10 +19,10 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@uploadthing/react": "workspace:6.3.4",
+    "@uploadthing/react": "workspace:6.4.0",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.2",
-    "uploadthing": "workspace:6.5.2"
+    "uploadthing": "workspace:6.6.0"
   },
   "devDependencies": {
     "@playwright/test": "1.42.1"
