@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "../src/server";
@@ -7,6 +7,7 @@ import {
   baseHeaders,
   createApiUrl,
   fetchMock,
+  it as itBase,
   middlewareMock,
   mockExternalRequests,
   uploadCompleteMock,
@@ -51,18 +52,24 @@ const router = {
     .onUploadComplete(uploadCompleteMock),
 };
 
-const handlers = createRouteHandler({
-  router,
-  config: {
-    uploadthingSecret: "sk_live_test123",
-    // @ts-expect-error - annoying to see error logs
-    logLevel: "silent",
-    fetch: mockExternalRequests,
+const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
+  handlers: async ({ db }, use) => {
+    use(
+      createRouteHandler({
+        router,
+        config: {
+          uploadthingSecret: "sk_live_test123",
+          // @ts-expect-error - annoying to see error logs
+          logLevel: "silent",
+          fetch: mockExternalRequests(db),
+        },
+      }),
+    );
   },
 });
 
 describe("errors for invalid request input", () => {
-  it("404s for invalid slugs", async () => {
+  it("404s for invalid slugs", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("i-dont-exist", "upload"), {
         method: "POST",
@@ -80,7 +87,7 @@ describe("errors for invalid request input", () => {
     });
   });
 
-  it("400s for invalid action type", async () => {
+  it("400s for invalid action type", async ({ handlers }) => {
     const res = await handlers.POST(
       // @ts-expect-error - invalid is not a valid action type
       new Request(createApiUrl("imageUploader", "invalid"), {
@@ -103,7 +110,7 @@ describe("errors for invalid request input", () => {
 });
 
 describe("file route config", () => {
-  it("blocks unmatched file types", async () => {
+  it("blocks unmatched file types", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -122,7 +129,9 @@ describe("file route config", () => {
     });
   });
 
-  it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async () => {
+  it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async ({
+    handlers,
+  }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -140,7 +149,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({});
   });
 
-  it("blocks for too many files", async () => {
+  it("blocks for too many files", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -165,7 +174,7 @@ describe("file route config", () => {
 });
 
 describe(".input()", () => {
-  it("blocks when input is missing", async () => {
+  it("blocks when input is missing", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -188,7 +197,7 @@ describe(".input()", () => {
     });
   });
 
-  it("blocks when input doesn't match schema", async () => {
+  it("blocks when input doesn't match schema", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -214,7 +223,7 @@ describe(".input()", () => {
     });
   });
 
-  it("forwards input to middleware", async () => {
+  it("forwards input to middleware", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -236,7 +245,7 @@ describe(".input()", () => {
 });
 
 describe(".middleware()", () => {
-  it("forwards files to middleware", async () => {
+  it("forwards files to middleware", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -257,7 +266,7 @@ describe(".middleware()", () => {
     expect(res.status).toBe(200);
   });
 
-  it("early exits if middleware throws", async () => {
+  it("early exits if middleware throws", async ({ handlers }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("middlewareThrows", "upload"), {
         method: "POST",
@@ -287,7 +296,9 @@ describe(".middleware()", () => {
 });
 
 describe(".onUploadComplete()", () => {
-  it("forwards correct args to onUploadComplete handler", async () => {
+  it("forwards correct args to onUploadComplete handler", async ({
+    handlers,
+  }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
