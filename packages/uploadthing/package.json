@@ -119,7 +119,7 @@
     "access": "public"
   },
   "scripts": {
-    "lint": "eslint src lint --max-warnings 0",
+    "lint": "eslint src test --max-warnings 0",
     "build": "NODE_OPTIONS=--max_old_space_size=16384 bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "wait-on ../shared/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
