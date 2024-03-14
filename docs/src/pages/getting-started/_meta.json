@@ -3,6 +3,6 @@
   "pagedir": "Next.js (pages/)",
   "solid": "SolidStart",
   "astro": "Astro",
-  "svelte": "SvelteKit (Coming Soon)",
+  "svelte": "SvelteKit",
   "nuxt": "Nuxt.js (Coming Soon)"
 }
