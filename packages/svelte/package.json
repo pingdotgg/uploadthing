@@ -1,14 +1,14 @@
 {
   "name": "@uploadthing/svelte",
-  "version": "5.6.1",
+  "version": "6.3.4",
   "license": "MIT",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && npm run package",
+    "build": "vite build && bun package",
     "build:styles": "tailwindcss -i ./src/lib/styles.css -o ./dist/styles.css",
     "preview": "vite preview",
-    "package": "svelte-kit sync && svelte-package && npm run build:styles && publint",
-    "prepublishOnly": "npm run package",
+    "package": "svelte-kit sync && svelte-package && bun build:styles && publint",
+    "prepublishOnly": "bun package",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint \"**/*.{ts,svelte}\"",
@@ -29,29 +29,29 @@
   ],
   "peerDependencies": {
     "svelte": "^4.0.0",
-    "uploadthing": "^5.0.0"
+    "uploadthing": "workspace:6.5.2"
   },
   "dependencies": {
-    "@uploadthing/shared": "^5.2.2",
+    "@uploadthing/shared": "workspace:6.3.4",
     "attr-accept": "^2.2.2",
     "file-selector": "^0.6.0",
-    "tailwind-merge": "^1.13.2"
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^2.1.0",
-    "@sveltejs/kit": "^1.24.1",
-    "@sveltejs/package": "^2.2.2",
-    "autoprefixer": "10.4.14",
-    "postcss": "8.4.22",
-    "postcss-load-config": "^4.0.1",
-    "publint": "^0.1.9",
-    "svelte": "^4.2.0",
-    "svelte-check": "^3.5.1",
-    "tailwindcss": "^3.3.2",
-    "tslib": "^2.4.1",
-    "typescript": "^5.1.6",
-    "uploadthing": "5.6.1",
-    "vite": "^4.4.9"
+    "@sveltejs/adapter-auto": "^3.1.1",
+    "@sveltejs/kit": "^2.5.4",
+    "@sveltejs/package": "^2.3.0",
+    "autoprefixer": "10.4.17",
+    "postcss": "8.4.35",
+    "postcss-load-config": "^5.0.3",
+    "publint": "^0.2.7",
+    "svelte": "^4.2.12",
+    "svelte-check": "^3.6.7",
+    "tailwindcss": "^3.4.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3",
+    "uploadthing": "workspace:6.5.2",
+    "vite": "^5.1.4"
   },
   "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",

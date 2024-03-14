@@ -1,68 +1,59 @@
-import { createUploadthing } from "uploadthing/server";
+import { randomUUID } from "crypto";
+
+import { createUploadthing, UTFiles } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
 
-const f = createUploadthing();
+const f = createUploadthing({
+  /**
+   * Log out more information about the error, but don't return it to the client
+   * @see https://docs.uploadthing.com/errors#error-formatting
+   */
+  errorFormatter: (err) => {
+    console.log("Error uploading file", err.message);
+    console.log("  - Above error caused by:", err.cause);
 
+    return { message: err.message };
+  },
+});
+
+/**
+ * This is your Uploadthing file router. For more information:
+ * @see https://docs.uploadthing.com/api-reference/server#file-routes
+ */
 export const uploadRouter = {
   videoAndImage: f({
     image: {
       maxFileSize: "4MB",
       maxFileCount: 4,
+      acl: "public-read",
     },
     video: {
       maxFileSize: "16MB",
     },
   })
-    .middleware(() => ({}))
-    .onUploadComplete((data) => {
-      console.log("upload completed", data);
-    }),
+    .middleware(({ req, files }) => {
+      // Check some condition based on the incoming requrest
+      req;
+      //^?
+      // if (!req.headers.get("x-some-header")) {
+      //   throw new Error("x-some-header is required");
+      // }
 
-  withMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "1MB",
-    },
-  })
-    .middleware(({ req }) => {
-      const h = req.headers.get("someProperty");
+      // (Optional) Label your files with a custom identifier
+      const filesWithMyIds = files.map((file, idx) => ({
+        ...file,
+        customId: `${idx}-${randomUUID()}`,
+      }));
 
-      if (!h) throw new Error("someProperty is required");
-
-      return {
-        someProperty: h,
-        otherProperty: "hello" as const,
-      };
+      // Return some metadata to be stored with the file
+      return { foo: "bar" as const, [UTFiles]: filesWithMyIds };
     })
-    .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
-      metadata.someProperty;
-      //       ^?
-      metadata.otherProperty;
-      //       ^?
-
-      console.log("files successfully uploaded:", file);
-      file;
-      // ^?
-    }),
-
-  withoutMdwr: f({
-    image: {
-      maxFileCount: 2,
-      maxFileSize: "16MB",
-    },
-  })
-    .middleware(() => {
-      return { testMetadata: "lol" };
-    })
-    .onUploadComplete(({ metadata, file }) => {
-      console.log("uploaded with the following metadata:", metadata);
+    .onUploadComplete(({ file, metadata }) => {
       metadata;
       // ^?
-
-      console.log("files successfully uploaded:", file);
-      file;
-      // ^?
+      file.customId;
+      //   ^?
+      console.log("upload completed", file);
     }),
 } satisfies FileRouter;
 

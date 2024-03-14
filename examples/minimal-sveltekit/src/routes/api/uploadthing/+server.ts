@@ -1,10 +1,10 @@
 import { env } from "$env/dynamic/private";
 import { uploadRouter } from "$lib/server/uploadthing";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 // The Svelte extension complains if you export the handlers directly
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
   config: {
     // callbackUrl: `http://localhost:${env.PORT ?? 5173}/api/uploadthing`,

@@ -1,53 +1,63 @@
 import { derived, readonly, writable } from "svelte/store";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
-import type { UploadFileResponse } from "uploadthing/client";
-import { DANGEROUS__uploadFiles } from "uploadthing/client";
-import type {
-  ErrorMessage,
-  FileRouter,
-  inferEndpointInput,
-  inferErrorShape,
-} from "uploadthing/server";
+import type { EndpointMetadata } from "@uploadthing/shared";
+import {
+  INTERNAL_DO_NOT_USE__fatalClientError,
+  resolveMaybeUrlArg,
+  UploadThingError,
+} from "@uploadthing/shared";
+import { genUploader } from "uploadthing/client";
+import type { FileRouter } from "uploadthing/server";
+import type { inferEndpointInput, inferErrorShape } from "uploadthing/types";
 
-import { createUploader } from "./component";
-import type { UploadthingComponentProps } from "./component/shared";
+import type {
+  GenerateTypedHelpersOptions,
+  UploadthingComponentProps,
+  UseUploadthingProps,
+} from "./types";
 import { createFetch } from "./utils/createFetch";
 
-type EndpointMetadata = {
-  slug: string;
-  config: ExpandedRouteConfig;
-}[];
+declare const globalThis: {
+  __UPLOADTHING?: EndpointMetadata;
+};
 
-const createEndpointMetadata = (endpoint: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(`/api/uploadthing`);
+const createEndpointMetadata = (url: URL, endpoint: string) => {
+  const maybeServerData = globalThis.__UPLOADTHING;
+  const dataGetter = createFetch<EndpointMetadata>(
+    // Don't fetch if we already have the data
+    maybeServerData ? undefined : url.href,
+  );
   return derived(dataGetter, ($data) =>
-    $data.data?.find((x) => x.slug === endpoint),
+    (maybeServerData ?? $data.data)?.find((x) => x.slug === endpoint),
   );
 };
 
-export type UseUploadthingProps<TRouter extends FileRouter> = {
-  onClientUploadComplete?: (res?: UploadFileResponse[]) => void;
-  onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
-  onUploadBegin?: (fileName: string) => void;
-};
-
-const fatalClientError = (e: Error) =>
-  new UploadThingError({
-    code: "INTERNAL_CLIENT_ERROR",
-    message: "Something went wrong. Please report this to UploadThing.",
-    cause: e,
+export const INTERNAL_uploadthingHookGen = <
+  TRouter extends FileRouter,
+>(initOpts: {
+  /**
+   * URL to the UploadThing API endpoint
+   * @example URL { http://localhost:3000/api/uploadthing }
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
+  url: URL;
+}) => {
+  const uploadFiles = genUploader<TRouter>({
+    url: initOpts.url,
+    package: "@uploadthing/svelte",
   });
-
-export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
-  const useUploadThing = <TEndpoint extends keyof TRouter>(
+  const useUploadThing = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const isUploading = writable(false);
-    const permittedFileInfo = createEndpointMetadata(endpoint as string);
+    const permittedFileInfo = createEndpointMetadata(
+      initOpts.url,
+      endpoint as string,
+    );
     let uploadProgress = 0;
     let fileProgress = new Map();
 
@@ -57,13 +67,14 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
       : [files: File[], input: InferredInput];
 
     const startUpload = async (...args: FuncInput) => {
-      const [files, input] = args;
+      const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
+      const input = args[1];
       isUploading.set(true);
+      opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles({
+        const res = await uploadFiles(endpoint, {
           files,
-          endpoint: endpoint as string,
-          input,
+          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.set(progress.file, progress.progress);
@@ -83,14 +94,23 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
 
             opts.onUploadBegin(file);
           },
+          // @ts-expect-error - input may not be defined on the type
+          input,
         });
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
-        const error = e instanceof UploadThingError ? e : fatalClientError;
-        opts?.onUploadError?.(
-          error as UploadThingError<inferErrorShape<TRouter>>,
-        );
+        let error: UploadThingError<inferErrorShape<TRouter>>;
+        if (e instanceof UploadThingError) {
+          error = e as UploadThingError<inferErrorShape<TRouter>>;
+        } else {
+          error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+          console.error(
+            "Something went wrong. Please contact UploadThing and provide the following cause:",
+            error.cause instanceof Error ? error.cause.toString() : error.cause,
+          );
+        }
+        opts?.onUploadError?.(error);
       } finally {
         isUploading.set(false);
         fileProgress = new Map();
@@ -107,22 +127,25 @@ export const INTERNAL_uploadthingHookGen = <TRouter extends FileRouter>() => {
 };
 
 const generateUploader = <TRouter extends FileRouter>() => {
-  return (
-    props: FileRouter extends TRouter
-      ? ErrorMessage<"You forgot to pass the generic">
-      : UploadthingComponentProps<TRouter>,
-  ) => createUploader<TRouter>(props);
+  return <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
+    props: UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
+  ) => props;
 };
 
-export const generateSvelteHelpers = <TRouter extends FileRouter>() => {
+export const generateSvelteHelpers = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
+
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>(),
-    uploadFiles: DANGEROUS__uploadFiles<TRouter>,
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    uploadFiles: genUploader<TRouter>({
+      url,
+      package: "@uploadthing/svelte",
+    }),
     createUploader: generateUploader<TRouter>(),
   } as const;
-};
-
-export type FullFile = {
-  file: File;
-  contents: string;
 };

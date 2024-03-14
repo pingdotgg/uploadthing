@@ -5,10 +5,8 @@
 
   import "@fontsource-variable/inter";
 
-  // Using createUploader directly needs the generic
-  // const uploader = createUploader<OurFileRouter>({
   const uploader = createUploader({
-    endpoint: "withoutMdwr",
+    endpoint: "videoAndImage",
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
@@ -22,7 +20,8 @@
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
-    onClientUploadComplete: () => {
+    onClientUploadComplete: (res) => {
+      console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
     },
   });

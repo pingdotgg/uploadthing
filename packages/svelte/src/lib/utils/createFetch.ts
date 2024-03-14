@@ -1,3 +1,4 @@
+import { onMount } from "svelte";
 import { readonly, writable } from "svelte/store";
 
 interface State<T> {
@@ -37,6 +38,8 @@ export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
       return store.set({ error: error as Error, type: "error" });
     }
   };
-  void fetchData();
+  onMount(() => {
+    void fetchData();
+  });
   return readonly(store);
 }

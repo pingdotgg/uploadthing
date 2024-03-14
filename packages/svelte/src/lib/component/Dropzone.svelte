@@ -40,7 +40,7 @@
   export let state: "readying" | "ready" | "uploading";
   export let inputRef: HTMLInputElement | null;
 
-  let rootRef: HTMLElement;
+  export let rootRef: HTMLElement;
   let dragTargetsRef: (EventTarget | null)[] = [];
   let isFileDialogActive = false;
   let acceptedFiles: InputFile[] = [];

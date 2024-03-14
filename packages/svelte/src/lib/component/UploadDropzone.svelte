@@ -4,29 +4,38 @@
   import type { FileRouter } from "uploadthing/server";
 
   type TRouter = FileRouter;
+  type TEndpoint = keyof TRouter;
+  type TSkipPolling = boolean;
 </script>
 
-<script lang="ts" generics="TRouter extends FileRouter">
+<script
+  lang="ts"
+  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
+>
   import type { FileWithPath } from "file-selector";
+  import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
 
   import {
     allowedContentTextLabelGenerator,
-    classNames,
+    resolveMaybeUrlArg,
+  } from "@uploadthing/shared";
+  import {
     generateClientDropzoneAccept,
     generatePermittedFileTypes,
-    progressWidths,
   } from "uploadthing/client";
 
+  import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
   import type { DropEvent } from "../utils/dropzone";
   import { styleFieldToString } from "../utils/styles";
   import type { StyleField } from "../utils/styles";
   import Dropzone from "./Dropzone.svelte";
-  import type { UploadthingComponentProps } from "./shared";
+  import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
   type DropzoneStyleFieldCallbackArgs = {
+    __runtime: "svelte";
     ready: boolean;
     isUploading: boolean;
     uploadProgress: number;
@@ -42,11 +51,12 @@
     button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
 
-  type UploadDropzoneConfig = { mode?: "auto" | "manual" };
-
-  export let uploader: UploadthingComponentProps<TRouter>;
+  export let uploader: UploadthingComponentProps<
+    TRouter,
+    TEndpoint,
+    TSkipPolling
+  >;
   export let appearance: UploadDropzoneAppearance = {};
-  export let config: UploadDropzoneConfig = {};
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
     undefined;
@@ -55,7 +65,7 @@
   // Allow to set ready explicitly and independently of internal state
   export let __internal_ready: boolean | undefined = undefined;
   // Allow to show the button even if no files were added
-  export let __internal_show_button: boolean | undefined = undefined;
+  // export let __internal_show_button: boolean | undefined = undefined;
   // Allow to disable the button
   export let __internal_button_disabled: boolean | undefined = undefined;
   // Allow to disable the dropzone
@@ -64,12 +74,18 @@
   let files: File[] = [];
   let uploadProgress = 0;
   let isDragActive = false;
+  let rootRef: HTMLElement;
   let inputRef: HTMLInputElement | null;
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>();
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: resolveMaybeUrlArg(uploader.url),
+  });
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     uploader.endpoint,
     {
+      skipPolling: !uploader?.onClientUploadComplete
+        ? true
+        : uploader?.skipPolling,
       onClientUploadComplete: (res) => {
         files = [];
         uploader.onClientUploadComplete?.(res);
@@ -81,16 +97,21 @@
       },
       onUploadError: uploader.onUploadError,
       onUploadBegin: uploader.onUploadBegin,
+      onBeforeUploadBegin: uploader.onBeforeUploadBegin,
     },
   );
 
+  $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
-  $: ({ fileTypes } = generatePermittedFileTypes($permittedFileInfo?.config));
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes(
+    $permittedFileInfo?.config,
+  ));
   $: ready =
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
 
   $: styleFieldArg = {
+    __runtime: "svelte",
     fileTypes,
     isDragActive,
     isUploading: $isUploading,
@@ -111,15 +132,48 @@
     files = acceptedFiles as FileWithPath[];
 
     // If mode is auto, start upload immediately
-    if (config?.mode === "auto") {
+    if (mode === "auto") {
       const input = "input" in uploader ? uploader.input : undefined;
       void startUpload(files, input);
       return;
     }
   };
+
+  const handlePaste = (event: ClipboardEvent) => {
+    if (!appendOnPaste) return;
+    // eslint-disable-next-line no-undef
+    if (document.activeElement !== rootRef) return;
+
+    const pastedFiles = getFilesFromClipboardEvent(event);
+    if (!pastedFiles) return;
+
+    files = [...files, ...pastedFiles];
+
+    if (mode === "auto") {
+      const input = "input" in uploader ? uploader.input : undefined;
+      void startUpload(files, input);
+    }
+  };
+
+  onMount(() => {
+    // eslint-disable-next-line no-undef
+    window.addEventListener("paste", handlePaste);
+    return () => {
+      // eslint-disable-next-line no-undef
+      window.removeEventListener("paste", handlePaste);
+    };
+  });
+
+  const getUploadButtonText = (fileTypes: string[]) => {
+    if (files.length > 0)
+      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+    if (fileTypes.length === 0) return "Loading...";
+    return `Choose File${multiple ? `(s)` : ``}`;
+  };
 </script>
 
 <Dropzone
+  bind:rootRef
   bind:inputRef
   bind:isDragActive
   {state}
@@ -162,10 +216,8 @@
   <label
     for="file-upload"
     class={twMerge(
-      classNames(
-        "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-        ready ? "text-blue-600" : "text-gray-500",
-      ),
+      "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+      ready ? "text-blue-600" : "text-gray-500",
       styleFieldToString(appearance?.label, styleFieldArg),
     )}
     style={styleFieldToString(appearance?.label, styleFieldArg)}
@@ -196,34 +248,35 @@
       {allowedContentTextLabelGenerator($permittedFileInfo?.config)}
     </slot>
   </div>
-  {#if __internal_show_button ?? files.length > 0}
-    <button
-      class={twMerge(
-        classNames(
-          "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-          state === "uploading"
-            ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`
-            : "bg-blue-600",
-        ),
-        styleFieldToString(appearance?.button, styleFieldArg),
-      )}
-      style={styleFieldToString(appearance?.button, styleFieldArg)}
-      data-ut-element="button"
-      data-state={state}
-      disabled={__internal_button_disabled ?? state === "uploading"}
-      on:click|preventDefault|stopPropagation={() => {
-        if (!files) return;
-        const input = "input" in uploader ? uploader.input : undefined;
-        void startUpload(files, input);
-      }}
-    >
-      <slot name="button-content" state={styleFieldArg}>
-        {#if state === "uploading"}
-          <Spinner />
-        {:else}
-          Upload {files.length} file{files.length === 1 ? "" : "s"}
-        {/if}
-      </slot>
-    </button>
-  {/if}
+  <button
+    class={twMerge(
+      "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      state === "readying" && "cursor-not-allowed bg-blue-400",
+      state === "uploading" &&
+        `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
+      state === "ready" && "bg-blue-600",
+      "disabled:pointer-events-none",
+      styleFieldToString(appearance?.button, styleFieldArg),
+    )}
+    style={styleFieldToString(appearance?.button, styleFieldArg)}
+    data-ut-element="button"
+    data-state={state}
+    disabled={__internal_button_disabled ??
+      (!files.length || state === "uploading")}
+    on:click|preventDefault|stopPropagation={() => {
+      if (!files) return;
+      const input = "input" in uploader ? uploader.input : undefined;
+      void startUpload(files, input);
+    }}
+  >
+    <slot name="button-content" state={styleFieldArg}>
+      {#if state !== "uploading"}
+        {getUploadButtonText(fileTypes)}
+      {:else if uploadProgress === 100}
+        <Spinner />
+      {:else}
+        <span class="z-50">{uploadProgress}%</span>
+      {/if}
+    </slot>
+  </button>
 </Dropzone>
