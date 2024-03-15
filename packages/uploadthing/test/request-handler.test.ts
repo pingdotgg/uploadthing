@@ -6,11 +6,11 @@ import type { UploadedFileData } from "../src/types";
 import {
   baseHeaders,
   createApiUrl,
-  fetchMock,
   it as itBase,
   middlewareMock,
-  mockExternalRequests,
+  setupMsw,
   uploadCompleteMock,
+  utApiMock,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -54,6 +54,7 @@ const router = {
 
 const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
   handlers: async ({ db }, use) => {
+    const msw = setupMsw({ db });
     await use(
       createRouteHandler({
         router,
@@ -61,10 +62,10 @@ const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
           uploadthingSecret: "sk_live_test123",
           // @ts-expect-error - annoying to see error logs
           logLevel: "silent",
-          fetch: mockExternalRequests(db),
         },
       }),
     );
+    msw.close();
   },
 });
 
@@ -80,7 +81,7 @@ describe("errors for invalid request input", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(404);
     await expect(res.json()).resolves.toEqual({
       message: "No file route found for slug i-dont-exist",
@@ -99,7 +100,7 @@ describe("errors for invalid request input", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: Invalid action type invalid",
@@ -121,7 +122,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: File type text not allowed for foo.txt",
@@ -144,7 +145,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({});
   });
@@ -163,7 +164,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause:
@@ -186,7 +187,7 @@ describe(".input()", () => {
     );
 
     expect(middlewareMock).toHaveBeenCalledTimes(0);
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
@@ -210,7 +211,7 @@ describe(".input()", () => {
     );
 
     expect(middlewareMock).toHaveBeenCalledTimes(0);
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
@@ -285,7 +286,7 @@ describe(".middleware()", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({
       cause:

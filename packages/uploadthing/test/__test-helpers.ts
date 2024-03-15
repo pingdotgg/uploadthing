@@ -1,15 +1,17 @@
-/* eslint-disable no-restricted-globals */
-/* eslint-disable no-console */
+import express from "express";
 import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { beforeEach, it as itBase, vi } from "vitest";
 
 import { lookup } from "@uploadthing/mime-types";
-import { generateUploadThingURL, isObject } from "@uploadthing/shared";
-import type { FetchEsque } from "@uploadthing/shared";
+import { generateUploadThingURL } from "@uploadthing/shared";
 
+import { genUploader } from "../src/client";
+import { createRouteHandler, createUploadthing } from "../src/express";
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
 import type {
   ActionType,
+  FileRouter,
   MPUResponse,
   PresignedBase,
   PSPResponse,
@@ -36,15 +38,17 @@ export const it = itBase.extend<{ db: MockDbInterface }>({
 });
 
 export const s3Mock = vi.fn();
-export const fetchMock = vi.fn();
+export const staticAssetMock = vi.fn();
+export const utApiMock = vi.fn();
 export const middlewareMock = vi.fn();
 export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
 beforeEach(() => {
   s3Mock.mockClear();
+  staticAssetMock.mockClear();
+  utApiMock.mockClear();
   middlewareMock.mockClear();
   uploadCompleteMock.mockClear();
-  fetchMock.mockClear();
   onErrorMock.mockClear();
 });
 
@@ -94,111 +98,269 @@ const mockPresigned = (file: {
   };
 };
 
-export const mockExternalRequests =
-  (db: MockDbInterface): FetchEsque =>
-  async (_url, init) => {
-    fetchMock(_url, init);
-    if (_url instanceof Request) return new Response("Wut?", { status: 500 });
-    const url = new URL(_url);
+const utapiMocks = (db: MockDbInterface) => [
+  http.post(
+    "https://uploadthing.com/api/prepareUpload",
+    async ({ request }) => {
+      const body = (await request.json()) as { files: any[] } & Record<
+        string,
+        string
+      >;
 
-    // Pass through localhost requests
-    if (url.host.startsWith("localhost")) {
-      return fetch(_url, init);
-    }
-
-    // Mock file downloads
-    if (url.host === "cdn.foo.com") {
-      return new Response("Lorem ipsum doler sit amet", {
-        headers: { "Content-Type": "text/plain" },
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        body: JSON.stringify(body),
       });
-    }
 
-    // Mock UT Api
-    if (url.host === "uploadthing.com") {
-      const body = (() => {
-        if ((init?.method ?? "GET") === "GET") return null;
-        const json = JSON.parse(init?.body as string);
-        if (!isObject(json)) throw new Error("Expected body to be an object");
-        return json;
-      })();
-
-      if (url.pathname === "/api/uploadFiles") {
-        const presigneds = (body?.files as any[]).map((file) => {
-          const presigned = mockPresigned(file);
-          db.insertFile({
-            ...file,
-            key: presigned.key,
-          });
-          return presigned;
+      const presigneds = body.files.map((file) => {
+        const presigned = mockPresigned(file);
+        db.insertFile({
+          ...file,
+          key: presigned.key,
+          callbackUrl: body.callbackUrl,
+          callbackSlug: body.callbackSlug,
         });
-        return Response.json({ data: presigneds });
-      }
-      if (url.pathname === "/api/prepareUpload") {
-        const presigneds = (body?.files as any[]).map((file) => {
-          const presigned = mockPresigned(file);
-          db.insertFile({
-            ...file,
-            key: presigned.key,
-            callbackUrl: body!.callbackUrl,
-            callbackSlug: body!.callbackSlug,
-          });
-          return presigned;
-        });
-        return Response.json(presigneds);
-      }
-      if (url.pathname === "/api/completeMultipart") {
-        return Response.json({ success: true });
-      }
-      if (url.pathname === "/api/failureCallback") {
-        return Response.json({ success: true });
-      }
-      if (url.pathname.startsWith("/api/pollUpload")) {
-        const key = url.pathname.slice("/api/pollUpload/".length);
-        console.log("Polled for key", key);
-        console.log("db contains", db.files);
-        return Response.json({
-          status: "done",
-          fileData: db.getFileByKey(key),
-        });
-      }
-      if (url.pathname === "/api/requestFileAccess") {
-        return Response.json({ url: "https://example.com" });
-      }
-    }
+        return presigned;
+      });
+      return HttpResponse.json(presigneds);
+    },
+  ),
+  http.post("https://uploadthing.com/api/uploadFiles", async ({ request }) => {
+    const body = (await request.json()) as { files: any[] };
 
-    // Mock S3
-    if (url.host === "bucket.s3.amazonaws.com") {
-      return new Response(null, { status: 204 });
-    }
+    utApiMock(request.url, {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      body: JSON.stringify(body),
+    });
 
-    // Else 404 (shouldn't happen, mock the requests we expect to make)
-    console.warn(
-      "[UT FETCH MOCK] :: Unhandled request. Did you mean to mock this?",
-      { url, init },
-    );
-    return new Response("Not Found", { status: 404 });
-  };
+    const presigneds = body?.files.map((file) => {
+      const presigned = mockPresigned(file);
+      db.insertFile({
+        ...file,
+        key: presigned.key,
+      });
+      return presigned;
+    });
+    return HttpResponse.json({ data: presigneds });
+  }),
+  http.post(
+    "https://uploadthing.com/api/completeMultipart",
+    async ({ request }) => {
+      const body = await request.json();
+
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        body: JSON.stringify(body),
+      });
+
+      return HttpResponse.json({ success: true });
+    },
+  ),
+  http.post(
+    "https://uploadthing.com/api/failureCallback",
+    async ({ request }) => {
+      const body = await request.json();
+
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        body: JSON.stringify(body),
+      });
+
+      return HttpResponse.json({ success: true });
+    },
+  ),
+  http.get(
+    "https://uploadthing.com/api/pollUpload/:key",
+    async ({ request }) => {
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+      });
+
+      const url = new URL(request.url);
+      const key = url.pathname.slice("/api/pollUpload/".length);
+      return HttpResponse.json({
+        status: "done",
+        fileData: db.getFileByKey(key),
+      });
+    },
+  ),
+  http.post(
+    "https://uploadthing.com/api/requestFileAccess",
+    async ({ request }) => {
+      const body = await request.json();
+
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        body: JSON.stringify(body),
+      });
+
+      return HttpResponse.json({
+        url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
+      });
+    },
+  ),
+  http.post(
+    "https://uploadthing.com/api/serverCallback",
+    async ({ request }) => {
+      const body = await request.json();
+
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        body: JSON.stringify(body),
+      });
+
+      return HttpResponse.json({ success: true });
+    },
+  ),
+  http.get("https://uploadthing.com/api/serverCallback", ({ request }) => {
+    utApiMock(request.url, {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+    });
+
+    return HttpResponse.json({ success: true });
+  }),
+];
 
 const staticAssetServer = [
-  http.get("https://cdn.foo.com/:fileKey", () => {
+  http.get("https://cdn.foo.com/:fileKey", ({ request }) => {
+    staticAssetMock(request.url);
+
     return HttpResponse.text("Lorem ipsum doler sit amet", {
-      headers: { "Content-Type": "text/plain" },
+      headers: { "content-type": "text/plain" },
+    });
+  }),
+  http.get("https://utfs.io/f/:key", ({ request }) => {
+    staticAssetMock(request.url);
+
+    return HttpResponse.text("Lorem ipsum doler sit amet", {
+      headers: { "content-type": "text/plain" },
     });
   }),
 ];
 
-const s3Api = [
-  http.post("https://bucket.s3.amazonaws.com/", ({ params, request }) => {
-    s3Mock(params, request);
-    return HttpResponse.json(null, { status: 204 });
-  }),
-  http.put("https://bucket.s3.amazonaws.com/:key", ({ params, request }) => {
-    s3Mock(params, request);
-    return HttpResponse.json(null, {
-      status: 204,
-      headers: { ETag: "abc123" },
-    });
-  }),
-];
+const s3Mocks = (fail: boolean) =>
+  fail
+    ? [
+        http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+          s3Mock(request.url, {
+            method: request.method,
+            headers: Object.fromEntries(request.headers.entries()),
+            body: await request.formData(),
+          });
+          return HttpResponse.json(null, { status: 403 });
+        }),
+        http.put(
+          "https://bucket.s3.amazonaws.com/:key",
+          async ({ request }) => {
+            s3Mock(request.url, {
+              method: request.method,
+              headers: Object.fromEntries(request.headers.entries()),
+              body: await request.formData(),
+            });
+            return HttpResponse.json(null, { status: 204 });
+          },
+        ),
+      ]
+    : [
+        http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+          s3Mock(request.url, {
+            method: request.method,
+            headers: Object.fromEntries(request.headers.entries()),
+            // body: fd,
+          });
+          return HttpResponse.json(null, { status: 204 });
+        }),
+        http.put(
+          "https://bucket.s3.amazonaws.com/:key",
+          async ({ request }) => {
+            s3Mock(request.url, {
+              method: request.method,
+              headers: Object.fromEntries(request.headers.entries()),
+              body: await request.formData(),
+            });
+            return HttpResponse.json(null, {
+              status: 204,
+              headers: { ETag: "abc123" },
+            });
+          },
+        ),
+      ];
 
-export const handlers = [...staticAssetServer, ...s3Api];
+export const setupMsw = (opts: {
+  db: MockDbInterface;
+  failS3Call?: boolean;
+}) => {
+  const server = setupServer(
+    ...s3Mocks(opts.failS3Call ?? false),
+    ...staticAssetServer,
+    ...utapiMocks(opts.db),
+  );
+  server.listen({ onUnhandledRequest: "warn" });
+  return server;
+};
+
+/**
+ * Starts an Express server and sets up mocked handlers using MSW
+ */
+export const setupUTServer = <TExtraRoutes extends FileRouter>(opts: {
+  db: MockDbInterface;
+  extraRoutes?: TExtraRoutes;
+  failS3Call?: boolean;
+}) => {
+  const msw = setupMsw(opts);
+
+  const f = createUploadthing({
+    errorFormatter(err) {
+      // eslint-disable-next-line no-console
+      console.log(err, err.cause);
+      return { message: err.message };
+    },
+  });
+  const router = {
+    foo: f({ text: {} })
+      .middleware((opts) => {
+        middlewareMock(opts);
+        return {};
+      })
+      .onUploadError(onErrorMock)
+      .onUploadComplete(uploadCompleteMock),
+    ...opts.extraRoutes,
+  };
+
+  const app = express();
+  app.use(
+    "/api/uploadthing",
+    createRouteHandler({
+      router,
+      config: {
+        uploadthingSecret: "sk_test_123",
+        isDev: true,
+      },
+    }),
+  );
+
+  const server = app.listen();
+  const port = (server.address() as { port: number }).port;
+
+  const uploadFiles = genUploader<typeof router>({
+    package: "vitest",
+    url: `http://localhost:${port}`,
+  });
+
+  return {
+    msw,
+    uploadFiles,
+    close: () => {
+      server.close();
+      msw.close();
+    },
+  };
+};
