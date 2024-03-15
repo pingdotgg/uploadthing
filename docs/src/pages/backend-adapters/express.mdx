@@ -35,10 +35,16 @@ UPLOADTHING_APP_ID=... # Your app id
 
 ### Creating your first FileRoute
 
-All files uploaded to uploadthing are associated with a FileRoute. Following
-example is very minimalistic. To get full insight into what you can do with the
-FileRoutes, please refer to the
-[File Router API](/api-reference/server#file-routes).
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". To get
+full insight into what you can do with the FileRoutes, please refer to the
+[File Router API](/api-reference/server#file-routes).Think of a FileRoute
+similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
 
 ```ts copy filename="src/uploadthing.ts"
 import { createUploadthing, type FileRouter } from "uploadthing/express";
