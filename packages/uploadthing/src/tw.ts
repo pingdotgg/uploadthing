@@ -1,4 +1,4 @@
-import path from "path";
+import { sep } from "node:path";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
@@ -11,10 +11,7 @@ export function withUt(twConfig: Config) {
   const contentPaths = PACKAGES.map((pkg) => {
     try {
       const resolved = require.resolve(`@uploadthing/${pkg}`);
-      return (
-        resolved.split(path.delimiter).slice(0, -1).join(path.delimiter) +
-        `${path.delimiter}**`
-      );
+      return resolved.split(sep).slice(0, -1).join(sep) + `${sep}**`;
     } catch {
       return null;
     }
