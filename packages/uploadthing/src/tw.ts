@@ -12,8 +12,7 @@ export function withUt(twConfig: Config) {
     try {
       const resolved = require.resolve(`@uploadthing/${pkg}`);
       return (
-        resolved.split(path.delimiter).slice(0, -1).join(path.delimiter) +
-        `${path.delimiter}**`
+        resolved.split(path.sep).slice(0, -1).join(path.sep) + `${path.sep}**`
       );
     } catch {
       return null;
