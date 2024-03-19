@@ -11,7 +11,10 @@ export function withUt(twConfig: Config) {
   const contentPaths = PACKAGES.map((pkg) => {
     try {
       const resolved = require.resolve(`@uploadthing/${pkg}`);
-      return resolved.split(path.delimiter).slice(0, -1).join(path.delimiter) + `${path.delimiter}**`;
+      return (
+        resolved.split(path.delimiter).slice(0, -1).join(path.delimiter) +
+        `${path.delimiter}**`
+      );
     } catch {
       return null;
     }
