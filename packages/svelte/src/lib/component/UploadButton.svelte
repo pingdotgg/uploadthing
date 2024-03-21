@@ -18,7 +18,9 @@
   import {
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
+    styleFieldToClassName,
   } from "@uploadthing/shared";
+  import type { StyleField } from "@uploadthing/shared";
   import {
     generateMimeTypes,
     generatePermittedFileTypes,
@@ -26,8 +28,6 @@
 
   import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-  import { styleFieldToString } from "../utils/styles";
-  import type { StyleField } from "../utils/styles";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -165,9 +165,9 @@ Example:
   class={twMerge(
     "flex flex-col items-center justify-center gap-1",
     className,
-    styleFieldToString(appearance?.container, styleFieldArg),
+    styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
-  style={styleFieldToString(appearance?.container, styleFieldArg)}
+  style={styleFieldToClassName(appearance?.container, styleFieldArg)}
   data-state={state}
 >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -180,9 +180,9 @@ Example:
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
       state === "ready" && "bg-blue-600",
-      styleFieldToString(appearance?.button, styleFieldArg),
+      styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
-    style={styleFieldToString(appearance?.button, styleFieldArg)}
+    style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-state={state}
     data-ut-element="button"
     on:click={(e) => {
@@ -237,9 +237,9 @@ Example:
       }}
       class={twMerge(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
-        styleFieldToString(appearance?.clearBtn, styleFieldArg),
+        styleFieldToClassName(appearance?.clearBtn, styleFieldArg),
       )}
-      style={styleFieldToString(appearance?.clearBtn, styleFieldArg)}
+      style={styleFieldToClassName(appearance?.clearBtn, styleFieldArg)}
       data-state={state}
       data-ut-element="clear-btn"
     >
@@ -249,9 +249,9 @@ Example:
     <div
       class={twMerge(
         "h-[1.25rem]  text-xs leading-5 text-gray-600",
-        styleFieldToString(appearance?.allowedContent, styleFieldArg),
+        styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
       )}
-      style={styleFieldToString(appearance?.allowedContent, styleFieldArg)}
+      style={styleFieldToClassName(appearance?.allowedContent, styleFieldArg)}
       data-state={state}
       data-ut-element="allowed-content"
     >

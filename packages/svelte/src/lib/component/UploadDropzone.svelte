@@ -19,7 +19,9 @@
   import {
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
+    styleFieldToClassName,
   } from "@uploadthing/shared";
+  import type { StyleField } from "@uploadthing/shared";
   import {
     generateClientDropzoneAccept,
     generatePermittedFileTypes,
@@ -28,8 +30,6 @@
   import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
   import type { DropEvent } from "../utils/dropzone";
-  import { styleFieldToString } from "../utils/styles";
-  import type { StyleField } from "../utils/styles";
   import Dropzone from "./Dropzone.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
@@ -188,9 +188,9 @@
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
     isDragActive && "bg-blue-600/10",
     className,
-    styleFieldToString(appearance?.container, styleFieldArg),
+    styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
-  style={styleFieldToString(appearance?.container, styleFieldArg)}
+  style={styleFieldToClassName(appearance?.container, styleFieldArg)}
   on:drop={onDrop}
 >
   <slot name="upload-icon" state={styleFieldArg}>
@@ -199,9 +199,9 @@
       viewBox="0 0 20 20"
       class={twMerge(
         "mx-auto block h-12 w-12 align-middle text-gray-400",
-        styleFieldToString(appearance?.uploadIcon, styleFieldArg),
+        styleFieldToClassName(appearance?.uploadIcon, styleFieldArg),
       )}
-      style={styleFieldToString(appearance?.uploadIcon, styleFieldArg)}
+      style={styleFieldToClassName(appearance?.uploadIcon, styleFieldArg)}
       data-ut-element="upload-icon"
       data-state={state}
     >
@@ -218,9 +218,9 @@
     class={twMerge(
       "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
       ready ? "text-blue-600" : "text-gray-500",
-      styleFieldToString(appearance?.label, styleFieldArg),
+      styleFieldToClassName(appearance?.label, styleFieldArg),
     )}
-    style={styleFieldToString(appearance?.label, styleFieldArg)}
+    style={styleFieldToClassName(appearance?.label, styleFieldArg)}
     data-ut-element="label"
     data-state={state}
   >
@@ -238,9 +238,9 @@
   <div
     class={twMerge(
       "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
-      styleFieldToString(appearance?.allowedContent, styleFieldArg),
+      styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
     )}
-    style={styleFieldToString(appearance?.allowedContent, styleFieldArg)}
+    style={styleFieldToClassName(appearance?.allowedContent, styleFieldArg)}
     data-ut-element="allowed-content"
     data-state={state}
   >
@@ -256,9 +256,9 @@
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
       state === "ready" && "bg-blue-600",
       "disabled:pointer-events-none",
-      styleFieldToString(appearance?.button, styleFieldArg),
+      styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
-    style={styleFieldToString(appearance?.button, styleFieldArg)}
+    style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-ut-element="button"
     data-state={state}
     disabled={__internal_button_disabled ??

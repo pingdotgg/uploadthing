@@ -76,7 +76,7 @@ export const allowedContentTextLabelGenerator = (
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
-type AnyRuntime = "react" | "solid";
+type AnyRuntime = "react" | "solid" | "svelte";
 type MinCallbackArg = { __runtime: AnyRuntime };
 type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"

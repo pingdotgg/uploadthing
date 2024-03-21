@@ -17,18 +17,10 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-declare const globalThis: {
-  __UPLOADTHING?: EndpointMetadata;
-};
-
 const createEndpointMetadata = (url: URL, endpoint: string) => {
-  const maybeServerData = globalThis.__UPLOADTHING;
-  const dataGetter = createFetch<EndpointMetadata>(
-    // Don't fetch if we already have the data
-    maybeServerData ? undefined : url.href,
-  );
+  const dataGetter = createFetch<EndpointMetadata>(url.href);
   return derived(dataGetter, ($data) =>
-    (maybeServerData ?? $data.data)?.find((x) => x.slug === endpoint),
+    $data.data?.find((x) => x.slug === endpoint),
   );
 };
 
