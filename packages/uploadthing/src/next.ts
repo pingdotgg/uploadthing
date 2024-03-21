@@ -2,13 +2,13 @@ import type { NextRequest } from "next/server";
 
 import type { Json } from "@uploadthing/shared";
 
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types-runtime";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 import { INTERNAL_DO_NOT_USE_createRouteHandlerCore } from "./server";
 
 export type { FileRouter };
-export { UTFiles } from "./internal/types";
+export { UTFiles } from "./internal/types-runtime";
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,

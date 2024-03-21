@@ -14,7 +14,7 @@ import type {
   inferEndpointOutput,
   MPUResponse,
   PSPResponse,
-} from "./internal/types";
+} from "./internal/types-runtime";
 import type { UTReporter } from "./internal/ut-reporter";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {

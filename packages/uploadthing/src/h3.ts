@@ -18,12 +18,12 @@ import {
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types-runtime";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
 export type { FileRouter };
-export { UTFiles } from "./internal/types";
+export { UTFiles } from "./internal/types-runtime";
 
 type MiddlewareArgs = { req: undefined; res: undefined; event: H3Event };
 

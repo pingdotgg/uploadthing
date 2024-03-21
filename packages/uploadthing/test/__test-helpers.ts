@@ -13,7 +13,7 @@ import type {
   MPUResponse,
   PresignedBase,
   PSPResponse,
-} from "../src/internal/types";
+} from "../src/internal/types-runtime";
 
 export interface MockDbInterface {
   files: any[];

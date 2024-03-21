@@ -12,7 +12,7 @@ import type {
   UploadBuilder,
   UploadBuilderDef,
   Uploader,
-} from "./types";
+} from "./types-runtime";
 
 function internalCreateBuilder<
   TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,

@@ -17,12 +17,12 @@ import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger, logger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types-runtime";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
 export type { FileRouter };
-export { UTFiles } from "./internal/types";
+export { UTFiles } from "./internal/types-runtime";
 
 type MiddlewareArgs = {
   req: ExpressRequest;

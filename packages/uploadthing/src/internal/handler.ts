@@ -22,7 +22,7 @@ import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
-import { UTFiles, VALID_ACTION_TYPES } from "./types";
+import { UTFiles, VALID_ACTION_TYPES } from "./types-runtime";
 import type {
   ActionType,
   FileRouter,
@@ -33,7 +33,7 @@ import type {
   RouteHandlerOptions,
   UTEvents,
   ValidMiddlewareObject,
-} from "./types";
+} from "./types-runtime";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.

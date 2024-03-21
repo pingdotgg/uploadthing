@@ -91,16 +91,6 @@
     "./types": {
       "types": "./types/index.d.ts",
       "default": "./types/index.js"
-    },
-    "./internal/types": {
-      "import": {
-        "types": "./internal/types.d.ts",
-        "default": "./internal/types.js"
-      },
-      "require": {
-        "types": "./internal/types.d.cts",
-        "default": "./internal/types.cjs"
-      }
     }
   },
   "files": [

@@ -3,7 +3,7 @@
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { UTFiles } from "../src/internal/types";
+import { UTFiles } from "../src/internal/types-runtime";
 import { createBuilder } from "../src/internal/upload-builder";
 
 it("typeerrors for invalid input", () => {
