@@ -3,7 +3,7 @@ import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
-import type { ActionType, UTEvents } from "./types-runtime";
+import type { ActionType, UTEvents } from "./types.internal-runtime";
 
 const createAPIRequestUrl = (config: {
   /**

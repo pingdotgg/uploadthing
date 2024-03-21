@@ -1,13 +1,16 @@
 import type { ExtendObjectIf, MaybePromise } from "@uploadthing/shared";
 
-import type { FileRouter, inferEndpointInput } from "./internal/types-runtime";
+import type {
+  FileRouter,
+  inferEndpointInput,
+} from "./internal/types.internal-runtime";
 
 export type {
   inferEndpointInput,
   inferEndpointOutput,
   inferErrorShape,
   FileRouter,
-} from "./internal/types-runtime";
+} from "./internal/types.internal-runtime";
 
 export * from "./sdk/types";
 

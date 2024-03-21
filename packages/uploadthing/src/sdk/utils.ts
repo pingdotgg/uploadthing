@@ -20,7 +20,7 @@ import type {
   PresignedURLs,
   PSPResponse,
   UTEvents,
-} from "../internal/types-runtime";
+} from "../internal/types.internal-runtime";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UploadFilesOptions } from "./types";
 
