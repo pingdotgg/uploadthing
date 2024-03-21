@@ -32,9 +32,8 @@
     "uploadthing": "workspace:6.5.2"
   },
   "dependencies": {
+    "@uploadthing/dropzone": "workspace:0.2.1",
     "@uploadthing/shared": "workspace:6.3.4",
-    "attr-accept": "^2.2.2",
-    "file-selector": "^0.6.0",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {

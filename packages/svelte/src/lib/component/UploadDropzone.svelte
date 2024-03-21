@@ -12,10 +12,10 @@
   lang="ts"
   generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
 >
-  import type { FileWithPath } from "file-selector";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
 
+  import { createDropzone } from "@uploadthing/dropzone/svelte";
   import {
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
@@ -29,8 +29,6 @@
 
   import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-  import type { DropEvent } from "../utils/dropzone";
-  import Dropzone from "./Dropzone.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -72,10 +70,7 @@
   export let __internal_dropzone_disabled: boolean | undefined = undefined;
 
   let files: File[] = [];
-  let uploadProgress = 0;
-  let isDragActive = false;
-  let rootRef: HTMLElement;
-  let inputRef: HTMLInputElement | null;
+  let uploadProgress = __internal_upload_progress ?? 0;
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
@@ -110,26 +105,8 @@
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
 
-  $: styleFieldArg = {
-    __runtime: "svelte",
-    fileTypes,
-    isDragActive,
-    isUploading: $isUploading,
-    ready,
-    uploadProgress,
-  } satisfies DropzoneStyleFieldCallbackArgs;
-
-  $: state = (() => {
-    if (__internal_state) return __internal_state;
-    if (!ready) return "readying";
-    if (ready && !$isUploading) return "ready";
-
-    return "uploading";
-  })();
-
-  const onDrop = (event: CustomEvent<DropEvent>) => {
-    const { acceptedFiles } = event.detail;
-    files = acceptedFiles as FileWithPath[];
+  const onDrop = (acceptedFiles: File[]) => {
+    files = acceptedFiles;
 
     // If mode is auto, start upload immediately
     if (mode === "auto") {
@@ -139,10 +116,22 @@
     }
   };
 
+  const {
+    state: dropzoneState,
+    rootRef,
+    dropzoneRoot,
+    dropzoneInput,
+  } = createDropzone({
+    onDrop,
+    multiple,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    disabled: __internal_dropzone_disabled,
+  });
+
   const handlePaste = (event: ClipboardEvent) => {
     if (!appendOnPaste) return;
     // eslint-disable-next-line no-undef
-    if (document.activeElement !== rootRef) return;
+    if (document.activeElement !== $rootRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
@@ -170,28 +159,35 @@
     if (fileTypes.length === 0) return "Loading...";
     return `Choose File${multiple ? `(s)` : ``}`;
   };
+
+  $: styleFieldArg = {
+    __runtime: "svelte",
+    fileTypes,
+    isDragActive: $dropzoneState.isDragActive,
+    isUploading: $isUploading,
+    ready,
+    uploadProgress,
+  } satisfies DropzoneStyleFieldCallbackArgs;
+
+  $: state = (() => {
+    if (__internal_state) return __internal_state;
+    if (!ready) return "readying";
+    if (ready && !$isUploading) return "ready";
+
+    return "uploading";
+  })();
 </script>
 
-<Dropzone
-  bind:rootRef
-  bind:inputRef
-  bind:isDragActive
-  {state}
-  let:inputProps
-  let:onInputChange
-  options={{
-    disabled: __internal_dropzone_disabled,
-    maxFiles: 2,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-  }}
+<div
+  use:dropzoneRoot
   class={twMerge(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-    isDragActive && "bg-blue-600/10",
+    $dropzoneState.isDragActive && "bg-blue-600/10",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
   style={styleFieldToClassName(appearance?.container, styleFieldArg)}
-  on:drop={onDrop}
+  data-state={state}
 >
   <slot name="upload-icon" state={styleFieldArg}>
     <svg
@@ -227,13 +223,7 @@
     <slot name="label" state={styleFieldArg}>
       {ready ? `Choose files or drag and drop` : `Loading...`}
     </slot>
-    <input
-      class="sr-only"
-      {...inputProps}
-      disabled={!ready}
-      on:change|preventDefault={onInputChange}
-      bind:this={inputRef}
-    />
+    <input use:dropzoneInput class="sr-only" />
   </label>
   <div
     class={twMerge(
@@ -279,4 +269,4 @@
       {/if}
     </slot>
   </button>
-</Dropzone>
+</div>
