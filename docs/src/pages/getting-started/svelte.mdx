@@ -17,16 +17,16 @@ npm install uploadthing @uploadthing/svelte
 
 ### Add env variables
 
+<Callout>
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+
 ```bash copy
 UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
 UPLOADTHING_APP_ID=... # Your app id
 ```
-
-<Callout type="warning">
-  If you don't already have an UploadThing secret key, [sign
-  up](/create-account) and create one from the
-  [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
 
 </Steps>
 
@@ -35,13 +35,22 @@ UPLOADTHING_APP_ID=... # Your app id
 <Steps>
 ### Creating your first FileRoute
 
-All files uploaded to UploadThing are associated with a FileRoute. Think of a
-FileRoute similar to an endpoint, it has:
+<Callout>
+  For more details on how to create a file router, see the
+  [router](/api-reference/server#file-routes) docs
+</Callout>
+
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
 - Max file size
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
+
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/api-reference/server#file-routes).
 
 ```ts copy filename="src/lib/server/uploadthing.ts"
 import { createUploadthing } from "uploadthing/server";
@@ -79,12 +88,12 @@ export type OurFileRouter = typeof ourFileRouter;
 
 ### Create an API route using the FileRouter
 
-<Callout type="warning">
-  **Note:** This is the ONLY FILE WHERE THE PATH MATTERS. You need to serve this
-  API from `/api/uploadthing` on your application.
+<Callout type="info">
+  File path here doesn't matter, you can serve this from any route. We recommend
+  serving it from `/api/uploadthing`.
 </Callout>
 
-```ts copy filename="src/hooks.server.ts"
+```ts copy filename="src/routes/api/uploadthing/+server.ts"
 import { UPLOADTHING_APP_ID, UPLOADTHING_SECRET } from "$env/static/private";
 import { uploadRouter } from "$lib/server/uploadthing";
 
@@ -96,13 +105,35 @@ const { GET, POST } = createServerHandler({
   config: {
     uploadthingId: UPLOADTHING_APP_ID,
     uploadthingSecret: UPLOADTHING_SECRET,
+    // Apply an (optional) custom config
   },
 });
 
 export { GET, POST };
 ```
 
-### Creating the UploadThing Helpers (optional)
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
+
+### Add UploadThing's Styles
+
+<Tabs items={["Tailwind", "Not Tailwind"]}>
+  <Tab>
+    <TailwindSetup />
+  </Tab>
+  <Tab>
+    Include our CSS file in the root layout to make sure the components look right!
+
+    ```svelte copy filename="src/+layout.svelte"
+    <script lang="ts">
+        import "@uploadthing/svelte/styles.css";
+    </script>
+    ```
+
+  </Tab>
+</Tabs>
+
+### Creating the UploadThing Helpers (recommended)
 
 Generating the `createUploader` helper lets you pass your generic `FileRouter`
 once and then have typesafe uploaders everywhere, instead of having to pass the
@@ -119,17 +150,6 @@ import type { OurFileRouter } from "../server/uploadthing";
 
 export const { createUploader, useUploadThing } =
   generateSvelteHelpers<OurFileRouter>();
-```
-
-### Include our stylesheet
-
-You need to import our styles for the button to look right. Import this in the
-root `+layout.svelte` to make it available everywhere.
-
-```svelte copy filename="src/+layout.svelte"
-<script lang="ts">
-    import "@uploadthing/svelte/styles.css";
-</script>
 ```
 
 ### Use the FileRouter in your app
@@ -158,9 +178,7 @@ generic `FileRouter` to this function if you're importing it directly from
   });
 </script>
 
-<main
-  class="flex min-h-screen flex-col items-center justify-center gap-16 p-24"
->
+<main>
   <Uploader {uploader} />
 </main>
 ```
@@ -200,8 +218,25 @@ separately. Both are included in the `@uploadthing/svelte` package.
 </div>
 ```
 
-Or you can create your own components using the `useUploadThing` helper
-function.
+</Steps>
+
+## Advanced usage: `useUploadThing`
+
+For advanced use cases, the premade components might not be flexible enough to
+suit your needs. In that case, you can use the `useUploadThing` hook to build
+your own components with a custom upload flow:
+
+<Steps>
+
+### Create the hook
+
+First, generate a typed hook using the `generateSvelteHelpers` function from
+`@uploadthing/svelte` as show above.
+
+### Use the hook
+
+Then, use the hook in your component. By using the hook, you have full control
+of when and how to upload files.
 
 ```svelte copy filename="src/routes/+page.svelte"
 <script lang="ts">
@@ -235,9 +270,10 @@ function.
 Check out our [theming guide](/theming) to know the basics about
 [components anatomy](/theming#components-anatomy) and
 [theming props](/theming#theming-props) as they still apply to
-`@uploadthing/svelte`. However,
-[content customization](/theming#content-customization) makes use of Svelte's
-named slots and slot props.
+`@uploadthing/svelte`.
+
+However, [content customization](/theming#content-customization) makes use of
+Svelte's named slots and slot props.
 
 ### UploadButton content customization
 
@@ -245,6 +281,9 @@ named slots and slot props.
 <UploadButton {uploader}>
   <span slot="button-content" let:state>
     {state.isUploading ? "Uploading..." : "Pick a file"}
+  </span>
+  <span slot="clear-btn" let:state>
+    Clear files
   </span>
   <span slot="allowed-content" let:state>
     You can choose between {state.fileTypes.join(", ")} files
