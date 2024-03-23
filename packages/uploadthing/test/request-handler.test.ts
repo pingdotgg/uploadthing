@@ -63,7 +63,7 @@ const handlers = createRouteHandler({
 });
 
 describe("errors for invalid request input", () => {
-  it("404s for invalid slugs", async ({ db: _ }) => {
+  it("404s for invalid slugs", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("i-dont-exist", "upload"), {
         method: "POST",
@@ -81,7 +81,7 @@ describe("errors for invalid request input", () => {
     });
   });
 
-  it("400s for invalid action type", async ({ db: _ }) => {
+  it("400s for invalid action type", async ({ db }) => {
     const res = await handlers.POST(
       // @ts-expect-error - invalid is not a valid action type
       new Request(createApiUrl("imageUploader", "invalid"), {
@@ -104,7 +104,7 @@ describe("errors for invalid request input", () => {
 });
 
 describe("file route config", () => {
-  it("blocks unmatched file types", async ({ db: _ }) => {
+  it("blocks unmatched file types", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -124,7 +124,7 @@ describe("file route config", () => {
   });
 
   it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async ({
-    db: _,
+    db,
   }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
@@ -143,7 +143,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({});
   });
 
-  it("blocks for too many files", async ({ db: _ }) => {
+  it("blocks for too many files", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -168,7 +168,7 @@ describe("file route config", () => {
 });
 
 describe(".input()", () => {
-  it("blocks when input is missing", async ({ db: _ }) => {
+  it("blocks when input is missing", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -191,7 +191,7 @@ describe(".input()", () => {
     });
   });
 
-  it("blocks when input doesn't match schema", async ({ db: _ }) => {
+  it("blocks when input doesn't match schema", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -217,7 +217,7 @@ describe(".input()", () => {
     });
   });
 
-  it("forwards input to middleware", async ({ db: _ }) => {
+  it("forwards input to middleware", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -239,7 +239,7 @@ describe(".input()", () => {
 });
 
 describe(".middleware()", () => {
-  it("forwards files to middleware", async ({ db: _ }) => {
+  it("forwards files to middleware", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -260,7 +260,7 @@ describe(".middleware()", () => {
     expect(res.status).toBe(200);
   });
 
-  it("early exits if middleware throws", async ({ db: _ }) => {
+  it("early exits if middleware throws", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("middlewareThrows", "upload"), {
         method: "POST",
@@ -290,7 +290,7 @@ describe(".middleware()", () => {
 });
 
 describe(".onUploadComplete()", () => {
-  it("forwards correct args to onUploadComplete handler", async ({ db: _ }) => {
+  it("forwards correct args to onUploadComplete handler", async ({ db }) => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
@@ -332,7 +332,7 @@ describe(".onUploadComplete()", () => {
     });
   });
 
-  it("is blocked on missing signature", async ({ db: _ }) => {
+  it("is blocked on missing signature", async ({ db }) => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
@@ -363,7 +363,7 @@ describe(".onUploadComplete()", () => {
     expect(uploadCompleteMock).not.toHaveBeenCalled();
   });
 
-  it("is blocked on invalid signature", async ({ db: _ }) => {
+  it("is blocked on invalid signature", async ({ db }) => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},

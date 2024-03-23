@@ -50,6 +50,8 @@ const config = {
         "@typescript-eslint/no-unsafe-assignment": "off",
         "@typescript-eslint/no-unsafe-argument": "off",
         "@typescript-eslint/require-await": "off",
+        // Allow unused vars (required to consume test context hooks)
+        "@typescript-eslint/no-unused-vars": "off",
       },
     },
   ],

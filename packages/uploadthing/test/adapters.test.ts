@@ -33,7 +33,7 @@ describe("adapters:h3", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("gets H3Event in middleware args", async ({ db: _ }) => {
+  it("gets H3Event in middleware args", async ({ db }) => {
     const eventHandler = createRouteHandler({
       router,
       config: {
@@ -103,7 +103,7 @@ describe("adapters:server", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("gets Request in middleware args", async ({ db: _ }) => {
+  it("gets Request in middleware args", async ({ db }) => {
     const handlers = createRouteHandler({
       router,
       config: {
@@ -163,7 +163,7 @@ describe("adapters:next", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("gets NextRequest in middleware args", async ({ db: _ }) => {
+  it("gets NextRequest in middleware args", async ({ db }) => {
     const handlers = createRouteHandler({
       router,
       config: {
@@ -259,7 +259,7 @@ describe("adapters:next-legacy", async () => {
   }
 
   it("gets NextApiRequest and NextApiResponse in middleware args", async ({
-    db: _,
+    db,
   }) => {
     const handler = createRouteHandler({
       router,
@@ -345,7 +345,7 @@ describe("adapters:express", async () => {
   };
 
   it("gets express.Request and express.Response in middleware args", async ({
-    db: _,
+    db,
   }) => {
     const server = startServer();
 
@@ -391,7 +391,7 @@ describe("adapters:express", async () => {
     server.close();
   });
 
-  it("works with some standard built-in middlewares", async ({ db: _ }) => {
+  it("works with some standard built-in middlewares", async ({ db }) => {
     const server = startServer((app) => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
@@ -411,7 +411,7 @@ describe("adapters:express", async () => {
     server.close();
   });
 
-  it("works with body-parser middleware", async ({ db: _ }) => {
+  it("works with body-parser middleware", async ({ db }) => {
     const bodyParser = await import("body-parser");
     const server = startServer((app) => {
       app.use(bodyParser.json());
@@ -470,7 +470,7 @@ describe("adapters:fastify", async () => {
   };
 
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
-    db: _,
+    db,
   }) => {
     const server = await startServer();
 
