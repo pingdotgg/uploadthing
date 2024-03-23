@@ -17,26 +17,6 @@ import type {
   PSPResponse,
 } from "../src/internal/types";
 
-export interface MockDbInterface {
-  files: any[];
-  insertFile: (file: any) => void;
-  getFileByKey: (key: string) => any;
-}
-
-export const it = itBase.extend<{ db: MockDbInterface }>({
-  // eslint-disable-next-line no-empty-pattern
-  db: async ({}, use) => {
-    const files: any[] = [];
-    const db: MockDbInterface = {
-      files,
-      insertFile: (file) => files.push(file),
-      getFileByKey: (key) => files.find((f) => f.key === key),
-    };
-    await use(db);
-    files.length = 0;
-  },
-});
-
 export const s3Mock = vi.fn();
 export const staticAssetMock = vi.fn();
 export const utApiMock = vi.fn();
@@ -287,26 +267,40 @@ const goodS3Mocks = [
   }),
 ];
 
+export interface MockDbInterface {
+  files: any[];
+  insertFile: (file: any) => void;
+  getFileByKey: (key: string) => any;
+}
+
 export const msw = setupServer(...goodS3Mocks, ...staticAssetServer);
 beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
 afterAll(() => msw.close());
 
-export const useDb = (db: MockDbInterface) => {
-  msw.use(...utapiMocks(db));
-};
-export const useBadS3 = () => {
-  msw.use(...badS3Mocks);
-};
+export const useDb = (db: MockDbInterface) => msw.use(...utapiMocks(db));
+export const useBadS3 = () => msw.use(...badS3Mocks);
+
+export const it = itBase.extend<{ db: MockDbInterface }>({
+  // eslint-disable-next-line no-empty-pattern
+  db: async ({}, use) => {
+    const files: any[] = [];
+    const db: MockDbInterface = {
+      files,
+      insertFile: (file) => files.push(file),
+      getFileByKey: (key) => files.find((f) => f.key === key),
+    };
+    useDb(db); // prepend msw listeners to use db instance
+    await use(db); // provide test context
+    files.length = 0; // clear files after each test
+  },
+});
 
 /**
  * Starts an Express server and sets up mocked handlers using MSW
  */
-export const setupUTServer = <TExtraRoutes extends FileRouter>(opts: {
-  db: MockDbInterface;
+export const setupUTServer = <TExtraRoutes extends FileRouter>(opts?: {
   extraRoutes?: TExtraRoutes;
 }) => {
-  useDb(opts.db);
-
   const f = createUploadthing({
     errorFormatter(err) {
       // eslint-disable-next-line no-console
@@ -322,7 +316,7 @@ export const setupUTServer = <TExtraRoutes extends FileRouter>(opts: {
       })
       .onUploadError(onErrorMock)
       .onUploadComplete(uploadCompleteMock),
-    ...opts.extraRoutes,
+    ...opts?.extraRoutes,
   };
 
   const app = express();

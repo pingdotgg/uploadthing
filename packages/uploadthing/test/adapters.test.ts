@@ -6,14 +6,12 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
-import type { MockDbInterface } from "./__test-helpers";
 import {
   baseHeaders,
   createApiUrl,
   it,
   middlewareMock,
   uploadCompleteMock,
-  useDb,
   utApiMock,
 } from "./__test-helpers";
 
@@ -35,8 +33,7 @@ describe("adapters:h3", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("gets H3Event in middleware args", async ({ db }) => {
-    useDb(db);
+  it("gets H3Event in middleware args", async ({ db: _ }) => {
     const eventHandler = createRouteHandler({
       router,
       config: {
@@ -106,8 +103,7 @@ describe("adapters:server", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("gets Request in middleware args", async ({ db }) => {
-    useDb(db);
+  it("gets Request in middleware args", async ({ db: _ }) => {
     const handlers = createRouteHandler({
       router,
       config: {
@@ -167,8 +163,7 @@ describe("adapters:next", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("gets NextRequest in middleware args", async ({ db }) => {
-    useDb(db);
+  it("gets NextRequest in middleware args", async ({ db: _ }) => {
     const handlers = createRouteHandler({
       router,
       config: {
@@ -264,9 +259,8 @@ describe("adapters:next-legacy", async () => {
   }
 
   it("gets NextApiRequest and NextApiResponse in middleware args", async ({
-    db,
+    db: _,
   }) => {
-    useDb(db);
     const handler = createRouteHandler({
       router,
       config: {
@@ -331,11 +325,7 @@ describe("adapters:express", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = (
-    db: MockDbInterface,
-    preregisters?: (app: express.Express) => void,
-  ) => {
-    useDb(db);
+  const startServer = (preregisters?: (app: express.Express) => void) => {
     const app = express.default();
     preregisters?.(app);
     app.use(
@@ -355,9 +345,9 @@ describe("adapters:express", async () => {
   };
 
   it("gets express.Request and express.Response in middleware args", async ({
-    db,
+    db: _,
   }) => {
-    const server = startServer(db);
+    const server = startServer();
 
     const url = `${server.url}/api/uploadthing/`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
@@ -401,8 +391,8 @@ describe("adapters:express", async () => {
     server.close();
   });
 
-  it("works with some standard built-in middlewares", async ({ db }) => {
-    const server = startServer(db, (app) => {
+  it("works with some standard built-in middlewares", async ({ db: _ }) => {
+    const server = startServer((app) => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
     });
@@ -421,9 +411,9 @@ describe("adapters:express", async () => {
     server.close();
   });
 
-  it("works with body-parser middleware", async ({ db }) => {
+  it("works with body-parser middleware", async ({ db: _ }) => {
     const bodyParser = await import("body-parser");
-    const server = startServer(db, (app) => {
+    const server = startServer((app) => {
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));
     });
@@ -463,8 +453,7 @@ describe("adapters:fastify", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = async (db: MockDbInterface) => {
-    useDb(db);
+  const startServer = async () => {
     const app = fastify.default();
     await app.register(createRouteHandler, {
       router,
@@ -481,9 +470,9 @@ describe("adapters:fastify", async () => {
   };
 
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
-    db,
+    db: _,
   }) => {
-    const server = await startServer(db);
+    const server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {

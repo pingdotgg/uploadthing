@@ -16,8 +16,8 @@ import {
 } from "./__test-helpers";
 
 describe("uploadFiles", () => {
-  it("uploads with presigned post", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db });
+  it("uploads with presigned post", async ({ db: _ }) => {
+    const { uploadFiles, close } = setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -52,8 +52,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("uploads with multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db });
+  it("uploads with multipart upload", async ({ db: _ }) => {
+    const { uploadFiles, close } = setupUTServer();
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
@@ -91,8 +91,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("sends custom headers if set (static object)", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db });
+  it("sends custom headers if set (static object)", async ({ db: _ }) => {
+    const { uploadFiles, close } = setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -124,8 +124,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("sends custom headers if set (async function)", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db });
+  it("sends custom headers if set (async function)", async ({ db: _ }) => {
+    const { uploadFiles, close } = setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -157,8 +157,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("reports of failed post upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db });
+  it("reports of failed post upload", async ({ db: _ }) => {
+    const { uploadFiles, close } = setupUTServer();
     useBadS3();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -192,8 +192,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("reports of failed multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db });
+  it("reports of failed multipart upload", async ({ db: _ }) => {
+    const { uploadFiles, close } = setupUTServer();
     useBadS3();
 
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
