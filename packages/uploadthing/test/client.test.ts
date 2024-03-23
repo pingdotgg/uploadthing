@@ -83,6 +83,7 @@ describe("uploadFiles", () => {
       "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
         method: "POST",
+        body: expect.any(FormData),
       }),
     );
 
@@ -122,6 +123,7 @@ describe("uploadFiles", () => {
       "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
       expect.objectContaining({
         method: "PUT",
+        body: expect.any(Blob),
       }),
     );
 

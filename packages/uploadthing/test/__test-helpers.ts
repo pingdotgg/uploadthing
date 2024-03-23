@@ -85,7 +85,7 @@ export const msw = setupServer(
     s3Mock(request.url, {
       method: request.method,
       headers: Object.fromEntries(request.headers.entries()),
-      // body: fd,
+      body: await request.formData(),
     });
     return HttpResponse.json(null, { status: 200 });
   }),
@@ -93,7 +93,7 @@ export const msw = setupServer(
     s3Mock(request.url, {
       method: request.method,
       headers: Object.fromEntries(request.headers.entries()),
-      // body: await request.formData(),
+      body: await request.blob(),
     });
     return HttpResponse.json(null, {
       status: 204,
@@ -272,7 +272,7 @@ export const useBadS3 = () =>
       s3Mock(request.url, {
         method: request.method,
         headers: Object.fromEntries(request.headers.entries()),
-        // body: await request.formData(),
+        body: await request.formData(),
       });
       return HttpResponse.json(null, { status: 403 });
     }),
@@ -280,7 +280,7 @@ export const useBadS3 = () =>
       s3Mock(request.url, {
         method: request.method,
         headers: Object.fromEntries(request.headers.entries()),
-        // body: await request.formData(),
+        body: await request.blob(),
       });
       return HttpResponse.json(null, { status: 204 });
     }),

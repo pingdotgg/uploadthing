@@ -49,7 +49,7 @@ describe("uploadFiles", () => {
     expect(s3Mock).toHaveBeenCalledWith(
       "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
-        // body: expect.any(FormData),
+        body: expect.any(FormData),
         method: "POST",
       }),
     );
