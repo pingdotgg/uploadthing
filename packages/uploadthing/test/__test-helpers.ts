@@ -11,7 +11,6 @@ import { createRouteHandler, createUploadthing } from "../src/express";
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
 import type {
   ActionType,
-  FileRouter,
   MPUResponse,
   PresignedBase,
   PSPResponse,
@@ -78,174 +77,10 @@ const mockPresigned = (file: {
   };
 };
 
-const utapiMocks = (db: MockDbInterface) => [
-  http.post(
-    "https://uploadthing.com/api/prepareUpload",
-    async ({ request }) => {
-      const body = (await request.json()) as { files: any[] } & Record<
-        string,
-        string
-      >;
-
-      utApiMock(request.url, {
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        body: JSON.stringify(body),
-      });
-
-      const presigneds = body.files.map((file) => {
-        const presigned = mockPresigned(file);
-        db.insertFile({
-          ...file,
-          key: presigned.key,
-          callbackUrl: body.callbackUrl,
-          callbackSlug: body.callbackSlug,
-        });
-        return presigned;
-      });
-      return HttpResponse.json(presigneds);
-    },
-  ),
-  http.post("https://uploadthing.com/api/uploadFiles", async ({ request }) => {
-    const body = (await request.json()) as { files: any[] };
-
-    utApiMock(request.url, {
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-      body: JSON.stringify(body),
-    });
-
-    const presigneds = body?.files.map((file) => {
-      const presigned = mockPresigned(file);
-      db.insertFile({
-        ...file,
-        key: presigned.key,
-      });
-      return presigned;
-    });
-    return HttpResponse.json({ data: presigneds });
-  }),
-  http.post(
-    "https://uploadthing.com/api/completeMultipart",
-    async ({ request }) => {
-      const body = await request.json();
-
-      utApiMock(request.url, {
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        body: JSON.stringify(body),
-      });
-
-      return HttpResponse.json({ success: true });
-    },
-  ),
-  http.post(
-    "https://uploadthing.com/api/failureCallback",
-    async ({ request }) => {
-      const body = await request.json();
-
-      utApiMock(request.url, {
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        body: JSON.stringify(body),
-      });
-
-      return HttpResponse.json({ success: true });
-    },
-  ),
-  http.get(
-    "https://uploadthing.com/api/pollUpload/:key",
-    async ({ request }) => {
-      utApiMock(request.url, {
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-      });
-
-      const url = new URL(request.url);
-      const key = url.pathname.slice("/api/pollUpload/".length);
-      return HttpResponse.json({
-        status: "done",
-        fileData: db.getFileByKey(key),
-      });
-    },
-  ),
-  http.post(
-    "https://uploadthing.com/api/requestFileAccess",
-    async ({ request }) => {
-      const body = await request.json();
-
-      utApiMock(request.url, {
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        body: JSON.stringify(body),
-      });
-
-      return HttpResponse.json({
-        url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
-      });
-    },
-  ),
-  http.post(
-    "https://uploadthing.com/api/serverCallback",
-    async ({ request }) => {
-      const body = await request.json();
-
-      utApiMock(request.url, {
-        method: request.method,
-        headers: Object.fromEntries(request.headers.entries()),
-        body: JSON.stringify(body),
-      });
-
-      return HttpResponse.json({ success: true });
-    },
-  ),
-  http.get("https://uploadthing.com/api/serverCallback", ({ request }) => {
-    utApiMock(request.url, {
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-    });
-
-    return HttpResponse.json({ success: true });
-  }),
-];
-
-const staticAssetServer = [
-  http.get("https://cdn.foo.com/:fileKey", ({ request }) => {
-    staticAssetMock(request.url);
-
-    return HttpResponse.text("Lorem ipsum doler sit amet", {
-      headers: { "content-type": "text/plain" },
-    });
-  }),
-  http.get("https://utfs.io/f/:key", ({ request }) => {
-    staticAssetMock(request.url);
-
-    return HttpResponse.text("Lorem ipsum doler sit amet", {
-      headers: { "content-type": "text/plain" },
-    });
-  }),
-];
-
-const badS3Mocks = [
-  http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
-    s3Mock(request.url, {
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-      // body: await request.formData(),
-    });
-    return HttpResponse.json(null, { status: 403 });
-  }),
-  http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
-    s3Mock(request.url, {
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-      // body: await request.formData(),
-    });
-    return HttpResponse.json(null, { status: 204 });
-  }),
-];
-
-const goodS3Mocks = [
+export const msw = setupServer(
+  /**
+   * S3
+   */
   http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
     s3Mock(request.url, {
       method: request.method,
@@ -265,7 +100,26 @@ const goodS3Mocks = [
       headers: { ETag: "abc123" },
     });
   }),
-];
+  /**
+   * Static Assets
+   */
+  http.get("https://cdn.foo.com/:fileKey", ({ request }) => {
+    staticAssetMock(request.url);
+
+    return HttpResponse.text("Lorem ipsum doler sit amet", {
+      headers: { "content-type": "text/plain" },
+    });
+  }),
+  http.get("https://utfs.io/f/:key", ({ request }) => {
+    staticAssetMock(request.url);
+
+    return HttpResponse.text("Lorem ipsum doler sit amet", {
+      headers: { "content-type": "text/plain" },
+    });
+  }),
+);
+beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
+afterAll(() => msw.close());
 
 export interface MockDbInterface {
   files: any[];
@@ -273,13 +127,172 @@ export interface MockDbInterface {
   getFileByKey: (key: string) => any;
 }
 
-export const msw = setupServer(...goodS3Mocks, ...staticAssetServer);
-beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
-afterAll(() => msw.close());
+/**
+ * Prepend MSW listeners to mock the UploadThing API
+ * Provide the `db` instance to store data within the test
+ */
+export const useDb = (db: MockDbInterface) =>
+  msw.use(
+    http.post(
+      "https://uploadthing.com/api/prepareUpload",
+      async ({ request }) => {
+        const body = (await request.json()) as { files: any[] } & Record<
+          string,
+          string
+        >;
 
-export const useDb = (db: MockDbInterface) => msw.use(...utapiMocks(db));
-export const useBadS3 = () => msw.use(...badS3Mocks);
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+          body: JSON.stringify(body),
+        });
 
+        const presigneds = body.files.map((file) => {
+          const presigned = mockPresigned(file);
+          db.insertFile({
+            ...file,
+            key: presigned.key,
+            callbackUrl: body.callbackUrl,
+            callbackSlug: body.callbackSlug,
+          });
+          return presigned;
+        });
+        return HttpResponse.json(presigneds);
+      },
+    ),
+    http.post(
+      "https://uploadthing.com/api/uploadFiles",
+      async ({ request }) => {
+        const body = (await request.json()) as { files: any[] };
+
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+          body: JSON.stringify(body),
+        });
+
+        const presigneds = body?.files.map((file) => {
+          const presigned = mockPresigned(file);
+          db.insertFile({
+            ...file,
+            key: presigned.key,
+          });
+          return presigned;
+        });
+        return HttpResponse.json({ data: presigneds });
+      },
+    ),
+    http.post(
+      "https://uploadthing.com/api/completeMultipart",
+      async ({ request }) => {
+        const body = await request.json();
+
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+          body: JSON.stringify(body),
+        });
+
+        return HttpResponse.json({ success: true });
+      },
+    ),
+    http.post(
+      "https://uploadthing.com/api/failureCallback",
+      async ({ request }) => {
+        const body = await request.json();
+
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+          body: JSON.stringify(body),
+        });
+
+        return HttpResponse.json({ success: true });
+      },
+    ),
+    http.get(
+      "https://uploadthing.com/api/pollUpload/:key",
+      async ({ request }) => {
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+        });
+
+        const url = new URL(request.url);
+        const key = url.pathname.slice("/api/pollUpload/".length);
+        return HttpResponse.json({
+          status: "done",
+          fileData: db.getFileByKey(key),
+        });
+      },
+    ),
+    http.post(
+      "https://uploadthing.com/api/requestFileAccess",
+      async ({ request }) => {
+        const body = await request.json();
+
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+          body: JSON.stringify(body),
+        });
+
+        return HttpResponse.json({
+          url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
+        });
+      },
+    ),
+    http.post(
+      "https://uploadthing.com/api/serverCallback",
+      async ({ request }) => {
+        const body = await request.json();
+
+        utApiMock(request.url, {
+          method: request.method,
+          headers: Object.fromEntries(request.headers.entries()),
+          body: JSON.stringify(body),
+        });
+
+        return HttpResponse.json({ success: true });
+      },
+    ),
+    http.get("https://uploadthing.com/api/serverCallback", ({ request }) => {
+      utApiMock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+      });
+
+      return HttpResponse.json({ success: true });
+    }),
+  );
+
+export const useBadS3 = () =>
+  msw.use(
+    http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+      s3Mock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        // body: await request.formData(),
+      });
+      return HttpResponse.json(null, { status: 403 });
+    }),
+    http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
+      s3Mock(request.url, {
+        method: request.method,
+        headers: Object.fromEntries(request.headers.entries()),
+        // body: await request.formData(),
+      });
+      return HttpResponse.json(null, { status: 204 });
+    }),
+  );
+
+/**
+ * Extend the base `it` function to provide a `db` instance to our tests
+ * and extend the MSW handlers to mock the UploadThing API
+ *
+ * NOTE:: Tests **must** destruct the `db` instance from the test context for it to be used
+ * @example it("should do something", ({ db }) => { ... })
+ */
 export const it = itBase.extend<{ db: MockDbInterface }>({
   // eslint-disable-next-line no-empty-pattern
   db: async ({}, use) => {
@@ -298,9 +311,7 @@ export const it = itBase.extend<{ db: MockDbInterface }>({
 /**
  * Starts an Express server and sets up mocked handlers using MSW
  */
-export const setupUTServer = <TExtraRoutes extends FileRouter>(opts?: {
-  extraRoutes?: TExtraRoutes;
-}) => {
+export const setupUTServer = () => {
   const f = createUploadthing({
     errorFormatter(err) {
       // eslint-disable-next-line no-console
@@ -316,7 +327,6 @@ export const setupUTServer = <TExtraRoutes extends FileRouter>(opts?: {
       })
       .onUploadError(onErrorMock)
       .onUploadComplete(uploadCompleteMock),
-    ...opts?.extraRoutes,
   };
 
   const app = express();
