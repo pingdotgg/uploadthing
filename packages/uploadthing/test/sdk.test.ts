@@ -3,11 +3,7 @@ import { describe, expect, expectTypeOf } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
-import {
-  fetchMock,
-  it as itBase,
-  mockExternalRequests,
-} from "./__test-helpers";
+import { it as itBase } from "./__test-helpers";
 
 describe("UTFile", () => {
   it("can be constructed using Blob", async () => {
@@ -32,7 +28,6 @@ const it = itBase.extend<{ utapi: UTApi }>({
     await use(
       new UTApi({
         apiKey: "sk_foo",
-        fetch: mockExternalRequests(db),
       }),
     );
   },
