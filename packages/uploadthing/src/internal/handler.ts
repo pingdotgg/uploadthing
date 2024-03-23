@@ -251,7 +251,7 @@ export const buildRequestHandler = <
 
       const verified = await verifySignature(
         JSON.stringify(maybeReqBody),
-        req.headers.get("x-payload-signature"),
+        req.headers.get("x-uploadthing-signature"),
         preferredOrEnvSecret,
       );
       logger.debug("Signature verified:", verified);

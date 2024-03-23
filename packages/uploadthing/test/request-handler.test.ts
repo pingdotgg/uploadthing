@@ -320,7 +320,7 @@ describe(".onUploadComplete()", () => {
         method: "POST",
         headers: {
           "uploadthing-hook": "callback",
-          "x-payload-signature": signature,
+          "x-uploadthing-signature": signature,
         },
         body: payload,
       }),
@@ -393,7 +393,7 @@ describe(".onUploadComplete()", () => {
         method: "POST",
         headers: {
           "uploadthing-hook": "callback",
-          "x-payload-signature": signature,
+          "x-uploadthing-signature": signature,
         },
         body: payload,
       }),

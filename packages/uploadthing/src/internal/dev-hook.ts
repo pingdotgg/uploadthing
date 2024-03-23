@@ -69,7 +69,7 @@ export const conditionalDevServer = async (opts: {
           body: payload,
           headers: {
             "uploadthing-hook": "callback",
-            "x-payload-signature": signature,
+            "x-uploadthing-signature": signature,
           },
         });
         if (isValidResponse(response)) {
