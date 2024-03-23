@@ -8,6 +8,7 @@ on:
 jobs:
   release:
     if: contains(github.event.pull_request.labels.*.name, 'release canary')
+    timeout-minutes: 10
     name: Build & Publish a canary release
     runs-on: ubuntu-latest
 
