@@ -9,6 +9,7 @@ import {
   resolveMaybeUrlArg,
   safeParseJSON,
   UploadThingError,
+  verifySignature,
 } from "@uploadthing/shared";
 import type {
   ExpandedRouteConfig,
@@ -245,6 +246,20 @@ export const buildRequestHandler = <
           code: "BAD_REQUEST",
           message: "Invalid request body",
           cause: maybeReqBody,
+        });
+      }
+
+      const verified = await verifySignature(
+        JSON.stringify(maybeReqBody),
+        req.headers.get("x-uploadthing-signature"),
+        preferredOrEnvSecret,
+      );
+      logger.debug("Signature verified:", verified);
+      if (!verified) {
+        logger.error("Invalid signature");
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid signature",
         });
       }
 
