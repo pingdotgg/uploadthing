@@ -20,8 +20,6 @@ import {
 export const setupUTServer = () => {
   const f = createUploadthing({
     errorFormatter(err) {
-      // eslint-disable-next-line no-console
-      console.log(err, err.cause);
       return { message: err.message };
     },
   });
