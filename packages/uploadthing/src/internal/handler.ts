@@ -36,6 +36,34 @@ import type {
 } from "./types";
 
 /**
+ * Verifies the signature of the callback request payload
+ */
+const verifySignature = async (
+  payload: any,
+  signature: string | null,
+  secret: string,
+) => {
+  const sig = signature?.slice("hmac-sha256=".length);
+  if (!sig) return false;
+
+  const encoder = new TextEncoder();
+  const algorithm = { name: "HMAC", hash: "SHA-256" };
+  const signingKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    algorithm,
+    false,
+    ["verify"],
+  );
+  return await crypto.subtle.verify(
+    algorithm,
+    signingKey,
+    Uint8Array.from(Buffer.from(sig, "hex")),
+    encoder.encode(JSON.stringify(payload)),
+  );
+};
+
+/**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
 
@@ -245,6 +273,20 @@ export const buildRequestHandler = <
           code: "BAD_REQUEST",
           message: "Invalid request body",
           cause: maybeReqBody,
+        });
+      }
+
+      const verified = await verifySignature(
+        maybeReqBody,
+        req.headers.get("x-payload-signature"),
+        preferredOrEnvSecret,
+      );
+      logger.debug("Signature verified:", verified);
+      if (!isDev && !verified) {
+        logger.error("Invalid signature");
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid signature",
         });
       }
 
