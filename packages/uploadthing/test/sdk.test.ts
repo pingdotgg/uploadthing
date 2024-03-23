@@ -3,7 +3,13 @@ import { describe, expect, expectTypeOf } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
-import { it as itBase } from "./__test-helpers";
+import {
+  it as itBase,
+  s3Mock,
+  staticAssetMock,
+  useDb,
+  utApiMock,
+} from "./__test-helpers";
 
 describe("UTFile", () => {
   it("can be constructed using Blob", async () => {
@@ -25,6 +31,7 @@ describe("UTFile", () => {
 
 const it = itBase.extend<{ utapi: UTApi }>({
   utapi: async ({ db }, use) => {
+    useDb(db);
     await use(
       new UTApi({
         apiKey: "sk_foo",
@@ -39,15 +46,14 @@ describe("uploadFiles", () => {
   it("uploads successfully", async ({ utapi }) => {
     const result = await utapi.uploadFiles(fooFile);
 
-    expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(fetchMock).toHaveBeenNthCalledWith(
+    expect(utApiMock).toHaveBeenCalledTimes(2);
+    expect(utApiMock).toHaveBeenNthCalledWith(
       1,
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"foo.txt","type":"text/plain","size":3}],"metadata":{},"contentDisposition":"inline"}',
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -55,22 +61,23 @@ describe("uploadFiles", () => {
         method: "POST",
       },
     );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
-      "https://bucket.s3.amazonaws.com",
+    expect(s3Mock).toHaveBeenCalledOnce();
+    expect(s3Mock).toHaveBeenCalledWith(
+      "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
-        body: expect.any(FormData),
+        // body: expect.any(FormData),
         method: "POST",
       }),
     );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      3,
+    expect(utApiMock).toHaveBeenNthCalledWith(
+      2,
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       {
         headers: {
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
+        method: "GET",
       },
     );
 
@@ -104,7 +111,7 @@ describe("uploadFiles", () => {
     await utapi.uploadFiles(file);
     expect(file.type).toBe("text/plain");
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       expect.objectContaining({}),
     );
@@ -121,13 +128,12 @@ describe("uploadFiles", () => {
     await utapi.uploadFiles(fileWithId);
     expect(fileWithId.customId).toBe("foo");
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"foo.txt","type":"text/plain","size":3,"customId":"foo"}],"metadata":{},"contentDisposition":"inline"}',
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -144,15 +150,17 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/foo.txt",
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(4); // download, request url, upload, poll
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
+    expect(staticAssetMock).toHaveBeenCalledOnce(); // download, request url, upload, poll
+    expect(utApiMock).toHaveBeenCalledTimes(2);
+    expect(s3Mock).toHaveBeenCalledOnce();
+
+    expect(utApiMock).toHaveBeenNthCalledWith(
+      1,
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"foo.txt","type":"text/plain","size":26}],"metadata":{},"contentDisposition":"inline"}',
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -160,13 +168,14 @@ describe("uploadFilesFromUrl", () => {
         method: "POST",
       },
     );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      3,
-      "https://bucket.s3.amazonaws.com",
-      expect.objectContaining({}),
+    expect(s3Mock).toHaveBeenCalledWith(
+      "https://bucket.s3.amazonaws.com/",
+      expect.objectContaining({
+        method: "POST",
+      }),
     );
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      4,
+    expect(utApiMock).toHaveBeenNthCalledWith(
+      2,
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       expect.objectContaining({}),
     );
@@ -207,13 +216,12 @@ describe("uploadFilesFromUrl", () => {
       name: "bar.txt",
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"bar.txt","type":"text/plain","size":26}],"metadata":{},"contentDisposition":"inline"}',
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -229,13 +237,12 @@ describe("uploadFilesFromUrl", () => {
       customId: "my-custom-id",
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
         body: '{"files":[{"name":"foo.txt","type":"text/plain","size":26,"customId":"my-custom-id"}],"metadata":{},"contentDisposition":"inline"}',
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -324,14 +331,13 @@ describe("getSignedURL", () => {
   it("sends request without expiresIn", async ({ utapi }) => {
     await utapi.getSignedURL("foo");
 
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledOnce();
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
         body: `{"fileKey":"foo"}`,
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -344,14 +350,13 @@ describe("getSignedURL", () => {
   it("sends request with valid expiresIn (1)", async ({ utapi }) => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledOnce();
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
         body: `{"fileKey":"foo","expiresIn":86400}`,
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -364,14 +369,13 @@ describe("getSignedURL", () => {
   it("sends request with valid expiresIn (2)", async ({ utapi }) => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
 
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(utApiMock).toHaveBeenCalledOnce();
+    expect(utApiMock).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
         body: `{"fileKey":"foo","expiresIn":180}`,
-        cache: "no-store",
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -388,7 +392,7 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
   });
 
   it("throws if expiresIn is longer than 7 days", async ({ utapi }) => {
@@ -397,6 +401,6 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
     );
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(utApiMock).toHaveBeenCalledTimes(0);
   });
 });

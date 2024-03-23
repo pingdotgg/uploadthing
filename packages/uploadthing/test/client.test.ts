@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
 
-import { headers } from "next/headers";
 import { describe, expect, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
@@ -12,6 +11,7 @@ import {
   s3Mock,
   setupUTServer,
   uploadCompleteMock,
+  useBadS3,
   utApiMock,
 } from "./__test-helpers";
 
@@ -38,9 +38,12 @@ describe("uploadFiles", () => {
     ]);
 
     expect(s3Mock).toHaveBeenCalledOnce();
-    expect(s3Mock).toHaveBeenCalledWith("https://bucket.s3.amazonaws.com/", {
-      method: "POST",
-    });
+    expect(s3Mock).toHaveBeenCalledWith(
+      "https://bucket.s3.amazonaws.com/",
+      expect.objectContaining({
+        method: "POST",
+      }),
+    );
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
@@ -73,9 +76,12 @@ describe("uploadFiles", () => {
     ]);
 
     expect(s3Mock).toHaveBeenCalledTimes(2);
-    expect(s3Mock).toHaveBeenCalledWith(
-      { key: "abc-123.txt" },
-      expect.any(Request),
+    expect(s3Mock).toHaveBeenNthCalledWith(
+      1,
+      "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
+      expect.objectContaining({
+        method: "PUT",
+      }),
     );
 
     expect(middlewareMock).toHaveBeenCalledOnce();
@@ -152,7 +158,8 @@ describe("uploadFiles", () => {
   });
 
   it("reports of failed post upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db, failS3Call: true });
+    const { uploadFiles, close } = setupUTServer({ db });
+    useBadS3();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
@@ -172,7 +179,7 @@ describe("uploadFiles", () => {
       {
         body: '{"fileKey":"abc-123.txt","uploadId":null}',
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_test_123",
           "x-uploadthing-be-adapter": "express",
           "x-uploadthing-fe-package": "vitest",
@@ -186,7 +193,8 @@ describe("uploadFiles", () => {
   });
 
   it("reports of failed multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer({ db, failS3Call: true });
+    const { uploadFiles, close } = setupUTServer({ db });
+    useBadS3();
 
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
@@ -208,7 +216,7 @@ describe("uploadFiles", () => {
       {
         body: '{"fileKey":"abc-123.txt","uploadId":"random-upload-id"}',
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_test_123",
           "x-uploadthing-be-adapter": "express",
           "x-uploadthing-fe-package": "vitest",

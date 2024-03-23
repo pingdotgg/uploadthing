@@ -1,7 +1,7 @@
 import express from "express";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { beforeEach, it as itBase, vi } from "vitest";
+import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
 
 import { lookup } from "@uploadthing/mime-types";
 import { generateUploadThingURL } from "@uploadthing/shared";
@@ -246,65 +246,56 @@ const staticAssetServer = [
   }),
 ];
 
-const s3Mocks = (fail: boolean) =>
-  fail
-    ? [
-        http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
-          s3Mock(request.url, {
-            method: request.method,
-            headers: Object.fromEntries(request.headers.entries()),
-            body: await request.formData(),
-          });
-          return HttpResponse.json(null, { status: 403 });
-        }),
-        http.put(
-          "https://bucket.s3.amazonaws.com/:key",
-          async ({ request }) => {
-            s3Mock(request.url, {
-              method: request.method,
-              headers: Object.fromEntries(request.headers.entries()),
-              body: await request.formData(),
-            });
-            return HttpResponse.json(null, { status: 204 });
-          },
-        ),
-      ]
-    : [
-        http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
-          s3Mock(request.url, {
-            method: request.method,
-            headers: Object.fromEntries(request.headers.entries()),
-            // body: fd,
-          });
-          return HttpResponse.json(null, { status: 204 });
-        }),
-        http.put(
-          "https://bucket.s3.amazonaws.com/:key",
-          async ({ request }) => {
-            s3Mock(request.url, {
-              method: request.method,
-              headers: Object.fromEntries(request.headers.entries()),
-              body: await request.formData(),
-            });
-            return HttpResponse.json(null, {
-              status: 204,
-              headers: { ETag: "abc123" },
-            });
-          },
-        ),
-      ];
+const badS3Mocks = [
+  http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+    s3Mock(request.url, {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      // body: await request.formData(),
+    });
+    return HttpResponse.json(null, { status: 403 });
+  }),
+  http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
+    s3Mock(request.url, {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      // body: await request.formData(),
+    });
+    return HttpResponse.json(null, { status: 204 });
+  }),
+];
 
-export const setupMsw = (opts: {
-  db: MockDbInterface;
-  failS3Call?: boolean;
-}) => {
-  const server = setupServer(
-    ...s3Mocks(opts.failS3Call ?? false),
-    ...staticAssetServer,
-    ...utapiMocks(opts.db),
-  );
-  server.listen({ onUnhandledRequest: "warn" });
-  return server;
+const goodS3Mocks = [
+  http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+    s3Mock(request.url, {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      // body: fd,
+    });
+    return HttpResponse.json(null, { status: 200 });
+  }),
+  http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
+    s3Mock(request.url, {
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      // body: await request.formData(),
+    });
+    return HttpResponse.json(null, {
+      status: 204,
+      headers: { ETag: "abc123" },
+    });
+  }),
+];
+
+export const msw = setupServer(...goodS3Mocks, ...staticAssetServer);
+beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
+afterAll(() => msw.close());
+
+export const useDb = (db: MockDbInterface) => {
+  msw.use(...utapiMocks(db));
+};
+export const useBadS3 = () => {
+  msw.use(...badS3Mocks);
 };
 
 /**
@@ -313,9 +304,8 @@ export const setupMsw = (opts: {
 export const setupUTServer = <TExtraRoutes extends FileRouter>(opts: {
   db: MockDbInterface;
   extraRoutes?: TExtraRoutes;
-  failS3Call?: boolean;
 }) => {
-  const msw = setupMsw(opts);
+  useDb(opts.db);
 
   const f = createUploadthing({
     errorFormatter(err) {
@@ -356,11 +346,7 @@ export const setupUTServer = <TExtraRoutes extends FileRouter>(opts: {
   });
 
   return {
-    msw,
     uploadFiles,
-    close: () => {
-      server.close();
-      msw.close();
-    },
+    close: () => server.close(),
   };
 };

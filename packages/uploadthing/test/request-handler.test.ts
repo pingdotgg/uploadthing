@@ -10,8 +10,8 @@ import {
   createApiUrl,
   it as itBase,
   middlewareMock,
-  setupMsw,
   uploadCompleteMock,
+  useDb,
   utApiMock,
 } from "./__test-helpers";
 
@@ -56,7 +56,7 @@ const router = {
 
 const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
   handlers: async ({ db }, use) => {
-    const msw = setupMsw({ db });
+    useDb(db);
     await use(
       createRouteHandler({
         router,
@@ -67,7 +67,6 @@ const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
         },
       }),
     );
-    msw.close();
   },
 });
 

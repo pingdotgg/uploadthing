@@ -12,8 +12,8 @@ import {
   createApiUrl,
   it,
   middlewareMock,
-  setupMsw,
   uploadCompleteMock,
+  useDb,
   utApiMock,
 } from "./__test-helpers";
 
@@ -36,7 +36,7 @@ describe("adapters:h3", async () => {
   };
 
   it("gets H3Event in middleware args", async ({ db }) => {
-    const msw = setupMsw({ db });
+    useDb(db);
     const eventHandler = createRouteHandler({
       router,
       config: {
@@ -83,8 +83,6 @@ describe("adapters:h3", async () => {
         method: "POST",
       },
     );
-
-    msw.close();
   });
 });
 
@@ -109,7 +107,7 @@ describe("adapters:server", async () => {
   };
 
   it("gets Request in middleware args", async ({ db }) => {
-    const msw = setupMsw({ db });
+    useDb(db);
     const handlers = createRouteHandler({
       router,
       config: {
@@ -148,8 +146,6 @@ describe("adapters:server", async () => {
         method: "POST",
       },
     );
-
-    msw.close();
   });
 });
 
@@ -172,7 +168,7 @@ describe("adapters:next", async () => {
   };
 
   it("gets NextRequest in middleware args", async ({ db }) => {
-    const msw = setupMsw({ db });
+    useDb(db);
     const handlers = createRouteHandler({
       router,
       config: {
@@ -210,8 +206,6 @@ describe("adapters:next", async () => {
         method: "POST",
       },
     );
-
-    msw.close();
   });
 });
 
@@ -272,7 +266,7 @@ describe("adapters:next-legacy", async () => {
   it("gets NextApiRequest and NextApiResponse in middleware args", async ({
     db,
   }) => {
-    const msw = setupMsw({ db });
+    useDb(db);
     const handler = createRouteHandler({
       router,
       config: {
@@ -314,8 +308,6 @@ describe("adapters:next-legacy", async () => {
         method: "POST",
       },
     );
-
-    msw.close();
   });
 });
 
@@ -343,8 +335,6 @@ describe("adapters:express", async () => {
     db: MockDbInterface,
     preregisters?: (app: express.Express) => void,
   ) => {
-    const msw = setupMsw({ db });
-
     const app = express.default();
     preregisters?.(app);
     app.use(
@@ -364,7 +354,6 @@ describe("adapters:express", async () => {
       url,
       close: () => {
         server.close();
-        msw.close();
       },
     };
   };
@@ -478,9 +467,7 @@ describe("adapters:fastify", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = async (db: MockDbInterface) => {
-    const msw = setupMsw({ db });
-
+  const startServer = async () => {
     const app = fastify.default();
     await app.register(createRouteHandler, {
       router,
@@ -495,17 +482,15 @@ describe("adapters:fastify", async () => {
 
     return {
       url,
-      close: async () => {
-        await app.close();
-        msw.close();
-      },
+      close: () => app.close(),
     };
   };
 
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
     db,
   }) => {
-    const server = await startServer(db);
+    useDb(db);
+    const server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
