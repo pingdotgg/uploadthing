@@ -1,8 +1,8 @@
 const signaturePrefix = "hmac-sha256=";
+const algorithm = { name: "HMAC", hash: "SHA-256" };
 
 export const signPayload = async (payload: string, secret: string) => {
   const encoder = new TextEncoder();
-  const algorithm = { name: "HMAC", hash: "SHA-256" };
   const signingKey = await crypto.subtle.importKey(
     "raw",
     encoder.encode(secret),
@@ -27,7 +27,6 @@ export const verifySignature = async (
   if (!sig) return false;
 
   const encoder = new TextEncoder();
-  const algorithm = { name: "HMAC", hash: "SHA-256" };
   const signingKey = await crypto.subtle.importKey(
     "raw",
     encoder.encode(secret),
