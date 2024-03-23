@@ -216,12 +216,7 @@ async function uploadPresignedPost(
     fetch: FetchEsque;
   },
 ) {
-  logger.debug(
-    "Uploading file",
-    file.name,
-    "using presigned POST URL to",
-    presigned.url,
-  );
+  logger.debug("Uploading file", file.name, "using presigned POST URL");
 
   const formData = new FormData();
   Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));

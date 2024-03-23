@@ -335,6 +335,7 @@ describe("adapters:express", async () => {
     db: MockDbInterface,
     preregisters?: (app: express.Express) => void,
   ) => {
+    useDb(db);
     const app = express.default();
     preregisters?.(app);
     app.use(
@@ -350,12 +351,7 @@ describe("adapters:express", async () => {
     const server = app.listen();
     const url = `http://localhost:${(server.address() as { port: number }).port}`;
 
-    return {
-      url,
-      close: () => {
-        server.close();
-      },
-    };
+    return { url, close: () => server.close() };
   };
 
   it("gets express.Request and express.Response in middleware args", async ({
@@ -467,7 +463,8 @@ describe("adapters:fastify", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = async () => {
+  const startServer = async (db: MockDbInterface) => {
+    useDb(db);
     const app = fastify.default();
     await app.register(createRouteHandler, {
       router,
@@ -480,17 +477,13 @@ describe("adapters:fastify", async () => {
     const port = addr.split(":").pop();
     const url = `http://localhost:${port}/`;
 
-    return {
-      url,
-      close: () => app.close(),
-    };
+    return { url, close: () => app.close() };
   };
 
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
     db,
   }) => {
-    useDb(db);
-    const server = await startServer();
+    const server = await startServer(db);
 
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {

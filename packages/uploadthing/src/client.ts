@@ -249,8 +249,6 @@ async function uploadPresignedPost(
     throw "unreachable"; // failure event will throw for us
   });
 
-  console.log("Upload response", response);
-
   if (response.status > 299 || response.status < 200) {
     await opts.reportEventToUT("failure", {
       fileKey: presigned.key,
