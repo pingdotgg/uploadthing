@@ -1,19 +1,62 @@
 // @vitest-environment happy-dom
 
+import express from "express";
 import { describe, expect, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
 
+import { genUploader } from "../src/client";
+import { createRouteHandler, createUploadthing } from "../src/express";
 import {
   it,
   middlewareMock,
   onErrorMock,
   s3Mock,
-  setupUTServer,
   uploadCompleteMock,
   useBadS3,
   utApiMock,
 } from "./__test-helpers";
+
+export const setupUTServer = () => {
+  const f = createUploadthing({
+    errorFormatter(err) {
+      // eslint-disable-next-line no-console
+      console.log(err, err.cause);
+      return { message: err.message };
+    },
+  });
+  const router = {
+    foo: f({ text: {} })
+      .middleware((opts) => {
+        middlewareMock(opts);
+        return {};
+      })
+      .onUploadError(onErrorMock)
+      .onUploadComplete(uploadCompleteMock),
+  };
+
+  const app = express();
+  app.use(
+    "/api/uploadthing",
+    createRouteHandler({
+      router,
+      config: {
+        uploadthingSecret: "sk_test_123",
+        isDev: true,
+      },
+    }),
+  );
+
+  const server = app.listen();
+  const port = (server.address() as { port: number }).port;
+
+  const uploadFiles = genUploader<typeof router>({
+    package: "vitest",
+    url: `http://localhost:${port}`,
+  });
+
+  return { uploadFiles, close: () => server.close() };
+};
 
 describe("uploadFiles", () => {
   it("uploads with presigned post", async ({ db }) => {
