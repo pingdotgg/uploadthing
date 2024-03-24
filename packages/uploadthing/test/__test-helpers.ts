@@ -87,7 +87,7 @@ export const msw = setupServer(
       headers: Object.fromEntries(request.headers.entries()),
       body: await request.formData(),
     });
-    return HttpResponse.json(null, { status: 200 });
+    return new HttpResponse()
   }),
   http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
     s3Mock(request.url, {
