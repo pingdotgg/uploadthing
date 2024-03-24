@@ -78,6 +78,10 @@ const mockPresigned = (file: {
   };
 };
 
+/**
+ * Call this in each MSW handler to spy on the request
+ * and provide an easy way to assert on the request
+ */
 const callRequestSpy = async (request: StrictRequest<any>) =>
   requestSpy(new URL(request.url).toString(), {
     method: request.method,
@@ -92,7 +96,7 @@ const callRequestSpy = async (request: StrictRequest<any>) =>
     })(),
   });
 
-export const msw = setupServer(
+const msw = setupServer(
   /**
    * S3
    */
@@ -122,103 +126,116 @@ export const msw = setupServer(
 beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
 afterAll(() => msw.close());
 
-export interface MockDbInterface {
-  files: any[];
-  insertFile: (file: any) => void;
-  getFileByKey: (key: string) => any;
-}
+/**
+ * Extend the base `it` function to provide a `db` instance to our tests
+ * and extend the MSW handlers to mock the UploadThing API
+ *
+ * NOTE:: Tests **must** destruct the `db` instance from the test context for it to be used
+ * @example it("should do something", ({ db }) => { ... })
+ */
+export const it = itBase.extend({
+  // eslint-disable-next-line no-empty-pattern
+  db: async ({}, use) => {
+    const files: any[] = [];
+    const db = {
+      files,
+      insertFile: (file: any) => files.push(file),
+      getFileByKey: (key: string) => files.find((f) => f.key === key),
+    };
+    // prepend msw listeners to use db instance
+    msw.use(
+      http.post<never, { files: any[] } & Record<string, string>>(
+        "https://uploadthing.com/api/prepareUpload",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          const body = await request.json();
+
+          const presigneds = body.files.map((file) => {
+            const presigned = mockPresigned(file);
+            db.insertFile({
+              ...file,
+              key: presigned.key,
+              callbackUrl: body.callbackUrl,
+              callbackSlug: body.callbackSlug,
+            });
+            return presigned;
+          });
+          return HttpResponse.json(presigneds);
+        },
+      ),
+      http.post<never, { files: any[] }>(
+        "https://uploadthing.com/api/uploadFiles",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          const body = await request.json();
+
+          const presigneds = body?.files.map((file) => {
+            const presigned = mockPresigned(file);
+            db.insertFile({
+              ...file,
+              key: presigned.key,
+            });
+            return presigned;
+          });
+          return HttpResponse.json({ data: presigneds });
+        },
+      ),
+      http.post(
+        "https://uploadthing.com/api/completeMultipart",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ success: true });
+        },
+      ),
+      http.post(
+        "https://uploadthing.com/api/failureCallback",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ success: true });
+        },
+      ),
+      http.get<{ key: string }>(
+        "https://uploadthing.com/api/pollUpload/:key",
+        async ({ request, params }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({
+            status: "done",
+            fileData: db.getFileByKey(params.key),
+          });
+        },
+      ),
+      http.post(
+        "https://uploadthing.com/api/requestFileAccess",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({
+            url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
+          });
+        },
+      ),
+      http.post(
+        "https://uploadthing.com/api/serverCallback",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ success: true });
+        },
+      ),
+      http.get(
+        "https://uploadthing.com/api/serverCallback",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ success: true });
+        },
+      ),
+    );
+    await use(db); // provide test context
+    files.length = 0; // clear files after each test
+  },
+});
 
 /**
- * Prepend MSW listeners to mock the UploadThing API
- * Provide the `db` instance to store data within the test
+ * Call this in your test to make the S3 requests fail
  */
-export const useDb = (db: MockDbInterface) =>
-  msw.use(
-    http.post<never, { files: any[] } & Record<string, string>>(
-      "https://uploadthing.com/api/prepareUpload",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        const body = await request.json();
-
-        const presigneds = body.files.map((file) => {
-          const presigned = mockPresigned(file);
-          db.insertFile({
-            ...file,
-            key: presigned.key,
-            callbackUrl: body.callbackUrl,
-            callbackSlug: body.callbackSlug,
-          });
-          return presigned;
-        });
-        return HttpResponse.json(presigneds);
-      },
-    ),
-    http.post<never, { files: any[] }>(
-      "https://uploadthing.com/api/uploadFiles",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        const body = await request.json();
-
-        const presigneds = body?.files.map((file) => {
-          const presigned = mockPresigned(file);
-          db.insertFile({
-            ...file,
-            key: presigned.key,
-          });
-          return presigned;
-        });
-        return HttpResponse.json({ data: presigneds });
-      },
-    ),
-    http.post(
-      "https://uploadthing.com/api/completeMultipart",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        return HttpResponse.json({ success: true });
-      },
-    ),
-    http.post(
-      "https://uploadthing.com/api/failureCallback",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        return HttpResponse.json({ success: true });
-      },
-    ),
-    http.get<{ key: string }>(
-      "https://uploadthing.com/api/pollUpload/:key",
-      async ({ request, params }) => {
-        await callRequestSpy(request);
-        return HttpResponse.json({
-          status: "done",
-          fileData: db.getFileByKey(params.key),
-        });
-      },
-    ),
-    http.post(
-      "https://uploadthing.com/api/requestFileAccess",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        return HttpResponse.json({
-          url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
-        });
-      },
-    ),
-    http.post(
-      "https://uploadthing.com/api/serverCallback",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        return HttpResponse.json({ success: true });
-      },
-    ),
-    http.get(
-      "https://uploadthing.com/api/serverCallback",
-      async ({ request }) => {
-        await callRequestSpy(request);
-        return HttpResponse.json({ success: true });
-      },
-    ),
-  );
-
 export const useBadS3 = () =>
   msw.use(
     http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
@@ -230,25 +247,3 @@ export const useBadS3 = () =>
       return new HttpResponse(null, { status: 204 });
     }),
   );
-
-/**
- * Extend the base `it` function to provide a `db` instance to our tests
- * and extend the MSW handlers to mock the UploadThing API
- *
- * NOTE:: Tests **must** destruct the `db` instance from the test context for it to be used
- * @example it("should do something", ({ db }) => { ... })
- */
-export const it = itBase.extend<{ db: MockDbInterface }>({
-  // eslint-disable-next-line no-empty-pattern
-  db: async ({}, use) => {
-    const files: any[] = [];
-    const db: MockDbInterface = {
-      files,
-      insertFile: (file) => files.push(file),
-      getFileByKey: (key) => files.find((f) => f.key === key),
-    };
-    useDb(db); // prepend msw listeners to use db instance
-    await use(db); // provide test context
-    files.length = 0; // clear files after each test
-  },
-});
