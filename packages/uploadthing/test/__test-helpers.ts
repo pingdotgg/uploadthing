@@ -21,7 +21,10 @@ import type {
   PSPResponse,
 } from "../src/internal/types";
 
-export const requestSpy = vi.fn();
+export const requestSpy = vi.fn<[string, RequestInit]>();
+export const requestsToDomain = (domain: string) =>
+  requestSpy.mock.calls.filter(([url]) => url.includes(domain));
+
 export const middlewareMock = vi.fn();
 export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
@@ -88,9 +91,6 @@ const callRequestSpy = async (request: StrictRequest<any>) =>
       return cloned.blob();
     })(),
   });
-export const requestsToDomain = (domain: string) =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-  requestSpy.mock.calls.filter(([url]) => url.includes(domain));
 
 export const msw = setupServer(
   /**
