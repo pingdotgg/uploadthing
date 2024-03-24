@@ -1,14 +1,7 @@
 import type { StrictRequest } from "msw";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  beforeEach,
-  it as itBase,
-  vi,
-} from "vitest";
+import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
 
 import { lookup } from "@uploadthing/mime-types";
 import { generateUploadThingURL } from "@uploadthing/shared";
