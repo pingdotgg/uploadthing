@@ -83,7 +83,7 @@
     "@types/react-dom": "18.2.19",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "5.0.0-beta.5",
+    "bunchee": "^4.4.8",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "next": "14.1.0",
