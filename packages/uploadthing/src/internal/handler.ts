@@ -173,22 +173,11 @@ const handleCallbackRequest = (opts: {
   apiKey: string;
 }) =>
   Effect.gen(function* ($) {
-    const requestInput = yield* $(
-      parseRequestJson(
-        opts.req,
-        S.struct({
-          file: UploadedFileDataSchema,
-          metadata: S.record(S.string, S.unknown),
-        }),
-      ),
-    );
-    logger.debug("Handling callback request with input:", requestInput);
-
     const verified = yield* $(
       Effect.tryPromise({
-        try: () =>
+        try: async () =>
           verifySignature(
-            JSON.stringify(requestInput),
+            await opts.req.clone().text(),
             opts.req.headers.get("x-uploadthing-signature"),
             opts.apiKey,
           ),
@@ -208,10 +197,25 @@ const handleCallbackRequest = (opts: {
       });
     }
 
+    const requestInput = yield* $(
+      parseRequestJson(
+        opts.req,
+        S.struct({
+          status: S.string,
+          file: UploadedFileDataSchema,
+          metadata: S.record(S.string, S.unknown),
+        }),
+      ),
+    );
+    logger.debug("Handling callback request with input:", requestInput);
+
     const serverData = yield* $(
       Effect.tryPromise({
         try: async () =>
-          opts.uploadable.resolver(requestInput) as Promise<unknown>,
+          opts.uploadable.resolver({
+            file: requestInput.file,
+            metadata: requestInput.metadata,
+          }) as Promise<unknown>,
         catch: (error) => {
           logger.error(
             "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
