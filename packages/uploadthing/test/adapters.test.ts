@@ -11,8 +11,8 @@ import {
   createApiUrl,
   it,
   middlewareMock,
+  requestSpy,
   uploadCompleteMock,
-  utApiMock,
 } from "./__test-helpers";
 
 describe("adapters:h3", async () => {
@@ -65,11 +65,23 @@ describe("adapters:h3", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
@@ -127,11 +139,23 @@ describe("adapters:server", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
@@ -186,11 +210,23 @@ describe("adapters:next", async () => {
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
     // Should proceed to have requested URLs
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
@@ -287,11 +323,23 @@ describe("adapters:next-legacy", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
@@ -372,11 +420,23 @@ describe("adapters:express", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: `{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"${url}","callbackSlug":"middleware"}`,
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: url,
+          callbackSlug: "middleware",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
@@ -497,11 +557,23 @@ describe("adapters:fastify", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: `{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"${url}","callbackSlug":"middleware"}`,
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: url,
+          callbackSlug: "middleware",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",

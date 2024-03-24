@@ -11,10 +11,9 @@ import {
   it,
   middlewareMock,
   onErrorMock,
-  s3Mock,
+  requestSpy,
   uploadCompleteMock,
   useBadS3,
-  utApiMock,
 } from "./__test-helpers";
 
 export const setupUTServer = () => {
@@ -78,8 +77,8 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(s3Mock).toHaveBeenCalledOnce();
-    expect(s3Mock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledTimes(3);
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
         method: "POST",
@@ -117,9 +116,9 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(s3Mock).toHaveBeenCalledTimes(2);
-    expect(s3Mock).toHaveBeenNthCalledWith(
-      1,
+    // Get presigned, poll upload, 2 parts, serverCallback, completeMPU
+    expect(requestSpy).toHaveBeenCalledTimes(6);
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
       expect.objectContaining({
         method: "PUT",
@@ -215,12 +214,12 @@ describe("uploadFiles", () => {
       `[Error: Failed to upload file foo.txt to S3]`,
     );
 
-    expect(s3Mock).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledTimes(4);
     expect(onErrorMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),
       {
-        body: '{"fileKey":"abc-123.txt","uploadId":null}',
+        body: { fileKey: "abc-123.txt", uploadId: null },
         headers: {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_test_123",
@@ -252,12 +251,11 @@ describe("uploadFiles", () => {
       `[Error: Failed to upload file foo.txt to S3]`,
     );
 
-    expect(s3Mock).toHaveBeenCalledTimes(2);
     expect(onErrorMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),
       {
-        body: '{"fileKey":"abc-123.txt","uploadId":"random-upload-id"}',
+        body: { fileKey: "abc-123.txt", uploadId: "random-upload-id" },
         headers: {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_test_123",

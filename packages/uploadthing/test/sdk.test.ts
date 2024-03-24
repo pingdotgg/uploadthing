@@ -3,7 +3,7 @@ import { describe, expect, expectTypeOf } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
-import { it, s3Mock, staticAssetMock, utApiMock } from "./__test-helpers";
+import { it, requestSpy } from "./__test-helpers";
 
 describe("UTFile", () => {
   it("can be constructed using Blob", async () => {
@@ -30,12 +30,16 @@ describe("uploadFiles", () => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
     const result = await utapi.uploadFiles(fooFile);
 
-    expect(utApiMock).toHaveBeenCalledTimes(2);
-    expect(utApiMock).toHaveBeenNthCalledWith(
+    expect(requestSpy).toHaveBeenCalledTimes(3);
+    expect(requestSpy).toHaveBeenNthCalledWith(
       1,
       "https://uploadthing.com/api/uploadFiles",
       {
-        body: '{"files":[{"name":"foo.txt","type":"text/plain","size":3}],"metadata":{},"contentDisposition":"inline"}',
+        body: {
+          files: [{ name: "foo.txt", type: "text/plain", size: 3 }],
+          metadata: {},
+          contentDisposition: "inline",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -45,18 +49,19 @@ describe("uploadFiles", () => {
         method: "POST",
       },
     );
-    expect(s3Mock).toHaveBeenCalledOnce();
-    expect(s3Mock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenNthCalledWith(
+      2,
       "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
         body: expect.any(FormData),
         method: "POST",
       }),
     );
-    expect(utApiMock).toHaveBeenNthCalledWith(
-      2,
+    expect(requestSpy).toHaveBeenNthCalledWith(
+      3,
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       {
+        body: null,
         headers: {
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -98,7 +103,7 @@ describe("uploadFiles", () => {
     await utapi.uploadFiles(file);
     expect(file.type).toBe("text/plain");
 
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       expect.objectContaining({}),
     );
@@ -117,10 +122,16 @@ describe("uploadFiles", () => {
     await utapi.uploadFiles(fileWithId);
     expect(fileWithId.customId).toBe("foo");
 
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
-        body: '{"files":[{"name":"foo.txt","type":"text/plain","size":3,"customId":"foo"}],"metadata":{},"contentDisposition":"inline"}',
+        body: {
+          files: [
+            { name: "foo.txt", type: "text/plain", size: 3, customId: "foo" },
+          ],
+          metadata: {},
+          contentDisposition: "inline",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -140,15 +151,16 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/foo.txt",
     );
 
-    expect(staticAssetMock).toHaveBeenCalledOnce(); // download, request url, upload, poll
-    expect(utApiMock).toHaveBeenCalledTimes(2);
-    expect(s3Mock).toHaveBeenCalledOnce();
-
-    expect(utApiMock).toHaveBeenNthCalledWith(
-      1,
+    expect(requestSpy).toHaveBeenCalledTimes(4); // download, request url, upload, poll
+    expect(requestSpy).toHaveBeenNthCalledWith(
+      2,
       "https://uploadthing.com/api/uploadFiles",
       {
-        body: '{"files":[{"name":"foo.txt","type":"text/plain","size":26}],"metadata":{},"contentDisposition":"inline"}',
+        body: {
+          files: [{ name: "foo.txt", type: "text/plain", size: 26 }],
+          metadata: {},
+          contentDisposition: "inline",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -158,14 +170,15 @@ describe("uploadFilesFromUrl", () => {
         method: "POST",
       },
     );
-    expect(s3Mock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenNthCalledWith(
+      3,
       "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
         method: "POST",
       }),
     );
-    expect(utApiMock).toHaveBeenNthCalledWith(
-      2,
+    expect(requestSpy).toHaveBeenNthCalledWith(
+      4,
       "https://uploadthing.com/api/pollUpload/abc-123.txt",
       expect.objectContaining({}),
     );
@@ -209,10 +222,14 @@ describe("uploadFilesFromUrl", () => {
       name: "bar.txt",
     });
 
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
-        body: '{"files":[{"name":"bar.txt","type":"text/plain","size":26}],"metadata":{},"contentDisposition":"inline"}',
+        body: {
+          files: [{ name: "bar.txt", type: "text/plain", size: 26 }],
+          metadata: {},
+          contentDisposition: "inline",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -231,10 +248,21 @@ describe("uploadFilesFromUrl", () => {
       customId: "my-custom-id",
     });
 
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/uploadFiles",
       {
-        body: '{"files":[{"name":"foo.txt","type":"text/plain","size":26,"customId":"my-custom-id"}],"metadata":{},"contentDisposition":"inline"}',
+        body: {
+          files: [
+            {
+              name: "foo.txt",
+              type: "text/plain",
+              size: 26,
+              customId: "my-custom-id",
+            },
+          ],
+          metadata: {},
+          contentDisposition: "inline",
+        },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -328,11 +356,11 @@ describe("getSignedURL", () => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
     await utapi.getSignedURL("foo");
 
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
-        body: `{"fileKey":"foo"}`,
+        body: { fileKey: "foo" },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -348,11 +376,11 @@ describe("getSignedURL", () => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
-        body: `{"fileKey":"foo","expiresIn":86400}`,
+        body: { fileKey: "foo", expiresIn: 86400 },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -368,11 +396,11 @@ describe("getSignedURL", () => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
 
-    expect(utApiMock).toHaveBeenCalledOnce();
-    expect(utApiMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/requestFileAccess",
       {
-        body: `{"fileKey":"foo","expiresIn":180}`,
+        body: { fileKey: "foo", expiresIn: 180 },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
@@ -392,7 +420,7 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
   });
 
   it("throws if expiresIn is longer than 7 days", async ({ db }) => {
@@ -402,6 +430,6 @@ describe("getSignedURL", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
     );
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
   });
 });

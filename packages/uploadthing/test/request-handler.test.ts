@@ -10,8 +10,8 @@ import {
   createApiUrl,
   it,
   middlewareMock,
+  requestSpy,
   uploadCompleteMock,
-  utApiMock,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -74,7 +74,7 @@ describe("errors for invalid request input", () => {
       }),
     );
 
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(404);
     await expect(res.json()).resolves.toEqual({
       message: "No file route found for slug i-dont-exist",
@@ -93,7 +93,7 @@ describe("errors for invalid request input", () => {
       }),
     );
 
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: Invalid action type invalid",
@@ -115,7 +115,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: File type text not allowed for foo.txt",
@@ -138,7 +138,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({});
   });
@@ -157,7 +157,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause:
@@ -180,7 +180,7 @@ describe(".input()", () => {
     );
 
     expect(middlewareMock).toHaveBeenCalledTimes(0);
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
@@ -204,7 +204,7 @@ describe(".input()", () => {
     );
 
     expect(middlewareMock).toHaveBeenCalledTimes(0);
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
@@ -279,7 +279,7 @@ describe(".middleware()", () => {
       }),
     );
 
-    expect(utApiMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({
       cause:
