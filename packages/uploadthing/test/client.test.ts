@@ -117,7 +117,6 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    // Get presigned, poll upload, 2 parts, serverCallback, completeMPU
     expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
     expect(requestSpy).toHaveBeenCalledWith(
       "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
