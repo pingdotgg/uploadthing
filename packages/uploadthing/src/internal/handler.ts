@@ -467,14 +467,12 @@ const handleUploadAction = (opts: {
 
     let promise: Promise<unknown> | undefined = undefined;
     if (opts.isDev) {
+      const layer = Layer.succeed(fetchContext, yield* $(fetchContext));
       promise = Effect.forEach(
         presignedUrls,
         (file) => conditionalDevServer(file.key, opts.apiKey),
         { concurrency: 10 },
-      ).pipe(
-        Effect.provide(Layer.succeed(fetchContext, yield* $(fetchContext))),
-        Effect.runPromise,
-      );
+      ).pipe(Effect.provide(layer), Effect.runPromise);
     }
 
     return {
