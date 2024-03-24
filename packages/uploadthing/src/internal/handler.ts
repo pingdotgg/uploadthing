@@ -151,16 +151,17 @@ export const buildRequestHandler =
         }
       }
     }).pipe(
-      // TODO: Maybe look over this error handling
-      // Now we return UploadThingError and die on everything else
-      Effect.catchTag("FetchError", (err) => {
-        logger.error("An error occurred while fetching", err);
-        return Effect.die(err);
+      Effect.catchTags({
+        FetchError: (err) => {
+          logger.error("An error occurred while fetching", err);
+          return Effect.die(err);
+        },
+        ParseError: (err) => {
+          logger.error("An error occurred while parsing input/output", err);
+          return Effect.die(err);
+        },
       }),
-      Effect.catchTag("ParseError", (err) => {
-        logger.error("An error occurred while parsing input/output", err);
-        return Effect.die(err);
-      }),
+      // By here we either have a successful result or an UploadThingError defect, return either
       Effect.match({
         onSuccess: (x) => x,
         onFailure: (e) => e,
