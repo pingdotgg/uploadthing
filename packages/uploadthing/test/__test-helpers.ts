@@ -87,7 +87,7 @@ export const msw = setupServer(
       headers: Object.fromEntries(request.headers.entries()),
       body: await request.formData(),
     });
-    return new HttpResponse()
+    return new HttpResponse();
   }),
   http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
     s3Mock(request.url, {
@@ -106,9 +106,7 @@ export const msw = setupServer(
   http.get("https://cdn.foo.com/:fileKey", ({ request }) => {
     staticAssetMock(request.url);
 
-    return HttpResponse.text("Lorem ipsum doler sit amet", {
-      headers: { "content-type": "text/plain" },
-    });
+    return HttpResponse.text("Lorem ipsum doler sit amet");
   }),
   http.get("https://utfs.io/f/:key", ({ request }) => {
     staticAssetMock(request.url);
@@ -133,13 +131,10 @@ export interface MockDbInterface {
  */
 export const useDb = (db: MockDbInterface) =>
   msw.use(
-    http.post(
+    http.post<never, { files: any[] } & Record<string, string>>(
       "https://uploadthing.com/api/prepareUpload",
       async ({ request }) => {
-        const body = (await request.json()) as { files: any[] } & Record<
-          string,
-          string
-        >;
+        const body = await request.json();
 
         utApiMock(request.url, {
           method: request.method,
@@ -210,19 +205,17 @@ export const useDb = (db: MockDbInterface) =>
         return HttpResponse.json({ success: true });
       },
     ),
-    http.get(
+    http.get<{ key: string }>(
       "https://uploadthing.com/api/pollUpload/:key",
-      async ({ request }) => {
+      async ({ request, params }) => {
         utApiMock(request.url, {
           method: request.method,
           headers: Object.fromEntries(request.headers.entries()),
         });
 
-        const url = new URL(request.url);
-        const key = url.pathname.slice("/api/pollUpload/".length);
         return HttpResponse.json({
           status: "done",
-          fileData: db.getFileByKey(key),
+          fileData: db.getFileByKey(params.key),
         });
       },
     ),
@@ -282,7 +275,7 @@ export const useBadS3 = () =>
         headers: Object.fromEntries(request.headers.entries()),
         body: await request.blob(),
       });
-      return HttpResponse.json(null, { status: 204 });
+      return new HttpResponse(null, { status: 204 });
     }),
   );
 
