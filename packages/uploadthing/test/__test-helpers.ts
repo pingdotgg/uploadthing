@@ -95,7 +95,7 @@ export const msw = setupServer(
       headers: Object.fromEntries(request.headers.entries()),
       body: await request.blob(),
     });
-    return HttpResponse.json(null, {
+    return new HttpResponse(null, {
       status: 204,
       headers: { ETag: "abc123" },
     });
