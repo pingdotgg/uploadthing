@@ -127,7 +127,7 @@ describe("file route config", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: File type text not allowed for foo.txt",
-      message: "Invalid config",
+      message: "Invalid config: InvalidFileType",
     });
   });
 
@@ -172,7 +172,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded 2 files of type 'image', but the limit for that type is 1",
-      message: "File count exceeded",
+      message: "Invalid config: FileCountMismatch",
     });
   });
 });

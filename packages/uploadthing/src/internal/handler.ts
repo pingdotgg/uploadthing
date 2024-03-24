@@ -365,62 +365,22 @@ const handleUploadAction = (opts: {
     logger.debug("Route config parsed successfully", parsedConfig);
 
     logger.debug("Validating files meet the config requirements", files);
+    const invalidConfigError = (e: { _tag: string; reason: string }) =>
+      new UploadThingError({
+        code: "BAD_REQUEST",
+        message: `Invalid config: ${e._tag}`,
+        cause: e.reason,
+      });
     yield* $(
       assertFilesMeetConfig(files, parsedConfig),
-      Effect.catchTag("FileSizeMismatch", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "File size mismatch",
-            cause: err.reason,
-          }),
-        ),
-      ),
-      Effect.catchTag("FileCountMismatch", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "File count exceeded",
-            cause: err.reason,
-          }),
-        ),
-      ),
-      Effect.catchTag("InvalidRouteConfig", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid config",
-            cause: err.reason,
-          }),
-        ),
-      ),
-      Effect.catchTag("InvalidFileSize", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid config",
-            cause: err.reason,
-          }),
-        ),
-      ),
-      Effect.catchTag("InvalidFileType", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid config",
-            cause: err.reason,
-          }),
-        ),
-      ),
-      Effect.catchTag("UnknownFileType", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Unknown file type",
-            cause: err.reason,
-          }),
-        ),
-      ),
+      Effect.catchTags({
+        FileSizeMismatch: invalidConfigError,
+        FileCountMismatch: invalidConfigError,
+        InvalidRouteConfig: invalidConfigError,
+        InvalidFileSize: invalidConfigError,
+        InvalidFileType: invalidConfigError,
+        UnknownFileType: invalidConfigError,
+      }),
     );
 
     const callbackUrl = yield* $(
