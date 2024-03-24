@@ -1,6 +1,8 @@
 import { describe, expect } from "vitest";
 import { z } from "zod";
 
+import { signPayload } from "@uploadthing/shared";
+
 import { createRouteHandler, createUploadthing } from "../src/server";
 import type { UploadedFileData } from "../src/types";
 import {
@@ -301,24 +303,28 @@ describe(".onUploadComplete()", () => {
   it("forwards correct args to onUploadComplete handler", async ({
     handlers,
   }) => {
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      file: {
+        url: "https://utfs.io/f/some-random-key.png",
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+      } satisfies UploadedFileData,
+    });
+    const signature = await signPayload(payload, "sk_live_test123");
+
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
           "uploadthing-hook": "callback",
+          "x-uploadthing-signature": signature,
         },
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: {},
-          file: {
-            url: "https://utfs.io/f/some-random-key.png",
-            name: "foo.png",
-            key: "some-random-key.png",
-            size: 48,
-            type: "image/png",
-            customId: null,
-          } satisfies UploadedFileData,
-        }),
+        body: payload,
       }),
     );
 
@@ -336,5 +342,69 @@ describe(".onUploadComplete()", () => {
       },
       metadata: {},
     });
+  });
+
+  it("is blocked on missing signature", async ({ handlers }) => {
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      file: {
+        url: "https://utfs.io/f/some-random-key.png",
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+      } satisfies UploadedFileData,
+    });
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader"), {
+        method: "POST",
+        headers: {
+          "uploadthing-hook": "callback",
+        },
+        body: payload,
+      }),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      message: "Invalid signature",
+    });
+    expect(uploadCompleteMock).not.toHaveBeenCalled();
+  });
+
+  it("is blocked on invalid signature", async ({ handlers }) => {
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      file: {
+        url: "https://utfs.io/f/some-random-key.png",
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+      } satisfies UploadedFileData,
+    });
+    const signature = await signPayload(payload, "sk_live_badkey");
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader"), {
+        method: "POST",
+        headers: {
+          "uploadthing-hook": "callback",
+          "x-uploadthing-signature": signature,
+        },
+        body: payload,
+      }),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      message: "Invalid signature",
+    });
+    expect(uploadCompleteMock).not.toHaveBeenCalled();
   });
 });

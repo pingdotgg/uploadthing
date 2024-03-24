@@ -100,6 +100,7 @@ export const parseAndValidateRequest = (opts: {
     const uploadthingHook = headers.get("uploadthing-hook");
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
     const clientVersion = headers.get("x-uploadthing-version");
+    const apiKey = getApiKey(opts.opts.config?.uploadthingSecret);
 
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       logger.error("Client version mismatch");
@@ -155,7 +156,6 @@ export const parseAndValidateRequest = (opts: {
       );
     }
 
-    const apiKey = getApiKey(opts.opts.config?.uploadthingSecret);
     if (!apiKey) {
       const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
       logger.error(msg);
@@ -238,6 +238,7 @@ export const parseAndValidateRequest = (opts: {
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = opts.adapter;
 
     return {
+      apiKey,
       slug,
       uploadable,
       hook: uploadthingHook,

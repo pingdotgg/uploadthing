@@ -10,6 +10,7 @@ import {
   objectKeys,
   parseRequestJson,
   UploadThingError,
+  verifySignature,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -88,7 +89,7 @@ export const buildRequestHandler =
     Effect.gen(function* ($) {
       const request =
         input.req instanceof Request ? input.req : yield* $(input.req);
-      const { slug, uploadable, hook, action } = yield* $(
+      const { apiKey, slug, uploadable, hook, action } = yield* $(
         parseAndValidateRequest({ req: request, opts, adapter }),
       );
 
@@ -103,6 +104,7 @@ export const buildRequestHandler =
           handleCallbackRequest({
             req: request,
             uploadable,
+            apiKey,
           }),
         );
       }
@@ -114,6 +116,7 @@ export const buildRequestHandler =
               req: request,
               middlewareArgs: input.middlewareArgs,
               uploadable,
+              apiKey,
               config: opts.config,
               isDev,
               slug,
@@ -167,6 +170,7 @@ export const buildRequestHandler =
 const handleCallbackRequest = (opts: {
   req: Request;
   uploadable: AnyUploader;
+  apiKey: string;
 }) =>
   Effect.gen(function* ($) {
     const requestInput = yield* $(
@@ -179,6 +183,30 @@ const handleCallbackRequest = (opts: {
       ),
     );
     logger.debug("Handling callback request with input:", requestInput);
+
+    const verified = yield* $(
+      Effect.tryPromise({
+        try: () =>
+          verifySignature(
+            JSON.stringify(requestInput),
+            opts.req.headers.get("x-uploadthing-signature"),
+            opts.apiKey,
+          ),
+        catch: () =>
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid signature",
+          }),
+      }),
+    );
+    logger.debug("Signature verified:", verified);
+    if (!verified) {
+      logger.error("Invalid signature");
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Invalid signature",
+      });
+    }
 
     const serverData = yield* $(
       Effect.tryPromise({
@@ -280,7 +308,7 @@ const handleUploadAction = (opts: {
   uploadable: AnyUploader;
   middlewareArgs: MiddlewareFnArgs<any, any, any>;
   config: RouteHandlerConfig | undefined;
-
+  apiKey: string;
   isDev: boolean;
   slug: string;
 }) =>
@@ -437,7 +465,7 @@ const handleUploadAction = (opts: {
     if (opts.isDev) {
       promise = Effect.forEach(
         presignedUrls,
-        (file) => conditionalDevServer(file.key),
+        (file) => conditionalDevServer(file.key, opts.apiKey),
         { concurrency: 10 },
       ).pipe(
         Effect.provide(Layer.succeed(fetchContext, yield* $(fetchContext))),

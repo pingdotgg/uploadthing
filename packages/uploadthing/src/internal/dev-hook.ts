@@ -7,6 +7,7 @@ import {
   fetchEffJson,
   generateUploadThingURL,
   RetryError,
+  signPayload,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
@@ -22,7 +23,7 @@ const isValidResponse = (response: ResponseEsque) => {
   return true;
 };
 
-export const conditionalDevServer = (fileKey: string) => {
+export const conditionalDevServer = (fileKey: string, apiKey: string) => {
   return Effect.gen(function* ($) {
     const file = yield* $(
       fetchEffJson(
@@ -71,23 +72,38 @@ export const conditionalDevServer = (fileKey: string) => {
 
     logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: JSON.parse(file.metadata ?? "{}") as unknown,
+      file: {
+        url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
+        key: fileKey,
+        name: file.fileName,
+        size: file.fileSize,
+        customId: file.customId,
+        type: file.fileType,
+      } satisfies UploadedFileData,
+    });
+
+    const signature = yield* $(
+      Effect.tryPromise({
+        try: () => signPayload(payload, apiKey),
+        catch: (e) =>
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to sign payload",
+            cause: e,
+          }),
+      }),
+    );
+
     const callbackResponse = yield* $(
       fetchEff(callbackUrl, {
         method: "POST",
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: JSON.parse(file.metadata ?? "{}") as unknown,
-          file: {
-            url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
-            key: fileKey,
-            name: file.fileName,
-            size: file.fileSize,
-            customId: file.customId,
-            type: file.fileType,
-          } satisfies UploadedFileData,
-        }),
+        body: payload,
         headers: {
           "uploadthing-hook": "callback",
+          "x-uploadthing-signature": signature,
         },
       }),
       Effect.catchTag("FetchError", () =>

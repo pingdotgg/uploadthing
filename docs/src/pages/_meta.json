@@ -12,6 +12,7 @@
     "type": "separator"
   },
   "backend-adapters": "Backend Adapters",
+  "auth-security": "Authentication & Security",
   "theming": "Theming",
   "regions-and-acl": "Regions and Access Controls",
   "api-reference": "API Reference",
