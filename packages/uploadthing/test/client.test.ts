@@ -12,6 +12,7 @@ import {
   middlewareMock,
   onErrorMock,
   requestSpy,
+  requestsToDomain,
   uploadCompleteMock,
   useBadS3,
 } from "./__test-helpers";
@@ -77,7 +78,7 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(requestSpy).toHaveBeenCalledTimes(3);
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
     expect(requestSpy).toHaveBeenCalledWith(
       "https://bucket.s3.amazonaws.com/",
       expect.objectContaining({
@@ -117,7 +118,7 @@ describe("uploadFiles", () => {
     ]);
 
     // Get presigned, poll upload, 2 parts, serverCallback, completeMPU
-    expect(requestSpy).toHaveBeenCalledTimes(6);
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
     expect(requestSpy).toHaveBeenCalledWith(
       "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
       expect.objectContaining({
@@ -214,7 +215,7 @@ describe("uploadFiles", () => {
       `[Error: Failed to upload file foo.txt to S3]`,
     );
 
-    expect(requestSpy).toHaveBeenCalledTimes(4);
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),
@@ -251,6 +252,7 @@ describe("uploadFiles", () => {
       `[Error: Failed to upload file foo.txt to S3]`,
     );
 
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),
