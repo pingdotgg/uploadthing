@@ -29,6 +29,7 @@ import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
   GenerateUploaderOptions,
+  inferEndpointInput,
   UploadFilesOptions,
 } from "./types";
 
@@ -53,20 +54,20 @@ const uploadFilesInternal = <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-) => {
-  const reportEventToUT = createUTReporter({
-    endpoint: String(endpoint),
-    package: opts.package,
-    url: resolveMaybeUrlArg(opts.url),
-    headers: opts.headers,
-  });
+): Effect.Effect<
+  ClientUploadedFileData<TServerOutput>[],
+  // TODO: Handle these errors instead of letting them bubble
+  UploadThingError | RetryError | FetchError | ParseError,
+  FetchContextTag
+> =>
+  Effect.gen(function* ($) {
+    const reportEventToUT = createUTReporter({
+      endpoint: String(endpoint),
+      package: opts.package,
+      url: resolveMaybeUrlArg(opts.url),
+      headers: opts.headers,
+    });
 
-  const uploadFiles: Effect.Effect<
-    ClientUploadedFileData<TServerOutput>[],
-    // TODO: Handle these errors instead of letting them bubble
-    UploadThingError | RetryError | FetchError | ParseError,
-    FetchContextTag
-  > = Effect.gen(function* ($) {
     const presigneds = yield* $(
       reportEventToUT(
         "upload",
@@ -87,29 +88,10 @@ const uploadFilesInternal = <
         presigneds,
         (presigned) =>
           uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
-        { concurrency: 6 }, // most browsers limits 6 fetch requests at a time
+        { concurrency: 6 },
       ),
     );
   });
-
-  // TODO: I think this can stay an Effect and not be run as a promise (especially once React package is Effect too)
-  //       The `genUploader` can be the one who provides the service and the Promise-inferface for the public
-  const layer = Layer.succeed(fetchContext, {
-    fetch: globalThis.fetch.bind(globalThis),
-    baseHeaders: {
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-api-key": undefined,
-      "x-uploadthing-fe-package": opts.package,
-      "x-uploadthing-be-adapter": undefined,
-    },
-  });
-
-  return uploadFiles.pipe(
-    Effect.tapErrorCause(Effect.logError),
-    Effect.provide(layer),
-    Effect.runPromise,
-  );
-};
 
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
@@ -123,13 +105,29 @@ export const genUploader = <TRouter extends FileRouter>(
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
       keyof GenerateUploaderOptions
     >,
-  ) =>
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+  ) => {
+    const layer = Layer.succeed(fetchContext, {
+      fetch: globalThis.fetch.bind(globalThis),
+      baseHeaders: {
+        "x-uploadthing-version": UPLOADTHING_VERSION,
+        "x-uploadthing-api-key": undefined,
+        "x-uploadthing-fe-package": initOpts.package,
+        "x-uploadthing-be-adapter": undefined,
+      },
+    });
+
+    return uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
-    } as any);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
+    }).pipe(
+      Effect.tapErrorCause(Effect.logError),
+      Effect.provide(layer),
+      Effect.runPromise,
+    );
+  };
 };
 
 const uploadFile = <
