@@ -21,9 +21,6 @@ export const requestsToDomain = (domain: string) =>
 export const middlewareMock = vi.fn();
 export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
-beforeEach(() => {
-  vi.resetAllMocks();
-});
 
 export const createApiUrl = (slug: string, action?: ActionType) => {
   const url = new URL("http://localhost:3000");
