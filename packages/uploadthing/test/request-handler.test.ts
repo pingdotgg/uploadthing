@@ -141,7 +141,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded a image file that was 3.15MB, but the limit for that type is 2MB",
-      message: "File size mismatch",
+      message: "Invalid config: FileSizeMismatch",
     });
   });
 

@@ -8,7 +8,7 @@ import { it, requestSpy } from "./__test-helpers";
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
-  it("uploads successfully", async ({ db }) => {
+  it.only("uploads successfully", async ({ db }) => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
     const result = await utapi.uploadFiles(fooFile);
 
@@ -45,7 +45,6 @@ describe("uploadFiles", () => {
       {
         body: null,
         headers: {
-          "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),

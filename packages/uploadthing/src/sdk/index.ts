@@ -56,7 +56,6 @@ export class UTApi {
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultHeaders = {
-      "Content-Type": "application/json",
       "x-uploadthing-api-key": apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
@@ -83,10 +82,13 @@ export class UTApi {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
-      headers: filterObjectValues(
-        this.defaultHeaders,
-        (v): v is string => typeof v === "string",
-      ),
+      headers: {
+        ...filterObjectValues(
+          this.defaultHeaders,
+          (v): v is string => typeof v === "string",
+        ),
+        "Content-Type": "application/json",
+      },
     }).pipe(
       Effect.catchTag("FetchError", (err) => {
         logger.error("Request failed:", err);
