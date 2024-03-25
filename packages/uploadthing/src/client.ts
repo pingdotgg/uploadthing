@@ -122,11 +122,7 @@ export const genUploader = <TRouter extends FileRouter>(
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
-    }).pipe(
-      Effect.tapErrorCause(Effect.logError),
-      Effect.provide(layer),
-      Effect.runPromise,
-    );
+    }).pipe(Effect.provide(layer), Effect.runPromise);
   };
 };
 
