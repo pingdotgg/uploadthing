@@ -8,7 +8,7 @@ import { it, requestSpy } from "./__test-helpers";
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
-  it.only("uploads successfully", async ({ db }) => {
+  it("uploads successfully", async ({ db }) => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
     const result = await utapi.uploadFiles(fooFile);
 
