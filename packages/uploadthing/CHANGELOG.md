@@ -1,5 +1,18 @@
 # uploadthing
 
+## 6.7.0
+
+### Minor Changes
+
+- [#725](https://github.com/pingdotgg/uploadthing/pull/725) [`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: verify callback data signature
+
+### Patch Changes
+
+- [#715](https://github.com/pingdotgg/uploadthing/pull/715) [`9644807`](https://github.com/pingdotgg/uploadthing/commit/96448073319d378208bd3dc5549c7146ce942fd7) Thanks [@jonsystems](https://github.com/jonsystems)! - fix: platform agnostic pathing for twPlugin
+
+- Updated dependencies [[`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97)]:
+  - @uploadthing/shared@6.4.0
+
 ## 6.6.0
 
 ### Minor Changes
