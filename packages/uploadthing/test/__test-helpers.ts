@@ -148,9 +148,12 @@ export const it = itBase.extend({
             const presigned = mockPresigned(file);
             db.insertFile({
               ...file,
+              customId: file.customId ?? null,
+              type: presigned.fileType,
               key: presigned.key,
               callbackUrl: body.callbackUrl,
               callbackSlug: body.callbackSlug,
+              metadata: JSON.stringify(body.metadata ?? "{}"),
             });
             return presigned;
           });
@@ -192,9 +195,16 @@ export const it = itBase.extend({
         "https://uploadthing.com/api/pollUpload/:key",
         async ({ request, params }) => {
           await callRequestSpy(request);
+          const file = db.getFileByKey(params.key);
           return HttpResponse.json({
             status: "done",
-            fileData: db.getFileByKey(params.key),
+            fileData: {
+              ...file,
+              fileName: file.name,
+              fileSize: file.size,
+              fileType: file.type,
+              fileKey: file.key,
+            },
           });
         },
       ),
