@@ -55,7 +55,7 @@ export type UploadFilesOptions<
    * Set custom headers that'll get sent with requests
    * to your server
    */
-  headers?: HeadersInit | (() => MaybePromise<HeadersInit>);
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   /**
    * The uploadthing package that is making this request, used to identify the client in the server logs
    * @example "@uploadthing/react"
