@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",
-    "@uploadthing/svelte": "workspace:6.3.4",
-    "uploadthing": "workspace:6.5.2"
+    "@uploadthing/svelte": "workspace:6.4.1",
+    "uploadthing": "workspace:6.7.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.1.1",
