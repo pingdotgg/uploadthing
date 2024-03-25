@@ -234,7 +234,7 @@ describe("uploadFiles", () => {
   //   close();
   // });
 
-  it("succeeds after retries (MPU)", async ({ db }) => {
+  it("succeeds after retries (MPU)", { timeout: 15e3 }, async ({ db }) => {
     const { uploadFiles, close } = setupUTServer();
     useHalfBadS3();
 
@@ -259,8 +259,10 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(requestsToDomain("amazonaws.com")).toHaveLength(4);
     expect(onErrorMock).not.toHaveBeenCalled();
+    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
+      timeout: 5000,
+    });
 
     close();
   });

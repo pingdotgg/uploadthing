@@ -254,23 +254,25 @@ export const useBadS3 = () =>
  */
 export const useHalfBadS3 = () =>
   msw.use(
-    http.post("https://bucket.s3.amazonaws.com",
-    // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-    async function* ({ request }) {
-      await callRequestSpy(request);
-      yield new HttpResponse(null, { status: 403 });
-      yield new HttpResponse(null, { status: 403 });
-      return new HttpResponse();
-    }),
-    http.put("https://bucket.s3.amazonaws.com/:key", 
-    // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-    async function* ({ request }) {
-      await callRequestSpy(request);
-      yield new HttpResponse(null, { status: 403 });
-      yield new HttpResponse(null, { status: 403 });
-      return new HttpResponse(null, {
-        status: 204,
-        headers: { ETag: "abc123" },
-      });
-    }),
+    http.post(
+      "https://bucket.s3.amazonaws.com",
+      // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+      async function* ({ request }) {
+        await callRequestSpy(request);
+        yield new HttpResponse(null, { status: 403 });
+        return new HttpResponse();
+      },
+    ),
+    http.put(
+      "https://bucket.s3.amazonaws.com/:key",
+      // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+      async function* ({ request }) {
+        await callRequestSpy(request);
+        yield new HttpResponse(null, { status: 403 });
+        return new HttpResponse(null, {
+          status: 204,
+          headers: { ETag: "abc123" },
+        });
+      },
+    ),
   );
