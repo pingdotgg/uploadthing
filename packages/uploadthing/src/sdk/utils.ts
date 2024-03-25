@@ -145,9 +145,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
           contentDisposition,
           acl,
         }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       }),
       Effect.catchTag("ParseError", (e) => Effect.die(e)),
       Effect.catchTag("FetchError", (e) => Effect.die(e)),

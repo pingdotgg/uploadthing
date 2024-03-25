@@ -97,6 +97,7 @@ export const completeMultipartUpload = (
         uploadId: presigned.uploadId,
         etags,
       }),
+      headers: { "Content-Type": "application/json" },
     },
   );
 

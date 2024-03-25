@@ -119,6 +119,7 @@ export const completeMultipartUpload = (
         uploadId: presigned.uploadId,
         etags,
       }),
+      headers: { "Content-Type": "application/json" },
     },
   );
 
@@ -135,5 +136,6 @@ export const abortMultipartUpload = (presigned: {
         fileKey: presigned.key,
         uploadId: presigned.uploadId,
       }),
+      headers: { "Content-Type": "application/json" },
     },
   );

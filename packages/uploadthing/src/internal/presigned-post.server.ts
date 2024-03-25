@@ -34,6 +34,7 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
             fileKey: presigned.key,
             uploadId: null,
           }),
+          headers: { "Content-Type": "application/json" },
         }),
       ),
     );

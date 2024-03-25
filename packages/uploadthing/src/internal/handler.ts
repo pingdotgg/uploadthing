@@ -59,7 +59,6 @@ export const runRequestHandlerAsync = <
   const layer = Layer.succeed(fetchContext, {
     fetch: config?.fetch ?? globalThis.fetch,
     baseHeaders: {
-      "Content-Type": "application/json",
       "x-uploadthing-version": UPLOADTHING_VERSION,
       // These are filled in later in `parseAndValidateRequest`
       "x-uploadthing-api-key": undefined,
@@ -243,6 +242,7 @@ const handleCallbackRequest = (opts: {
       fetchEffJson(generateUploadThingURL("/api/serverCallback"), S.any, {
         method: "POST",
         body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
       }),
     );
     return { status: 200, body: null };
@@ -419,6 +419,7 @@ const handleUploadAction = (opts: {
             callbackUrl: callbackUrl.origin + callbackUrl.pathname,
             callbackSlug: opts.slug,
           }),
+          headers: { "Content-Type": "application/json" },
         },
       ),
     );

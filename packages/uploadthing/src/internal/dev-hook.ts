@@ -102,6 +102,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
         method: "POST",
         body: payload,
         headers: {
+          "Content-Type": "application/json",
           "uploadthing-hook": "callback",
           "x-uploadthing-signature": signature,
         },
