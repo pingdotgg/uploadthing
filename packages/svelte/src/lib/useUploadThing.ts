@@ -123,8 +123,12 @@ const generateUploader = <TRouter extends FileRouter>() => {
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
-    props: UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
-  ) => props;
+    endpoint: TEndpoint,
+    props: Omit<
+      UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
+      "endpoint"
+    >,
+  ) => ({ endpoint, ...props });
 };
 
 export const generateSvelteHelpers = <TRouter extends FileRouter>(

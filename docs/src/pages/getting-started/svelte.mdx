@@ -166,8 +166,7 @@ generic `FileRouter` to this function if you're importing it directly from
 
   import { Uploader } from "@uploadthing/svelte";
 
-  const uploader = createUploader({
-    endpoint: "withoutMdwr",
+  const uploader = createUploader("withoutMdwr", {
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
@@ -192,8 +191,7 @@ separately. Both are included in the `@uploadthing/svelte` package.
 
   import { Uploader } from "@uploadthing/svelte";
 
-  const uploader = createUploader({
-    endpoint: "withoutMdwr",
+  const uploader = createUploader("withoutMdwr", {
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");

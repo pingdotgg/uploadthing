@@ -5,8 +5,7 @@
 
   import "@fontsource-variable/inter";
 
-  const uploader = createUploader({
-    endpoint: "videoAndImage",
+  const uploader = createUploader("videoAndImage", {
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
