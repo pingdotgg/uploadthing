@@ -1,15 +1,16 @@
 import { describe, expect } from "vitest";
 import { z } from "zod";
 
+import { signPayload } from "@uploadthing/shared";
+
 import { createRouteHandler, createUploadthing } from "../src/server";
 import type { UploadedFileData } from "../src/types";
 import {
   baseHeaders,
   createApiUrl,
-  fetchMock,
-  it as itBase,
+  it,
   middlewareMock,
-  mockExternalRequests,
+  requestSpy,
   uploadCompleteMock,
 } from "./__test-helpers";
 
@@ -52,24 +53,17 @@ const router = {
     .onUploadComplete(uploadCompleteMock),
 };
 
-const it = itBase.extend<{ handlers: ReturnType<typeof createRouteHandler> }>({
-  handlers: async ({ db }, use) => {
-    await use(
-      createRouteHandler({
-        router,
-        config: {
-          uploadthingSecret: "sk_live_test123",
-          // @ts-expect-error - annoying to see error logs
-          logLevel: "silent",
-          fetch: mockExternalRequests(db),
-        },
-      }),
-    );
+const handlers = createRouteHandler({
+  router,
+  config: {
+    uploadthingSecret: "sk_live_test123",
+    // @ts-expect-error - annoying to see error logs
+    logLevel: "silent",
   },
 });
 
 describe("errors for invalid request input", () => {
-  it("404s for invalid slugs", async ({ handlers }) => {
+  it("404s for invalid slugs", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("i-dont-exist", "upload"), {
         method: "POST",
@@ -80,14 +74,14 @@ describe("errors for invalid request input", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(404);
     await expect(res.json()).resolves.toEqual({
       message: "No file route found for slug i-dont-exist",
     });
   });
 
-  it("400s for invalid action type", async ({ handlers }) => {
+  it("400s for invalid action type", async ({ db }) => {
     const res = await handlers.POST(
       // @ts-expect-error - invalid is not a valid action type
       new Request(createApiUrl("imageUploader", "invalid"), {
@@ -99,7 +93,7 @@ describe("errors for invalid request input", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: Invalid action type invalid",
@@ -110,7 +104,7 @@ describe("errors for invalid request input", () => {
 });
 
 describe("file route config", () => {
-  it("blocks unmatched file types", async ({ handlers }) => {
+  it("blocks unmatched file types", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -121,7 +115,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: File type text not allowed for foo.txt",
@@ -130,7 +124,7 @@ describe("file route config", () => {
   });
 
   it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async ({
-    handlers,
+    db,
   }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
@@ -144,12 +138,12 @@ describe("file route config", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({});
   });
 
-  it("blocks for too many files", async ({ handlers }) => {
+  it("blocks for too many files", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -163,7 +157,7 @@ describe("file route config", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause:
@@ -174,7 +168,7 @@ describe("file route config", () => {
 });
 
 describe(".input()", () => {
-  it("blocks when input is missing", async ({ handlers }) => {
+  it("blocks when input is missing", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -186,7 +180,7 @@ describe(".input()", () => {
     );
 
     expect(middlewareMock).toHaveBeenCalledTimes(0);
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
@@ -197,7 +191,7 @@ describe(".input()", () => {
     });
   });
 
-  it("blocks when input doesn't match schema", async ({ handlers }) => {
+  it("blocks when input doesn't match schema", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -210,7 +204,7 @@ describe(".input()", () => {
     );
 
     expect(middlewareMock).toHaveBeenCalledTimes(0);
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       message: "Invalid input.",
@@ -223,7 +217,7 @@ describe(".input()", () => {
     });
   });
 
-  it("forwards input to middleware", async ({ handlers }) => {
+  it("forwards input to middleware", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -245,7 +239,7 @@ describe(".input()", () => {
 });
 
 describe(".middleware()", () => {
-  it("forwards files to middleware", async ({ handlers }) => {
+  it("forwards files to middleware", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -266,7 +260,7 @@ describe(".middleware()", () => {
     expect(res.status).toBe(200);
   });
 
-  it("early exits if middleware throws", async ({ handlers }) => {
+  it("early exits if middleware throws", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("middlewareThrows", "upload"), {
         method: "POST",
@@ -285,7 +279,7 @@ describe(".middleware()", () => {
       }),
     );
 
-    expect(fetchMock).toHaveBeenCalledTimes(0);
+    expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({
       cause:
@@ -296,27 +290,29 @@ describe(".middleware()", () => {
 });
 
 describe(".onUploadComplete()", () => {
-  it("forwards correct args to onUploadComplete handler", async ({
-    handlers,
-  }) => {
+  it("forwards correct args to onUploadComplete handler", async ({ db }) => {
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      file: {
+        url: "https://utfs.io/f/some-random-key.png",
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+      } satisfies UploadedFileData,
+    });
+    const signature = await signPayload(payload, "sk_live_test123");
+
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
           "uploadthing-hook": "callback",
+          "x-uploadthing-signature": signature,
         },
-        body: JSON.stringify({
-          status: "uploaded",
-          metadata: {},
-          file: {
-            url: "https://utfs.io/f/some-random-key.png",
-            name: "foo.png",
-            key: "some-random-key.png",
-            size: 48,
-            type: "image/png",
-            customId: null,
-          } satisfies UploadedFileData,
-        }),
+        body: payload,
       }),
     );
 
@@ -334,5 +330,69 @@ describe(".onUploadComplete()", () => {
       },
       metadata: {},
     });
+  });
+
+  it("is blocked on missing signature", async ({ db }) => {
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      file: {
+        url: "https://utfs.io/f/some-random-key.png",
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+      } satisfies UploadedFileData,
+    });
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader"), {
+        method: "POST",
+        headers: {
+          "uploadthing-hook": "callback",
+        },
+        body: payload,
+      }),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      message: "Invalid signature",
+    });
+    expect(uploadCompleteMock).not.toHaveBeenCalled();
+  });
+
+  it("is blocked on invalid signature", async ({ db }) => {
+    const payload = JSON.stringify({
+      status: "uploaded",
+      metadata: {},
+      file: {
+        url: "https://utfs.io/f/some-random-key.png",
+        name: "foo.png",
+        key: "some-random-key.png",
+        size: 48,
+        type: "image/png",
+        customId: null,
+      } satisfies UploadedFileData,
+    });
+    const signature = await signPayload(payload, "sk_live_badkey");
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader"), {
+        method: "POST",
+        headers: {
+          "uploadthing-hook": "callback",
+          "x-uploadthing-signature": signature,
+        },
+        body: payload,
+      }),
+    );
+
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      message: "Invalid signature",
+    });
+    expect(uploadCompleteMock).not.toHaveBeenCalled();
   });
 });

@@ -1,5 +1,12 @@
 # @uploadthing/react
 
+## 6.4.1
+
+### Patch Changes
+
+- Updated dependencies [[`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97)]:
+  - @uploadthing/shared@6.4.0
+
 ## 6.4.0
 
 ### Minor Changes

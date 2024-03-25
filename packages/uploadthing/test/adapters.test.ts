@@ -6,14 +6,12 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
-import type { MockDbInterface } from "./__test-helpers";
 import {
   baseHeaders,
   createApiUrl,
-  fetchMock,
   it,
   middlewareMock,
-  mockExternalRequests,
+  requestSpy,
   uploadCompleteMock,
 } from "./__test-helpers";
 
@@ -40,7 +38,6 @@ describe("adapters:h3", async () => {
       router,
       config: {
         uploadthingSecret: "sk_live_test",
-        fetch: mockExternalRequests(db),
       },
     });
 
@@ -68,13 +65,25 @@ describe("adapters:h3", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
           "x-uploadthing-be-adapter": "h3",
           "x-uploadthing-fe-package": "vitest",
@@ -111,7 +120,6 @@ describe("adapters:server", async () => {
       router,
       config: {
         uploadthingSecret: "sk_live_test",
-        fetch: mockExternalRequests(db),
       },
     });
 
@@ -131,13 +139,25 @@ describe("adapters:server", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
           "x-uploadthing-be-adapter": "server",
           "x-uploadthing-fe-package": "vitest",
@@ -172,7 +192,6 @@ describe("adapters:next", async () => {
       router,
       config: {
         uploadthingSecret: "sk_live_test",
-        fetch: mockExternalRequests(db),
       },
     });
 
@@ -191,13 +210,25 @@ describe("adapters:next", async () => {
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
           "x-uploadthing-be-adapter": "nextjs-app",
           "x-uploadthing-fe-package": "vitest",
@@ -270,7 +301,6 @@ describe("adapters:next-legacy", async () => {
       router,
       config: {
         uploadthingSecret: "sk_live_test",
-        fetch: mockExternalRequests(db),
       },
     });
 
@@ -293,13 +323,25 @@ describe("adapters:next-legacy", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: '{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"http://localhost:3000/","callbackSlug":"middleware"}',
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: "http://localhost:3000/",
+          callbackSlug: "middleware",
+        },
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
           "x-uploadthing-be-adapter": "nextjs-pages",
           "x-uploadthing-fe-package": "vitest",
@@ -331,10 +373,7 @@ describe("adapters:express", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = (
-    db: MockDbInterface,
-    preregisters?: (app: express.Express) => void,
-  ) => {
+  const startServer = (preregisters?: (app: express.Express) => void) => {
     const app = express.default();
     preregisters?.(app);
     app.use(
@@ -343,7 +382,6 @@ describe("adapters:express", async () => {
         router,
         config: {
           uploadthingSecret: "sk_live_test",
-          fetch: mockExternalRequests(db),
         },
       }),
     );
@@ -357,7 +395,7 @@ describe("adapters:express", async () => {
   it("gets express.Request and express.Response in middleware args", async ({
     db,
   }) => {
-    const server = startServer(db);
+    const server = startServer();
 
     const url = `${server.url}/api/uploadthing/`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
@@ -382,13 +420,25 @@ describe("adapters:express", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: `{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"${url}","callbackSlug":"middleware"}`,
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: url,
+          callbackSlug: "middleware",
+        },
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
           "x-uploadthing-be-adapter": "express",
           "x-uploadthing-fe-package": "vitest",
@@ -402,7 +452,7 @@ describe("adapters:express", async () => {
   });
 
   it("works with some standard built-in middlewares", async ({ db }) => {
-    const server = startServer(db, (app) => {
+    const server = startServer((app) => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
     });
@@ -423,7 +473,7 @@ describe("adapters:express", async () => {
 
   it("works with body-parser middleware", async ({ db }) => {
     const bodyParser = await import("body-parser");
-    const server = startServer(db, (app) => {
+    const server = startServer((app) => {
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));
     });
@@ -463,13 +513,12 @@ describe("adapters:fastify", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  const startServer = async (db: MockDbInterface) => {
+  const startServer = async () => {
     const app = fastify.default();
     await app.register(createRouteHandler, {
       router,
       config: {
         uploadthingSecret: "sk_live_test",
-        fetch: mockExternalRequests(db),
       },
     });
 
@@ -483,7 +532,7 @@ describe("adapters:fastify", async () => {
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
     db,
   }) => {
-    const server = await startServer(db);
+    const server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
@@ -508,13 +557,25 @@ describe("adapters:fastify", async () => {
     );
 
     // Should proceed to have requested URLs
-    expect(fetchMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/prepareUpload",
       {
-        body: `{"files":[{"name":"foo.txt","size":48}],"routeConfig":{"blob":{"maxFileSize":"8MB","maxFileCount":1,"contentDisposition":"inline"}},"metadata":{},"callbackUrl":"${url}","callbackSlug":"middleware"}`,
+        body: {
+          files: [{ name: "foo.txt", size: 48 }],
+          routeConfig: {
+            blob: {
+              maxFileSize: "8MB",
+              maxFileCount: 1,
+              contentDisposition: "inline",
+            },
+          },
+          metadata: {},
+          callbackUrl: url,
+          callbackSlug: "middleware",
+        },
         headers: {
-          "Content-Type": "application/json",
+          "content-type": "application/json",
           "x-uploadthing-api-key": "sk_live_test",
           "x-uploadthing-be-adapter": "fastify",
           "x-uploadthing-fe-package": "vitest",
