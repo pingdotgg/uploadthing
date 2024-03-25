@@ -189,11 +189,12 @@ export const it = itBase.extend({
       ),
       http.get<{ key: string }>(
         "https://uploadthing.com/api/pollUpload/:key",
-        function* ({ request, params }) {
-          void callRequestSpy(request);
+        // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+        async function* ({ request, params }) {
+          await callRequestSpy(request);
 
           // Simulate polling
-          yield HttpResponse.json({ status: "still wating" });
+          yield HttpResponse.json({ status: "still waiting" });
 
           return HttpResponse.json({
             status: "done",
@@ -219,8 +220,9 @@ export const it = itBase.extend({
       ),
       http.get(
         "https://uploadthing.com/api/serverCallback",
-        function* ({ request }) {
-          void callRequestSpy(request);
+        // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+        async function* ({ request }) {
+          await callRequestSpy(request);
 
           yield HttpResponse.json({ status: "still waiting" });
           return HttpResponse.json({ status: "done", callbackData: null });
@@ -252,16 +254,20 @@ export const useBadS3 = () =>
  */
 export const useHalfBadS3 = () =>
   msw.use(
-    http.post("https://bucket.s3.amazonaws.com", function* ({ request }) {
-      void callRequestSpy(request);
+    http.post("https://bucket.s3.amazonaws.com",
+    // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+    async function* ({ request }) {
+      await callRequestSpy(request);
       yield new HttpResponse(null, { status: 403 });
       yield new HttpResponse(null, { status: 403 });
       return new HttpResponse();
     }),
-    http.put("https://bucket.s3.amazonaws.com/:key", function* ({ request }) {
-      void callRequestSpy(request);
-      yield new HttpResponse(null, { status: 204 });
-      yield new HttpResponse(null, { status: 204 });
+    http.put("https://bucket.s3.amazonaws.com/:key", 
+    // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+    async function* ({ request }) {
+      await callRequestSpy(request);
+      yield new HttpResponse(null, { status: 403 });
+      yield new HttpResponse(null, { status: 403 });
       return new HttpResponse(null, {
         status: 204,
         headers: { ETag: "abc123" },
