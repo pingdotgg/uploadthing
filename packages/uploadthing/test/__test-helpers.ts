@@ -1,5 +1,5 @@
 import type { StrictRequest } from "msw";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
 
@@ -189,8 +189,12 @@ export const it = itBase.extend({
       ),
       http.get<{ key: string }>(
         "https://uploadthing.com/api/pollUpload/:key",
-        async ({ request, params }) => {
-          await callRequestSpy(request);
+        function* ({ request, params }) {
+          void callRequestSpy(request);
+
+          // Simulate polling
+          yield HttpResponse.json({ status: "still wating" });
+
           return HttpResponse.json({
             status: "done",
             fileData: db.getFileByKey(params.key),
@@ -215,9 +219,11 @@ export const it = itBase.extend({
       ),
       http.get(
         "https://uploadthing.com/api/serverCallback",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
+        function* ({ request }) {
+          void callRequestSpy(request);
+
+          yield HttpResponse.json({ status: "still waiting" });
+          return HttpResponse.json({ status: "done", callbackData: null });
         },
       ),
     );
@@ -238,5 +244,27 @@ export const useBadS3 = () =>
     http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
       await callRequestSpy(request);
       return new HttpResponse(null, { status: 204 });
+    }),
+  );
+
+/**
+ * Call this in your test to make the S3 requests fail a couple times before succeeding
+ */
+export const useHalfBadS3 = () =>
+  msw.use(
+    http.post("https://bucket.s3.amazonaws.com", function* ({ request }) {
+      void callRequestSpy(request);
+      yield new HttpResponse(null, { status: 403 });
+      yield new HttpResponse(null, { status: 403 });
+      return new HttpResponse();
+    }),
+    http.put("https://bucket.s3.amazonaws.com/:key", function* ({ request }) {
+      void callRequestSpy(request);
+      yield new HttpResponse(null, { status: 204 });
+      yield new HttpResponse(null, { status: 204 });
+      return new HttpResponse(null, {
+        status: 204,
+        headers: { ETag: "abc123" },
+      });
     }),
   );

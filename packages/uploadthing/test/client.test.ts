@@ -15,6 +15,7 @@ import {
   requestsToDomain,
   uploadCompleteMock,
   useBadS3,
+  useHalfBadS3,
 } from "./__test-helpers";
 
 export const setupUTServer = () => {
@@ -195,6 +196,66 @@ describe("uploadFiles", () => {
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
+
+    close();
+  });
+
+  it("succeeds after retries (PSP)", async ({ db }) => {
+    const { uploadFiles, close } = setupUTServer();
+    useHalfBadS3();
+
+    const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+
+    await expect(
+      uploadFiles("foo", {
+        files: [file],
+        skipPolling: true,
+      }),
+    ).resolves.toEqual([
+      {
+        name: "foo.txt",
+        size: 3,
+        type: "text/plain",
+        customId: null,
+        serverData: null,
+        key: "abc-123.txt",
+        url: "https://utfs.io/f/abc-123.txt",
+      },
+    ]);
+
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(3);
+    expect(onErrorMock).not.toHaveBeenCalled();
+
+    close();
+  });
+
+  it("succeeds after retries (MPU)", async ({ db }) => {
+    const { uploadFiles, close } = setupUTServer();
+    useHalfBadS3();
+
+    const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
+      type: "text/plain",
+    });
+
+    await expect(
+      uploadFiles("foo", {
+        files: [bigFile],
+        skipPolling: true,
+      }),
+    ).resolves.toEqual([
+      {
+        name: "foo.txt",
+        size: 10485760,
+        type: "text/plain",
+        customId: null,
+        serverData: null,
+        key: "abc-123.txt",
+        url: "https://utfs.io/f/abc-123.txt",
+      },
+    ]);
+
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(4);
+    expect(onErrorMock).not.toHaveBeenCalled();
 
     close();
   });
