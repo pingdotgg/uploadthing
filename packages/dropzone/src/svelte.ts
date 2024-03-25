@@ -74,7 +74,7 @@ export function createDropzone({
   onMount(() => {
     const onDocumentDrop = (event: DropEvent) => {
       const root = get(rootRef);
-      if (root && root.contains(event.target as Node)) {
+      if (root?.contains(event.target as Node)) {
         // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
         return;
       }
@@ -240,7 +240,7 @@ export function createDropzone({
   const onKeyDown = (event: KeyboardEvent) => {
     // Ignore keyboard events bubbling up the DOM tree
     const root = get(rootRef);
-    if (!root || !root.isEqualNode(event.target as Node)) {
+    if (!root?.isEqualNode(event.target as Node)) {
       return;
     }
 
