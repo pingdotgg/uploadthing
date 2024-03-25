@@ -17,7 +17,7 @@ export const FileUploadDataSchema = S.struct({
 /**
  * Properties from the web File object, this is what the client sends when initiating an upload
  */
-export type FileUploadData = S.Schema.To<typeof FileUploadDataSchema>;
+export type FileUploadData = S.Schema.Type<typeof FileUploadDataSchema>;
 
 export const FileUploadDataWithCustomIdSchema = S.extend(
   FileUploadDataSchema,
@@ -28,7 +28,7 @@ export const FileUploadDataWithCustomIdSchema = S.extend(
 /**
  * `.middleware()` can add a customId to the incoming file data
  */
-export type FileUploadDataWithCustomId = S.Schema.To<
+export type FileUploadDataWithCustomId = S.Schema.Type<
   typeof FileUploadDataWithCustomIdSchema
 >;
 
@@ -42,7 +42,7 @@ export const UploadedFileDataSchema = S.extend(
 /**
  * When files are uploaded, we get back a key and a URL for the file
  */
-export type UploadedFileData = S.Schema.To<typeof UploadedFileDataSchema>;
+export type UploadedFileData = S.Schema.Type<typeof UploadedFileDataSchema>;
 
 /**
  * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`

@@ -29,10 +29,10 @@ import type {
 /**
  * Returned by `/api/prepareUpload` and `/api/uploadFiles`
  */
-export type PresignedBase = S.Schema.To<typeof PresignedBaseSchema>;
-export type PSPResponse = S.Schema.To<typeof PSPResponseSchema>;
-export type MPUResponse = S.Schema.To<typeof MPUResponseSchema>;
-export type PresignedURLs = S.Schema.To<typeof PresignedURLResponseSchema>;
+export type PresignedBase = S.Schema.Type<typeof PresignedBaseSchema>;
+export type PSPResponse = S.Schema.Type<typeof PSPResponseSchema>;
+export type MPUResponse = S.Schema.Type<typeof MPUResponseSchema>;
+export type PresignedURLs = S.Schema.Type<typeof PresignedURLResponseSchema>;
 
 /**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
@@ -94,7 +94,7 @@ type MiddlewareFn<
   TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
   opts: TArgs & {
-    files: Schema.To<typeof UploadActionPayload>["files"];
+    files: Schema.Type<typeof UploadActionPayload>["files"];
     input: TInput extends UnsetMarker ? undefined : TInput;
   },
 ) => MaybePromise<TOutput>;
@@ -247,15 +247,15 @@ export type ActionType = (typeof VALID_ACTION_TYPES)[number];
  */
 export type UTEvents = {
   upload: {
-    in: S.Schema.To<typeof UploadActionPayload>;
-    out: S.Schema.To<typeof PresignedURLResponseSchema>;
+    in: S.Schema.Type<typeof UploadActionPayload>;
+    out: S.Schema.Type<typeof PresignedURLResponseSchema>;
   };
   failure: {
-    in: S.Schema.To<typeof FailureActionPayload>;
+    in: S.Schema.Type<typeof FailureActionPayload>;
     out: null;
   };
   "multipart-complete": {
-    in: S.Schema.To<typeof MultipartCompleteActionPayload>;
+    in: S.Schema.Type<typeof MultipartCompleteActionPayload>;
     out: null;
   };
 };

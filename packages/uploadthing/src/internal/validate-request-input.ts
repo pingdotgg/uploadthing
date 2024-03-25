@@ -46,7 +46,7 @@ class FileCountMismatch extends TaggedError("FileCountMismatch")<{
 // e.g. uploading more videos than allowed, or a file that is larger than allowed.
 // This is double-checked on infra side, but we want to fail early to avoid network latency.
 export const assertFilesMeetConfig = (
-  files: S.Schema.To<typeof UploadActionPayload>["files"],
+  files: S.Schema.Type<typeof UploadActionPayload>["files"],
   routeConfig: ExpandedRouteConfig,
 ) =>
   Effect.gen(function* ($) {

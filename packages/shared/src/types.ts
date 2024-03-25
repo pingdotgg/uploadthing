@@ -96,9 +96,9 @@ export type Time =
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
 export const ContentDisposition = S.literal("inline", "attachment");
-export type ContentDisposition = S.Schema.To<typeof ContentDisposition>;
+export type ContentDisposition = S.Schema.Type<typeof ContentDisposition>;
 export const ACL = S.literal("public-read", "private");
-export type ACL = S.Schema.To<typeof ACL>;
+export type ACL = S.Schema.Type<typeof ACL>;
 
 type RouteConfig = {
   maxFileSize: FileSize;

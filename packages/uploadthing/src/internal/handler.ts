@@ -251,8 +251,8 @@ const handleCallbackRequest = (opts: {
 const runRouteMiddleware = (opts: {
   uploadable: AnyUploader;
   middlewareArgs: MiddlewareFnArgs<any, any, any>;
-  routeInput: S.Schema.To<typeof UploadActionPayload>["input"];
-  files: S.Schema.To<typeof UploadActionPayload>["files"];
+  routeInput: S.Schema.Type<typeof UploadActionPayload>["input"];
+  files: S.Schema.Type<typeof UploadActionPayload>["files"];
 }) =>
   Effect.gen(function* ($) {
     const { files } = opts;
