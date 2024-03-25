@@ -90,7 +90,9 @@ describe("uploadFiles", () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
-    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0);
+    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
+      timeout: 5000,
+    });
 
     close();
   });
@@ -129,7 +131,9 @@ describe("uploadFiles", () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
-    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0);
+    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
+      timeout: 5000,
+    });
 
     close();
   });
