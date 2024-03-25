@@ -1,36 +1,25 @@
-/* eslint-disable no-console */
 // @vitest-environment happy-dom
 
 import express from "express";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import { afterAll, afterEach, beforeAll, describe, expect, vi } from "vitest";
+import { describe, expect, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
-import type { MockDbInterface } from "./__test-helpers";
 import {
-  fetchMock,
-  handlers,
   it,
   middlewareMock,
-  mockExternalRequests,
   onErrorMock,
-  s3Mock,
+  requestSpy,
+  requestsToDomain,
   uploadCompleteMock,
+  useBadS3,
 } from "./__test-helpers";
 
-const msw = setupServer(...handlers);
-beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
-afterEach(() => msw.resetHandlers());
-afterAll(() => msw.close());
-
-const setupUTServer = (db: MockDbInterface) => {
+export const setupUTServer = () => {
   const f = createUploadthing({
     errorFormatter(err) {
-      console.log(err, err.cause);
       return { message: err.message };
     },
   });
@@ -52,7 +41,6 @@ const setupUTServer = (db: MockDbInterface) => {
       config: {
         uploadthingSecret: "sk_test_123",
         isDev: true,
-        fetch: mockExternalRequests(db),
       },
     }),
   );
@@ -70,7 +58,7 @@ const setupUTServer = (db: MockDbInterface) => {
 
 describe("uploadFiles", () => {
   it("uploads with presigned post", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer(db);
+    const { uploadFiles, close } = setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -90,8 +78,14 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(s3Mock).toHaveBeenCalledOnce();
-    expect(s3Mock).toHaveBeenCalledWith({}, expect.any(Request));
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
+    expect(requestSpy).toHaveBeenCalledWith(
+      "https://bucket.s3.amazonaws.com/",
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(FormData),
+      }),
+    );
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(onErrorMock).not.toHaveBeenCalled();
@@ -101,7 +95,7 @@ describe("uploadFiles", () => {
   });
 
   it("uploads with multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer(db);
+    const { uploadFiles, close } = setupUTServer();
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
@@ -123,10 +117,13 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(s3Mock).toHaveBeenCalledTimes(2);
-    expect(s3Mock).toHaveBeenCalledWith(
-      { key: "abc-123.txt" },
-      expect.any(Request),
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
+    expect(requestSpy).toHaveBeenCalledWith(
+      "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
+      expect.objectContaining({
+        method: "PUT",
+        body: expect.any(Blob),
+      }),
     );
 
     expect(middlewareMock).toHaveBeenCalledOnce();
@@ -137,7 +134,7 @@ describe("uploadFiles", () => {
   });
 
   it("sends custom headers if set (static object)", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer(db);
+    const { uploadFiles, close } = setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -170,7 +167,7 @@ describe("uploadFiles", () => {
   });
 
   it("sends custom headers if set (async function)", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer(db);
+    const { uploadFiles, close } = setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -203,14 +200,9 @@ describe("uploadFiles", () => {
   });
 
   it("reports of failed post upload", async ({ db }) => {
-    msw.resetHandlers(
-      http.post("https://bucket.s3.amazonaws.com", ({ params, request }) => {
-        s3Mock(params, request);
-        return HttpResponse.json(null, { status: 403 });
-      }),
-    );
+    const { uploadFiles, close } = setupUTServer();
+    useBadS3();
 
-    const { uploadFiles, close } = setupUTServer(db);
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -222,12 +214,12 @@ describe("uploadFiles", () => {
       `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
-    expect(s3Mock).toHaveBeenCalledOnce();
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
     expect(onErrorMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),
       {
-        body: '{"fileKey":"abc-123.txt","uploadId":null}',
+        body: { fileKey: "abc-123.txt", uploadId: null },
         headers: {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_test_123",
@@ -243,17 +235,9 @@ describe("uploadFiles", () => {
   });
 
   it("reports of failed multipart upload", async ({ db }) => {
-    msw.resetHandlers(
-      http.put(
-        "https://bucket.s3.amazonaws.com/:key",
-        ({ params, request }) => {
-          s3Mock(params, request);
-          return HttpResponse.json(null, { status: 200 });
-        },
-      ),
-    );
+    const { uploadFiles, close } = setupUTServer();
+    useBadS3();
 
-    const { uploadFiles, close } = setupUTServer(db);
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
@@ -267,12 +251,12 @@ describe("uploadFiles", () => {
       `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
-    expect(s3Mock).toHaveBeenCalledTimes(2);
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
     expect(onErrorMock).toHaveBeenCalledOnce();
-    expect(fetchMock).toHaveBeenCalledWith(
+    expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),
       {
-        body: '{"fileKey":"abc-123.txt","uploadId":"random-upload-id"}',
+        body: { fileKey: "abc-123.txt", uploadId: "random-upload-id" },
         headers: {
           "Content-Type": "application/json",
           "x-uploadthing-api-key": "sk_test_123",
