@@ -10,10 +10,11 @@ import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import { toWebRequest } from "./internal/node-http/toWebRequest";
+import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -51,10 +52,14 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const response = await requestHandler({
-      req: toWebRequest(req),
-      middlewareArgs: { req, res, event: undefined },
-    });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: toWebRequest(req),
+        middlewareArgs: { req, res, event: undefined },
+      },
+      opts.config,
+    );
 
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
 
@@ -62,12 +67,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       res.status(getStatusCodeFromError(response));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
       return res.json(formatError(response, opts.router));
-    }
-
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      res.status(500);
-      return res.send("An unknown error occurred");
     }
 
     res.status(response.status);

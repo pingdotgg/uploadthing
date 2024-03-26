@@ -1,3 +1,5 @@
+import * as S from "@effect/schema/Schema";
+
 import type { MimeType } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
@@ -49,6 +51,7 @@ export interface RequestInitEsque {
  */
 export interface ResponseEsque {
   status: number;
+  statusText: string;
   ok: boolean;
   /**
    * @remarks
@@ -92,8 +95,11 @@ export type Time =
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
-export type ContentDisposition = "inline" | "attachment";
-export type ACL = "public-read" | "private";
+export const ContentDisposition = S.literal("inline", "attachment");
+export type ContentDisposition = S.Schema.Type<typeof ContentDisposition>;
+export const ACL = S.literal("public-read", "private");
+export type ACL = S.Schema.Type<typeof ACL>;
+
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;

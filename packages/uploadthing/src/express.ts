@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { Router as ExpressRouter } from "express";
 import type {
   Request as ExpressRequest,
@@ -12,11 +13,11 @@ import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger, logger } from "./internal/logger";
-import { getPostBody } from "./internal/node-http/getBody";
-import { toWebRequest } from "./internal/node-http/toWebRequest";
+import { initLogger } from "./internal/logger";
+import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -49,42 +50,21 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   router.post("/", async (req, res) => {
-    const bodyResult = await getPostBody({ req });
-
-    if (!bodyResult.ok) {
-      logger.error(
-        "Error parsing body. UploadThing expects a raw JSON body, make sure any body-parsing middlewares are registered after uploadthing.",
-      );
-      res.status(400);
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(
-        JSON.stringify({
-          error: "BAD_REQUEST",
-          message: bodyResult.error.message,
-        }),
-      );
-
-      return;
-    }
-
-    const response = await requestHandler({
-      req: toWebRequest(req, bodyResult.data),
-      middlewareArgs: { req, res, event: undefined },
-    });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: getPostBody({ req }).pipe(
+          Effect.andThen((body) => toWebRequest(req, body)),
+        ),
+        middlewareArgs: { req, res, event: undefined },
+      },
+      opts.config,
+    );
 
     if (response instanceof UploadThingError) {
       res.status(getStatusCodeFromError(response));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
       res.send(JSON.stringify(formatError(response, opts.router)));
-      return;
-    }
-
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      res.status(500);
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send("An unknown error occurred");
-
       return;
     }
 

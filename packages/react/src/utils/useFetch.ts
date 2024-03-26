@@ -4,8 +4,8 @@ import { useEffect, useReducer, useRef } from "react";
 import { safeParseJSON } from "@uploadthing/shared";
 
 interface State<T> {
-  data?: T;
-  error?: Error;
+  data?: T | undefined;
+  error?: Error | undefined;
 }
 
 type Cache<T> = Record<string, T>;

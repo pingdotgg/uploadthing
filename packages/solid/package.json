@@ -110,8 +110,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@effect/schema": "^0.64.13",
     "@uploadthing/dropzone": "workspace:0.2.1",
     "@uploadthing/shared": "workspace:6.4.0",
+    "effect": "^2.4.13",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
@@ -126,7 +128,7 @@
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
-    "uploadthing": "^6.5.1"
+    "uploadthing": "^6.6.0"
   },
   "keywords": [
     "SolidJS",

@@ -48,7 +48,7 @@ export type UrlWithOverrides = {
 type BlobEsque = NodeBlob | Blob;
 export type FileEsque = BlobEsque & {
   name: string;
-  customId?: string | null;
+  customId?: string | null | undefined;
 };
 
 export interface UploadFilesOptions {
