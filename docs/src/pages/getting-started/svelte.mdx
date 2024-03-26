@@ -102,7 +102,6 @@ import { createRouteHandler } from "uploadthing/server";
 const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
   config: {
-    uploadthingId: env.UPLOADTHING_APP_ID,
     uploadthingSecret: env.UPLOADTHING_SECRET,
   },
 });
