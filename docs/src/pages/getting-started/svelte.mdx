@@ -1,4 +1,7 @@
-import { Callout, Steps } from "nextra-theme-docs";
+import { Callout, Steps, Tabs, Tab } from "nextra-theme-docs";
+
+import EnvSetup from "./_shared/env-setup.mdx";
+import TailwindSetup from "./_shared/tailwind-setup.mdx";
 
 # Getting Started with SvelteKit
 
@@ -17,16 +20,14 @@ npm install uploadthing @uploadthing/svelte
 
 ### Add env variables
 
-<Callout>
-  If you don't already have a uploadthing secret key, [sign
-  up](https://uploadthing.com/sign-in) and create one from the
-  [dashboard!](https://uploadthing.com/dashboard)
-</Callout>
-
-```bash copy
+```bash
 UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
-UPLOADTHING_APP_ID=... # Your app id
 ```
+
+<Callout type="warning">
+  If you don't already have a uploadthing secret key, [sign up](https://uploadthing.com/sign-in) and create one from
+  the [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
 
 </Steps>
 
