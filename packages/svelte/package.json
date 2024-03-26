@@ -13,6 +13,7 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "eslint \"**/*.{ts,svelte}\"",
     "prepare": "svelte-kit sync",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "clean": "git clean -xdf dist .svelte-kit node_modules"
   },
   "exports": {
