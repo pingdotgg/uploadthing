@@ -59,6 +59,7 @@
     "extends": [
       "@uploadthing/eslint-config/base",
       "@uploadthing/eslint-config/svelte"
-    ]
+    ],
+    "ignorePatterns": ["*.config.*"]
   }
 }
