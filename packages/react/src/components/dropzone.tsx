@@ -312,6 +312,7 @@ export function UploadDropzone<
         onClick={onUploadClick}
         data-ut-element="button"
         data-state={state}
+        type="button"
         disabled={
           $props.__internal_button_disabled ??
           (!files.length || state === "uploading")

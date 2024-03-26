@@ -238,6 +238,7 @@ export const UploadDropzone = <
           }}
           data-ut-element="button"
           data-state={state()}
+          type="button"
           disabled={state() === "uploading"}
         >
           {contentFieldToContent($props.content?.button, styleFieldArg) ??
