@@ -49,7 +49,8 @@ community.
 <!-- prettier-ignore-end -->
 
 1. Fork and clone the repository
-2. Ensure you have the LTS version of Node.js installed, as well as the latest version of [Bun](https://bun.sh).
+2. Ensure you have the LTS version of Node.js installed, as well as the latest
+   version of [Bun](https://bun.sh).
 3. Install the project dependencies by running `bun install`.
 4. Implement your changes, as well as any documentation or tests that are
    required.
