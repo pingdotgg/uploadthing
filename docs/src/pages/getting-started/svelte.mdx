@@ -107,7 +107,6 @@ const { GET, POST } = createRouteHandler({
 });
 
 export { GET, POST };
-
 ```
 
 > See configuration options in
@@ -142,8 +141,9 @@ Generating the `useUploadThing` helper function lets you create your own
 components.
 
 ```ts copy filename="src/lib/utils/uploadthing.ts"
-import { generateSvelteHelpers } from "@uploadthing/svelte";
 import type { OurFileRouter } from "$lib/server/uploadthing";
+
+import { generateSvelteHelpers } from "@uploadthing/svelte";
 
 export const { createUploader, useUploadThing } =
   generateSvelteHelpers<OurFileRouter>();
