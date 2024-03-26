@@ -78,10 +78,10 @@ export function createDropzone(_props: DropzoneOptions) {
   createEffect(() => {
     const onDocumentDrop = (event: DropEvent) => {
       const root = rootRef();
-      if (root && root.contains(event.target as Node)) {
-        // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
-        return;
-      }
+
+      // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
+      if (root?.contains(event.target as Node)) return;
+
       event.preventDefault();
       dragTargets = [];
     };
@@ -233,11 +233,10 @@ export function createDropzone(_props: DropzoneOptions) {
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    // Ignore keyboard events bubbling up the DOM tree
     const root = rootRef();
-    if (!root || !root.isEqualNode(event.target as Node)) {
-      return;
-    }
+
+    // Ignore keyboard events bubbling up the DOM tree
+    if (!root?.isEqualNode(event.target as Node)) return;
 
     if (isEnterOrSpace(event)) {
       event.preventDefault();
