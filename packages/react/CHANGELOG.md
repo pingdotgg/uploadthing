@@ -1,5 +1,11 @@
 # @uploadthing/react
 
+## 6.4.2
+
+### Patch Changes
+
+- [#734](https://github.com/pingdotgg/uploadthing/pull/734) [`5606d15`](https://github.com/pingdotgg/uploadthing/commit/5606d15e952c077d652943fee4efdb3c32d33667) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix dropzone not submitting when inside a form
+
 ## 6.4.1
 
 ### Patch Changes

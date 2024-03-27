@@ -19,7 +19,7 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@uploadthing/react": "workspace:6.4.1",
+    "@uploadthing/react": "workspace:6.4.2",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.2",
     "uploadthing": "workspace:6.7.0"
