@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createUploader, useUploadThing } from "$lib/utils/uploadthing";
 
-  import { Uploader } from "@uploadthing/svelte";
+  import { UploadButton, UploadDropzone } from "@uploadthing/svelte";
 
   import "@fontsource-variable/inter";
 
@@ -27,7 +27,12 @@
 </script>
 
 <main>
-  <Uploader {uploader} />
+  <UploadButton
+    {uploader}
+  />
+  <UploadDropzone
+    {uploader}
+  />
   <input
     type="file"
     on:change={async (e) => {
