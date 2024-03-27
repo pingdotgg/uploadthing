@@ -13,7 +13,8 @@
     onUploadError: (error: Error) => {
       alert(`ERROR! ${error.message}`);
     },
-  });
+      
+  })
 
   const { startUpload } = useUploadThing("videoAndImage", {
     /**
@@ -23,16 +24,13 @@
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
     },
+
   });
 </script>
 
 <main>
-  <UploadButton
-    {uploader}
-  />
-  <UploadDropzone
-    {uploader}
-  />
+  <UploadButton {uploader} />
+  <UploadDropzone {uploader} />
   <input
     type="file"
     on:change={async (e) => {

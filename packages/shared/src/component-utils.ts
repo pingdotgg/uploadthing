@@ -82,7 +82,9 @@ type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"
   : T["__runtime"] extends "solid"
     ? "solid"
-    : "svelte";
+    : T["__runtime"] extends "svelte"
+      ? "svelte"
+      : never;
 
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? ReactNode
@@ -91,7 +93,9 @@ type CSSPropertiesEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? CSSProperties
   : TRuntime extends "solid"
     ? JSX.CSSProperties
-    : string;
+    : TRuntime extends "svelte"
+      ? string
+      : never;
 
 export type StyleField<
   CallbackArg extends MinCallbackArg,
