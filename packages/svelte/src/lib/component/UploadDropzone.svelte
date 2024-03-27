@@ -210,7 +210,7 @@
     </svg>
   </slot>
   <label
-    for="file-upload"
+
     class={twMerge(
       "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
       ready ? "text-blue-600" : "text-gray-500",
@@ -220,10 +220,10 @@
     data-ut-element="label"
     data-state={state}
   >
+  <input use:dropzoneInput class="sr-only" />
     <slot name="label" state={styleFieldArg}>
       {ready ? `Choose files or drag and drop` : `Loading...`}
     </slot>
-    <input use:dropzoneInput class="sr-only" />
   </label>
   <div
     class={twMerge(
