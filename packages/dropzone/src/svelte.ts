@@ -195,7 +195,7 @@ export function createDropzone({
       }
     });
 
-    if (isValidQuantity(acceptedFiles, multiple, maxFiles)) {
+    if (!isValidQuantity(acceptedFiles, multiple, maxFiles)) {
       acceptedFiles.splice(0);
     }
 
