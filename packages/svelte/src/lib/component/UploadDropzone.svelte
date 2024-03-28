@@ -116,17 +116,19 @@
     }
   };
 
+  $: dropzoneOptions = {
+    onDrop,
+    multiple,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    disabled: __internal_dropzone_disabled,
+  };
+
   const {
     state: dropzoneState,
     rootRef,
     dropzoneRoot,
     dropzoneInput,
-  } = createDropzone({
-    onDrop,
-    multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: __internal_dropzone_disabled,
-  });
+  } = createDropzone(dropzoneOptions);
 
   const handlePaste = (event: ClipboardEvent) => {
     if (!appendOnPaste) return;
@@ -210,7 +212,6 @@
     </svg>
   </slot>
   <label
-
     class={twMerge(
       "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
       ready ? "text-blue-600" : "text-gray-500",
@@ -220,7 +221,7 @@
     data-ut-element="label"
     data-state={state}
   >
-  <input use:dropzoneInput class="sr-only" />
+    <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
     <slot name="label" state={styleFieldArg}>
       {ready ? `Choose files or drag and drop` : `Loading...`}
     </slot>
@@ -265,7 +266,7 @@
       {:else if uploadProgress === 100}
         <Spinner />
       {:else}
-        <span class="z-50">{uploadProgress}%</span>
+        <span class="relative z-50">{uploadProgress}%</span>
       {/if}
     </slot>
   </button>

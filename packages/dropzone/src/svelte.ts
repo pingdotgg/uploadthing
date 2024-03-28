@@ -1,7 +1,7 @@
 import { fromEvent } from "file-selector";
 import { onMount } from "svelte";
 import type { Action } from "svelte/action";
-import { get, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 
 import {
   acceptPropAsAcceptAttr,
@@ -32,16 +32,19 @@ function reducible<State, Actions>(
   return [{ subscribe }, dispatch] as const;
 }
 
-export function createDropzone({
-  accept,
-  disabled = false,
-  maxSize = Number.POSITIVE_INFINITY,
-  minSize = 0,
-  multiple = true,
-  maxFiles = 0,
-  onDrop,
-}: DropzoneOptions) {
-  const acceptAttr = acceptPropAsAcceptAttr(accept);
+export function createDropzone(_props: DropzoneOptions) {
+  const props = writable({
+    disabled: false,
+    maxSize: Number.POSITIVE_INFINITY,
+    minSize: 0,
+    multiple: true,
+    maxFiles: 0,
+    ..._props,
+  });
+
+  const acceptAttr = derived(props, ($props) =>
+    acceptPropAsAcceptAttr($props.accept),
+  );
 
   const rootRef = writable<HTMLElement | null>();
   const inputRef = writable<HTMLInputElement | null>();
@@ -116,11 +119,11 @@ export function createDropzone({
             fileCount > 0 &&
             allFilesAccepted({
               files: files as File[],
-              accept: acceptAttr!,
-              minSize,
-              maxSize,
-              multiple,
-              maxFiles,
+              accept: get(acceptAttr)!,
+              minSize: get(props).minSize,
+              maxSize: get(props).maxSize,
+              multiple: get(props).multiple,
+              maxFiles: get(props).maxFiles,
             });
           const isDragReject = fileCount > 0 && !isDragAccept;
 
@@ -187,15 +190,21 @@ export function createDropzone({
     const acceptedFiles: File[] = [];
 
     files.forEach((file) => {
-      const accepted = isFileAccepted(file, acceptAttr!);
-      const sizeMatch = isValidSize(file, minSize, maxSize);
+      const accepted = isFileAccepted(file, get(acceptAttr)!);
+      const sizeMatch = isValidSize(
+        file,
+        get(props).minSize,
+        get(props).maxSize,
+      );
 
       if (accepted && sizeMatch) {
         acceptedFiles.push(file);
       }
     });
 
-    if (!isValidQuantity(acceptedFiles, multiple, maxFiles)) {
+    if (
+      !isValidQuantity(acceptedFiles, get(props).multiple, get(props).maxFiles)
+    ) {
       acceptedFiles.splice(0);
     }
 
@@ -206,7 +215,7 @@ export function createDropzone({
       },
     });
 
-    onDrop(acceptedFiles);
+    get(props).onDrop(acceptedFiles);
   };
 
   const onDropCb = (event: DropEvent) => {
@@ -266,10 +275,10 @@ export function createDropzone({
   // This is a svelte action, it should be used as "use:dropzoneRoot"
   // We should be able to refactor this when svelte 5 is released to bring it more inline
   // with the rest of the dropzone implementations
-  const dropzoneRoot: Action<HTMLElement> = (node: HTMLElement) => {
+  const dropzoneRoot: Action<HTMLElement> = (node) => {
     rootRef.set(node);
     node.setAttribute("role", "presentation");
-    if (!disabled) {
+    if (!get(props).disabled) {
       node.setAttribute("tabIndex", "0");
       node.addEventListener("keydown", onKeyDown);
       node.addEventListener("focus", onFocus);
@@ -296,20 +305,30 @@ export function createDropzone({
   };
 
   // This is a svelte action, it should be used as "use:dropzoneInput"
-  const dropzoneInput: Action<HTMLInputElement> = (node: HTMLInputElement) => {
+  const dropzoneInput: Action<HTMLInputElement, DropzoneOptions> = (
+    node,
+    options,
+  ) => {
     inputRef.set(node);
     node.setAttribute("type", "file");
     node.style.display = "none";
-    node.setAttribute("accept", acceptAttr!);
-    node.setAttribute("multiple", String(multiple));
+    node.setAttribute("multiple", String(options.multiple));
     node.setAttribute("tabIndex", "-1");
-    if (!disabled) {
+    const acceptAttrUnsub = acceptAttr.subscribe((accept) => {
+      node.setAttribute("accept", accept!);
+    });
+    if (!options.disabled) {
       node.addEventListener("change", onDropCb);
       node.addEventListener("click", onInputElementClick);
     }
     return {
+      update(options: DropzoneOptions) {
+        props.update(($props) => ({ ...$props, ...options }));
+        node.setAttribute("multiple", String(options.multiple));
+      },
       destroy() {
         inputRef.set(null);
+        acceptAttrUnsub();
         node.removeEventListener("change", onDropCb);
         node.removeEventListener("click", onInputElementClick);
       },
