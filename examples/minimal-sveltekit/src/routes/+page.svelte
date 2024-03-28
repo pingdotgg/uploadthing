@@ -4,6 +4,7 @@
   import { UploadButton, UploadDropzone } from "@uploadthing/svelte";
 
   import "@fontsource-variable/inter";
+  import "@uploadthing/svelte/styles.css";
 
   const uploader = createUploader("videoAndImage", {
     onClientUploadComplete: (res) => {
