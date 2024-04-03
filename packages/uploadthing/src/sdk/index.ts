@@ -458,7 +458,11 @@ export class UTApi {
    *   "public-read",
    * );
    */
-  updateACL(keys: string[], acl: ACL): Promise<{ success: true }>;
+  updateACL(
+    keys: string[],
+    acl: ACL,
+    opts?: KeyTypeOptionsBase,
+  ): Promise<{ success: true }>;
   updateACL(updates: ACLUpdate | ACLUpdate[]): Promise<{ success: true }>;
   updateACL(...args: any[]): Promise<{ success: true }> {
     guardServerOnly();

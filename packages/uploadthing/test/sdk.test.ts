@@ -535,4 +535,33 @@ describe("updateACL", () => {
       },
     );
   });
+
+  it("many keys with single acl and keytype override", async ({ db }) => {
+    const utapi = new UTApi({ apiKey: "sk_foo" });
+
+    await expect(
+      utapi.updateACL(["my-custom-id1", "my-custom-id2"], "public-read", {
+        keyType: "customId",
+      }),
+    ).resolves.toEqual({ success: true });
+
+    expect(requestSpy).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/updateACL",
+      {
+        body: {
+          updates: [
+            { customId: "my-custom-id1", acl: "public-read" },
+            { customId: "my-custom-id2", acl: "public-read" },
+          ],
+        },
+        headers: {
+          "content-type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
 });
