@@ -4035,6 +4035,11 @@ const mimeTypesInternal = {
     extensions: ["obj"],
     compressible: null,
   },
+  "model/step": {
+    source: "iana",
+    compressible: false,
+    extensions: [".p21", ".stp", ".step", ".stpnc", ".210"],
+  },
   "model/step+xml": {
     source: "iana",
     compressible: true,
