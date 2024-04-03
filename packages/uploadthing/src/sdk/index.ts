@@ -18,12 +18,11 @@ import { UPLOADTHING_VERSION } from "../internal/constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import { initLogger, logger } from "../internal/logger";
 import type {
-  ACLUpdate,
+  ACLUpdateOptions,
   DeleteFilesOptions,
   FileEsque,
   GetFileUrlsOptions,
   GetSignedURLOptions,
-  KeyTypeOptionsBase,
   ListFilesOptions,
   RenameFileUpdate,
   UploadFileResult,
@@ -436,54 +435,31 @@ export class UTApi {
    * Update the ACL of a file or set of files.
    *
    * @example
-   * // Single file
-   * await utapi.updateACL({
-   *   key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-   *   acl: "public-read",
-   * });
+   * // Make a single file public
+   * await utapi.updateACL("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", "public-read");
    *
-   * // Set of files with different ACLs
-   * await utapi.updateACL([
-   *   { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", acl: "public-read" },
-   *   { key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", acl: "private" },
-   *   { customId: "myCustomIdentifier", acl: "public-read" },
-   * ]);
-   *
-   * // Set of files with the same ACL
+   * // Make multiple files private
    * await utapi.updateACL(
    *   [
    *     "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
    *     "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
    *   ],
-   *   "public-read",
+   *   "private",
    * );
    */
   updateACL(
-    keys: string[],
+    keys: string | string[],
     acl: ACL,
-    opts?: KeyTypeOptionsBase,
-  ): Promise<{ success: true }>;
-  updateACL(updates: ACLUpdate | ACLUpdate[]): Promise<{ success: true }>;
-  updateACL(...args: any[]): Promise<{ success: true }> {
+    opts?: ACLUpdateOptions,
+  ): Promise<{ success: true }> {
     guardServerOnly();
 
-    const updates = (() => {
-      if (args.length === 1) {
-        return asArray(args[0] as ACLUpdate[]).map((update) => {
-          if ("key" in update) return { fileKey: update.key, acl: update.acl };
-          return { customId: update.customId, acl: update.acl };
-        });
-      }
-
-      const [keys, acl, opts] = args as [string[], ACL, KeyTypeOptionsBase];
-      const { keyType = this.defaultKeyType } = opts ?? {};
-
-      return asArray(keys).map((key) => {
-        return keyType === "fileKey"
-          ? { fileKey: key, acl }
-          : { customId: key, acl };
-      });
-    })();
+    const { keyType = this.defaultKeyType } = opts ?? {};
+    const updates = asArray(keys).map((key) => {
+      return keyType === "fileKey"
+        ? { fileKey: key, acl }
+        : { customId: key, acl };
+    });
 
     return this.requestUploadThing<{ success: true }>(
       "/api/updateACL",

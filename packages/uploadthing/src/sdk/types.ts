@@ -61,7 +61,7 @@ export type UploadFileResult = Either<
   SerializedUploadThingError
 >;
 
-export interface KeyTypeOptionsBase {
+interface KeyTypeOptionsBase {
   /**
    * Whether the provided key is a fileKey or a custom identifier. fileKey is the
    * identifier you get from UploadThing after uploading a file, customId is a
@@ -97,3 +97,4 @@ export interface GetSignedURLOptions extends KeyTypeOptionsBase {
 type KeyACLUpdate = { key: string; acl: ACL };
 type CustomIdACLUpdate = { customId: string; acl: ACL };
 export type ACLUpdate = KeyACLUpdate | CustomIdACLUpdate;
+export interface ACLUpdateOptions extends KeyTypeOptionsBase {}

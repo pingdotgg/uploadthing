@@ -435,69 +435,17 @@ describe("getSignedURL", () => {
 });
 
 describe("updateACL", () => {
-  it("single updates argument (1)", async ({ db }) => {
+  it("single file", async ({ db }) => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
 
-    await expect(
-      utapi.updateACL({ key: "ut-key", acl: "private" }),
-    ).resolves.toEqual({ success: true });
+    await expect(utapi.updateACL("ut-key", "public-read")).resolves.toEqual({
+      success: true,
+    });
 
     expect(requestSpy).toHaveBeenCalledWith(
       "https://uploadthing.com/api/updateACL",
       {
-        body: { updates: [{ fileKey: "ut-key", acl: "private" }] },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
-      },
-    );
-  });
-
-  it("single updates argument (2)", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
-
-    await expect(
-      utapi.updateACL({ customId: "my-custom-id", acl: "public-read" }),
-    ).resolves.toEqual({ success: true });
-
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/updateACL",
-      {
-        body: { updates: [{ customId: "my-custom-id", acl: "public-read" }] },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
-      },
-    );
-  });
-
-  it("multiple updates argument", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
-
-    await expect(
-      utapi.updateACL([
-        { customId: "my-custom-id", acl: "public-read" },
-        { key: "ut-key", acl: "private" },
-      ]),
-    ).resolves.toEqual({ success: true });
-
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/updateACL",
-      {
-        body: {
-          updates: [
-            { customId: "my-custom-id", acl: "public-read" },
-            { fileKey: "ut-key", acl: "private" },
-          ],
-        },
+        body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
         headers: {
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",

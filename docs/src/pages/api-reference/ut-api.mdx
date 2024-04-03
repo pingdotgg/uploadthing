@@ -333,49 +333,24 @@ Update the [ACL](/regions-and-acl#access-controls) of set of files.
 ```ts
 import { utapi } from "~/server/uploadthing.ts";
 
-// Single file
-await utapi.updateACL({
-  key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  acl: "public-read",
-});
+// Make a single file public
+await utapi.updateACL(
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "public-read",
+);
 
-// Set of files with different ACLs
-await utapi.updateACL([
-  { key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", acl: "public-read" },
-  { key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", acl: "private" },
-  { customId: "myCustomIdentifier", acl: "public-read" },
-]);
-
-// Set of files with the same ACL
+// Make multiple files private
 await utapi.updateACL(
   [
     "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
     "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
   ],
-  "public-read",
+  "private",
 );
 ```
 
-| Arguments (Overload 1) | Type                     | Required | Description                                                            |
-| :--------------------- | :----------------------- | :------- | :--------------------------------------------------------------------- |
-| updates                | ACLUpdate \| ACLUpdate[] | Yes      | Objects of what file keys or customIds as well as the ACL to update to |
-
-| Arguments (Overload 2) | Type                       | Required | Description                                                                            |
-| :--------------------- | :------------------------- | :------- | :------------------------------------------------------------------------------------- |
-| keys                   | string[]                   | Yes      | The file key you want to get the URL for.                                              |
-| acl                    | "public-read" \| "private" | Yes      | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
-| opts.keyType           | "fileKey" \| "customId"    | No       | The type of key you are passing in. Defaults to `fileKey`                              |
-
-#### `ACLUpdate` type definition
-
-```ts
-type ACLUpdate =
-  | {
-      key: string;
-      acl: "public-read" | "private";
-    }
-  | {
-      customId: string;
-      acl: "public-read" | "private";
-    };
-```
+| Arguments    | Type                       | Required | Description                                                |
+| :----------- | :------------------------- | :------- | :--------------------------------------------------------- |
+| keys         | string \| string[]         | Yes      | The fileKeys (or customIds) you want to update the ACL for |
+| acl          | "public-read" \| "private" | Yes      | The ACL to update to.                                      |
+| opts.keyType | "fileKey" \| "customId"    | No       | The type of key you are passing in. Defaults to `fileKey`  |
