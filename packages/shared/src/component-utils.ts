@@ -64,7 +64,7 @@ export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
   const { maxFileSize, maxFileCount, minFileCount } = config[key]!;
 
   if (maxFileCount && maxFileCount > 1) {
-    if (minFileCount > 0) {
+    if (minFileCount > 1) {
       return `${formattedKey}s up to ${maxFileSize}, at least ${minFileCount}, max ${maxFileCount}`;
     } else {
       return `${formattedKey}s up to ${maxFileSize}, max ${maxFileCount}`;

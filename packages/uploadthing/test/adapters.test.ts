@@ -75,7 +75,7 @@ describe("adapters:h3", async () => {
             blob: {
               maxFileSize: "8MB",
               maxFileCount: 1,
-              minFileCount: 0,
+              minFileCount: 1,
               contentDisposition: "inline",
             },
           },
@@ -150,7 +150,7 @@ describe("adapters:server", async () => {
             blob: {
               maxFileSize: "8MB",
               maxFileCount: 1,
-              minFileCount: 0,
+              minFileCount: 1,
               contentDisposition: "inline",
             },
           },
@@ -222,7 +222,7 @@ describe("adapters:next", async () => {
             blob: {
               maxFileSize: "8MB",
               maxFileCount: 1,
-              minFileCount: 0,
+              minFileCount: 1,
               contentDisposition: "inline",
             },
           },
@@ -336,7 +336,7 @@ describe("adapters:next-legacy", async () => {
             blob: {
               maxFileSize: "8MB",
               maxFileCount: 1,
-              minFileCount: 0,
+              minFileCount: 1,
               contentDisposition: "inline",
             },
           },
@@ -434,7 +434,7 @@ describe("adapters:express", async () => {
             blob: {
               maxFileSize: "8MB",
               maxFileCount: 1,
-              minFileCount: 0,
+              minFileCount: 1,
               contentDisposition: "inline",
             },
           },
@@ -572,7 +572,7 @@ describe("adapters:fastify", async () => {
             blob: {
               maxFileSize: "8MB",
               maxFileCount: 1,
-              minFileCount: 0,
+              minFileCount: 1,
               contentDisposition: "inline",
             },
           },
