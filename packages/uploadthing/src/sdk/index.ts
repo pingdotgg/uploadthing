@@ -17,6 +17,7 @@ import { UPLOADTHING_VERSION } from "../internal/constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import { initLogger, logger } from "../internal/logger";
 import type {
+  ACLUpdate,
   DeleteFilesOptions,
   FileEsque,
   GetFileUrlsOptions,
@@ -427,5 +428,21 @@ export class UTApi {
     );
 
     return json.url;
+  };
+
+  /** Update the ACL of a file */
+  updateACL = (updates: ACLUpdate | ACLUpdate[]) => {
+    guardServerOnly();
+
+    const updatesArray = asArray(updates).map((update) => {
+      if ("key" in update) return { fileKey: update.key, acl: update.acl };
+      return { customId: update.customId, acl: update.acl };
+    });
+
+    return this.requestUploadThing<{ success: true }>(
+      "/api/updateACL",
+      { updates: updatesArray },
+      "An unknown error occurred while updating ACLs.",
+    );
   };
 }
