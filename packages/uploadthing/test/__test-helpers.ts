@@ -220,6 +220,13 @@ export const it = itBase.extend({
           return HttpResponse.json({ success: true });
         },
       ),
+      http.post(
+        "https://uploadthing.com/api/updateACL",
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ success: true });
+        },
+      ),
     );
     await use(db); // provide test context
     files.length = 0; // clear files after each test

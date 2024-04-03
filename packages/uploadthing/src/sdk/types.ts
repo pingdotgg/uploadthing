@@ -61,7 +61,7 @@ export type UploadFileResult = Either<
   SerializedUploadThingError
 >;
 
-interface KeyTypeOptionsBase {
+export interface KeyTypeOptionsBase {
   /**
    * Whether the provided key is a fileKey or a custom identifier. fileKey is the
    * identifier you get from UploadThing after uploading a file, customId is a
