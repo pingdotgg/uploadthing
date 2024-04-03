@@ -94,7 +94,4 @@ export interface GetSignedURLOptions extends KeyTypeOptionsBase {
   expiresIn?: Time;
 }
 
-type KeyACLUpdate = { key: string; acl: ACL };
-type CustomIdACLUpdate = { customId: string; acl: ACL };
-export type ACLUpdate = KeyACLUpdate | CustomIdACLUpdate;
 export interface ACLUpdateOptions extends KeyTypeOptionsBase {}
