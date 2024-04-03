@@ -15,6 +15,9 @@ it("typeerrors for invalid input", () => {
   // @ts-expect-error - invalid size format
   f({ image: { maxFileSize: "1gb" } });
 
+  // TODO: add test for minFileCount <= maxFileCount
+  //f({ image: { minFileCount: 2, maxFileCount: 1 } });
+
   // @ts-expect-error - should return an object
   f(["image"]).middleware(() => {
     return null;

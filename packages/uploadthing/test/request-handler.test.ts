@@ -51,6 +51,17 @@ const router = {
       return {};
     })
     .onUploadComplete(uploadCompleteMock),
+
+  withMinInput: f({
+    image: {
+      minFileCount: 2,
+    },
+  })
+    .middleware((opts) => {
+      middlewareMock(opts);
+      return {};
+    })
+    .onUploadComplete(uploadCompleteMock),
 };
 
 const handlers = createRouteHandler({
@@ -161,8 +172,28 @@ describe("file route config", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause:
-        "Error: You uploaded 2 files of type 'image', but the limit for that type is 1",
+        "Error: You uploaded 2 file(s) of type 'image', but the limit for that type is 1",
       message: "File limit exceeded",
+    });
+  });
+
+  it("blocks for too few files", async ({ db }) => {
+    const res = await handlers.POST(
+      new Request(createApiUrl("withMinInput", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.png", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+
+    expect(requestSpy).toHaveBeenCalledTimes(0);
+    expect(res.status).toBe(400);
+    await expect(res.json()).resolves.toEqual({
+      cause:
+        "Error: You uploaded 1 file(s) of type 'image', but the minimum for that type is 2",
+      message: "File minimum not met",
     });
   });
 });

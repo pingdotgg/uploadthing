@@ -101,6 +101,44 @@ const fileCountLimitHit = (
   return { limitHit: false };
 };
 
+const fileCountMinHit = (
+  files: { name: string }[],
+  routeConfig: ExpandedRouteConfig,
+) => {
+  const counts: Record<string, number> = {};
+
+  files.forEach((file) => {
+    const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
+
+    if (!counts[type]) {
+      counts[type] = 1;
+    } else {
+      counts[type] += 1;
+    }
+  });
+
+  for (const _key in counts) {
+    const key = _key as FileRouterInputKey;
+    const count = counts[key];
+    const min = routeConfig[key]?.minFileCount;
+
+    if (typeof min !== "number") {
+      logger.error(routeConfig, key);
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Invalid config during file count",
+        cause: `Expected route config to have a minFileCount for key ${key} but none was found.`,
+      });
+    }
+
+    if (count < min) {
+      return { minCountHit: true, type: key, minCount: min, count };
+    }
+  }
+
+  return { minCountHit: false };
+};
+
 export const buildRequestHandler = <
   TRouter extends FileRouter,
   Args extends MiddlewareFnArgs<any, any, any>,
@@ -421,7 +459,7 @@ export const buildRequestHandler = <
             parsedConfig,
           );
           if (limitHit) {
-            const msg = `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`;
+            const msg = `You uploaded ${count} file(s) of type '${type}', but the limit for that type is ${limit}`;
             logger.error(msg);
             return new UploadThingError({
               code: "BAD_REQUEST",
@@ -430,6 +468,23 @@ export const buildRequestHandler = <
             });
           }
           logger.debug("File count limit check passed");
+
+          const {
+            minCountHit,
+            count: count1,
+            minCount,
+            type: type1,
+          } = fileCountMinHit(files, parsedConfig);
+          if (minCountHit) {
+            const msg = `You uploaded ${count1} file(s) of type '${type1}', but the minimum for that type is ${minCount}`;
+            logger.error(msg);
+            return new UploadThingError({
+              code: "BAD_REQUEST",
+              message: "File minimum not met",
+              cause: msg,
+            });
+          }
+          logger.debug("File min count check passed");
         } catch (error) {
           logger.error("Invalid route config", error);
           return new UploadThingError({
