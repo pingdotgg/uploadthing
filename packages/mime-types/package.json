@@ -33,7 +33,7 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^5.1.1",
+    "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
     "typescript": "^5.4.2"
   },
