@@ -457,7 +457,7 @@ describe("updateACL", () => {
     );
   });
 
-  it("many keys with single acl", async ({ db }) => {
+  it("many keys", async ({ db }) => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
 
     await expect(
@@ -484,7 +484,7 @@ describe("updateACL", () => {
     );
   });
 
-  it("many keys with single acl and keytype override", async ({ db }) => {
+  it("many keys with keytype override", async ({ db }) => {
     const utapi = new UTApi({ apiKey: "sk_foo" });
 
     await expect(
