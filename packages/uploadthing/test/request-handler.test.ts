@@ -54,6 +54,7 @@ const router = {
 
   withMinInput: f({
     image: {
+      maxFileCount: 2,
       minFileCount: 2,
     },
   })

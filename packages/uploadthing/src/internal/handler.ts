@@ -74,12 +74,7 @@ const fileCountBoundsCheck = (
 
   files.forEach((file) => {
     const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
-
-    if (!counts[type]) {
-      counts[type] = 1;
-    } else {
-      counts[type] += 1;
-    }
+    counts[type] = (counts[type] || 0) + 1;
   });
 
   for (const _key in counts) {
@@ -88,29 +83,23 @@ const fileCountBoundsCheck = (
     const min = routeConfig[key]?.minFileCount;
     const max = routeConfig[key]?.maxFileCount;
 
-    if (typeof min !== "number") {
+    if (typeof min !== "number" || typeof max !== "number") {
       logger.error(routeConfig, key);
+      const configKey =
+        typeof min !== "number" ? "minFileCount" : "maxFileCount";
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: "Invalid config during file count",
-        cause: `Expected route config to have a minFileCount for key ${key} but none was found.`,
+        message: `Invalid config during file count - missing ${configKey}`,
+        cause: `Expected route config to have a ${configKey} for key ${key} but none was found.`,
       });
     }
 
-    if (typeof max !== "number") {
-      logger.error(routeConfig, key);
+    if (min > max) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: "Invalid config during file count",
-        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`,
-      });
-    }
-
-    if (min >= max) {
-      throw new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "Invalid config during file count",
-        cause: `minFileCount should be less than maxFileCount for key ${key}.`,
+        message:
+          "Invalid config during file count - minFileCount > maxFileCount",
+        cause: `minFileCount should be less than maxFileCount for key ${key}. got: ${min} > ${max}`,
       });
     }
 
