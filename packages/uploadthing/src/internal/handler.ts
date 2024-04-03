@@ -62,6 +62,7 @@ const createUTFetch = (
     return response;
   };
 };
+
 const fileCountBoundsCheck = (
   files: { name: string }[],
   routeConfig: ExpandedRouteConfig,
@@ -103,18 +104,15 @@ const fileCountBoundsCheck = (
       });
     }
 
-    if (count < min) {
-      results.minCountHit = true;
-      results.type = key;
-      results.minCount = min;
-      results.count = count;
-    }
-
-    if (count > max) {
-      results.limitHit = true;
-      results.type = key;
-      results.limit = max;
-      results.count = count;
+    if (count < min || count > max) {
+      return {
+        minCount: min,
+        minCountHit: count < min,
+        limit: max,
+        limitHit: count > max,
+        count,
+        type: key,
+      };
     }
   }
 
