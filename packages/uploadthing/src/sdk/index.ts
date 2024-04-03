@@ -447,11 +447,7 @@ export class UTApi {
    *   "private",
    * );
    */
-  updateACL(
-    keys: string | string[],
-    acl: ACL,
-    opts?: ACLUpdateOptions,
-  ): Promise<{ success: true }> {
+  updateACL = (keys: string | string[], acl: ACL, opts?: ACLUpdateOptions) => {
     guardServerOnly();
 
     const { keyType = this.defaultKeyType } = opts ?? {};
@@ -466,5 +462,5 @@ export class UTApi {
       { updates },
       "An unknown error occurred while updating ACLs.",
     );
-  }
+  };
 }
