@@ -94,9 +94,11 @@ export type Time =
 
 export type ContentDisposition = "inline" | "attachment";
 export type ACL = "public-read" | "private";
+
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;
+  minFileCount: number; // must be <= maxFileCount
   contentDisposition: ContentDisposition;
   acl?: ACL; // default is set on UT server, not backfilled like other options
 };
