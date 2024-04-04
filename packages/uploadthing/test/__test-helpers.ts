@@ -50,8 +50,8 @@ const mockPresigned = (file: {
   customId: string | null;
 }): PSPResponse | MPUResponse => {
   const base: PresignedBase = {
-    customId: file.customId ?? null,
     contentDisposition: "inline",
+    customId: file.customId ?? null,
     fileName: file.name,
     fileType: lookup(file.name) as any,
     fileUrl: "https://utfs.io/f/abc-123.txt",
@@ -65,7 +65,6 @@ const mockPresigned = (file: {
       chunkCount: 2,
       chunkSize: file.size / 2,
       uploadId: "random-upload-id",
-
       urls: [
         "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
         "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=2&uploadId=random-upload-id",
