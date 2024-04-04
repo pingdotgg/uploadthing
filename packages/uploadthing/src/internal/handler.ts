@@ -68,10 +68,6 @@ const fileCountBoundsCheck = (
   routeConfig: ExpandedRouteConfig,
 ) => {
   const counts: Record<string, number> = {};
-  const results: Record<string, any> = {
-    minCountHit: false,
-    limitHit: false,
-  };
 
   files.forEach((file) => {
     const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
@@ -108,15 +104,18 @@ const fileCountBoundsCheck = (
       return {
         minCount: min,
         minCountHit: count < min,
-        limit: max,
-        limitHit: count > max,
+        maxCount: max,
+        maxCountHit: count > max,
         count,
         type: key,
       };
     }
   }
 
-  return results;
+  return {
+    minCountHit: false,
+    limitHit: false,
+  };
 };
 
 export const buildRequestHandler = <
@@ -435,21 +434,21 @@ export const buildRequestHandler = <
         try {
           logger.debug("Checking file count bounds", files);
 
-          const { limit, limitHit, minCount, minCountHit, count, type } =
+          const { minCount, minCountHit, maxCount, maxCountHit, count, type } =
             fileCountBoundsCheck(files, parsedConfig);
 
-          if (limitHit || minCountHit) {
-            const errorMessage = limitHit
-              ? `You uploaded ${count} file(s) of type '${type}', but the limit for that type is ${limit}`
+          if (maxCountHit === true || minCountHit === true) {
+            const errorMessage = maxCountHit
+              ? `You uploaded ${count} file(s) of type '${type}', but the limit for that type is ${maxCount}`
               : `You uploaded ${count} file(s) of type '${type}', but the minimum for that type is ${minCount}`;
 
             logger.error(errorMessage);
 
             return new UploadThingError({
               code: "BAD_REQUEST",
-              message: limitHit
-                ? "File limit exceeded"
-                : "File minimum not met",
+              message: maxCountHit
+                ? "Maximum file count not met"
+                : "Minimum file count not met",
               cause: errorMessage,
             });
           }

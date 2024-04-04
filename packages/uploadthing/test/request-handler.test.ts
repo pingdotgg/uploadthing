@@ -174,7 +174,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded 2 file(s) of type 'image', but the limit for that type is 1",
-      message: "File limit exceeded",
+      message: "Maximum file count not met",
     });
   });
 
@@ -194,7 +194,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded 1 file(s) of type 'image', but the minimum for that type is 2",
-      message: "File minimum not met",
+      message: "Minimum file count not met",
     });
   });
 });
