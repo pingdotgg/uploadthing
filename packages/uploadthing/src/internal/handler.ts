@@ -67,12 +67,11 @@ const fileCountBoundsCheck = (
   files: { name: string }[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: Record<string, number> = {};
-
-  files.forEach((file) => {
+  const counts = files.reduce<Record<string, number>>((acc, file) => {
     const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
-    counts[type] = (counts[type] || 0) + 1;
-  });
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
 
   for (const _key in counts) {
     const key = _key as FileRouterInputKey;
