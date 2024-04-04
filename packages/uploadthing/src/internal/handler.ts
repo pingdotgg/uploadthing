@@ -109,10 +109,7 @@ const fileCountBoundsCheck = (
     }
   }
 
-  return {
-    minCountHit: false,
-    limitHit: false,
-  };
+  return { minCountHit: false, maxCountHit: false };
 };
 
 export const buildRequestHandler = <
@@ -434,7 +431,7 @@ export const buildRequestHandler = <
           const { minCount, minCountHit, maxCount, maxCountHit, count, type } =
             fileCountBoundsCheck(files, parsedConfig);
 
-          if (maxCountHit === true || minCountHit === true) {
+          if (maxCountHit || minCountHit) {
             const errorMessage = maxCountHit
               ? `You uploaded ${count} file(s) of type '${type}', but the limit for that type is ${maxCount}`
               : `You uploaded ${count} file(s) of type '${type}', but the minimum for that type is ${minCount}`;
