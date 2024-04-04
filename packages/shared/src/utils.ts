@@ -46,7 +46,7 @@ export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
   constructor(type: string, field?: string) {
     const reason = field
       ? `Expected route config to have a ${field} for key ${type} but none was found.`
-      : "Encountered an invalid route config during backfilling.";
+      : `Encountered an invalid route config during backfilling. ${type} was not found.`;
     super({ reason });
   }
 }
