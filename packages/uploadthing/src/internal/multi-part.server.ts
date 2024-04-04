@@ -49,7 +49,7 @@ export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
     );
 
     logger.debug("File", file.name, "uploaded successfully.");
-    logger.debug("Comleting multipart upload...");
+    logger.debug("Completing multipart upload...");
     yield* $(completeMultipartUpload(presigned, etags));
     logger.debug("Multipart upload complete.");
   });
