@@ -47,7 +47,9 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
  */
 
 export const fillInputRouteConfig = Unify.unify(
-  (routeConfig: FileRouterInputConfig) => {
+  (
+    routeConfig: FileRouterInputConfig,
+  ): Effect.Effect<ExpandedRouteConfig, InvalidRouteConfigError> => {
     // If array, apply defaults
     if (isRouteArray(routeConfig)) {
       return Effect.succeed(
@@ -135,23 +137,25 @@ export function generateUploadThingURL(path: `/${string}`) {
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
-export const fileSizeToBytes = Unify.unify((fileSize: FileSize) => {
-  const regex = new RegExp(
-    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
-    "i",
-  );
+export const fileSizeToBytes = Unify.unify(
+  (fileSize: FileSize): Effect.Effect<number, InvalidFileSizeError> => {
+    const regex = new RegExp(
+      `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
+      "i",
+    );
 
-  // make sure the string is in the format of 123KB
-  const match = fileSize.match(regex);
-  if (!match) {
-    return Effect.fail(new InvalidFileSizeError(fileSize));
-  }
+    // make sure the string is in the format of 123KB
+    const match = fileSize.match(regex);
+    if (!match) {
+      return Effect.fail(new InvalidFileSizeError(fileSize));
+    }
 
-  const sizeValue = parseFloat(match[1]);
-  const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
-  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
-  return Effect.succeed(Math.floor(bytes));
-});
+    const sizeValue = parseFloat(match[1]);
+    const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
+    const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
+    return Effect.succeed(Math.floor(bytes));
+  },
+);
 
 export const bytesToFileSize = (bytes: number) => {
   if (bytes === 0 || bytes === -1) {
@@ -259,7 +263,9 @@ export function semverLite(required: string, toCheck: string) {
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
 }
 
-export const getFullApiUrl = (maybeUrl?: string) =>
+export const getFullApiUrl = (
+  maybeUrl?: string,
+): Effect.Effect<URL, InvalidURLError> =>
   Effect.gen(function* ($) {
     const base = (() => {
       if (typeof window !== "undefined") return window.location.origin;
@@ -286,7 +292,7 @@ export const getFullApiUrl = (maybeUrl?: string) =>
  * and will return the "closest" url matching the default
  * `<VERCEL_URL || localhost>/api/uploadthing`
  */
-export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined) => {
+export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
   return maybeUrl instanceof URL
     ? maybeUrl
     : Effect.runSync(getFullApiUrl(maybeUrl));
