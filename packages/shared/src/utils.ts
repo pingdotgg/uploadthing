@@ -79,7 +79,8 @@ export const fillInputRouteConfig = Unify.unify(
             // Apply defaults
             maxFileSize: getDefaultSizeForType(fileType),
             maxFileCount: 1,
-            contentDisposition: "inline",
+            minFileCount: 1,
+            contentDisposition: "inline" as const,
           };
           return acc;
         }, {}),
@@ -95,6 +96,7 @@ export const fillInputRouteConfig = Unify.unify(
       const defaultValues = {
         maxFileSize: getDefaultSizeForType(key),
         maxFileCount: 1,
+        minFileCount: 1,
         contentDisposition: "inline" as const,
       };
 

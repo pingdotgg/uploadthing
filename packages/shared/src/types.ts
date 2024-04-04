@@ -95,14 +95,15 @@ export type Time =
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
-export const ContentDisposition = S.literal("inline", "attachment");
-export type ContentDisposition = S.Schema.Type<typeof ContentDisposition>;
-export const ACL = S.literal("public-read", "private");
-export type ACL = S.Schema.Type<typeof ACL>;
+export const ContentDispositionSchema = S.literal("inline", "attachment");
+export type ContentDisposition = S.Schema.Type<typeof ContentDispositionSchema>;
+export const ACLSchema = S.literal("public-read", "private");
+export type ACL = S.Schema.Type<typeof ACLSchema>;
 
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;
+  minFileCount: number; // must be <= maxFileCount
   contentDisposition: ContentDisposition;
   acl?: ACL; // default is set on UT server, not backfilled like other options
 };

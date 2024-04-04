@@ -124,12 +124,14 @@ export const ourFileRouter = {
     .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
-  // Takes ONE image up to 2MB
-  strictImageAttachment: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
+  // Takes exactly ONE image up to 2MB
+  strictImageAttachment: f({
+    image: { maxFileSize: "2MB", maxFileCount: 1, minFileCount: 1 },
+  })
     .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
-  // Takes a 4 2mb images and/or 1 256mb video
+  // Takes up to 4 2mb images and/or 1 256mb video
   mediaPost: f({
     image: { maxFileSize: "2MB", maxFileCount: 4 },
     video: { maxFileSize: "256MB", maxFileCount: 1 },
@@ -157,6 +159,7 @@ type FileRouterInput =
       [key: ValidFileTypes]: {
         maxFileSize?: string;
         maxFileCount?: number;
+        minFileCount?: number;
         contentDisposition?: ContentDisposition = "inline";
         acl?: ACL;
       };

@@ -36,8 +36,14 @@ class FileSizeMismatch extends TaggedError("FileSizeMismatch")<{
 class FileCountMismatch extends TaggedError("FileCountMismatch")<{
   reason: string;
 }> {
-  constructor(type: FileRouterInputKey, max: number, actual: number) {
-    const reason = `You uploaded ${actual} files of type '${type}', but the limit for that type is ${max}`;
+  constructor(
+    type: FileRouterInputKey,
+    boundtype: "minimum" | "maximum",
+    bound: number,
+    actual: number,
+  ) {
+    const reason = `You uploaded ${actual} file(s) of type '${type}', but the ${boundtype} for that type is ${bound}`;
+
     super({ reason });
   }
 }
@@ -71,14 +77,29 @@ export const assertFilesMeetConfig = (
 
     for (const _key in counts) {
       const key = _key as FileRouterInputKey;
-      const count = counts[key];
-      const limit = routeConfig[key]?.maxFileCount;
+      const config = routeConfig[key];
+      if (!config) return yield* $(new InvalidRouteConfigError(key));
 
-      if (!limit) {
-        return yield* $(new InvalidRouteConfigError(key, "maxFileCount"));
+      const count = counts[key];
+      const min = config.minFileCount;
+      const max = config.maxFileCount;
+
+      if (min > max) {
+        return yield* $(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message:
+              "Invalid config during file count - minFileCount > maxFileCount",
+            cause: `minFileCount must be less than maxFileCount for key ${key}. got: ${min} > ${max}`,
+          }),
+        );
       }
-      if (count > limit) {
-        return yield* $(new FileCountMismatch(key, limit, count));
+
+      if (count < min) {
+        return yield* $(new FileCountMismatch(key, "minimum", min, count));
+      }
+      if (count > max) {
+        return yield* $(new FileCountMismatch(key, "maximum", max, count));
       }
     }
 

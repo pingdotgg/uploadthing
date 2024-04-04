@@ -1,7 +1,7 @@
 import * as S from "@effect/schema/Schema";
 
 import type { FileRouterInputKey, Json } from "@uploadthing/shared";
-import { ContentDisposition } from "@uploadthing/shared";
+import { ContentDispositionSchema } from "@uploadthing/shared";
 
 /**
  * =============================================================================
@@ -67,7 +67,7 @@ export const PresignedBaseSchema = S.struct({
   fileUrl: S.string,
   pollingJwt: S.string,
   pollingUrl: S.string,
-  contentDisposition: ContentDisposition,
+  contentDisposition: ContentDispositionSchema,
   customId: S.nullable(S.string),
 });
 
