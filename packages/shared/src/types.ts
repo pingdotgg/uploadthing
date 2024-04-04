@@ -103,8 +103,6 @@ type RouteConfig = {
   acl?: ACL; // default is set on UT server, not backfilled like other options
 };
 
-//
-
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
 export type ExpandedRouteConfig = Partial<{
