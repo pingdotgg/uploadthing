@@ -1,13 +1,9 @@
 import * as S from "@effect/schema/Schema";
-import { Context, Data, Duration, Effect, pipe, Schedule } from "effect";
+import { Context, Duration, Effect, pipe, Schedule } from "effect";
 
+import { FetchError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
-
-export class FetchError extends Data.TaggedError("FetchError")<{
-  readonly input: RequestInfo | URL;
-  readonly error: unknown;
-}> {}
 
 export type FetchContextTag = {
   fetch: FetchEsque;
@@ -88,5 +84,3 @@ export const exponentialBackoff = pipe(
   Schedule.compose(Schedule.elapsed),
   Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
 );
-
-export class RetryError extends Data.TaggedError("RetryError") {}

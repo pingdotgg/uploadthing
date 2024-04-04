@@ -1,10 +1,16 @@
 import { Effect, Unify } from "effect";
-import { TaggedError } from "effect/Data";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
+import {
+  InvalidFileSizeError,
+  InvalidFileTypeError,
+  InvalidRouteConfigError,
+  InvalidURLError,
+  UnknownFileTypeError,
+} from "./tagged-errors";
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
@@ -39,35 +45,6 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
  * ["image"] => { image: { maxFileSize: "4MB", limit: 1 } }
  * ```
  */
-
-export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
-  reason: string;
-}> {
-  constructor(type: string, field?: string) {
-    const reason = field
-      ? `Expected route config to have a ${field} for key ${type} but none was found.`
-      : `Encountered an invalid route config during backfilling. ${type} was not found.`;
-    super({ reason });
-  }
-}
-
-export class UnknownFileTypeError extends TaggedError("UnknownFileType")<{
-  reason: string;
-}> {
-  constructor(fileName: string) {
-    const reason = `Could not determine type for ${fileName}`;
-    super({ reason });
-  }
-}
-
-export class InvalidFileTypeError extends TaggedError("InvalidFileType")<{
-  reason: string;
-}> {
-  constructor(fileType: string, fileName: string) {
-    const reason = `File type ${fileType} not allowed for ${fileName}`;
-    super({ reason });
-  }
-}
 
 export const fillInputRouteConfig = Unify.unify(
   (routeConfig: FileRouterInputConfig) => {
@@ -154,15 +131,6 @@ export function generateUploadThingURL(path: `/${string}`) {
     host = process.env.CUSTOM_INFRA_URL;
   }
   return `${host}${path}`;
-}
-
-export class InvalidFileSizeError extends TaggedError("InvalidFileSize")<{
-  reason: string;
-}> {
-  constructor(fileSize: string) {
-    const reason = `Invalid file size: ${fileSize}`;
-    super({ reason });
-  }
 }
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
@@ -289,14 +257,6 @@ export function semverLite(required: string, toCheck: string) {
 
   // Exact match
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
-}
-
-export class InvalidURLError extends TaggedError("InvalidURL")<{
-  reason: string;
-}> {
-  constructor(attemptedUrl: string) {
-    super({ reason: `Failed to parse '${attemptedUrl}' as a URL.` });
-  }
 }
 
 export const getFullApiUrl = (maybeUrl?: string) =>
