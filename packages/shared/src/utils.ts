@@ -181,9 +181,6 @@ export const fileSizeToBytes = Unify.unify((fileSize: FileSize) => {
 
   const sizeValue = parseFloat(match[1]);
   const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
-  if (!FILESIZE_UNITS.includes(sizeUnit)) {
-    return Effect.fail(new InvalidFileSizeError(fileSize));
-  }
   const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
   return Effect.succeed(Math.floor(bytes));
 });
