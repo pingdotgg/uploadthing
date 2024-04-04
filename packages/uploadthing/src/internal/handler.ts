@@ -137,17 +137,6 @@ export const buildRequestHandler =
             }),
           );
         }
-        default: {
-          action satisfies never;
-          return yield* $(
-            Effect.fail(
-              new UploadThingError({
-                code: "BAD_REQUEST",
-                message: `Invalid action type ${action as string}`,
-              }),
-            ),
-          );
-        }
       }
     }).pipe(
       Effect.catchTags({

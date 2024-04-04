@@ -4,8 +4,12 @@ import { TaggedError } from "effect/Data";
 
 import type {
   ExpandedRouteConfig,
+  FetchContextTag,
   FileRouterInputKey,
   FileSize,
+  InvalidFileSizeError,
+  InvalidFileTypeError,
+  UnknownFileTypeError,
 } from "@uploadthing/shared";
 import {
   bytesToFileSize,
@@ -21,8 +25,20 @@ import { UPLOADTHING_VERSION } from "./constants";
 import { getApiKey } from "./get-api-key";
 import { logger } from "./logger";
 import type { UploadActionPayload } from "./shared-schemas";
-import type { ActionType, FileRouter, RouteHandlerOptions } from "./types";
-import { VALID_ACTION_TYPES } from "./types";
+import type {
+  ActionType,
+  AnyParams,
+  FileRouter,
+  RouteHandlerOptions,
+  Uploader,
+  UploadThingHook,
+} from "./types";
+import {
+  isActionType,
+  isUploadThingHook,
+  VALID_ACTION_TYPES,
+  VALID_UT_HOOKS,
+} from "./types";
 
 class FileSizeMismatch extends TaggedError("FileSizeMismatch")<{
   reason: string;
@@ -54,7 +70,16 @@ class FileCountMismatch extends TaggedError("FileCountMismatch")<{
 export const assertFilesMeetConfig = (
   files: S.Schema.Type<typeof UploadActionPayload>["files"],
   routeConfig: ExpandedRouteConfig,
-) =>
+): Effect.Effect<
+  null,
+  | UploadThingError
+  | FileSizeMismatch
+  | FileCountMismatch
+  | InvalidRouteConfigError
+  | UnknownFileTypeError
+  | InvalidFileTypeError
+  | InvalidFileSizeError
+> =>
   Effect.gen(function* ($) {
     const counts: Record<string, number> = {};
 
@@ -110,13 +135,30 @@ export const parseAndValidateRequest = (opts: {
   req: Request;
   opts: RouteHandlerOptions<FileRouter>;
   adapter: string;
-}) =>
+}): Effect.Effect<
+  | {
+      apiKey: string;
+      slug: string;
+      uploadable: Uploader<AnyParams>;
+      hook: UploadThingHook;
+      action: null;
+    }
+  | {
+      apiKey: string;
+      slug: string;
+      uploadable: Uploader<AnyParams>;
+      hook: null;
+      action: ActionType;
+    },
+  UploadThingError,
+  FetchContextTag
+> =>
   Effect.gen(function* ($) {
     // Get inputs from query and params
     const url = new URL(opts.req.url);
     const headers = opts.req.headers;
     const params = url.searchParams;
-    const actionType = (params.get("actionType") as ActionType) ?? null;
+    const actionType = params.get("actionType");
     const slug = params.get("slug");
     const uploadthingHook = headers.get("uploadthing-hook");
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
@@ -151,27 +193,6 @@ export const parseAndValidateRequest = (opts: {
         new UploadThingError({
           code: "BAD_REQUEST",
           message: "`slug` must be a string",
-          cause: msg,
-        }),
-      );
-    }
-    if (actionType && typeof actionType !== "string") {
-      const msg = `Expected actionType to be of type 'string', got '${typeof actionType}'`;
-      logger.error(msg);
-      return yield* $(
-        new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "`actionType` must be a string",
-          cause: msg,
-        }),
-      );
-    }
-    if (uploadthingHook && typeof uploadthingHook !== "string") {
-      const msg = `Expected uploadthingHook to be of type 'string', got '${typeof uploadthingHook}'`;
-      return yield* $(
-        new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "`uploadthingHook` must be a string",
           cause: msg,
         }),
       );
@@ -226,11 +247,7 @@ export const parseAndValidateRequest = (opts: {
       );
     }
 
-    if (
-      uploadthingHook !== "callback" && // TODO: Maybe just send callback as actionType? Or actionType as header?
-      (!actionType || !VALID_ACTION_TYPES.includes(actionType))
-    ) {
-      // This would either be someone spamming or the AWS webhook
+    if (actionType && !isActionType(actionType)) {
       const msg = `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
         .join(", ")
         .replace(/,(?!.*,)/, " or")} but got "${actionType}"`;
@@ -239,6 +256,31 @@ export const parseAndValidateRequest = (opts: {
         new UploadThingError({
           code: "BAD_REQUEST",
           cause: `Invalid action type ${actionType}`,
+          message: msg,
+        }),
+      );
+    }
+
+    if (uploadthingHook && !isUploadThingHook(uploadthingHook)) {
+      const msg = `Expected ${VALID_UT_HOOKS.map((x) => `"${x}"`)
+        .join(", ")
+        .replace(/,(?!.*,)/, " or")} but got "${uploadthingHook}"`;
+      logger.error("Invalid uploadthing hook", msg);
+      return yield* $(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          cause: `Invalid uploadthing hook ${uploadthingHook}`,
+          message: msg,
+        }),
+      );
+    }
+
+    if ((!actionType && !uploadthingHook) || (actionType && uploadthingHook)) {
+      const msg = `Exactly one of 'actionType' or 'uploadthing-hook' must be provided`;
+      logger.error(msg);
+      return yield* $(
+        new UploadThingError({
+          code: "BAD_REQUEST",
           message: msg,
         }),
       );
@@ -258,11 +300,21 @@ export const parseAndValidateRequest = (opts: {
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = opts.adapter;
 
-    return {
-      apiKey,
-      slug,
-      uploadable,
-      hook: uploadthingHook,
-      action: actionType,
-    };
+    if (actionType) {
+      return {
+        apiKey,
+        slug,
+        uploadable,
+        hook: null,
+        action: actionType as ActionType,
+      } as const;
+    } else {
+      return {
+        apiKey,
+        slug,
+        uploadable,
+        hook: uploadthingHook as UploadThingHook,
+        action: null,
+      } as const;
+    }
   });

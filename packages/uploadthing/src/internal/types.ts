@@ -241,6 +241,14 @@ export const VALID_ACTION_TYPES = [
   "multipart-complete",
 ] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+export const isActionType = (input: unknown): input is ActionType =>
+  typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
+
+export const VALID_UT_HOOKS = ["callback"] as const;
+export type UploadThingHook = (typeof VALID_UT_HOOKS)[number];
+export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
+  typeof input === "string" &&
+  VALID_UT_HOOKS.includes(input as UploadThingHook);
 
 /**
  * Map actionType to the required payload for that action

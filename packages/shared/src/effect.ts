@@ -1,3 +1,4 @@
+import type { ParseError } from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
 import { Context, Duration, Effect, pipe, Schedule } from "effect";
 
@@ -20,7 +21,10 @@ export const fetchContext =
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly
-export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
+export const fetchEff = (
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Effect.Effect<ResponseEsque, FetchError, FetchContextTag> =>
   fetchContext.pipe(
     Effect.andThen(({ fetch, baseHeaders }) =>
       Effect.tryPromise({
@@ -40,11 +44,11 @@ export const fetchEff = (input: RequestInfo | URL, init?: RequestInit) =>
     }),
   );
 
-export const fetchEffJson = <Res>(
+export const fetchEffJson = <Schema>(
   input: RequestInfo | URL,
-  schema: S.Schema<Res, any>,
+  schema: S.Schema<Schema, any>,
   init?: RequestInit,
-) =>
+): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> =>
   fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
@@ -58,10 +62,10 @@ export const fetchEffJson = <Res>(
     }),
   );
 
-export const parseRequestJson = <Req>(
+export const parseRequestJson = <Schema>(
   reqOrRes: Request | ResponseEsque,
-  schema: S.Schema<Req, any>,
-) =>
+  schema: S.Schema<Schema, any>,
+): Effect.Effect<Schema, FetchError | ParseError> =>
   Effect.tryPromise({
     try: () => reqOrRes.json(),
     catch: (error) =>
