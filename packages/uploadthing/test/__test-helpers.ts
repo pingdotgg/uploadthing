@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import type { StrictRequest } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
+import type { Test } from "vitest";
 import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
 
 import { lookup } from "@uploadthing/mime-types";
@@ -32,6 +34,14 @@ export const createApiUrl = (slug: string, action?: ActionType) => {
 export const baseHeaders = {
   "x-uploadthing-version": UPLOADTHING_VERSION,
   "x-uploadthing-package": "vitest",
+};
+
+export const genPort = (test: Test) => {
+  const str = `${test.id}-${test.name}-${Date.now()}`;
+  const hashedValue = createHash("sha256").update(str).digest("hex");
+  const hashedInteger = parseInt(hashedValue, 16);
+  const port = 1024 + (hashedInteger % (65535 - 1024 + 1));
+  return port;
 };
 
 const mockPresigned = (file: {
@@ -193,10 +203,14 @@ export const it = itBase.extend({
         // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
         async function* ({ request, params }) {
           await callRequestSpy(request);
-          const file = db.getFileByKey(params.key);
+          let file = null;
 
-          // Simulate polling
+          // Simulate polling - at least once
           yield HttpResponse.json({ status: "still waiting" });
+          if (!file) {
+            file = db.getFileByKey(params.key);
+            yield HttpResponse.json({ status: "still waiting" });
+          }
 
           return HttpResponse.json({
             status: "done",

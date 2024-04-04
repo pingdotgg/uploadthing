@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 
 import express from "express";
+import type { Test } from "vitest";
 import { describe, expect, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
@@ -8,6 +9,7 @@ import { generateUploadThingURL } from "@uploadthing/shared";
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
 import {
+  genPort,
   it,
   middlewareMock,
   onErrorMock,
@@ -18,7 +20,7 @@ import {
   useHalfBadS3,
 } from "./__test-helpers";
 
-export const setupUTServer = () => {
+export const setupUTServer = (task: Test) => {
   const f = createUploadthing({
     errorFormatter(err) {
       return { message: err.message };
@@ -46,8 +48,8 @@ export const setupUTServer = () => {
     }),
   );
 
-  const server = app.listen();
-  const port = (server.address() as { port: number }).port;
+  const port = genPort(task);
+  const server = app.listen(port);
 
   const uploadFiles = genUploader<typeof router>({
     package: "vitest",
@@ -58,8 +60,8 @@ export const setupUTServer = () => {
 };
 
 describe("uploadFiles", () => {
-  it("uploads with presigned post", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
+  it("uploads with presigned post", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -97,8 +99,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("uploads with multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
+  it("uploads with multipart upload", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
@@ -138,8 +140,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("sends custom headers if set (static object)", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
+  it("sends custom headers if set (static object)", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -171,8 +173,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("sends custom headers if set (async function)", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
+  it("sends custom headers if set (async function)", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -234,41 +236,45 @@ describe("uploadFiles", () => {
   //   close();
   // });
 
-  it("succeeds after retries (MPU)", { timeout: 15e3 }, async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
-    useHalfBadS3();
+  it(
+    "succeeds after retries (MPU)",
+    { timeout: 15e3 },
+    async ({ db, task }) => {
+      const { uploadFiles, close } = setupUTServer(task);
+      useHalfBadS3();
 
-    const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
-      type: "text/plain",
-    });
-
-    await expect(
-      uploadFiles("foo", {
-        files: [bigFile],
-        skipPolling: true,
-      }),
-    ).resolves.toEqual([
-      {
-        name: "foo.txt",
-        size: 10485760,
+      const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
         type: "text/plain",
-        customId: null,
-        serverData: null,
-        key: "abc-123.txt",
-        url: "https://utfs.io/f/abc-123.txt",
-      },
-    ]);
+      });
 
-    expect(onErrorMock).not.toHaveBeenCalled();
-    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
-      timeout: 5000,
-    });
+      await expect(
+        uploadFiles("foo", {
+          files: [bigFile],
+          skipPolling: true,
+        }),
+      ).resolves.toEqual([
+        {
+          name: "foo.txt",
+          size: 10485760,
+          type: "text/plain",
+          customId: null,
+          serverData: null,
+          key: "abc-123.txt",
+          url: "https://utfs.io/f/abc-123.txt",
+        },
+      ]);
 
-    close();
-  });
+      expect(onErrorMock).not.toHaveBeenCalled();
+      await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
+        timeout: 5000,
+      });
 
-  it("reports of failed post upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
+      close();
+    },
+  );
+
+  it("reports of failed post upload", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
     useBadS3();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -302,8 +308,8 @@ describe("uploadFiles", () => {
     close();
   });
 
-  it("reports of failed multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = setupUTServer();
+  it("reports of failed multipart upload", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
     useBadS3();
 
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
