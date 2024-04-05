@@ -37,7 +37,7 @@
     "@uploadthing/eslint-config": "workspace:0.2.0",
     "@uploadthing/mime-types": "workspace:0.2.6",
     "@uploadthing/tsconfig": "workspace:0.1.0",
-    "bunchee": "^4.4.8",
+    "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
     "typescript": "^5.4.2",
     "wait-on": "^7.2.0"
