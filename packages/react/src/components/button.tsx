@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
-  generateMimeTypes,
   generatePermittedFileTypes,
   resolveMaybeUrlArg,
   styleFieldToClassName,
@@ -115,9 +114,8 @@ export function UploadButton<
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
 
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
-    $props.endpoint,
-    {
+  const { startUpload, isUploading, permittedFileInfo, getInputProps } =
+    useUploadThing($props.endpoint, {
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
@@ -136,8 +134,7 @@ export function UploadButton<
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
       onBeforeUploadBegin: $props.onBeforeUploadBegin,
-    },
-  );
+    });
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
     permittedFileInfo?.config,
@@ -146,6 +143,7 @@ export function UploadButton<
   const ready =
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
+  const buttonDisabled = $props.__internal_button_disabled ?? !ready;
 
   useEffect(() => {
     const handlePaste = (event: ClipboardEvent) => {
@@ -167,7 +165,7 @@ export function UploadButton<
     return () => {
       window.removeEventListener("paste", handlePaste);
     };
-  }, [startUpload, appendOnPaste, $props, files, mode, fileTypes]);
+  }, [startUpload, appendOnPaste, $props, files, mode]);
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (isManualTriggerDisplayed)
@@ -186,27 +184,15 @@ export function UploadButton<
     return <span className="z-50">{uploadProgress}%</span>;
   };
 
-  const getInputProps = () => ({
-    type: "file",
-    ref: fileInputRef,
-    multiple,
-    accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files) return;
-      const selectedFiles = Array.from(e.target.files);
-
-      if (mode === "manual") {
-        setFiles(selectedFiles);
-        setIsManualTriggerDisplayed(true);
-        return;
-      }
-
-      const input = "input" in $props ? $props.input : undefined;
-      void startUpload(selectedFiles, input);
-    },
-    disabled: $props.__internal_button_disabled ?? !ready,
-    ...(!($props.__internal_button_disabled ?? !ready) ? { tabIndex: 0 } : {}),
-  });
+  const inputProps = useMemo(
+    () => ({
+      ...getInputProps({ mode }),
+      ref: fileInputRef,
+      disabled: buttonDisabled,
+      tabIndex: buttonDisabled ? -1 : 0,
+    }),
+    [getInputProps, mode, buttonDisabled],
+  );
 
   const styleFieldArg = {
     ready: ready,
@@ -296,7 +282,7 @@ export function UploadButton<
           }
         }}
       >
-        <input {...getInputProps()} className="sr-only" />
+        <input {...inputProps} className="sr-only" />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
           getUploadButtonContents(fileTypes)}
       </label>

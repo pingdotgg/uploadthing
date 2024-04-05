@@ -1,7 +1,10 @@
-import { useRef, useState } from "react";
+import type { InputHTMLAttributes } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import type { EndpointMetadata } from "@uploadthing/shared";
 import {
+  generateMimeTypes,
+  generatePermittedFileTypes,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
   semverLite,
@@ -134,10 +137,49 @@ export const INTERNAL_uploadthingHookGen = <
       }
     });
 
+    const getInputProps = useCallback(
+      (opts?: {
+        /**
+         * 'auto' will start uploading files as soon as they are selected
+         * 'manual' will require the user to manually trigger the upload
+         * @default 'auto'
+         */
+        mode: "manual" | "auto";
+      }): InputHTMLAttributes<HTMLInputElement> => {
+        const { mode = "auto" } = opts ?? {};
+
+        const { fileTypes, multiple } = generatePermittedFileTypes(
+          permittedFileInfo?.config,
+        );
+
+        return {
+          type: "file",
+          multiple,
+          accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
+          disabled: fileTypes.length === 0,
+          tabIndex: fileTypes.length === 0 ? -1 : 0,
+          onChange: (e) => {
+            if (!e.target.files) return;
+            const selectedFiles = Array.from(e.target.files);
+
+            if (mode === "manual") {
+              // setFiles(selectedFiles); // controlled state?
+              return;
+            }
+
+            const input = undefined; // how to get input?
+            void startUpload(selectedFiles, input);
+          },
+        };
+      },
+      [permittedFileInfo?.config, startUpload],
+    );
+
     return {
       startUpload,
       isUploading,
       permittedFileInfo,
+      getInputProps,
     } as const;
   };
 
