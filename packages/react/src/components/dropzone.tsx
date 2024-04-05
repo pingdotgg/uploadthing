@@ -20,8 +20,8 @@ import type {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
+import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {

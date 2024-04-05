@@ -17,10 +17,13 @@ import type {
   inferErrorShape,
 } from "uploadthing/types";
 
-import { peerDependencies } from "../package.json";
-import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
-import { useEvent } from "./utils/useEvent";
-import useFetch from "./utils/useFetch";
+import { peerDependencies } from "../../package.json";
+import type {
+  GenerateTypedHelpersOptions,
+  UseUploadthingProps,
+} from "../types";
+import { useEvent } from "../utils/useEvent";
+import useFetch from "../utils/useFetch";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
