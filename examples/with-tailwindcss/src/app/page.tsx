@@ -26,6 +26,7 @@ export default function Home() {
         }}
         config={{
           appendOnPaste: true,
+          mode: "manual",
         }}
       />
       <UploadDropzone

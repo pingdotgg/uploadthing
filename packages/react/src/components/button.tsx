@@ -107,28 +107,32 @@ export function UploadButton<
   const [uploadProgress, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
-  const [files, setFiles] = useState<File[]>([]);
 
-  const { startUpload, isUploading, permittedFileInfo, getInputProps } =
-    useUploadThing($props.endpoint, {
-      headers: $props.headers,
-      skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
-      onClientUploadComplete: (res) => {
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        setFiles([]);
-        $props.onClientUploadComplete?.(res);
-        setUploadProgress(0);
-      },
-      onUploadProgress: (p) => {
-        setUploadProgress(p);
-        $props.onUploadProgress?.(p);
-      },
-      onUploadError: $props.onUploadError,
-      onUploadBegin: $props.onUploadBegin,
-      onBeforeUploadBegin: $props.onBeforeUploadBegin,
-    });
+  const {
+    files,
+    setFiles,
+    startUpload,
+    isUploading,
+    permittedFileInfo,
+    getInputProps,
+  } = useUploadThing($props.endpoint, {
+    headers: $props.headers,
+    skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
+    onClientUploadComplete: (res) => {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      $props.onClientUploadComplete?.(res);
+      setUploadProgress(0);
+    },
+    onUploadProgress: (p) => {
+      setUploadProgress(p);
+      $props.onUploadProgress?.(p);
+    },
+    onUploadError: $props.onUploadError,
+    onUploadBegin: $props.onUploadBegin,
+    onBeforeUploadBegin: $props.onBeforeUploadBegin,
+  });
 
   const inputProps = useMemo(
     () => getInputProps({ mode }),

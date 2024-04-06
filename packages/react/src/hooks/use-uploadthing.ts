@@ -68,9 +68,10 @@ export const INTERNAL_uploadthingHookGen = <
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
+    const [files, setFiles] = useState<File[]>([]);
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
-    const fileProgress = useRef<Map<string, number>>(new Map());
+    const fileProgress = useRef(new Map<string, number>());
 
     const permittedFileInfo = useEndpointMetadata(
       initOpts.url,
@@ -116,6 +117,7 @@ export const INTERNAL_uploadthingHookGen = <
           input,
         });
 
+        setFiles([]);
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
@@ -155,7 +157,7 @@ export const INTERNAL_uploadthingHookGen = <
         return {
           type: "file",
           multiple,
-          accept: generateMimeTypes(fileTypes ?? [])?.join(", "),
+          accept: generateMimeTypes(fileTypes)?.join(", "),
           disabled: fileTypes.length === 0,
           tabIndex: fileTypes.length === 0 ? -1 : 0,
           onChange: (e) => {
@@ -163,7 +165,7 @@ export const INTERNAL_uploadthingHookGen = <
             const selectedFiles = Array.from(e.target.files);
 
             if (mode === "manual") {
-              // setFiles(selectedFiles); // controlled state?
+              setFiles(selectedFiles); // controlled state?
               return;
             }
 
@@ -176,6 +178,8 @@ export const INTERNAL_uploadthingHookGen = <
     );
 
     return {
+      files,
+      setFiles,
       startUpload,
       isUploading,
       permittedFileInfo,
