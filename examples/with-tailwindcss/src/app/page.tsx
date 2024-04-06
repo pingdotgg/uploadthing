@@ -24,6 +24,9 @@ export default function Home() {
         onUploadBegin={() => {
           console.log("upload begin");
         }}
+        config={{
+          appendOnPaste: true,
+        }}
       />
       <UploadDropzone
         className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 ut-allowed-content:text-white w-full bg-slate-800"

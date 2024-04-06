@@ -242,6 +242,7 @@ component match your design in the exact way you want.
 ```
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="ready"
   className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 dark:ut-allowed-content:text-white mt-4"
@@ -252,6 +253,7 @@ component match your design in the exact way you want.
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="readying"
   className="ut-button:bg-red-500 ut-button:ut-readying:bg-red-500/50 dark:ut-allowed-content:text-white mt-4"
@@ -312,6 +314,7 @@ component.
 ```
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="uploading"
   __internal_button_disabled
   appearance={{
@@ -327,6 +330,7 @@ component.
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="ready"
   __internal_button_disabled
   appearance={{
@@ -389,6 +393,7 @@ specific elements of components.
 ```
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="ready"
   __internal_button_disabled
   className="custom-class dark:ut-allowed-content:text-white"
@@ -399,6 +404,7 @@ specific elements of components.
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="readying"
   __internal_button_disabled
   className="custom-class dark:ut-allowed-content:text-white"
@@ -414,6 +420,7 @@ specific elements of components.
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="uploading"
   __internal_button_disabled
   className="custom-class dark:ut-allowed-content:text-white"
@@ -492,6 +499,7 @@ and will return a string
 ```
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="ready"
   __internal_button_disabled
   className="dark:ut-allowed-content:text-white"
@@ -511,6 +519,7 @@ and will return a string
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="readying"
   __internal_button_disabled
   className="dark:ut-allowed-content:text-white"
@@ -529,6 +538,7 @@ and will return a string
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_state="uploading"
   __internal_button_disabled
   className="dark:ut-allowed-content:text-white"
@@ -577,6 +587,7 @@ the component and will return a `CSSProperties` object
 ```
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="readying"
   appearance={{
@@ -601,6 +612,7 @@ the component and will return a `CSSProperties` object
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="ready"
   appearance={{
@@ -625,6 +637,7 @@ the component and will return a `CSSProperties` object
 />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="uploading"
   appearance={{
@@ -689,6 +702,7 @@ type UploadDropzoneProps = {
 
 ```jsx
 <UploadButton
+  endpoint="mockRoute"
   content={{
     button({ ready }) {
       if (ready) return <div>Upload stuff</div>;
@@ -705,6 +719,7 @@ type UploadDropzoneProps = {
 ```
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="readying"
   className="ut-allowed-content:text-zinc-500"
@@ -723,6 +738,7 @@ type UploadDropzoneProps = {
 }} />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="ready"
   content={{
@@ -747,9 +763,9 @@ appearance={{
   }} />
 
 <UploadButton
+  endpoint="mockRoute"
   __internal_button_disabled
   __internal_state="uploading"
-  __internal_ready={true}
   content={{
     button({ ready }) {
       if (ready) return <div>Upload stuff</div>;
