@@ -184,6 +184,7 @@ export const INTERNAL_uploadthingHookGen = <
       isUploading,
       permittedFileInfo,
       getInputProps,
+      uploadProgress: uploadProgress.current,
     } as const;
   };
 
