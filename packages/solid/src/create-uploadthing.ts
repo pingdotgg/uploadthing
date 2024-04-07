@@ -21,7 +21,7 @@ const createEndpointMetadata = (url: URL, endpoint: string) => {
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
 };
 
-export const INTERNAL_uploadthingHookGen = <
+export const INTERNAL_createUploadThingGen = <
   TRouter extends FileRouter,
 >(initOpts: {
   /**
@@ -36,7 +36,7 @@ export const INTERNAL_uploadthingHookGen = <
     package: "@uploadthing/solid",
   });
 
-  const useUploadThing = <
+  const createUploadThing = <
     TEndpoint extends keyof TRouter,
     TSkipPolling extends boolean = false,
   >(
@@ -119,16 +119,21 @@ export const INTERNAL_uploadthingHookGen = <
     } as const;
   };
 
-  return useUploadThing;
+  return createUploadThing;
 };
 
 export const generateSolidHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({ url });
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    createUploadThing,
+    /**
+     * @deprecated use `createUploadThing` instead
+     */
+    useUploadThing: createUploadThing,
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/solid",

@@ -1,11 +1,11 @@
 import {
+  createUploadThing,
   UploadButton,
   UploadDropzone,
-  useUploadThing,
 } from "~/utils/uploadthing";
 
 export default function Home() {
-  const { startUpload } = useUploadThing("videoAndImage", {
+  const { startUpload } = createUploadThing("videoAndImage", {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
