@@ -63,42 +63,53 @@ const createUTFetch = (
   };
 };
 
-const fileCountLimitHit = (
+const fileCountBoundsCheck = (
   files: { name: string }[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: Record<string, number> = {};
-
-  files.forEach((file) => {
+  const counts = files.reduce<Record<string, number>>((acc, file) => {
     const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
-
-    if (!counts[type]) {
-      counts[type] = 1;
-    } else {
-      counts[type] += 1;
-    }
-  });
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
 
   for (const _key in counts) {
     const key = _key as FileRouterInputKey;
-    const count = counts[key];
-    const limit = routeConfig[key]?.maxFileCount;
-
-    if (!limit) {
-      logger.error(routeConfig, key);
+    const config = routeConfig[key];
+    if (!config) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: "Invalid config during file count",
-        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`,
+        message: `Invalid config during file count - missing ${key}`,
+        cause: `Expected route config to have a config for key ${key} but none was found.`,
       });
     }
 
-    if (count > limit) {
-      return { limitHit: true, type: key, limit, count };
+    const count = counts[key];
+    const min = config.minFileCount;
+    const max = config.maxFileCount;
+
+    if (min > max) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message:
+          "Invalid config during file count - minFileCount > maxFileCount",
+        cause: `minFileCount must be less than maxFileCount for key ${key}. got: ${min} > ${max}`,
+      });
+    }
+
+    if (count < min || count > max) {
+      return {
+        minCount: min,
+        minCountHit: count < min,
+        maxCount: max,
+        maxCountHit: count > max,
+        count,
+        type: key,
+      };
     }
   }
 
-  return { limitHit: false };
+  return { minCountHit: false, maxCountHit: false };
 };
 
 export const buildRequestHandler = <
@@ -415,21 +426,28 @@ export const buildRequestHandler = <
         }
 
         try {
-          logger.debug("Checking file count limit", files);
-          const { limitHit, count, limit, type } = fileCountLimitHit(
-            files,
-            parsedConfig,
-          );
-          if (limitHit) {
-            const msg = `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`;
-            logger.error(msg);
+          logger.debug("Checking file count bounds", files);
+
+          const { minCount, minCountHit, maxCount, maxCountHit, count, type } =
+            fileCountBoundsCheck(files, parsedConfig);
+
+          if (maxCountHit || minCountHit) {
+            const errorMessage = maxCountHit
+              ? `You uploaded ${count} file(s) of type '${type}', but the limit for that type is ${maxCount}`
+              : `You uploaded ${count} file(s) of type '${type}', but the minimum for that type is ${minCount}`;
+
+            logger.error(errorMessage);
+
             return new UploadThingError({
               code: "BAD_REQUEST",
-              message: "File limit exceeded",
-              cause: msg,
+              message: maxCountHit
+                ? "Maximum file count not met"
+                : "Minimum file count not met",
+              cause: errorMessage,
             });
           }
-          logger.debug("File count limit check passed");
+
+          logger.debug("File count bounds check passed");
         } catch (error) {
           logger.error("Invalid route config", error);
           return new UploadThingError({

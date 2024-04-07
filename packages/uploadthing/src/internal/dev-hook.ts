@@ -6,6 +6,7 @@ import {
 } from "@uploadthing/shared";
 import type { FetchEsque, ResponseEsque } from "@uploadthing/shared";
 
+import type { UploadedFileData } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { logger } from "./logger";
 
@@ -58,7 +59,7 @@ export const conditionalDevServer = async (opts: {
           size: file.fileSize,
           type: file.fileType,
           customId: file.customId,
-        },
+        } satisfies UploadedFileData,
       });
 
       const signature = await signPayload(payload, opts.apiKey);

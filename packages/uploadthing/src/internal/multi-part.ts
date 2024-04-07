@@ -113,7 +113,7 @@ export async function uploadPartWithProgress(
         // Add a delay before retrying (exponential backoff can be used)
         const delay = Math.pow(2, retryCount) * 1000;
         await new Promise((res) => setTimeout(res, delay));
-        await uploadPartWithProgress(opts, retryCount + 1); // Retry the request
+        resolve(await uploadPartWithProgress(opts, retryCount + 1)); // Retry the request
       } else {
         reject("Max retries exceeded");
       }

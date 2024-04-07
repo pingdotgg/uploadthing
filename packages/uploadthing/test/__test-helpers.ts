@@ -1,5 +1,5 @@
 import type { StrictRequest } from "msw";
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
 
@@ -21,9 +21,6 @@ export const requestsToDomain = (domain: string) =>
 export const middlewareMock = vi.fn();
 export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
-beforeEach(() => {
-  vi.resetAllMocks();
-});
 
 export const createApiUrl = (slug: string, action?: ActionType) => {
   const url = new URL("http://localhost:3000");
@@ -189,8 +186,13 @@ export const it = itBase.extend({
       ),
       http.get<{ key: string }>(
         "https://uploadthing.com/api/pollUpload/:key",
-        async ({ request, params }) => {
+        // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+        async function* ({ request, params }) {
           await callRequestSpy(request);
+
+          // Simulate polling
+          yield HttpResponse.json({ status: "still waiting" });
+
           return HttpResponse.json({
             status: "done",
             fileData: db.getFileByKey(params.key),
@@ -215,9 +217,12 @@ export const it = itBase.extend({
       ),
       http.get(
         "https://uploadthing.com/api/serverCallback",
-        async ({ request }) => {
+        // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+        async function* ({ request }) {
           await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
+
+          yield HttpResponse.json({ status: "still waiting" });
+          return HttpResponse.json({ status: "done", callbackData: null });
         },
       ),
     );
@@ -239,4 +244,32 @@ export const useBadS3 = () =>
       await callRequestSpy(request);
       return new HttpResponse(null, { status: 204 });
     }),
+  );
+
+/**
+ * Call this in your test to make the S3 requests fail a couple times before succeeding
+ */
+export const useHalfBadS3 = () =>
+  msw.use(
+    http.post(
+      "https://bucket.s3.amazonaws.com",
+      // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+      async function* ({ request }) {
+        await callRequestSpy(request);
+        yield new HttpResponse(null, { status: 403 });
+        return new HttpResponse();
+      },
+    ),
+    http.put(
+      "https://bucket.s3.amazonaws.com/:key",
+      // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
+      async function* ({ request }) {
+        await callRequestSpy(request);
+        yield new HttpResponse(null, { status: 403 });
+        return new HttpResponse(null, {
+          status: 204,
+          headers: { ETag: "abc123" },
+        });
+      },
+    ),
   );
