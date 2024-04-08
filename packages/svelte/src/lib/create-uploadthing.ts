@@ -24,7 +24,7 @@ const createEndpointMetadata = (url: URL, endpoint: string) => {
   );
 };
 
-export const INTERNAL_uploadthingHookGen = <
+export const INTERNAL_createUploadThingGen = <
   TRouter extends FileRouter,
 >(initOpts: {
   /**
@@ -137,7 +137,7 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
   const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url }),
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/svelte",

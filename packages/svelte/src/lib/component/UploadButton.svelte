@@ -27,7 +27,7 @@
   } from "uploadthing/client";
 
   import type { UploadthingComponentProps } from "../types";
-  import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -68,10 +68,10 @@
   let isManualTriggerDisplayed = false;
   let files: File[] = [];
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+  const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
     uploader.endpoint,
     {
       skipPolling: !uploader?.onClientUploadComplete

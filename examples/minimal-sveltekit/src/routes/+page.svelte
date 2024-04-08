@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createUploader, useUploadThing } from "$lib/utils/uploadthing";
+  import { createUploader, createUploadThing } from "$lib/utils/uploadthing";
 
   import { UploadButton, UploadDropzone } from "@uploadthing/svelte";
 
@@ -17,7 +17,7 @@
       
   })
 
-  const { startUpload } = useUploadThing("videoAndImage", {
+  const { startUpload } = createUploadThing("videoAndImage", {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
