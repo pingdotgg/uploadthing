@@ -130,15 +130,10 @@ export { GET, POST };
   </Tab>
 </Tabs>
 
-### Creating the UploadThing Helpers (recommended)
-
-Generating the `createUploader` helper lets you pass your generic `FileRouter`
-once and then have typesafe uploaders everywhere, instead of having to pass the
-generic everytime you call `createUploader`, but you can also import it directly
-from `@uploadthing/svelte`.
+### Creating the UploadThing Helpers
 
 Generating the `createUploadThing` helper function lets you create your own
-components.
+components, with full type safety:
 
 ```ts copy filename="src/lib/utils/uploadthing.ts"
 import type { OurFileRouter } from "$lib/server/uploadthing";
@@ -153,9 +148,8 @@ export const { createUploader, createUploadThing } =
 
 The `@uploadthing/svelte` package includes an "Uploader" component that you can
 simply drop into your app, and start uploading files immediately. To create the
-"Uploader" props you can use the "createUploader" helper. Make sure to pass your
-generic `FileRouter` to this function if you're importing it directly from
-`@uploadthing/svelte`.
+"Uploader" props you can use the "createUploader" helper you generated in the
+previous step.
 
 ```svelte copy filename="src/routes/+page.svelte"
 <script lang="ts">
