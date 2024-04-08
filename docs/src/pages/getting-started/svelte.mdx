@@ -212,20 +212,17 @@ separately. Both are included in the `@uploadthing/svelte` package.
 ## Advanced usage: `createUploadThing`
 
 For advanced use cases, the premade components might not be flexible enough to
-suit your needs. In that case, you can use the `createUploadThing` hook to build
-your own components with a custom upload flow:
+suit your needs. In that case, you can use the `createUploadThing` helper
+function to build your own components with a custom upload flow:
 
 <Steps>
 
-### Create the hook
+### Create the `createUploadThing` helper
 
-First, generate a typed hook using the `generateSvelteHelpers` function from
+First, generate a typed helper using the `generateSvelteHelpers` function from
 `@uploadthing/svelte` as show above.
 
-### Use the hook
-
-Then, use the hook in your component. By using the hook, you have full control
-of when and how to upload files.
+### Use the helper
 
 ```svelte copy filename="src/routes/+page.svelte"
 <script lang="ts">
@@ -282,7 +279,7 @@ Svelte's named slots and slot props.
 
 ### UploadDropzone content customization
 
-```svelte
+````svelte
 <UploadDropzone {uploader}>
   <i slot="upload-icon" let:state>
     <!-- some custom icon -->
@@ -297,4 +294,6 @@ Svelte's named slots and slot props.
     You can choose between {state.fileTypes.join(", ")} files
   </span>
 </UploadDropzone>
-```
+```import { create } from "domain";
+
+````
