@@ -137,7 +137,7 @@ once and then have typesafe uploaders everywhere, instead of having to pass the
 generic everytime you call `createUploader`, but you can also import it directly
 from `@uploadthing/svelte`.
 
-Generating the `useUploadThing` helper function lets you create your own
+Generating the `createUploadThing` helper function lets you create your own
 components.
 
 ```ts copy filename="src/lib/utils/uploadthing.ts"
@@ -145,7 +145,7 @@ import type { OurFileRouter } from "$lib/server/uploadthing";
 
 import { generateSvelteHelpers } from "@uploadthing/svelte";
 
-export const { createUploader, useUploadThing } =
+export const { createUploader, createUploadThing } =
   generateSvelteHelpers<OurFileRouter>();
 ```
 
@@ -215,10 +215,10 @@ separately. Both are included in the `@uploadthing/svelte` package.
 
 </Steps>
 
-## Advanced usage: `useUploadThing`
+## Advanced usage: `createUploadThing`
 
 For advanced use cases, the premade components might not be flexible enough to
-suit your needs. In that case, you can use the `useUploadThing` hook to build
+suit your needs. In that case, you can use the `createUploadThing` hook to build
 your own components with a custom upload flow:
 
 <Steps>
@@ -235,9 +235,9 @@ of when and how to upload files.
 
 ```svelte copy filename="src/routes/+page.svelte"
 <script lang="ts">
-  import { useUploadThing } from "$lib/utils/uploadthing";
+  import { createUploadThing } from "$lib/utils/uploadthing";
 
-  const { startUpload } = useUploadThing("imageUploader", {
+  const { startUpload } = createUploadThing("imageUploader", {
     onClientUploadComplete: () => {
       alert("Upload Completed");
     },
