@@ -13,7 +13,10 @@ import type {
   inferErrorShape,
 } from "uploadthing/types";
 
-import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
+import type {
+  CreateUploadthingProps,
+  GenerateTypedHelpersOptions,
+} from "./types";
 import { createFetch } from "./utils/createFetch";
 
 const createEndpointMetadata = (url: URL, endpoint: string) => {
@@ -41,7 +44,7 @@ export const INTERNAL_createUploadThingGen = <
     TSkipPolling extends boolean = false,
   >(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+    opts?: CreateUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(

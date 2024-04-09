@@ -24,7 +24,7 @@ export interface GenerateTypedHelpersOptions {
   url?: string | URL;
 }
 
-export type UseUploadthingProps<
+export type CreateUploadthingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
@@ -73,11 +73,23 @@ export type UseUploadthingProps<
   headers?: HeadersInit | (() => MaybePromise<HeadersInit>);
 };
 
+/**
+ * @deprecated Use `CreateUploadthingProps` instead
+ */
+export type UseUploadThingProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
+> = CreateUploadthingProps<TRouter, TEndpoint, TSkipPolling, TServerOutput>;
+
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
-> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
+> = CreateUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
   /**
    * The endpoint from your FileRouter to use for the upload
    */
