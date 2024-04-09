@@ -1,5 +1,7 @@
 import type { UploadRouter } from "#uploadthing-router";
 
-import { UploadDropzone } from "@uploadthing/vue";
+import { generateUploadDropzone } from "@uploadthing/vue";
 
-export default UploadDropzone<UploadRouter>();
+const UploadDropzone = generateUploadDropzone<UploadRouter>();
+
+export default UploadDropzone;

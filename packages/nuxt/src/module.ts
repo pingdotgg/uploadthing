@@ -69,15 +69,15 @@ export default defineNuxtModule<ModuleOptions>({
       }
       path = resolve(nuxt.options.srcDir, path);
       if (path === routerPath || path.startsWith(routerPath)) {
-        nuxt.hooks.callHook("restart", { hard: true });
+        void nuxt.hooks.callHook("restart", { hard: true });
       }
     });
 
-    addComponent({
+    void addComponent({
       name: "UploadButton",
       filePath: resolver.resolve("./runtime/components/button"),
     });
-    addComponent({
+    void addComponent({
       name: "UploadDropzone",
       filePath: resolver.resolve("./runtime/components/dropzone"),
     });
