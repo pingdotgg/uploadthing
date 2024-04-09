@@ -1,44 +1,24 @@
 import { createSignal } from "solid-js";
 
-import { UploadThingError } from "@uploadthing/shared";
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
-import type { UploadFileResponse } from "uploadthing/client";
 import {
-  DANGEROUS__uploadFiles,
-  getFullApiUrl,
   INTERNAL_DO_NOT_USE__fatalClientError,
-} from "uploadthing/client";
+  resolveMaybeUrlArg,
+  UploadThingError,
+} from "@uploadthing/shared";
+import type { EndpointMetadata } from "@uploadthing/shared";
+import { genUploader } from "uploadthing/client";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
-  inferEndpointOutput,
   inferErrorShape,
-} from "uploadthing/server";
+} from "uploadthing/types";
 
+import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { createFetch } from "./utils/createFetch";
-
-type EndpointMetadata = {
-  slug: string;
-  config: ExpandedRouteConfig;
-}[];
 
 const createEndpointMetadata = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
-};
-
-export type UseUploadthingProps<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
-  onUploadProgress?: (p: number) => void;
-  onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => File[] | Promise<File[]>;
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -51,9 +31,17 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const useUploadThing = <TEndpoint extends keyof TRouter>(
+  const uploadFiles = genUploader<TRouter>({
+    url: initOpts.url,
+    package: "@uploadthing/solid",
+  });
+
+  const useUploadThing = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
     const permittedFileInfo = createEndpointMetadata(
@@ -75,9 +63,10 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+        const res = await uploadFiles(endpoint, {
+          headers: opts?.headers,
           files,
-          input,
+          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.set(progress.file, progress.progress);
@@ -97,7 +86,8 @@ export const INTERNAL_uploadthingHookGen = <
 
             opts.onUploadBegin(file);
           },
-          url: initOpts.url,
+          // @ts-expect-error - input may not be defined on the type
+          input,
         });
 
         opts?.onClientUploadComplete?.(res);
@@ -132,39 +122,16 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateSolidHelpers = <TRouter extends FileRouter>(initOpts?: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { /api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-}) => {
-  const url =
-    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+export const generateSolidHelpers = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: <TEndpoint extends keyof TRouter>(
-      endpoint: TEndpoint,
-      opts: DistributiveOmit<
-        Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-        "url"
-      >,
-    ) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
-        ...opts,
-        url,
-      } as any),
+    uploadFiles: genUploader<TRouter>({
+      url,
+      package: "@uploadthing/solid",
+    }),
   } as const;
-};
-
-export type FullFile = {
-  file: File;
-  contents: string;
 };

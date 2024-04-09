@@ -1,4 +1,8 @@
-import { generateUploadThingURL, UploadThingError } from "@uploadthing/shared";
+import {
+  contentDisposition,
+  generateUploadThingURL,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type { ContentDisposition, FetchEsque } from "@uploadthing/shared";
 
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -26,11 +30,10 @@ export async function uploadPart(
     body: opts.chunk,
     headers: {
       "Content-Type": opts.contentType,
-      "Content-Disposition": [
+      "Content-Disposition": contentDisposition(
         opts.contentDisposition,
-        `filename="${encodeURI(opts.fileName)}"`,
-        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
-      ].join("; "),
+        opts.fileName,
+      ),
     },
   });
 
@@ -99,11 +102,7 @@ export async function uploadPartWithProgress(
     xhr.setRequestHeader("Content-Type", opts.fileType);
     xhr.setRequestHeader(
       "Content-Disposition",
-      [
-        opts.contentDisposition,
-        `filename="${encodeURI(opts.fileName)}"`,
-        `filename*=UTF-8''${encodeURI(opts.fileName)}`,
-      ].join("; "),
+      contentDisposition(opts.contentDisposition, opts.fileName),
     );
 
     xhr.onload = async () => {
@@ -114,7 +113,7 @@ export async function uploadPartWithProgress(
         // Add a delay before retrying (exponential backoff can be used)
         const delay = Math.pow(2, retryCount) * 1000;
         await new Promise((res) => setTimeout(res, delay));
-        await uploadPartWithProgress(opts, retryCount + 1); // Retry the request
+        resolve(await uploadPartWithProgress(opts, retryCount + 1)); // Retry the request
       } else {
         reject("Max retries exceeded");
       }

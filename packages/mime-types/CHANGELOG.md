@@ -1,5 +1,35 @@
 # @uploadthing/mime-types
 
+## 0.2.7
+
+### Patch Changes
+
+- [#740](https://github.com/pingdotgg/uploadthing/pull/740) [`0069ead`](https://github.com/pingdotgg/uploadthing/commit/0069eadbffd90db29df1966eae4f0a85aa3a8490) Thanks [@kaspnilsson](https://github.com/kaspnilsson)! - Add support for 'model/step' MIME type
+
+## 0.2.6
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+## 0.2.5
+
+### Patch Changes
+
+- [#655](https://github.com/pingdotgg/uploadthing/pull/655) [`0adc3b8`](https://github.com/pingdotgg/uploadthing/commit/0adc3b8df67ea5c4a94db736d0aff1b489979393) Thanks [@ecwyne](https://github.com/ecwyne)! - add `audio/x-gsm` mime-type
+
+## 0.2.4
+
+### Patch Changes
+
+- [#620](https://github.com/pingdotgg/uploadthing/pull/620) [`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(cjs bundling): force client splitting in .cjs output files
+
+## 0.2.3
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
 ## 0.2.2
 
 ### Patch Changes

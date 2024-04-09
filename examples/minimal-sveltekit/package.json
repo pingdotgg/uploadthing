@@ -1,0 +1,29 @@
+{
+  "name": "@example/minimal-sveltekit",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "prepare": "svelte-kit sync",
+    "clean": "git clean -xdf dist .svelte-kit node_modules"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.0.17",
+    "@uploadthing/svelte": "workspace:6.4.1",
+    "uploadthing": "workspace:6.9.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^3.1.1",
+    "@sveltejs/kit": "^2.5.4",
+    "svelte": "^4.2.12",
+    "svelte-check": "^3.6.7",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.4"
+  },
+  "type": "module"
+}

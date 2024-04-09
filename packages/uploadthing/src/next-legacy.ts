@@ -5,37 +5,42 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter };
+export { UTFiles } from "./internal/types";
+
+type MiddlewareArgs = {
+  req: NextApiRequest;
+  res: NextApiResponse;
+  event: undefined;
+};
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: NextApiRequest; res: NextApiResponse; event: undefined },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
-export const createNextPageApiHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+export const createRouteHandler = <TRouter extends FileRouter>(
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    "nextjs-pages",
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
@@ -46,13 +51,9 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = new URL(req.url ?? "/", `${proto}://${req.headers.host}`);
-
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, url),
-      originalRequest: req,
-      res,
+      req: toWebRequest(req),
+      middlewareArgs: { req, res, event: undefined },
     });
 
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
@@ -66,10 +67,15 @@ export const createNextPageApiHandler = <TRouter extends FileRouter>(
     if (response.status !== 200) {
       // We messed up - this should never happen
       res.status(500);
-      return res.send("An unknown error occured");
+      return res.send("An unknown error occurred");
     }
 
     res.status(response.status);
     return res.json(response.body);
   };
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createNextPageApiHandler = createRouteHandler;

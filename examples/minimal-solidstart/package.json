@@ -1,40 +1,26 @@
 {
   "name": "@example/minimal-solidstart",
-  "private": true,
   "type": "module",
+  "private": true,
   "scripts": {
-    "dev": "solid-start dev --port 9898",
-    "start": "solid-start start --port 9898",
-    "build": "solid-start build",
-    "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "dev": "NODE_ENV=development vinxi dev",
+    "clean": "git clean -xdf .solid node_modules",
+    "build": "vinxi build",
+    "start": "vinxi start"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.28.6",
-    "@solidjs/router": "^0.8.3",
-    "@uploadthing/solid": "6.1.1",
-    "attr-accept": "^2.2.2",
-    "solid-js": "^1.7.11",
-    "solid-start": "^0.3.5",
-    "solidjs-dropzone": "^1.0.0",
-    "undici": "^5.20.0",
-    "uploadthing": "6.2.0",
-    "zod": "^3.22.3"
+    "@solidjs/meta": "^0.29.3",
+    "@solidjs/router": "^0.12.4",
+    "@solidjs/start": "^0.6.0",
+    "@uploadthing/solid": "workspace:6.3.4",
+    "solid-js": "^1.8.15",
+    "uploadthing": "workspace:6.9.0",
+    "vinxi": "0.3.4"
   },
   "devDependencies": {
-    "@types/node": "18.16.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "eslint": "^8.47.0",
-    "eslint-plugin-solid": "^0.13.0",
-    "solid-start-node": "^0.3.4",
-    "typescript": "^5.1.6",
-    "vite": "^4.4.9"
-  },
-  "eslintConfig": {
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-      "eslint:recommended",
-      "plugin:solid/typescript"
-    ]
+    "@types/node": "^20.11.21",
+    "postcss": "8.4.38",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.2"
   }
 }

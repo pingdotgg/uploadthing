@@ -4,16 +4,19 @@ import { twMerge } from "tailwind-merge";
 import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
-  classNames,
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
-import type { ErrorMessage, FileRouter } from "uploadthing/server";
+} from "@uploadthing/shared";
+import type {
+  ContentField,
+  ErrorMessage,
+  StyleField,
+} from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
@@ -28,24 +31,38 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: () => boolean;
 };
 
+type DropzoneAppearance = {
+  container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  button?: StyleField<DropzoneStyleFieldCallbackArgs>;
+};
+
+type DropzoneContent = {
+  uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+};
+
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
-  appearance?: {
-    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-  };
-  content?: {
-    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-  };
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   class?: string;
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
+   */
+  appearance?: DropzoneAppearance;
+  /**
+   * @see https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: DropzoneContent;
   config?: {
     mode?: "manual" | "auto";
   };
@@ -54,20 +71,23 @@ export type UploadDropzoneProps<
 export const UploadDropzone = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter, TEndpoint>,
+    : UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
-  const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
+  const $props = props as UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
 
   const { mode = "manual" } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
   const uploadThing = useUploadThing($props.endpoint, {
+    headers: $props.headers,
+    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);
       $props.onClientUploadComplete?.(res);
@@ -98,6 +118,7 @@ export const UploadDropzone = <
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
+    multiple: fileInfo().multiple,
     get accept() {
       return fileInfo().fileTypes
         ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
@@ -158,21 +179,18 @@ export const UploadDropzone = <
         </svg>
       )}
       <label
-        html-for="file-upload"
         class={twMerge(
-          classNames(
-            "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-            ready() ? "text-blue-600" : "text-gray-500",
-          ),
+          "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+          ready() ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
         data-ut-element="label"
         data-state={state()}
       >
+        <input class="sr-only" {...getInputProps()} />
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
           (ready() ? `Choose files or drag and drop` : `Loading...`)}
-        <input class="sr-only" {...getInputProps()} />
       </label>
       <div
         class={twMerge(
@@ -197,14 +215,12 @@ export const UploadDropzone = <
       {files().length > 0 && (
         <button
           class={twMerge(
-            classNames(
-              "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-              state() === "uploading"
-                ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-                    progressWidths[uploadProgress()]
-                  }`
-                : "bg-blue-600",
-            ),
+            "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+            state() === "uploading"
+              ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
+                  progressWidths[uploadProgress()]
+                }`
+              : "bg-blue-600",
             styleFieldToClassName($props.appearance?.button, styleFieldArg),
           )}
           style={styleFieldToCssObject(
@@ -221,6 +237,7 @@ export const UploadDropzone = <
           }}
           data-ut-element="button"
           data-state={state()}
+          type="button"
           disabled={state() === "uploading"}
         >
           {contentFieldToContent($props.content?.button, styleFieldArg) ??

@@ -1,9 +1,18 @@
-import { generateComponents } from "@uploadthing/react";
-import { generateReactHelpers } from "@uploadthing/react/hooks";
+import {
+  generateReactHelpers,
+  generateUploadButton,
+  generateUploadDropzone,
+  type GenerateTypedHelpersOptions,
+} from "@uploadthing/react";
 
 import type { OurFileRouter } from "../../server/src/router";
+import { BACKEND_URL } from "./constants";
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+const initOpts = {
+  url: BACKEND_URL,
+} satisfies GenerateTypedHelpersOptions;
 
-export const { useUploadThing } = generateReactHelpers<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>(initOpts);
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>(initOpts);
+
+export const { useUploadThing } = generateReactHelpers<OurFileRouter>(initOpts);

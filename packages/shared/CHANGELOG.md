@@ -1,5 +1,100 @@
 # @uploadthing/shared
 
+## 6.6.0
+
+### Minor Changes
+
+- [#225](https://github.com/pingdotgg/uploadthing/pull/225) [`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe) Thanks [@AlanAcDz](https://github.com/AlanAcDz)! - feat: sveltekit support
+
+  📚 Read the docs to get started: https://docs.uploadthing.com/getting-started/svelte
+
+## 6.5.0
+
+### Minor Changes
+
+- [#739](https://github.com/pingdotgg/uploadthing/pull/739) [`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: minFileCount option on RouteConfig
+
+## 6.4.0
+
+### Minor Changes
+
+- [#725](https://github.com/pingdotgg/uploadthing/pull/725) [`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: verify callback data signature
+
+## 6.3.4
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+## 6.3.3
+
+### Patch Changes
+
+- [#662](https://github.com/pingdotgg/uploadthing/pull/662) [`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - make API more consistent with the available file data in different callbacks
+
+- [#659](https://github.com/pingdotgg/uploadthing/pull/659) [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: move some internally exported functions to `@uploadthing/shared`
+
+## 6.3.2
+
+### Patch Changes
+
+- [#641](https://github.com/pingdotgg/uploadthing/pull/641) [`f0a4ae4`](https://github.com/pingdotgg/uploadthing/commit/f0a4ae4f491c4e2a5c4517b27e5d76617d5db004) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: move some types to `@uploadthing/shared`
+
+- [#630](https://github.com/pingdotgg/uploadthing/pull/630) [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: enforce compatible `uploadthing` version for `@uploadthing/react`
+
+## 6.3.1
+
+### Patch Changes
+
+- [#620](https://github.com/pingdotgg/uploadthing/pull/620) [`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(cjs bundling): force client splitting in .cjs output files
+
+## 6.3.0
+
+### Minor Changes
+
+- [#587](https://github.com/pingdotgg/uploadthing/pull/587) [`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to provide custom identifiers when uploading files
+
+  also adds ability for UTApi methods to filter based on custom identifiers
+
+  ```ts
+  // bind custom id when uploading
+  f(["image"]).middleware(({ files }) => {
+    const filesWithIds = files.map((f) => ({
+      ...f,
+      customId: uuid(),
+    }));
+    return { my: "metadata", [UTFiles]: filesWithIds };
+  });
+
+  // filter based on custom id
+  const utapi = new UTApi();
+  utapi.getFileUrl("my-uuid", { keyType: "customId" });
+
+  // or, set a global keyType default
+  const utapi = new UTApi({ defaultKeyType: "customId" });
+  utapi.getFileUrl("my-uuid");
+  ```
+
+- [#598](https://github.com/pingdotgg/uploadthing/pull/598) [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: use presigned post uploads for small files to reduce overhead time of multipart
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
+## 6.2.1
+
+### Patch Changes
+
+- [#582](https://github.com/pingdotgg/uploadthing/pull/582) [`d6c8358`](https://github.com/pingdotgg/uploadthing/commit/d6c8358e535843e82427dd904e6b90c8328dd61f) Thanks [@GentikSolm](https://github.com/GentikSolm)! - feat: float error messages to client for UploadThingErrors. Read the [error handling docs 📚](https://docs.uploadthing.com/errors) to find out more.
+
+## 6.2.0
+
+### Minor Changes
+
+- [`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  cloudflare workers
+
 ## 6.1.0
 
 ### Minor Changes

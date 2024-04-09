@@ -102,6 +102,10 @@
   background: var(--theme-color-accent) !important;
 }
 
+.scalar-codeblock-code {
+  display: unset;
+}
+
 :root {
   --theme-color-accent: hsla(4, 61%, 49%, 1);
   --theme-color-background: hsla(348, 71%, 93%, 1);
@@ -112,4 +116,9 @@
   --theme-background-1: hsl(0deg, 0%, 7%, 0.8);
   --theme-color-accent: hsla(356, 65%, 50%, 1);
   --theme-color-background: hsla(348, 24%, 12%, 1);
+}
+
+// Nextra fixes
+.nextra-content {
+  min-width: 0;
 }

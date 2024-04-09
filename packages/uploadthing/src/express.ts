@@ -7,38 +7,43 @@ import type {
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
-import type { RouterWithConfig } from "./internal/handler";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger } from "./internal/logger";
+import { initLogger, logger } from "./internal/logger";
 import { getPostBody } from "./internal/node-http/getBody";
 import { toWebRequest } from "./internal/node-http/toWebRequest";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter };
+export { UTFiles } from "./internal/types";
+
+type MiddlewareArgs = {
+  req: ExpressRequest;
+  res: ExpressResponse;
+  event: undefined;
+};
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: ExpressRequest; res: ExpressResponse; event: undefined },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
-export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+export const createRouteHandler = <TRouter extends FileRouter>(
+  opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler<TRouter>(opts);
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    "express",
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
   const router = ExpressRouter();
 
@@ -47,6 +52,9 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
     const bodyResult = await getPostBody({ req });
 
     if (!bodyResult.ok) {
+      logger.error(
+        "Error parsing body. UploadThing expects a raw JSON body, make sure any body-parsing middlewares are registered after uploadthing.",
+      );
       res.status(400);
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
       res.send(
@@ -59,16 +67,9 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    const proto = (req.headers["x-forwarded-proto"] as string) ?? "http";
-    const url = new URL(
-      req.baseUrl + req.url, // baseUrl is the mount point for the router, url is the path
-      `${proto}://${req.headers.host}`,
-    );
-
     const response = await requestHandler({
-      nativeRequest: toWebRequest(req, url, bodyResult.data),
-      originalRequest: req,
-      res,
+      req: toWebRequest(req, bodyResult.data),
+      middlewareArgs: { req, res, event: undefined },
     });
 
     if (response instanceof UploadThingError) {
@@ -82,7 +83,7 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
       // We messed up - this should never happen
       res.status(500);
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send("An unknown error occured");
+      res.send("An unknown error occurred");
 
       return;
     }
@@ -101,3 +102,8 @@ export const createUploadthingExpressHandler = <TRouter extends FileRouter>(
 
   return router;
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createUploadthingExpressHandler = createRouteHandler;

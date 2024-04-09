@@ -3,7 +3,7 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "6.1.1",
+  "version": "6.3.4",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
@@ -16,7 +16,10 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/server.js"
         },
-        "require": "./dist/server.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/server.cjs"
+        }
       },
       "browser": {
         "solid": {
@@ -28,13 +31,19 @@
             "types": "./dist/index.d.ts",
             "default": "./dist/dev.js"
           },
-          "require": "./dist/dev.cjs"
+          "require": {
+            "types": "./dist/index.d.cts",
+            "default": "./dist/dev.cjs"
+          }
         },
         "import": {
           "types": "./dist/index.d.ts",
           "default": "./dist/index.js"
         },
-        "require": "./dist/index.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/index.cjs"
+        }
       },
       "deno": {
         "solid": "./dist/server.jsx",
@@ -42,7 +51,10 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/server.js"
         },
-        "require": "./dist/server.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/server.cjs"
+        }
       },
       "node": {
         "solid": "./dist/server.jsx",
@@ -50,7 +62,10 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/server.js"
         },
-        "require": "./dist/server.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/server.cjs"
+        }
       },
       "solid": {
         "development": "./dist/dev.jsx",
@@ -61,13 +76,19 @@
           "types": "./dist/index.d.ts",
           "default": "./dist/dev.js"
         },
-        "require": "./dist/dev.cjs"
+        "require": {
+          "types": "./dist/index.d.cts",
+          "default": "./dist/dev.cjs"
+        }
       },
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       },
-      "require": "./dist/index.cjs"
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./styles.css": "./dist/index.css"
   },
@@ -81,32 +102,31 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsup --config ./tsup.config.js",
-    "dev": "wait-on ../uploadthing/dist/server.mjs && tsup --watch --config ./tsup.config.js",
+    "build": "tsup",
+    "clean": "git clean -xdf dist node_modules",
+    "dev": "wait-on ../uploadthing/server/index.d.ts && tsup --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "^0.1.1",
-    "@uploadthing/shared": "^6.1.0",
-    "tailwind-merge": "^1.13.2"
+    "@uploadthing/dropzone": "workspace:0.3.1",
+    "@uploadthing/shared": "workspace:6.6.0",
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@uploadthing/eslint-config": "0.2.0",
-    "autoprefixer": "10.4.14",
-    "eslint": "^8.47.0",
-    "postcss": "8.4.31",
-    "solid-js": "^1.7.11",
-    "tailwindcss": "^3.3.2",
-    "tsup": "6.7.0",
-    "tsup-preset-solid": "0.1.8",
-    "typescript": "^5.1.6",
-    "uploadthing": "6.2.0",
-    "wait-on": "^7.0.1"
+    "postcss": "8.4.38",
+    "solid-js": "^1.8.15",
+    "tailwindcss": "^3.4.1",
+    "tsup": "8.0.2",
+    "tsup-preset-solid": "2.2.0",
+    "typescript": "^5.4.2",
+    "uploadthing": "workspace:6.9.0",
+    "wait-on": "^7.2.0"
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
-    "uploadthing": "^6.0.0"
+    "uploadthing": "^6.5.1"
   },
   "keywords": [
     "SolidJS",
@@ -114,6 +134,17 @@
   ],
   "eslintConfig": {
     "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/solid",
+            "@uploadthing/solid/*"
+          ]
+        }
+      ]
+    },
     "extends": [
       "@uploadthing/eslint-config/base"
     ]

@@ -16,18 +16,23 @@ where you want to be
 <Steps>
 ### Creating your first FileRoute
 
-All files uploaded to uploadthing are associated with a FileRoute. Think of a
-FileRoute similar to an endpoint, it has:
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
 - Max file size
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
 
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/api-reference/server#file-routes).
+
 ```tsx copy filename="server/uploadthing.ts"
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -43,7 +48,7 @@ export const ourFileRouter = {
       const user = await auth(req, res);
 
       // If you throw, the user will not be able to upload
-      if (!user) throw new Error("Unauthorized");
+      if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
@@ -70,16 +75,20 @@ export type OurFileRouter = typeof ourFileRouter;
 </Callout>
 
 ```ts copy filename="pages/api/uploadthing.ts"
-import { createNextPageApiHandler } from "uploadthing/next-legacy";
+import { createRouteHandler } from "uploadthing/next-legacy";
 
 import { ourFileRouter } from "~/server/uploadthing";
 
-const handler = createNextPageApiHandler({
+export default createRouteHandler({
   router: ourFileRouter,
-});
 
-export default handler;
+  // Apply an (optional) custom config:
+  // config: { ... },
+});
 ```
+
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
 
 ### Add UploadThing's Styles
 
@@ -100,12 +109,15 @@ export default handler;
 ### Create The UploadThing Components (Recommended)
 
 ```ts copy filename="src/utils/uploadthing.ts"
-import { generateComponents } from "@uploadthing/react";
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/react";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-export const { UploadButton, UploadDropzone, Uploader } =
-  generateComponents<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Mount A Button And Upload!

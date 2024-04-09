@@ -1,37 +1,51 @@
 import { isDevelopment, process } from "std-env";
 
-import type { MimeType } from "@uploadthing/mime-types/db";
 import {
   generateUploadThingURL,
   getTypeFromFileName,
   isObject,
   objectKeys,
   fillInputRouteConfig as parseAndExpandInputConfig,
+  resolveMaybeUrlArg,
   safeParseJSON,
   UploadThingError,
+  verifySignature,
 } from "@uploadthing/shared";
 import type {
-  ContentDisposition,
   ExpandedRouteConfig,
   FetchEsque,
   FileRouterInputKey,
   Json,
-  UploadedFile,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import type { UploadedFileData } from "../types";
+import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { getFullApiUrl } from "./get-full-api-url";
-import type { LogLevel } from "./logger";
 import { logger } from "./logger";
 import { getParseFn } from "./parser";
-import { VALID_ACTION_TYPES } from "./types";
-import type { ActionType, FileRouter, UTEvents } from "./types";
+import { UTFiles, VALID_ACTION_TYPES } from "./types";
+import type {
+  ActionType,
+  FileRouter,
+  MiddlewareFnArgs,
+  PresignedURLs,
+  RequestHandler,
+  RouteHandlerConfig,
+  RouteHandlerOptions,
+  UTEvents,
+  ValidMiddlewareObject,
+} from "./types";
 
 /**
  * Creates a wrapped fetch that will always forward a few headers to the server.
  */
-const createUTFetch = (apiKey: string, fetch: FetchEsque) => {
+
+const createUTFetch = (
+  apiKey: string,
+  fetch: FetchEsque,
+  fePackage: string,
+  beAdapter: string,
+) => {
   return async (endpoint: `/${string}`, payload: unknown) => {
     const response = await fetch(generateUploadThingURL(endpoint), {
       method: "POST",
@@ -40,6 +54,8 @@ const createUTFetch = (apiKey: string, fetch: FetchEsque) => {
         "Content-Type": "application/json",
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": UPLOADTHING_VERSION,
+        "x-uploadthing-fe-package": fePackage,
+        "x-uploadthing-be-adapter": beAdapter,
       },
     });
 
@@ -47,91 +63,63 @@ const createUTFetch = (apiKey: string, fetch: FetchEsque) => {
   };
 };
 
-const fileCountLimitHit = (
+const fileCountBoundsCheck = (
   files: { name: string }[],
   routeConfig: ExpandedRouteConfig,
 ) => {
-  const counts: Record<string, number> = {};
-
-  files.forEach((file) => {
+  const counts = files.reduce<Record<string, number>>((acc, file) => {
     const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
-
-    if (!counts[type]) {
-      counts[type] = 1;
-    } else {
-      counts[type] += 1;
-    }
-  });
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {});
 
   for (const _key in counts) {
     const key = _key as FileRouterInputKey;
-    const count = counts[key];
-    const limit = routeConfig[key]?.maxFileCount;
-
-    if (!limit) {
-      logger.error(routeConfig, key);
+    const config = routeConfig[key];
+    if (!config) {
       throw new UploadThingError({
         code: "BAD_REQUEST",
-        message: "Invalid config during file count",
-        cause: `Expected route config to have a maxFileCount for key ${key} but none was found.`,
+        message: `Invalid config during file count - missing ${key}`,
+        cause: `Expected route config to have a config for key ${key} but none was found.`,
       });
     }
 
-    if (count > limit) {
-      return { limitHit: true, type: key, limit, count };
+    const count = counts[key];
+    const min = config.minFileCount;
+    const max = config.maxFileCount;
+
+    if (min > max) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message:
+          "Invalid config during file count - minFileCount > maxFileCount",
+        cause: `minFileCount must be less than maxFileCount for key ${key}. got: ${min} > ${max}`,
+      });
+    }
+
+    if (count < min || count > max) {
+      return {
+        minCount: min,
+        minCountHit: count < min,
+        maxCount: max,
+        maxCountHit: count > max,
+        count,
+        type: key,
+      };
     }
   }
 
-  return { limitHit: false };
+  return { minCountHit: false, maxCountHit: false };
 };
 
-export type RouterWithConfig<TRouter extends FileRouter> = {
-  router: TRouter;
-  config?: {
-    logLevel?: LogLevel;
-    callbackUrl?: string;
-    uploadthingId?: string;
-    uploadthingSecret?: string;
-    /**
-     * Used to determine whether to run dev hook or not
-     * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
-     */
-    isDev?: boolean;
-    /**
-     * Used to override the fetch implementation
-     * @default `globalThis.fetch`
-     */
-    fetch?: FetchEsque;
-  };
-};
-
-export type UploadThingResponse = {
-  presignedUrls: string[];
-  pollingJwt: string;
-  key: string;
-  pollingUrl: string;
-  uploadId: string;
-  fileName: string;
-  fileType: MimeType;
-  contentDisposition: ContentDisposition;
-  chunkCount: number;
-  chunkSize: number;
-}[];
-
-export const buildRequestHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
-) => {
-  return async (input: {
-    nativeRequest: Request;
-
-    // Forward to middleware handler
-    originalRequest?: unknown;
-    res?: unknown;
-    event?: unknown;
-  }): Promise<
-    | UploadThingError
-    | { status: 200; body?: UploadThingResponse; cleanup?: Promise<unknown> }
-  > => {
+export const buildRequestHandler = <
+  TRouter extends FileRouter,
+  Args extends MiddlewareFnArgs<any, any, any>,
+>(
+  opts: RouteHandlerOptions<TRouter>,
+  adapter: string,
+): RequestHandler<Args> => {
+  return async (input) => {
     const isDev = opts.config?.isDev ?? isDevelopment;
     const fetch = opts.config?.fetch ?? globalThis.fetch;
 
@@ -143,7 +131,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const preferredOrEnvSecret =
       config?.uploadthingSecret ?? process.env.UPLOADTHING_SECRET;
 
-    const req = input.nativeRequest;
+    const req = input.req;
     const url = new URL(req.url);
 
     // Get inputs from query and params
@@ -151,6 +139,18 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     const uploadthingHook = req.headers.get("uploadthing-hook") ?? undefined;
     const slug = params.get("slug") ?? undefined;
     const actionType = (params.get("actionType") as ActionType) ?? undefined;
+    const utFrontendPackage =
+      req.headers.get("x-uploadthing-package") ?? "unknown";
+
+    const clientVersion = req.headers.get("x-uploadthing-version");
+    if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
+      logger.error("Client version mismatch");
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Client version mismatch",
+        cause: `Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
+      });
+    }
 
     // Validate inputs
     if (!slug) {
@@ -208,6 +208,17 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
+    if (utFrontendPackage && typeof utFrontendPackage !== "string") {
+      const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utFrontendPackage}'`;
+      logger.error(msg);
+      return new UploadThingError({
+        code: "BAD_REQUEST",
+        message:
+          "`x-uploadthing-package` must be a string. eg. '@uploadthing/react'",
+        cause: msg,
+      });
+    }
+
     const uploadable = router[slug];
     if (!uploadable) {
       const msg = `No file route found for slug ${slug}`;
@@ -218,7 +229,12 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const utFetch = createUTFetch(preferredOrEnvSecret, fetch);
+    const utFetch = createUTFetch(
+      preferredOrEnvSecret,
+      fetch,
+      utFrontendPackage,
+      adapter,
+    );
     logger.debug("All request input is valid", {
       slug,
       actionType,
@@ -228,8 +244,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
     if (uploadthingHook === "callback") {
       // This is when we receive the webhook from uploadthing
       const maybeReqBody = await safeParseJSON<{
-        file: UploadedFile;
-        files: unknown;
+        file: UploadedFileData;
         metadata: Record<string, unknown>;
         input?: Json;
       }>(req);
@@ -242,6 +257,20 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           code: "BAD_REQUEST",
           message: "Invalid request body",
           cause: maybeReqBody,
+        });
+      }
+
+      const verified = await verifySignature(
+        JSON.stringify(maybeReqBody),
+        req.headers.get("x-uploadthing-signature"),
+        preferredOrEnvSecret,
+      );
+      logger.debug("Signature verified:", verified);
+      if (!verified) {
+        logger.error("Invalid signature");
+        return new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid signature",
         });
       }
 
@@ -267,7 +296,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         "UploadThing responded with status:",
         callbackResponse.status,
       );
-      return { status: 200 };
+      return { status: 200, body: null };
     }
 
     if (!actionType || !VALID_ACTION_TYPES.includes(actionType)) {
@@ -285,7 +314,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
     switch (actionType) {
       case "upload": {
-        const maybeInput = await safeParseJSON<UTEvents["upload"]>(req);
+        const maybeInput = await safeParseJSON<UTEvents["upload"]["in"]>(req);
 
         if (maybeInput instanceof Error) {
           logger.error("Invalid request body", maybeInput);
@@ -299,41 +328,6 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         logger.debug("Handling upload request with input:", maybeInput);
         const { files, input: userInput } = maybeInput;
 
-        // validate the input
-        let parsedInput: Json = {};
-        try {
-          logger.debug("Parsing input");
-          const inputParser = uploadable._def.inputParser;
-          parsedInput = await getParseFn(inputParser)(userInput);
-          logger.debug("Input parsed successfully", parsedInput);
-        } catch (error) {
-          logger.error("An error occured trying to parse input", error);
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid input.",
-            cause: error,
-          });
-        }
-
-        let metadata: Json = {};
-        try {
-          logger.debug("Running middleware");
-          metadata = await uploadable._def.middleware({
-            req: input.originalRequest,
-            res: input.res,
-            event: input.event,
-            input: parsedInput,
-          });
-          logger.debug("Middleware finished successfully with:", metadata);
-        } catch (error) {
-          logger.error("An error occured in your middleware function", error);
-          return new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run middleware.",
-            cause: error,
-          });
-        }
-
         // Validate without Zod (for now)
         if (
           !Array.isArray(files) ||
@@ -341,10 +335,11 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
             (f) =>
               isObject(f) &&
               typeof f.name === "string" &&
-              typeof f.size === "number",
+              typeof f.size === "number" &&
+              typeof f.type === "string",
           )
         ) {
-          const msg = `Expected files to be of type '{name:string, size:number}[]', got '${JSON.stringify(
+          const msg = `Expected files to be of type '{name:string, size:number, type:string}[]', got '${JSON.stringify(
             files,
           )}'`;
           logger.error(msg);
@@ -355,8 +350,66 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
+        // validate the input
+        let parsedInput: Json = {};
+        try {
+          logger.debug("Parsing input");
+          const inputParser = uploadable._def.inputParser;
+          parsedInput = await getParseFn(inputParser)(userInput);
+          logger.debug("Input parsed successfully", parsedInput);
+        } catch (error) {
+          logger.error("An error occurred trying to parse input:", error);
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Invalid input.",
+            cause: error,
+          });
+        }
+
+        let metadata: ValidMiddlewareObject = {};
+        try {
+          logger.debug("Running middleware");
+          metadata = await uploadable._def.middleware({
+            ...input.middlewareArgs,
+            input: parsedInput,
+            files,
+          });
+          logger.debug("Middleware finished successfully with:", metadata);
+        } catch (error) {
+          logger.error("An error occurred in your middleware function:", error);
+          if (error instanceof UploadThingError) return error;
+          return new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to run middleware.",
+            cause: error,
+          });
+        }
+
+        if (metadata[UTFiles] && metadata[UTFiles].length !== files.length) {
+          const msg = `Expected files override to have the same length as original files, got ${metadata[UTFiles].length} but expected ${files.length}`;
+          logger.error(msg);
+          return new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "Files override must have the same length as files",
+            cause: msg,
+          });
+        }
+
+        // Attach customIds from middleware to the files
+        const filesWithCustomIds = files.map((file, idx) => {
+          const theirs = metadata[UTFiles]?.[idx];
+          if (theirs && theirs.size !== file.size) {
+            logger.warn("File size mismatch. Reverting to original size");
+          }
+          return {
+            name: theirs?.name ?? file.name,
+            size: file.size,
+            customId: theirs?.customId,
+          };
+        });
+
         // FILL THE ROUTE CONFIG so the server only has one happy path
-        let parsedConfig: ReturnType<typeof parseAndExpandInputConfig>;
+        let parsedConfig: ExpandedRouteConfig;
         try {
           logger.debug("Parsing route config", uploadable._def.routerConfig);
           parsedConfig = parseAndExpandInputConfig(
@@ -373,21 +426,28 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         }
 
         try {
-          logger.debug("Checking file count limit", files);
-          const { limitHit, count, limit, type } = fileCountLimitHit(
-            files,
-            parsedConfig,
-          );
-          if (limitHit) {
-            const msg = `You uploaded ${count} files of type '${type}', but the limit for that type is ${limit}`;
-            logger.error(msg);
+          logger.debug("Checking file count bounds", files);
+
+          const { minCount, minCountHit, maxCount, maxCountHit, count, type } =
+            fileCountBoundsCheck(files, parsedConfig);
+
+          if (maxCountHit || minCountHit) {
+            const errorMessage = maxCountHit
+              ? `You uploaded ${count} file(s) of type '${type}', but the limit for that type is ${maxCount}`
+              : `You uploaded ${count} file(s) of type '${type}', but the minimum for that type is ${minCount}`;
+
+            logger.error(errorMessage);
+
             return new UploadThingError({
               code: "BAD_REQUEST",
-              message: "File limit exceeded",
-              cause: msg,
+              message: maxCountHit
+                ? "Maximum file count not met"
+                : "Minimum file count not met",
+              cause: errorMessage,
             });
           }
-          logger.debug("File count limit check passed");
+
+          logger.debug("File count bounds check passed");
         } catch (error) {
           logger.error("Invalid route config", error);
           return new UploadThingError({
@@ -403,7 +463,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           callbackUrl.href,
         );
         const uploadthingApiResponse = await utFetch("/api/prepareUpload", {
-          files: files,
+          files: filesWithCustomIds,
 
           routeConfig: parsedConfig,
 
@@ -413,7 +473,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
 
         // This is when we send the response back to the user's form so they can submit the files
-        const parsedResponse = await safeParseJSON<UploadThingResponse>(
+        const parsedResponse = await safeParseJSON<PresignedURLs>(
           uploadthingApiResponse,
         );
 
@@ -448,17 +508,13 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         return {
           cleanup: promise,
-          body: parsedResponse.map((x) => ({
-            ...x,
-            pollingUrl: generateUploadThingURL(`/api/serverCallback`),
-          })),
+          body: parsedResponse satisfies UTEvents["upload"]["out"],
           status: 200,
         };
       }
       case "multipart-complete": {
-        const maybeReqBody = await safeParseJSON<
-          UTEvents["multipart-complete"]
-        >(req);
+        const maybeReqBody =
+          await safeParseJSON<UTEvents["multipart-complete"]["in"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
@@ -492,10 +548,14 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 
         logger.debug("UploadThing responded with:", completeRes.status);
 
-        return { status: 200 };
+        return {
+          status: 200,
+          body: null satisfies UTEvents["multipart-complete"]["out"],
+        };
       }
       case "failure": {
-        const maybeReqBody = await safeParseJSON<UTEvents["failure"]>(req);
+        const maybeReqBody =
+          await safeParseJSON<UTEvents["failure"]["in"]>(req);
         if (maybeReqBody instanceof Error) {
           logger.error("Invalid request body", maybeReqBody);
           return new UploadThingError({
@@ -515,9 +575,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
         });
 
         if (!uploadthingApiResponse.ok) {
-          const parsedResponse = await safeParseJSON<UploadThingResponse>(
-            uploadthingApiResponse,
-          );
+          const parsedResponse = await safeParseJSON(uploadthingApiResponse);
           logger.error("Failed to mark upload as failed", parsedResponse);
 
           return new UploadThingError({
@@ -552,7 +610,7 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
           });
         }
 
-        return { status: 200 };
+        return { status: 200, body: null satisfies UTEvents["failure"]["out"] };
       }
       default: {
         // This should never happen
@@ -566,16 +624,16 @@ export const buildRequestHandler = <TRouter extends FileRouter>(
 };
 
 function resolveCallbackUrl(opts: {
-  config: RouterWithConfig<FileRouter>["config"];
+  config: RouteHandlerConfig | undefined;
   req: Request;
   url: URL;
   isDev: boolean;
 }): URL {
   let callbackUrl = opts.url;
   if (opts.config?.callbackUrl) {
-    callbackUrl = getFullApiUrl(opts.config.callbackUrl);
+    callbackUrl = resolveMaybeUrlArg(opts.config.callbackUrl);
   } else if (process.env.UPLOADTHING_URL) {
-    callbackUrl = getFullApiUrl(process.env.UPLOADTHING_URL);
+    callbackUrl = resolveMaybeUrlArg(process.env.UPLOADTHING_URL);
   }
 
   if (opts.isDev || !callbackUrl.host.includes("localhost")) {
@@ -605,11 +663,11 @@ function resolveCallbackUrl(opts: {
     return callbackUrl;
   }
 
-  return getFullApiUrl(parsedFromHeaders);
+  return resolveMaybeUrlArg(parsedFromHeaders);
 }
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   return () => {
     const r = opts.router;

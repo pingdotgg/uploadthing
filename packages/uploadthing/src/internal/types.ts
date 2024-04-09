@@ -1,50 +1,96 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 import type {
+  ContentDisposition,
+  ErrorMessage,
+  FetchEsque,
   FileRouterInputConfig,
+  FileRouterInputKey,
   Json,
-  UploadedFile,
+  MaybePromise,
+  Simplify,
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type {
+  FileUploadData,
+  FileUploadDataWithCustomId,
+  UploadedFileData,
+} from "../types";
+import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 
-//
-// Utils
-export const unsetMarker = "unsetMarker" as "unsetMarker" & {
+export interface PresignedBase {
+  key: string;
+  fileName: string;
+  fileType: FileRouterInputKey;
+  fileUrl: string;
+  contentDisposition: ContentDisposition;
+  pollingJwt: string;
+  pollingUrl: string;
+  customId: string | null;
+}
+
+export interface PSPResponse extends PresignedBase {
+  url: string;
+  fields: Record<string, string>;
+}
+
+export interface MPUResponse extends PresignedBase {
+  urls: string[];
+  uploadId: string;
+  chunkSize: number;
+  chunkCount: number;
+}
+
+/**
+ * Returned by `/api/prepareUpload` and `/api/uploadFiles`
+ */
+export type PresignedURLs = (PSPResponse | MPUResponse)[];
+
+/**
+ * Marker used to append a `customId` to the incoming file data in `.middleware()`
+ * @example
+ * ```ts
+ * .middleware((opts) => {
+ *   return {
+ *     [UTFiles]: opts.files.map((file) => ({
+ *       ...file,
+ *       customId: generateId(),
+ *     }))
+ *   };
+ * })
+ * ```
+ */
+export const UTFiles = Symbol("uploadthing-custom-id-symbol");
+
+const unsetMarker = "unsetMarker" as "unsetMarker" & {
   __brand: "unsetMarker";
 };
 export type UnsetMarker = typeof unsetMarker;
 
-export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
-
-export type MaybePromise<TType> = TType | Promise<TType>;
-
-/**
- * Omits the key without removing a potential union
- * @internal
- */
-export type DistributiveOmit<TObj, TKey extends keyof any> = TObj extends any
-  ? Omit<TObj, TKey>
-  : never;
-
-//
-// Package
-type ResolverOptions<TParams extends AnyParams> = {
-  metadata: Simplify<
-    TParams["_metadata"] extends UnsetMarker ? undefined : TParams["_metadata"]
-  >;
-
-  file: UploadedFile;
+export type ValidMiddlewareObject = {
+  [UTFiles]?: Partial<FileUploadDataWithCustomId>[];
+  [key: string]: unknown;
 };
 
-export type AnyRuntime = "app" | "pages" | "web" | "express" | "fastify" | "h3";
+type ResolverOptions<TParams extends AnyParams> = {
+  metadata: Simplify<
+    TParams["_metadata"] extends UnsetMarker
+      ? undefined
+      : Omit<TParams["_metadata"], typeof UTFiles>
+  >;
 
+  file: UploadedFileData;
+};
+
+/**
+ * Different frameworks have different request and response types
+ */
 export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
   req: TRequest;
   res: TResponse;
   event: TEvent;
 };
+
 export interface AnyParams {
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
@@ -56,10 +102,13 @@ export interface AnyParams {
 
 type MiddlewareFn<
   TInput extends Json | UnsetMarker,
-  TOutput extends Record<string, unknown>,
+  TOutput extends ValidMiddlewareObject,
   TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
-  opts: TArgs & (TInput extends UnsetMarker ? {} : { input: TInput }),
+  opts: TArgs & {
+    files: FileUploadData[];
+    input: TInput extends UnsetMarker ? undefined : TInput;
+  },
 ) => MaybePromise<TOutput>;
 
 type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
@@ -70,8 +119,6 @@ type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
 }) => void;
-
-export type ErrorMessage<TError extends string> = TError;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -86,7 +133,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
-  middleware: <TOutput extends Record<string, unknown>>(
+  middleware: <TOutput extends ValidMiddlewareObject>(
     fn: TParams["_metadata"] extends UnsetMarker
       ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
       : ErrorMessage<"middleware is already set">,
@@ -125,6 +172,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
   inputParser: JsonParser;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   middleware: MiddlewareFn<TParams["_input"], {}, TParams["_middlewareArgs"]>;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
   onUploadError: UploadErrorFn;
@@ -140,6 +188,45 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   Uploader<TParams>
 >;
 
+export type RouteHandlerConfig = {
+  logLevel?: LogLevel;
+  callbackUrl?: string;
+  uploadthingId?: string;
+  uploadthingSecret?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+};
+
+export type RouteHandlerOptions<TRouter extends FileRouter> = {
+  router: TRouter;
+  config?: RouteHandlerConfig;
+};
+
+type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> = {
+  req: Request;
+  middlewareArgs: TArgs;
+};
+type RequestHandlerOutput = Promise<
+  | {
+      status: number;
+      body: UTEvents[keyof UTEvents]["out"];
+      cleanup?: Promise<unknown>;
+    }
+  | UploadThingError
+>;
+
+export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
+  input: RequestHandlerInput<TArgs>,
+) => RequestHandlerOutput;
+
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
     ? undefined
@@ -153,6 +240,9 @@ export type inferEndpointOutput<TUploader extends Uploader<any>> =
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
 
+/**
+ * Valid options for the `?actionType` query param
+ */
 export const VALID_ACTION_TYPES = [
   "upload",
   "failure",
@@ -160,23 +250,35 @@ export const VALID_ACTION_TYPES = [
 ] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
 
+/**
+ * Map actionType to the required payload for that action
+ */
 export type UTEvents = {
   upload: {
-    files: { name: string; size: number }[];
-    input: Json;
+    in: {
+      files: FileUploadData[];
+      input: Json;
+    };
+    out: PresignedURLs;
   };
   failure: {
-    fileKey: string;
-    uploadId: string;
-    s3Error?: string;
-    fileName: string;
+    in: {
+      fileKey: string;
+      uploadId: string | null;
+      s3Error?: string;
+      fileName: string;
+    };
+    out: null;
   };
   "multipart-complete": {
-    fileKey: string;
-    uploadId: string;
-    etags: {
-      tag: string;
-      partNumber: number;
-    }[];
+    in: {
+      fileKey: string;
+      uploadId: string;
+      etags: {
+        tag: string;
+        partNumber: number;
+      }[];
+    };
+    out: null;
   };
 };

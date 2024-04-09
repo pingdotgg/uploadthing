@@ -14,6 +14,7 @@ concurrency:
 jobs:
   e2e-node:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         dir:
@@ -23,17 +24,11 @@ jobs:
           ]
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      - name: Install necessary deps
-        run: pnpm --filter "./examples/${{ matrix.dir }}/**"  --filter "@uploadthing/*" --filter "uploadthing" --filter "uploadthing-turbo" install
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
 
       - name: Build UT packages
-        run: pnpm build
+        run: bun run build
 
       - name: Run build
-        run: pnpm turbo --filter ./examples/${{ matrix.dir }} build
+        run: bun turbo --filter ./examples/${{ matrix.dir }} build

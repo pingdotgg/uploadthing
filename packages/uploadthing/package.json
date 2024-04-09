@@ -1,6 +1,7 @@
 {
   "name": "uploadthing",
-  "version": "6.2.0",
+  "version": "6.9.0",
+  "type": "module",
   "engines": {
     "node": ">=18.13.0"
   },
@@ -8,116 +9,175 @@
   "exports": {
     "./package.json": "./package.json",
     "./client": {
-      "types": "./dist/client.d.ts",
-      "import": "./dist/client.mjs",
-      "require": "./dist/client.js"
+      "import": {
+        "types": "./client/index.d.ts",
+        "default": "./client/index.js"
+      },
+      "require": {
+        "types": "./client/index.d.cts",
+        "default": "./client/index.cjs"
+      }
     },
     "./server": {
-      "types": "./dist/server.d.ts",
-      "import": "./dist/server.mjs",
-      "require": "./dist/server.js"
+      "import": {
+        "types": "./server/index.d.ts",
+        "default": "./server/index.js"
+      },
+      "require": {
+        "types": "./server/index.d.cts",
+        "default": "./server/index.cjs"
+      }
     },
     "./next": {
-      "types": "./dist/next.d.ts",
-      "import": "./dist/next.mjs",
-      "require": "./dist/next.js"
+      "import": {
+        "types": "./next/index.d.ts",
+        "default": "./next/index.js"
+      },
+      "require": {
+        "types": "./next/index.d.cts",
+        "default": "./next/index.cjs"
+      }
     },
     "./next-legacy": {
-      "types": "./dist/next-legacy.d.ts",
-      "import": "./dist/next-legacy.mjs",
-      "require": "./dist/next-legacy.js"
-    },
-    "./express": {
-      "import": "./dist/express.mjs",
-      "types": "./dist/express.d.ts",
-      "require": "./dist/express.js"
+      "import": {
+        "types": "./next-legacy/index.d.ts",
+        "default": "./next-legacy/index.js"
+      },
+      "require": {
+        "types": "./next-legacy/index.d.cts",
+        "default": "./next-legacy/index.cjs"
+      }
     },
     "./tw": {
-      "types": "./dist/tw.d.ts",
-      "import": "./dist/tw.mjs",
-      "require": "./dist/tw.js"
+      "import": {
+        "types": "./tw/index.d.ts",
+        "default": "./tw/index.js"
+      },
+      "require": {
+        "types": "./tw/index.d.cts",
+        "default": "./tw/index.cjs"
+      }
     },
     "./fastify": {
-      "types": "./dist/fastify.d.ts",
-      "import": "./dist/fastify.mjs",
-      "require": "./dist/fastify.js"
+      "import": {
+        "types": "./fastify/index.d.ts",
+        "default": "./fastify/index.js"
+      },
+      "require": {
+        "types": "./fastify/index.d.cts",
+        "default": "./fastify/index.cjs"
+      }
+    },
+    "./express": {
+      "import": {
+        "types": "./express/index.d.ts",
+        "default": "./express/index.js"
+      },
+      "require": {
+        "types": "./express/index.d.cts",
+        "default": "./express/index.cjs"
+      }
     },
     "./h3": {
-      "types": "./dist/h3.d.ts",
-      "import": "./dist/h3.mjs",
-      "require": "./dist/h3.js"
+      "import": {
+        "types": "./h3/index.d.ts",
+        "default": "./h3/index.js"
+      },
+      "require": {
+        "types": "./h3/index.d.cts",
+        "default": "./h3/index.cjs"
+      }
+    },
+    "./types": {
+      "types": "./types/index.d.ts",
+      "default": "./types/index.js"
+    },
+    "./internal/types": {
+      "import": {
+        "types": "./internal/types.d.ts",
+        "default": "./internal/types.js"
+      },
+      "require": {
+        "types": "./internal/types.d.cts",
+        "default": "./internal/types.cjs"
+      }
     }
   },
   "files": [
-    "dist"
+    "client",
+    "express",
+    "fastify",
+    "h3",
+    "internal",
+    "next",
+    "next-legacy",
+    "server",
+    "types",
+    "tw"
   ],
   "publishConfig": {
     "access": "public"
   },
-  "typesVersions": {
-    "*": {
-      "client": [
-        "dist/client.d.ts"
-      ],
-      "server": [
-        "dist/server.d.ts"
-      ],
-      "next": [
-        "dist/next.d.ts"
-      ],
-      "next-legacy": [
-        "dist/next-legacy.d.ts"
-      ],
-      "tw": [
-        "dist/tw.d.ts"
-      ],
-      "express": [
-        "dist/express.d.ts"
-      ],
-      "fastify": [
-        "dist/fastify.d.ts"
-      ],
-      "h3": [
-        "dist/h3.d.ts"
-      ]
-    }
-  },
   "scripts": {
-    "lint": "eslint \"**/*.{ts,tsx}\" --max-warnings 0",
-    "build": "tsup",
-    "clean": "git clean -xdf dist node_modules",
-    "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "lint": "eslint src test --max-warnings 0",
+    "build": "bunchee --tsconfig tsconfig.build.json",
+    "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
+    "dev": "wait-on ../shared/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/mime-types": "^0.2.2",
-    "@uploadthing/shared": "^6.1.0",
+    "@uploadthing/mime-types": "workspace:0.2.7",
+    "@uploadthing/shared": "workspace:6.6.0",
     "consola": "^3.2.3",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
-    "@types/react": "18.2.33",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
-    "@uploadthing/tsup-config": "0.1.0",
-    "eslint": "^8.47.0",
+    "@types/express": "^4.17.21",
+    "@types/express-serve-static-core": "^4.17.43",
+    "@types/react": "18.2.60",
+    "@uploadthing/eslint-config": "workspace:0.2.0",
+    "@uploadthing/tsconfig": "workspace:0.1.0",
+    "body-parser": "^1.20.2",
+    "bunchee": "^5.1.2",
+    "eslint": "^8.57.0",
     "express": "^4.18.2",
-    "fastify": "^4.23.2",
-    "h3": "^1.8.1",
-    "next": "14.0.1",
+    "fastify": "^4.26.1",
+    "h3": "^1.11.1",
+    "next": "14.1.0",
     "nuxt": "^3.8.1",
-    "solid-js": "^1.7.11",
-    "tailwindcss": "^3.3.2",
-    "tsup": "6.7.0",
-    "type-fest": "^3.11.1",
-    "typescript": "^5.1.6",
-    "undici": "^5.20.0",
-    "vitest": "^0.30.1",
-    "vue": "^3.3.8",
-    "zod": "^3.22.3"
+    "solid-js": "^1.8.15",
+    "tailwindcss": "^3.4.1",
+    "type-fest": "^4.10.3",
+    "typescript": "^5.4.2",
+    "undici": "^6.6.2",
+    "vue": "^3.3.4",
+    "wait-on": "^7.2.0",
+    "zod": "^3.22.4"
+  },
+  "peerDependencies": {
+    "express": "*",
+    "fastify": "*",
+    "h3": "*",
+    "next": "*",
+    "tailwindcss": "*"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    },
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    },
+    "h3": {
+      "optional": true
+    },
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "eslintConfig": {
     "root": true,
@@ -135,6 +195,15 @@
         {
           "name": "process",
           "message": "Use `import { process } from 'std-env` instead"
+        }
+      ],
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "uploadthing",
+            "uploadthing/*"
+          ]
         }
       ]
     }

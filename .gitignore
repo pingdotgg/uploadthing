@@ -13,6 +13,10 @@ coverage
 out/
 build
 
+# solid
+.output
+.vinxi
+
 # misc
 .DS_Store
 *.pem
@@ -46,3 +50,10 @@ dist
 # cf
 .wrangler
 .dev.vars
+
+# Ignore all folders except `src/` and `test/` in every published package
+packages/*/*/
+!packages/*/src/
+!packages/*/test/
+
+.svelte-kit

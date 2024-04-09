@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -6,12 +8,16 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
-import type { ErrorMessage, FileRouter } from "uploadthing/server";
+} from "@uploadthing/shared";
+import type {
+  ContentField,
+  ErrorMessage,
+  StyleField,
+} from "@uploadthing/shared";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
@@ -25,26 +31,36 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
+type ButtonAppearance = {
+  container?: StyleField<ButtonStyleFieldCallbackArgs>;
+  button?: StyleField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
+};
+
+type ButtonContent = {
+  button?: ContentField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
+};
+
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
-  appearance?: {
-    container?: StyleField<ButtonStyleFieldCallbackArgs>;
-    button?: StyleField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-    clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
-  };
-  content?: {
-    button?: ContentField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-    clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
-  };
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   className?: string;
-  config?: {
-    appendOnPaste?: boolean;
-    mode?: "auto" | "manual";
-  };
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
+   */
+  appearance?: ButtonAppearance;
+  /**
+   * @see https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: ButtonContent;
 };
 
 /**
@@ -58,14 +74,19 @@ export type UploadButtonProps<
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint>,
+    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> & {
+  const $props = props as unknown as UploadButtonProps<
+    TRouter,
+    TEndpoint,
+    TSkipPolling
+  > & {
     // props not exposed on public type
     // Allow to set internal state for testing
     __internal_state?: "readying" | "ready" | "uploading";
@@ -80,7 +101,7 @@ export function UploadButton<
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: $props.url instanceof URL ? $props.url : getFullApiUrl($props.url),
+    url: resolveMaybeUrlArg($props.url),
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -97,6 +118,8 @@ export function UploadButton<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      headers: $props.headers,
+      skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -160,7 +183,7 @@ export function UploadButton<
     if (uploadProgress === 100) {
       return <Spinner />;
     }
-    return `${uploadProgress}%`;
+    return <span className="z-50">{uploadProgress}%</span>;
   };
 
   const getInputProps = () => ({
@@ -263,7 +286,6 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
-        tabIndex={0}
         ref={labelRef}
         onClick={(e) => {
           if (isManualTriggerDisplayed) {

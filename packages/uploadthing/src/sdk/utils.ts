@@ -1,11 +1,10 @@
 import { process } from "std-env";
-import type { File as UndiciFile } from "undici";
 
 import type {
-  ACL,
-  ContentDisposition,
   FetchEsque,
-  Json,
+  SerializedUploadThingError,
+  Time,
+  TimeShort,
 } from "@uploadthing/shared";
 import {
   generateUploadThingURL,
@@ -13,10 +12,17 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../constants";
+import { UPLOADTHING_VERSION } from "../internal/constants";
 import { logger } from "../internal/logger";
 import { uploadPart } from "../internal/multi-part";
-import type { UTEvents } from "../server";
+import type {
+  MPUResponse,
+  PresignedURLs,
+  PSPResponse,
+  UTEvents,
+} from "../internal/types";
+import type { UploadedFileData } from "../types";
+import type { FileEsque, UploadFilesOptions } from "./types";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -37,31 +43,9 @@ export function getApiKeyOrThrow(apiKey?: string) {
   });
 }
 
-export type FileEsque = (Blob & { name: string }) | UndiciFile;
-
-export type UploadData = {
-  key: string;
-  url: string;
-  name: string;
-  size: number;
-};
-
-export type UploadError = {
-  code: string;
-  message: string;
-  data: any;
-};
-
-export type UploadFileResponse =
-  | { data: UploadData; error: null }
-  | { data: null; error: UploadError };
-
 export const uploadFilesInternal = async (
-  data: {
+  data: UploadFilesOptions & {
     files: FileEsque[];
-    metadata: Json;
-    contentDisposition: ContentDisposition;
-    acl?: ACL;
   },
   opts: {
     fetch: FetchEsque;
@@ -73,6 +57,7 @@ export const uploadFilesInternal = async (
     name: file.name ?? "unnamed-blob",
     type: file.type,
     size: file.size,
+    ...("customId" in file ? { customId: file.customId } : {}),
   }));
   logger.debug("Getting presigned URLs for files", fileData);
   const res = await opts.fetch(generateUploadThingURL("/api/uploadFiles"), {
@@ -93,22 +78,8 @@ export const uploadFilesInternal = async (
     throw error;
   }
 
-  if (!res.ok) {
-    const error = await UploadThingError.fromResponse(res);
-    logger.debug("Failed getting presigned URLs:", error);
-    throw error;
-  }
-
   const json = await res.json<{
-    data: {
-      presignedUrls: string[];
-      key: string;
-      fileUrl: string;
-      fileType: string;
-      uploadId: string;
-      chunkSize: number;
-      chunkCount: number;
-    }[];
+    data: PresignedURLs;
   }>();
 
   logger.debug("Got presigned URLs:", json.data);
@@ -117,93 +88,44 @@ export const uploadFilesInternal = async (
   // Upload each file to S3 in chunks using multi-part uploads
   const uploads = await Promise.allSettled(
     data.files.map(async (file, i) => {
-      const { presignedUrls, key, fileUrl, uploadId, chunkSize } = json.data[i];
+      const presigned = json.data[i];
 
-      if (!presignedUrls || !Array.isArray(presignedUrls)) {
+      if (!presigned) {
         logger.error(
           "Failed to generate presigned URL for file:",
           file,
-          json.data[i],
+          presigned,
         );
         throw new UploadThingError({
           code: "URL_GENERATION_FAILED",
           message: "Failed to generate presigned URL",
-          cause: JSON.stringify(json.data[i]),
+          cause: JSON.stringify(presigned),
         });
       }
 
-      logger.debug(
-        "Uploading file",
-        file.name,
-        "with",
-        presignedUrls.length,
-        "chunks of size",
-        chunkSize,
-        "bytes each",
-      );
-
-      const etags = await Promise.all(
-        presignedUrls.map(async (url, index) => {
-          const offset = chunkSize * index;
-          const end = Math.min(offset + chunkSize, file.size);
-          const chunk = file.slice(offset, end);
-
-          const etag = await uploadPart({
-            fetch: opts.fetch,
-            url,
-            chunk: chunk as Blob,
-            contentDisposition: data.contentDisposition,
-            contentType: file.type,
-            fileName: file.name,
-            maxRetries: 10,
-            key,
-            utRequestHeaders: opts.utRequestHeaders,
-          });
-
-          logger.debug("Part", index + 1, "uploaded successfully:", etag);
-
-          return { tag: etag, partNumber: index + 1 };
-        }),
-      );
-
-      logger.debug(
-        "File",
-        file.name,
-        "uploaded successfully. Notifying UploadThing to complete multipart upload.",
-      );
-
-      // Complete multipart upload
-      const completionRes = await opts.fetch(
-        generateUploadThingURL("/api/completeMultipart"),
-        {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: key,
-            uploadId,
-            etags,
-          } satisfies UTEvents["multipart-complete"]),
-          headers: opts.utRequestHeaders,
-        },
-      );
-
-      logger.debug("UploadThing responsed with status:", completionRes.status);
-      logger.debug("Polling for file data...");
+      if ("urls" in presigned) {
+        await uploadMultipart(file, presigned, { ...opts });
+      } else {
+        await uploadPresignedPost(file, presigned, { ...opts });
+      }
 
       // Poll for file to be available
+      logger.debug("Polling for file data...");
       await pollForFileData({
-        url: generateUploadThingURL(`/api/pollUpload/${key}`),
+        url: generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
         apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
         sdkVersion: UPLOADTHING_VERSION,
         fetch: opts.fetch,
       });
-
       logger.debug("Polling complete.");
 
       return {
-        key,
-        url: fileUrl,
+        key: presigned.key,
+        url: presigned.fileUrl,
         name: file.name,
         size: file.size,
+        type: file.type,
+        customId: "customId" in file ? file.customId ?? null : null,
       };
     }),
   );
@@ -212,27 +134,114 @@ export const uploadFilesInternal = async (
 
   return uploads.map((upload) => {
     if (upload.status === "fulfilled") {
-      const data = upload.value satisfies UploadData;
+      const data: UploadedFileData = upload.value;
       return { data, error: null };
     }
     // We only throw UploadThingErrors, so this is safe
     const reason = upload.reason as UploadThingError;
-    const error = UploadThingError.toObject(reason) satisfies UploadError;
+    const error: SerializedUploadThingError = UploadThingError.toObject(reason);
     return { data: null, error };
   });
 };
 
-type TimeShort = "s" | "m" | "h" | "d";
-type TimeLong = "second" | "minute" | "hour" | "day";
-type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
-// eslint-disable-next-line @typescript-eslint/ban-types
-type AutoCompleteableNumber = SuggestedNumbers | (number & {});
-export type Time =
-  | number
-  | `1${TimeShort}`
-  | `${AutoCompleteableNumber}${TimeShort}`
-  | `1 ${TimeLong}`
-  | `${AutoCompleteableNumber} ${TimeLong}s`;
+async function uploadMultipart(
+  file: FileEsque,
+  presigned: MPUResponse,
+  opts: {
+    fetch: FetchEsque;
+    utRequestHeaders: Record<string, string>;
+  },
+) {
+  logger.debug(
+    "Uploading file",
+    file.name,
+    "with",
+    presigned.urls.length,
+    "chunks of size",
+    presigned.chunkSize,
+    "bytes each",
+  );
+
+  const etags = await Promise.all(
+    presigned.urls.map(async (url, index) => {
+      const offset = presigned.chunkSize * index;
+      const end = Math.min(offset + presigned.chunkSize, file.size);
+      const chunk = file.slice(offset, end);
+
+      const etag = await uploadPart({
+        fetch: opts.fetch,
+        url,
+        chunk: chunk as Blob,
+        contentDisposition: presigned.contentDisposition,
+        contentType: file.type,
+        fileName: file.name,
+        maxRetries: 10,
+        key: presigned.key,
+        utRequestHeaders: opts.utRequestHeaders,
+      });
+
+      logger.debug("Part", index + 1, "uploaded successfully:", etag);
+
+      return { tag: etag, partNumber: index + 1 };
+    }),
+  );
+
+  logger.debug(
+    "File",
+    file.name,
+    "uploaded successfully. Notifying UploadThing to complete multipart upload.",
+  );
+
+  // Complete multipart upload
+  const completionRes = await opts.fetch(
+    generateUploadThingURL("/api/completeMultipart"),
+    {
+      method: "POST",
+      body: JSON.stringify({
+        fileKey: presigned.key,
+        uploadId: presigned.uploadId,
+        etags,
+      } satisfies UTEvents["multipart-complete"]["in"]),
+      headers: opts.utRequestHeaders,
+    },
+  );
+
+  logger.debug("UploadThing responsed with status:", completionRes.status);
+}
+
+async function uploadPresignedPost(
+  file: FileEsque,
+  presigned: PSPResponse,
+  opts: {
+    fetch: FetchEsque;
+  },
+) {
+  logger.debug("Uploading file", file.name, "using presigned POST URL");
+
+  const formData = new FormData();
+  Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
+  formData.append("file", file as Blob); // File data **MUST GO LAST**
+
+  const res = await opts.fetch(presigned.url, {
+    method: "POST",
+    body: formData,
+    headers: new Headers({
+      Accept: "application/xml",
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    logger.error("Failed to upload file:", text);
+    throw new UploadThingError({
+      code: "UPLOAD_FAILED",
+      message: "Failed to upload file",
+      cause: text,
+    });
+  }
+
+  logger.debug("File", file.name, "uploaded successfully");
+}
 
 export function parseTimeToSeconds(time: Time) {
   const match = time.toString().split(/(\d+)/).filter(Boolean);

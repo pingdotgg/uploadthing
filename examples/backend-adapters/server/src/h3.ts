@@ -1,19 +1,29 @@
 import "dotenv/config";
 
-import { createApp, createRouter, eventHandler } from "h3";
+import {
+  appendCorsPreflightHeaders,
+  createApp,
+  createRouter,
+  eventHandler,
+} from "h3";
 
-import { createH3EventHandler } from "uploadthing/h3";
+import { createRouteHandler } from "uploadthing/h3";
 
 import { uploadRouter } from "./router";
 
-const app = createApp();
+const app = createApp({
+  onRequest(event) {
+    appendCorsPreflightHeaders(event, {});
+  },
+});
 const router = createRouter();
 
 router.get(
   "/api",
   eventHandler(() => "Hello from H3!"),
 );
-router.use("/api/uploadthing", createH3EventHandler({ router: uploadRouter }));
+router.options("/api/uploadthing", () => null);
+router.use("/api/uploadthing", createRouteHandler({ router: uploadRouter }));
 
 app.use(router.handler);
 

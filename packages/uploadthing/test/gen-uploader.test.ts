@@ -1,16 +1,15 @@
-import { expectTypeOf, it } from "vitest";
+import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import type { UploadFileResponse } from "../src/client";
 import { genUploader } from "../src/client";
-import type { FileRouter } from "../src/internal/types";
 import { createBuilder } from "../src/internal/upload-builder";
+import type { ClientUploadedFileData, FileRouter } from "../src/types";
 
 const doNotExecute = (_fn: (...args: any[]) => any) => {
   // noop
 };
 
-it("genuploader", () => {
+describe("genuploader", () => {
   const f = createBuilder();
 
   const router = {
@@ -24,22 +23,29 @@ it("genuploader", () => {
       }),
   } satisfies FileRouter;
 
-  const uploader = genUploader<typeof router>({ url: "0.0.0.0" });
+  const uploader = genUploader<typeof router>({
+    url: "0.0.0.0",
+    package: "test",
+  });
+  const files = [new File([""], "file1"), new File([""], "file2")];
 
-  doNotExecute(async () => {
-    // @ts-expect-error - Argument of type '"random"' is not assignable to parameter of type '"uploadable"'
-    await uploader("random", { files: [] });
+  it("typeerrors for invalid input", () => {
+    doNotExecute(async () => {
+      // @ts-expect-error - Argument of type '"random"' is not assignable to parameter of type '"uploadable"'
+      await uploader("random", { files });
+    });
+
+    doNotExecute(async () => {
+      // @ts-expect-error - Input should be required here
+      const res = await uploader("uploadable2", { files });
+      expectTypeOf<ClientUploadedFileData<{ baz: "qux" }>[]>(res);
+    });
   });
 
-  doNotExecute(async () => {
-    // No input should be required here
-    const res = await uploader("uploadable1", { files: [] });
-    expectTypeOf<UploadFileResponse<{ foo: "bar" }>[]>(res);
-  });
-
-  doNotExecute(async () => {
-    // @ts-expect-error - Input should be required here
-    const res = await uploader("uploadable2", { files: [] });
-    expectTypeOf<UploadFileResponse<{ baz: "qux" }>[]>(res);
+  it("types serverData as null if polling is skipped", () => {
+    doNotExecute(async () => {
+      const res = await uploader("uploadable1", { files, skipPolling: true });
+      expectTypeOf<ClientUploadedFileData<null>[]>(res);
+    });
   });
 });

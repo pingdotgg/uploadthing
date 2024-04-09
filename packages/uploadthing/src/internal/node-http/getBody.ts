@@ -2,6 +2,8 @@ import type { IncomingMessage } from "node:http";
 
 import { UploadThingError } from "@uploadthing/shared";
 
+import { logger } from "../logger";
+
 export type BodyResult =
   | {
       ok: true;
@@ -18,9 +20,10 @@ export async function getPostBody(opts: {
   const { req, maxBodySize = Infinity } = opts;
   return new Promise((resolve) => {
     if ("body" in req) {
-      const isJsonType = req.headers["content-type"] === "application/json";
+      const contentType = req.headers["content-type"];
 
-      if (!isJsonType) {
+      if (contentType !== "application/json") {
+        logger.error("Expected JSON content type, got:", contentType);
         resolve({
           ok: false,
           error: new UploadThingError({
@@ -32,6 +35,10 @@ export async function getPostBody(opts: {
       }
 
       if (typeof req.body !== "object") {
+        logger.error(
+          "Expected body to be of type 'object', got:",
+          typeof req.body,
+        );
         resolve({
           ok: false,
           error: new UploadThingError({
@@ -42,6 +49,7 @@ export async function getPostBody(opts: {
         return;
       }
 
+      logger.debug("Body parsed successfully.", req.body);
       resolve({
         ok: true,
         data: req.body,
@@ -54,6 +62,13 @@ export async function getPostBody(opts: {
       body += data;
       hasBody = true;
       if (body.length > maxBodySize) {
+        logger.error(
+          "Body too large, max size is",
+          maxBodySize,
+          "bytes but received",
+          body.length,
+          "bytes",
+        );
         resolve({
           ok: false,
           error: new UploadThingError({
@@ -67,18 +82,22 @@ export async function getPostBody(opts: {
     req.on("end", () => {
       let parsedBody: unknown;
       try {
+        logger.debug("Finished reading body, parsing as JSON", body);
         parsedBody = JSON.parse(body);
       } catch (e) {
+        logger.error("Error parsing JSON:", body);
         resolve({
           ok: false,
           error: new UploadThingError({
             code: "BAD_REQUEST",
             message: "INVALID_JSON",
+            cause: e,
           }),
         });
         return;
       }
 
+      logger.debug("Body parsed successfully.", parsedBody);
       resolve({
         ok: true,
         data: hasBody ? parsedBody : undefined,

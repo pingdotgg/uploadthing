@@ -34,10 +34,17 @@ UPLOADTHING_APP_ID=... # Your app id
 
 ### Set Up A FileRouter
 
-All files uploaded to uploadthing are associated with a FileRoute. Following
-example is very minimalistic. To get full insight into what you can do with the
-FileRoutes, please refer to the
-[File Router API](/api-reference/server#file-routes).
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/api-reference/server#file-routes).
 
 ```ts copy filename="uploadthing.ts"
 import { createUploadthing, type FileRouter } from "uploadthing/server";
@@ -45,13 +52,10 @@ import { createUploadthing, type FileRouter } from "uploadthing/server";
 const f = createUploadthing();
 
 export const uploadRouter = {
-  videoAndImage: f({
+  imageUploader: f({
     image: {
       maxFileSize: "4MB",
       maxFileCount: 4,
-    },
-    video: {
-      maxFileSize: "16MB",
     },
   }).onUploadComplete((data) => {
     console.log("upload completed", data);
@@ -65,34 +69,38 @@ export type OurFileRouter = typeof uploadRouter;
 
 ## Runtimes-specific setup
 
+> See configuration options in
+> [server API reference](/api-reference/server#createroutehandler)
+
 ### Astro
 
 ```ts filename="pages/api/uploadthing.ts"
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "../../server/uploadthing";
 
-export const { GET, POST } = createServerHandler({
+export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
-  config: {
-    uploadthingId: import.meta.env.UPLOADTHING_APPID,
-    uploadthingSecret: import.meta.env.UPLOADTHING_SECRET,
-    callbackUrl: "http://localhost:4321/api/uploadthing",
-  },
+  config: { ... },
 });
 ```
+
+<Callout type="info">
+  Read more in our [Getting Started with Astro](/getting-started/astro) guide.
+</Callout>
 
 ### Elysia
 
 ```ts filename="src/index.ts"
 import { Elysia } from "elysia";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
+  config: { ... },
 });
 
 const app = new Elysia().get("/", () => "Hello Elysia");
@@ -111,12 +119,13 @@ app.listen(3000);
 ```ts filename="src/index.ts"
 import { Hono } from "hono";
 
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
-const { GET, POST } = createServerHandler({
+const { GET, POST } = createRouteHandler({
   router: uploadRouter,
+  config: { ... },
 });
 
 const app = new Hono();
@@ -133,13 +142,13 @@ export default app;
 ### Cloudflare Workers
 
 ```ts filename="src/worker.ts"
-import { createServerHandler } from "uploadthing/server";
+import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    const handlers = createServerHandler({
+    const handlers = createRouteHandler({
       router: uploadRouter,
       config: {
         /**
@@ -186,7 +195,26 @@ export default {
 
 ## Use the FileRouter in your app
 
-Please refer to client side examples:
+Client side usage differs ever so slightly from the fullstack framework setups
+when using a separate backend server. You'll need to set the URL of your server
+when you generate the components and helpers.
+
+```tsx
+import { generateUploadButton } from "@uploadthing/react";
+
+export const UploadButton = generateUploadButton({
+  url: "https://your-server.com/api/uploadthing",
+});
+// ...
+```
+
+<Callout type="info">
+  Please note that you might need to setup some CORS rules on your server to
+  allow the client to make requests to the server.
+</Callout>
+
+For the remaining usage, please refer to client side examples of the fullstack
+framework guides:
 
 - [NextJS App directory](/getting-started/appdir#create-the-uploadthing-components-optional)
 - [NextJS Pages directory](/getting-started/pagedir#create-the-uploadthing-components-optional)

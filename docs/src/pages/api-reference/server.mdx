@@ -3,15 +3,22 @@ import { Callout, Tab, Tabs } from "nextra-theme-docs";
 ## createUploadthing
 
 The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
-FROM THE RIGHT PLACE
+FROM THE RIGHT PLACE. The export name ensures your file routes' `middleware`
+functions are typed correctly.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing/next";
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req }) => {
+        //           ^? req: NextRequest
+      })
     ```
 
   </Tab>
@@ -21,15 +28,27 @@ FROM THE RIGHT PLACE
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req, res }) => {
+        //           ^? req: NextApiRequest, res: NextApiResponse
+      })
     ```
 
   </Tab>
   <Tab>
     ```ts
-    import { createUploadthing, type FileRouter } from "uploadthing";
+    import { createUploadthing, type FileRouter } from "uploadthing/server";
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req }) => {
+        //           ^? req: Request
+      })
     ```
 
   </Tab>
@@ -40,6 +59,44 @@ FROM THE RIGHT PLACE
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req, res }) => {
+        //           ^? req: ExpressRequest, res: ExpressResponse
+      })
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/fastify";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req, res }) => {
+        //           ^? req: FastifyRequest, res: FastifyReply
+      })
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/h3";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ event }) => {
+        //           ^? event: H3Event
+      })
     ```
 
   </Tab>
@@ -67,12 +124,14 @@ export const ourFileRouter = {
     .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
-  // Takes ONE image up to 2MB
-  strictImageAttachment: f({ image: { maxFileSize: "2MB", maxFileCount: 1 } })
+  // Takes exactly ONE image up to 2MB
+  strictImageAttachment: f({
+    image: { maxFileSize: "2MB", maxFileCount: 1, minFileCount: 1 },
+  })
     .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
 
-  // Takes a 4 2mb images and/or 1 256mb video
+  // Takes up to 4 2mb images and/or 1 256mb video
   mediaPost: f({
     image: { maxFileSize: "2MB", maxFileCount: 4 },
     video: { maxFileSize: "256MB", maxFileCount: 1 },
@@ -84,7 +143,7 @@ export const ourFileRouter = {
 export type OurFileRouter = typeof ourFileRouter;
 ```
 
-### Input
+### Route Config
 
 ```ts
 // Your file types can be any of the following types
@@ -100,6 +159,7 @@ type FileRouterInput =
       [key: ValidFileTypes]: {
         maxFileSize?: string;
         maxFileCount?: number;
+        minFileCount?: number;
         contentDisposition?: ContentDisposition = "inline";
         acl?: ACL;
       };
@@ -123,7 +183,7 @@ disposition on
   enabling this setting will result in an error.
 </Callout>
 
-### Defaults
+#### Defaults
 
 All routes default to a max file count of 1. The file size defaults are below
 
@@ -170,19 +230,54 @@ tag the upload with metadata here. Example using Clerk:
 ```ts
 import { currentUser } from "@clerk/nextjs";
 
+import { UploadThingError } from "uploadthing/server";
+
 f(["image"])
   .middleware(async ({ req, res }) => {
     const user = await currentUser();
 
     // Throw if user isn't signed in
     if (!user)
-      throw new Error("You must be logged in to upload a profile picture");
+      throw new UploadThingError(
+        "You must be logged in to upload a profile picture",
+      );
 
     // Return userId to be used in onUploadComplete
     return { userId: user.id };
   })
   .onUploadComplete(async ({ metadata }) => {
     console.log("Uploaded by user", metadata.userId);
+  });
+```
+
+<Callout type="info">
+  Note: By default, a thrown `UploadThingError`'s message will be sent to the
+  client's `onError`. All other errors are turned into generic failure messages
+  to avoid leaking sensitive information.
+</Callout>
+
+As of `v6.4`, you can also tag your metadata using the `UTFiles` symbol to
+override the uploaded files attributes. This can be used to either rename the
+file, or set a custom identifer for the file:
+
+```ts
+import { UTFiles } from "uploadthing/server";
+
+f(["image"])
+  .middleware(async ({ req, files }) => {
+    const fileOverrides = files.map((file) => {
+      const newName = sluggify(file.name);
+      const myIdentifier = generateId();
+      return { ...file, name: newName, customId: myIdentifier };
+    });
+
+    // Return userId to be used in onUploadComplete
+    return { foo: "bar" as const, [UTFiles]: fileOverrides };
+  })
+  .onUploadComplete(async ({ metadata, file }) => {
+    // The UTFIles symbol is stripped from the metadata
+    metadata; // { foo: "bar" }
+    file.customId; // myIdentifier
   });
 ```
 
@@ -195,282 +290,141 @@ accessible here.
 As of v6.0, you can return JSON serializable data from this function, which will
 be passed to the clientside `onClientUploadComplete` callback.
 
-## `UTApi`
+## `createRouteHandler`
 
-The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
-API but better.
+All adapters exports a `createRouteHandler` function that exposes your router to
+the world. By default, you should only have to pass your router to this
+function, although there are some extra configuration options available.
 
-To get started, initialize an instance of `UTApi`.
+> The names of the exported `createRouteHandler` is different prior to `v6.3`.
 
-<Callout type="info">
-  Prior to `v5.7`, this was exported as a regular object called `utapi` without
-  any custom intialization support.
-</Callout>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+  <Tab>
+    ```ts
+    import { createRouteHandler } from "uploadthing/next";
+    import { uploadRouter } from "~/server/uploadthing.ts";
 
-```ts filename="~/server/uploadthing.ts"
-import { UTApi } from "uploadthing/server";
+    export const { GET, POST } = createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    });
+    ```
 
-export const utapi = new UTApi();
-```
+  </Tab>
+  <Tab>
+    ```ts
+    import { createRouteHandler } from "uploadthing/next-legacy";
+    import { uploadRouter } from "~/server/uploadthing.ts";
 
-The constructor takes some optional arguments that you can pass to override the
-defaults. Below are shown the available options, the default values, and the
-types of the values.
+    export default createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    });
+    ```
 
-```ts
-{
-  fetch: FetchEsque = globalThis.fetch; // subset of standard fetch required for uploadthing
-  apiKey: string = process.env.UPLOADTHING_SECRET;
-}
-```
+  </Tab>
+  <Tab>
+    ```ts
+    import { createRouteHandler } from "uploadthing/server";
+    import { uploadRouter } from "~/server/uploadthing.ts";
 
-### `uploadFiles`
+    export const { GET, POST } = createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    });
+    ```
 
-> Added in `v5.3`
+  </Tab>
 
-Upload files directly from your server **without** using the file router. Useful
-for server-side file processing, uploading from a server action, and much more.
+  <Tab>
+    ```ts
+    import express from "express";
+    import { createRouteHandler } from "uploadthing/express";
+    import { uploadRouter } from "~/server/uploadthing.ts";
 
-```tsx
-import { utapi } from "~/server/uploadthing.ts";
+    const app = express();
 
-async function uploadFiles(formData: FormData) {
-  "use server";
-  const files = formData.getAll("files");
-  const response = await utapi.uploadFiles(files);
-  //    ^? UploadedFileResponse[]
-}
+    app.use("/api/uploadthing", createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    }));
+    ```
 
-function MyForm() {
-  return (
-    <form action={uploadFiles}>
-      <input name="files" type="file" multiple />
-      <button type="submit">Upload</button>
-    </form>
-  );
-}
-```
+  </Tab>
 
-When uploading files using `uploadFiles`, the files must be present on your
-server. Then presigned URLs are generated on our servers before the files can be
-uploaded to the storage provider.
+  <Tab>
+    ```ts
+    import Fastify from "fastify";
+    import { createRouteHandler } from "uploadthing/fastify";
+    import { uploadRouter } from "~/server/uploadthing.ts";
 
-| Arguments               | Type                       | Required | Description                                                                                                                                                                                                                                   |
-| :---------------------- | :------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| files                   | FileEsque \|\| FileEsque[] | Yes      | The file(s) you want to upload                                                                                                                                                                                                                |
-| opts.metadata           | Json                       | No       | Metadata to attach to the file(s)                                                                                                                                                                                                             |
-| opts.contentDisposition | "inline" \| "attachment"   | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline`                                                                         |
-| opts.acl                | "public-read" \| "private" | No       | What [ACL](/regions-and-acl#access-controls) should be set on the storage provider. Defaults to whatever is [configured on your app settings](/regions-and-acl#configuring-acl) and can only be used if the app allows per-request overrides. |
+    const fastify = Fastify();
 
-```ts
-// Edge / Node < 20 friendly File interface
-interface FileEsque extends Blob {
-  name: string;
-}
-```
+    fastify.register(createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    }));
+    ```
 
-The returned `UploadedFileResponse` is an object with the following shape. If
-the `files` argument is an array, the returned value will be of type
-`UploadedFileResponse[]`.
+  </Tab>
 
-```ts
-type UploadFileResponse =
-  | { data: UploadData; error: null }
-  | { data: null; error: UploadError };
+  <Tab>
+    ```ts
+    import { createApp, createRouter } from "h3";
+    import { createRouteHandler } from "uploadthing/h3";
+    import { uploadRouter } from "~/server/uploadthing.ts";
 
-type UploadData = {
-  key: string;
-  url: string;
-  name: string;
-  size: number;
-};
+    const app = createApp();
+    const router = createRouter();
 
-type UploadError = {
-  code: string;
-  message: string;
-  data: any;
-};
-```
+    router.use("/api/uploadthing", createRouteHandler({
+      router: uploadRouter,
+      config: { ... },
+    }));
+    app.use(router.handler);
+    ```
 
-### `uploadFilesFromUrl`
+  </Tab>
+</Tabs>
 
-> Added in `v5.3`
-
-Have a file hosted somewhere else you want to upload on UploadThing? This is the
-function you're looking for.
-
-<Callout type="warning">
-  When uploading files from URL, the file is first downloaded on **your**
-  server, before presigned URLs are created and the file is uploaded to the
-  storage provider.
-</Callout>
-
-```tsx
-import { utapi } from "~/server/uploadthing.ts";
-
-const fileUrl = "https://test.com/some.png";
-const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
-//    ^? UploadedFileResponse
-
-const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
-const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
-//    ^? UploadedFileResponse[]
-```
-
-| Arguments               | Type                                     | Required | Description                                                                                                                                                                                                                                   |
-| :---------------------- | :--------------------------------------- | :------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| urls                    | URL \|\| string \|\| (URL \|\| string)[] | Yes      | The URL(s) of the file(s) you wish to upload                                                                                                                                                                                                  |
-| opts.metadata           | Json                                     | No       | Metadata to attach to the file(s)                                                                                                                                                                                                             |
-| opts.contentDisposition | "inline" \| "attachment"                 | No       | What [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) should be set on the storage provider. Defaults to `inline`                                                                         |
-| opts.acl                | "public-read" \| "private"               | No       | What [ACL](/regions-and-acl#access-controls) should be set on the storage provider. Defaults to whatever is [configured on your app settings](/regions-and-acl#configuring-acl) and can only be used if the app allows per-request overrides. |
-
-### `deleteFiles`
-
-> Added in `v4.0`
-
-`deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
-the server.
+### `config`
 
 ```ts
-import { utapi } from "~/server/uploadthing.ts";
-
-await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
-await utapi.deleteFiles([
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
-]);
-```
-
-| Arguments | Type                 | Required | Notes           | Description                                |
-| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------- |
-| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to delete |
-
-### `getFileUrls`
-
-> Added in `v4.0`
-
-`getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to
-access them.
-
-```ts
-import { utapi } from "~/server/uploadthing.ts";
-
-const oneUrl = await utapi.getFileUrls(
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-);
-const multipleUrls = await utapi.getFileUrls([
-  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
-]);
-```
-
-| Arguments | Type                 | Required | Notes           | Description                                      |
-| :-------- | :------------------- | :------- | :-------------- | :----------------------------------------------- |
-| input     | string \|\| string[] | Yes      | Added in `v5.0` | The fileKey or fileKeys you want to get URLs for |
-
-### `listFiles`
-
-> Added in `v5.3`
-
-`listFiles` returns an array of objects containing file ids and keys for all
-files that have been uploaded to the application your API key corresponds to. As
-of 6.0.5, you can optionally pass an `options` object to paginate the results
-
-```ts
-type ListFilesOptions = {
-  limit?: number; // The maximum number of files to return
-  offset?: number; // The number of files to skip
+type RouteHandlerConfig = {
+  /**
+   * The URL to where your route handler is hosted. This is called via webhook
+   * after your file is uploaded. UploadThing attempts to automatically detect
+   * this value based on the request URL and headers. You can override this if
+   * the automatic detection fails.
+   */
+  callbackUrl?: string;
+  /**
+   * Your UploadThing app id. You can find this on the UploadThing dashboard.
+   * @default `env.UPLOADTHING_APP_ID`
+   */
+  uploadthingId?: string;
+  /**
+   * Your UploadThing API key. You can find this on the UploadThing dashboard.
+   * @default `env.UPLOADTHING_KEY`
+   */
+  uploadthingSecret?: string;
+  /**
+   * Enable more verbose logging.
+   * @default `info`
+   * @since v6.2
+   */
+  logLevel?: "error" | "warn" | "info" | "debug" | "trace";
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   * @since v6.3
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   * @since v6.3
+   */
+  fetch?: FetchEsque;
 };
 ```
-
-| Arguments | Type             | Required | Notes             | Description                                                                   |
-| :-------- | :--------------- | :------- | :---------------- | :---------------------------------------------------------------------------- |
-| opts      | ListFilesOptions | No       | Added in `v6.0.5` | Options for pagination. If excluded, all files (up to 100k) will be returned. |
-
-```ts
-import { utapi } from "~/server/uploadthing.ts";
-
-const files = await utapi.listFiles();
-
-console.log(files);
-/*
- * [
- *  {
- *    id: "2e0fdb64-9957-4262-8e45-f372ba903ac8",
- *    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg"
- *  }
- * ]
- */
-```
-
-### `renameFiles`
-
-> Added in `v5.3`
-
-`renameFiles` takes in a `Rename` or an array of `Rename`s and renames the
-appropriate files on the server.
-
-```ts
-import { utapi } from "~/server/uploadthing.ts";
-
-await utapi.renameFiles({
-  fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-  newName: "myImage.jpg",
-});
-
-await utapi.renameFiles([
-  {
-    fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
-    newName: "myImage.jpg",
-  },
-  {
-    fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
-    newName: "myOtherImage.jpg",
-  },
-]);
-```
-
-#### `Rename` type definition
-
-```ts
-type Rename = {
-  fileKey: string;
-  newName: string; // should include file extension
-};
-```
-
-| Arguments | Type                 | Required | Description                                            |
-| :-------- | :------------------- | :------- | :----------------------------------------------------- |
-| renames   | Rename \|\| Rename[] | Yes      | Object specifying what file to rename and the new name |
-
-### `getSignedURL`
-
-> Added in `v6.2`
-
-Retrieve a [signed URL](/regions-and-acl#using-signed-urls) for a private file.
-
-```ts
-import { utapi } from "~/server/uploadthing.ts";
-
-const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
-const url = await utapi.getSignedURL(fileKey, {
-  expiresIn: 60 * 60, // 1 hour
-  // expiresIn: '1 hour',
-  // expiresIn: '3d',
-  // expiresIn: '7 days',
-});
-```
-
-<Callout>
-  The `expiresIn` option can only be used if you allow overrides in your app
-  settings on the UploadThing dashboard.
-</Callout>
-
-| Arguments      | Type                 | Required | Description                                                                            |
-| :------------- | :------------------- | :------- | :------------------------------------------------------------------------------------- |
-| key            | string               | Yes      | The file key you want to get the URL for.                                              |
-| opts.expiresIn | number \| TimeString | No       | How long the URL should be valid for. Must be positive and less than 604 800 (7 days). |
-
-> `TimeString` refers to a human-readable string that can be parsed as a number,
-> followed by a unit of time. For example, `1s`, `1 second`, `2m`, `2 minutes`,
-> `7 days` etc. If no unit is specified, seconds are assumed.

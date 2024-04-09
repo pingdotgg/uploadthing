@@ -4,9 +4,9 @@ import { lookup } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
 import type {
+  ContentDisposition,
   ExpandedRouteConfig,
   FetchEsque,
-  FileData,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
@@ -48,6 +48,7 @@ export function fillInputRouteConfig(
         // Apply defaults
         maxFileSize: getDefaultSizeForType(fileType),
         maxFileCount: 1,
+        minFileCount: 1,
         contentDisposition: "inline",
       };
       return acc;
@@ -64,6 +65,7 @@ export function fillInputRouteConfig(
     const defaultValues = {
       maxFileSize: getDefaultSizeForType(key),
       maxFileCount: 1,
+      minFileCount: 1,
       contentDisposition: "inline" as const,
     };
 
@@ -175,7 +177,7 @@ export async function pollForFileData(
       },
     });
     const maybeJson = await safeParseJSON<
-      { status: "done"; fileData?: FileData } | { status: "something else" }
+      { status: "done"; fileData?: any } | { status: "something else" }
     >(res);
 
     if (maybeJson instanceof Error) {
@@ -246,4 +248,83 @@ export function objectKeys<T extends Record<string, unknown>>(
 /** checks if obj is a valid, non-null object */
 export function isObject(obj: unknown): obj is Record<string, unknown> {
   return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+}
+
+export function asArray<T>(val: T | T[]): T[] {
+  return Array.isArray(val) ? val : [val];
+}
+
+/** construct content-disposition header */
+export function contentDisposition(
+  contentDisposition: ContentDisposition,
+  fileName: string,
+) {
+  return [
+    contentDisposition,
+    `filename="${encodeURI(fileName)}"`,
+    `filename*=UTF-8''${encodeURI(fileName)}`,
+  ].join("; ");
+}
+
+export function semverLite(required: string, toCheck: string) {
+  // Pull out numbers from strings like `6.0.0`, `^6.4`, `~6.4.0`
+  const semverRegex = /(\d+)\.?(\d+)?\.?(\d+)?/;
+  const requiredMatch = required.match(semverRegex);
+  if (!requiredMatch?.[0]) {
+    throw new Error(`Invalid semver requirement: ${required}`);
+  }
+  const toCheckMatch = toCheck.match(semverRegex);
+  if (!toCheckMatch?.[0]) {
+    throw new Error(`Invalid semver to check: ${toCheck}`);
+  }
+
+  const [_1, rMajor, rMinor, rPatch] = requiredMatch;
+  const [_2, cMajor, cMinor, cPatch] = toCheckMatch;
+
+  if (required.startsWith("^")) {
+    // Major must be equal, minor must be greater or equal
+    if (rMajor !== cMajor) return false;
+    if (rMinor > cMinor) return false;
+    return true;
+  }
+
+  if (required.startsWith("~")) {
+    // Major must be equal, minor must be equal
+    if (rMajor !== cMajor) return false;
+    if (rMinor !== cMinor) return false;
+    return true;
+  }
+
+  // Exact match
+  return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
+}
+
+function getFullApiUrl(maybeUrl?: string): URL {
+  const base = (() => {
+    if (typeof window !== "undefined") return window.location.origin;
+    if (process.env?.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+    return "http://localhost:3000";
+  })();
+
+  try {
+    const url = new URL(maybeUrl ?? "/api/uploadthing", base);
+    if (url.pathname === "/") {
+      url.pathname = "/api/uploadthing";
+    }
+    return url;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse '${maybeUrl}' as a URL. Make sure it's a valid URL or path`,
+    );
+  }
+}
+
+/*
+ * Returns a full URL to the dev's uploadthing endpoint
+ * Can take either an origin, or a pathname, or a full URL
+ * and will return the "closest" url matching the default
+ * `<VERCEL_URL || localhost>/api/uploadthing`
+ */
+export function resolveMaybeUrlArg(maybeUrl: string | URL | undefined) {
+  return maybeUrl instanceof URL ? maybeUrl : getFullApiUrl(maybeUrl);
 }

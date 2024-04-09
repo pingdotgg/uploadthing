@@ -23,6 +23,12 @@ const ERROR_CODES = {
 } as const;
 
 type ErrorCode = keyof typeof ERROR_CODES;
+type UploadThingErrorOptions<T> = {
+  code: keyof typeof ERROR_CODES;
+  message?: string;
+  cause?: unknown;
+  data?: T;
+};
 
 function messageFromUnknown(cause: unknown, fallback?: string) {
   if (typeof cause === "string") {
@@ -42,6 +48,12 @@ function messageFromUnknown(cause: unknown, fallback?: string) {
   return fallback ?? "An unknown error occurred";
 }
 
+export interface SerializedUploadThingError {
+  code: ErrorCode;
+  message: string;
+  data?: Json;
+}
+
 export class UploadThingError<
   TShape extends Json = { message: string },
 > extends Error {
@@ -49,12 +61,11 @@ export class UploadThingError<
   public readonly code: ErrorCode;
   public readonly data?: TShape;
 
-  constructor(opts: {
-    code: keyof typeof ERROR_CODES;
-    message?: string;
-    cause?: unknown;
-    data?: TShape;
-  }) {
+  constructor(initOpts: UploadThingErrorOptions<TShape> | string) {
+    const opts: UploadThingErrorOptions<TShape> =
+      typeof initOpts === "string"
+        ? { code: "INTERNAL_SERVER_ERROR", message: initOpts }
+        : initOpts;
     const message = opts.message ?? messageFromUnknown(opts.cause, opts.code);
 
     super(message);
@@ -100,7 +111,7 @@ export class UploadThingError<
     });
   }
 
-  public static toObject(error: UploadThingError) {
+  public static toObject(error: UploadThingError): SerializedUploadThingError {
     return {
       code: error.code,
       message: error.message,
@@ -125,3 +136,10 @@ function getErrorTypeFromStatusCode(statusCode: number): ErrorCode {
   }
   return "INTERNAL_SERVER_ERROR";
 }
+
+export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
+  new UploadThingError({
+    code: "INTERNAL_CLIENT_ERROR",
+    message: "Something went wrong. Please report this to UploadThing.",
+    cause: e,
+  });

@@ -1,4 +1,4 @@
-import type { MimeType } from "@uploadthing/mime-types/db";
+import type { MimeType } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
 
@@ -9,6 +9,18 @@ export type Json = JsonValue | JsonObject | JsonArray;
 
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
+export type ErrorMessage<TError extends string> = TError;
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
+export type MaybePromise<TType> = TType | Promise<TType>;
+export type Either<TData, TError> =
+  | { data: TData; error: null }
+  | { data: null; error: TError };
+
+export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
+  ? // eslint-disable-next-line @typescript-eslint/ban-types
+    {}
+  : ToAdd;
 
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
@@ -44,13 +56,13 @@ export interface ResponseEsque {
    * that's not as type-safe as unknown. We use unknown because we're
    * more type-safe. You do want more type safety, right? 😉
    */
-  json<T = unknown>(): Promise<T>;
-  text(): Promise<string>;
-  blob(): Promise<Blob>;
+  json: <T = unknown>() => Promise<T>;
+  text: () => Promise<string>;
+  blob: () => Promise<Blob>;
 
   headers: Headers;
 
-  clone(): ResponseEsque;
+  clone: () => ResponseEsque;
 }
 
 export type MaybeUrl = string | URL;
@@ -64,36 +76,29 @@ export type FetchEsque = (
   init?: RequestInit | RequestInitEsque,
 ) => Promise<ResponseEsque>;
 
-/** This matches the return type from the infra */
-export interface FileData {
-  id: string;
-  createdAt: string;
-
-  fileKey: string | null;
-  fileName: string;
-  fileSize: number;
-  metadata: string | null;
-
-  callbackUrl: string;
-  callbackSlug: string;
-}
-
-export type UploadedFile = {
-  name: string;
-  key: string;
-  url: string;
-  size: number;
-};
-
 type PowOf2 = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128 | 256 | 512 | 1024;
 export type SizeUnit = "B" | "KB" | "MB" | "GB";
 export type FileSize = `${PowOf2}${SizeUnit}`;
 
+export type TimeShort = "s" | "m" | "h" | "d";
+export type TimeLong = "second" | "minute" | "hour" | "day";
+type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
+// eslint-disable-next-line @typescript-eslint/ban-types
+type AutoCompleteableNumber = SuggestedNumbers | (number & {});
+export type Time =
+  | number
+  | `1${TimeShort}`
+  | `${AutoCompleteableNumber}${TimeShort}`
+  | `1 ${TimeLong}`
+  | `${AutoCompleteableNumber} ${TimeLong}s`;
+
 export type ContentDisposition = "inline" | "attachment";
 export type ACL = "public-read" | "private";
+
 type RouteConfig = {
   maxFileSize: FileSize;
   maxFileCount: number;
+  minFileCount: number; // must be <= maxFileCount
   contentDisposition: ContentDisposition;
   acl?: ACL; // default is set on UT server, not backfilled like other options
 };
@@ -103,6 +108,11 @@ export type FileRouterInputKey = AllowedFileType | MimeType;
 export type ExpandedRouteConfig = Partial<{
   [key in FileRouterInputKey]: RouteConfig;
 }>;
+
+export type EndpointMetadata = {
+  slug: string;
+  config: ExpandedRouteConfig;
+}[];
 
 type PartialRouteConfig = Partial<
   Record<FileRouterInputKey, Partial<RouteConfig>>

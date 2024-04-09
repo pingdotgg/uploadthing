@@ -1,0 +1,7 @@
+{
+  "extends": "@uploadthing/tsconfig/base.build",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*", "*.ts", "test"]
+}

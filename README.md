@@ -35,3 +35,24 @@ This repository contains the packages, docs and examples for uploadthing
   server/client stuff (framework agnostic)
 
 [Report an Issue](https://github.com/pingdotgg/uploadthing/issues/new)
+
+## Contributing
+
+All UploadThing SDKs are open source and we welcome contributions from the
+community.
+
+<!-- prettier-ignore -->
+> [!NOTE] 
+> If your change also requires infrastructure changes, please reach out
+> and we can work together to make the necessary changes on our end.
+
+<!-- prettier-ignore-end -->
+
+1. Fork and clone the repository
+2. Ensure you have the LTS version of Node.js installed, as well as the latest
+   version of [Bun](https://bun.sh).
+3. Install the project dependencies by running `bun install`.
+4. Implement your changes, as well as any documentation or tests that are
+   required.
+5. Create a changeset for your changes by running `bun changeset`.
+6. Open a pull request with your changes and changeset.

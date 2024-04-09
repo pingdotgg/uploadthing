@@ -1,12 +1,21 @@
+import { sep } from "node:path";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
-export function withUt(twConfig?: Config) {
-  const contentPaths = [
-    "./node_modules/@uploadthing/react/dist/**",
-    "./node_modules/@uploadthing/solid/dist/**",
-    "./node_modules/@uploadthing/vue/dist/**",
-  ];
+/**
+ * Add more here when additional UI packages are added
+ */
+const PACKAGES = ["react", "solid", "svelte", "vue"];
+
+export function withUt(twConfig: Config) {
+  const contentPaths = PACKAGES.map((pkg) => {
+    try {
+      const resolved = require.resolve(`@uploadthing/${pkg}`);
+      return resolved.split(sep).slice(0, -1).join(sep) + `${sep}**`;
+    } catch {
+      return null;
+    }
+  }).filter(Boolean) as string[];
 
   const defaultConfig: {
     content: Config["content"];

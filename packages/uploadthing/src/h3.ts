@@ -10,36 +10,37 @@ import {
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./internal/constants";
 import { defaultErrorFormatter } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import type { RouterWithConfig } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { initLogger } from "./internal/logger";
-import type { FileRouter } from "./internal/types";
+import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter } from "./internal/types";
+export type { FileRouter };
+export { UTFiles } from "./internal/types";
+
+type MiddlewareArgs = { req: undefined; res: undefined; event: H3Event };
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) =>
-  createBuilder<
-    { req: undefined; res: undefined; event: H3Event },
-    TErrorShape
-  >(opts);
+) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
-export const createH3EventHandler = <TRouter extends FileRouter>(
-  opts: RouterWithConfig<TRouter>,
+export const createRouteHandler = <TRouter extends FileRouter>(
+  opts: RouteHandlerOptions<TRouter>,
 ) => {
   initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
-  const requestHandler = buildRequestHandler(opts);
+  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+    opts,
+    "h3",
+  );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return defineEventHandler(async (event) => {
@@ -53,8 +54,8 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
 
     // POST
     const response = await requestHandler({
-      nativeRequest: toWebRequest(event),
-      event,
+      req: toWebRequest(event),
+      middlewareArgs: { req: undefined, res: undefined, event },
     });
 
     if (response instanceof UploadThingError) {
@@ -71,6 +72,11 @@ export const createH3EventHandler = <TRouter extends FileRouter>(
       return "An unknown error occurred";
     }
 
-    return response.body;
+    return response.body ?? "OK";
   });
 };
+
+/**
+ * @deprecated Use {@link createRouteHandler} instead
+ */
+export const createH3EventHandler = createRouteHandler;

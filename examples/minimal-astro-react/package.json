@@ -4,21 +4,22 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
+    "clean": "git clean -xdf dist node_modules",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^6.0.0",
-    "@astrojs/react": "^3.0.2",
-    "@uploadthing/react": "*",
-    "astro": "^3.0.13",
+    "@astrojs/node": "^8.2.1",
+    "@astrojs/react": "^3.0.10",
+    "@uploadthing/react": "workspace:6.4.4",
+    "astro": "^4.4.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "*"
+    "uploadthing": "workspace:6.9.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14"
+    "@types/react": "18.2.60",
+    "@types/react-dom": "18.2.19"
   }
 }

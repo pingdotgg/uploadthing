@@ -20,6 +20,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -28,11 +29,14 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Build & test
-        run: pnpm turbo build test --filter "./packages/*"
+      - name: Build
+        run: bun turbo build --filter "./packages/*"
+      - name: Test
+        run: bun run test
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -42,10 +46,11 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Lint
-        run: pnpm lint
+        run: bun run lint
 
   format:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -55,10 +60,11 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Format
-        run: pnpm format:check
+        run: bun run format:check
 
   typecheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -68,5 +74,5 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Typecheck
-        run: pnpm typecheck
+        run: bun run typecheck
 

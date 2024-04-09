@@ -3475,6 +3475,11 @@ const mimeTypesInternal = {
     extensions: ["wav"],
     compressible: null,
   },
+  "audio/x-gsm": {
+    source: "apache",
+    extensions: ["gsm"],
+    compressible: null,
+  },
   "audio/xm": {
     source: "apache",
     extensions: ["xm"],
@@ -4029,6 +4034,11 @@ const mimeTypesInternal = {
     source: "iana",
     extensions: ["obj"],
     compressible: null,
+  },
+  "model/step": {
+    source: "iana",
+    compressible: false,
+    extensions: [".p21", ".stp", ".step", ".stpnc", ".210"],
   },
   "model/step+xml": {
     source: "iana",

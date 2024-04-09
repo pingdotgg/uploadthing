@@ -23,7 +23,8 @@ yarn-error.log*
 
 dist
 .solid
-pnpm-lock.yaml
+
+.svelte-kit
 
 .nuxt
 .output

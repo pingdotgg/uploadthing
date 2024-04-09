@@ -3,34 +3,39 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "clean": "git clean -xdf .next node_modules",
     "dev": "next dev",
     "lint": "SKIP_ENV_VALIDATION=true next lint",
     "start": "next start",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.3",
-    "@t3-oss/env-nextjs": "^0.6.0",
-    "@uploadthing/react": "6.2.0",
-    "next": "14.0.1",
+    "@clerk/nextjs": "^4.29.8",
+    "@t3-oss/env-nextjs": "^0.9.2",
+    "@uploadthing/react": "workspace:6.4.4",
+    "next": "14.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "6.2.0",
-    "zod": "^3.22.3"
+    "uploadthing": "workspace:6.9.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/eslint": "^8.44.2",
-    "@types/node": "18.16.0",
-    "@types/react": "18.2.33",
-    "@types/react-dom": "18.2.14",
-    "@typescript-eslint/eslint-plugin": "^6.7.0",
-    "@typescript-eslint/parser": "^6.7.0",
-    "autoprefixer": "10.4.14",
-    "eslint": "^8.47.0",
-    "eslint-config-next": "^14.0.1",
-    "typescript": "^5.1.6"
+    "@types/eslint": "^8.56.4",
+    "@types/node": "^20.11.21",
+    "@types/react": "18.2.60",
+    "@types/react-dom": "18.2.19",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "@typescript-eslint/parser": "^7.3.1",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.1.0",
+    "typescript": "^5.4.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "next/core-web-vitals"
+    ]
   }
 }

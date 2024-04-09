@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Callout } from "nextra-theme-docs";
 
 ### The UploadThing components look all weird, what's going on?
 
@@ -43,13 +44,19 @@ or use the node runtime instead:
 export const runtime = "nodejs";
 ```
 
+<Callout type="info">
+  Since `next@14.1.2-canary.38`, this limitation has been fixed and you should
+  safely be able to use the edge runtime in development.
+</Callout>
+
 ### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
 
 This occurs when you're importing the `UploadButton` or `UploadDropzone`
 components from `@uploadthing/react` or `@uploadthing/solid` directly, and not
 [generating your own typesafe components](/api-reference/react#generateComponents)
-using `generateComponents`. While you can do this, it is not recommended as you
-have to provide the generics yourself in order to get full typesafety.
+using `generateUploadButton` or `generateUploadDropzone`. While you can do this,
+it is not recommended as you have to provide the generics yourself in order to
+get full typesafety.
 
 ```tsx
 import { UploadButton } from "@uploadthing/react";
@@ -89,9 +96,9 @@ to expose your application to the internet. Start the application with the
 
 The automatic URL inference unfortunately breaks for certain reverse proxy
 setups. In this case, set either the
-[`config.callbackUrl`](/api-reference/next#config-object) when you're creating
-the server entrypoints or the `UPLOADTHING_URL` environment variable to the
-public URL of your application.
+[`config.callbackUrl`](/api-reference/server#config) when you're creating the
+server entrypoints or the `UPLOADTHING_URL` environment variable to the public
+URL of your application.
 
 You will get a warning in the console if we detect a localhost URL is being used
 as the callback URL in production.

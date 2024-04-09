@@ -1,5 +1,272 @@
 # uploadthing
 
+## 6.9.0
+
+### Minor Changes
+
+- [#225](https://github.com/pingdotgg/uploadthing/pull/225) [`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe) Thanks [@AlanAcDz](https://github.com/AlanAcDz)! - feat: sveltekit support
+
+  📚 Read the docs to get started: https://docs.uploadthing.com/getting-started/svelte
+
+### Patch Changes
+
+- Updated dependencies [[`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe)]:
+  - @uploadthing/shared@6.6.0
+
+## 6.8.0
+
+### Minor Changes
+
+- [#739](https://github.com/pingdotgg/uploadthing/pull/739) [`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: minFileCount option on RouteConfig
+
+- [#742](https://github.com/pingdotgg/uploadthing/pull/742) [`946cb99`](https://github.com/pingdotgg/uploadthing/commit/946cb99d3051c3982f14740874b6613bf3c4bc65) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to update a file's ACL to UTApi
+
+### Patch Changes
+
+- Updated dependencies [[`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667), [`0069ead`](https://github.com/pingdotgg/uploadthing/commit/0069eadbffd90db29df1966eae4f0a85aa3a8490)]:
+  - @uploadthing/shared@6.5.0
+  - @uploadthing/mime-types@0.2.7
+
+## 6.7.0
+
+### Minor Changes
+
+- [#725](https://github.com/pingdotgg/uploadthing/pull/725) [`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: verify callback data signature
+
+### Patch Changes
+
+- [#715](https://github.com/pingdotgg/uploadthing/pull/715) [`9644807`](https://github.com/pingdotgg/uploadthing/commit/96448073319d378208bd3dc5549c7146ce942fd7) Thanks [@jonsystems](https://github.com/jonsystems)! - fix: platform agnostic pathing for twPlugin
+
+- Updated dependencies [[`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97)]:
+  - @uploadthing/shared@6.4.0
+
+## 6.6.0
+
+### Minor Changes
+
+- [#705](https://github.com/pingdotgg/uploadthing/pull/705) [`a919d5a`](https://github.com/pingdotgg/uploadthing/commit/a919d5a9fde0680dfdba73d8d2947d229268fdb8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add client headers option
+
+  this primarily allows you to authenticate the client when your server is deployed separate from your client:
+
+  ```ts
+  import { genUploader } from "uploadthing/client";
+
+  const uploadFiles = genUploader<OurFileRouter>({
+    url: "https://my-server.com",
+  });
+
+  uploadFiles("endpoint", {
+    headers: async () => {
+      const token = await getToken();
+      return { Authorization: `Bearer ${token}` };
+    },
+  });
+  ```
+
+### Patch Changes
+
+- [#691](https://github.com/pingdotgg/uploadthing/pull/691) [`92e0b59`](https://github.com/pingdotgg/uploadthing/commit/92e0b59d2eeb6a8e035a264efa03f0b8abf3678d) Thanks [@ahkhanjani](https://github.com/ahkhanjani)! - fix: Slightly better server error messages
+
+- [#699](https://github.com/pingdotgg/uploadthing/pull/699) [`398866b`](https://github.com/pingdotgg/uploadthing/commit/398866bcdf2e05bda4a8b59a255090a7276e178c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(types): FileEsque resolved to any if undici was not in project
+
+- [#694](https://github.com/pingdotgg/uploadthing/pull/694) [`5f5a1ea`](https://github.com/pingdotgg/uploadthing/commit/5f5a1ea7bd8bf17b0d153f1f604b73f084686cf7) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: CustomId should be optional in middleware
+
+- [#696](https://github.com/pingdotgg/uploadthing/pull/696) [`8773859`](https://github.com/pingdotgg/uploadthing/commit/87738594f38a1f723f5c1c867af979441b95a722) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(tw plugin): support turbopack
+
+## 6.5.2
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+- Updated dependencies [[`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939)]:
+  - @uploadthing/mime-types@0.2.6
+  - @uploadthing/shared@6.3.4
+
+## 6.5.1
+
+### Patch Changes
+
+- [#662](https://github.com/pingdotgg/uploadthing/pull/662) [`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - make API more consistent with the available file data in different callbacks
+
+- [#659](https://github.com/pingdotgg/uploadthing/pull/659) [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: move some internally exported functions to `@uploadthing/shared`
+
+- [#627](https://github.com/pingdotgg/uploadthing/pull/627) [`1bafd62`](https://github.com/pingdotgg/uploadthing/commit/1bafd62258328f994300e69839738661bf7c652a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - drop usage of `util.inspect` in internal logger
+
+- [#654](https://github.com/pingdotgg/uploadthing/pull/654) [`b42efc2`](https://github.com/pingdotgg/uploadthing/commit/b42efc226479cdee16eabd2ede3042f17bc102da) Thanks [@markflorkowski](https://github.com/markflorkowski)! - include a wider search pattern in tailwind plugin to cover more monorepo usecases
+
+- Updated dependencies [[`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df), [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20), [`0adc3b8`](https://github.com/pingdotgg/uploadthing/commit/0adc3b8df67ea5c4a94db736d0aff1b489979393)]:
+  - @uploadthing/shared@6.3.3
+  - @uploadthing/mime-types@0.2.5
+
+## 6.5.0
+
+### Minor Changes
+
+- [#619](https://github.com/pingdotgg/uploadthing/pull/619) [`7d23dd0`](https://github.com/pingdotgg/uploadthing/commit/7d23dd067bbe3bbbf495604af7e3c030d460d76b) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add version lock to ensure `uploadthing/client` and `uploadthing/server`uses same version
+
+- [#637](https://github.com/pingdotgg/uploadthing/pull/637) [`7fef94e`](https://github.com/pingdotgg/uploadthing/commit/7fef94ec53c178181b37669b2470df28e462b104) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - allow overriding filename when using `utapi.uploadFilesFromUrl`. This is useful when the pathname is too long, or when you just want to set your own name.
+
+  ```ts
+  utapi.uploadFilesFromUrl({
+    url: "https://example.com/super-long-pathname-that-exceeds-the-limit.jpg",
+    name: "my-custom-name.jpg",
+  });
+  ```
+
+  you can also set a customId for the file by passing the `customId` option.
+
+  ```ts
+  utapi.uploadFilesFromUrl({
+    url: "https://example.com/foo.jpg",
+    customId: "my-custom-id",
+  });
+  ```
+
+- [#642](https://github.com/pingdotgg/uploadthing/pull/642) [`4e1cb0d`](https://github.com/pingdotgg/uploadthing/commit/4e1cb0d2ccd9ac0ef4917e318d5c29c35d42cfda) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat(client): add `skipPolling` option
+
+### Patch Changes
+
+- [#633](https://github.com/pingdotgg/uploadthing/pull/633) [`60d18c0`](https://github.com/pingdotgg/uploadthing/commit/60d18c0e6c6956d3f63d0ea07f52310dd0fd7868) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove unused classNames utility
+
+- [#607](https://github.com/pingdotgg/uploadthing/pull/607) [`8e9d502`](https://github.com/pingdotgg/uploadthing/commit/8e9d5022fa54f1472baa1c1460069a6888157097) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix url parsing and prefer x-forwarded-host before host header
+
+- [#630](https://github.com/pingdotgg/uploadthing/pull/630) [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: enforce compatible `uploadthing` version for `@uploadthing/react`
+
+- [#635](https://github.com/pingdotgg/uploadthing/pull/635) [`09dfa6a`](https://github.com/pingdotgg/uploadthing/commit/09dfa6a6d20d59167c7b3fff4bff20795e710c57) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more elaborate log when dev callback fails
+
+- [#636](https://github.com/pingdotgg/uploadthing/pull/636) [`6ca94fc`](https://github.com/pingdotgg/uploadthing/commit/6ca94fc9a9ba575219ed983dd8d1cc962df089eb) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: report failed PSP uplaods as failed to UploadThing
+
+- [#624](https://github.com/pingdotgg/uploadthing/pull/624) [`14d190d`](https://github.com/pingdotgg/uploadthing/commit/14d190d9d9099b9cb5bf938808f9dc8e6a886e82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - export UTFiles from server entrypoint
+
+- Updated dependencies [[`f0a4ae4`](https://github.com/pingdotgg/uploadthing/commit/f0a4ae4f491c4e2a5c4517b27e5d76617d5db004), [`28edc15`](https://github.com/pingdotgg/uploadthing/commit/28edc151a7f0e551783f2593b0abd3c598d91bd1)]:
+  - @uploadthing/shared@6.3.2
+
+## 6.4.1
+
+### Patch Changes
+
+- [#620](https://github.com/pingdotgg/uploadthing/pull/620) [`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(cjs bundling): force client splitting in .cjs output files
+
+- [#617](https://github.com/pingdotgg/uploadthing/pull/617) [`8ce67f7`](https://github.com/pingdotgg/uploadthing/commit/8ce67f74b56b34fbee5781743aa9bc9506ef8f27) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add `name` prop to `utapi.listFiles` return type
+
+- Updated dependencies [[`0ee53b5`](https://github.com/pingdotgg/uploadthing/commit/0ee53b553e3304444d5fcf35fdfbd18cc317e668)]:
+  - @uploadthing/mime-types@0.2.4
+  - @uploadthing/shared@6.3.1
+
+## 6.4.0
+
+### Minor Changes
+
+- [#587](https://github.com/pingdotgg/uploadthing/pull/587) [`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to provide custom identifiers when uploading files
+
+  also adds ability for UTApi methods to filter based on custom identifiers
+
+  ```ts
+  // bind custom id when uploading
+  f(["image"]).middleware(({ files }) => {
+    const filesWithIds = files.map((f) => ({
+      ...f,
+      customId: uuid(),
+    }));
+    return { my: "metadata", [UTFiles]: filesWithIds };
+  });
+
+  // filter based on custom id
+  const utapi = new UTApi();
+  utapi.getFileUrl("my-uuid", { keyType: "customId" });
+
+  // or, set a global keyType default
+  const utapi = new UTApi({ defaultKeyType: "customId" });
+  utapi.getFileUrl("my-uuid");
+  ```
+
+- [#598](https://github.com/pingdotgg/uploadthing/pull/598) [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: use presigned post uploads for small files to reduce overhead time of multipart
+
+- [#602](https://github.com/pingdotgg/uploadthing/pull/602) [`3fe3271`](https://github.com/pingdotgg/uploadthing/commit/3fe32711abeb5b1332e848454341c396db69cfc2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add `UTFile` utility to simplify usage of Blobs with properties
+
+### Patch Changes
+
+- [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: refactor bundling #579
+
+- [#587](https://github.com/pingdotgg/uploadthing/pull/587) [`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: make pagination object on `utapi.listFiles` optional
+
+- Updated dependencies [[`83e544d`](https://github.com/pingdotgg/uploadthing/commit/83e544d3b221c74e2cf83abbc023d8890d3d924e), [`352eea6`](https://github.com/pingdotgg/uploadthing/commit/352eea651218501f6535420287e8d8170faafec7), [`04d145e`](https://github.com/pingdotgg/uploadthing/commit/04d145eef140de55810b8d54f6859607ef5fa09a)]:
+  - @uploadthing/shared@6.3.0
+  - @uploadthing/mime-types@0.2.3
+
+## 6.3.3
+
+### Patch Changes
+
+- [#593](https://github.com/pingdotgg/uploadthing/pull/593) [`91a2ad7`](https://github.com/pingdotgg/uploadthing/commit/91a2ad7889105380871c0b0abe1769131706bc80) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: Fix broken tests so release works
+
+## 6.3.2
+
+### Patch Changes
+
+- [#592](https://github.com/pingdotgg/uploadthing/pull/592) [`9a1c507`](https://github.com/pingdotgg/uploadthing/commit/9a1c50716a80787cbce3169ee98f4fc50fc9bce3) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(server-handler): forward original request
+
+- [#582](https://github.com/pingdotgg/uploadthing/pull/582) [`d6c8358`](https://github.com/pingdotgg/uploadthing/commit/d6c8358e535843e82427dd904e6b90c8328dd61f) Thanks [@GentikSolm](https://github.com/GentikSolm)! - feat: float error messages to client for UploadThingErrors. Read the [error handling docs 📚](https://docs.uploadthing.com/errors) to find out more.
+
+- [#577](https://github.com/pingdotgg/uploadthing/pull/577) [`8a9878f`](https://github.com/pingdotgg/uploadthing/commit/8a9878fe6e76de9aa1147f08f0c8c81035ffcae8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore(express): add logs for express body parser
+
+  Enables easier debugging for a common issue Express users has had when registed other middlewares before UploadThing that processes the body in an incompatible way.
+  These logs should help track down these cases more easily
+
+- Updated dependencies [[`d6c8358`](https://github.com/pingdotgg/uploadthing/commit/d6c8358e535843e82427dd904e6b90c8328dd61f)]:
+  - @uploadthing/shared@6.2.1
+
+## 6.3.1
+
+### Patch Changes
+
+- [#573](https://github.com/pingdotgg/uploadthing/pull/573)
+  [`adf7994`](https://github.com/pingdotgg/uploadthing/commit/adf7994e85d4bb7a160ba43f643073bbca36463c)
+  Thanks [@pi0](https://github.com/pi0)! - fix(h3): always return a response to
+  support non-preemptive routers
+
+## 6.3.0
+
+### Minor Changes
+
+- [`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support
+  cloudflare workers
+
+- [`a493cd6`](https://github.com/pingdotgg/uploadthing/commit/a493cd6ef54240843a5601ab9dceb284e0f60ff6)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: forward
+  incoming files to middleware function.
+
+  ### Example usage
+
+  ```ts
+  f({ ... })
+    .middleware(({ files }) => {
+      const uploadCount = files.length
+      // ...
+    })
+  ```
+
+### Patch Changes
+
+- [#567](https://github.com/pingdotgg/uploadthing/pull/567)
+  [`31d84d0`](https://github.com/pingdotgg/uploadthing/commit/31d84d09cb88cf7961a181c9258979e717e63c5d)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: rename
+  all adapter exports to be `createRouteHandler`
+
+  the import path is already self-documenting, and this makes it easier to
+  document when there's a single name to refer to
+
+- [#564](https://github.com/pingdotgg/uploadthing/pull/564)
+  [`4e9ff0e`](https://github.com/pingdotgg/uploadthing/commit/4e9ff0e5c5504806608f77a9bafd9a9f78d04d17)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore
+  (analytics): Report which UT frontend package is being used to make requests
+
+- Updated dependencies
+  [[`6d54854`](https://github.com/pingdotgg/uploadthing/commit/6d548541c3b45679f6493c74274f0d988b5430e4)]:
+  - @uploadthing/shared@6.2.0
+
 ## 6.2.0
 
 ### Minor Changes
@@ -725,7 +992,7 @@
     ```ts
     // before
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
-    uploadFiles(files, endpoint, { url: "" })
+    uploadFiles(files, endpoint, { url: "" });
 
     // after
     const { uploadFiles } = generateReactHelpers<OurFileRouter>();
@@ -734,7 +1001,7 @@
       endpoint,
       input, // <-- new option
       url,
-    })
+    });
     ```
 
 ## 4.1.3

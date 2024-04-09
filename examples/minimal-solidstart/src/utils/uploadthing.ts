@@ -1,10 +1,18 @@
-import { generateComponents, generateSolidHelpers } from "@uploadthing/solid";
+import {
+  generateSolidHelpers,
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/solid";
 
-import type { OurFileRouter } from "~/server/uploadthing";
+import { OurFileRouter } from "~/server/uploadthing";
 
-export const { UploadButton, UploadDropzone } =
-  generateComponents<OurFileRouter>({
-    url: "http://localhost:9898",
-  });
+const initOpts = {
+  /**
+   * Set absolute URL to have SSR working properly
+   */
+  url: "http://localhost:3000",
+};
 
-export const { useUploadThing } = generateSolidHelpers<OurFileRouter>();
+export const UploadButton = generateUploadButton<OurFileRouter>(initOpts);
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>(initOpts);
+export const { useUploadThing } = generateSolidHelpers<OurFileRouter>(initOpts);
