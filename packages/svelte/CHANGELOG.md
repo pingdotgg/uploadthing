@@ -1,5 +1,12 @@
 # @uploadthing/svelte
 
+## 6.4.1
+
+### Patch Changes
+
+- Updated dependencies [[`1960306`](https://github.com/pingdotgg/uploadthing/commit/196030685bc51a10df8cb413088fed37e7d5bb6c)]:
+  - @uploadthing/dropzone@0.3.1
+
 ## 6.4.0
 
 ### Minor Changes

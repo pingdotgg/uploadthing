@@ -1,5 +1,11 @@
 # @uploadthing/dropzone
 
+## 0.3.1
+
+### Patch Changes
+
+- [#751](https://github.com/pingdotgg/uploadthing/pull/751) [`1960306`](https://github.com/pingdotgg/uploadthing/commit/196030685bc51a10df8cb413088fed37e7d5bb6c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: turbo cached build output
+
 ## 0.3.0
 
 ### Minor Changes

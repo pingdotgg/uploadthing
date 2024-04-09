@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/svelte",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "license": "MIT",
   "scripts": {
     "dev": "vite dev",
@@ -33,7 +33,7 @@
     "uploadthing": "^6.9.0"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:0.3.0",
+    "@uploadthing/dropzone": "workspace:0.3.1",
     "@uploadthing/shared": "workspace:6.6.0",
     "tailwind-merge": "^2.2.1"
   },
