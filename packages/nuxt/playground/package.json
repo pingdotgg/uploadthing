@@ -8,6 +8,6 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
-    "nuxt": "latest"
+    "nuxt": "3.11.2"
   }
 }
