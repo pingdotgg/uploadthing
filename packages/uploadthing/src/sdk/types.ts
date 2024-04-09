@@ -93,3 +93,5 @@ export interface GetSignedURLOptions extends KeyTypeOptionsBase {
    */
   expiresIn?: Time;
 }
+
+export interface ACLUpdateOptions extends KeyTypeOptionsBase {}

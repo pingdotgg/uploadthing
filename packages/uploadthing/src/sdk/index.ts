@@ -2,6 +2,7 @@ import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
 import type {
+  ACL,
   FetchEsque,
   MaybeUrl,
   SerializedUploadThingError,
@@ -17,6 +18,7 @@ import { UPLOADTHING_VERSION } from "../internal/constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import { initLogger, logger } from "../internal/logger";
 import type {
+  ACLUpdateOptions,
   DeleteFilesOptions,
   FileEsque,
   GetFileUrlsOptions,
@@ -427,5 +429,38 @@ export class UTApi {
     );
 
     return json.url;
+  };
+
+  /**
+   * Update the ACL of a file or set of files.
+   *
+   * @example
+   * // Make a single file public
+   * await utapi.updateACL("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", "public-read");
+   *
+   * // Make multiple files private
+   * await utapi.updateACL(
+   *   [
+   *     "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+   *     "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+   *   ],
+   *   "private",
+   * );
+   */
+  updateACL = (keys: string | string[], acl: ACL, opts?: ACLUpdateOptions) => {
+    guardServerOnly();
+
+    const { keyType = this.defaultKeyType } = opts ?? {};
+    const updates = asArray(keys).map((key) => {
+      return keyType === "fileKey"
+        ? { fileKey: key, acl }
+        : { customId: key, acl };
+    });
+
+    return this.requestUploadThing<{ success: true }>(
+      "/api/updateACL",
+      { updates },
+      "An unknown error occurred while updating ACLs.",
+    );
   };
 }
