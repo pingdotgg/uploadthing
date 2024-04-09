@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.4.3",
+  "version": "6.4.4",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -61,7 +61,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:0.3.0",
+    "@uploadthing/dropzone": "workspace:0.3.1",
     "@uploadthing/shared": "workspace:6.6.0",
     "file-selector": "^0.6.0",
     "tailwind-merge": "^2.2.1"
