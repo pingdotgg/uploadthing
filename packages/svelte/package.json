@@ -30,7 +30,7 @@
   ],
   "peerDependencies": {
     "svelte": "^4.0.0",
-    "uploadthing": "workspace:6.5.2"
+    "uploadthing": "^6.9.0"
   },
   "dependencies": {
     "@uploadthing/dropzone": "workspace:0.2.1",
