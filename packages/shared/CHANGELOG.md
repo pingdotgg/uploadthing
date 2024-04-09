@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 6.5.0
+
+### Minor Changes
+
+- [#739](https://github.com/pingdotgg/uploadthing/pull/739) [`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: minFileCount option on RouteConfig
+
 ## 6.4.0
 
 ### Minor Changes
