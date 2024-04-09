@@ -135,7 +135,7 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
             isUploading: isUploading.value,
             ready: ready.value,
             uploadProgress: uploadProgress.value,
-          } as DropzoneStyleFieldCallbackArgs),
+          }) as DropzoneStyleFieldCallbackArgs,
       );
 
       const state = computed(() => {

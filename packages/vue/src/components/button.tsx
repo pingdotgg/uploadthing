@@ -146,7 +146,7 @@ export const UploadButton = <TRouter extends FileRouter>() =>
             isUploading: isUploading.value,
             uploadProgress: uploadProgress.value,
             fileTypes: generatedPermittedFileTypes.value.fileTypes,
-          } as ButtonStyleFieldCallbackArgs),
+          }) as ButtonStyleFieldCallbackArgs,
       );
 
       const labelClass = computed(() =>

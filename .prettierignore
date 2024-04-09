@@ -28,3 +28,5 @@ dist
 
 .nuxt
 .output
+
+CHANGELOG.md
