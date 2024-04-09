@@ -2,19 +2,19 @@ import { defineComponent } from "vue";
 
 import type { FileRouter } from "uploadthing/server";
 
-import { UploadButton } from "./components/button";
-import { UploadDropzone } from "./components/dropzone";
-import { Spinner } from "./components/shared";
-import type { UploadthingComponentProps } from "./types";
-
-export { UploadButton, UploadDropzone, Spinner };
+import type { UploadthingComponentProps } from "../types";
+import { UploadButton } from "./button";
+import { UploadDropzone } from "./dropzone";
 
 export const Uploader = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
 >() =>
   defineComponent(
-    (_props: { config: UploadthingComponentProps<TRouter, TEndpoint> }) => {
+    (_props: {
+      config: UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>;
+    }) => {
       return () => {
         return (
           <>

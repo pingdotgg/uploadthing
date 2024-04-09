@@ -3,23 +3,20 @@ import { computed, defineComponent, reactive, ref } from "vue";
 
 import {
   allowedContentTextLabelGenerator,
+  ContentField,
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
+  StyleField,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
+} from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
-import { Spinner } from "../components";
-import type { UploadthingComponentProps } from "../types";
-import {
-  INTERNAL_uploadthingHookGen,
-  UseUploadthingProps,
-} from "../useUploadThing";
-import { progressWidths } from "./shared";
+import type { UploadthingComponentProps, UseUploadthingProps } from "../types";
+import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "vue";
@@ -29,55 +26,79 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
+type ButtonAppearance = {
+  container?: StyleField<ButtonStyleFieldCallbackArgs>;
+  button?: StyleField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
+};
+
+type ButtonContent = {
+  button?: ContentField<ButtonStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
+  clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
+};
+
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
-  appearance?: {
-    container?: StyleField<ButtonStyleFieldCallbackArgs>;
-    button?: StyleField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
-    clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
-  };
-  content?: {
-    button?: ContentField<ButtonStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
-    clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;
-  };
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   className?: string;
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
+   */
+  appearance?: ButtonAppearance;
+  /**
+   * @see https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: ButtonContent;
 };
 
 export const UploadButton = <TRouter extends FileRouter>() =>
   defineComponent(
-    <TEndpoint extends keyof TRouter>(props: {
-      config: UploadButtonProps<TRouter, TEndpoint>;
+    <
+      TEndpoint extends keyof TRouter,
+      TSkipPolling extends boolean = false,
+    >(props: {
+      config: UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
     }) => {
+      const $props = props.config;
+
       const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-        url:
-          props.config.url instanceof URL
-            ? props.config.url
-            : getFullApiUrl(props.config.url),
+        url: resolveMaybeUrlArg(props.config.url),
       });
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
       const uploadProgress = ref(0);
 
-      const $props = props.config;
-      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
-        reactive({
-          onClientUploadComplete: (res) => {
-            if (fileInputRef.value) {
-              fileInputRef.value.value = "";
-            }
-            $props.onClientUploadComplete?.(res);
-            uploadProgress.value = 0;
-          },
-          onUploadProgress: (p) => {
-            uploadProgress.value = p;
-            $props.onUploadProgress?.(p);
-          },
-          onUploadError: $props.onUploadError,
-        });
+      const useUploadthingProps: UseUploadthingProps<
+        TRouter,
+        TEndpoint,
+        TSkipPolling
+      > = reactive({
+        headers: $props.headers,
+        skipPolling: !$props?.onClientUploadComplete
+          ? true
+          : ($props?.skipPolling as any),
+        onClientUploadComplete: (res) => {
+          if (fileInputRef.value) {
+            fileInputRef.value.value = "";
+          }
+          $props.onClientUploadComplete?.(res);
+          uploadProgress.value = 0;
+        },
+        onUploadProgress: (p) => {
+          uploadProgress.value = p;
+          $props.onUploadProgress?.(p);
+        },
+        onUploadError: $props.onUploadError,
+        onUploadBegin: $props.onUploadBegin,
+        onBeforeUploadBegin: $props.onBeforeUploadBegin,
+      });
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,

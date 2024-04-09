@@ -1,22 +1,20 @@
 import { useFetch } from "@vueuse/core";
 import { computed, ref } from "vue";
 
-import { UploadThingError } from "@uploadthing/shared";
 import {
-  DANGEROUS__uploadFiles,
-  getFullApiUrl,
+  EndpointMetadata,
   INTERNAL_DO_NOT_USE__fatalClientError,
-  UploadFileResponse,
-} from "uploadthing/client";
+  resolveMaybeUrlArg,
+  UploadThingError,
+} from "@uploadthing/shared";
+import { genUploader } from "uploadthing/client";
 import type {
-  DistributiveOmit,
   FileRouter,
   inferEndpointInput,
-  inferEndpointOutput,
   inferErrorShape,
-} from "uploadthing/server";
+} from "uploadthing/types";
 
-import { EndpointMetadata } from "./types";
+import { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 
 const useEndpointMetadata = (url: URL, endpoint: string) => {
@@ -30,19 +28,6 @@ const useEndpointMetadata = (url: URL, endpoint: string) => {
   });
 };
 
-export type UseUploadthingProps<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
-  onClientUploadComplete?: (
-    res: UploadFileResponse<inferEndpointOutput<TRouter[TEndpoint]>>[],
-  ) => void;
-  onUploadProgress?: (p: number) => void;
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
-  onUploadBegin?: (fileName: string) => void;
-  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
-};
-
 export const INTERNAL_uploadthingHookGen = <
   TRouter extends FileRouter,
 >(initOpts: {
@@ -53,9 +38,17 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const useUploadThing = <TEndpoint extends keyof TRouter>(
+  const uploadFiles = genUploader<TRouter>({
+    url: initOpts.url,
+    package: "@uploadthing/vue",
+  });
+
+  const useUploadThing = <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const isUploading = ref(false);
     const uploadProgress = ref(0);
@@ -78,9 +71,9 @@ export const INTERNAL_uploadthingHookGen = <
       isUploading.value = true;
       opts?.onUploadProgress?.(0);
       try {
-        const res = await DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
+        const res = await uploadFiles(endpoint, {
+          headers: opts?.headers,
           files,
-          input,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.value.set(progress.file, progress.progress);
@@ -100,7 +93,8 @@ export const INTERNAL_uploadthingHookGen = <
 
             opts.onUploadBegin(file);
           },
-          url: initOpts.url,
+          // @ts-expect-error - input may not be defined on the type
+          input,
         });
 
         opts?.onClientUploadComplete?.(res);
@@ -134,34 +128,16 @@ export const INTERNAL_uploadthingHookGen = <
   return useUploadThing;
 };
 
-export const generateVueHelpers = <TRouter extends FileRouter>(initOpts?: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example "/api/uploadthing"
-   * @example "https://www.example.com/api/uploadthing"
-   *
-   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
-   *
-   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
-   */
-  url?: string | URL;
-}) => {
-  const url =
-    initOpts?.url instanceof URL ? initOpts.url : getFullApiUrl(initOpts?.url);
+export const generateVueHelpers = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) => {
+  const url = resolveMaybeUrlArg(initOpts?.url);
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: <TEndpoint extends keyof TRouter>(
-      endpoint: TEndpoint,
-      opts: DistributiveOmit<
-        Parameters<typeof DANGEROUS__uploadFiles<TRouter, TEndpoint>>[1],
-        "url"
-      >,
-    ) =>
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      DANGEROUS__uploadFiles<TRouter, TEndpoint>(endpoint, {
-        ...opts,
-        url,
-      } as any),
+    uploadFiles: genUploader<TRouter>({
+      url,
+      package: "@uploadthing/vue",
+    }),
   };
 };

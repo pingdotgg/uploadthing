@@ -4,22 +4,19 @@ import { computed, defineComponent, reactive, ref, watch } from "vue";
 import { useDropzone } from "@uploadthing/dropzone/vue";
 import {
   allowedContentTextLabelGenerator,
-  classNames,
+  ContentField,
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
-  getFullApiUrl,
+  resolveMaybeUrlArg,
+  StyleField,
   styleFieldToClassName,
   styleFieldToCssObject,
-} from "uploadthing/client";
-import type { ContentField, StyleField } from "uploadthing/client";
+} from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
-import type { UploadthingComponentProps } from "../types";
-import {
-  INTERNAL_uploadthingHookGen,
-  UseUploadthingProps,
-} from "../useUploadThing";
+import type { UploadthingComponentProps, UseUploadthingProps } from "../types";
+import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
@@ -31,55 +28,78 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: boolean;
 };
 
+type DropzoneAppearance = {
+  container?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  label?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
+  button?: StyleField<DropzoneStyleFieldCallbackArgs>;
+};
+
+type DropzoneContent = {
+  uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  label?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
+  button?: ContentField<DropzoneStyleFieldCallbackArgs>;
+};
+
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UploadthingComponentProps<TRouter, TEndpoint> & {
-  appearance?: {
-    container?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    label?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    allowedContent?: StyleField<DropzoneStyleFieldCallbackArgs>;
-    button?: StyleField<DropzoneStyleFieldCallbackArgs>;
-  };
-  content?: {
-    uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    label?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
-    button?: ContentField<DropzoneStyleFieldCallbackArgs>;
-  };
+  TSkipPolling extends boolean = false,
+> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
+   */
   className?: string;
+  /**
+   * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
+   */
+  appearance?: DropzoneAppearance;
+  /**
+   * @see https://docs.uploadthing.com/theming#content-customisation
+   */
+  content?: DropzoneContent;
 };
 
 export const UploadDropzone = <TRouter extends FileRouter>() =>
   defineComponent(
-    <TEndpoint extends keyof TRouter>(props: {
-      config: UploadDropzoneProps<TRouter, TEndpoint>;
+    <
+      TEndpoint extends keyof TRouter,
+      TSkipPolling extends boolean = false,
+    >(props: {
+      config: UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
     }) => {
       const $props = props.config;
       const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-        url:
-          props.config.url instanceof URL
-            ? props.config.url
-            : getFullApiUrl(props.config.url),
+        url: resolveMaybeUrlArg($props.url),
       });
       const files = ref<File[]>([]);
 
       const uploadProgress = ref(0);
 
-      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
-        reactive({
-          onClientUploadComplete: (res) => {
-            files.value = [];
-            $props.onClientUploadComplete?.(res);
-            uploadProgress.value = 0;
-          },
-          onUploadProgress: (p) => {
-            uploadProgress.value = p;
-            $props.onUploadProgress?.(p);
-          },
-          onUploadError: $props.onUploadError,
-        });
+      const useUploadthingProps: UseUploadthingProps<
+        TRouter,
+        TEndpoint,
+        TSkipPolling
+      > = reactive({
+        headers: $props.headers,
+        skipPolling: !$props?.onClientUploadComplete
+          ? true
+          : ($props?.skipPolling as any),
+        onClientUploadComplete: (res) => {
+          files.value = [];
+          $props.onClientUploadComplete?.(res);
+          uploadProgress.value = 0;
+        },
+        onUploadProgress: (p) => {
+          uploadProgress.value = p;
+          $props.onUploadProgress?.(p);
+        },
+        onUploadError: $props.onUploadError,
+        onUploadBegin: $props.onUploadBegin,
+        onBeforeUploadBegin: $props.onBeforeUploadBegin,
+      });
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
@@ -191,10 +211,8 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
       );
       const labelClass = computed(() =>
         twMerge(
-          classNames(
-            "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-            ready.value ? "text-blue-600" : "text-gray-500",
-          ),
+          "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+          ready.value ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg.value),
         ),
       );
@@ -209,14 +227,12 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
       );
       const buttonClass = computed(() =>
         twMerge(
-          classNames(
-            "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-            state.value === "uploading"
-              ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-                  progressWidths[uploadProgress.value]
-                }`
-              : "bg-blue-600",
-          ),
+          "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+          state.value === "uploading"
+            ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
+                progressWidths[uploadProgress.value]
+              }`
+            : "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
       );
