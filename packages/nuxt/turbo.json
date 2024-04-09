@@ -1,0 +1,12 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "dev:prepare": {
+      "outputs": ["dist/**", ".nuxt/**"]
+    },
+    "lint": {
+      "dependsOn": ["dev:prepare"]
+    }
+  }
+}
