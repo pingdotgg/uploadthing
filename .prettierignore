@@ -24,9 +24,9 @@ yarn-error.log*
 dist
 .solid
 
+CHANGELOG.md
+
 .svelte-kit
 
 .nuxt
 .output
-
-CHANGELOG.md
