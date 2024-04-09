@@ -9,13 +9,13 @@
   },
   "dependencies": {
     "@uploadthing/react": "workspace:6.4.4",
-    "vue": "^3.4.21",
-    "uploadthing": "workspace:6.9.0"
+    "uploadthing": "workspace:6.9.0",
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
-    "typescript": "^5.4.4",
-    "vite": "^5.2.0",
+    "typescript": "^5.4.2",
+    "vite": "^5.1.4",
     "vue-tsc": "^2.0.6"
   }
 }
