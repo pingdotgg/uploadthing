@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.2.7
+
+### Patch Changes
+
+- [#740](https://github.com/pingdotgg/uploadthing/pull/740) [`0069ead`](https://github.com/pingdotgg/uploadthing/commit/0069eadbffd90db29df1966eae4f0a85aa3a8490) Thanks [@kaspnilsson](https://github.com/kaspnilsson)! - Add support for 'model/step' MIME type
+
 ## 0.2.6
 
 ### Patch Changes
