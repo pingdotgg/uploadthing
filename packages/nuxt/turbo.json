@@ -3,10 +3,12 @@
   "extends": ["//"],
   "pipeline": {
     "dev:prepare": {
+      "dependsOn": ["^build"],
       "outputs": ["dist/**", ".nuxt/**"]
     },
     "lint": {
-      "dependsOn": ["dev:prepare"]
+      "dependsOn": ["^topo", "^build", "dev:prepare"],
+      "outputs": []
     }
   }
 }
