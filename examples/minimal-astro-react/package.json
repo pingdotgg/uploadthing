@@ -12,11 +12,11 @@
   "dependencies": {
     "@astrojs/node": "^8.2.1",
     "@astrojs/react": "^3.0.10",
-    "@uploadthing/react": "workspace:6.4.2",
+    "@uploadthing/react": "workspace:6.4.3",
     "astro": "^4.4.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "workspace:6.8.0"
+    "uploadthing": "workspace:6.9.0"
   },
   "devDependencies": {
     "@types/react": "18.2.60",

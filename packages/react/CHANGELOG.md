@@ -1,5 +1,13 @@
 # @uploadthing/react
 
+## 6.4.3
+
+### Patch Changes
+
+- Updated dependencies [[`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe)]:
+  - @uploadthing/dropzone@0.3.0
+  - @uploadthing/shared@6.6.0
+
 ## 6.4.2
 
 ### Patch Changes
