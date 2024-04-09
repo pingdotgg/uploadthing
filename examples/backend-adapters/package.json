@@ -14,6 +14,7 @@
     "dev:fastify": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:fastify\"",
     "dev:hono": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:hono\"",
     "dev:h3": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:h3\"",
+    "dev:h3-vue": "concurrently \"bun --cwd client-vue dev\" \"bun --cwd server dev:h3\"",
     "build": "bun --cwd client build && bun --cwd server build",
     "start": "concurrently \"bun --cwd client start\" \"bun --cwd server start\"",
     "test": "playwright test"

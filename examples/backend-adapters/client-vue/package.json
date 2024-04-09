@@ -1,0 +1,21 @@
+{
+  "name": "@example/backend-adapters-client-vue",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@uploadthing/react": "workspace:6.4.4",
+    "vue": "^3.4.21",
+    "uploadthing": "workspace:6.9.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "typescript": "^5.4.4",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.6"
+  }
+}

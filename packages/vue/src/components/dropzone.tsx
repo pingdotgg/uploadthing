@@ -15,7 +15,11 @@ import {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
-import type { UploadthingComponentProps, UseUploadthingProps } from "../types";
+import type {
+  GenerateTypedHelpersOptions,
+  UploadthingComponentProps,
+  UseUploadthingProps,
+} from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner } from "./shared";
 
@@ -62,7 +66,9 @@ export type UploadDropzoneProps<
   content?: DropzoneContent;
 };
 
-export const UploadDropzone = <TRouter extends FileRouter>() =>
+export const generateUploadDropzone = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) =>
   defineComponent(
     <
       TEndpoint extends keyof TRouter,
@@ -72,7 +78,7 @@ export const UploadDropzone = <TRouter extends FileRouter>() =>
     }) => {
       const $props = props.config;
       const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-        url: resolveMaybeUrlArg($props.url),
+        url: resolveMaybeUrlArg($props.url ?? initOpts?.url),
       });
       const files = ref<File[]>([]);
 
