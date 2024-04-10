@@ -857,6 +857,12 @@ importers:
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
+      solid-js:
+        specifier: ^1.8.15
+        version: 1.8.16
       typescript:
         specifier: ^5.4.2
         version: 5.4.5

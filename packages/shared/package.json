@@ -39,6 +39,8 @@
     "@uploadthing/tsconfig": "workspace:0.1.0",
     "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
+    "react": "18.2.0",
+    "solid-js": "^1.8.15",
     "typescript": "^5.4.2",
     "wait-on": "^7.2.0"
   },
