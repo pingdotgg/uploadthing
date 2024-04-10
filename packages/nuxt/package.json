@@ -16,12 +16,12 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build build",
+    "lint": "eslint src --max-warnings 0",
+    "build": "nuxt-module-build build",
+    "clean": "git clean -xdf .nuxt dist node_modules",
     "dev": "nuxi dev playground --port 3010",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
-    "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
-    "lint": "eslint src --max-warnings 0",
     "FIXME__test": "vitest run",
     "test:watch": "vitest watch"
   },

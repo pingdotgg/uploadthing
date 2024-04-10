@@ -1,5 +1,5 @@
 {
-  "extends": "@uploadthing/tsconfig/base",
+  "extends": "@uploadthing/tsconfig/base.build",
   "compilerOptions": {
     "jsx": "preserve",
     "jsxImportSource": "vue",

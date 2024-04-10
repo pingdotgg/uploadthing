@@ -3,8 +3,9 @@
   "name": "nuxt-uploadthing-playground",
   "type": "module",
   "scripts": {
-    "dev": "nuxi dev --port 3010",
     "build": "nuxi build",
+    "clean": "git clean -xdf .nuxt .output node_modules",
+    "dev": "nuxi dev --port 3010",
     "generate": "nuxi generate"
   },
   "devDependencies": {

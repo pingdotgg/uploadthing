@@ -1,0 +1,20 @@
+{
+  "name": "@example/minimal-nuxt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "clean": "git clean -xdf .nuxt .output node_modules",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@uploadthing/nuxt": "workspace:6.3.0",
+    "nuxt": "^3.11.2",
+    "uploadthing": "workspace:6.9.0",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  }
+}

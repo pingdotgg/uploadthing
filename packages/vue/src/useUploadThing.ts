@@ -1,8 +1,8 @@
 import { useFetch } from "@vueuse/core";
 import { computed, ref } from "vue";
 
+import type { EndpointMetadata } from "@uploadthing/shared";
 import {
-  EndpointMetadata,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
   UploadThingError,
@@ -14,7 +14,7 @@ import type {
   inferErrorShape,
 } from "uploadthing/types";
 
-import { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
+import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 
 const useEndpointMetadata = (url: URL, endpoint: string) => {
@@ -22,8 +22,10 @@ const useEndpointMetadata = (url: URL, endpoint: string) => {
   const { data } = useFetch<string>(url.href);
   return computed(() => {
     if (!data.value) return undefined;
-    const endpointData: EndpointMetadata =
-      typeof data.value === "string" ? JSON.parse(data.value) : data.value;
+    const endpointData =
+      typeof data.value === "string"
+        ? (JSON.parse(data.value) as EndpointMetadata)
+        : (data.value as EndpointMetadata);
     return endpointData?.find((x) => x.slug === endpoint);
   });
 };

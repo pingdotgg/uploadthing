@@ -6,7 +6,9 @@ export function useEvent<TCallback extends AnyFunction>(callback: TCallback) {
   const callbackRef = ref(callback);
 
   // Watch the callbackRef and create a stable reference
-  watch(callbackRef, () => {});
+  watch(callbackRef, () => {
+    // noop
+  });
 
   // Throw an error if the callback is invoked before mounting
   onMounted(() => {

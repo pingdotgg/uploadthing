@@ -47,5 +47,8 @@
     "typescript": "^5.4.2",
     "vite-tsconfig-paths": "^4.3.1",
     "vitest": "^1.3.1"
-  }
+  },
+  "trustedDependencies": [
+    "nuxt"
+  ]
 }

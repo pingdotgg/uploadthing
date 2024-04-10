@@ -1,16 +1,16 @@
 import { twMerge } from "tailwind-merge";
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
-import { DropzoneOptions, useDropzone } from "@uploadthing/dropzone/vue";
+import type { DropzoneOptions } from "@uploadthing/dropzone/vue";
+import { useDropzone } from "@uploadthing/dropzone/vue";
+import type { ContentField, StyleField } from "@uploadthing/shared";
 import {
   allowedContentTextLabelGenerator,
-  ContentField,
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
-  StyleField,
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "@uploadthing/shared";
@@ -94,6 +94,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         TSkipPolling
       > = reactive({
         headers: $props.headers,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         skipPolling: !$props?.onClientUploadComplete
           ? true
           : ($props?.skipPolling as any),
@@ -381,6 +382,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       };
     },
     {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       props: ["config"] as any,
     },
   );
