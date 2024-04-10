@@ -39,7 +39,8 @@
     "@uploadthing/eslint-config": "0.2.0",
     "eslint": "^8.57.0",
     "h3": "^1.11.1",
-    "nuxt": "^3.11.2"
+    "nuxt": "^3.11.2",
+    "ufo": "^1.5.3"
   },
   "eslintConfig": {
     "root": true,
