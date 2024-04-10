@@ -11,6 +11,7 @@ import {
   isEventWithFiles,
   isFileAccepted,
   isIeOrEdge,
+  isPropagationStopped,
   isValidQuantity,
   isValidSize,
   noop,
@@ -96,13 +97,6 @@ export function createDropzone(_props: DropzoneOptions) {
       document.removeEventListener("drop", onDocumentDrop, false);
     };
   });
-
-  const isPropagationStopped = (event: Event) => {
-    if (typeof event.cancelBubble !== "undefined") {
-      return event.cancelBubble;
-    }
-    return false;
-  };
 
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();

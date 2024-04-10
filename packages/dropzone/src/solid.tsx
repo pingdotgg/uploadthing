@@ -101,7 +101,6 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets = [...dragTargets, event.target as HTMLElement];
 
@@ -199,7 +198,6 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onDrop = (event: DropEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets = [];
 
