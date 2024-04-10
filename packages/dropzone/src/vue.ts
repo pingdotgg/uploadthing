@@ -125,7 +125,6 @@ export function useDropzone(options: DropzoneOptions) {
   };
 
   const onDragover = (event: DragEvent) => {
-    console.log("onDragOver", event);
     event.preventDefault();
 
     const hasFiles = isEventWithFiles(event);
@@ -234,7 +233,6 @@ export function useDropzone(options: DropzoneOptions) {
   };
 
   const onInputElementClick = (event: MouseEvent) => {
-    console.log("clicked");
     event.stopPropagation();
   };
 
