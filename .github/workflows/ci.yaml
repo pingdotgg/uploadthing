@@ -30,9 +30,9 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Build
-        run: bun turbo build --filter "./packages/*"
+        run: pnpm turbo build --filter "./packages/*"
       - name: Test
-        run: bun run test
+        run: pnpm run test
 
   lint:
     runs-on: ubuntu-latest
@@ -46,7 +46,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Lint
-        run: bun run lint
+        run: pnpm run lint
 
   format:
     runs-on: ubuntu-latest
@@ -60,7 +60,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Format
-        run: bun run format:check
+        run: pnpm run format:check
 
   typecheck:
     runs-on: ubuntu-latest
@@ -74,5 +74,5 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Typecheck
-        run: bun run typecheck
+        run: pnpm run typecheck
 

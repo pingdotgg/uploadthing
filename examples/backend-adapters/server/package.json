@@ -4,7 +4,7 @@
   "scripts": {
     "build": "tsc",
     "dev:cf": "wrangler dev --port 3000",
-    "dev:elysia": "NODE_ENV=development bun run --hot src/elysia.ts",
+    "dev:elysia": "NODE_ENV=development pnpm run --hot src/elysia.ts",
     "dev:express": "NODE_ENV=development tsx watch src/express.ts",
     "dev:fastify": "NODE_ENV=development tsx watch src/fastify.ts",
     "dev:hono": "NODE_ENV=development tsx watch src/hono.ts",

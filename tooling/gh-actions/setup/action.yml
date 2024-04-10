@@ -8,13 +8,11 @@ runs:
       with:
         node-version: 20
 
-    - name: Setup bun
-      uses: oven-sh/setup-bun@v1
-      with:
-        bun-version: latest
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
 
     - shell: bash
-      run: bun install
+      run: pnpm install
 
     - name: Copy .env.example files
       shell: bash

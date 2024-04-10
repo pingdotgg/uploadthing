@@ -8,14 +8,14 @@
   ],
   "scripts": {
     "clean": "git clean -xdf node_modules client/node_modules client/dist server/node_modules server/dist",
-    "dev:cf": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:cf\"",
-    "dev:elysia": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:elysia\"",
-    "dev:express": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:express\"",
-    "dev:fastify": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:fastify\"",
-    "dev:hono": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:hono\"",
-    "dev:h3": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:h3\"",
-    "build": "bun --cwd client build && bun --cwd server build",
-    "start": "concurrently \"bun --cwd client start\" \"bun --cwd server start\"",
+    "dev:cf": "concurrently \"pnpm --cwd client dev\" \"pnpm --cwd server dev:cf\"",
+    "dev:elysia": "concurrently \"pnpm --cwd client dev\" \"pnpm --cwd server dev:elysia\"",
+    "dev:express": "concurrently \"pnpm --cwd client dev\" \"pnpm --cwd server dev:express\"",
+    "dev:fastify": "concurrently \"pnpm --cwd client dev\" \"pnpm --cwd server dev:fastify\"",
+    "dev:hono": "concurrently \"pnpm --cwd client dev\" \"pnpm --cwd server dev:hono\"",
+    "dev:h3": "concurrently \"pnpm --cwd client dev\" \"pnpm --cwd server dev:h3\"",
+    "build": "pnpm --cwd client build && pnpm --cwd server build",
+    "start": "concurrently \"pnpm --cwd client start\" \"pnpm --cwd server start\"",
     "test": "playwright test"
   },
   "dependencies": {

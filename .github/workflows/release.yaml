@@ -21,7 +21,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Check packages for common errors
-        run: bun turbo --filter "./packages/*" build lint test typecheck
+        run: pnpm turbo --filter "./packages/*" build lint test typecheck
 
       # Using custom token `MY_GITHUB_TOKEN` with more access to avoid rate limiting
       - name: Create Release

@@ -15,7 +15,7 @@ that are included here are:
 - [H3](./server/src/h3.ts)
 
 You can start the Vite frontend as well as any of your preferred server using
-the `bun dev:<your-server>` command. The Vite app will then be available on
+the `pnpm dev:<your-server>` command. The Vite app will then be available on
 `http://localhost:5173` and the server at `http://localhost:3000`.
 
 ## QuickStart
@@ -24,7 +24,7 @@ the `bun dev:<your-server>` command. The Vite app will then be available on
    https://uploadthing.com/dashboard
 2. `cp server/.env.example server/.env` and paste in your API key in the newly
    created `.env` file
-3. `bun dev:<server>`, e.g. `bun dev:hono`
+3. `pnpm dev:<server>`, e.g. `pnpm dev:hono`
 4. Go to [http://localhost:3000](http://localhost:3000) and upload files!
 
 ## Further reference
