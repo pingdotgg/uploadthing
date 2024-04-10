@@ -11,10 +11,10 @@ import {
 } from "@nuxt/kit";
 import defu from "defu";
 
-import type { createH3EventHandler } from "uploadthing/h3";
+import type { RouteHandlerConfig } from "uploadthing/internal/types";
 
 type HandlerConfig = Omit<
-  NonNullable<Parameters<typeof createH3EventHandler>[0]["config"]>,
+  RouteHandlerConfig,
   "uploadthingSecret" | "uploadthingId"
 >;
 

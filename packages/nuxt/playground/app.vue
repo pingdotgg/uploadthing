@@ -5,10 +5,9 @@
       endpoint: 'videoAndImage',
       onClientUploadComplete(res) {
         console.log(`onClientUploadComplete`, res);
-        // alert('Upload Completed');
+        alert('Upload Completed');
 
         res[0]?.serverData;
-        // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: 'bar' }>()
       },
       onUploadBegin: () => {
         console.log(`onUploadBegin`);
@@ -21,10 +20,9 @@
       endpoint: 'e2',
       onClientUploadComplete(res) {
         console.log(`onClientUploadComplete`, res);
-        // alert('Upload Completed');
+        alert('Upload Completed');
 
         res[0]?.serverData;
-        // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: 'baz' }>()
       },
       onUploadBegin: () => {
         console.log(`onUploadBegin`);
@@ -50,20 +48,14 @@
 </template>
 
 <script setup lang="ts">
-// import { expectTypeOf } from "vitest";
+const alert = (msg: string) => {
+  window.alert(msg);
+};
 
 const { startUpload } = useUploadThing("videoAndImage", {
   onClientUploadComplete(res) {
     console.log(`onClientUploadComplete`, res);
-    // alert("Upload Completed");
-
-    // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ foo: "bar" }>();
-  },
-});
-
-useUploadThing("e2", {
-  onClientUploadComplete(res) {
-    // expectTypeOf(res[0]?.serverData).toEqualTypeOf<{ bar: "baz" }>();
+    alert("Upload Completed");
   },
 });
 </script>

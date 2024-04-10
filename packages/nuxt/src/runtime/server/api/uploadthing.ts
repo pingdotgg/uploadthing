@@ -1,7 +1,7 @@
 // FIXME: How to type useRuntimeConfig's  return type to have our stuff on it?
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig } from "#imports";
 import { uploadRouter } from "#uploadthing-router";
 import { defineEventHandler } from "h3";
 
