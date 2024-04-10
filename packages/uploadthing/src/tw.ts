@@ -17,21 +17,11 @@ export function withUt(twConfig: Config) {
     }
   }).filter(Boolean) as string[];
 
-  const defaultConfig: {
-    content: Config["content"];
-    plugins: Required<Config>["plugins"];
-  } = {
-    content: [],
-    plugins: [],
-  };
-
-  const config = Object.assign({}, defaultConfig, twConfig);
-
-  if (Array.isArray(config.content)) {
-    config.content.push(...contentPaths);
+  if (Array.isArray(twConfig.content)) {
+    twConfig.content.push(...contentPaths);
   } else {
     // content can be an object too with `files` property
-    config.content.files.push(...contentPaths);
+    twConfig.content.files.push(...contentPaths);
   }
 
   const utPlugin = plugin(({ addVariant }) => {
@@ -48,7 +38,11 @@ export function withUt(twConfig: Config) {
     addVariant("ut-uploading", '&[data-state="uploading"]');
   });
 
-  config.plugins.push(utPlugin);
+  if (!twConfig.plugins) {
+    twConfig.plugins = [];
+  }
+
+  twConfig.plugins.push(utPlugin);
 
   return twConfig;
 }
