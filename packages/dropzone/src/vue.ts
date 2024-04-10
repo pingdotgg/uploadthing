@@ -126,6 +126,7 @@ export function useDropzone(options: DropzoneOptions) {
 
   const onDragover = (event: DragEvent) => {
     event.preventDefault();
+    event.stopPropagation();
 
     const hasFiles = isEventWithFiles(event);
     if (hasFiles && event.dataTransfer) {
@@ -137,6 +138,31 @@ export function useDropzone(options: DropzoneOptions) {
     }
 
     return false;
+  };
+
+  const onDragleave = (event: DragEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Only deactivate once the dropzone and all children have been lef
+    const targets = dragTargets.value.filter((target) =>
+      rootRef.value?.contains(target),
+    );
+
+    // Make sure to remove a target present multiple times only once
+    // (Firefox may fire dragenter/dragleave multiple times on the same element)
+    const targetIdx = targets.indexOf(event.target as HTMLElement);
+    if (targetIdx !== -1) {
+      targets.splice(targetIdx, 1);
+    }
+    dragTargets.value = targets;
+    if (targets.length > 0) {
+      return;
+    }
+
+    state.isDragActive = false;
+    state.isDragAccept = false;
+    state.isDragReject = false;
   };
 
   const setFiles = (files: File[]) => {
@@ -167,30 +193,6 @@ export function useDropzone(options: DropzoneOptions) {
 
     state.acceptedFiles = acceptedFiles;
     optionsRef.value.onDrop?.(acceptedFiles);
-  };
-
-  const onDragleave = (event: DragEvent) => {
-    event.preventDefault();
-
-    // Only deactivate once the dropzone and all children have been lef
-    const targets = dragTargets.value.filter((target) =>
-      rootRef.value?.contains(target),
-    );
-
-    // Make sure to remove a target present multiple times only once
-    // (Firefox may fire dragenter/dragleave multiple times on the same element)
-    const targetIdx = targets.indexOf(event.target as HTMLElement);
-    if (targetIdx !== -1) {
-      targets.splice(targetIdx, 1);
-    }
-    dragTargets.value = targets;
-    if (targets.length > 0) {
-      return;
-    }
-
-    state.isDragActive = false;
-    state.isDragAccept = false;
-    state.isDragReject = false;
   };
 
   const onDrop = (event: DropEvent) => {
@@ -239,7 +241,6 @@ export function useDropzone(options: DropzoneOptions) {
   const onFocus = () => (state.isFocused = true);
   const onBlur = () => (state.isFocused = false);
   const onClick = () => {
-    console.log("clicked");
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
