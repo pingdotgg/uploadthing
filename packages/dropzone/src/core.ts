@@ -34,9 +34,9 @@ function accepts(file: File, acceptedFiles: string | string[]): boolean {
   return true;
 }
 
-export function isPropagationStopped(
+export const isPropagationStopped = (
   event: Event & { isPropagationStopped?: () => boolean },
-): boolean {
+) => {
   if (typeof event.isPropagationStopped === "function") {
     return event.isPropagationStopped();
   }
@@ -44,7 +44,7 @@ export function isPropagationStopped(
     return event.cancelBubble;
   }
   return false;
-}
+};
 
 // Firefox versions prior to 53 return a bogus MIME type for every file drag, so dragovers with
 // that MIME type will always be accepted
