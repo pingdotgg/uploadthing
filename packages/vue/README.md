@@ -4,14 +4,25 @@ Learn more: [docs.uploadthing.com](https://docs.uploadthing.com)
 
 ## Example
 
+```ts
+// utils/uploadthing.ts
+import {
+  generateUploadButton,
+  generateUploadDropzone,
+  generateVueHelpers,
+} from "@uploadthing/vue";
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
+
+export const { useUploadThing } = generateVueHelpers<OurFileRouter>();
+```
+
 ```vue
 <script setup lang="ts">
 import type { OurFileRouter } from "server/uploadthing";
 
-import { useUploadButton, useUploadDropzone } from "@uploadthing/vue";
-
-const UploadButton = useUploadButton<OurFileRouter>();
-const UploadDropzone = useUploadDropzone<OurFileRouter>();
+import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
 </script>
 
 <template>
