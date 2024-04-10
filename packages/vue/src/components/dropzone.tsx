@@ -1,13 +1,14 @@
 import { twMerge } from "tailwind-merge";
 import { computed, defineComponent, reactive, ref, watch } from "vue";
 
-import { useDropzone } from "@uploadthing/dropzone/vue";
+import { DropzoneOptions, useDropzone } from "@uploadthing/dropzone/vue";
 import {
   allowedContentTextLabelGenerator,
   ContentField,
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   StyleField,
   styleFieldToClassName,
@@ -21,7 +22,7 @@ import type {
   UseUploadthingProps,
 } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner, usePaste } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -55,7 +56,7 @@ export type UploadDropzoneProps<
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
-  className?: string;
+  class?: string;
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
    */
@@ -68,8 +69,12 @@ export type UploadDropzoneProps<
 
 export const generateUploadDropzone = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
-) =>
-  defineComponent(
+) => {
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: resolveMaybeUrlArg(initOpts?.url),
+  });
+
+  return defineComponent(
     <
       TEndpoint extends keyof TRouter,
       TSkipPolling extends boolean = false,
@@ -77,11 +82,10 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       config: UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
     }) => {
       const $props = props.config;
-      const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-        url: resolveMaybeUrlArg(initOpts?.url),
-      });
-      const files = ref<File[]>([]);
 
+      const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+
+      const files = ref<File[]>([]);
       const uploadProgress = ref(0);
 
       const useUploadthingProps: UseUploadthingProps<
@@ -106,109 +110,175 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         onUploadBegin: $props.onUploadBegin,
         onBeforeUploadBegin: $props.onBeforeUploadBegin,
       });
-
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
         useUploadthingProps,
       );
 
-      const generatedPermittedFileTypes = computed(() =>
+      const permittedFileTypes = computed(() =>
         generatePermittedFileTypes(permittedFileInfo.value?.config),
       );
       const acceptedFileTypes = computed(() =>
-        generateClientDropzoneAccept(
-          generatedPermittedFileTypes.value.fileTypes,
-        ),
+        generateClientDropzoneAccept(permittedFileTypes.value.fileTypes),
       );
 
-      const dropzoneOptions = reactive({
-        onDrop: (acceptedFiles: File[]) => {
-          files.value = acceptedFiles;
+      const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles === null) return;
+        files.value = acceptedFiles;
 
-          // TODO: If mode is auto, start upload immediately
-        },
+        // If mode is auto, start upload immediately.
+        if (mode === "auto") {
+          const input = "input" in $props ? $props.input : undefined;
+          void startUpload(acceptedFiles, input);
+          return;
+        }
+      };
+
+      const dropzoneOptions: DropzoneOptions = reactive({
+        onDrop: onDrop,
         accept: acceptedFileTypes.value,
+        multiple: permittedFileTypes.value.multiple,
+        disabled: permittedFileTypes.value.fileTypes.length === 0,
       });
       watch(
         () => acceptedFileTypes.value,
-        (value) => {
-          dropzoneOptions.accept = value;
+        (newVal) => {
+          dropzoneOptions.accept = newVal;
         },
       );
-      const { getRootProps, getInputProps, isDragActive } =
+      watch(
+        () => permittedFileTypes.value,
+        (newVal) => {
+          dropzoneOptions.multiple = newVal.multiple;
+          dropzoneOptions.disabled = newVal.fileTypes.length === 0;
+        },
+      );
+      const { getRootProps, getInputProps, isDragActive, rootRef } =
         useDropzone(dropzoneOptions);
 
-      const fileTypesText = computed(() =>
-        contentFieldToContent(
-          $props.content?.allowedContent,
-          styleFieldArg.value,
-        ) ?? generatedPermittedFileTypes.value.fileTypes.length > 0
-          ? allowedContentTextLabelGenerator(permittedFileInfo.value?.config)
-          : // It contains whitespace because for some reason, if string is empty
-            // There will be error on FE
-            " ",
-      );
+      const state = computed(() => {
+        if (dropzoneOptions.disabled) return "readying";
+        if (!dropzoneOptions.disabled && !isUploading.value) return "ready";
+        return "uploading";
+      });
 
-      const ready = computed(
-        () => generatedPermittedFileTypes.value.fileTypes.length > 0,
-      );
+      usePaste((event) => {
+        if (!appendOnPaste) return;
+        if (document.activeElement !== rootRef.value) return;
+
+        const pastedFiles = getFilesFromClipboardEvent(event);
+        if (!pastedFiles) return;
+
+        files.value = [...files.value, ...pastedFiles];
+
+        if (mode === "auto") {
+          const input = "input" in $props ? $props.input : undefined;
+          void startUpload(files.value, input);
+        }
+      });
 
       const styleFieldArg = computed(
         () =>
           ({
-            fileTypes: generatedPermittedFileTypes.value.fileTypes,
-            isDragActive: isDragActive.value,
-            isUploading: isUploading.value,
-            ready: ready.value,
+            ready: state.value === "ready",
+            isUploading: state.value === "uploading",
             uploadProgress: uploadProgress.value,
+            fileTypes: permittedFileTypes.value.fileTypes,
+            isDragActive: isDragActive.value,
           }) as DropzoneStyleFieldCallbackArgs,
       );
 
-      const state = computed(() => {
-        if (!ready.value) return "readying";
-        if (ready.value && !isUploading.value) return "ready";
+      const renderUploadIcon = () => {
+        const customContent = contentFieldToContent(
+          $props.content?.uploadIcon,
+          styleFieldArg.value,
+        );
+        if (customContent) return customContent;
 
-        return "uploading";
-      });
-
-      const uploadIconContent = computed(
-        () =>
-          contentFieldToContent(
-            $props.content?.uploadIcon,
-            styleFieldArg.value,
-          ) ?? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              class={twMerge(
-                "mx-auto block h-12 w-12 align-middle text-gray-400",
-                styleFieldToClassName(
-                  $props.appearance?.uploadIcon,
-                  styleFieldArg.value,
-                ),
-              )}
-              style={styleFieldToCssObject(
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            class={twMerge(
+              "mx-auto block h-12 w-12 align-middle text-gray-400",
+              styleFieldToClassName(
                 $props.appearance?.uploadIcon,
                 styleFieldArg.value,
-              )}
-              data-ut-element="upload-icon"
-              data-state={state}
-            >
-              <path
-                fill="currentColor"
-                fill-rule="evenodd"
-                d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-          ),
-      );
+              ),
+            )}
+            style={styleFieldToCssObject(
+              $props.appearance?.uploadIcon,
+              styleFieldArg.value,
+            )}
+            data-ut-element="upload-icon"
+            data-state={state}
+          >
+            <path
+              fill="currentColor"
+              fill-rule="evenodd"
+              d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        );
+      };
+
+      const labelContent = computed(() => {
+        const customContent = contentFieldToContent(
+          $props.content?.label,
+          styleFieldArg.value,
+        );
+        if (customContent) return customContent;
+
+        if (state.value === "readying") {
+          return `Loading...`;
+        }
+
+        return `Choose files or drag and drop`;
+      });
+
+      const renderAllowedContent = () => {
+        const customContent = contentFieldToContent(
+          $props.content?.allowedContent,
+          styleFieldArg.value,
+        );
+        if (customContent) return customContent;
+
+        return (
+          allowedContentTextLabelGenerator(permittedFileInfo.value?.config) ||
+          " " // ensure no empty string
+        );
+      };
+
+      const buttonContent = computed(() => {
+        const customContent = contentFieldToContent(
+          $props.content?.button,
+          styleFieldArg.value,
+        );
+        if (customContent) return customContent;
+
+        if (state.value !== "uploading") {
+          if (files.value.length > 0) {
+            return `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"}`;
+          }
+          if (permittedFileTypes.value.fileTypes.length === 0) {
+            return "Loading...";
+          }
+          return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
+        }
+
+        if (uploadProgress.value === 100) {
+          return <Spinner />;
+        }
+
+        return <span class="z-50">{`${uploadProgress.value}%`}</span>;
+      });
 
       const containerClass = computed(() =>
         twMerge(
           "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-          isDragActive && "bg-blue-600/10",
-          $props.className,
+          isDragActive.value && "bg-blue-600/10",
+          $props.class,
           styleFieldToClassName(
             $props.appearance?.container,
             styleFieldArg.value,
@@ -218,7 +288,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const labelClass = computed(() =>
         twMerge(
           "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-          ready.value ? "text-blue-600" : "text-gray-500",
+          state.value === "ready" ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg.value),
         ),
       );
@@ -233,12 +303,12 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
       const buttonClass = computed(() =>
         twMerge(
-          "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-          state.value === "uploading"
-            ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-                progressWidths[uploadProgress.value]
-              }`
-            : "bg-blue-600",
+          "relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          state.value === "readying" && "cursor-not-allowed bg-blue-400",
+          state.value === "uploading" &&
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
+          state.value === "ready" && "bg-blue-600",
+          "disabled:pointer-events-none",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
       );
@@ -262,23 +332,6 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         styleFieldToCssObject($props.appearance?.button, styleFieldArg.value),
       );
 
-      const labelContent = computed(
-        () =>
-          contentFieldToContent($props.content?.label, styleFieldArg.value) ??
-          (ready.value ? `Choose files or drag and drop` : `Loading...`),
-      );
-      const buttonContent = computed(
-        () =>
-          contentFieldToContent($props.content?.button, styleFieldArg.value) ??
-          (isUploading.value ? (
-            <Spinner />
-          ) : (
-            `Upload ${files.value.length} file${
-              files.value.length === 1 ? "" : "s"
-            }`
-          )),
-      );
-
       return () => {
         return (
           <div
@@ -287,20 +340,15 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             style={containerStyle.value}
             data-state={state.value}
           >
-            {uploadIconContent.value}
+            {renderUploadIcon()}
             <label
-              for="file-upload"
               class={labelClass.value}
               style={labelStyle.value}
               data-ut-element="label"
               data-state={state.value}
             >
+              <input class="sr-only" {...getInputProps()} />
               {labelContent.value}
-              <input
-                class="ut-sr-only"
-                {...getInputProps()}
-                // disabled={!ready.value}
-              />
             </label>
             <div
               class={allowedContentClass.value}
@@ -308,27 +356,26 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
               data-ut-element="allowed-content"
               data-state={state.value}
             >
-              {fileTypesText.value}
+              {renderAllowedContent()}
             </div>
-            {files.value.length > 0 && (
-              <button
-                class={buttonClass.value}
-                style={buttonStyle.value}
-                data-ut-element="button"
-                data-state={state.value}
-                disabled={state.value === "uploading"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (!files.value) return;
 
-                  const input = "input" in $props ? $props.input : undefined;
-                  void startUpload(files.value, input);
-                }}
-              >
-                {buttonContent.value}
-              </button>
-            )}
+            <button
+              class={buttonClass.value}
+              style={buttonStyle.value}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!files.value) return;
+
+                const input = "input" in $props ? $props.input : undefined;
+                void startUpload(files.value, input);
+              }}
+              data-ut-element="button"
+              data-state={state.value}
+              disabled={files.value.length === 0 || state.value === "uploading"}
+            >
+              {buttonContent.value}
+            </button>
           </div>
         );
       };
@@ -337,3 +384,4 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       props: ["config"] as any,
     },
   );
+};

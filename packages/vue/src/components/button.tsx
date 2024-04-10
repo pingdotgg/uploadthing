@@ -52,7 +52,7 @@ export type UploadButtonProps<
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
-  className?: string;
+  class?: string;
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-appearance-prop
    */
@@ -271,7 +271,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const containerClass = computed(() =>
         twMerge(
           "flex flex-col items-center justify-center gap-1",
-          $props.className,
+          $props.class,
           styleFieldToClassName(
             $props.appearance?.container,
             styleFieldArg.value,

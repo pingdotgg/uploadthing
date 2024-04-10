@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 import { BACKEND_URL } from "./constants";
-import { UploadButton } from "./uploadthing";
+import { UploadButton, UploadDropzone } from "./uploadthing";
 
 function App() {
   return (
@@ -10,6 +10,18 @@ function App() {
       <WhatServer />
       <div>
         <UploadButton
+          endpoint="videoAndImage"
+          skipPolling
+          onClientUploadComplete={(file) => {
+            console.log("uploaded", file);
+            alert("Upload complete");
+          }}
+          onUploadError={(error) => {
+            console.error(error, error.cause);
+            alert("Upload failed");
+          }}
+        />
+        <UploadDropzone
           endpoint="videoAndImage"
           skipPolling
           onClientUploadComplete={(file) => {

@@ -1,4 +1,5 @@
 import { fromEvent } from "file-selector";
+import type { HTMLAttributes, InputHTMLAttributes, ReservedProps } from "vue";
 import {
   computed,
   onMounted,
@@ -24,6 +25,8 @@ import {
 } from "./core";
 import type { DropzoneOptions } from "./types";
 
+export type * from "./types";
+
 export type DropEvent = InputEvent | DragEvent | Event;
 
 export function useDropzone(options: DropzoneOptions) {
@@ -36,7 +39,6 @@ export function useDropzone(options: DropzoneOptions) {
     ...options,
   });
   watch(
-    /** REVIEW: Is this how this should be done??? Feels very odd */
     () => ({ ...options }),
     (value) => {
       optionsRef.value = { ...optionsRef.value, ...value };
@@ -91,9 +93,8 @@ export function useDropzone(options: DropzoneOptions) {
     document.removeEventListener("drop", onDocumentDrop, false);
   });
 
-  const onDragEnter = (event: DragEvent) => {
+  const onDragenter = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets.value = [...dragTargets.value, event.target as HTMLElement];
 
@@ -123,9 +124,9 @@ export function useDropzone(options: DropzoneOptions) {
     }
   };
 
-  const onDragOver = (event: DragEvent) => {
+  const onDragover = (event: DragEvent) => {
+    console.log("onDragOver", event);
     event.preventDefault();
-    event.stopPropagation();
 
     const hasFiles = isEventWithFiles(event);
     if (hasFiles && event.dataTransfer) {
@@ -169,9 +170,8 @@ export function useDropzone(options: DropzoneOptions) {
     optionsRef.value.onDrop?.(acceptedFiles);
   };
 
-  const onDragLeave = (event: DragEvent) => {
+  const onDragleave = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     // Only deactivate once the dropzone and all children have been lef
     const targets = dragTargets.value.filter((target) =>
@@ -196,7 +196,6 @@ export function useDropzone(options: DropzoneOptions) {
 
   const onDrop = (event: DropEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets.value = [];
 
@@ -222,9 +221,9 @@ export function useDropzone(options: DropzoneOptions) {
     }
   };
 
-  const onKeyDown = (event: KeyboardEvent) => {
+  const onKeydown = (event: KeyboardEvent) => {
     // Ignore keyboard events bubbling up the DOM tree
-    if (!rootRef.value || !rootRef.value.isEqualNode(event.target as Node)) {
+    if (!rootRef.value?.isEqualNode(event.target as Node)) {
       return;
     }
 
@@ -249,36 +248,36 @@ export function useDropzone(options: DropzoneOptions) {
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
   };
 
-  const getRootProps = () => ({
+  const getRootProps = (): HTMLAttributes & ReservedProps => ({
     ref: rootRef,
     role: "presentation" as const,
     ...(!optionsRef.value.disabled
-      ? {
-          tabIndex: 0,
-          onKeyDown,
+      ? ({
+          tabindex: 0,
+          onKeydown,
           onFocus,
           onBlur,
           onClick,
-          onDragEnter,
-          onDragOver,
-          onDragLeave,
+          onDragenter,
+          onDragover,
+          onDragleave,
           onDrop,
-        }
+        } satisfies HTMLAttributes & ReservedProps)
       : {}),
   });
 
-  const getInputProps = () => ({
+  const getInputProps = (): InputHTMLAttributes & ReservedProps => ({
     ref: inputRef,
     type: "file",
     style: "display: none",
     accept: acceptAttr.value,
     multiple: optionsRef.value.multiple,
-    tabIndex: -1,
+    tabindex: -1,
     ...(!optionsRef.value.disabled
-      ? {
+      ? ({
           onChange: onDrop,
           onClick: onInputElementClick,
-        }
+        } satisfies InputHTMLAttributes & ReservedProps)
       : {}),
   });
 
