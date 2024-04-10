@@ -31,7 +31,6 @@
     "@nuxt/kit": "^3.11.2",
     "@uploadthing/vue": "workspace:6.4.0",
     "defu": "^6.1.4",
-    "ufo": "^1.5.0",
     "uploadthing": "workspace:6.9.0"
   },
   "devDependencies": {
