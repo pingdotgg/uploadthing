@@ -4,5 +4,5 @@
   "solid": "SolidStart",
   "astro": "Astro",
   "svelte": "SvelteKit",
-  "nuxt": "Nuxt.js (Coming Soon)"
+  "nuxt": "Nuxt.js"
 }
