@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
-import { computed, defineComponent, reactive, ref } from "vue";
+import * as Vue from "vue";
+import { computed, reactive, ref } from "vue";
 
 import type { ContentField, StyleField } from "@uploadthing/shared";
 import {
@@ -69,7 +70,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
     url: resolveMaybeUrlArg(initOpts?.url),
   });
 
-  return defineComponent(
+  return Vue.defineComponent(
     <
       TEndpoint extends keyof TRouter,
       TSkipPolling extends boolean = false,

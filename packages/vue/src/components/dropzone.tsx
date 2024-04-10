@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
-import { computed, defineComponent, reactive, ref, watch } from "vue";
+import * as Vue from "vue";
+import { computed, reactive, ref, watch } from "vue";
 
 import type { DropzoneOptions } from "@uploadthing/dropzone/vue";
 import { useDropzone } from "@uploadthing/dropzone/vue";
@@ -74,7 +75,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
     url: resolveMaybeUrlArg(initOpts?.url),
   });
 
-  return defineComponent(
+  return Vue.defineComponent(
     <
       TEndpoint extends keyof TRouter,
       TSkipPolling extends boolean = false,

@@ -1,4 +1,5 @@
-import { defineComponent, onMounted, onUnmounted } from "vue";
+import * as Vue from "vue";
+import { onMounted, onUnmounted } from "vue";
 
 export const usePaste = (callback: (e: ClipboardEvent) => void) => {
   onMounted(() => {
@@ -9,7 +10,7 @@ export const usePaste = (callback: (e: ClipboardEvent) => void) => {
   });
 };
 
-export const Spinner = defineComponent(() => () => {
+export const Spinner = Vue.defineComponent(() => () => {
   return (
     <svg
       class="z-10 block h-5 w-5 animate-spin align-middle text-white"
