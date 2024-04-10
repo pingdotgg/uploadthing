@@ -55,5 +55,6 @@ dist
 packages/*/*/
 !packages/*/src/
 !packages/*/test/
+!packages/*/playground/
 
 .svelte-kit
