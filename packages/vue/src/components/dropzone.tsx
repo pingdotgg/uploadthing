@@ -78,7 +78,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
     }) => {
       const $props = props.config;
       const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-        url: resolveMaybeUrlArg($props.url ?? initOpts?.url),
+        url: resolveMaybeUrlArg(initOpts?.url),
       });
       const files = ref<File[]>([]);
 

@@ -12,6 +12,10 @@ function alert(message: string) {
     <div>
       <UploadButton
         :config="{
+          config: {
+            mode: 'manual',
+            appendOnPaste: true,
+          },
           endpoint: 'videoAndImage',
           skipPolling: true,
           onClientUploadComplete: (file) => {

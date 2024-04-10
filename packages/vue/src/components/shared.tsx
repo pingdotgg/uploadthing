@@ -1,4 +1,13 @@
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, onUnmounted } from "vue";
+
+export const usePaste = (callback: (e: ClipboardEvent) => void) => {
+  onMounted(() => {
+    document.addEventListener("paste", callback);
+  });
+  onUnmounted(() => {
+    document.removeEventListener("paste", callback);
+  });
+};
 
 export const Spinner = defineComponent(() => {
   return () => {

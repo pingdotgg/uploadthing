@@ -8,6 +8,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -21,7 +22,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";

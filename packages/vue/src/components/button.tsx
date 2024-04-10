@@ -7,6 +7,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   StyleField,
   styleFieldToClassName,
@@ -20,7 +21,7 @@ import type {
   UseUploadthingProps,
 } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner, usePaste } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "vue";
@@ -64,8 +65,12 @@ export type UploadButtonProps<
 
 export const generateUploadButton = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
-) =>
-  defineComponent(
+) => {
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: resolveMaybeUrlArg(initOpts?.url),
+  });
+
+  return defineComponent(
     <
       TEndpoint extends keyof TRouter,
       TSkipPolling extends boolean = false,
@@ -74,12 +79,12 @@ export const generateUploadButton = <TRouter extends FileRouter>(
     }) => {
       const $props = props.config;
 
-      const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-        url: resolveMaybeUrlArg(props.config.url ?? initOpts?.url),
-      });
+      const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
+      const labelRef = ref<HTMLLabelElement | null>(null);
       const uploadProgress = ref(0);
+      const files = ref<File[]>([]);
 
       const useUploadthingProps: UseUploadthingProps<
         TRouter,
@@ -94,6 +99,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           if (fileInputRef.value) {
             fileInputRef.value.value = "";
           }
+          files.value = [];
           $props.onClientUploadComplete?.(res);
           uploadProgress.value = 0;
         },
@@ -111,69 +117,143 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         useUploadthingProps,
       );
 
-      const generatedPermittedFileTypes = computed(() =>
+      const permittedFileTypes = computed(() =>
         generatePermittedFileTypes(permittedFileInfo.value?.config),
       );
 
-      const ready = computed(
-        () => generatedPermittedFileTypes.value.fileTypes.length > 0,
-      );
+      const inputProps = computed(() => ({
+        type: "file",
+        multiple: permittedFileTypes.value.multiple,
+        accept: generateMimeTypes(permittedFileTypes.value?.fileTypes)?.join(
+          ", ",
+        ),
+        disabled: permittedFileTypes.value.fileTypes.length === 0,
+        tabIndex: permittedFileTypes.value.fileTypes.length === 0 ? -1 : 0,
+        onChange: (e: Event) => {
+          if (!e.target) return;
+          const { files: selectedFiles } = e.target as HTMLInputElement;
+          if (!selectedFiles) return;
 
-      const getUploadButtonText = (fileTypes: string[]) => {
-        if (!(fileTypes.length > 0)) return "Loading...";
-        return `Choose File${
-          generatedPermittedFileTypes.value.multiple ? `(s)` : ``
-        }`;
-      };
+          if (mode === "manual") {
+            files.value = Array.from(selectedFiles);
+            return;
+          }
 
-      const uploadButtonText = computed(
-        () =>
-          contentFieldToContent($props.content?.button, styleFieldArg.value) ??
-          (state.value === "uploading" ? (
-            <Spinner />
-          ) : (
-            getUploadButtonText(generatedPermittedFileTypes.value.fileTypes)
-          )),
-      );
-
-      const fileTypesText = computed(() =>
-        contentFieldToContent(
-          $props.content?.allowedContent,
-          styleFieldArg.value,
-        ) ?? generatedPermittedFileTypes.value.fileTypes.length > 0
-          ? allowedContentTextLabelGenerator(permittedFileInfo.value?.config)
-          : // It contains whitespace because for some reason, if string is empty
-            // There will be error on FE
-            " ",
-      );
-
-      const handleFileChange = (e: Event) => {
-        if (!e.target) return;
-
-        const { files: targetFiles } = e.target as HTMLInputElement;
-
-        if (!targetFiles) return;
-
-        const input = "input" in $props ? $props.input : undefined;
-        const files = Array.from(targetFiles);
-        void startUpload(files, input);
-      };
+          const input = "input" in $props ? $props.input : undefined;
+          void startUpload(files.value, input);
+        },
+      }));
 
       const state = computed(() => {
-        if (!ready.value) return "readying";
-        if (ready.value && !isUploading.value) return "ready";
-
+        if (inputProps.value.disabled) return "readying";
+        if (!inputProps.value.disabled && !isUploading.value) return "ready";
         return "uploading";
+      });
+
+      usePaste((event) => {
+        if (!appendOnPaste) return;
+        if (document.activeElement !== labelRef.value) return;
+
+        const pastedFiles = getFilesFromClipboardEvent(event);
+        if (!pastedFiles) return;
+
+        files.value = [...files.value, ...pastedFiles];
+
+        if (mode === "auto") {
+          const input = "input" in $props ? $props.input : undefined;
+          void startUpload(files.value, input);
+        }
       });
 
       const styleFieldArg = computed(
         () =>
           ({
-            ready: ready.value,
-            isUploading: isUploading.value,
+            ready: state.value === "ready",
+            isUploading: state.value === "uploading",
             uploadProgress: uploadProgress.value,
-            fileTypes: generatedPermittedFileTypes.value.fileTypes,
+            fileTypes: permittedFileTypes.value.fileTypes,
           }) as ButtonStyleFieldCallbackArgs,
+      );
+
+      const renderButton = () => {
+        const customContent = contentFieldToContent(
+          $props.content?.button,
+          styleFieldArg.value,
+        );
+        if (customContent) return customContent;
+
+        if (state.value === "readying") {
+          return "Loading...";
+        }
+
+        if (state.value !== "uploading") {
+          if (mode === "manual" && files.value.length > 0) {
+            return `Upload ${files.value.length} file${
+              files.value.length > 1 ? "s" : ""
+            }`;
+          }
+          return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
+        }
+
+        if (uploadProgress.value === 100) {
+          return <Spinner />;
+        }
+
+        return <span class="z-50">{uploadProgress.value}%</span>;
+      };
+
+      const renderClearButton = () => (
+        <button
+          onClick={() => {
+            files.value = [];
+
+            if (fileInputRef.value) {
+              fileInputRef.value.value = "";
+            }
+          }}
+          class={twMerge(
+            "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
+            styleFieldToClassName(
+              $props.appearance?.clearBtn,
+              styleFieldArg.value,
+            ),
+          )}
+          style={styleFieldToCssObject(
+            $props.appearance?.clearBtn,
+            styleFieldArg.value,
+          )}
+          data-state={state}
+          data-ut-element="clear-btn"
+        >
+          {contentFieldToContent(
+            $props.content?.clearBtn,
+            styleFieldArg.value,
+          ) ?? "Clear"}
+        </button>
+      );
+
+      const renderAllowedContent = () => (
+        <div
+          class={twMerge(
+            "h-[1.25rem]  text-xs leading-5 text-gray-600",
+            styleFieldToClassName(
+              $props.appearance?.allowedContent,
+              styleFieldArg.value,
+            ),
+          )}
+          style={styleFieldToCssObject(
+            $props.appearance?.allowedContent,
+            styleFieldArg.value,
+          )}
+          data-state={state}
+          data-ut-element="allowed-content"
+        >
+          {contentFieldToContent(
+            $props.content?.allowedContent,
+            styleFieldArg.value,
+          ) ??
+            allowedContentTextLabelGenerator(permittedFileInfo.value?.config)}
+        </div>
       );
 
       const labelClass = computed(() =>
@@ -198,15 +278,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           ),
         ),
       );
-      const allowedContentClass = computed(() =>
-        twMerge(
-          "h-[1.25rem]  text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
-            $props.appearance?.allowedContent,
-            styleFieldArg.value,
-          ),
-        ),
-      );
 
       const containerStyle = computed(() =>
         styleFieldToCssObject(
@@ -216,12 +287,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       );
       const labelStyle = computed(() =>
         styleFieldToCssObject($props.appearance?.button, styleFieldArg.value),
-      );
-      const allowedContentStyle = computed(() =>
-        styleFieldToCssObject(
-          $props.appearance?.allowedContent,
-          styleFieldArg.value,
-        ),
       );
 
       return () => {
@@ -236,29 +301,22 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
-              tabindex={0}
+              ref={labelRef}
+              onClick={(e) => {
+                if (mode === "manual" && files.value.length > 0) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const input = "input" in $props ? $props.input : undefined;
+                  void startUpload(files.value, input);
+                }
+              }}
             >
-              <input
-                class="hidden"
-                type="file"
-                ref={fileInputRef}
-                multiple={generatedPermittedFileTypes.value.multiple}
-                accept={generateMimeTypes(
-                  generatedPermittedFileTypes.value.fileTypes,
-                )?.join(", ")}
-                onChange={handleFileChange}
-                disabled={!ready}
-              />
-              {uploadButtonText.value}
+              <input class="hidden" {...inputProps.value} />
+              {renderButton()}
             </label>
-            <div
-              class={allowedContentClass.value}
-              style={allowedContentStyle.value ?? {}}
-              data-state={state.value}
-              data-ut-element="allowed-content"
-            >
-              {fileTypesText.value}
-            </div>
+            {mode === "manual" && files.value.length > 0
+              ? renderClearButton()
+              : renderAllowedContent()}
           </div>
         );
       };
@@ -267,3 +325,4 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       props: ["config"] as any,
     },
   );
+};

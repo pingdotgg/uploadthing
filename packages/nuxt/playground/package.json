@@ -1,9 +1,9 @@
 {
   "private": true,
-  "name": "my-module-playground",
+  "name": "nuxt-uploadthing-playground",
   "type": "module",
   "scripts": {
-    "dev": "nuxi dev",
+    "dev": "nuxi dev --port 3010",
     "build": "nuxi build",
     "generate": "nuxi generate"
   },
