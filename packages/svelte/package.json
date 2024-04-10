@@ -41,6 +41,7 @@
     "@sveltejs/adapter-auto": "^3.1.1",
     "@sveltejs/kit": "^2.5.4",
     "@sveltejs/package": "^2.3.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "postcss": "8.4.38",
     "postcss-load-config": "^5.0.3",
     "publint": "^0.2.7",
