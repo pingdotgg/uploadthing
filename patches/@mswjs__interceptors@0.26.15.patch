@@ -1,0 +1,150 @@
+diff --git a/lib/node/interceptors/fetch/index.mjs b/lib/node/interceptors/fetch/index.mjs
+index ae8f98cb6c31744f849ecba96416273603867f3d..1efa85de6f91d125fb69cc74600cab7e34c29398 100644
+--- a/lib/node/interceptors/fetch/index.mjs
++++ b/lib/node/interceptors/fetch/index.mjs
+@@ -1,17 +1,7 @@
+-import {
+-  isPropertyAccessible
+-} from "../../chunk-DERTLGL3.mjs";
+-import {
+-  IS_PATCHED_MODULE
+-} from "../../chunk-HAGW22AN.mjs";
+-import {
+-  emitAsync,
+-  toInteractiveRequest
+-} from "../../chunk-OUWBQF3Z.mjs";
+-import {
+-  Interceptor,
+-  createRequestId
+-} from "../../chunk-QED3Q6Z2.mjs";
++import { isPropertyAccessible } from "../../chunk-DERTLGL3.mjs";
++import { IS_PATCHED_MODULE } from "../../chunk-HAGW22AN.mjs";
++import { emitAsync, toInteractiveRequest } from "../../chunk-OUWBQF3Z.mjs";
++import { Interceptor, createRequestId } from "../../chunk-QED3Q6Z2.mjs";
+ 
+ // src/interceptors/fetch/index.ts
+ import { invariant } from "outvariant";
+@@ -34,7 +24,10 @@ var _FetchInterceptor = class extends Interceptor {
+     super(_FetchInterceptor.symbol);
+   }
+   checkEnvironment() {
+-    return typeof globalThis !== "undefined" && typeof globalThis.fetch !== "undefined";
++    return (
++      typeof globalThis !== "undefined" &&
++      typeof globalThis.fetch !== "undefined"
++    );
+   }
+   async setup() {
+     const pureFetch = globalThis.fetch;
+@@ -45,10 +38,16 @@ var _FetchInterceptor = class extends Interceptor {
+     globalThis.fetch = async (input, init) => {
+       var _a;
+       const requestId = createRequestId();
+-      const resolvedInput = typeof input === "string" && typeof location !== "undefined" && !canParseUrl(input) ? new URL(input, location.origin) : input;
++      const resolvedInput =
++        typeof input === "string" &&
++        typeof location !== "undefined" &&
++        !canParseUrl(input)
++          ? new URL(input, location.origin)
++          : input;
+       const request = new Request(resolvedInput, init);
+       this.logger.info("[%s] %s", request.method, request.url);
+-      const { interactiveRequest, requestController } = toInteractiveRequest(request);
++      const { interactiveRequest, requestController } =
++        toInteractiveRequest(request);
+       this.logger.info(
+         'emitting the "request" event for %d listener(s)...',
+         this.emitter.listenerCount("request")
+@@ -76,7 +75,7 @@ var _FetchInterceptor = class extends Interceptor {
+       const resolverResult = await until(async () => {
+         const listenersFinished = emitAsync(this.emitter, "request", {
+           request: interactiveRequest,
+-          requestId
++          requestId,
+         });
+         await Promise.race([
+           requestAborted,
+@@ -84,7 +83,7 @@ var _FetchInterceptor = class extends Interceptor {
+           // with the request abort Promise because otherwise awaiting the listeners
+           // would always yield some response (or undefined).
+           listenersFinished,
+-          requestController.responsePromise
++          requestController.responsePromise,
+         ]);
+         this.logger.info("all request listeners have been resolved!");
+         const mockedResponse2 = await requestController.responsePromise;
+@@ -98,9 +97,15 @@ var _FetchInterceptor = class extends Interceptor {
+         return Promise.reject(createNetworkError(resolverResult.error));
+       }
+       const mockedResponse = resolverResult.data;
+-      if (mockedResponse && !((_a = request.signal) == null ? void 0 : _a.aborted)) {
++      if (
++        mockedResponse &&
++        !((_a = request.signal) == null ? void 0 : _a.aborted)
++      ) {
+         this.logger.info("received mocked response:", mockedResponse);
+-        if (isPropertyAccessible(mockedResponse, "type") && mockedResponse.type === "error") {
++        if (
++          isPropertyAccessible(mockedResponse, "type") &&
++          mockedResponse.type === "error"
++        ) {
+           this.logger.info(
+             "received a network error response, rejecting the request promise..."
+           );
+@@ -111,25 +116,25 @@ var _FetchInterceptor = class extends Interceptor {
+           response: responseClone,
+           isMockedResponse: true,
+           request: interactiveRequest,
+-          requestId
++          requestId,
+         });
+         Object.defineProperty(mockedResponse, "url", {
+           writable: false,
+           enumerable: true,
+           configurable: false,
+-          value: request.url
++          value: request.url,
+         });
+         return mockedResponse;
+       }
+       this.logger.info("no mocked response received!");
+-      return pureFetch(request).then((response) => {
++      return pureFetch(resolvedInput, init).then((response) => {
+         const responseClone = response.clone();
+         this.logger.info("original fetch performed", responseClone);
+         this.emitter.emit("response", {
+           response: responseClone,
+           isMockedResponse: false,
+           request: interactiveRequest,
+-          requestId
++          requestId,
+         });
+         return response;
+       });
+@@ -137,11 +142,11 @@ var _FetchInterceptor = class extends Interceptor {
+     Object.defineProperty(globalThis.fetch, IS_PATCHED_MODULE, {
+       enumerable: true,
+       configurable: true,
+-      value: true
++      value: true,
+     });
+     this.subscriptions.push(() => {
+       Object.defineProperty(globalThis.fetch, IS_PATCHED_MODULE, {
+-        value: void 0
++        value: void 0,
+       });
+       globalThis.fetch = pureFetch;
+       this.logger.info(
+@@ -155,10 +160,8 @@ var FetchInterceptor = _FetchInterceptor;
+ FetchInterceptor.symbol = Symbol("fetch");
+ function createNetworkError(cause) {
+   return Object.assign(new TypeError("Failed to fetch"), {
+-    cause
++    cause,
+   });
+ }
+-export {
+-  FetchInterceptor
+-};
++export { FetchInterceptor };
+ //# sourceMappingURL=index.mjs.map

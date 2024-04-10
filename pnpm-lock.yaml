@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
+  '@mswjs/interceptors@0.26.15':
+    hash: b4i3mfjisdgapabfrhqgz5r23e
+    path: patches/@mswjs__interceptors@0.26.15.patch
   msw@2.2.13:
     hash: mpkjv35lscrawpqthnrnago5ai
     path: patches/msw@2.2.13.patch
@@ -44,7 +47,7 @@ importers:
         specifier: ^13.6.2
         version: 13.10.1
       msw:
-        specifier: ^2.2.10
+        specifier: 2.2.13
         version: 2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.4.5)
       prettier:
         specifier: ^3.2.5
@@ -3333,7 +3336,7 @@ packages:
     engines: {node: '>=18'}
     dev: false
 
-  /@mswjs/interceptors@0.26.15:
+  /@mswjs/interceptors@0.26.15(patch_hash=b4i3mfjisdgapabfrhqgz5r23e):
     resolution: {integrity: sha512-HM47Lu1YFmnYHKMBynFfjCp0U/yRskHj/8QEJW0CBEPOlw8Gkmjfll+S9b8M7V5CNDw2/ciRxjjnWeaCiblSIQ==}
     engines: {node: '>=18'}
     dependencies:
@@ -3344,6 +3347,7 @@ packages:
       outvariant: 1.4.2
       strict-event-emitter: 0.5.1
     dev: false
+    patched: true
 
   /@napi-rs/simple-git-android-arm-eabi@0.1.16:
     resolution: {integrity: sha512-dbrCL0Pl5KZG7x7tXdtVsA5CO6At5ohDX3myf5xIYn9kN4jDFxsocl8bNt6Vb/hZQoJd8fI+k5VlJt+rFhbdVw==}
@@ -12336,7 +12340,7 @@ packages:
       '@bundled-es-modules/statuses': 1.0.1
       '@inquirer/confirm': 3.1.2
       '@mswjs/cookies': 1.1.0
-      '@mswjs/interceptors': 0.26.15
+      '@mswjs/interceptors': 0.26.15(patch_hash=b4i3mfjisdgapabfrhqgz5r23e)
       '@open-draft/until': 2.1.0
       '@types/cookie': 0.6.0
       '@types/statuses': 2.0.5
