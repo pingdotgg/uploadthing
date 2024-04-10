@@ -1,5 +1,3 @@
-import "./styles.css";
-
 import * as Vue from "vue";
 
 export { generateUploadButton } from "./components/button";
