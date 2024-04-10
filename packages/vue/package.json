@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/vue",
-  "version": "6.4.0",
+  "version": "6.3.0",
   "type": "module",
   "publishConfig": {
     "access": "public"

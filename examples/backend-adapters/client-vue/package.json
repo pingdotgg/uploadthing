@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/react": "workspace:6.4.4",
+    "@uploadthing/vue": "workspace:6.3.0",
     "uploadthing": "workspace:6.9.0",
     "vue": "^3.4.21"
   },

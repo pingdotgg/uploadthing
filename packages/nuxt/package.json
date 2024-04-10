@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.11.2",
-    "@uploadthing/vue": "workspace:6.4.0",
+    "@uploadthing/vue": "workspace:6.3.0",
     "defu": "^6.1.4",
     "uploadthing": "workspace:6.9.0"
   },
