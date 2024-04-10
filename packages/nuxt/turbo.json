@@ -6,6 +6,10 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".nuxt/**"]
     },
+    "build": {
+      "dependsOn": ["^build", "dev:prepare"],
+      "outputs": ["dist/**", ".nuxt/**"]
+    },
     "lint": {
       "dependsOn": ["^topo", "^build", "dev:prepare"],
       "outputs": []
