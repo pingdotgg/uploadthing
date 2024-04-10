@@ -82,7 +82,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
-      const labelRef = ref<HTMLLabelElement | null>(null);
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
@@ -123,12 +122,13 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       const inputProps = computed(() => ({
         type: "file",
+        ref: fileInputRef,
         multiple: permittedFileTypes.value.multiple,
         accept: generateMimeTypes(permittedFileTypes.value?.fileTypes)?.join(
           ", ",
         ),
         disabled: permittedFileTypes.value.fileTypes.length === 0,
-        tabIndex: permittedFileTypes.value.fileTypes.length === 0 ? -1 : 0,
+        tabindex: permittedFileTypes.value.fileTypes.length === 0 ? -1 : 0,
         onChange: (e: Event) => {
           if (!e.target) return;
           const { files: selectedFiles } = e.target as HTMLInputElement;
@@ -152,7 +152,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       usePaste((event) => {
         if (!appendOnPaste) return;
-        if (document.activeElement !== labelRef.value) return;
+        if (document.activeElement !== fileInputRef.value) return;
 
         const pastedFiles = getFilesFromClipboardEvent(event);
         if (!pastedFiles) return;
@@ -301,7 +301,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
-              ref={labelRef}
               onClick={(e) => {
                 if (mode === "manual" && files.value.length > 0) {
                   e.preventDefault();
@@ -311,7 +310,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
                 }
               }}
             >
-              <input class="hidden" {...inputProps.value} />
+              <input class="sr-only" {...inputProps.value} />
               {renderButton()}
             </label>
             {mode === "manual" && files.value.length > 0
