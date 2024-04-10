@@ -842,6 +842,9 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
     devDependencies:
+      '@types/react':
+        specifier: 18.2.60
+        version: 18.2.60
       '@uploadthing/eslint-config':
         specifier: workspace:0.2.0
         version: link:../../tooling/eslint-config
