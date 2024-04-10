@@ -18,7 +18,7 @@
   <UploadDropzone
     :config="{
       endpoint: 'e2',
-      onClientUploadComplete(res) {
+      onClientUploadComplete: (res) => {
         console.log(`onClientUploadComplete`, res);
         alert('Upload Completed');
 

@@ -25,7 +25,7 @@ import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner, usePaste } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
-  __runtime: "react";
+  __runtime: "vue";
   ready: boolean;
   isUploading: boolean;
   uploadProgress: number;
