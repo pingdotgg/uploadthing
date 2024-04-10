@@ -23,6 +23,7 @@ import {
   isEventWithFiles,
   isFileAccepted,
   isIeOrEdge,
+  isPropagationStopped,
   isValidQuantity,
   isValidSize,
   noop,
@@ -98,16 +99,8 @@ export function createDropzone(_props: DropzoneOptions) {
     });
   });
 
-  function isPropagationStopped(event: Event) {
-    if (typeof event.cancelBubble !== "undefined") {
-      return event.cancelBubble;
-    }
-    return false;
-  }
-
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets = [...dragTargets, event.target as HTMLElement];
 
@@ -192,7 +185,7 @@ export function createDropzone(_props: DropzoneOptions) {
       }
     });
 
-    if (isValidQuantity(acceptedFiles, props.multiple, props.maxFiles)) {
+    if (!isValidQuantity(acceptedFiles, props.multiple, props.maxFiles)) {
       acceptedFiles.splice(0);
     }
 
@@ -205,7 +198,6 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onDrop = (event: DropEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets = [];
 
