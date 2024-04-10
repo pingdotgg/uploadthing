@@ -1,6 +1,6 @@
-export { generateUploadButton } from "./components/button";
-export { generateUploadDropzone } from "./components/dropzone";
-export { generateVueHelpers } from "./useUploadThing";
+export * from "./components/button";
+export * from "./components/dropzone";
+export * from "./useUploadThing";
 
 export type * from "./types";
 

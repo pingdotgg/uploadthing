@@ -23,7 +23,7 @@ import type {
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner, usePaste } from "./shared";
 
-type ButtonStyleFieldCallbackArgs = {
+export type ButtonStyleFieldCallbackArgs = {
   __runtime: "vue";
   ready: boolean;
   isUploading: boolean;
@@ -31,14 +31,14 @@ type ButtonStyleFieldCallbackArgs = {
   fileTypes: string[];
 };
 
-type ButtonAppearance = {
+export type ButtonAppearance = {
   container?: StyleField<ButtonStyleFieldCallbackArgs>;
   button?: StyleField<ButtonStyleFieldCallbackArgs>;
   allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
   clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
 };
 
-type ButtonContent = {
+export type ButtonContent = {
   button?: ContentField<ButtonStyleFieldCallbackArgs>;
   allowedContent?: ContentField<ButtonStyleFieldCallbackArgs>;
   clearBtn?: ContentField<ButtonStyleFieldCallbackArgs>;

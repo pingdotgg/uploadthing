@@ -25,7 +25,7 @@ import type {
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner, usePaste } from "./shared";
 
-type DropzoneStyleFieldCallbackArgs = {
+export type DropzoneStyleFieldCallbackArgs = {
   __runtime: "vue";
   ready: boolean;
   isUploading: boolean;
@@ -34,7 +34,7 @@ type DropzoneStyleFieldCallbackArgs = {
   isDragActive: boolean;
 };
 
-type DropzoneAppearance = {
+export type DropzoneAppearance = {
   container?: StyleField<DropzoneStyleFieldCallbackArgs>;
   uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
   label?: StyleField<DropzoneStyleFieldCallbackArgs>;
@@ -42,7 +42,7 @@ type DropzoneAppearance = {
   button?: StyleField<DropzoneStyleFieldCallbackArgs>;
 };
 
-type DropzoneContent = {
+export type DropzoneContent = {
   uploadIcon?: ContentField<DropzoneStyleFieldCallbackArgs>;
   label?: ContentField<DropzoneStyleFieldCallbackArgs>;
   allowedContent?: ContentField<DropzoneStyleFieldCallbackArgs>;
