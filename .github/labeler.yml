@@ -19,6 +19,9 @@
     'packages/uploadthing/src/h3.ts', 
     'packages/uploadthing/src/fastify.ts'
   ]
-
+'release canary':
+  - any: [
+    '**'
+  ]
 'sdk':
   - any: ['packages/uploadthing/src/sdk/**']
