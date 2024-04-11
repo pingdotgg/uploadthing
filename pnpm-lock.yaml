@@ -834,8 +834,8 @@ importers:
         specifier: 0.1.0
         version: link:../../tooling/tsconfig
       bunchee:
-        specifier: ^4.4.8
-        version: 4.4.8(typescript@5.4.5)
+        specifier: ^5.1.2
+        version: 5.1.2(typescript@5.4.5)
       eslint:
         specifier: ^8.56.0
         version: 8.57.0
@@ -8975,37 +8975,6 @@ packages:
       '@types/node': 20.11.30
       '@types/ws': 8.5.10
     dev: false
-
-  /bunchee@4.4.8(typescript@5.4.5):
-    resolution: {integrity: sha512-YfGENthKSPF94+vJqnV51yDwTv5r6YZoBISJBe6ZeD167QL+iwgpMk2IaZzLgawJGCcoybOqII5sRchALWHhEw==}
-    engines: {node: '>= 18.0.0'}
-    hasBin: true
-    peerDependencies:
-      typescript: ^4.1 || ^5.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.1)
-      '@rollup/plugin-json': 6.1.0(rollup@4.14.1)
-      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.1)
-      '@rollup/plugin-replace': 5.0.5(rollup@4.14.1)
-      '@rollup/plugin-wasm': 6.2.2(rollup@4.14.1)
-      '@rollup/pluginutils': 5.1.0(rollup@4.14.1)
-      '@swc/core': 1.4.13(@swc/helpers@0.5.8)
-      '@swc/helpers': 0.5.8
-      arg: 5.0.2
-      clean-css: 5.3.3
-      magic-string: 0.30.9
-      pretty-bytes: 5.6.0
-      rimraf: 5.0.5
-      rollup: 4.14.1
-      rollup-plugin-dts: 6.1.0(rollup@4.14.1)(typescript@5.4.5)
-      rollup-plugin-swc3: 0.11.0(@swc/core@1.4.13)(rollup@4.14.1)
-      rollup-preserve-directives: 1.1.1(rollup@4.14.1)
-      tslib: 2.6.2
-      typescript: 5.4.5
-    dev: true
 
   /bunchee@5.1.2(typescript@5.4.5):
     resolution: {integrity: sha512-fOcub+z6CcCesKjVX82+B6wPTzQjtcHjrI1zcAc/acc5PRmI4fNsww7p20VxR8lctaXPrLnbuWeuhtSrZ311/Q==}
@@ -18282,14 +18251,6 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
-
-  /rimraf@5.0.5:
-    resolution: {integrity: sha512-CqDakW+hMe/Bz202FPEymy68P+G50RfMQK+Qo5YUqc9SPipvbGjCGKd0RSKEelbsfQuw3g5NZDSrlZZAJurH1A==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      glob: 10.3.12
-    dev: true
 
   /robust-predicates@3.0.2:
     resolution: {integrity: sha512-IXgzBWvWQwE6PrDI05OvmXUIruQTcoMDzRsOd5CDvHCVLcLHMTSYvOK5Cm46kWqlV3yAbuSpBZdJ5oP5OUoStg==}
