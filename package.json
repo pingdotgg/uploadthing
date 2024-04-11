@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "build:all": "turbo run build",
-    "build": "echo $TURBO_TOKEN | base64 | base64; echo $TURBO_TEAM | base64 | base64",
+    "build": "turbo run build --filter \"./packages/*\"",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev:all": "turbo run dev",
     "dev": "turbo run dev --filter \"./packages/*\"",
