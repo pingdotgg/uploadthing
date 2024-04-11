@@ -40,6 +40,7 @@ export default defineNuxtModule<ModuleOptions>({
     const logger = useLogger("uploadthing");
     const resolver = createResolver(import.meta.url);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     nuxt.options.runtimeConfig.uploadthing = defu(
       nuxt.options.runtimeConfig.uploadthing as any,
       {
