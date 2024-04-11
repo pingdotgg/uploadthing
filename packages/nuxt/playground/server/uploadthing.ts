@@ -1,5 +1,5 @@
-import { createUploadthing } from "uploadthing/next";
-import type { FileRouter } from "uploadthing/next";
+import { createUploadthing } from "uploadthing/h3";
+import type { FileRouter } from "uploadthing/h3";
 
 const f = createUploadthing({
   /**

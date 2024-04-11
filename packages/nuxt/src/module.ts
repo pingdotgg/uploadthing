@@ -9,6 +9,7 @@ import {
   resolvePath,
   useLogger,
 } from "@nuxt/kit";
+import type from "@nuxt/schema";
 import defu from "defu";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";
@@ -40,7 +41,6 @@ export default defineNuxtModule<ModuleOptions>({
     const logger = useLogger("uploadthing");
     const resolver = createResolver(import.meta.url);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     nuxt.options.runtimeConfig.uploadthing = defu(
       nuxt.options.runtimeConfig.uploadthing as any,
       {
@@ -74,11 +74,11 @@ export default defineNuxtModule<ModuleOptions>({
       }
     });
 
-    void addComponent({
+    await addComponent({
       name: "UploadButton",
       filePath: resolver.resolve("./runtime/components/button"),
     });
-    void addComponent({
+    await addComponent({
       name: "UploadDropzone",
       filePath: resolver.resolve("./runtime/components/dropzone"),
     });

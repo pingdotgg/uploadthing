@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "nuxt-module-build build && bun run postbuild.ts",
+    "build": "nuxt-module-build build && tsc && bun run postbuild.ts",
     "clean": "git clean -xdf .nuxt dist node_modules",
     "dev": "nuxi dev playground --port 3010",
     "dev:build": "nuxi build playground",

@@ -17,6 +17,11 @@ import type {
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 
+export type {
+  EndpointMetadata,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
+
 const useEndpointMetadata = (url: URL, endpoint: string) => {
   // TODO: useState with server-inserted data to skip fetch on client
   const { data } = useFetch<string>(url.href);

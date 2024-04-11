@@ -4,4 +4,4 @@ import { generateUploadDropzone } from "@uploadthing/vue";
 
 const UploadDropzone = generateUploadDropzone<UploadRouter>();
 
-export default UploadDropzone;
+ export default UploadDropzone;

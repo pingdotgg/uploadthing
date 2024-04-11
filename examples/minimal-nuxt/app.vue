@@ -53,7 +53,6 @@ const alert = (msg: string) => {
 };
 
 const { startUpload } = useUploadThing("videoAndImage", {
-  // @ts-expect-error - FIXME
   onClientUploadComplete(res) {
     console.log(`onClientUploadComplete`, res);
     alert("Upload Completed");
