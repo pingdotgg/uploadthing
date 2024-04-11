@@ -17,8 +17,8 @@
 
   <UploadDropzone
     :config="{
-      endpoint: 'e2',
-      onClientUploadComplete(res) {
+      endpoint: 'videoAndImage',
+      onClientUploadComplete: (res) => {
         console.log(`onClientUploadComplete`, res);
         alert('Upload Completed');
 
@@ -53,8 +53,7 @@ const alert = (msg: string) => {
 };
 
 const { startUpload } = useUploadThing("videoAndImage", {
-  // @ts-expect-error - FIXME
-  onClientUploadComplete(res) {
+  onClientUploadComplete: (res) => {
     console.log(`onClientUploadComplete`, res);
     alert("Upload Completed");
   },

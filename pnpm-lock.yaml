@@ -958,6 +958,9 @@ importers:
       typescript:
         specifier: ^5.4.2
         version: 5.4.5
+      vue:
+        specifier: ^3.4.21
+        version: 3.4.21(typescript@5.4.5)
       wait-on:
         specifier: ^7.2.0
         version: 7.2.0

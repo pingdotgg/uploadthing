@@ -1,0 +1,6 @@
+{
+  "extends": "./.nuxt/tsconfig.json",
+  "compilerOptions": {
+    "declaration": false
+  }
+}

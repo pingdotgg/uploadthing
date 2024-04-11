@@ -1,75 +1,18 @@
-# Nuxt 3 Minimal Starter
+# Minimal Nuxt example for UploadThing
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/minimal-nuxt">
+  <img height="64" src="https://github.com/pingdotgg/uploadthing/assets/51714798/45907a4e-aa64-401a-afb3-b6c6df6eb71f" />
+</a>
 
-## Setup
+## QuickStart
 
-Make sure to install the dependencies:
+1. Grab an API key from the UploadThing dashboard:
+   https://uploadthing.com/dashboard
+2. `cp .env.example .env` and paste in your API key in the newly created `.env`
+   file
+3. `pnpm i && pnpm generate && pnpm dev`
+4. Upload files!
 
-```bash
-# npm
-npm install
+## Further reference
 
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
-```
-
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Check out the docs at: https://docs.uploadthing.com/getting-started/appdir

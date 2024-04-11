@@ -6,6 +6,11 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".nuxt/**"]
     },
+    "dev": {
+      "dependsOn": ["dev:prepare"],
+      "cache": false,
+      "persistent": true
+    },
     "build": {
       "dependsOn": ["^build", "dev:prepare"],
       "outputs": ["dist/**", ".nuxt/**"]
