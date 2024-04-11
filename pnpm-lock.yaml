@@ -863,9 +863,6 @@ importers:
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@types/node@20.12.7)(@unocss/reset@0.59.0)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@3.29.4)(typescript@5.4.5)(unocss@0.59.0)(vite@5.2.8)
-      ufo:
-        specifier: ^1.5.3
-        version: 1.5.3
 
   packages/react:
     dependencies:
