@@ -837,7 +837,7 @@ importers:
         specifier: ^5.1.2
         version: 5.1.2(typescript@5.4.5)
       eslint:
-        specifier: ^8.56.0
+        specifier: ^8.57.0
         version: 8.57.0
       expo-constants:
         specifier: ^15.4.5
@@ -855,11 +855,11 @@ importers:
         specifier: ^0.73.4
         version: 0.73.6(@babel/core@7.24.4)(@babel/preset-env@7.24.4)(react@18.2.0)
       typescript:
-        specifier: ^5.3.3
+        specifier: ^5.4.2
         version: 5.4.5
       uploadthing:
-        specifier: 6.5.0
-        version: 6.5.0
+        specifier: 6.9.0
+        version: link:../uploadthing
       wait-on:
         specifier: ^7.2.0
         version: 7.2.0
@@ -7674,6 +7674,7 @@ packages:
 
   /@uploadthing/mime-types@0.2.7:
     resolution: {integrity: sha512-HfQpL1GSyLOOnIT4WqVv8aW3HotEpFKuuCnK+dUZThMzeiFs09s9J0wk5/VBwupXvIXQwMiB//bp9aUE2p/mFg==}
+    dev: false
 
   /@uploadthing/shared@6.6.0(@uploadthing/mime-types@0.2.7):
     resolution: {integrity: sha512-3mERSbD9/i83dF4rK6M/K3zcPo70mfo33VvrTE4U2Tf2HS8vjUvu8BmJjNZkZOSIoXenEnKmCxDf9vNPsdO65w==}
@@ -7685,6 +7686,7 @@ packages:
     dependencies:
       '@uploadthing/mime-types': 0.2.7
       std-env: 3.7.0
+    dev: false
 
   /@urql/core@2.3.6(graphql@15.8.0):
     resolution: {integrity: sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw==}
@@ -18994,6 +18996,7 @@ packages:
 
   /std-env@3.7.0:
     resolution: {integrity: sha512-JPbdCEQLj1w5GilpiHAx3qJvFndqybBysA3qUOnznweH4QbNYUsW/ea8QzSrnh0vNsezMMw5bcVool8lM0gwzg==}
+    dev: false
 
   /stdin-discarder@0.1.0:
     resolution: {integrity: sha512-xhV7w8S+bUwlPTb4bAOUQhv8/cSS5offJuX8GQGq32ONF0ZtDWKfkdomM3HMRA+LhX6um/FZ0COqlwsjD53LeQ==}
@@ -20592,6 +20595,7 @@ packages:
       '@uploadthing/shared': 6.6.0(@uploadthing/mime-types@0.2.7)
       consola: 3.2.3
       std-env: 3.7.0
+    dev: false
 
   /uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}

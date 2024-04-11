@@ -41,21 +41,21 @@
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^5.1.2",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.0",
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^11.10.1",
     "expo-image-picker": "^14.7.1",
     "react": "18.2.0",
     "react-native": "^0.73.4",
-    "typescript": "^5.3.3",
-    "uploadthing": "6.5.0",
+    "typescript": "^5.4.2",
+    "uploadthing": "6.9.0",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^11.0.0",
     "expo-image-picker": "^14.0.0",
-    "uploadthing": "^6.5.0"
+    "uploadthing": "^6.9.0"
   },
   "peerDependenciesMeta": {
     "@uploadthing/mime-types": {
