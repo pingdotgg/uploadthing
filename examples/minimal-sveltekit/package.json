@@ -13,12 +13,13 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",
-    "@uploadthing/svelte": "workspace:6.4.1",
-    "uploadthing": "workspace:6.9.0"
+    "@uploadthing/svelte": "6.4.1",
+    "uploadthing": "6.9.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.1.1",
     "@sveltejs/kit": "^2.5.4",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
     "svelte": "^4.2.12",
     "svelte-check": "^3.6.7",
     "tslib": "^2.6.2",

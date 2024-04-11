@@ -28,7 +28,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Build UT packages
-        run: bun run build
+        run: pnpm run build
 
       - name: Run build
-        run: bun turbo --filter ./examples/${{ matrix.dir }} build
+        run: pnpm turbo --filter ./examples/${{ matrix.dir }} build
