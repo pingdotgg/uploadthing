@@ -320,8 +320,8 @@ importers:
         specifier: ~3.29.0
         version: 3.29.0(react-native@0.73.6)(react@18.2.0)
       uploadthing:
-        specifier: 6.5.0
-        version: 6.5.0
+        specifier: 6.9.0
+        version: link:../../packages/uploadthing
     devDependencies:
       '@babel/core':
         specifier: ^7.23.9
@@ -333,7 +333,7 @@ importers:
         specifier: 18.2.60
         version: 18.2.60
       typescript:
-        specifier: ^5.3.3
+        specifier: ^5.4.2
         version: 5.4.5
 
   examples/minimal-pagedir:
@@ -7670,22 +7670,6 @@ packages:
     resolution: {integrity: sha512-ErP6SUzPPRX9Df4fqGlwlLInoG+iBiH0nDudRuIpoFGyTnv1uO9BQ+lfFld8s1gI1WCdoBwVkISBp9/f/E/GLA==}
     dependencies:
       '@unhead/schema': 1.9.4
-    dev: false
-
-  /@uploadthing/mime-types@0.2.7:
-    resolution: {integrity: sha512-HfQpL1GSyLOOnIT4WqVv8aW3HotEpFKuuCnK+dUZThMzeiFs09s9J0wk5/VBwupXvIXQwMiB//bp9aUE2p/mFg==}
-    dev: false
-
-  /@uploadthing/shared@6.6.0(@uploadthing/mime-types@0.2.7):
-    resolution: {integrity: sha512-3mERSbD9/i83dF4rK6M/K3zcPo70mfo33VvrTE4U2Tf2HS8vjUvu8BmJjNZkZOSIoXenEnKmCxDf9vNPsdO65w==}
-    peerDependencies:
-      '@uploadthing/mime-types': 0.2.7
-    peerDependenciesMeta:
-      '@uploadthing/mime-types':
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.7
-      std-env: 3.7.0
     dev: false
 
   /@urql/core@2.3.6(graphql@15.8.0):
@@ -20569,33 +20553,6 @@ packages:
       browserslist: 4.23.0
       escalade: 3.1.2
       picocolors: 1.0.0
-
-  /uploadthing@6.5.0:
-    resolution: {integrity: sha512-lW+wOpWQzw2qNCvbuz/cWw4H8tF7dNakuLNVllQbQJFlPniKwPqSXHMGumXEeOdQi4mR20fJH1YPJBq5bof3cg==}
-    engines: {node: '>=18.13.0'}
-    peerDependencies:
-      express: '*'
-      fastify: '*'
-      h3: '*'
-      next: '*'
-      tailwindcss: '*'
-    peerDependenciesMeta:
-      express:
-        optional: true
-      fastify:
-        optional: true
-      h3:
-        optional: true
-      next:
-        optional: true
-      tailwindcss:
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.7
-      '@uploadthing/shared': 6.6.0(@uploadthing/mime-types@0.2.7)
-      consola: 3.2.3
-      std-env: 3.7.0
-    dev: false
 
   /uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
