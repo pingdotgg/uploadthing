@@ -19,7 +19,7 @@ for (const file of filesToPatch) {
     content,
   ].join(";\n");
   content = content
-    .replace(
+    .replaceAll(
       "TEndpoint extends string | number | symbol",
       "TEndpoint extends keyof UploadRouter",
     )
