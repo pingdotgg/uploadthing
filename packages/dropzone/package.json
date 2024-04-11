@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/dropzone",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -34,12 +34,23 @@
         "types": "./solid/index.d.cts",
         "default": "./solid/index.cjs"
       }
+    },
+    "./svelte": {
+      "import": {
+        "types": "./svelte/index.d.ts",
+        "default": "./svelte/index.js"
+      },
+      "require": {
+        "types": "./svelte/index.d.cts",
+        "default": "./svelte/index.cjs"
+      }
     }
   },
   "files": [
     "core",
     "react",
-    "solid"
+    "solid",
+    "svelte"
   ],
   "publishConfig": {
     "access": "public"
@@ -49,6 +60,7 @@
     "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf core react solid node_modules",
     "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -58,21 +70,26 @@
     "@types/react": "18.2.60",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^4.4.8",
+    "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
     "react": "18.2.0",
     "solid-js": "^1.8.15",
-    "typescript": "^5.3.3"
+    "svelte": "^4.2.12",
+    "typescript": "^5.4.2"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "solid-js": "^1.7.11"
+    "solid-js": "^1.7.11",
+    "svelte": "^4.2.12"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "solid-js": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     }
   },

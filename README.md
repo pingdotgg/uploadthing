@@ -49,11 +49,8 @@ community.
 <!-- prettier-ignore-end -->
 
 1. Fork and clone the repository
-2. Ensure you have the LTS version of Node.js installed, as well as a compatible
-   version of pnpm as specified in
-   [package.json#packageManager](./package.json#L5). The easiest way to do this
-   is to install [corepack](https://github.com/nodejs/corepack) by running
-   `corepack enable`.
+2. Ensure you have the LTS version of Node.js installed, as well as the latest
+   version of [pnpm](https://pnpm.io).
 3. Install the project dependencies by running `pnpm install`.
 4. Implement your changes, as well as any documentation or tests that are
    required.

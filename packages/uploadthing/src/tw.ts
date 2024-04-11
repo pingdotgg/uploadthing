@@ -1,20 +1,21 @@
+import { sep } from "node:path";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
 
 /**
  * Add more here when additional UI packages are added
  */
-const PACKAGES = ["react", "solid"];
+const PACKAGES = ["react", "solid", "svelte"];
 
 export function withUt(twConfig: Config) {
-  const contentPaths = PACKAGES.flatMap((pkg) => {
-    // We assume a majority of monorepos are max 2 levels deep, but we can add more if needed
-    return [
-      `./node_modules/@uploadthing/${pkg}/dist/**`,
-      `../node_modules/@uploadthing/${pkg}/dist/**`,
-      `../../node_modules/@uploadthing/${pkg}/dist/**`,
-    ];
-  });
+  const contentPaths = PACKAGES.map((pkg) => {
+    try {
+      const resolved = require.resolve(`@uploadthing/${pkg}`);
+      return resolved.split(sep).slice(0, -1).join(sep) + `${sep}**`;
+    } catch {
+      return null;
+    }
+  }).filter(Boolean) as string[];
 
   if (Array.isArray(twConfig.content)) {
     twConfig.content.push(...contentPaths);

@@ -1,10 +1,12 @@
 import {
   generateUploadThingURL,
   pollForFileData,
+  signPayload,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { FetchEsque, ResponseEsque } from "@uploadthing/shared";
 
+import type { UploadedFileData } from "../types";
 import { UPLOADTHING_VERSION } from "./constants";
 import { logger } from "./logger";
 
@@ -47,23 +49,29 @@ export const conditionalDevServer = async (opts: {
 
       logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
 
+      const payload = JSON.stringify({
+        status: "uploaded",
+        metadata: JSON.parse(file.metadata ?? "{}") as unknown,
+        file: {
+          url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
+          key: opts.fileKey,
+          name: file.fileName,
+          size: file.fileSize,
+          type: file.fileType,
+          customId: file.customId,
+        } satisfies UploadedFileData,
+      });
+
+      const signature = await signPayload(payload, opts.apiKey);
+
       try {
         const response = await opts.fetch(callbackUrl, {
           method: "POST",
-          body: JSON.stringify({
-            status: "uploaded",
-            metadata: JSON.parse(file.metadata ?? "{}") as unknown,
-            file: {
-              url: `https://utfs.io/f/${encodeURIComponent(opts.fileKey)}`,
-              key: opts.fileKey,
-              name: file.fileName,
-              size: file.fileSize,
-              type: file.fileType,
-              customId: file.customId,
-            },
-          }),
+          body: payload,
           headers: {
+            "content-type": "application/json",
             "uploadthing-hook": "callback",
+            "x-uploadthing-signature": signature,
           },
         });
         if (isValidResponse(response)) {

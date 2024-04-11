@@ -8,16 +8,17 @@
   },
   "scripts": {
     "build": "tsup",
+    "dev": "tsup --watch",
     "clean": "git clean -xdf dist node_modules"
   },
   "dependencies": {
-    "@typescript-eslint/parser": "^7.1.0",
-    "@typescript-eslint/utils": "^7.1.0"
+    "@typescript-eslint/parser": "^7.3.1",
+    "@typescript-eslint/utils": "^7.3.1"
   },
   "devDependencies": {
     "@types/eslint": "^8.56.4",
     "@uploadthing/tsconfig": "0.1.0",
     "tsup": "8.0.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.2"
   }
 }

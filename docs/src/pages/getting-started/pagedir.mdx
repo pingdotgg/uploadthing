@@ -16,13 +16,17 @@ where you want to be
 <Steps>
 ### Creating your first FileRoute
 
-All files uploaded to uploadthing are associated with a FileRoute. Think of a
-FileRoute similar to an endpoint, it has:
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
 - Max file size
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
+
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/api-reference/server#file-routes).
 
 ```tsx copy filename="server/uploadthing.ts"
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -77,7 +81,9 @@ import { ourFileRouter } from "~/server/uploadthing";
 
 export default createRouteHandler({
   router: ourFileRouter,
-  config: { ... },
+
+  // Apply an (optional) custom config:
+  // config: { ... },
 });
 ```
 

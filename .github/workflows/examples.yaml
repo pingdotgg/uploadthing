@@ -14,6 +14,7 @@ concurrency:
 jobs:
   e2e-node:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         dir:
@@ -26,11 +27,8 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - name: Install necessary deps
-        run: bun i
-
       - name: Build UT packages
-        run: bun run build
+        run: pnpm run build
 
       - name: Run build
-        run: bun turbo --filter ./examples/${{ matrix.dir }} build
+        run: pnpm turbo --filter ./examples/${{ matrix.dir }} build

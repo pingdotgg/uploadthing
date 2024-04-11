@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { useConfig } from "nextra-theme-docs";
 
@@ -60,7 +61,7 @@ const Head = () => {
   const { asPath, defaultLocale, locale } = useRouter();
   const { frontMatter } = useConfig();
   const url =
-    "https://my-app.com" +
+    "https://docs.uploadthing.com" +
     (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
   return (
@@ -127,6 +128,7 @@ const config = {
     link: "https://github.com/pingdotgg/uploadthing",
   },
   useNextSeoProps() {
+    const currentUrl = usePathname();
     return {
       additionalLinkTags: [
         {
@@ -163,6 +165,8 @@ const config = {
           { url: "https://docs.uploadthing.com/og.jpg?random=aaaaaaaaaaaaa" },
         ],
       },
+      canonical: `https://docs.uploadthing.com${currentUrl}`,
+      noindex: process.env.NO_INDEX === "true",
       titleTemplate: "%s – uploadthing",
       twitter: {
         cardType: "summary_large_image",

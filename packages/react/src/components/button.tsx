@@ -118,6 +118,7 @@ export function UploadButton<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
@@ -285,7 +286,6 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
-        tabIndex={0}
         ref={labelRef}
         onClick={(e) => {
           if (isManualTriggerDisplayed) {

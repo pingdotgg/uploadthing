@@ -117,3 +117,8 @@
   --theme-color-accent: hsla(356, 65%, 50%, 1);
   --theme-color-background: hsla(348, 24%, 12%, 1);
 }
+
+// Nextra fixes
+.nextra-content {
+  min-width: 0;
+}

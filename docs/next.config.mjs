@@ -13,4 +13,7 @@ const withNextra = nextra({
 export default withNextra({
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
+  env: {
+    NO_INDEX: process.env.VERCEL_ENV !== "production" ? "true" : "false",
+  },
 });

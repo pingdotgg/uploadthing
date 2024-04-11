@@ -1,4 +1,4 @@
-import type { FetchEsque } from "@uploadthing/shared";
+import type { FetchEsque, MaybePromise } from "@uploadthing/shared";
 import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -28,6 +28,7 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
+  headers?: HeadersInit,
 ) => Promise<UTEvents[TEvent]["out"]>;
 
 /**
@@ -39,6 +40,7 @@ export const createUTReporter = (cfg: {
   endpoint: string;
   package: string;
   fetch: FetchEsque;
+  headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
 }): UTReporter => {
   return async (type, payload) => {
     const url = createAPIRequestUrl({
@@ -46,6 +48,10 @@ export const createUTReporter = (cfg: {
       slug: cfg.endpoint,
       actionType: type,
     });
+    let customHeaders =
+      typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
+    if (customHeaders instanceof Promise) customHeaders = await customHeaders;
+
     const response = await cfg.fetch(url, {
       method: "POST",
       body: JSON.stringify(payload),
@@ -53,6 +59,7 @@ export const createUTReporter = (cfg: {
         "Content-Type": "application/json",
         "x-uploadthing-package": cfg.package,
         "x-uploadthing-version": UPLOADTHING_VERSION,
+        ...customHeaders,
       },
     });
 

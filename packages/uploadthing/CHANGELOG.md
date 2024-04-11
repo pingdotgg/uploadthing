@@ -1,5 +1,104 @@
 # uploadthing
 
+## 6.9.0
+
+### Minor Changes
+
+- [#225](https://github.com/pingdotgg/uploadthing/pull/225) [`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe) Thanks [@AlanAcDz](https://github.com/AlanAcDz)! - feat: sveltekit support
+
+  📚 Read the docs to get started: https://docs.uploadthing.com/getting-started/svelte
+
+### Patch Changes
+
+- Updated dependencies [[`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe)]:
+  - @uploadthing/shared@6.6.0
+
+## 6.8.0
+
+### Minor Changes
+
+- [#739](https://github.com/pingdotgg/uploadthing/pull/739) [`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: minFileCount option on RouteConfig
+
+- [#742](https://github.com/pingdotgg/uploadthing/pull/742) [`946cb99`](https://github.com/pingdotgg/uploadthing/commit/946cb99d3051c3982f14740874b6613bf3c4bc65) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to update a file's ACL to UTApi
+
+### Patch Changes
+
+- Updated dependencies [[`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667), [`0069ead`](https://github.com/pingdotgg/uploadthing/commit/0069eadbffd90db29df1966eae4f0a85aa3a8490)]:
+  - @uploadthing/shared@6.5.0
+  - @uploadthing/mime-types@0.2.7
+
+## 6.7.0
+
+### Minor Changes
+
+- [#725](https://github.com/pingdotgg/uploadthing/pull/725) [`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: verify callback data signature
+
+### Patch Changes
+
+- [#715](https://github.com/pingdotgg/uploadthing/pull/715) [`9644807`](https://github.com/pingdotgg/uploadthing/commit/96448073319d378208bd3dc5549c7146ce942fd7) Thanks [@jonsystems](https://github.com/jonsystems)! - fix: platform agnostic pathing for twPlugin
+
+- Updated dependencies [[`6d9e90b`](https://github.com/pingdotgg/uploadthing/commit/6d9e90b1035f858af2c90d66d6c01f41ed80aa97)]:
+  - @uploadthing/shared@6.4.0
+
+## 6.6.0
+
+### Minor Changes
+
+- [#705](https://github.com/pingdotgg/uploadthing/pull/705) [`a919d5a`](https://github.com/pingdotgg/uploadthing/commit/a919d5a9fde0680dfdba73d8d2947d229268fdb8) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add client headers option
+
+  this primarily allows you to authenticate the client when your server is deployed separate from your client:
+
+  ```ts
+  import { genUploader } from "uploadthing/client";
+
+  const uploadFiles = genUploader<OurFileRouter>({
+    url: "https://my-server.com",
+  });
+
+  uploadFiles("endpoint", {
+    headers: async () => {
+      const token = await getToken();
+      return { Authorization: `Bearer ${token}` };
+    },
+  });
+  ```
+
+### Patch Changes
+
+- [#691](https://github.com/pingdotgg/uploadthing/pull/691) [`92e0b59`](https://github.com/pingdotgg/uploadthing/commit/92e0b59d2eeb6a8e035a264efa03f0b8abf3678d) Thanks [@ahkhanjani](https://github.com/ahkhanjani)! - fix: Slightly better server error messages
+
+- [#699](https://github.com/pingdotgg/uploadthing/pull/699) [`398866b`](https://github.com/pingdotgg/uploadthing/commit/398866bcdf2e05bda4a8b59a255090a7276e178c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(types): FileEsque resolved to any if undici was not in project
+
+- [#694](https://github.com/pingdotgg/uploadthing/pull/694) [`5f5a1ea`](https://github.com/pingdotgg/uploadthing/commit/5f5a1ea7bd8bf17b0d153f1f604b73f084686cf7) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: CustomId should be optional in middleware
+
+- [#696](https://github.com/pingdotgg/uploadthing/pull/696) [`8773859`](https://github.com/pingdotgg/uploadthing/commit/87738594f38a1f723f5c1c867af979441b95a722) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(tw plugin): support turbopack
+
+## 6.5.2
+
+### Patch Changes
+
+- [`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release with `workspace:` protocol in published distributions
+
+- Updated dependencies [[`d7c2018`](https://github.com/pingdotgg/uploadthing/commit/d7c2018f62c9e1ee9e0c11514e4ff3f28cc5e939)]:
+  - @uploadthing/mime-types@0.2.6
+  - @uploadthing/shared@6.3.4
+
+## 6.5.1
+
+### Patch Changes
+
+- [#662](https://github.com/pingdotgg/uploadthing/pull/662) [`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - make API more consistent with the available file data in different callbacks
+
+- [#659](https://github.com/pingdotgg/uploadthing/pull/659) [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: move some internally exported functions to `@uploadthing/shared`
+
+- [#627](https://github.com/pingdotgg/uploadthing/pull/627) [`1bafd62`](https://github.com/pingdotgg/uploadthing/commit/1bafd62258328f994300e69839738661bf7c652a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - drop usage of `util.inspect` in internal logger
+
+- [#654](https://github.com/pingdotgg/uploadthing/pull/654) [`b42efc2`](https://github.com/pingdotgg/uploadthing/commit/b42efc226479cdee16eabd2ede3042f17bc102da) Thanks [@markflorkowski](https://github.com/markflorkowski)! - include a wider search pattern in tailwind plugin to cover more monorepo usecases
+
+- Updated dependencies [[`77740a8`](https://github.com/pingdotgg/uploadthing/commit/77740a84266a5c2f1c7e485d8bf41d768e91e1df), [`a9c9443`](https://github.com/pingdotgg/uploadthing/commit/a9c94436d63af524991fb166879a906016bd6e20), [`0adc3b8`](https://github.com/pingdotgg/uploadthing/commit/0adc3b8df67ea5c4a94db736d0aff1b489979393)]:
+  - @uploadthing/shared@6.3.3
+  - @uploadthing/mime-types@0.2.5
+
 ## 6.5.0
 
 ### Minor Changes

@@ -18,7 +18,7 @@ import type {
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 
-interface PresignedBase {
+export interface PresignedBase {
   key: string;
   fileName: string;
   fileType: FileRouterInputKey;
@@ -68,7 +68,7 @@ const unsetMarker = "unsetMarker" as "unsetMarker" & {
 export type UnsetMarker = typeof unsetMarker;
 
 export type ValidMiddlewareObject = {
-  [UTFiles]?: FileUploadDataWithCustomId[];
+  [UTFiles]?: Partial<FileUploadDataWithCustomId>[];
   [key: string]: unknown;
 };
 

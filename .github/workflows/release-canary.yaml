@@ -8,6 +8,7 @@ on:
 jobs:
   release:
     if: contains(github.event.pull_request.labels.*.name, 'release canary')
+    timeout-minutes: 10
     name: Build & Publish a canary release
     runs-on: ubuntu-latest
 
@@ -19,7 +20,7 @@ jobs:
         uses: ./tooling/gh-actions/setup
 
       - name: Check packages for common errors
-        run: bun turbo --filter "./packages/*" build
+        run: pnpm turbo --filter "./packages/*" build
 
       - name: Bump version to canary
         run: node .github/canary-version.js

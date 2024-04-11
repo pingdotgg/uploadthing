@@ -23,6 +23,7 @@ import {
   isEventWithFiles,
   isFileAccepted,
   isIeOrEdge,
+  isPropagationStopped,
   isValidQuantity,
   isValidSize,
   noop,
@@ -78,10 +79,10 @@ export function createDropzone(_props: DropzoneOptions) {
   createEffect(() => {
     const onDocumentDrop = (event: DropEvent) => {
       const root = rootRef();
-      if (root && root.contains(event.target as Node)) {
-        // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
-        return;
-      }
+
+      // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
+      if (root?.contains(event.target as Node)) return;
+
       event.preventDefault();
       dragTargets = [];
     };
@@ -98,16 +99,8 @@ export function createDropzone(_props: DropzoneOptions) {
     });
   });
 
-  function isPropagationStopped(event: Event) {
-    if (typeof event.cancelBubble !== "undefined") {
-      return event.cancelBubble;
-    }
-    return false;
-  }
-
   const onDragEnter = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets = [...dragTargets, event.target as HTMLElement];
 
@@ -192,7 +185,7 @@ export function createDropzone(_props: DropzoneOptions) {
       }
     });
 
-    if (isValidQuantity(acceptedFiles, props.multiple, props.maxFiles)) {
+    if (!isValidQuantity(acceptedFiles, props.multiple, props.maxFiles)) {
       acceptedFiles.splice(0);
     }
 
@@ -205,7 +198,6 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onDrop = (event: DropEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     dragTargets = [];
 
@@ -233,11 +225,10 @@ export function createDropzone(_props: DropzoneOptions) {
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
-    // Ignore keyboard events bubbling up the DOM tree
     const root = rootRef();
-    if (!root || !root.isEqualNode(event.target as Node)) {
-      return;
-    }
+
+    // Ignore keyboard events bubbling up the DOM tree
+    if (!root?.isEqualNode(event.target as Node)) return;
 
     if (isEnterOrSpace(event)) {
       event.preventDefault();
