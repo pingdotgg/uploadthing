@@ -40,13 +40,6 @@ yarn-error.log*
 # turbo
 .turbo
 
-dist
-.solid
-
-.output
-.nuxt
-.vercel
-
 # cf
 .wrangler
 .dev.vars
@@ -57,4 +50,10 @@ packages/*/*/
 !packages/*/test/
 !packages/*/playground/
 
+dist
+
 .svelte-kit
+.solid
+.vercel
+.output
+.nuxt

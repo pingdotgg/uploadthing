@@ -2,22 +2,22 @@
   "name": "@example/with-drizzle-appdir",
   "private": true,
   "scripts": {
-    "build": "bun db:push && next build",
+    "build": "pnpm db:push && next build",
     "clean": "git clean -xdf .next node_modules",
     "db:push": "mkdir -p .data && drizzle-kit push:sqlite",
-    "dev": "bun db:push && next dev",
+    "dev": "pnpm db:push && next dev",
     "lint": "SKIP_ENV_VALIDATION=true next lint",
     "start": "next start"
   },
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.9.2",
-    "@uploadthing/react": "workspace:6.4.4",
+    "@uploadthing/react": "6.4.4",
     "better-sqlite3": "^9.4.3",
     "drizzle-orm": "^0.29.4",
     "next": "14.1.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "uploadthing": "workspace:6.9.0",
+    "uploadthing": "6.9.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

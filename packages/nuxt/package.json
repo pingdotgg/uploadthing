@@ -27,16 +27,16 @@
   },
   "dependencies": {
     "@nuxt/kit": "^3.11.2",
-    "@uploadthing/vue": "workspace:6.3.0",
+    "@uploadthing/vue": "workspace:*",
     "defu": "^6.1.4",
-    "uploadthing": "workspace:6.9.0"
+    "uploadthing": "workspace:*"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@nuxt/module-builder": "^0.5.5",
     "@nuxt/schema": "^3.11.2",
     "@nuxt/test-utils": "^3.12.0",
-    "@uploadthing/eslint-config": "0.2.0",
+    "@uploadthing/eslint-config": "workspace:*",
     "eslint": "^8.57.0",
     "h3": "^1.11.1",
     "nuxt": "^3.11.2",

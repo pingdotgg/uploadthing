@@ -10,6 +10,7 @@ coverage
 **/next-env.d.ts
 out/
 build
+dist
 
 .DS_Store
 *.pem
@@ -21,12 +22,11 @@ yarn-error.log*
 
 .turbo
 
-dist
-.solid
-
 CHANGELOG.md
 
 .svelte-kit
-
+.solid
 .nuxt
 .output
+
+pnpm-lock.yaml
