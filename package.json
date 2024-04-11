@@ -3,8 +3,10 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": "20.x",
+    "pnpm": "8.x"
   },
+  "packageManager": "pnpm@8.15.6",
   "workspaces": [
     "docs",
     "examples/*",
