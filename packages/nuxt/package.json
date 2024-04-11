@@ -22,6 +22,7 @@
     "dev": "nuxi dev playground --port 3010",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "FIXME__test": "vitest run",
     "test:watch": "vitest watch"
   },
