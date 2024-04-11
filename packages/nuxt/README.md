@@ -133,7 +133,7 @@ From workspace root:
 # Install dependencies
 pnpm install
 
-# Develop with the playground (playground is at `examples/minimal-nuxt`)
+# Develop with the playground
 pnpm dev
 
 # Run ESLint
