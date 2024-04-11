@@ -63,7 +63,7 @@ export type ModuleOptions = Omit<
    * Path to your router definition file
    * @default `~/server/uploadthing.ts`
    */
-  routerPath: string;
+  routerPath?: string;
   /**
    * Your UploadThing secret key
    * @default `process.env.NUXT_UPLOADTHING_SECRET`
