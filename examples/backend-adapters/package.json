@@ -8,21 +8,21 @@
   ],
   "scripts": {
     "clean": "git clean -xdf node_modules client/node_modules client/dist server/node_modules server/dist",
-    "dev:cf": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:cf\"",
-    "dev:elysia": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:elysia\"",
-    "dev:express": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:express\"",
-    "dev:fastify": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:fastify\"",
-    "dev:hono": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:hono\"",
-    "dev:h3": "concurrently \"bun --cwd client dev\" \"bun --cwd server dev:h3\"",
-    "build": "bun --cwd client build && bun --cwd server build",
-    "start": "concurrently \"bun --cwd client start\" \"bun --cwd server start\"",
+    "dev:cf": "concurrently \"npm run -w client dev\" \"npm run -w server dev:cf\"",
+    "dev:elysia": "concurrently \"npm run -w client dev\" \"npm run -w server dev:elysia\"",
+    "dev:express": "concurrently \"npm run -w client dev\" \"npm run -w server dev:express\"",
+    "dev:fastify": "concurrently \"npm run -w client dev\" \"npm run -w server dev:fastify\"",
+    "dev:hono": "concurrently \"npm run -w client dev\" \"npm run -w server dev:hono\"",
+    "dev:h3": "concurrently \"npm run -w client dev\" \"npm run -w server dev:h3\"",
+    "build": "npm run -w client build && npm run -w server build",
+    "start": "concurrently \"npm run -w client start\" \"npm run -w server start\"",
     "test": "playwright test"
   },
   "dependencies": {
-    "@uploadthing/react": "workspace:6.4.1",
+    "@uploadthing/react": "6.4.4",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.2",
-    "uploadthing": "workspace:6.7.0"
+    "uploadthing": "6.9.0"
   },
   "devDependencies": {
     "@playwright/test": "1.42.1"

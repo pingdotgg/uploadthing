@@ -7,6 +7,6 @@
 Example using the NextJS App Router
 
 ```bash
-bun install
-bun dev
+pnpm install
+pnpm dev
 ```

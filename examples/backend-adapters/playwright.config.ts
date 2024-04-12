@@ -9,7 +9,7 @@ export default defineConfig({
   },
   webServer: [
     {
-      command: "bun dev:hono",
+      command: "pnpm dev:hono",
       url: "http://localhost:3000/api",
       reuseExistingServer: !process.env.CI,
       stdout: "pipe",

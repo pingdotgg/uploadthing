@@ -416,3 +416,83 @@ describe("getSignedURL", () => {
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });
 });
+
+describe("updateACL", () => {
+  it("single file", async ({ db }) => {
+    const utapi = new UTApi({ apiKey: "sk_foo" });
+
+    await expect(utapi.updateACL("ut-key", "public-read")).resolves.toEqual({
+      success: true,
+    });
+
+    expect(requestSpy).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/updateACL",
+      {
+        body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
+        headers: {
+          "content-type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
+
+  it("many keys", async ({ db }) => {
+    const utapi = new UTApi({ apiKey: "sk_foo" });
+
+    await expect(
+      utapi.updateACL(["ut-key1", "ut-key2"], "public-read"),
+    ).resolves.toEqual({ success: true });
+
+    expect(requestSpy).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/updateACL",
+      {
+        body: {
+          updates: [
+            { fileKey: "ut-key1", acl: "public-read" },
+            { fileKey: "ut-key2", acl: "public-read" },
+          ],
+        },
+        headers: {
+          "content-type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
+
+  it("many keys with keytype override", async ({ db }) => {
+    const utapi = new UTApi({ apiKey: "sk_foo" });
+
+    await expect(
+      utapi.updateACL(["my-custom-id1", "my-custom-id2"], "public-read", {
+        keyType: "customId",
+      }),
+    ).resolves.toEqual({ success: true });
+
+    expect(requestSpy).toHaveBeenCalledWith(
+      "https://uploadthing.com/api/updateACL",
+      {
+        body: {
+          updates: [
+            { customId: "my-custom-id1", acl: "public-read" },
+            { customId: "my-custom-id2", acl: "public-read" },
+          ],
+        },
+        headers: {
+          "content-type": "application/json",
+          "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+        },
+        method: "POST",
+      },
+    );
+  });
+});

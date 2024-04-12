@@ -2,6 +2,7 @@ import * as S from "@effect/schema/Schema";
 import { Effect, Layer } from "effect";
 
 import type {
+  ACL,
   FetchContextTag,
   FetchEsque,
   MaybeUrl,
@@ -21,6 +22,7 @@ import { getApiKeyOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import { initLogger, logger } from "../internal/logger";
 import type {
+  ACLUpdateOptions,
   DeleteFilesOptions,
   FileEsque,
   GetFileUrlsOptions,
@@ -386,6 +388,45 @@ export class UTApi {
           : { customId: key, expiresIn },
         responseSchema,
       ),
+    );
+  };
+
+  /**
+   * Update the ACL of a file or set of files.
+   *
+   * @example
+   * // Make a single file public
+   * await utapi.updateACL("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", "public-read");
+   *
+   * // Make multiple files private
+   * await utapi.updateACL(
+   *   [
+   *     "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+   *     "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+   *   ],
+   *   "private",
+   * );
+   */
+  updateACL = async (
+    keys: string | string[],
+    acl: ACL,
+    opts?: ACLUpdateOptions,
+  ) => {
+    guardServerOnly();
+
+    const { keyType = this.defaultKeyType } = opts ?? {};
+    const updates = asArray(keys).map((key) => {
+      return keyType === "fileKey"
+        ? { fileKey: key, acl }
+        : { customId: key, acl };
+    });
+
+    const responseSchema = S.struct({
+      success: S.boolean,
+    });
+
+    return await this.executeAsync(
+      this.requestUploadThing("/api/updateACL", { updates }, responseSchema),
     );
   };
 }

@@ -5,7 +5,7 @@ import plugin from "tailwindcss/plugin";
 /**
  * Add more here when additional UI packages are added
  */
-const PACKAGES = ["react", "solid"];
+const PACKAGES = ["react", "solid", "svelte"];
 
 export function withUt(twConfig: Config) {
   const contentPaths = PACKAGES.map((pkg) => {
