@@ -285,7 +285,7 @@ describe("uploadFiles", () => {
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[UploadThingError: Failed to upload file foo.txt to S3]`,
+      `[(FiberFailure) UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
     expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
@@ -322,7 +322,7 @@ describe("uploadFiles", () => {
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[UploadThingError: Failed to upload file foo.txt to S3]`,
+      `[(FiberFailure) UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
     expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
