@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { utapi } from "~/uploadthing/server";
-import { ReactHookFormDemo } from "./_components/react-hook-form-demo";
+import { ReactHookFormDemo } from "./react-hook-form-demo";
 
 const PAGE_SIZE = 20;
 
