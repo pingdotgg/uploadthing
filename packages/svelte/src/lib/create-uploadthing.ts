@@ -17,6 +17,8 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
+export type { ExpandedRouteConfig } from "@uploadthing/shared";
+
 const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return derived(
