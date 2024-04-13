@@ -23,7 +23,6 @@
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
   import {
-    generateClientDropzoneAccept,
     generatePermittedFileTypes,
   } from "uploadthing/client";
 
