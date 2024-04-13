@@ -8,10 +8,6 @@ import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/react";
 import { bytesToHumanReadable } from "@uploadthing/shared";
-import {
-  generateClientDropzoneAccept,
-  generatePermittedFileTypes,
-} from "uploadthing/client";
 
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
@@ -28,16 +24,13 @@ export function FileUploader({
   className,
   ...dropzoneProps
 }: FileUploaderProps) {
-  const { permittedFileInfo, progresses, startUpload } = useUploadThing(
+  const { routeConfig, progresses, startUpload } = useUploadThing(
     "imageUploader",
     {
       files,
       onFilesChange,
       skipPolling: true,
     },
-  );
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
   );
 
   const onDrop = React.useCallback(
@@ -56,8 +49,7 @@ export function FileUploader({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: generateClientDropzoneAccept(fileTypes),
-    multiple,
+    routeConfig,
   });
 
   // Revoke preview url when component unmounts
