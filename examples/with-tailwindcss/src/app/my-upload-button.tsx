@@ -1,7 +1,7 @@
 import { useUploadThing } from "~/utils/uploadthing";
 
 export const MyUploadButton = (props: {}) => {
-  const { getInputProps, files, isUploading, uploadProgress } =
+  const { getInputProps, files, isUploading, progresses } =
     useUploadThing("videoAndImage");
 
   return (

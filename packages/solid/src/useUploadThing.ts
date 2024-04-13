@@ -16,9 +16,10 @@ import type {
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const createEndpointMetadata = (url: URL, endpoint: string) => {
+const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
-  return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
+  return () =>
+    dataGetter()?.data?.find((x) => x.slug === endpoint)?.config ?? null;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -44,10 +45,7 @@ export const INTERNAL_uploadthingHookGen = <
     opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
-    const permittedFileInfo = createEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+    const routeConfig = createRouteConfig(initOpts.url, endpoint as string);
     let uploadProgress = 0;
     let fileProgress = new Map();
 
@@ -115,7 +113,7 @@ export const INTERNAL_uploadthingHookGen = <
     return {
       startUpload,
       isUploading,
-      permittedFileInfo,
+      routeConfig,
     } as const;
   };
 

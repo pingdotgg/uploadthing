@@ -5,7 +5,6 @@ import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
-  generateClientDropzoneAccept,
   generatePermittedFileTypes,
   resolveMaybeUrlArg,
   styleFieldToClassName,
@@ -113,16 +112,12 @@ export const UploadDropzone = <
       return;
     }
   };
-  const fileInfo = () =>
-    generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
+  const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
-    multiple: fileInfo().multiple,
-    get accept() {
-      return fileInfo().fileTypes
-        ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
-        : undefined;
+    get routeConfig() {
+      return uploadThing.routeConfig();
     },
   });
 
@@ -208,9 +203,7 @@ export const UploadDropzone = <
         data-state={state()}
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(
-            uploadThing.permittedFileInfo()?.config,
-          )}
+          allowedContentTextLabelGenerator(uploadThing.routeConfig())}
       </div>
       {files().length > 0 && (
         <button
