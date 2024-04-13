@@ -1,7 +1,9 @@
 import { type NextRequest } from "next/server";
 
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
+import { UploadThingError, UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
 
 const f = createUploadthing({
   /**

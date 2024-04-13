@@ -1,17 +1,34 @@
 import * as React from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import {
   Controller,
   FormProvider,
   useFormContext,
+  useForm as useFormHook,
+  UseFormProps,
   type ControllerProps,
   type FieldPath,
   type FieldValues,
 } from "react-hook-form";
+import { twMerge } from "tailwind-merge";
+import { ZodType } from "zod";
 
 import { Label } from "~/components/ui/label";
-import { cn } from "~/lib/utils";
+
+export const useForm = <TSchema extends ZodType>(
+  props: Omit<UseFormProps<TSchema["_input"]>, "resolver"> & {
+    schema: TSchema;
+  },
+) => {
+  const form = useFormHook<TSchema["_input"]>({
+    ...props,
+    resolver: zodResolver(props.schema, undefined),
+  });
+
+  return form;
+};
 
 const Form = FormProvider;
 
@@ -78,7 +95,7 @@ const FormItem = React.forwardRef<
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div ref={ref} className={cn("space-y-2", className)} {...props} />
+      <div ref={ref} className={twMerge("space-y-2", className)} {...props} />
     </FormItemContext.Provider>
   );
 });
@@ -93,7 +110,7 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && "text-destructive", className)}
+      className={twMerge(error && "text-destructive", className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -134,7 +151,7 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn("text-muted-foreground text-[0.8rem]", className)}
+      className={twMerge("text-muted-foreground text-[0.8rem]", className)}
       {...props}
     />
   );
@@ -156,7 +173,10 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn("text-destructive text-[0.8rem] font-medium", className)}
+      className={twMerge(
+        "text-destructive text-[0.8rem] font-medium",
+        className,
+      )}
       {...props}
     >
       {body}

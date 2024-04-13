@@ -217,6 +217,15 @@ export const fileSizeToBytes = (input: string) => {
   return Math.floor(bytes);
 };
 
+export const bytesToHumanReadable = (bytes: number) => {
+  if (bytes === 0 || bytes === -1) {
+    return "0B";
+  }
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1000));
+  return `${(bytes / Math.pow(1000, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
+};
+
 export async function safeParseJSON<T>(
   input: string | ResponseEsque | Request,
 ): Promise<T | Error> {

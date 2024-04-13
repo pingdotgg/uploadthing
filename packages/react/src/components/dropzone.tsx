@@ -113,6 +113,8 @@ export function UploadDropzone<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      files,
+      onFilesChange: setFiles,
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {

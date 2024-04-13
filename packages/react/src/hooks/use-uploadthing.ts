@@ -25,6 +25,7 @@ import type {
   GenerateTypedHelpersOptions,
   UseUploadthingProps,
 } from "../types";
+import { useControllableState } from "./use-controllable-state";
 import { useEvent } from "./use-event";
 import useFetch from "./use-fetch";
 
@@ -68,23 +69,30 @@ export const INTERNAL_uploadthingHookGen = <
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
-    const [files, setFiles] = useState<File[]>([]);
+    const [_files, setFiles] = useControllableState({
+      prop: opts?.files,
+      onChange: opts?.onFilesChange,
+      defaultProp: [],
+    });
     const [isUploading, setUploading] = useState(false);
-    const uploadProgress = useRef(0);
-    const fileProgress = useRef(new Map<string, number>());
+    const [progresses, setProgresses] = useState(new Map<string, number>());
+    const totalProgress = useRef(0);
 
     const permittedFileInfo = useEndpointMetadata(
       initOpts.url,
       endpoint as string,
     );
 
+    // TODO: Look over if this needs to accept files or if the hook should do it
+    // useControllableState is quite a nice abstraction for this
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
       ? [files: File[], input?: undefined]
       : [files: File[], input: InferredInput];
 
     const startUpload = useEvent(async (...args: FuncInput) => {
-      const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
+      const filesToUpload =
+        (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
       const input = args[1];
 
       setUploading(true);
@@ -92,20 +100,24 @@ export const INTERNAL_uploadthingHookGen = <
       try {
         const res = await uploadFiles(endpoint, {
           headers: opts?.headers,
-          files,
+          files: filesToUpload,
           skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
-            if (!opts?.onUploadProgress) return;
-            fileProgress.current.set(progress.file, progress.progress);
+            // Update progress for the file that triggered the event
+            setProgresses((p) =>
+              new Map(p).set(progress.file, progress.progress),
+            );
+
+            // Update total progress
             let sum = 0;
-            fileProgress.current.forEach((p) => {
-              sum += p;
-            });
-            const averageProgress =
-              Math.floor(sum / fileProgress.current.size / 10) * 10;
-            if (averageProgress !== uploadProgress.current) {
-              opts?.onUploadProgress?.(averageProgress);
-              uploadProgress.current = averageProgress;
+            progresses.forEach((p) => (sum += p));
+
+            if (!opts?.onUploadProgress) return;
+            // Run callback on 10, 20, 30, 40...
+            const even10 = Math.floor(sum / progresses.size / 10) * 10;
+            if (even10 !== totalProgress.current) {
+              opts?.onUploadProgress?.(even10);
+              totalProgress.current = even10;
             }
           },
           onUploadBegin({ file }) {
@@ -134,8 +146,8 @@ export const INTERNAL_uploadthingHookGen = <
         opts?.onUploadError?.(error);
       } finally {
         setUploading(false);
-        fileProgress.current = new Map();
-        uploadProgress.current = 0;
+        setProgresses(new Map());
+        totalProgress.current = 0;
       }
     });
 
@@ -165,7 +177,7 @@ export const INTERNAL_uploadthingHookGen = <
             const selectedFiles = Array.from(e.target.files);
 
             if (mode === "manual") {
-              setFiles(selectedFiles); // controlled state?
+              setFiles(selectedFiles);
               return;
             }
 
@@ -174,17 +186,15 @@ export const INTERNAL_uploadthingHookGen = <
           },
         };
       },
-      [permittedFileInfo?.config, startUpload],
+      [permittedFileInfo?.config, startUpload, setFiles],
     );
 
     return {
-      files,
-      setFiles,
       startUpload,
       isUploading,
       permittedFileInfo,
       getInputProps,
-      uploadProgress: uploadProgress.current,
+      progresses,
     } as const;
   };
 

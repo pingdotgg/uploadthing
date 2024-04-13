@@ -33,6 +33,14 @@ export type UseUploadthingProps<
     : null,
 > = {
   /**
+   * Controllable state for the files to upload
+   */
+  files?: File[];
+  /**
+   * Called when the files are changed
+   */
+  onFilesChange?: (files: File[]) => void;
+  /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
    * Can be used to modify the files before they are uploaded, e.g. renaming them
    */
