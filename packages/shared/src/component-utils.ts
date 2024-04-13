@@ -80,18 +80,26 @@ export const allowedContentTextLabelGenerator = (
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
-type AnyRuntime = "react" | "solid";
+type AnyRuntime = "react" | "solid" | "svelte";
 type MinCallbackArg = { __runtime: AnyRuntime };
 type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"
-  : "solid";
+  : T["__runtime"] extends "solid"
+    ? "solid"
+    : T["__runtime"] extends "svelte"
+      ? "svelte"
+      : never;
 
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? ReactNode
   : JSX.Element;
 type CSSPropertiesEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? CSSProperties
-  : JSX.CSSProperties;
+  : TRuntime extends "solid"
+    ? JSX.CSSProperties
+    : TRuntime extends "svelte"
+      ? string
+      : never;
 
 export type StyleField<
   CallbackArg extends MinCallbackArg,

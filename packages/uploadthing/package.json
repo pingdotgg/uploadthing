@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.7.0",
+  "version": "6.9.0",
   "type": "module",
   "engines": {
     "node": ">=18.13.0"
@@ -127,17 +127,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/mime-types": "workspace:0.2.6",
-    "@uploadthing/shared": "workspace:6.4.0",
+    "@uploadthing/mime-types": "workspace:*",
+    "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
+    "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
     "@types/react": "18.2.60",
-    "@uploadthing/eslint-config": "workspace:0.2.0",
-    "@uploadthing/tsconfig": "workspace:0.1.0",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
     "body-parser": "^1.20.2",
     "bunchee": "^5.1.2",
     "eslint": "^8.57.0",

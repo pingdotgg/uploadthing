@@ -69,6 +69,7 @@ export const conditionalDevServer = async (opts: {
           method: "POST",
           body: payload,
           headers: {
+            "content-type": "application/json",
             "uploadthing-hook": "callback",
             "x-uploadthing-signature": signature,
           },

@@ -1,0 +1,6 @@
+packages:
+  - "docs"
+  - "examples/*"
+  - "examples/backend-adapters/*"
+  - "packages/*"
+  - "tooling/*"

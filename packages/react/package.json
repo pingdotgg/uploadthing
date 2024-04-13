@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.4.1",
+  "version": "6.4.4",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -50,8 +50,8 @@
   },
   "scripts": {
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --minify",
-    "build:js": "bunchee --tsconfig tsconfig.build.json && bun build:css",
-    "build": "bun build:js && bun build:css",
+    "build:js": "bunchee --tsconfig tsconfig.build.json && pnpm build:css",
+    "build": "pnpm build:js && pnpm build:css",
     "dev:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "dev:js": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "dev": "conc npm:dev:*",
@@ -61,8 +61,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:0.2.1",
-    "@uploadthing/shared": "workspace:6.4.0",
+    "@uploadthing/dropzone": "workspace:*",
+    "@uploadthing/shared": "workspace:*",
     "file-selector": "^0.6.0",
     "tailwind-merge": "^2.2.1"
   },
@@ -80,8 +80,8 @@
     "@types/node": "^20.11.21",
     "@types/react": "18.2.60",
     "@types/react-dom": "18.2.19",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.1.2",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
@@ -89,7 +89,7 @@
     "react": "18.2.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2",
-    "uploadthing": "workspace:6.7.0",
+    "uploadthing": "workspace:*",
     "wait-on": "^7.2.0",
     "zod": "^3.22.4"
   },

@@ -1,5 +1,29 @@
 # @uploadthing/solid
 
+## 6.3.4
+
+### Patch Changes
+
+- Updated dependencies [[`1960306`](https://github.com/pingdotgg/uploadthing/commit/196030685bc51a10df8cb413088fed37e7d5bb6c)]:
+  - @uploadthing/dropzone@0.3.1
+
+## 6.3.3
+
+### Patch Changes
+
+- Updated dependencies [[`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe)]:
+  - @uploadthing/dropzone@0.3.0
+  - @uploadthing/shared@6.6.0
+
+## 6.3.2
+
+### Patch Changes
+
+- [#734](https://github.com/pingdotgg/uploadthing/pull/734) [`5606d15`](https://github.com/pingdotgg/uploadthing/commit/5606d15e952c077d652943fee4efdb3c32d33667) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix dropzone not submitting when inside a form
+
+- Updated dependencies [[`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667)]:
+  - @uploadthing/shared@6.5.0
+
 ## 6.3.1
 
 ### Patch Changes
