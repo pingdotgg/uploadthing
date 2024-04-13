@@ -105,9 +105,9 @@ type RouteConfig = {
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
-export type ExpandedRouteConfig = Partial<{
-  [key in FileRouterInputKey]: RouteConfig;
-}>;
+export type ExpandedRouteConfig = {
+  [key in FileRouterInputKey]?: RouteConfig;
+};
 
 export type EndpointMetadata = {
   slug: string;

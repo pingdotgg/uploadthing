@@ -9,6 +9,7 @@ export {
 } from "./components";
 
 export { generateReactHelpers } from "./hooks/use-uploadthing";
+export type * from "./hooks/use-uploadthing";
 
 export type * from "./types";
 

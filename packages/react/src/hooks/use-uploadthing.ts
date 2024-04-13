@@ -36,6 +36,8 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
+export type { ExpandedRouteConfig } from "@uploadthing/shared";
+
 const useRouteConfig = (
   url: URL,
   endpoint: string,
