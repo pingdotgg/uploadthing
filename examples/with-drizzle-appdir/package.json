@@ -26,12 +26,12 @@
     "@types/node": "^20.11.21",
     "@types/react": "18.2.78",
     "@types/react-dom": "18.2.25",
-    "@typescript-eslint/eslint-plugin": "^7.3.1",
-    "@typescript-eslint/parser": "^7.3.1",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/parser": "^7.6.0",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.1",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.1"

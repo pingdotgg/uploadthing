@@ -21,6 +21,6 @@
     "@types/node": "^20.11.21",
     "postcss": "8.4.38",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   }
 }

@@ -59,7 +59,7 @@ importers:
         specifier: ^1.13.2
         version: 1.13.2
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       vite-tsconfig-paths:
         specifier: ^4.3.1
@@ -120,7 +120,7 @@ importers:
         specifier: ^8.2.2
         version: 8.2.2
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       uploadthing:
         specifier: 6.9.0
@@ -155,7 +155,7 @@ importers:
         specifier: ^3.6.0
         version: 3.6.0(vite@5.2.8)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       vite:
         specifier: ^5.1.4
@@ -213,7 +213,7 @@ importers:
         specifier: ^4.7.1
         version: 4.7.2
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       wrangler:
         specifier: ^3.30.0
@@ -247,7 +247,7 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/minimal-astro-react:
@@ -309,7 +309,7 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/minimal-solidstart:
@@ -346,7 +346,7 @@ importers:
         specifier: ^3.4.1
         version: 3.4.3
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/minimal-sveltekit:
@@ -380,7 +380,7 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       vite:
         specifier: ^5.1.4
@@ -426,10 +426,10 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
       eslint:
         specifier: ^8.57.0
@@ -438,7 +438,7 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(eslint@8.57.0)(typescript@5.4.5)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/with-clerk-pagesdir:
@@ -481,10 +481,10 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
       eslint:
         specifier: ^8.57.0
@@ -493,7 +493,7 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(eslint@8.57.0)(typescript@5.4.5)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/with-drizzle-appdir:
@@ -542,10 +542,10 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
       drizzle-kit:
         specifier: ^0.20.14
@@ -557,7 +557,7 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(eslint@8.57.0)(typescript@5.4.5)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/with-drizzle-pagesdir:
@@ -609,10 +609,10 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
       drizzle-kit:
         specifier: ^0.20.14
@@ -624,7 +624,7 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(eslint@8.57.0)(typescript@5.4.5)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/with-react-image-crop:
@@ -658,7 +658,7 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/with-serveractions:
@@ -686,7 +686,7 @@ importers:
         specifier: 18.2.25
         version: 18.2.25
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   examples/with-tailwindcss:
@@ -723,7 +723,7 @@ importers:
         specifier: ^3.4.1
         version: 3.4.3
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   packages/dropzone:
@@ -757,7 +757,7 @@ importers:
         specifier: ^4.2.12
         version: 4.2.13
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   packages/mime-types:
@@ -775,7 +775,7 @@ importers:
         specifier: ^8.57.0
         version: 8.57.0
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   packages/react:
@@ -827,7 +827,7 @@ importers:
         specifier: ^3.4.1
         version: 3.4.3
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       uploadthing:
         specifier: workspace:*
@@ -870,7 +870,7 @@ importers:
         specifier: ^1.8.15
         version: 1.8.16
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       wait-on:
         specifier: ^7.2.0
@@ -904,7 +904,7 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(esbuild@0.20.2)(solid-js@1.8.16)(tsup@8.0.2)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       uploadthing:
         specifier: workspace:*
@@ -959,7 +959,7 @@ importers:
         specifier: ^2.6.2
         version: 2.6.2
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       uploadthing:
         specifier: workspace:*
@@ -1032,7 +1032,7 @@ importers:
         specifier: ^4.10.3
         version: 4.15.0
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       undici:
         specifier: ^6.6.2
@@ -1053,10 +1053,10 @@ importers:
         specifier: ^8.56.4
         version: 8.56.7
       '@typescript-eslint/eslint-plugin':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/parser':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
       '@uploadthing/eslint-plugin':
         specifier: ^0.1.0
@@ -1084,16 +1084,16 @@ importers:
         specifier: ^8.57.0
         version: 8.57.0
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   tooling/eslint-plugin:
     dependencies:
       '@typescript-eslint/parser':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
       '@typescript-eslint/utils':
-        specifier: ^7.3.1
+        specifier: ^7.6.0
         version: 7.6.0(eslint@8.57.0)(typescript@5.4.5)
     devDependencies:
       '@types/eslint':
@@ -1106,7 +1106,7 @@ importers:
         specifier: 8.0.2
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
 
   tooling/tsconfig: {}
