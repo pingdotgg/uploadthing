@@ -1,11 +1,10 @@
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
+
 export type AcceptProp = Record<string, string[]>;
 
 export type DropzoneOptions = {
-  multiple?: boolean;
-  accept?: AcceptProp;
+  routeConfig?: ExpandedRouteConfig | undefined;
   minSize?: number;
-  maxSize?: number;
-  maxFiles?: number;
   disabled?: boolean;
   onDrop: <T extends File>(acceptedFiles: T[]) => void;
 };

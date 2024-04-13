@@ -204,7 +204,7 @@ export const fileSizeToBytes = (input: string) => {
   const match = input.match(regex);
 
   if (!match) {
-    return new Error("Invalid file size format");
+    throw new Error("Invalid file size format");
   }
 
   const sizeValue = parseFloat(match[1]);

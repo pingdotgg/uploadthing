@@ -1,7 +1,10 @@
 import type { InputHTMLAttributes } from "react";
 import { useCallback, useRef, useState } from "react";
 
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type {
+  EndpointMetadata,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
 import {
   generateMimeTypes,
   generatePermittedFileTypes,
@@ -33,13 +36,16 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-const useEndpointMetadata = (url: URL, endpoint: string) => {
+const useRouteConfig = (
+  url: URL,
+  endpoint: string,
+): ExpandedRouteConfig | undefined => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
-  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
+  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -69,7 +75,7 @@ export const INTERNAL_uploadthingHookGen = <
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
-    const [_files, setFiles] = useControllableState({
+    const [files, setFiles] = useControllableState({
       prop: opts?.files,
       onChange: opts?.onFilesChange,
       defaultProp: [],
@@ -78,10 +84,7 @@ export const INTERNAL_uploadthingHookGen = <
     const [progresses, setProgresses] = useState(new Map<string, number>());
     const totalProgress = useRef(0);
 
-    const permittedFileInfo = useEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
 
     // TODO: Look over if this needs to accept files or if the hook should do it
     // useControllableState is quite a nice abstraction for this
@@ -162,9 +165,7 @@ export const INTERNAL_uploadthingHookGen = <
       }): InputHTMLAttributes<HTMLInputElement> => {
         const { mode = "auto" } = opts ?? {};
 
-        const { fileTypes, multiple } = generatePermittedFileTypes(
-          permittedFileInfo?.config,
-        );
+        const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
         return {
           type: "file",
@@ -186,13 +187,15 @@ export const INTERNAL_uploadthingHookGen = <
           },
         };
       },
-      [permittedFileInfo?.config, startUpload, setFiles],
+      [routeConfig, startUpload, setFiles],
     );
 
     return {
+      files,
+      setFiles,
       startUpload,
       isUploading,
-      permittedFileInfo,
+      routeConfig,
       getInputProps,
       progresses,
     } as const;

@@ -4,7 +4,6 @@ import type { Action } from "svelte/action";
 import { derived, get, writable } from "svelte/store";
 
 import {
-  acceptPropAsAcceptAttr,
   allFilesAccepted,
   initialState,
   isEnterOrSpace,
@@ -16,6 +15,7 @@ import {
   isValidSize,
   noop,
   reducer,
+  routeConfigToDropzoneProps,
 } from "./core";
 import type { DropzoneOptions } from "./types";
 
@@ -36,15 +36,12 @@ function reducible<State, Actions>(
 export function createDropzone(_props: DropzoneOptions) {
   const props = writable({
     disabled: false,
-    maxSize: Number.POSITIVE_INFINITY,
     minSize: 0,
-    multiple: true,
-    maxFiles: 0,
     ..._props,
   });
 
-  const acceptAttr = derived(props, ($props) =>
-    acceptPropAsAcceptAttr($props.accept),
+  const routeProps = derived(props, ($props) =>
+    routeConfigToDropzoneProps($props.routeConfig),
   );
 
   const rootRef = writable<HTMLElement | null>();
@@ -113,11 +110,11 @@ export function createDropzone(_props: DropzoneOptions) {
             fileCount > 0 &&
             allFilesAccepted({
               files: files as File[],
-              accept: get(acceptAttr)!,
+              accept: get(routeProps).accept,
               minSize: get(props).minSize,
-              maxSize: get(props).maxSize,
-              multiple: get(props).multiple,
-              maxFiles: get(props).maxFiles,
+              maxSize: get(routeProps).maxSize,
+              multiple: get(routeProps).multiple,
+              maxFiles: get(routeProps).maxFiles,
             });
           const isDragReject = fileCount > 0 && !isDragAccept;
 
@@ -184,11 +181,11 @@ export function createDropzone(_props: DropzoneOptions) {
     const acceptedFiles: File[] = [];
 
     files.forEach((file) => {
-      const accepted = isFileAccepted(file, get(acceptAttr)!);
+      const accepted = isFileAccepted(file, get(routeProps).accept);
       const sizeMatch = isValidSize(
         file,
         get(props).minSize,
-        get(props).maxSize,
+        get(routeProps).maxSize,
       );
 
       if (accepted && sizeMatch) {
@@ -197,7 +194,11 @@ export function createDropzone(_props: DropzoneOptions) {
     });
 
     if (
-      !isValidQuantity(acceptedFiles, get(props).multiple, get(props).maxFiles)
+      !isValidQuantity(
+        acceptedFiles,
+        get(routeProps).multiple,
+        get(routeProps).maxFiles,
+      )
     ) {
       acceptedFiles.splice(0);
     }
@@ -306,10 +307,10 @@ export function createDropzone(_props: DropzoneOptions) {
     inputRef.set(node);
     node.setAttribute("type", "file");
     node.style.display = "none";
-    node.setAttribute("multiple", String(options.multiple));
     node.setAttribute("tabIndex", "-1");
-    const acceptAttrUnsub = acceptAttr.subscribe((accept) => {
-      node.setAttribute("accept", accept!);
+    const unsub = routeProps.subscribe(({ accept, multiple }) => {
+      node.setAttribute("multiple", String(multiple));
+      if (accept) node.setAttribute("accept", accept);
     });
     if (!options.disabled) {
       node.addEventListener("change", onDropCb);
@@ -318,11 +319,10 @@ export function createDropzone(_props: DropzoneOptions) {
     return {
       update(options: DropzoneOptions) {
         props.update(($props) => ({ ...$props, ...options }));
-        node.setAttribute("multiple", String(options.multiple));
       },
       destroy() {
         inputRef.set(null);
-        acceptAttrUnsub();
+        unsub();
         node.removeEventListener("change", onDropCb);
         node.removeEventListener("click", onInputElementClick);
       },

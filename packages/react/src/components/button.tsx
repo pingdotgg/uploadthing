@@ -113,7 +113,7 @@ export function UploadButton<
     setFiles,
     startUpload,
     isUploading,
-    permittedFileInfo,
+    routeConfig,
     getInputProps,
   } = useUploadThing($props.endpoint, {
     headers: $props.headers,
@@ -170,7 +170,7 @@ export function UploadButton<
     ready: state === "ready",
     isUploading: state === "uploading",
     uploadProgress,
-    fileTypes: generatePermittedFileTypes(permittedFileInfo?.config).fileTypes,
+    fileTypes: generatePermittedFileTypes(routeConfig).fileTypes,
   } as ButtonStyleFieldCallbackArgs;
 
   const renderButton = () => {
@@ -234,7 +234,7 @@ export function UploadButton<
       data-ut-element="allowed-content"
     >
       {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-        allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+        allowedContentTextLabelGenerator(routeConfig)}
     </div>
   );
 

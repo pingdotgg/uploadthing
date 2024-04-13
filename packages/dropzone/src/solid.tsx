@@ -16,7 +16,6 @@ import {
 import { createStore } from "solid-js/store";
 
 import {
-  acceptPropAsAcceptAttr,
   allFilesAccepted,
   initialState,
   isEnterOrSpace,
@@ -27,6 +26,7 @@ import {
   isValidQuantity,
   isValidSize,
   noop,
+  routeConfigToDropzoneProps,
 } from "./core";
 import type { DropzoneOptions } from "./types";
 
@@ -38,15 +38,14 @@ export function createDropzone(_props: DropzoneOptions) {
   const props = mergeProps(
     {
       disabled: false,
-      maxSize: Number.POSITIVE_INFINITY,
       minSize: 0,
-      multiple: true,
-      maxFiles: 0,
     },
     _props,
   );
 
-  const acceptAttr = createMemo(() => acceptPropAsAcceptAttr(props.accept));
+  const routeProps = createMemo(() =>
+    routeConfigToDropzoneProps(props.routeConfig),
+  );
 
   const [rootRef, setRootRef] = createSignal<HTMLElement | null>();
   const [inputRef, setInputRef] = createSignal<HTMLInputElement | null>();
@@ -114,11 +113,8 @@ export function createDropzone(_props: DropzoneOptions) {
             fileCount > 0 &&
             allFilesAccepted({
               files: files as File[],
-              accept: acceptAttr()!,
               minSize: props.minSize,
-              maxSize: props.maxSize,
-              multiple: props.multiple,
-              maxFiles: props.maxFiles,
+              ...routeProps(),
             });
           const isDragReject = fileCount > 0 && !isDragAccept;
 
@@ -177,15 +173,21 @@ export function createDropzone(_props: DropzoneOptions) {
     const acceptedFiles: File[] = [];
 
     files.forEach((file) => {
-      const accepted = isFileAccepted(file, acceptAttr()!);
-      const sizeMatch = isValidSize(file, props.minSize, props.maxSize);
+      const accepted = isFileAccepted(file, routeProps().accept);
+      const sizeMatch = isValidSize(file, props.minSize, routeProps().maxSize);
 
       if (accepted && sizeMatch) {
         acceptedFiles.push(file);
       }
     });
 
-    if (!isValidQuantity(acceptedFiles, props.multiple, props.maxFiles)) {
+    if (
+      !isValidQuantity(
+        acceptedFiles,
+        routeProps().multiple,
+        routeProps().maxFiles,
+      )
+    ) {
       acceptedFiles.splice(0);
     }
 
@@ -271,8 +273,8 @@ export function createDropzone(_props: DropzoneOptions) {
     ref: setInputRef,
     type: "file",
     style: { display: "none" },
-    accept: acceptAttr(),
-    multiple: props.multiple,
+    accept: routeProps().accept,
+    multiple: routeProps().multiple,
     tabIndex: -1,
     ...(!props.disabled
       ? {

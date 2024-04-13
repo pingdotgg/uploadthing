@@ -819,6 +819,9 @@ importers:
 
   packages/dropzone:
     dependencies:
+      '@uploadthing/shared':
+        specifier: workspace:*
+        version: link:../shared
       file-selector:
         specifier: ^0.6.0
         version: 0.6.0

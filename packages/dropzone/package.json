@@ -64,6 +64,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@uploadthing/shared": "workspace:*",
     "file-selector": "^0.6.0"
   },
   "devDependencies": {

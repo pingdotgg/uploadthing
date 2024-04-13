@@ -5,6 +5,13 @@
  * The original package is licensed under the MIT license.
  */
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import {
+  fileSizeToBytes,
+  generateClientDropzoneAccept,
+  generatePermittedFileTypes,
+} from "@uploadthing/shared";
+
 import type { AcceptProp, DropzoneState } from "./types";
 
 /**
@@ -43,7 +50,8 @@ export const isPropagationStopped = (event: Event) => {
 
 // Firefox versions prior to 53 return a bogus MIME type for every file drag, so dragovers with
 // that MIME type will always be accepted
-export function isFileAccepted(file: File, accept: string | string[]) {
+export function isFileAccepted(file: File, accept: string | undefined) {
+  if (!accept) return true;
   return file.type === "application/x-moz-file" || accepts(file, accept);
 }
 
@@ -84,7 +92,7 @@ export function allFilesAccepted({
   maxFiles,
 }: {
   files: File[];
-  accept: string | string[];
+  accept: string | undefined;
   minSize: number;
   maxSize: number;
   multiple: boolean;
@@ -136,7 +144,7 @@ function isExt(v: string) {
 /**
  * Convert the `{accept}` dropzone prop to an array of MIME types/extensions.
  */
-export function acceptPropAsAcceptAttr(accept?: AcceptProp) {
+function acceptPropAsAcceptAttr(accept?: AcceptProp) {
   if (isDefined(accept)) {
     return (
       Object.entries(accept)
@@ -153,6 +161,30 @@ export function acceptPropAsAcceptAttr(accept?: AcceptProp) {
 export function noop() {
   // noop
 }
+
+export const routeConfigToDropzoneProps = (
+  routeConfig: ExpandedRouteConfig | undefined,
+) => {
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
+
+  const { maxFiles, maxSize } = Object.values(routeConfig ?? {}).reduce(
+    (acc, curr) => {
+      // Don't think it makes sense to have a minFileCount since they can select many times
+      // acc.minFiles = Math.min(acc.minFiles, curr.minFileCount);
+      acc.maxFiles = Math.max(acc.maxFiles, curr.maxFileCount);
+      acc.maxSize = Math.max(acc.maxSize, fileSizeToBytes(curr.maxFileSize));
+      return acc;
+    },
+    { maxFiles: 0, maxSize: 0 },
+  );
+
+  return {
+    multiple,
+    accept: acceptPropAsAcceptAttr(generateClientDropzoneAccept(fileTypes)),
+    maxFiles,
+    maxSize: maxSize,
+  };
+};
 
 /**
  * ================================================

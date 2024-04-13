@@ -7,7 +7,6 @@ import { useDropzone } from "@uploadthing/dropzone/react";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
-  generateClientDropzoneAccept,
   generatePermittedFileTypes,
   resolveMaybeUrlArg,
   styleFieldToClassName,
@@ -110,7 +109,7 @@ export function UploadDropzone<
   );
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
       files,
@@ -132,9 +131,7 @@ export function UploadDropzone<
     },
   );
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
-  );
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -152,8 +149,7 @@ export function UploadDropzone<
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
-    multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    routeConfig,
     disabled: $props.__internal_dropzone_disabled,
   });
 
@@ -296,7 +292,7 @@ export function UploadDropzone<
         data-state={state}
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+          allowedContentTextLabelGenerator(routeConfig)}
       </div>
 
       <button
