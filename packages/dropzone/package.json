@@ -67,7 +67,7 @@
     "file-selector": "^0.6.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.60",
+    "@types/react": "18.2.78",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^5.1.2",

@@ -146,11 +146,11 @@ importers:
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       '@vitejs/plugin-react-swc':
         specifier: ^3.6.0
         version: 3.6.0(vite@5.2.8)
@@ -241,11 +241,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       typescript:
         specifier: ^5.4.2
         version: 5.4.5
@@ -257,7 +257,7 @@ importers:
         version: 8.2.5(astro@4.5.18)
       '@astrojs/react':
         specifier: ^3.0.10
-        version: 3.2.0(@types/react-dom@18.2.19)(@types/react@18.2.60)(react-dom@18.2.0)(react@18.2.0)(vite@5.2.8)
+        version: 3.2.0(@types/react-dom@18.2.19)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)(vite@5.2.8)
       '@uploadthing/react':
         specifier: 6.4.4
         version: link:../../packages/react
@@ -275,8 +275,8 @@ importers:
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
         specifier: 18.2.19
         version: 18.2.19
@@ -303,11 +303,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       typescript:
         specifier: ^5.4.2
         version: 5.4.5
@@ -420,11 +420,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.3.1
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
@@ -475,11 +475,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.3.1
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
@@ -509,7 +509,7 @@ importers:
         version: 9.5.0
       drizzle-orm:
         specifier: ^0.29.4
-        version: 0.29.5(@types/better-sqlite3@7.6.9)(@types/react@18.2.60)(better-sqlite3@9.5.0)(react@18.2.0)
+        version: 0.29.5(@types/better-sqlite3@7.6.9)(@types/react@18.2.78)(better-sqlite3@9.5.0)(react@18.2.0)
       next:
         specifier: 14.2.1
         version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
@@ -536,11 +536,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.3.1
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
@@ -573,7 +573,7 @@ importers:
         version: 9.5.0
       drizzle-orm:
         specifier: ^0.29.4
-        version: 0.29.5(@types/better-sqlite3@7.6.9)(@types/react@18.2.60)(better-sqlite3@9.5.0)(react@18.2.0)
+        version: 0.29.5(@types/better-sqlite3@7.6.9)(@types/react@18.2.78)(better-sqlite3@9.5.0)(react@18.2.0)
       next:
         specifier: 14.2.1
         version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
@@ -603,11 +603,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       '@typescript-eslint/eslint-plugin':
         specifier: ^7.3.1
         version: 7.6.0(@typescript-eslint/parser@7.6.0)(eslint@8.57.0)(typescript@5.4.5)
@@ -652,11 +652,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       typescript:
         specifier: ^5.4.2
         version: 5.4.5
@@ -680,11 +680,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       typescript:
         specifier: ^5.4.2
         version: 5.4.5
@@ -711,11 +711,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       postcss:
         specifier: 8.4.38
         version: 8.4.38
@@ -733,8 +733,8 @@ importers:
         version: 0.6.0
     devDependencies:
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@uploadthing/eslint-config':
         specifier: 0.2.0
         version: link:../../tooling/eslint-config
@@ -797,11 +797,11 @@ importers:
         specifier: ^20.11.21
         version: 20.12.7
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@types/react-dom':
-        specifier: 18.2.19
-        version: 18.2.19
+        specifier: 18.2.25
+        version: 18.2.25
       '@uploadthing/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
@@ -846,8 +846,8 @@ importers:
         version: 3.7.0
     devDependencies:
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@uploadthing/eslint-config':
         specifier: 'workspace:'
         version: link:../../tooling/eslint-config
@@ -993,8 +993,8 @@ importers:
         specifier: ^4.17.43
         version: 4.19.0
       '@types/react':
-        specifier: 18.2.60
-        version: 18.2.60
+        specifier: 18.2.78
+        version: 18.2.78
       '@uploadthing/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
@@ -1217,7 +1217,7 @@ packages:
       prismjs: 1.29.0
     dev: false
 
-  /@astrojs/react@3.2.0(@types/react-dom@18.2.19)(@types/react@18.2.60)(react-dom@18.2.0)(react@18.2.0)(vite@5.2.8):
+  /@astrojs/react@3.2.0(@types/react-dom@18.2.19)(@types/react@18.2.78)(react-dom@18.2.0)(react@18.2.0)(vite@5.2.8):
     resolution: {integrity: sha512-27ISrGBM7Sh5CV0IeIiv3OOJwSF6l+Zo+fD1PZI8A81g+cPO/NgaYBjrYhCtg2ZCAuJzN3NFYG14NIAbxVu+2w==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
@@ -1226,7 +1226,7 @@ packages:
       react: ^17.0.2 || ^18.0.0
       react-dom: ^17.0.2 || ^18.0.0
     dependencies:
-      '@types/react': 18.2.60
+      '@types/react': 18.2.78
       '@types/react-dom': 18.2.19
       '@vitejs/plugin-react': 4.2.1(vite@5.2.8)
       react: 18.2.0
@@ -5225,13 +5225,6 @@ packages:
     dependencies:
       '@types/react': 18.2.78
 
-  /@types/react@18.2.60:
-    resolution: {integrity: sha512-dfiPj9+k20jJrLGOu9Nf6eqxm2EyJRrq2NvwOFsfbb7sFExZ9WELPs67UImHj3Ayxg8ruTtKtNnbjaF8olPq0A==}
-    dependencies:
-      '@types/prop-types': 15.7.12
-      '@types/scheduler': 0.23.0
-      csstype: 3.1.3
-
   /@types/react@18.2.78:
     resolution: {integrity: sha512-qOwdPnnitQY4xKlKayt42q5W5UQrSHjgoXNVEtxeqdITJ99k4VXJOP3vt8Rkm9HmgJpH50UNU+rlqfkfWOqp0A==}
     dependencies:
@@ -5240,9 +5233,6 @@ packages:
 
   /@types/resolve@1.20.2:
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
-
-  /@types/scheduler@0.23.0:
-    resolution: {integrity: sha512-YIoDCTH3Af6XM5VuwGG/QL/CJqga1Zm3NkU3HZ4ZHK2fRMPYP1VczsTUqtsf43PH/iJNVlPHAo2oWX7BSdB2Hw==}
 
   /@types/semver@6.2.7:
     resolution: {integrity: sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==}
@@ -7918,7 +7908,7 @@ packages:
       - supports-color
     dev: true
 
-  /drizzle-orm@0.29.5(@types/better-sqlite3@7.6.9)(@types/react@18.2.60)(better-sqlite3@9.5.0)(react@18.2.0):
+  /drizzle-orm@0.29.5(@types/better-sqlite3@7.6.9)(@types/react@18.2.78)(better-sqlite3@9.5.0)(react@18.2.0):
     resolution: {integrity: sha512-jS3+uyzTz4P0Y2CICx8FmRQ1eplURPaIMWDn/yq6k4ShRFj9V7vlJk67lSf2kyYPzQ60GkkNGXcJcwrxZ6QCRw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
@@ -7990,7 +7980,7 @@ packages:
         optional: true
     dependencies:
       '@types/better-sqlite3': 7.6.9
-      '@types/react': 18.2.60
+      '@types/react': 18.2.78
       better-sqlite3: 9.5.0
       react: 18.2.0
     dev: false

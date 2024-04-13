@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/react": "18.2.60",
+    "@types/react": "18.2.78",
     "@uploadthing/eslint-config": "workspace:",
     "@uploadthing/mime-types": "workspace:",
     "@uploadthing/tsconfig": "workspace:",
