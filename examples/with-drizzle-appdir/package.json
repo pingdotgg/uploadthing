@@ -14,7 +14,7 @@
     "@uploadthing/react": "6.4.4",
     "better-sqlite3": "^9.4.3",
     "drizzle-orm": "^0.29.4",
-    "next": "14.1.0",
+    "next": "14.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "uploadthing": "6.9.0",
@@ -24,14 +24,14 @@
     "@types/better-sqlite3": "^7.6.9",
     "@types/eslint": "^8.56.4",
     "@types/node": "^20.11.21",
-    "@types/react": "18.2.60",
-    "@types/react-dom": "18.2.19",
-    "@typescript-eslint/eslint-plugin": "^7.3.1",
-    "@typescript-eslint/parser": "^7.3.1",
+    "@types/react": "18.2.78",
+    "@types/react-dom": "18.2.25",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/parser": "^7.6.0",
     "drizzle-kit": "^0.20.14",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.1.0",
-    "typescript": "^5.4.2"
+    "eslint-config-next": "^14.2.1",
+    "typescript": "^5.4.5"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.1"
