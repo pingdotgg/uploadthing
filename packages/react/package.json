@@ -85,7 +85,7 @@
     "bunchee": "^5.1.2",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "next": "14.1.0",
+    "next": "14.2.1",
     "react": "18.2.0",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.2",
