@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useEvent } from "./useEvent";
+import { useEvent } from "./use-event";
 
 type PasteCallback = (event: ClipboardEvent) => void;
 export const usePaste = (callback: PasteCallback) => {

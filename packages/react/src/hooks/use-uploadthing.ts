@@ -25,8 +25,8 @@ import type {
   GenerateTypedHelpersOptions,
   UseUploadthingProps,
 } from "../types";
-import { useEvent } from "../utils/useEvent";
-import useFetch from "../utils/useFetch";
+import { useEvent } from "./use-event";
+import useFetch from "./use-fetch";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
