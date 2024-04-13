@@ -39,13 +39,15 @@ declare const globalThis: {
 const useRouteConfig = (
   url: URL,
   endpoint: string,
-): ExpandedRouteConfig | undefined => {
+): ExpandedRouteConfig | null => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
-  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
+  return (
+    (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config ?? null
+  );
 };
 
 export const INTERNAL_uploadthingHookGen = <

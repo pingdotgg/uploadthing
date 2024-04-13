@@ -163,7 +163,7 @@ export function noop() {
 }
 
 export const routeConfigToDropzoneProps = (
-  routeConfig: ExpandedRouteConfig | undefined,
+  routeConfig: ExpandedRouteConfig | null,
 ) => {
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 

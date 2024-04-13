@@ -30,7 +30,9 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */
 
-export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
+export const generatePermittedFileTypes = (
+  config: ExpandedRouteConfig | null,
+) => {
   const fileTypes = config ? objectKeys(config) : [];
 
   const maxFileCount = config
@@ -44,7 +46,9 @@ export const capitalizeStart = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
+export const INTERNAL_doFormatting = (
+  config: ExpandedRouteConfig | null,
+): string => {
   if (!config) return "";
 
   const allowedTypes = objectKeys(config);
@@ -75,7 +79,7 @@ export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
 };
 
 export const allowedContentTextLabelGenerator = (
-  config?: ExpandedRouteConfig,
+  config: ExpandedRouteConfig | null,
 ): string => {
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
