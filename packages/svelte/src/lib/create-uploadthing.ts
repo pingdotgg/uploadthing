@@ -23,7 +23,7 @@ const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return derived(
     dataGetter,
-    ($data) => $data.data?.find((x) => x.slug === endpoint)?.config ?? null,
+    ($data) => $data.data?.find((x) => x.slug === endpoint)?.config,
   );
 };
 

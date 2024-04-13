@@ -41,15 +41,13 @@ export type { ExpandedRouteConfig } from "@uploadthing/shared";
 const useRouteConfig = (
   url: URL,
   endpoint: string,
-): ExpandedRouteConfig | null => {
+): ExpandedRouteConfig | undefined => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
-  return (
-    (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config ?? null
-  );
+  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
 };
 
 export const INTERNAL_uploadthingHookGen = <

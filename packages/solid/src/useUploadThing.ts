@@ -20,8 +20,7 @@ export type { ExpandedRouteConfig } from "@uploadthing/shared";
 
 const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
-  return () =>
-    dataGetter()?.data?.find((x) => x.slug === endpoint)?.config ?? null;
+  return () => dataGetter()?.data?.find((x) => x.slug === endpoint)?.config;
 };
 
 export const INTERNAL_uploadthingHookGen = <

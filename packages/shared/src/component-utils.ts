@@ -31,7 +31,7 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
  */
 
 export const generatePermittedFileTypes = (
-  config: ExpandedRouteConfig | null,
+  config: ExpandedRouteConfig | undefined,
 ) => {
   const fileTypes = config ? objectKeys(config) : [];
 
@@ -47,7 +47,7 @@ export const capitalizeStart = (str: string) => {
 };
 
 export const INTERNAL_doFormatting = (
-  config: ExpandedRouteConfig | null,
+  config: ExpandedRouteConfig | undefined,
 ): string => {
   if (!config) return "";
 
@@ -79,7 +79,7 @@ export const INTERNAL_doFormatting = (
 };
 
 export const allowedContentTextLabelGenerator = (
-  config: ExpandedRouteConfig | null,
+  config: ExpandedRouteConfig | undefined,
 ): string => {
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
