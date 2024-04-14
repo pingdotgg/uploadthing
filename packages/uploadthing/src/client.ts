@@ -30,6 +30,8 @@ export {
   generateClientDropzoneAccept,
   /** @public */
   generatePermittedFileTypes,
+  /** @public */
+  bytesToHumanReadable,
 } from "@uploadthing/shared";
 
 export const version = pkgJson.version;

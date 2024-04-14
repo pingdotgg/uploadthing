@@ -19,6 +19,7 @@
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    getFilesFromClipboardEvent,
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
   import {
@@ -28,7 +29,7 @@
 
   import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
-  import { getFilesFromClipboardEvent, progressWidths } from "./shared";
+  import { progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
   type ButtonStyleFieldCallbackArgs = {

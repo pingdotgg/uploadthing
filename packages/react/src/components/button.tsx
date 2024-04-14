@@ -7,6 +7,7 @@ import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -21,7 +22,7 @@ import type { FileRouter } from "uploadthing/types";
 import { usePaste } from "../hooks/use-paste";
 import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";

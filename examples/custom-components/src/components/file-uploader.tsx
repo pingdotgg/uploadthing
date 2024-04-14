@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/react";
-import { bytesToHumanReadable } from "@uploadthing/shared";
+import { bytesToHumanReadable } from "uploadthing/client";
 
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
