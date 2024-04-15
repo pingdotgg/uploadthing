@@ -2,9 +2,7 @@ import "client-only";
 
 import * as React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { Cross2Icon, UploadIcon } from "@radix-ui/react-icons";
-import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/react";
