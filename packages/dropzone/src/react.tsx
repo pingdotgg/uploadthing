@@ -214,7 +214,7 @@ export function useDropzone({
         if (accepted && sizeMatch) {
           const fileWithState: FileWithState = Object.assign(file, {
             status: "pending" as const,
-            url: null,
+            key: null,
           });
           acceptedFiles.push(fileWithState);
         }
@@ -253,7 +253,7 @@ export function useDropzone({
             const filesWithState = (files as File[]).map((file) =>
               Object.assign(file, {
                 status: "pending" as const,
-                url: null,
+                key: null,
               }),
             );
             setFiles(filesWithState);

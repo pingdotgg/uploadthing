@@ -149,7 +149,7 @@ export const INTERNAL_uploadthingHookGen = <
             filesToUpload.map((file, index) =>
               Object.assign(file, {
                 status: "uploaded" as const,
-                url: res[index].url,
+                key: res[index].key,
               }),
             ),
           );
@@ -204,7 +204,7 @@ export const INTERNAL_uploadthingHookGen = <
             const filesWithState = selectedFiles.map((file) =>
               Object.assign(file, {
                 status: "pending" as const,
-                url: null,
+                key: null,
               }),
             );
             setFiles(filesWithState);

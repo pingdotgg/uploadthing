@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
 import { Form, FormField, FormItem, useForm } from "~/components/ui/form";
-import { UploadButton } from "~/uploadthing/client";
+import { UploadDropzone } from "~/uploadthing/client";
 import { fileWithStateValidator } from "~/utils";
 
 /**
@@ -16,6 +16,7 @@ export const SimpleRHFDemo = () => {
     schema: z.object({
       images: fileWithStateValidator.array(),
     }),
+    mode: "onChange",
   });
 
   const onSubmit = form.handleSubmit((data) => {
@@ -26,10 +27,6 @@ export const SimpleRHFDemo = () => {
     );
     form.reset();
   });
-
-  const disabled = form
-    .getValues("images")
-    ?.some((f) => f.status !== "uploaded");
 
   return (
     <div className="flex flex-col gap-8 p-16">
@@ -43,7 +40,7 @@ export const SimpleRHFDemo = () => {
             name="images"
             render={({ field }) => (
               <FormItem>
-                <UploadButton
+                <UploadDropzone
                   endpoint="imageUploader"
                   files={field.value}
                   onFilesChange={(files) => {
@@ -55,7 +52,11 @@ export const SimpleRHFDemo = () => {
             )}
           />
 
-          <Button type="submit" className="w-full" disabled={disabled}>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={!form.formState.isValid}
+          >
             Submit
           </Button>
         </form>

@@ -166,12 +166,12 @@ export const contentFieldToContent = <T extends MinCallbackArg>(
 export type FileWithState = File &
   (
     | {
-        status: "pending" | "uploading";
-        url: null;
+        status: "pending";
+        key: null;
       }
     | {
-        status: "uploaded";
-        url: string;
+        status: "uploading" | "uploaded";
+        key: string;
       }
   );
 
@@ -185,7 +185,7 @@ export function getFilesFromClipboardEvent(event: ClipboardEvent) {
       if (!f) return acc;
       const fileWithState = Object.assign(f, {
         status: "pending" as const,
-        url: null,
+        key: null,
       });
       return [...acc, fileWithState];
     },
