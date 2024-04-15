@@ -2,6 +2,7 @@ import "client-only";
 
 import * as React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Cross2Icon, UploadIcon } from "@radix-ui/react-icons";
 import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
@@ -39,7 +40,7 @@ export function FileUploader({
   });
 
   const onDrop = React.useCallback(
-    async (acceptedFiles: FileWithState[]) => {
+    (acceptedFiles: FileWithState[]) => {
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -48,7 +49,7 @@ export function FileUploader({
 
       const updatedFiles = files ? [...files, ...newFiles] : newFiles;
       onFilesChange(updatedFiles);
-      await startUpload(updatedFiles);
+      void startUpload(updatedFiles);
     },
     [files],
   );

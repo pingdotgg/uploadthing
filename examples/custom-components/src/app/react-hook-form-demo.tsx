@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -22,8 +23,15 @@ export function ReactHookFormDemo() {
     schema: z.object({
       images: fileWithStateValidator.array(),
     }),
+    defaultValues: {
+      images: [],
+    },
+    mode: "onChange",
   });
 
+  console.log("Form Errors", JSON.stringify(form.formState.errors, null, 4));
+
+  const router = useRouter();
   const onSubmit = form.handleSubmit((data) => {
     toast(
       <pre className="w-full rounded bg-zinc-300 p-1 font-mono">
@@ -31,6 +39,7 @@ export function ReactHookFormDemo() {
       </pre>,
     );
     form.reset();
+    router.refresh();
   });
 
   return (
@@ -52,21 +61,21 @@ export function ReactHookFormDemo() {
                     }}
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             </div>
           )}
         />
-        <Button className="w-fit" disabled={form.formState.isSubmitting}>
+        <Button
+          className="w-full"
+          disabled={
+            !form.formState.isValid ||
+            !form.formState.isDirty ||
+            form.formState.isSubmitting
+          }
+        >
           Save
         </Button>
       </form>
-      <pre className="rounded bg-zinc-300 p-1 font-mono">
-        Form: {JSON.stringify(form.watch(), null, 4)}
-      </pre>
-      <pre className="rounded bg-zinc-300 p-1 font-mono">
-        Errors: {JSON.stringify(form.formState.errors, null, 4)}
-      </pre>
     </Form>
   );
 }
