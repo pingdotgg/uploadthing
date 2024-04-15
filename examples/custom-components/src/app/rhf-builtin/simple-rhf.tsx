@@ -4,7 +4,14 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "~/components/ui/button";
-import { Form, FormField, FormItem, useForm } from "~/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  useForm,
+} from "~/components/ui/form";
 import { UploadDropzone } from "~/uploadthing/client";
 import { fileWithStateValidator } from "~/utils";
 
@@ -40,6 +47,7 @@ export const SimpleRHFDemo = () => {
             name="images"
             render={({ field }) => (
               <FormItem>
+                <FormLabel>Upload images</FormLabel>
                 <UploadDropzone
                   endpoint="imageUploader"
                   skipPolling
@@ -48,6 +56,7 @@ export const SimpleRHFDemo = () => {
                     console.log("files", files);
                     return field.onChange(files);
                   }}
+                  config={{ mode: "auto" }}
                 />
               </FormItem>
             )}
