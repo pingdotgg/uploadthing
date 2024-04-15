@@ -29,8 +29,6 @@ export function ReactHookFormDemo() {
     mode: "onChange",
   });
 
-  console.log("Form Errors", JSON.stringify(form.formState.errors, null, 4));
-
   const router = useRouter();
   const onSubmit = form.handleSubmit((data) => {
     toast(
