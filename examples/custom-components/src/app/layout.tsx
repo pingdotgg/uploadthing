@@ -24,8 +24,8 @@ export default function RootLayout({
       <body className={twMerge("font-sans", inter.variable)}>
         <NextSSRPlugin routerConfig={extractRouterConfig(uploadRouter)} />
         <nav className="w-full border-b-2 border-black p-4 text-center">
-          <Link href="/" className={buttonVariants({ variant: "link" })}>
-            Kitchen-sinky
+          <Link href="/gallery" className={buttonVariants({ variant: "link" })}>
+            Gallery
           </Link>
           <Link
             href="/rhf-builtin"

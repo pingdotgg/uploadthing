@@ -1,4 +1,4 @@
-import { SimpleRHFDemo } from "./simple-rhf";
+import { SimpleRHFDemo } from "./rhf";
 
 export default function DemoPage() {
   return <SimpleRHFDemo />;
