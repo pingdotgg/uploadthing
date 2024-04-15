@@ -25,6 +25,7 @@ const MyDropzone = (props: {
   onFilesChange: (files: FileWithState[]) => void;
 }) => {
   const { routeConfig, startUpload } = useUploadThing("imageUploader", {
+    skipPolling: true,
     files: props.files,
     onFilesChange: props.onFilesChange,
   });

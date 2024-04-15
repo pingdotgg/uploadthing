@@ -42,6 +42,7 @@ export const SimpleRHFDemo = () => {
               <FormItem>
                 <UploadDropzone
                   endpoint="imageUploader"
+                  skipPolling
                   files={field.value}
                   onFilesChange={(files) => {
                     console.log("files", files);
