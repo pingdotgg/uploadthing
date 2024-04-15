@@ -29,7 +29,6 @@ import type {
   UseUploadthingProps,
 } from "../types";
 import { useControllableState } from "./use-controllable-state";
-import { useEvent } from "./use-event";
 import useFetch from "./use-fetch";
 
 declare const globalThis: {
@@ -82,8 +81,11 @@ export const INTERNAL_uploadthingHookGen = <
       onChange: opts?.onFilesChange,
       defaultProp: [],
     });
+
+    console.log("[TOP LEVEL HOOK] files", files);
+
     const [isUploading, setUploading] = useState(false);
-    const [progresses, setProgresses] = useState(new Map<string, number>());
+    const progresses = useRef(new Map<string, number>());
     const totalProgress = useRef(0);
 
     const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
@@ -95,66 +97,86 @@ export const INTERNAL_uploadthingHookGen = <
       ? [files: File[], input?: undefined]
       : [files: File[], input: InferredInput];
 
-    const startUpload = useEvent(async (...args: FuncInput) => {
-      const filesToUpload =
-        (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
-      const input = args[1];
+    const startUpload = useCallback(
+      async (...args: FuncInput) => {
+        const filesToUpload =
+          (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
+        const input = args[1];
 
-      setUploading(true);
-      opts?.onUploadProgress?.(0);
-      try {
-        const res = await uploadFiles(endpoint, {
-          headers: opts?.headers,
-          files: filesToUpload,
-          skipPolling: opts?.skipPolling,
-          onUploadProgress: (progress) => {
-            // Update progress for the file that triggered the event
-            setProgresses((p) =>
-              new Map(p).set(progress.file, progress.progress),
-            );
-
-            // Update total progress
-            let sum = 0;
-            progresses.forEach((p) => (sum += p));
-
-            if (!opts?.onUploadProgress) return;
-            // Run callback on 10, 20, 30, 40...
-            const even10 = Math.floor(sum / progresses.size / 10) * 10;
-            if (even10 !== totalProgress.current) {
-              opts?.onUploadProgress?.(even10);
-              totalProgress.current = even10;
-            }
-          },
-          onUploadBegin({ file }) {
-            if (!opts?.onUploadBegin) return;
-
-            opts.onUploadBegin(file);
-          },
-          // @ts-expect-error - input may not be defined on the type
-          input,
-        });
-
-        setFiles([]);
-        opts?.onClientUploadComplete?.(res);
-        return res;
-      } catch (e) {
-        let error: UploadThingError<inferErrorShape<TRouter>>;
-        if (e instanceof UploadThingError) {
-          error = e as UploadThingError<inferErrorShape<TRouter>>;
-        } else {
-          error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
-          console.error(
-            "Something went wrong. Please contact UploadThing and provide the following cause:",
-            error.cause instanceof Error ? error.cause.toString() : error.cause,
-          );
+        setUploading(true);
+        for (const file of filesToUpload) {
+          progresses.current.set(file.name, 0);
         }
-        opts?.onUploadError?.(error);
-      } finally {
-        setUploading(false);
-        setProgresses(new Map());
-        totalProgress.current = 0;
-      }
-    });
+        opts?.onUploadProgress?.(0, undefined);
+        try {
+          const res = await uploadFiles(endpoint, {
+            headers: opts?.headers,
+            files: filesToUpload,
+            skipPolling: opts?.skipPolling,
+            onUploadProgress: (progress) => {
+              // Update progress for the file that triggered the event
+              progresses.current.set(progress.file, progress.progress);
+
+              // Update total progress
+              let sum = 0;
+              progresses.current.forEach((p) => (sum += p));
+
+              // Run callback on 10, 20, 30, 40...
+              const even10 =
+                Math.floor(sum / progresses.current.size / 10) * 10;
+              if (even10 !== totalProgress.current) {
+                totalProgress.current = even10;
+                opts?.onUploadProgress?.(even10, progress);
+              }
+            },
+            onUploadComplete: (res) => {
+              console.log("onUploadComplete", res);
+              progresses.current.delete(res.name);
+
+              let sum = 0;
+              progresses.current.forEach((p) => (sum += p));
+            },
+            onUploadBegin({ file }) {
+              if (!opts?.onUploadBegin) return;
+
+              opts.onUploadBegin(file);
+            },
+            // @ts-expect-error - input may not be defined on the type
+            input,
+          });
+
+          setFiles(
+            filesToUpload.map((file, index) =>
+              Object.assign(file, {
+                status: "uploaded" as const,
+                url: res[index].url,
+              }),
+            ),
+          );
+          opts?.onClientUploadComplete?.(res);
+          return res;
+        } catch (e) {
+          let error: UploadThingError<inferErrorShape<TRouter>>;
+          if (e instanceof UploadThingError) {
+            error = e as UploadThingError<inferErrorShape<TRouter>>;
+          } else {
+            error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+            console.error(
+              "Something went wrong. Please contact UploadThing and provide the following cause:",
+              error.cause instanceof Error
+                ? error.cause.toString()
+                : error.cause,
+            );
+          }
+          opts?.onUploadError?.(error);
+        } finally {
+          setUploading(false);
+          // setProgresses(new Map());
+          // totalProgress.current = 0;
+        }
+      },
+      [endpoint, opts, progresses, setFiles],
+    );
 
     const getInputProps = useCallback(
       (opts?: {
@@ -179,13 +201,18 @@ export const INTERNAL_uploadthingHookGen = <
             if (!e.target.files) return;
             const selectedFiles = Array.from(e.target.files);
 
-            if (mode === "manual") {
-              setFiles(selectedFiles);
-              return;
-            }
+            const filesWithState = selectedFiles.map((file) =>
+              Object.assign(file, {
+                status: "pending" as const,
+                url: null,
+              }),
+            );
+            setFiles(filesWithState);
 
-            const input = undefined; // how to get input?
-            void startUpload(selectedFiles, input);
+            if (mode === "auto") {
+              const input = undefined; // how to get input?
+              void startUpload(selectedFiles, input);
+            }
           },
         };
       },

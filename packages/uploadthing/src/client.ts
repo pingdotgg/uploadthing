@@ -117,8 +117,7 @@ const uploadFilesInternal = async <
         return res.status === "done" ? res.callbackData : undefined;
       });
     }
-
-    return {
+    const res: ClientUploadedFileData<TServerOutput> = {
       name: file.name,
       size: file.size,
       type: file.type,
@@ -128,6 +127,11 @@ const uploadFilesInternal = async <
       serverData: serverData as any,
       customId: presigned.customId,
     };
+    console.log("calling onUploadComplete", res);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    opts.onUploadComplete?.(res as any);
+
+    return res;
   });
 
   return Promise.all(fileUploadPromises);

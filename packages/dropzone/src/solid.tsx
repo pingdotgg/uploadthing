@@ -192,9 +192,10 @@ export function createDropzone(_props: DropzoneOptions) {
     }
 
     setState({
+      // @ts-expect-error - FIXME LATER
       acceptedFiles,
     });
-
+    // @ts-expect-error - FIXME LATER
     props.onDrop?.(acceptedFiles);
   };
 

@@ -117,6 +117,8 @@ export function UploadButton<
     routeConfig,
     getInputProps,
   } = useUploadThing($props.endpoint, {
+    files: $props.files,
+    onFilesChange: $props.onFilesChange,
     headers: $props.headers,
     skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
     onClientUploadComplete: (res) => {
@@ -126,9 +128,9 @@ export function UploadButton<
       $props.onClientUploadComplete?.(res);
       setUploadProgress(0);
     },
-    onUploadProgress: (p) => {
+    onUploadProgress: (p, e) => {
       setUploadProgress(p);
-      $props.onUploadProgress?.(p);
+      $props.onUploadProgress?.(p, e);
     },
     onUploadError: $props.onUploadError,
     onUploadBegin: $props.onUploadBegin,

@@ -5,7 +5,7 @@
  * The original package is licensed under the MIT license.
  */
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type { ExpandedRouteConfig, FileWithState } from "@uploadthing/shared";
 import {
   fileSizeToBytes,
   generateClientDropzoneAccept,
@@ -218,7 +218,7 @@ export const initialState = {
   isDragActive: false,
   isDragAccept: false,
   isDragReject: false,
-  acceptedFiles: [] as File[],
+  acceptedFiles: [] as FileWithState[],
 };
 
 export function reducer(

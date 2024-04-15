@@ -16,6 +16,7 @@ import {
 import type {
   ContentField,
   ErrorMessage,
+  FileWithState,
   StyleField,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
@@ -103,7 +104,7 @@ export function UploadDropzone<
     url: resolveMaybeUrlArg($props.url),
   });
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileWithState[]>([]);
 
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
@@ -122,9 +123,9 @@ export function UploadDropzone<
         $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
-      onUploadProgress: (p) => {
+      onUploadProgress: (p, e) => {
         setUploadProgress(p);
-        $props.onUploadProgress?.(p);
+        $props.onUploadProgress?.(p, e);
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
@@ -136,7 +137,11 @@ export function UploadDropzone<
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      setFiles(acceptedFiles);
+      setFiles(
+        acceptedFiles.map((file) =>
+          Object.assign(file, { status: "pending" as const, url: null }),
+        ),
+      );
 
       // If mode is auto, start upload immediately
       if (mode === "auto") {

@@ -39,3 +39,35 @@ export function LoadingDots(props: ComponentProps<"svg">) {
     </svg>
   );
 }
+
+export function LoadingSpinner(
+  props: ComponentProps<"div"> & { size?: number },
+) {
+  const { size = 30 } = props;
+
+  return (
+    <div
+      className="spinner_wrapper__zbFtL"
+      style={{
+        // @ts-expect-error
+        "--spinner-size": size + "px",
+        "--spinner-color": "#ccc",
+      }}
+    >
+      <div className="spinner_spinner__fqUfx">
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+        <div className="spinner_bar__VysK5"></div>
+      </div>
+    </div>
+  );
+}

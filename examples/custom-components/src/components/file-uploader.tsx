@@ -7,15 +7,17 @@ import { toast } from "sonner";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/react";
+import { FileWithState } from "@uploadthing/shared";
 import { bytesToHumanReadable } from "uploadthing/client";
 
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { useUploadThing } from "~/uploadthing/client";
+import { LoadingSpinner } from "./ui/loading";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  files: File[];
-  onFilesChange: (files: File[]) => void;
+  files: FileWithState[];
+  onFilesChange: (files: FileWithState[]) => void;
 }
 
 export function FileUploader({
@@ -24,17 +26,20 @@ export function FileUploader({
   className,
   ...dropzoneProps
 }: FileUploaderProps) {
-  const { routeConfig, progresses, startUpload } = useUploadThing(
-    "imageUploader",
-    {
-      files,
-      onFilesChange,
-      skipPolling: true,
+  const [progresses, setProgresses] = React.useState(new Map<string, number>());
+  const { routeConfig, startUpload } = useUploadThing("imageUploader", {
+    files,
+    onFilesChange,
+    skipPolling: true,
+    onUploadError: (e) => console.error(e),
+    onUploadProgress: (_, e) => {
+      if (!e) return;
+      setProgresses((p) => new Map(p).set(e?.file, e?.progress));
     },
-  );
+  });
 
   const onDrop = React.useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: FileWithState[]) => {
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -42,7 +47,8 @@ export function FileUploader({
       );
 
       const updatedFiles = files ? [...files, ...newFiles] : newFiles;
-      onFilesChange?.(updatedFiles);
+      onFilesChange(updatedFiles);
+      await startUpload(updatedFiles);
     },
     [files],
   );
@@ -129,12 +135,12 @@ export function FileUploader({
 }
 
 interface FileCardProps {
-  file: File;
+  file: FileWithState;
   onRemove: () => void;
   progress?: number;
 }
 
-function FileCard({ file, progress, onRemove }: FileCardProps) {
+function FileCard({ file, progress = 0, onRemove }: FileCardProps) {
   return (
     <div className="relative flex items-center space-x-4">
       <div className="flex flex-1 space-x-4">
@@ -149,18 +155,26 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
           />
         ) : null}
         <div className="flex w-full flex-col gap-2">
-          <div className="space-y-px">
-            <p className="text-foreground/80 line-clamp-1 text-sm font-medium">
-              {file.name}
-            </p>
-            <p className="text-muted-foreground text-xs">
-              {bytesToHumanReadable(file.size)}
-            </p>
+          <div className="flex items-center justify-between">
+            <div className="space-y-px">
+              <p className="text-foreground/80 line-clamp-1 text-sm font-medium">
+                {file.name}
+              </p>
+              <p className="text-muted-foreground text-xs">
+                {bytesToHumanReadable(file.size)}
+              </p>
+            </div>
+            {file.status === "uploading" && (
+              <div className="flex items-center gap-2">
+                {progress < 100 ? <LoadingSpinner size={24} /> : null}
+                <span className="text-sm">{progress}%</span>
+              </div>
+            )}
           </div>
           <Progress value={progress} />
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      {file.status === "pending" && (
         <Button
           type="button"
           variant="outline"
@@ -171,7 +185,7 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
           <Cross2Icon className="size-4 " aria-hidden="true" />
           <span className="sr-only">Remove file</span>
         </Button>
-      </div>
+      )}
     </div>
   );
 }

@@ -15,6 +15,8 @@ import type {
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { fromEvent } from "file-selector";
 
+import type { FileWithState } from "@uploadthing/shared";
+
 import {
   allFilesAccepted,
   initialState,
@@ -203,14 +205,18 @@ export function useDropzone({
 
   const setFiles = useCallback(
     (files: File[]) => {
-      const acceptedFiles: File[] = [];
+      const acceptedFiles: FileWithState[] = [];
 
       files.forEach((file) => {
         const accepted = isFileAccepted(file, accept);
         const sizeMatch = isValidSize(file, minSize, maxSize);
 
         if (accepted && sizeMatch) {
-          acceptedFiles.push(file);
+          const fileWithState: FileWithState = Object.assign(file, {
+            status: "pending" as const,
+            url: null,
+          });
+          acceptedFiles.push(fileWithState);
         }
       });
 
@@ -241,7 +247,16 @@ export function useDropzone({
         Promise.resolve(fromEvent(event))
           .then((files) => {
             if (event.isPropagationStopped()) return;
-            setFiles(files as File[]);
+
+            console.log("files in onDrop", files);
+
+            const filesWithState = (files as File[]).map((file) =>
+              Object.assign(file, {
+                status: "pending" as const,
+                url: null,
+              }),
+            );
+            setFiles(filesWithState);
           })
           .catch(noop);
       }

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { FileUploader } from "~/components/file-uploader";
@@ -14,15 +15,23 @@ import {
   FormMessage,
   useForm,
 } from "~/components/ui/form";
+import { fileWithStateValidator } from "~/utils";
 
 export function ReactHookFormDemo() {
   const form = useForm({
     schema: z.object({
-      images: z.array(z.instanceof(File)),
+      images: fileWithStateValidator.array(),
     }),
   });
 
-  const onSubmit = form.handleSubmit((input) => {});
+  const onSubmit = form.handleSubmit((data) => {
+    toast(
+      <pre className="w-full rounded bg-zinc-300 p-1 font-mono">
+        {JSON.stringify(data, null, 4)}
+      </pre>,
+    );
+    form.reset();
+  });
 
   return (
     <Form {...form}>
@@ -37,7 +46,10 @@ export function ReactHookFormDemo() {
                 <FormControl>
                   <FileUploader
                     files={field.value}
-                    onFilesChange={field.onChange}
+                    onFilesChange={(files) => {
+                      console.trace(files);
+                      field.onChange(files);
+                    }}
                   />
                 </FormControl>
                 <FormMessage />
@@ -49,6 +61,12 @@ export function ReactHookFormDemo() {
           Save
         </Button>
       </form>
+      <pre className="rounded bg-zinc-300 p-1 font-mono">
+        Form: {JSON.stringify(form.watch(), null, 4)}
+      </pre>
+      <pre className="rounded bg-zinc-300 p-1 font-mono">
+        Errors: {JSON.stringify(form.formState.errors, null, 4)}
+      </pre>
     </Form>
   );
 }
