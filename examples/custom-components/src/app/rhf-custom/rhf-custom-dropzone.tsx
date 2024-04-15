@@ -116,7 +116,7 @@ export const SimpleRHFDemo = () => {
           <Button
             type="submit"
             className="w-full"
-            disabled={!form.formState.isValid}
+            disabled={!form.formState.isValid || !form.formState.isDirty}
           >
             Submit
           </Button>
