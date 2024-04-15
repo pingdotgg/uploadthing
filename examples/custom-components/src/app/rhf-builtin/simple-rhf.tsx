@@ -23,6 +23,9 @@ export const SimpleRHFDemo = () => {
     schema: z.object({
       images: fileWithStateValidator.array(),
     }),
+    defaultValues: {
+      images: [],
+    },
     mode: "onChange",
   });
 
