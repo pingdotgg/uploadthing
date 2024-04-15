@@ -53,10 +53,7 @@ export function ReactHookFormDemo() {
                 <FormControl>
                   <FileUploader
                     files={field.value}
-                    onFilesChange={(files) => {
-                      console.trace(files);
-                      field.onChange(files);
-                    }}
+                    onFilesChange={field.onChange}
                   />
                 </FormControl>
               </FormItem>
