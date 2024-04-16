@@ -855,7 +855,7 @@ importers:
         specifier: 18.2.0
         version: 18.2.0
       react-native:
-        specifier: ^0.73.4
+        specifier: ^0.73.6
         version: 0.73.6(@babel/core@7.24.4)(@babel/preset-env@7.24.4)(react@18.2.0)
       typescript:
         specifier: ^5.4.5

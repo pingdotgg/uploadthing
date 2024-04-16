@@ -46,7 +46,7 @@
     "expo-document-picker": "^11.10.1",
     "expo-image-picker": "^14.7.1",
     "react": "18.2.0",
-    "react-native": "^0.73.4",
+    "react-native": "^0.73.6",
     "typescript": "^5.4.5",
     "uploadthing": "6.9.0",
     "wait-on": "^7.2.0"
