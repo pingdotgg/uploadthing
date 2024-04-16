@@ -42,7 +42,7 @@ export const uploadPresignedPostWithProgress = (
                 fileName: file.name,
                 s3Error: xhr.responseText,
               },
-              S.null,
+              S.Null,
             ),
       );
     xhr.onerror = () =>
@@ -54,7 +54,7 @@ export const uploadPresignedPostWithProgress = (
             uploadId: null,
             fileName: file.name,
           },
-          S.null,
+          S.Null,
         ),
       );
 

@@ -95,9 +95,9 @@ export type Time =
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
-export const ContentDispositionSchema = S.literal("inline", "attachment");
+export const ContentDispositionSchema = S.Literal("inline", "attachment");
 export type ContentDisposition = S.Schema.Type<typeof ContentDispositionSchema>;
-export const ACLSchema = S.literal("public-read", "private");
+export const ACLSchema = S.Literal("public-read", "private");
 export type ACL = S.Schema.Type<typeof ACLSchema>;
 
 type RouteConfig = {

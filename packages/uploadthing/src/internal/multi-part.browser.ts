@@ -64,7 +64,7 @@ export const uploadMultipartWithProgress = (
             fileName: file.name,
             s3Error: Cause.pretty(error).toString(),
           },
-          S.null,
+          S.Null,
         ),
       ),
     );
@@ -78,7 +78,7 @@ export const uploadMultipartWithProgress = (
           fileKey: presigned.key,
           etags,
         },
-        S.null,
+        S.Null,
       ),
     );
   });
@@ -89,7 +89,7 @@ export const completeMultipartUpload = (
 ) =>
   fetchEffJson(
     generateUploadThingURL("/api/completeMultipart"),
-    S.struct({ success: S.boolean, message: S.optional(S.string) }),
+    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
     {
       method: "POST",
       body: JSON.stringify({

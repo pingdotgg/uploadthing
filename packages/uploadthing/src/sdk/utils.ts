@@ -131,7 +131,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
     }));
     logger.debug("Getting presigned URLs for files", fileData);
 
-    const responseSchema = S.struct({
+    const responseSchema = S.Struct({
       data: PresignedURLResponseSchema,
     });
 
@@ -173,7 +173,7 @@ const uploadFile = (
     yield* $(
       fetchEffJson(
         generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        S.struct({ status: S.string }),
+        S.Struct({ status: S.String }),
       ),
       Effect.andThen((res) =>
         res.status === "done"

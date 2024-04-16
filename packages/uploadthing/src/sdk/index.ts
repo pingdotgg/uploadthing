@@ -232,8 +232,8 @@ export class UTApi {
     guardServerOnly();
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const responseSchema = S.struct({
-      success: S.boolean,
+    const responseSchema = S.Struct({
+      success: S.Boolean,
     });
 
     return await this.executeAsync(
@@ -264,11 +264,11 @@ export class UTApi {
 
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const responseSchema = S.struct({
-      data: S.array(
-        S.struct({
-          key: S.string,
-          url: S.string,
+    const responseSchema = S.Struct({
+      data: S.Array(
+        S.Struct({
+          key: S.String,
+          url: S.String,
         }),
       ),
     });
@@ -295,13 +295,13 @@ export class UTApi {
   listFiles = async (opts?: ListFilesOptions) => {
     guardServerOnly();
 
-    const responseSchema = S.struct({
-      files: S.array(
-        S.struct({
-          id: S.string,
-          key: S.string,
-          name: S.string,
-          status: S.literal(
+    const responseSchema = S.Struct({
+      files: S.Array(
+        S.Struct({
+          id: S.String,
+          key: S.String,
+          name: S.String,
+          status: S.Literal(
             "Deletion Pending",
             "Failed",
             "Uploaded",
@@ -319,8 +319,8 @@ export class UTApi {
   renameFiles = async (updates: RenameFileUpdate | RenameFileUpdate[]) => {
     guardServerOnly();
 
-    const responseSchema = S.struct({
-      success: S.boolean,
+    const responseSchema = S.Struct({
+      success: S.Boolean,
     });
 
     return await this.executeAsync(
@@ -338,14 +338,14 @@ export class UTApi {
   getUsageInfo = async () => {
     guardServerOnly();
 
-    const responseSchema = S.struct({
-      totalBytes: S.number,
-      totalReadable: S.string,
-      appTotalBytes: S.number,
-      appTotalReadable: S.string,
-      filesUploaded: S.number,
-      limitBytes: S.number,
-      limitReadable: S.string,
+    const responseSchema = S.Struct({
+      totalBytes: S.Number,
+      totalReadable: S.String,
+      appTotalBytes: S.Number,
+      appTotalReadable: S.String,
+      filesUploaded: S.Number,
+      limitBytes: S.Number,
+      limitReadable: S.String,
     });
 
     return await this.executeAsync(
@@ -376,8 +376,8 @@ export class UTApi {
       });
     }
 
-    const responseSchema = S.struct({
-      url: S.string,
+    const responseSchema = S.Struct({
+      url: S.String,
     });
 
     return await this.executeAsync(
@@ -421,8 +421,8 @@ export class UTApi {
         : { customId: key, acl };
     });
 
-    const responseSchema = S.struct({
-      success: S.boolean,
+    const responseSchema = S.Struct({
+      success: S.Boolean,
     });
 
     return await this.executeAsync(

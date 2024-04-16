@@ -189,10 +189,10 @@ const handleCallbackRequest = (opts: {
     const requestInput = yield* $(
       parseRequestJson(
         opts.req,
-        S.struct({
-          status: S.string,
+        S.Struct({
+          status: S.String,
           file: UploadedFileDataSchema,
-          metadata: S.record(S.string, S.unknown),
+          metadata: S.Record(S.String, S.Unknown),
         }),
       ),
     );
@@ -228,7 +228,7 @@ const handleCallbackRequest = (opts: {
     );
 
     yield* $(
-      fetchEffJson(generateUploadThingURL("/api/serverCallback"), S.any, {
+      fetchEffJson(generateUploadThingURL("/api/serverCallback"), S.Any, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: { "Content-Type": "application/json" },

@@ -111,7 +111,7 @@ export const completeMultipartUpload = (
 ) =>
   fetchEffJson(
     generateUploadThingURL("/api/completeMultipart"),
-    S.struct({ success: S.boolean, message: S.optional(S.string) }),
+    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
     {
       method: "POST",
       body: JSON.stringify({
@@ -129,7 +129,7 @@ export const abortMultipartUpload = (presigned: {
 }) =>
   fetchEffJson(
     generateUploadThingURL("/api/failureCallback"),
-    S.struct({ success: S.boolean, message: S.optional(S.string) }),
+    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
     {
       method: "POST",
       body: JSON.stringify({

@@ -161,12 +161,12 @@ const uploadFile = <
       yield* $(uploadPresignedPostWithProgress(file, presigned, opts));
     }
 
-    const PollingResponse = S.union(
-      S.struct({
-        status: S.literal("done"),
-        callbackData: S.any as S.Schema<TServerOutput, any>,
+    const PollingResponse = S.Union(
+      S.Struct({
+        status: S.Literal("done"),
+        callbackData: S.Any as S.Schema<TServerOutput, any>,
       }),
-      S.struct({ status: S.literal("still waiting") }),
+      S.Struct({ status: S.Literal("still waiting") }),
     );
 
     let serverData: TServerOutput | null = null;

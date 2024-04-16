@@ -28,19 +28,19 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     const file = yield* $(
       fetchEffJson(
         generateUploadThingURL(`/api/pollUpload/${fileKey}`),
-        S.struct({
-          status: S.string,
+        S.Struct({
+          status: S.String,
           fileData: S.optional(
-            S.struct({
-              fileKey: S.nullable(S.string),
-              fileName: S.string,
-              fileSize: S.number,
-              fileType: S.string,
-              metadata: S.nullable(S.string),
-              customId: S.nullable(S.string),
+            S.Struct({
+              fileKey: S.NullOr(S.String),
+              fileName: S.String,
+              fileSize: S.Number,
+              fileType: S.String,
+              metadata: S.NullOr(S.String),
+              customId: S.NullOr(S.String),
 
-              callbackUrl: S.string,
-              callbackSlug: S.string,
+              callbackUrl: S.String,
+              callbackSlug: S.String,
             }),
           ),
         }),

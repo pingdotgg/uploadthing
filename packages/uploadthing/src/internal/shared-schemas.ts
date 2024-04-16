@@ -9,10 +9,10 @@ import { ContentDispositionSchema } from "@uploadthing/shared";
  * =============================================================================
  */
 
-export const FileUploadDataSchema = S.struct({
-  name: S.string,
-  size: S.number,
-  type: S.string,
+export const FileUploadDataSchema = S.Struct({
+  name: S.String,
+  size: S.Number,
+  type: S.String,
 });
 /**
  * Properties from the web File object, this is what the client sends when initiating an upload
@@ -21,8 +21,8 @@ export type FileUploadData = S.Schema.Type<typeof FileUploadDataSchema>;
 
 export const FileUploadDataWithCustomIdSchema = S.extend(
   FileUploadDataSchema,
-  S.struct({
-    customId: S.nullable(S.string),
+  S.Struct({
+    customId: S.NullOr(S.String),
   }),
 );
 /**
@@ -34,9 +34,9 @@ export type FileUploadDataWithCustomId = S.Schema.Type<
 
 export const UploadedFileDataSchema = S.extend(
   FileUploadDataWithCustomIdSchema,
-  S.struct({
-    key: S.string,
-    url: S.string,
+  S.Struct({
+    key: S.String,
+    url: S.String,
   }),
 );
 /**
@@ -60,37 +60,37 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-export const PresignedBaseSchema = S.struct({
-  key: S.string,
-  fileName: S.string,
-  fileType: S.string as S.Schema<FileRouterInputKey>,
-  fileUrl: S.string,
-  pollingJwt: S.string,
-  pollingUrl: S.string,
+export const PresignedBaseSchema = S.Struct({
+  key: S.String,
+  fileName: S.String,
+  fileType: S.String as S.Schema<FileRouterInputKey>,
+  fileUrl: S.String,
+  pollingJwt: S.String,
+  pollingUrl: S.String,
   contentDisposition: ContentDispositionSchema,
-  customId: S.nullable(S.string),
+  customId: S.NullOr(S.String),
 });
 
 export const MPUResponseSchema = S.extend(
   PresignedBaseSchema,
-  S.struct({
-    urls: S.array(S.string),
-    uploadId: S.string,
-    chunkSize: S.number,
-    chunkCount: S.number,
+  S.Struct({
+    urls: S.Array(S.String),
+    uploadId: S.String,
+    chunkSize: S.Number,
+    chunkCount: S.Number,
   }),
 );
 
 export const PSPResponseSchema = S.extend(
   PresignedBaseSchema,
-  S.struct({
-    url: S.string,
-    fields: S.record(S.string, S.string),
+  S.Struct({
+    url: S.String,
+    fields: S.Record(S.String, S.String),
   }),
 );
 
-export const PresignedURLResponseSchema = S.array(
-  S.union(PSPResponseSchema, MPUResponseSchema),
+export const PresignedURLResponseSchema = S.Array(
+  S.Union(PSPResponseSchema, MPUResponseSchema),
 );
 
 /**
@@ -99,25 +99,25 @@ export const PresignedURLResponseSchema = S.array(
  * =============================================================================
  */
 
-export const UploadActionPayload = S.struct({
-  files: S.array(FileUploadDataSchema),
-  input: S.unknown as S.Schema<Json>,
+export const UploadActionPayload = S.Struct({
+  files: S.Array(FileUploadDataSchema),
+  input: S.Unknown as S.Schema<Json>,
 });
 
-export const FailureActionPayload = S.struct({
-  fileKey: S.string,
-  uploadId: S.nullable(S.string),
-  s3Error: S.optional(S.string),
-  fileName: S.string,
+export const FailureActionPayload = S.Struct({
+  fileKey: S.String,
+  uploadId: S.NullOr(S.String),
+  s3Error: S.optional(S.String),
+  fileName: S.String,
 });
 
-export const MultipartCompleteActionPayload = S.struct({
-  fileKey: S.string,
-  uploadId: S.string,
-  etags: S.array(
-    S.struct({
-      tag: S.string,
-      partNumber: S.number,
+export const MultipartCompleteActionPayload = S.Struct({
+  fileKey: S.String,
+  uploadId: S.String,
+  etags: S.Array(
+    S.Struct({
+      tag: S.String,
+      partNumber: S.Number,
     }),
   ),
 });
