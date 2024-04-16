@@ -1,7 +1,11 @@
 // Don't want to ship our logger to the client, keep size down
 /* eslint-disable no-console */
 
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
+  fileSizeToBytes,
+  getTypeFromFileName,
+  objectKeys,
   resolveMaybeUrlArg,
   UploadThingError,
   withExponentialBackoff,
@@ -33,6 +37,39 @@ export {
   /** @public */
   bytesToHumanReadable,
 } from "@uploadthing/shared";
+
+/**
+ * Validate that a file is of a valid type given a route config
+ * @public
+ */
+export const isValidFileType = (
+  file: File,
+  routeConfig: ExpandedRouteConfig,
+) => {
+  try {
+    const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
+    return file.type.includes(type);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Validate that a file is of a valid size given a route config
+ * @public
+ */
+export const isValidFileSize = (
+  file: File,
+  routeConfig: ExpandedRouteConfig,
+) => {
+  try {
+    const type = getTypeFromFileName(file.name, objectKeys(routeConfig));
+    const maxFileSize = fileSizeToBytes(routeConfig[type]!.maxFileSize);
+    return file.size <= maxFileSize;
+  } catch {
+    return false;
+  }
+};
 
 export const version = pkgJson.version;
 

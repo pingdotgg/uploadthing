@@ -238,11 +238,33 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
 
+  const getRouteConfig = (endpoint: keyof TRouter) => {
+    const maybeServerData = globalThis.__UPLOADTHING;
+    if (!maybeServerData) {
+      throw new Error(
+        "No UploadThing server data found. Please make sure to use the NextSSRPlugin in your Next.js app.",
+      );
+    }
+    const config = maybeServerData.find((x) => x.slug === endpoint)?.config;
+    if (!config) {
+      throw new Error(
+        `No config found for endpoint "${endpoint.toString()}". Please make sure to use the NextSSRPlugin in your Next.js app.`,
+      );
+    }
+    return config;
+  };
+
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/react",
     }),
+
+    /**
+     * Get the config for a given endpoint outside of React context.
+     * @remarks Can only be used if the NextSSRPlugin is used in the app.
+     */
+    getRouteConfig,
   } as const;
 };
