@@ -325,7 +325,7 @@ describe("uploadFiles", () => {
       `[(FiberFailure) UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
-    expect(requestsToDomain("amazonaws.com")).toHaveLength(2);
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(7);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
       generateUploadThingURL("/api/failureCallback"),

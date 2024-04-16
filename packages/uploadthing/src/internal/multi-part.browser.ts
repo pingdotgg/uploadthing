@@ -1,14 +1,15 @@
 import * as S from "@effect/schema/Schema";
-import { Cause, Effect, Schedule } from "effect";
+import { Cause, Effect } from "effect";
+import { isTest } from "std-env";
 
 import {
   contentDisposition,
+  exponentialBackoff,
   fetchEffJson,
   generateUploadThingURL,
   RetryError,
-  UploadThingError,
 } from "@uploadthing/shared";
-import type { ContentDisposition } from "@uploadthing/shared";
+import type { ContentDisposition, UploadThingError } from "@uploadthing/shared";
 
 import type { MPUResponse } from "./types";
 import type { UTReporter } from "./ut-reporter";
@@ -48,8 +49,8 @@ export const uploadMultipartWithProgress = (
             Effect.andThen((tag) => ({ tag, partNumber: index + 1 })),
             Effect.retry({
               while: (error) => error instanceof RetryError,
-              times: 10,
-              schedule: Schedule.fixed(2000),
+              times: isTest ? 3 : 10, // less retries in tests just to make it faster
+              schedule: exponentialBackoff,
             }),
           );
         },
@@ -126,14 +127,7 @@ const uploadPart = (opts: UploadPartOptions) =>
       if (xhr.status >= 200 && xhr.status <= 299 && etag) {
         return resume(Effect.succeed(etag));
       }
-      return resume(
-        Effect.fail(
-          new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: "Missing Etag header from uploaded part",
-          }),
-        ),
-      );
+      return resume(Effect.fail(new RetryError()));
     };
     xhr.onerror = () => resume(Effect.fail(new RetryError()));
 
