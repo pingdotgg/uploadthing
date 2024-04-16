@@ -1155,6 +1155,9 @@ importers:
       '@uploadthing/react':
         specifier: 6.4.4
         version: link:../packages/react
+      '@uploadthing/shared':
+        specifier: ^6.6.0
+        version: link:../packages/shared
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0

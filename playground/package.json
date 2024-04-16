@@ -1,5 +1,5 @@
 {
-  "name": "@example/custom-components",
+  "name": "playground",
   "private": true,
   "type": "module",
   "scripts": {
@@ -20,6 +20,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@uploadthing/shared": "^6.6.0",
     "@uploadthing/react": "6.4.4",
     "class-variance-authority": "^0.7.0",
     "client-only": "^0.0.1",
