@@ -818,10 +818,10 @@ importers:
   packages/expo:
     dependencies:
       '@uploadthing/react':
-        specifier: ^6.3.2
+        specifier: ^6.4.4
         version: link:../react
       '@uploadthing/shared':
-        specifier: ^6.3.2
+        specifier: ^6.6.0
         version: link:../shared
     devDependencies:
       '@types/react':
