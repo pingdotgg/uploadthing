@@ -3,4 +3,5 @@ packages:
   - "examples/*"
   - "examples/backend-adapters/*"
   - "packages/*"
+  - "playground"
   - "tooling/*"
