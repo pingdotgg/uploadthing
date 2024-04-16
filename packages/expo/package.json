@@ -33,11 +33,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "^6.3.2",
-    "@uploadthing/shared": "^6.3.2"
+    "@uploadthing/react": "^6.4.4",
+    "@uploadthing/shared": "^6.6.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.60",
+    "@types/react": "18.2.78",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^5.1.2",
@@ -47,7 +47,7 @@
     "expo-image-picker": "^14.7.1",
     "react": "18.2.0",
     "react-native": "^0.73.4",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.5",
     "uploadthing": "6.9.0",
     "wait-on": "^7.2.0"
   },
