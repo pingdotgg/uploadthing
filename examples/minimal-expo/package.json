@@ -2,7 +2,8 @@
   "name": "@example/minimal-expo",
   "main": "expo-router/entry",
   "scripts": {
-    "dev": "expo start"
+    "dev": "expo start",
+    "clean": "git clean -xdf .next node_modules"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^4.0.1",
