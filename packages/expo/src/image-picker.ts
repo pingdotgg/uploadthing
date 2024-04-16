@@ -38,7 +38,7 @@ export const GENERATE_useImageUploader =
       opts: {
         /**
          * Whether to show a UI to edit the image after it is picked
-         * @default true for single-file uploads, else false
+         * If multiple files are allowed to be uploaded, this will be ignored and set to false
          */
         allowsEditing?: boolean;
       } & ExtendObjectIf<
@@ -48,7 +48,7 @@ export const GENERATE_useImageUploader =
     ) => {
       const response = await ImagePicker.launchImageLibraryAsync({
         mediaTypes,
-        allowsEditing: !multiple,
+        allowsEditing: multiple ? false : opts.allowsEditing,
         allowsMultipleSelection: multiple,
       });
       if (response.canceled) {
