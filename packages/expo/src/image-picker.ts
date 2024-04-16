@@ -36,7 +36,11 @@ export const GENERATE_useImageUploader =
 
     const openImagePicker = async (
       opts: {
-        // Nothing here yet.
+        /**
+         * Whether to show a UI to edit the image after it is picked
+         * @default true for single-file uploads, else false
+         */
+        allowsEditing?: boolean;
       } & ExtendObjectIf<
         inferEndpointInput<TRouter[TEndpoint]>,
         { input: inferEndpointInput<TRouter[TEndpoint]> }
@@ -44,7 +48,7 @@ export const GENERATE_useImageUploader =
     ) => {
       const response = await ImagePicker.launchImageLibraryAsync({
         mediaTypes,
-        allowsEditing: true,
+        allowsEditing: !multiple,
         allowsMultipleSelection: multiple,
       });
       if (response.canceled) {
@@ -66,5 +70,5 @@ export const GENERATE_useImageUploader =
       );
     };
 
-    return { openImagePicker };
+    return { openImagePicker, isUploading: uploadthing.isUploading };
   };

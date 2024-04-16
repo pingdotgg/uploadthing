@@ -73,5 +73,5 @@ export const GENERATE_useDocumentUploader =
       );
     };
 
-    return { openDocumentPicker };
+    return { openDocumentPicker, isUploading: uploadthing.isUploading };
   };

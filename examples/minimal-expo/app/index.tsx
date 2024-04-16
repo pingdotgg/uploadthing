@@ -9,22 +9,29 @@ const { useImageUploader, useDocumentUploader } =
   generateReactNativeHelpers<UploadRouter>();
 
 export default function ModalScreen() {
-  const { openImagePicker } = useImageUploader("videoAndImage");
-  const { openDocumentPicker } = useDocumentUploader("document");
+  const { openImagePicker, isUploading: isUploadingImage } =
+    useImageUploader("videoAndImage");
+  const { openDocumentPicker, isUploading: isUploadingDocument } =
+    useDocumentUploader("document");
 
   return (
     <>
       <Stack.Screen options={{ title: "Home Page" }} />
       <View style={styles.container}>
         <Text style={styles.title}>Modal</Text>
-        <Button title="Open Gallery" onPress={() => openImagePicker({})} />
+        <Button
+          title="Open Gallery"
+          onPress={() => openImagePicker({})}
+          disabled={isUploadingImage}
+        />
         <Button
           title="Select File"
-          onPress={() =>
-            openDocumentPicker({
+          onPress={() => {
+            return openDocumentPicker({
               input: { foo: "bar" },
-            })
-          }
+            });
+          }}
+          disabled={isUploadingDocument}
         />
         <View style={styles.separator} />
       </View>
