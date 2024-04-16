@@ -8,23 +8,24 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
-    "@uploadthing/expo": "workspace:*",
-    "expo": "~50.0.6",
+    "@uploadthing/expo": "6.3.0",
+    "expo": "~50.0.15",
     "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",
-    "expo-router": "~3.4.7",
-    "expo-splash-screen": "~0.26.3",
+    "expo-router": "~3.4.8",
+    "expo-splash-screen": "~0.26.4",
     "expo-status-bar": "~1.11.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "^0.73.4",
+    "react-native": "^0.73.6",
     "react-native-safe-area-context": "4.8.2",
     "react-native-screens": "~3.29.0",
-    "uploadthing": "6.9.0"
+    "uploadthing": "6.9.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9",
-    "@babel/runtime": "^7.23.9",
+    "@babel/core": "^7.24.4",
+    "@babel/runtime": "^7.24.4",
     "@types/react": "18.2.78",
     "typescript": "^5.4.5"
   },

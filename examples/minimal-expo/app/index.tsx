@@ -17,8 +17,15 @@ export default function ModalScreen() {
       <Stack.Screen options={{ title: "Home Page" }} />
       <View style={styles.container}>
         <Text style={styles.title}>Modal</Text>
-        <Button title="Open Gallery" onPress={() => openImagePicker()} />
-        <Button title="Select File" onPress={() => openDocumentPicker()} />
+        <Button title="Open Gallery" onPress={() => openImagePicker({})} />
+        <Button
+          title="Select File"
+          onPress={() =>
+            openDocumentPicker({
+              input: { foo: "bar" },
+            })
+          }
+        />
         <View style={styles.separator} />
       </View>
     </>

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import { createRouteHandler, createUploadthing } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
 
@@ -33,9 +35,14 @@ export const uploadRouter = {
       maxFileCount: 1,
       contentDisposition: "inline",
     },
-  }).onUploadComplete((data) => {
-    console.log("upload completed", data);
-  }),
+  })
+    .input(z.object({ foo: z.string() }))
+    .middleware(({ input }) => {
+      return { input };
+    })
+    .onUploadComplete((data) => {
+      console.log("upload completed", data);
+    }),
 } satisfies FileRouter;
 
 export type UploadRouter = typeof uploadRouter;
