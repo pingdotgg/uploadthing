@@ -1,9 +1,15 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const { FileStore } = require("@expo/metro-config/file-store");
+const { withNativeWind } = require("nativewind/metro");
 const path = require("path");
 
 module.exports = withTurborepoManagedCache(
-  withMonorepoPaths(getDefaultConfig(__dirname)),
+  withMonorepoPaths(
+    withNativeWind(getDefaultConfig(__dirname), {
+      input: "./app/styles.css",
+      configPath: "./tailwind.config.ts",
+    }),
+  ),
 );
 
 /**

@@ -24,13 +24,13 @@ export const uploadRouter = {
   videoAndImage: f({
     image: {
       maxFileSize: "4MB",
-      maxFileCount: 4,
+      maxFileCount: 1,
     },
   }).onUploadComplete((data) => {
     console.log("upload completed", data);
   }),
   document: f({
-    blob: {
+    pdf: {
       maxFileSize: "16MB",
       maxFileCount: 1,
       contentDisposition: "inline",
