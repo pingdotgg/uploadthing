@@ -9,6 +9,9 @@ export default withUt({
 
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,md,mdx}",
+
+    // all package managers are terrible. This is a hack so that we get the styles for the UT components in the docs
+    "./node_modules/@uploadthing/react/dist/**/*.js",
   ],
   theme: {
     extend: {
