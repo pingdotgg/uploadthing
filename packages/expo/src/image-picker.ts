@@ -73,9 +73,9 @@ export const GENERATE_useImageUploader =
         requestPermissionFn = ImagePicker.requestMediaLibraryPermissionsAsync;
       }
 
-      let granted = true;
       const currentPermissions = await getPermissionFn();
-      if (!currentPermissions.granted && currentPermissions.canAskAgain) {
+      let granted = currentPermissions.granted;
+      if (!granted && currentPermissions.canAskAgain) {
         const newPermissions = await requestPermissionFn();
         granted = newPermissions.granted;
       }
