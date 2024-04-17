@@ -22,6 +22,9 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
     onUploadProgress: (p) => {
       console.log("upload progress", p);
     },
+    onUploadError: (e) => {
+      Alert.alert("Upload Error", e.message);
+    },
     onClientUploadComplete: (files) => {
       utils.getFiles.invalidate();
 
@@ -38,6 +41,9 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
   const pdfUploader = useDocumentUploader("document", {
     onUploadProgress: (p) => {
       console.log("upload progress", p);
+    },
+    onUploadError: (e) => {
+      Alert.alert("Upload Error", e.message);
     },
     onClientUploadComplete: (files) => {
       utils.getFiles.invalidate();
