@@ -2,6 +2,6 @@
 import nativewind from "nativewind/preset";
 
 export default {
-  content: ["./app/**/*.{ts,tsx}"],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   presets: [nativewind],
 };
