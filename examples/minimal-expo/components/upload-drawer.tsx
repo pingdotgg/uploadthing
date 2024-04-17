@@ -22,20 +22,34 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
     onUploadProgress: (p) => {
       console.log("upload progress", p);
     },
-    onClientUploadComplete: ([{ key, name }]) => {
+    onClientUploadComplete: (files) => {
       utils.getFiles.invalidate();
-      bottomSheetModalRef.current?.dismiss();
-      router.push(`/f/${key}?name=${name}`);
+
+      if (files.length === 1) {
+        // Auto-open the file if there's only one
+        const { key, name } = files[0];
+        bottomSheetModalRef.current?.dismiss();
+        router.push(`/f/${key}?name=${name}`);
+      } else {
+        bottomSheetModalRef.current?.dismiss();
+      }
     },
   });
   const pdfUploader = useDocumentUploader("document", {
-    onClientUploadComplete: ([{ key, name }]) => {
-      utils.getFiles.invalidate();
-      bottomSheetModalRef.current?.dismiss();
-      router.push(`/f/${key}?name=${name}`);
-    },
     onUploadProgress: (p) => {
       console.log("upload progress", p);
+    },
+    onClientUploadComplete: (files) => {
+      utils.getFiles.invalidate();
+
+      if (files.length === 1) {
+        // Auto-open the file if there's only one
+        const { key, name } = files[0];
+        bottomSheetModalRef.current?.dismiss();
+        router.push(`/f/${key}?name=${name}`);
+      } else {
+        bottomSheetModalRef.current?.dismiss();
+      }
     },
   });
 

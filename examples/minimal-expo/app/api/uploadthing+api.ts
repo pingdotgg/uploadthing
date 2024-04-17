@@ -24,7 +24,7 @@ export const uploadRouter = {
   videoAndImage: f({
     image: {
       maxFileSize: "4MB",
-      maxFileCount: 1,
+      maxFileCount: 4,
     },
   }).onUploadComplete((data) => {
     console.log("upload completed", data);
