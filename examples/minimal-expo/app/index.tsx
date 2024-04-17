@@ -17,18 +17,17 @@ export default function HomeScreen() {
         <View className="flex h-full items-center justify-center">
           <ActivityIndicator size="large" color="#ccc" />
         </View>
-      ) : (
-        files?.length > 0 ? (
+      ) : files && files.length > 0 ? (
         <FlashList
           data={files}
           estimatedItemSize={100}
           renderItem={({ item }) => <FileItem key={item.id} item={item} />}
         />
-      ): (
+      ) : (
         <View className="flex h-full items-center justify-center">
-          <Text className="text-gray-500 text-lg">{`No files uploaded yet.`}</Text>
+          <Text className="text-lg text-gray-500">{`No files uploaded yet.`}</Text>
         </View>
-      ))}
+      )}
       <Pressable
         className="absolute bottom-8 right-8 flex items-center justify-center rounded-full bg-zinc-800 p-3"
         onPress={() => {
