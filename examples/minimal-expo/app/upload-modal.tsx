@@ -1,6 +1,6 @@
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
-import { FileText, Image } from "lucide-react-native";
+import { Camera, FileText, Image } from "lucide-react-native";
 import {
   ActivityIndicator,
   Alert,
@@ -72,7 +72,7 @@ export default function Modal() {
         style={{
           backgroundColor: "#18181b",
           elevation: 5,
-          transform: [{ translateY: height * 0.75 }],
+          transform: [{ translateY: height * 0.65 }],
         }}
         entering={SlideInDown}
         exiting={SlideOutDown}
@@ -85,6 +85,33 @@ export default function Modal() {
           </View>
         ) : (
           <>
+            <Pressable
+              onPress={() => {
+                imageUploader.openImagePicker({
+                  source: "library",
+                  onInsufficientPermissions: () => {
+                    Alert.alert(
+                      "No Permissions",
+                      "You need to grant permission to your Photos to use this",
+                      [
+                        {
+                          text: "Dismiss",
+                        },
+                        {
+                          text: "Open Settings",
+                          onPress: () => Linking.openSettings(),
+                          isPreferred: true,
+                        },
+                      ],
+                    );
+                  },
+                });
+              }}
+              className="flex w-full max-w-52 flex-row items-center justify-center gap-2 rounded-lg bg-blue-600 p-4 active:bg-blue-700"
+            >
+              <Image size={24} color="white" />
+              <Text className="font-bold text-white">Select Image</Text>
+            </Pressable>
             <Pressable
               onPress={() => {
                 imageUploader.openImagePicker({
@@ -109,7 +136,7 @@ export default function Modal() {
               }}
               className="flex w-full max-w-52 flex-row items-center justify-center gap-2 rounded-lg bg-blue-600 p-4 active:bg-blue-700"
             >
-              <Image size={24} color="white" />
+              <Camera size={24} color="white" />
               <Text className="font-bold text-white">Select Image</Text>
             </Pressable>
             <Pressable
