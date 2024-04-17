@@ -1,5 +1,5 @@
 const { getDefaultConfig } = require("expo/metro-config");
-const { FileStore } = require("@expo/metro-config/file-store");
+// const { FileStore } = require("@expo/metro-config/file-store");
 const { withNativeWind } = require("nativewind/metro");
 const path = require("path");
 
@@ -46,8 +46,8 @@ function withMonorepoPaths(config) {
  * @returns {import('expo/metro-config').MetroConfig}
  */
 function withTurborepoManagedCache(config) {
-  config.cacheStores = [
-    new FileStore({ root: path.join(__dirname, "node_modules/.cache/metro") }),
-  ];
+  // config.cacheStores = [
+  //   new FileStore({ root: path.join(__dirname, "node_modules/.cache/metro") }),
+  // ];
   return config;
 }

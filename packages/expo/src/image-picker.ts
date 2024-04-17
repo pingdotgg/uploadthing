@@ -88,12 +88,22 @@ export const GENERATE_useImageUploader =
       });
       if (response.canceled) return opts.onCancel?.();
 
-      const files = response.assets.map((ass) => ({
-        uri: ass.uri,
-        type: ass.type,
-        name: ass.fileName ?? ass.uri.split("/").pop() ?? "unknown-filename",
-        size: ass.fileSize,
-      }));
+      const files = await Promise.all(
+        response.assets.map(async (a) => {
+          const blob = await fetch(a.uri).then((r) => r.blob());
+          const n = a.fileName ?? a.uri.split("/").pop() ?? "unknown-filename";
+          const file = new File([blob], n, {
+            type: a.mimeType ?? a.type,
+          });
+          /**
+           * According to React Native's FormData implementation:
+           * "a "blob", which in React Native just means an object with a uri attribute"
+           * @see https://github.com/facebook/react-native/blob/030663bb0634fc76f811cdc63e4d09e7ca32f3d4/packages/react-native/Libraries/Network/FormData.js#L78C1-L82C48
+           */
+          const RNFormDataCompatibleFile = Object.assign(file, { uri: a.uri });
+          return RNFormDataCompatibleFile;
+        }),
+      );
 
       // This cast works cause you can append { uri, type, name } as FormData
       return uploadthing.startUpload(

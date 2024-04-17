@@ -1,9 +1,13 @@
 {
   "name": "@example/minimal-expo",
-  "main": "expo-router/entry",
+  "private": true,
+  "version": "1.0.0",
+  "main": "./index.ts",
   "scripts": {
     "dev": "expo start",
-    "clean": "git clean -xdf .next node_modules"
+    "clean": "git clean -xdf .next node_modules",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "dependencies": {
     "@expo/react-native-action-sheet": "^4.0.1",
@@ -15,6 +19,8 @@
     "@trpc/server": "next",
     "@uploadthing/expo": "6.3.0",
     "expo": "~50.0.17",
+    "expo-dev-client": "~3.3.11",
+    "expo-document-picker": "11.10.1",
     "expo-image": "^1.10.6",
     "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",
@@ -41,6 +47,5 @@
     "@types/react": "18.2.78",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.5"
-  },
-  "private": true
+  }
 }

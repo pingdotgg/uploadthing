@@ -31,7 +31,7 @@ export const uploadRouter = {
   }),
   document: f({
     pdf: {
-      maxFileSize: "16MB",
+      maxFileSize: "64MB",
       maxFileCount: 1,
       contentDisposition: "inline",
     },
@@ -49,4 +49,5 @@ export type UploadRouter = typeof uploadRouter;
 
 export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
+  config: { logLevel: "debug" },
 });
