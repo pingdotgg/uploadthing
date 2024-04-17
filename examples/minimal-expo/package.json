@@ -20,7 +20,7 @@
     "@uploadthing/expo": "6.3.0",
     "expo": "~50.0.17",
     "expo-dev-client": "~3.3.11",
-    "expo-document-picker": "11.10.1",
+    "expo-document-picker": "^11.10.1",
     "expo-image": "^1.10.6",
     "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",

@@ -314,7 +314,7 @@ importers:
         specifier: ~3.3.11
         version: 3.3.11(expo@50.0.17)
       expo-document-picker:
-        specifier: 11.10.1
+        specifier: ^11.10.1
         version: 11.10.1(expo@50.0.17)
       expo-image:
         specifier: ^1.10.6
