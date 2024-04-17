@@ -8,7 +8,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   orientation: "portrait",
   icon: "./assets/icon.png",
   scheme: "myapp",
-  userInterfaceStyle: "automatic",
+  userInterfaceStyle: "dark",
   splash: {
     backgroundColor: "#ffffff",
   },
