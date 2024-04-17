@@ -75,11 +75,9 @@ export const GENERATE_useImageUploader =
 
       let granted = true;
       const currentPermissions = await getPermissionFn();
-      if (!currentPermissions.granted) {
-        if (currentPermissions.canAskAgain) {
-          const newPermissions = await requestPermissionFn();
-          granted = newPermissions.granted;
-        }
+      if (!currentPermissions.granted && currentPermissions.canAskAgain) {
+        const newPermissions = await requestPermissionFn();
+        granted = newPermissions.granted;
       }
       if (!granted) return opts.onInsufficientPermissions?.();
 
