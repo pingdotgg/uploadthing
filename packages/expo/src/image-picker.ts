@@ -41,20 +41,54 @@ export const GENERATE_useImageUploader =
          * If multiple files are allowed to be uploaded, this will be ignored and set to false
          */
         allowsEditing?: boolean;
+        /**
+         * Open Library or Camera
+         * @default "library"
+         */
+        source?: "library" | "camera";
+        /**
+         * Called when there are insufficient permissions to use the image picker
+         */
+        onInsufficientPermissions?: () => void;
+        /**
+         * Called when the user cancels the picker
+         */
+        onCancel?: () => void;
       } & ExtendObjectIf<
         inferEndpointInput<TRouter[TEndpoint]>,
         { input: inferEndpointInput<TRouter[TEndpoint]> }
       >,
     ) => {
-      const response = await ImagePicker.launchImageLibraryAsync({
+      let launchFn: typeof ImagePicker.launchImageLibraryAsync;
+      let getPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
+      let requestPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
+
+      if ((opts.source ?? "library") === "camera") {
+        launchFn = ImagePicker.launchCameraAsync;
+        getPermissionFn = ImagePicker.getCameraPermissionsAsync;
+        requestPermissionFn = ImagePicker.requestCameraPermissionsAsync;
+      } else {
+        launchFn = ImagePicker.launchImageLibraryAsync;
+        getPermissionFn = ImagePicker.getMediaLibraryPermissionsAsync;
+        requestPermissionFn = ImagePicker.requestMediaLibraryPermissionsAsync;
+      }
+
+      let granted = true;
+      const currentPermissions = await getPermissionFn();
+      if (!currentPermissions.granted) {
+        if (currentPermissions.canAskAgain) {
+          const newPermissions = await requestPermissionFn();
+          granted = newPermissions.granted;
+        }
+      }
+      if (!granted) return opts.onInsufficientPermissions?.();
+
+      const response = await launchFn({
         mediaTypes,
         allowsEditing: multiple ? false : opts.allowsEditing,
         allowsMultipleSelection: multiple,
       });
-      if (response.canceled) {
-        console.log("User cancelled image picker");
-        return;
-      }
+      if (response.canceled) return opts.onCancel?.();
 
       const files = response.assets.map((ass) => ({
         uri: ass.uri,

@@ -85,7 +85,9 @@ export default function Modal() {
           <>
             <Pressable
               onPress={() => {
-                imageUploader.openImagePicker({});
+                imageUploader.openImagePicker({
+                  source: "camera",
+                });
               }}
               className="flex w-full max-w-52 flex-row items-center justify-center gap-2 rounded-lg bg-blue-600 p-4 active:bg-blue-700"
             >

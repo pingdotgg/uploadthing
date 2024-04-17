@@ -44,7 +44,10 @@ export const GENERATE_useDocumentUploader =
 
     const openDocumentPicker = async (
       opts: {
-        // Nothing here yet.
+        /**
+         * Called when the user cancels the picker
+         */
+        onCancel?: () => void;
       } & ExtendObjectIf<
         inferEndpointInput<TRouter[TEndpoint]>,
         { input: inferEndpointInput<TRouter[TEndpoint]> }
@@ -54,10 +57,7 @@ export const GENERATE_useDocumentUploader =
         multiple,
         type: mimeTypes,
       });
-      if (response.canceled) {
-        console.log("User cancelled document picker");
-        return;
-      }
+      if (response.canceled) return opts.onCancel?.();
 
       const files = response.assets.map((ass) => ({
         uri: ass.uri,
