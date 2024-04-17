@@ -30,7 +30,11 @@ export default function RootLayout() {
             name="upload-modal"
             options={{
               headerShown: false,
-              presentation: "modal",
+              presentation: "transparentModal",
+              contentStyle:{
+                backgroundColor: "transparent",
+              },
+              animation: "none",
             }}
           />
         </Stack>
