@@ -7,10 +7,18 @@ import { Button, View } from "react-native";
 
 import { isImage } from "~/utils/image-utils";
 
+import Constants from "expo-constants";
+
 export default function FileScreen() {
   const searchParams = useGlobalSearchParams<{ key: string; name: string }>();
   const { key, name } = searchParams;
   const fileUrl = `https://utfs.io/f/${key}`;
+
+  const apiUrl = Constants?.expoConfig?.hostUri
+  ? Constants.expoConfig.hostUri.split(`:`).shift()?.concat(`/api/test-upload:8081`)
+  : `api.uploadthing.com`;
+
+  console.log(apiUrl);
 
   useEffect(() => {
     (async () => {
@@ -54,11 +62,11 @@ export default function FileScreen() {
         console.log("UPLOAD loaded", xhr.response);
       });
 
-      xhr.open("POST", "http://192.168.1.5:8081/api/test-upload", true);
-      // xhr.setRequestHeader("Content-Length", String(blob.size));
-      // xhr.setRequestHeader("Content-Type", "application/octet-stream");
+      xhr.open("POST", apiUrl, true);
+      xhr.setRequestHeader("Content-Length", String(blob.size));
+      xhr.setRequestHeader("Content-Type", "multipart/form-data");
 
-      xhr.send(JSON.stringify({ file: "fooo barba dfaosjfiasodjfoisdjf" }));
+      xhr.send(formData);
     })();
   }, []);
 
