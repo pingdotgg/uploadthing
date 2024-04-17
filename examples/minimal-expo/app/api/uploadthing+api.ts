@@ -1,3 +1,4 @@
+import { isObject } from "@trpc/server/unstable-core-do-not-import";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "uploadthing/server";
@@ -12,7 +13,13 @@ const f = createUploadthing({
     console.log("Error uploading file", err.message);
     console.log("  - Above error caused by:", err.cause);
 
-    return { message: err.message };
+    return {
+      message: err.message,
+      reason:
+        isObject(err.cause) && typeof err.cause.error === "string"
+          ? err.cause.error
+          : null,
+    };
   },
 });
 

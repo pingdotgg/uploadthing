@@ -229,16 +229,33 @@ async function uploadPresignedPost(
   const response = await new Promise<{ status: number }>((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", presigned.url);
-    xhr.setRequestHeader("Accept", "application/xml");
-    xhr.upload.onprogress = (p) => {
-      opts.onUploadProgress?.({
-        file: file.name,
-        progress: (p.loaded / p.total) * 100,
-      });
-    };
-    xhr.onload = () => resolve({ status: xhr.status });
-    xhr.onerror = (e) => reject(e);
+    // xhr.setRequestHeader("Accept", "application/xml");
+    xhr.responseType = "text";
+    // xhr.upload.onprogress = (p) => {
+    //   opts.onUploadProgress?.({
+    //     file: file.name,
+    //     progress: (p.loaded / p.total) * 100,
+    //   });
+    // };
+    xhr.addEventListener("progress", ({ loaded, total }) => {
+      console.log("progress", loaded, total);
+    });
+    xhr.addEventListener("load", () => {
+      console.log("loaded", xhr.response);
+      resolve({ status: xhr.status });
+    });
+
+    // xhr.onload = () => resolve({ status: xhr.status });
+    // xhr.onerror = (e) => reject(e);
     xhr.send(formData);
+    // console.log("xhr.upload", xhr.upload);
+    // if (xhr.upload) {
+    //   xhr.upload.onprogress = ({ total, loaded }) =>
+    //     console.log(">> PROGRESS EVENT IN onprogress", loaded / total);
+    // }
+    // xhr.addEventListener("progress", ({ total, loaded }) => {
+    //   console.log(">> PROGRESS EVENT IN EVENT LISTENET", loaded / total);
+    // });
   }).catch(async (error) => {
     await opts.reportEventToUT("failure", {
       fileKey: presigned.key,

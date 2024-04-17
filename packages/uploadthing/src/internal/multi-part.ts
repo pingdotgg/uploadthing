@@ -99,6 +99,7 @@ export async function uploadPartWithProgress(
     const xhr = new XMLHttpRequest();
 
     xhr.open("PUT", opts.url, true);
+    xhr.responseType = "text";
     xhr.setRequestHeader("Content-Type", opts.fileType);
     xhr.setRequestHeader(
       "Content-Disposition",
@@ -133,11 +134,19 @@ export async function uploadPartWithProgress(
       }
     };
 
-    xhr.upload.onprogress = (e) => {
-      const delta = e.loaded - lastProgress;
-      lastProgress += delta;
-      opts.onProgress(delta);
-    };
+    // xhr.upload.onprogress = (e) => {
+    //   const delta = e.loaded - lastProgress;
+    //   lastProgress += delta;
+    //   opts.onProgress(delta);
+    // };
+
+    xhr.addEventListener("progress", ({ loaded, total }) => {
+      console.log("progress", loaded, total);
+    });
+    xhr.addEventListener("load", () => {
+      console.log("loaded", xhr.response);
+      resolve(xhr.response);
+    });
 
     xhr.send(opts.chunk);
   });

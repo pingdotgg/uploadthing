@@ -23,7 +23,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
       console.log("upload progress", p);
     },
     onUploadError: (e) => {
-      Alert.alert("Upload Error", e.message);
+      Alert.alert("Upload Error", e.data?.reason ?? e.message);
     },
     onClientUploadComplete: (files) => {
       utils.getFiles.invalidate();
@@ -43,7 +43,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
       console.log("upload progress", p);
     },
     onUploadError: (e) => {
-      Alert.alert("Upload Error", e.message);
+      Alert.alert("Upload Error", e.data?.reason ?? e.message);
     },
     onClientUploadComplete: (files) => {
       utils.getFiles.invalidate();
