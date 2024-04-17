@@ -15,8 +15,8 @@ export default function FileScreen() {
   const fileUrl = `https://utfs.io/f/${key}`;
 
   const apiUrl = Constants?.expoConfig?.hostUri
-  ? Constants.expoConfig.hostUri.split(`:`).shift()?.concat(`/api/test-upload:8081`)
-  : `api.uploadthing.com`;
+  ? `http://${Constants.expoConfig.hostUri.split(':')[0]}:8081/api/test-upload`
+  : `https://api.uploadthing.com`;
 
   console.log(apiUrl);
 
