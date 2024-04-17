@@ -1,20 +1,30 @@
 import { useRouter } from "expo-router";
 import { FileText, Image } from "lucide-react-native";
-import { ActivityIndicator, Pressable, Text, View, useWindowDimensions } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  SlideInDown,
+  SlideOutDown,
+} from "react-native-reanimated";
 
 import { generateReactNativeHelpers } from "@uploadthing/expo";
 
-import { api } from "~/utils/api";
+import { trpc } from "~/utils/trpc";
 import { UploadRouter } from "./api/uploadthing+api";
-import Animated, { FadeIn, FadeOut, SlideInDown, SlideInRight, SlideOutDown } from "react-native-reanimated";
-import { useState } from "react";
 
 const { useImageUploader, useDocumentUploader } =
   generateReactNativeHelpers<UploadRouter>();
 
 export default function Modal() {
   const router = useRouter();
-  const utils = api.useUtils();
+  const utils = trpc.useUtils();
 
   const imageUploader = useImageUploader("videoAndImage", {
     onUploadProgress: (p) => {
@@ -48,20 +58,26 @@ export default function Modal() {
         onPress={() => {
           router.dismissAll();
         }}
-        className="absolute top-0 left-0 right-0 bottom-0"
+        className="absolute bottom-0 left-0 right-0 top-0"
       >
-        <Animated.View entering={FadeIn} exiting={FadeOut} className="w-full h-full bg-black/50"/>
+        <Animated.View
+          entering={FadeIn}
+          exiting={FadeOut}
+          className="h-full w-full bg-black/50"
+        />
       </Pressable>
-      <Animated.View style={{
-        backgroundColor: "#18181b",
-        elevation: 5,
-        transform: [{ translateY: height*.75 }],
-      }}
-      entering={SlideInDown}
-      exiting={SlideOutDown}
-      className="flex flex-1 w-full shadow-lg rounded-lg p-12 gap-4 items-center">
+      <Animated.View
+        style={{
+          backgroundColor: "#18181b",
+          elevation: 5,
+          transform: [{ translateY: height * 0.75 }],
+        }}
+        entering={SlideInDown}
+        exiting={SlideOutDown}
+        className="flex w-full flex-1 items-center gap-4 rounded-lg p-12 shadow-lg"
+      >
         {isUploading ? (
-          <View className="flex h-full flex-col items-center pt-8 gap-4">
+          <View className="flex h-full flex-col items-center gap-4 pt-8">
             <ActivityIndicator size="large" color="#ccc" />
             <Text className="font-bold text-white">Uploading...</Text>
           </View>

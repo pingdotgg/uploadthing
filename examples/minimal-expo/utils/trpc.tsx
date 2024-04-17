@@ -10,7 +10,7 @@ import type { TRPCRouter } from "../app/api/trpc/[trpc]+api";
 /**
  * A set of typesafe hooks for consuming your API.
  */
-export const api = createTRPCReact<TRPCRouter>();
+export const trpc = createTRPCReact<TRPCRouter>();
 
 export type RouterOutputs = inferRouterOutputs<TRPCRouter>;
 
@@ -48,7 +48,7 @@ const resolveUrl = () => {
 export function TRPCProvider(props: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
-    api.createClient({
+    trpc.createClient({
       links: [
         // loggerLink({
         //   enabled: (opts) =>
@@ -62,10 +62,10 @@ export function TRPCProvider(props: { children: React.ReactNode }) {
   );
 
   return (
-    <api.Provider client={trpcClient} queryClient={queryClient}>
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         {props.children}
       </QueryClientProvider>
-    </api.Provider>
+    </trpc.Provider>
   );
 }

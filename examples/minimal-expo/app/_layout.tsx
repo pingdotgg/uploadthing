@@ -1,13 +1,12 @@
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-
-import { TRPCProvider } from "~/utils/api";
-
 import "./styles.css";
 
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { Image } from "expo-image";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import { cssInterop } from "nativewind";
+
+import { TRPCProvider } from "~/utils/trpc";
 
 cssInterop(Image, { className: "style" });
 
@@ -31,7 +30,7 @@ export default function RootLayout() {
             options={{
               headerShown: false,
               presentation: "transparentModal",
-              contentStyle:{
+              contentStyle: {
                 backgroundColor: "transparent",
               },
               animation: "none",
