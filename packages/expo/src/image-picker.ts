@@ -63,7 +63,7 @@ export const GENERATE_useImageUploader =
       let getPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
       let requestPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
 
-      if ((opts.source ?? "library") === "camera") {
+      if (opts.source === "camera") {
         launchFn = ImagePicker.launchCameraAsync;
         getPermissionFn = ImagePicker.getCameraPermissionsAsync;
         requestPermissionFn = ImagePicker.requestCameraPermissionsAsync;
