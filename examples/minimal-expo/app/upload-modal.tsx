@@ -1,7 +1,9 @@
+import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { FileText, Image } from "lucide-react-native";
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   Text,
   useWindowDimensions,
@@ -87,6 +89,22 @@ export default function Modal() {
               onPress={() => {
                 imageUploader.openImagePicker({
                   source: "camera",
+                  onInsufficientPermissions: () => {
+                    Alert.alert(
+                      "No Permissions",
+                      "You need to grant camera permissions to use this",
+                      [
+                        {
+                          text: "Dismiss",
+                        },
+                        {
+                          text: "Open Settings",
+                          onPress: () => Linking.openSettings(),
+                          isPreferred: true,
+                        },
+                      ],
+                    );
+                  },
                 });
               }}
               className="flex w-full max-w-52 flex-row items-center justify-center gap-2 rounded-lg bg-blue-600 p-4 active:bg-blue-700"
