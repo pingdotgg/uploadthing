@@ -69,11 +69,14 @@ export function FileItem({
           Created {generateDateFromString(item).toLocaleString()}
         </Text>
       </View>
-      <Pressable className="shrink-0" onPress={() => openActionSheet()}>
+      <Pressable
+        className="mr-2 flex shrink-0 items-center justify-center rounded p-1 active:bg-zinc-700"
+        onPress={() => openActionSheet()}
+      >
         <FeatherIcon
           name="more-horizontal"
           size={20}
-          className="mr-2 text-zinc-300"
+          className="text-zinc-300"
         />
       </Pressable>
     </Pressable>
