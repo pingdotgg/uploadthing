@@ -50,11 +50,10 @@ export class UTApi {
   private defaultKeyType: "fileKey" | "customId";
 
   constructor(opts?: UTApiOptions) {
-    const apiKey = getApiKeyOrThrow(opts?.apiKey);
-
     // Assert some stuff
     guardServerOnly();
     incompatibleNodeGuard();
+    const apiKey = getApiKeyOrThrow(opts?.apiKey);
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultHeaders = {
