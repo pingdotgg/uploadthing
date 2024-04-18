@@ -104,7 +104,7 @@ export function FileItem({
             >
               {item.name}
             </Text>
-            <Text className="text-based text-zinc-300">
+            <Text className="text-base text-zinc-300">
               Created {generateDateFromString(item).toLocaleString()}
             </Text>
           </View>
