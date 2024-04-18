@@ -14,8 +14,8 @@ const generateMediaTypes = (config: ExpandedRouteConfig | undefined) => {
 
   let mediaTypes: ImagePicker.MediaTypeOptions | undefined = undefined;
   if (allowsImg && allowsVid) mediaTypes = ImagePicker.MediaTypeOptions.All;
-  if (allowsImg) mediaTypes = ImagePicker.MediaTypeOptions.Images;
-  if (allowsVid) mediaTypes = ImagePicker.MediaTypeOptions.Videos;
+  else if (allowsImg) mediaTypes = ImagePicker.MediaTypeOptions.Images;
+  else if (allowsVid) mediaTypes = ImagePicker.MediaTypeOptions.Videos;
 
   return { mediaTypes, multiple };
 };
