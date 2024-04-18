@@ -98,14 +98,8 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
                         "No Permissions",
                         "You need to grant permission to your Photos to use this",
                         [
-                          {
-                            text: "Dismiss",
-                          },
-                          {
-                            text: "Open Settings",
-                            onPress: () => openSettings(),
-                            isPreferred: true,
-                          },
+                          { text: "Dismiss" },
+                          { text: "Open Settings", onPress: openSettings },
                         ],
                       );
                     },
