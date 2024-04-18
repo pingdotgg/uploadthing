@@ -6,11 +6,19 @@ import { UTApi } from "uploadthing/server";
 
 const t = initTRPC.context<{ utapi: UTApi }>().create();
 
+const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+  /**
+   * Note to readers: You should do auth here to prevent unauthorized access
+   * to the UTApi
+   */
+  return next();
+});
+
 const router = t.router({
-  getFiles: t.procedure.query(({ ctx }) => {
+  getFiles: protectedProcedure.query(({ ctx }) => {
     return ctx.utapi.listFiles();
   }),
-  deleteFile: t.procedure
+  deleteFile: protectedProcedure
     .input(z.object({ key: z.string() }))
     .mutation(async ({ ctx, input }) => {
       await ctx.utapi.deleteFiles(input.key);

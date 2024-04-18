@@ -45,6 +45,10 @@ export const uploadRouter = {
   })
     .input(z.object({ foo: z.string() }))
     .middleware(({ input }) => {
+      /**
+       * Note to readers: You should do auth here to prevent anyone from
+       * uploading a file
+       */
       return { input };
     })
     .onUploadComplete((data) => {
