@@ -63,7 +63,7 @@ export const uploadMultipartWithProgress = (
             fileKey: presigned.key,
             uploadId: presigned.uploadId,
             fileName: file.name,
-            s3Error: Cause.pretty(error).toString(),
+            storageProviderError: Cause.pretty(error).toString(),
           },
           S.Null,
         ),

@@ -95,7 +95,7 @@ export const createUTReporter =
         case "failure": {
           // why isn't this narrowed automatically?
           const p = payload as UTEvents["failure"]["in"];
-          const parsed = maybeParseResponseXML(p.s3Error ?? "");
+          const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
           if (parsed?.message) {
             return yield* $(
               new UploadThingError({
@@ -108,7 +108,7 @@ export const createUTReporter =
               new UploadThingError({
                 code: "UPLOAD_FAILED",
                 message: `Failed to upload file ${p.fileName} to S3`,
-                cause: p.s3Error,
+                cause: p.storageProviderError,
               }),
             );
           }

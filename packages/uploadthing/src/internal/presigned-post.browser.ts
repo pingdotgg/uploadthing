@@ -40,7 +40,7 @@ export const uploadPresignedPostWithProgress = (
                 fileKey: presigned.key,
                 uploadId: null,
                 fileName: file.name,
-                s3Error: xhr.responseText,
+                storageProviderError: xhr.responseText,
               },
               S.Null,
             ),

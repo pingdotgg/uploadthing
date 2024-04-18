@@ -124,7 +124,7 @@ export const UploadActionPayload = S.Struct({
 export const FailureActionPayload = S.Struct({
   fileKey: S.String,
   uploadId: S.NullOr(S.String),
-  s3Error: S.optional(S.String),
+  storageProviderError: S.optional(S.String),
   fileName: S.String,
 });
 
