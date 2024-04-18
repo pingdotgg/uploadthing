@@ -26,8 +26,6 @@ export function FileItem({
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  // const Icon = isImage(item.name) ? Image : FileText;
-
   const openActionSheet = () => {
     const destructiveButtonIndex = 0;
     const cancelButtonIndex = 2;
