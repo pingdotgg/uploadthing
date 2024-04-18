@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import * as ImagePicker from "expo-image-picker";
 
 import type { UseUploadthingProps } from "@uploadthing/react";
@@ -30,8 +31,9 @@ export const GENERATE_useImageUploader =
       url: initOpts.url,
     });
     const uploadthing = useUploadThing(endpoint, opts);
-    const { mediaTypes, multiple } = generateMediaTypes(
-      uploadthing.permittedFileInfo?.config,
+    const { mediaTypes, multiple } = useMemo(
+      () => generateMediaTypes(uploadthing.permittedFileInfo?.config),
+      [uploadthing.permittedFileInfo?.config],
     );
 
     const openImagePicker = async (
