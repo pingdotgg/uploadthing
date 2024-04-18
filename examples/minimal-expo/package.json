@@ -10,7 +10,6 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
-    "@expo/react-native-action-sheet": "^4.0.1",
     "@expo/vector-icons": "^13.0.0",
     "@gorhom/bottom-sheet": "^4.6.1",
     "@shopify/flash-list": "1.6.3",
@@ -22,6 +21,7 @@
     "expo": "~50.0.17",
     "expo-dev-client": "~3.3.11",
     "expo-document-picker": "^11.10.1",
+    "expo-haptics": "~12.8.1",
     "expo-image": "^1.10.6",
     "expo-image-picker": "^14.7.1",
     "expo-linking": "~6.2.2",

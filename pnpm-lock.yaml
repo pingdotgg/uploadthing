@@ -283,9 +283,6 @@ importers:
 
   examples/minimal-expo:
     dependencies:
-      '@expo/react-native-action-sheet':
-        specifier: ^4.0.1
-        version: 4.0.1(react@18.2.0)
       '@expo/vector-icons':
         specifier: ^13.0.0
         version: 13.0.0
@@ -319,6 +316,9 @@ importers:
       expo-document-picker:
         specifier: ^11.10.1
         version: 11.10.1(expo@50.0.17)
+      expo-haptics:
+        specifier: ~12.8.1
+        version: 12.8.1(expo@50.0.17)
       expo-image:
         specifier: ^1.10.6
         version: 1.10.6(expo@50.0.17)
@@ -4478,16 +4478,6 @@ packages:
       - encoding
       - supports-color
 
-  /@expo/react-native-action-sheet@4.0.1(react@18.2.0):
-    resolution: {integrity: sha512-FwCFpjpB6yzrK8CIWssLlh/i6zQFytFBiJfNdz0mJ2ckU4hWk8SrjB37P0Q4kF7w0bnIdYzPgRbdPR9hnfFqPw==}
-    peerDependencies:
-      react: '>=16.3.0'
-    dependencies:
-      '@types/hoist-non-react-statics': 3.3.5
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-    dev: false
-
   /@expo/rudder-sdk-node@1.1.1:
     resolution: {integrity: sha512-uy/hS/awclDJ1S88w9UGpc6Nm9XnNUjzOAAib1A3PVAnGQIwebg8DpFqOthFBTlZxeuV/BKbZ5jmTbtNZkp1WQ==}
     engines: {node: '>=12'}
@@ -7398,13 +7388,6 @@ packages:
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
     dependencies:
       '@types/unist': 3.0.2
-    dev: false
-
-  /@types/hoist-non-react-statics@3.3.5:
-    resolution: {integrity: sha512-SbcrWzkKBw2cdwRTwQAswfpB9g9LJWfjtUeW/jvNwbhC8cpmmNYVePa+ncbUe0rGTQ7G3Ff6mYUN2VMfLVr+Sg==}
-    dependencies:
-      '@types/react': 18.2.78
-      hoist-non-react-statics: 3.3.2
     dev: false
 
   /@types/http-cache-semantics@4.0.4:
@@ -11881,6 +11864,14 @@ packages:
     dependencies:
       expo: 50.0.17(@babel/core@7.24.4)(@react-native/babel-preset@0.73.21)
       fontfaceobserver: 2.3.0
+
+  /expo-haptics@12.8.1(expo@50.0.17):
+    resolution: {integrity: sha512-ntLsHkfle8K8w9MW8pZEw92ZN3sguaGUSSIxv30fPKNeQFu7Cq/h47Qv3tONv2MO3wU48N9FbKnant6XlfptpA==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 50.0.17(@babel/core@7.24.4)(@react-native/babel-preset@0.73.21)
+    dev: false
 
   /expo-image-loader@4.6.0(expo@50.0.17):
     resolution: {integrity: sha512-RHQTDak7/KyhWUxikn2yNzXL7i2cs16cMp6gEAgkHOjVhoCJQoOJ0Ljrt4cKQ3IowxgCuOrAgSUzGkqs7omj8Q==}

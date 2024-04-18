@@ -45,6 +45,9 @@ export default function HomeScreen() {
               <Text className="text-lg font-bold text-zinc-200">{`No files uploaded yet.`}</Text>
             </View>
           }
+          ItemSeparatorComponent={() => (
+            <View className="border-b border-zinc-700" />
+          )}
         />
       )}
       <UploadActionDrawer showTrigger={!isScrolling} />
