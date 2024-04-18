@@ -1,4 +1,3 @@
-import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
 import {
@@ -10,6 +9,7 @@ import {
 
 import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
+import { FailureCallbackResponseSchema } from "./shared-schemas";
 import type { PSPResponse } from "./types";
 
 export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
@@ -28,14 +28,18 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
         }),
       }),
       Effect.tapErrorCause(() =>
-        fetchEffJson(generateUploadThingURL("/api/failureCallback"), S.Any, {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: presigned.key,
-            uploadId: null,
-          }),
-          headers: { "Content-Type": "application/json" },
-        }),
+        fetchEffJson(
+          generateUploadThingURL("/api/failureCallback"),
+          FailureCallbackResponseSchema,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              fileKey: presigned.key,
+              uploadId: null,
+            }),
+            headers: { "Content-Type": "application/json" },
+          },
+        ),
       ),
     );
 

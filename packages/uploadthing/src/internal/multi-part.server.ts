@@ -14,6 +14,7 @@ import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
 import { logger } from "./logger";
+import { FailureCallbackResponseSchema } from "./shared-schemas";
 import type { MPUResponse } from "./types";
 
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
@@ -129,7 +130,7 @@ export const abortMultipartUpload = (presigned: {
 }) =>
   fetchEffJson(
     generateUploadThingURL("/api/failureCallback"),
-    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
+    FailureCallbackResponseSchema,
     {
       method: "POST",
       body: JSON.stringify({

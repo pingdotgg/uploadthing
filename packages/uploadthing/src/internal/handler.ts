@@ -26,6 +26,7 @@ import {
   FailureActionPayload,
   MultipartCompleteActionPayload,
   PresignedURLResponseSchema,
+  ServerCallbackPostResponseSchema,
   UploadActionPayload,
   UploadedFileDataSchema,
 } from "./shared-schemas";
@@ -228,11 +229,15 @@ const handleCallbackRequest = (opts: {
     );
 
     yield* $(
-      fetchEffJson(generateUploadThingURL("/api/serverCallback"), S.Any, {
-        method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-      }),
+      fetchEffJson(
+        generateUploadThingURL("/api/serverCallback"),
+        ServerCallbackPostResponseSchema,
+        {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
     );
     return { status: 200, body: null };
   });

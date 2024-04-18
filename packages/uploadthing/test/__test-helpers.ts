@@ -238,7 +238,7 @@ export const it = itBase.extend({
         "https://uploadthing.com/api/serverCallback",
         async ({ request }) => {
           await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
+          return HttpResponse.json({ status: "ok" });
         },
       ),
       http.get(

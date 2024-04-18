@@ -110,6 +110,15 @@ export const PollUploadResponseSchema = S.Struct({
   ),
 });
 
+export const FailureCallbackResponseSchema = S.Struct({
+  success: S.Boolean,
+  message: S.optional(S.String),
+});
+
+export const ServerCallbackPostResponseSchema = S.Struct({
+  status: S.String,
+});
+
 /**
  * =============================================================================
  * ======================== Client Action Payloads ============================
