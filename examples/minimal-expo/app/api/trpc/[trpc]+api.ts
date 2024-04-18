@@ -20,8 +20,13 @@ const protectedProcedure = t.procedure.use(({ ctx, next }) => {
 });
 
 const router = t.router({
-  getFiles: protectedProcedure.query(({ ctx }) => {
-    return ctx.utapi.listFiles();
+  getFiles: protectedProcedure.query(async ({ ctx }) => {
+    /**
+     * Note to readers: You're better off storing the files
+     * in your database and then querying them from there.
+     */
+    const files = await ctx.utapi.listFiles();
+    return files.filter((f) => f.status !== "Deletion Pending");
   }),
   deleteFile: protectedProcedure
     .input(z.object({ key: z.string() }))
