@@ -27,13 +27,18 @@ const router = t.router({
      */
     const files = await ctx.utapi.listFiles();
     const nonDeleted = files.filter((f) => f.status !== "Deletion Pending");
-    return nonDeleted.map((f, i) => {
+    return nonDeleted.map((f) => {
       // Append a date property to each file
       // If you store the files in your database, you'd have this data
       // but I'll generate one here for simplicity
-      const date = new Date(+new Date("2024-04-01") - i * 1000 * 60 * 60);
+      const randomButDeterministicNumber = JSON.stringify(f)
+        .split("")
+        .reduce((a, b) => a + Math.pow(b.charCodeAt(0), 4), 0);
+      const date = new Date(
+        +new Date("2024-01-01") + randomButDeterministicNumber,
+      ).toISOString();
 
-      return { ...f, date: date.toISOString() };
+      return { ...f, date: date };
     });
   }),
   deleteFile: protectedProcedure
