@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import FeatherIcon from "@expo/vector-icons/Feather";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
@@ -6,7 +7,6 @@ import {
 } from "@gorhom/bottom-sheet";
 import { openSettings } from "expo-linking";
 import { useRouter } from "expo-router";
-import { Camera, FileText, Image, Plus } from "lucide-react-native";
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 
 import { trpc } from "~/utils/trpc";
@@ -72,7 +72,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
         ].join(" ")}
         onPress={() => bottomSheetModalRef.current?.present()}
       >
-        <Plus color="white" size={36} />
+        <FeatherIcon name="plus" size={36} className="text-zinc-100" />
       </Pressable>
 
       {/* Sheet Content */}
@@ -107,7 +107,11 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
                 }}
                 className="flex w-full flex-row items-center gap-4 p-4 active:bg-zinc-900"
               >
-                <Image size={24} color="white" style={{ marginLeft: 10 }} />
+                <FeatherIcon
+                  name="image"
+                  size={24}
+                  className="ml-2 text-zinc-100"
+                />
                 <Text className="font-bold text-white">Select Image</Text>
               </Pressable>
               <Pressable
@@ -134,7 +138,11 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
                 }}
                 className="flex w-full flex-row items-center gap-4 p-4 active:bg-zinc-900"
               >
-                <Camera size={24} color="white" style={{ marginLeft: 10 }} />
+                <FeatherIcon
+                  name="camera"
+                  size={24}
+                  className="ml-2 text-zinc-100"
+                />
                 <Text className="font-bold text-white">Take Photo</Text>
               </Pressable>
               <Pressable
@@ -145,7 +153,11 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
                 }}
                 className="flex w-full flex-row items-center gap-4 p-4 active:bg-zinc-900"
               >
-                <FileText size={24} color="white" style={{ marginLeft: 10 }} />
+                <FeatherIcon
+                  name="file-text"
+                  size={24}
+                  className="ml-2 text-zinc-100"
+                />
                 <Text className="font-bold text-white">Select PDF</Text>
               </Pressable>
               {/* Bottom "padding" */}

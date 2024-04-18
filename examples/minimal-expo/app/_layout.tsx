@@ -1,6 +1,7 @@
 import "./styles.css";
 
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import FeatherIcon from "@expo/vector-icons/Feather";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
@@ -11,8 +12,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { TRPCProvider } from "~/utils/trpc";
 
 cssInterop(Image, { className: "style" });
-cssInterop(BottomSheetModal, { className: "style" });
 cssInterop(BottomSheetView, { className: "style" });
+cssInterop(FeatherIcon, { className: "style" });
 
 export default function RootLayout() {
   return (

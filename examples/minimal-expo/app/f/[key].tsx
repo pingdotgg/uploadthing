@@ -1,22 +1,21 @@
 import { useEffect } from "react";
+import FeatherIcon from "@expo/vector-icons/Feather";
+import Constants from "expo-constants";
 import { Image } from "expo-image";
 import { Stack, useGlobalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { FileText } from "lucide-react-native";
 import { Button, View } from "react-native";
 
 import { isImage } from "~/utils/image-utils";
 
-import Constants from "expo-constants";
-
 export default function FileScreen() {
-  const searchParams = useGlobalSearchParams<{ key: string; name: string }>();
-  const { key, name } = searchParams;
+  const searchParams = useGlobalSearchParams<{ key: string; name?: string }>();
+  const { key, name = "Untitled" } = searchParams;
   const fileUrl = `https://utfs.io/f/${key}`;
 
   const apiUrl = Constants?.expoConfig?.hostUri
-  ? `http://${Constants.expoConfig.hostUri.split(':')[0]}:8081/api/test-upload`
-  : `https://api.uploadthing.com`;
+    ? `http://${Constants.expoConfig.hostUri.split(":")[0]}:8081/api/test-upload`
+    : `https://api.uploadthing.com`;
 
   console.log(apiUrl);
 
@@ -76,7 +75,7 @@ export default function FileScreen() {
       <View className="flex h-full items-center justify-center">
         {!isImage(name) ? (
           <View className="flex flex-col items-center gap-4">
-            <FileText color="white" size={72} />
+            <FeatherIcon name="file-text" size={72} className="text-zinc-300" />
             <Button
               title="Preview File in Browser"
               onPress={() => WebBrowser.openBrowserAsync(fileUrl)}

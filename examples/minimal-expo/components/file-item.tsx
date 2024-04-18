@@ -1,6 +1,6 @@
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import FeatherIcon from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
-import { Ellipsis, FileText, Image } from "lucide-react-native";
 import { Pressable, Text, View } from "react-native";
 
 import { generateDateFromString, isImage } from "~/utils/image-utils";
@@ -26,7 +26,7 @@ export function FileItem({
 
   const { showActionSheetWithOptions } = useActionSheet();
 
-  const Icon = isImage(item.name) ? Image : FileText;
+  // const Icon = isImage(item.name) ? Image : FileText;
 
   const openActionSheet = () => {
     const destructiveButtonIndex = 0;
@@ -54,11 +54,15 @@ export function FileItem({
 
   return (
     <Pressable
-      className="flex w-full flex-row items-center gap-2 p-2 px-4 active:bg-zinc-700"
+      className="flex w-full flex-row items-center gap-4 p-2 active:bg-zinc-700"
       onPress={() => router.push(`/f/${item.key}?name=${item.name}`)}
       onLongPress={() => openActionSheet()}
     >
-      <Icon className="size-8" color="#ccc" />
+      <FeatherIcon
+        name={isImage(item.name) ? "image" : "file-text"}
+        size={24}
+        className="ml-2 text-zinc-100"
+      />
       <View className="flex flex-1 flex-col gap-1">
         <Text className="line-clamp-1 truncate text-zinc-100">{item.name}</Text>
         <Text className="text-sm text-zinc-300">
@@ -66,7 +70,11 @@ export function FileItem({
         </Text>
       </View>
       <Pressable className="shrink-0" onPress={() => openActionSheet()}>
-        <Ellipsis color="#ccc" />
+        <FeatherIcon
+          name="more-horizontal"
+          size={20}
+          className="mr-2 text-zinc-300"
+        />
       </Pressable>
     </Pressable>
   );
