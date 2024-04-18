@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import * as DocumentPicker from "expo-document-picker";
 
 import type { UseUploadthingProps } from "@uploadthing/react";
@@ -38,8 +39,9 @@ export const GENERATE_useDocumentUploader =
       url: initOpts.url,
     });
     const uploadthing = useUploadThing(endpoint, opts);
-    const { mimeTypes, multiple } = generateFileTypes(
-      uploadthing.permittedFileInfo?.config,
+    const { mimeTypes, multiple } = useMemo(
+      () => generateFileTypes(uploadthing.permittedFileInfo?.config),
+      [uploadthing.permittedFileInfo?.config],
     );
 
     const openDocumentPicker = async (
