@@ -1,7 +1,7 @@
 import "./styles.css";
 
 import FeatherIcon from "@expo/vector-icons/Feather";
-import { BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -39,8 +39,11 @@ export default function RootLayout() {
  * Add CSS Styling to some 3rd party components
  * @see https://www.nativewind.dev/v4/guides/third-party-components#handling-components-with-style-attribute-props
  */
-
 cssInterop(BottomSheetView, { className: "style" });
+cssInterop(BottomSheetModal, {
+  className: "style",
+  bgClassName: "backgroundStyle",
+});
 cssInterop(FeatherIcon, { className: "style" });
 cssInterop(Image, { className: "style" });
 cssInterop(RectButton, { className: "style" });
@@ -52,5 +55,11 @@ cssInterop(RectButton, { className: "style" });
 declare module "react-native-gesture-handler" {
   interface RectButtonProps {
     className?: string;
+  }
+}
+declare module "@gorhom/bottom-sheet" {
+  interface BottomSheetModalProps {
+    className?: string;
+    bgClassName?: string;
   }
 }

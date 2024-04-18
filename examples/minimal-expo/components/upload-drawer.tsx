@@ -79,7 +79,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
       <BottomSheetModal
         ref={bottomSheetModalRef}
         enableDynamicSizing
-        backgroundStyle={{ backgroundColor: "#27272a" }}
+        bgClassName="bg-zinc-800"
       >
         <BottomSheetView className="flex items-center">
           {isUploading ? (
