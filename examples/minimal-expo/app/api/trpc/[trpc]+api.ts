@@ -26,7 +26,15 @@ const router = t.router({
      * in your database and then querying them from there.
      */
     const files = await ctx.utapi.listFiles();
-    return files.filter((f) => f.status !== "Deletion Pending");
+    const nonDeleted = files.filter((f) => f.status !== "Deletion Pending");
+    return nonDeleted.map((f, i) => {
+      // Append a date property to each file
+      // If you store the files in your database, you'd have this data
+      // but I'll generate one here for simplicity
+      const date = new Date(+new Date("2024-04-01") - i * 1000 * 60 * 60);
+
+      return { ...f, date: date.toISOString() };
+    });
   }),
   deleteFile: protectedProcedure
     .input(z.object({ key: z.string() }))

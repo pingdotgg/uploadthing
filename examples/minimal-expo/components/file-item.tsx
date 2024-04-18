@@ -6,7 +6,7 @@ import { Animated, Text, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
-import { generateDateFromString, isImage } from "~/utils/image-utils";
+import { isImage } from "~/utils/image-utils";
 import { RouterOutputs, trpc } from "~/utils/trpc";
 
 const AnimatedRectButton = Animated.createAnimatedComponent(RectButton);
@@ -105,7 +105,7 @@ export function FileItem({
               {item.name}
             </Text>
             <Text className="text-base text-zinc-300">
-              Created {generateDateFromString(item).toLocaleString()}
+              Created {new Date(item.date).toLocaleString()}
             </Text>
           </View>
           <FeatherIcon
