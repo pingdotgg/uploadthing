@@ -36,7 +36,7 @@ export type UTReporter = <TEvent extends keyof UTEvents>(
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
- * Events are handled in "./handler.ts starting at L200"
+ * Events are handled in "./handler.ts starting at L112"
  */
 export const createUTReporter =
   (cfg: {
