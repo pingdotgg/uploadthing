@@ -23,7 +23,10 @@ import type {
 import { logger } from "../internal/logger";
 import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
-import { PresignedURLResponseSchema } from "../internal/shared-schemas";
+import {
+  PollUploadResponseSchema,
+  PresignedURLResponseSchema,
+} from "../internal/shared-schemas";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -52,9 +55,17 @@ export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
         (file) =>
           uploadFile(file).pipe(
             Effect.match({
-              onFailure: (_error) => ({
+              onFailure: (error) => ({
                 data: null,
-                error: UploadThingError.toObject(new UploadThingError("Foo")),
+                error: UploadThingError.toObject(
+                  error instanceof UploadThingError
+                    ? error
+                    : new UploadThingError({
+                        message: "Failed to upload file.",
+                        code: "BAD_REQUEST",
+                        cause: error,
+                      }),
+                ),
               }),
               onSuccess: (data: UploadedFileData) => ({ data, error: null }),
             }),
@@ -173,8 +184,9 @@ const uploadFile = (
     yield* $(
       fetchEffJson(
         generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        S.Struct({ status: S.String }),
+        PollUploadResponseSchema,
       ),
+      Effect.tap(() => logger.debug("Polled upload", presigned.key)),
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(undefined)

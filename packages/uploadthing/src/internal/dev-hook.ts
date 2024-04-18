@@ -1,4 +1,3 @@
-import * as S from "@effect/schema/Schema";
 import { Effect } from "effect";
 
 import {
@@ -13,6 +12,7 @@ import {
 import type { ResponseEsque } from "@uploadthing/shared";
 
 import { logger } from "./logger";
+import { PollUploadResponseSchema } from "./shared-schemas";
 import type { UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
@@ -28,22 +28,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     const file = yield* $(
       fetchEffJson(
         generateUploadThingURL(`/api/pollUpload/${fileKey}`),
-        S.Struct({
-          status: S.String,
-          fileData: S.optional(
-            S.Struct({
-              fileKey: S.NullOr(S.String),
-              fileName: S.String,
-              fileSize: S.Number,
-              fileType: S.String,
-              metadata: S.NullOr(S.String),
-              customId: S.NullOr(S.String),
-
-              callbackUrl: S.String,
-              callbackSlug: S.String,
-            }),
-          ),
-        }),
+        PollUploadResponseSchema,
       ),
       Effect.andThen((res) =>
         res.status === "done"

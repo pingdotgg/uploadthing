@@ -93,6 +93,23 @@ export const PresignedURLResponseSchema = S.Array(
   S.Union(PSPResponseSchema, MPUResponseSchema),
 );
 
+export const PollUploadResponseSchema = S.Struct({
+  status: S.String,
+  fileData: S.optional(
+    S.Struct({
+      fileKey: S.NullOr(S.String),
+      fileName: S.String,
+      fileSize: S.Number,
+      fileType: S.String,
+      metadata: S.NullOr(S.String),
+      customId: S.NullOr(S.String),
+
+      callbackUrl: S.optional(S.String),
+      callbackSlug: S.optional(S.String),
+    }),
+  ),
+});
+
 /**
  * =============================================================================
  * ======================== Client Action Payloads ============================

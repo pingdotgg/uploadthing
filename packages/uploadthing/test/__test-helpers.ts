@@ -3,7 +3,7 @@ import type { StrictRequest } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import type { Test } from "vitest";
-import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
+import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
 import { lookup } from "@uploadthing/mime-types";
 import { generateUploadThingURL } from "@uploadthing/shared";
@@ -166,7 +166,7 @@ export const it = itBase.extend({
           return HttpResponse.json(presigneds);
         },
       ),
-      http.post<never, { files: any[] }>(
+      http.post<never, { files: any[]; metadata: unknown }>(
         "https://uploadthing.com/api/uploadFiles",
         async ({ request }) => {
           await callRequestSpy(request);
@@ -175,8 +175,10 @@ export const it = itBase.extend({
           const presigneds = body?.files.map((file) => {
             const presigned = mockPresigned(file);
             db.insertFile({
-              ...file,
               key: presigned.key,
+              metadata: JSON.stringify(body.metadata ?? "{}"),
+              customId: file.customId ?? null,
+              ...file,
             });
             return presigned;
           });
