@@ -122,21 +122,21 @@ const uploadPart = (opts: UploadPartOptions) =>
       contentDisposition(opts.contentDisposition, opts.fileName),
     );
 
-    xhr.onload = () => {
+    xhr.addEventListener("load", () => {
       const etag = xhr.getResponseHeader("Etag");
       if (xhr.status >= 200 && xhr.status <= 299 && etag) {
         return resume(Effect.succeed(etag));
       }
       return resume(Effect.fail(new RetryError()));
-    };
-    xhr.onerror = () => resume(Effect.fail(new RetryError()));
+    });
+    xhr.addEventListener("error", () => resume(Effect.fail(new RetryError())));
 
     let lastProgress = 0;
-    xhr.upload.onprogress = (e) => {
+    xhr.upload.addEventListener("progress", (e) => {
       const delta = e.loaded - lastProgress;
       lastProgress += delta;
       opts.onProgress(delta);
-    };
+    });
 
     xhr.send(opts.chunk);
   });

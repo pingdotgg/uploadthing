@@ -24,13 +24,14 @@ export const uploadPresignedPostWithProgress = (
     const xhr = new XMLHttpRequest();
     xhr.open("POST", presigned.url);
     xhr.setRequestHeader("Accept", "application/xml");
-    xhr.upload.onprogress = (p) => {
+
+    xhr.upload.addEventListener("progress", ({ loaded, total }) => {
       opts.onUploadProgress?.({
         file: file.name,
-        progress: (p.loaded / p.total) * 100,
+        progress: (loaded / total) * 100,
       });
-    };
-    xhr.onload = () =>
+    });
+    xhr.addEventListener("load", () =>
       resume(
         xhr.status >= 200 && xhr.status < 300
           ? Effect.succeed(null)
@@ -44,8 +45,9 @@ export const uploadPresignedPostWithProgress = (
               },
               S.Null,
             ),
-      );
-    xhr.onerror = () =>
+      ),
+    );
+    xhr.addEventListener("error", () =>
       resume(
         opts.reportEventToUT(
           "failure",
@@ -56,7 +58,8 @@ export const uploadPresignedPostWithProgress = (
           },
           S.Null,
         ),
-      );
+      ),
+    );
 
     const formData = new FormData();
     Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
