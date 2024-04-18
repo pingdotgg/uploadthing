@@ -4,7 +4,8 @@ import { z } from "zod";
 
 import { UTApi } from "uploadthing/server";
 
-const t = initTRPC.context<{ utapi: UTApi }>().create();
+const createContext = () => ({ utapi: new UTApi() });
+const t = initTRPC.context<typeof createContext>().create();
 
 const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   /**
@@ -32,7 +33,7 @@ const handler = (req: Request) => {
     req,
     endpoint: "/api/trpc",
     router,
-    createContext: () => ({ utapi: new UTApi() }),
+    createContext,
   });
 };
 
