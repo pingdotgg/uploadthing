@@ -177,7 +177,7 @@ importers:
         specifier: ^5.0.4
         version: 5.0.4(vite@5.2.10)(vue@3.4.24)
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       vite:
         specifier: ^5.1.4
@@ -991,7 +991,7 @@ importers:
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
       tsup-preset-solid:
         specifier: 2.2.0
-        version: 2.2.0(esbuild@0.19.2)(solid-js@1.8.16)(tsup@8.0.2)
+        version: 2.2.0(esbuild@0.20.2)(solid-js@1.8.16)(tsup@8.0.2)
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1110,7 +1110,7 @@ importers:
         version: 1.11.1
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.22.10)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@types/node@20.12.7)(@unocss/reset@0.59.4)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@4.16.2)(typescript@5.4.5)(unocss@0.59.4)(vite@5.2.10)
@@ -9273,7 +9273,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
 
   /chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
@@ -9287,7 +9287,7 @@ packages:
       normalize-path: 3.0.0
       readdirp: 3.6.0
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
 
   /chownr@1.1.4:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
@@ -11043,7 +11043,7 @@ packages:
       es6-symbol: 3.1.4
     dev: true
 
-  /esbuild-plugin-solid@0.5.0(esbuild@0.19.2)(solid-js@1.8.16):
+  /esbuild-plugin-solid@0.5.0(esbuild@0.20.2)(solid-js@1.8.16):
     resolution: {integrity: sha512-ITK6n+0ayGFeDVUZWNMxX+vLsasEN1ILrg4pISsNOQ+mq4ljlJJiuXotInd+HE0MzwTcA9wExT1yzDE2hsqPsg==}
     peerDependencies:
       esbuild: '>=0.12'
@@ -11052,7 +11052,7 @@ packages:
       '@babel/core': 7.22.10
       '@babel/preset-typescript': 7.22.5(@babel/core@7.22.10)
       babel-preset-solid: 1.7.7(@babel/core@7.22.10)
-      esbuild: 0.19.2
+      esbuild: 0.20.2
       solid-js: 1.8.16
     transitivePeerDependencies:
       - supports-color
@@ -12190,6 +12190,7 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
+    dev: true
     optional: true
 
   /fsevents@2.3.3:
@@ -15572,48 +15573,6 @@ packages:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: true
 
-  /next@14.2.1(@babel/core@7.22.10)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-SF3TJnKdH43PMkCcErLPv+x/DY1YCklslk3ZmwaVoyUfDgHKexuKlf9sEfBQ69w+ue8jQ3msLb+hSj1T19hGag==}
-    engines: {node: '>=18.17.0'}
-    hasBin: true
-    peerDependencies:
-      '@opentelemetry/api': ^1.1.0
-      '@playwright/test': ^1.41.2
-      react: ^18.2.0
-      react-dom: ^18.2.0
-      sass: ^1.3.0
-    peerDependenciesMeta:
-      '@opentelemetry/api':
-        optional: true
-      '@playwright/test':
-        optional: true
-      sass:
-        optional: true
-    dependencies:
-      '@next/env': 14.2.1
-      '@swc/helpers': 0.5.5
-      busboy: 1.6.0
-      caniuse-lite: 1.0.30001612
-      graceful-fs: 4.2.11
-      postcss: 8.4.31
-      react: 18.2.0
-      react-dom: 18.2.0(react@18.2.0)
-      styled-jsx: 5.1.1(@babel/core@7.22.10)(react@18.2.0)
-    optionalDependencies:
-      '@next/swc-darwin-arm64': 14.2.1
-      '@next/swc-darwin-x64': 14.2.1
-      '@next/swc-linux-arm64-gnu': 14.2.1
-      '@next/swc-linux-arm64-musl': 14.2.1
-      '@next/swc-linux-x64-gnu': 14.2.1
-      '@next/swc-linux-x64-musl': 14.2.1
-      '@next/swc-win32-arm64-msvc': 14.2.1
-      '@next/swc-win32-ia32-msvc': 14.2.1
-      '@next/swc-win32-x64-msvc': 14.2.1
-    transitivePeerDependencies:
-      - '@babel/core'
-      - babel-plugin-macros
-    dev: true
-
   /next@14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-SF3TJnKdH43PMkCcErLPv+x/DY1YCklslk3ZmwaVoyUfDgHKexuKlf9sEfBQ69w+ue8jQ3msLb+hSj1T19hGag==}
     engines: {node: '>=18.17.0'}
@@ -18688,20 +18647,12 @@ packages:
       rollup: 4.16.2
     dev: true
 
-  /rollup@3.28.0:
-    resolution: {integrity: sha512-d7zhvo1OUY2SXSM6pfNjgD5+d0Nz87CUp4mt8l/GgVP3oBsPwzNvSzyu1me6BSG9JIgWNTVcafIXBIyM8yQ3yw==}
-    engines: {node: '>=14.18.0', npm: '>=8.0.0'}
-    hasBin: true
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: false
-
   /rollup@3.29.4:
     resolution: {integrity: sha512-oWzmBZwvYrU0iJHtDmhsm662rC15FRXmcjCk1xD771dFDx5jJ02ufAQQTn0etB2emNk4J9EZg/yWKpsn9BWGRw==}
     engines: {node: '>=14.18.0', npm: '>=8.0.0'}
     hasBin: true
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
 
   /rollup@4.16.2:
     resolution: {integrity: sha512-sxDP0+pya/Yi5ZtptF4p3avI+uWCIf/OdrfdH2Gbv1kWddLKk0U7WE3PmQokhi5JrektxsK3sK8s4hzAmjqahw==}
@@ -19585,24 +19536,6 @@ packages:
       inline-style-parser: 0.1.1
     dev: false
 
-  /styled-jsx@5.1.1(@babel/core@7.22.10)(react@18.2.0):
-    resolution: {integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==}
-    engines: {node: '>= 12.0.0'}
-    peerDependencies:
-      '@babel/core': '*'
-      babel-plugin-macros: '*'
-      react: '>= 16.8.0 || 17.x.x || ^18.0.0-0'
-    peerDependenciesMeta:
-      '@babel/core':
-        optional: true
-      babel-plugin-macros:
-        optional: true
-    dependencies:
-      '@babel/core': 7.22.10
-      client-only: 0.0.1
-      react: 18.2.0
-    dev: true
-
   /styled-jsx@5.1.1(@babel/core@7.24.4)(react@18.2.0):
     resolution: {integrity: sha512-pW7uC1l4mBZ8ugbiZrcIsiIvVx1UmTfw7UkC3Um2tmfUq9Bhk8IiyEIPl6F8agHgjzku6j0xQEZbfA5uSgSaCw==}
     engines: {node: '>= 12.0.0'}
@@ -20232,12 +20165,12 @@ packages:
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
 
-  /tsup-preset-solid@2.2.0(esbuild@0.19.2)(solid-js@1.8.16)(tsup@8.0.2):
+  /tsup-preset-solid@2.2.0(esbuild@0.20.2)(solid-js@1.8.16)(tsup@8.0.2):
     resolution: {integrity: sha512-sPAzeArmYkVAZNRN+m4tkiojdd0GzW/lCwd4+TQDKMENe8wr2uAuro1s0Z59ASmdBbkXoxLgCiNcuQMyiidMZg==}
     peerDependencies:
       tsup: ^8.0.0
     dependencies:
-      esbuild-plugin-solid: 0.5.0(esbuild@0.19.2)(solid-js@1.8.16)
+      esbuild-plugin-solid: 0.5.0(esbuild@0.20.2)(solid-js@1.8.16)
       tsup: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
     transitivePeerDependencies:
       - esbuild
@@ -21582,9 +21515,9 @@ packages:
       '@types/node': 20.12.7
       esbuild: 0.18.20
       postcss: 8.4.38
-      rollup: 3.28.0
+      rollup: 3.29.4
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     dev: false
 
   /vite@5.2.10(@types/node@20.12.7):
@@ -22125,7 +22058,7 @@ packages:
       ts-json-schema-generator: 1.5.1
       xxhash-wasm: 1.0.2
     optionalDependencies:
-      fsevents: 2.3.2
+      fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
