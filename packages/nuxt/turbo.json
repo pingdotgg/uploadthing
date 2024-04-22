@@ -13,13 +13,11 @@
     },
     "build": {
       "dependsOn": ["^build", "dev:prepare"],
-      "outputs": ["dist/**", ".nuxt/**"],
-      "cache": false
+      "outputs": ["dist/**", ".nuxt/**"]
     },
     "lint": {
       "dependsOn": ["^topo", "^build", "dev:prepare"],
-      "outputs": [],
-      "cache": false
+      "outputs": []
     }
   }
 }
