@@ -51,7 +51,7 @@
     "bunchee": "^5.1.2",
     "concurrently": "^8.2.2",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.2",
+    "typescript": "^5.4.5",
     "uploadthing": "workspace:6.9.0",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0"

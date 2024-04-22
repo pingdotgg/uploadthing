@@ -1173,7 +1173,7 @@ importers:
         specifier: ^3.4.1
         version: 3.4.3
       typescript:
-        specifier: ^5.4.2
+        specifier: ^5.4.5
         version: 5.4.5
       uploadthing:
         specifier: workspace:6.9.0
