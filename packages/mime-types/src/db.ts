@@ -3643,7 +3643,7 @@ const mimeTypesInternal = {
   "image/jpeg": {
     source: "iana",
     compressible: false,
-    extensions: ["jpeg", "jpg", "jpe"],
+    extensions: ["jpeg", "jpg", "jpe", "jfif", "pjpeg", "pjp"],
   },
   "image/jph": {
     source: "iana",
