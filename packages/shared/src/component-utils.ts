@@ -14,16 +14,13 @@ export const generateMimeTypes = (fileTypes: string[]) => {
   });
 
   if (accepted.includes("blob")) {
-    return undefined;
+    return [];
   }
   return accepted;
 };
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
-
-  if (!mimeTypes) return undefined;
-
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 

@@ -125,7 +125,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         type: "file",
         ref: fileInputRef,
         multiple: permittedFileTypes.value.multiple,
-        accept: generateMimeTypes(permittedFileTypes.value?.fileTypes)?.join(
+        accept: generateMimeTypes(permittedFileTypes.value.fileTypes).join(
           ", ",
         ),
         disabled: permittedFileTypes.value.fileTypes.length === 0,
