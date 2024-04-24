@@ -9,7 +9,8 @@
         ".nuxt/**",
         "playground/dist/**",
         "playground/.nuxt/**"
-      ]
+      ],
+      "cache": false
     },
     "dev": {
       "dependsOn": ["dev:prepare"],
@@ -18,11 +19,13 @@
     },
     "build": {
       "dependsOn": ["^build", "dev:prepare"],
-      "outputs": ["dist/**", ".nuxt/**"]
+      "outputs": ["dist/**", ".nuxt/**"],
+      "cache": false
     },
     "lint": {
       "dependsOn": ["^topo", "^build", "dev:prepare"],
-      "outputs": []
+      "outputs": [],
+      "cache": false
     }
   }
 }
