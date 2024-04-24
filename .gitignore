@@ -48,9 +48,12 @@ yarn-error.log*
 packages/*/*/
 !packages/*/src/
 !packages/*/test/
+!packages/*/playground/
 
 dist
 
 .svelte-kit
 .solid
 .vercel
+.output
+.nuxt

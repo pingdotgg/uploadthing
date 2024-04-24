@@ -26,5 +26,7 @@ CHANGELOG.md
 
 .svelte-kit
 .solid
+.nuxt
+.output
 
 pnpm-lock.yaml

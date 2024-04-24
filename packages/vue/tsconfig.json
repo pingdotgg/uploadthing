@@ -1,0 +1,10 @@
+{
+  "extends": "@uploadthing/tsconfig/base",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "jsxFactory": "Vue.h"
+  },
+  "include": ["src/**/*", "*.ts", "test"],
+  "exclude": ["node_modules"]
+}
