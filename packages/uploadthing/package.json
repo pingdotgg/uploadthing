@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.9.0",
+  "version": "6.10.0",
   "type": "module",
   "engines": {
     "node": ">=18.13.0"
@@ -127,9 +127,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@effect/schema": "^0.66.0",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
+    "effect": "^3.0.0",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
@@ -146,11 +148,13 @@
     "fastify": "^4.26.1",
     "h3": "^1.11.1",
     "next": "14.2.1",
+    "nuxt": "^3.11.2",
     "solid-js": "^1.8.15",
     "tailwindcss": "^3.4.1",
     "type-fest": "^4.10.3",
     "typescript": "^5.4.5",
     "undici": "^6.6.2",
+    "vue": "^3.4.21",
     "wait-on": "^7.2.0",
     "zod": "^3.22.4"
   },

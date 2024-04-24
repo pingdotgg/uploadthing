@@ -34,7 +34,12 @@ function accepts(file: File, acceptedFiles: string | string[]): boolean {
   return true;
 }
 
-export const isPropagationStopped = (event: Event) => {
+export const isPropagationStopped = (
+  event: Event & { isPropagationStopped?: () => boolean },
+) => {
+  if (typeof event.isPropagationStopped === "function") {
+    return event.isPropagationStopped();
+  }
   if (typeof event.cancelBubble !== "undefined") {
     return event.cancelBubble;
   }

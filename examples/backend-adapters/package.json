@@ -14,15 +14,16 @@
     "dev:fastify": "concurrently \"npm run -w client dev\" \"npm run -w server dev:fastify\"",
     "dev:hono": "concurrently \"npm run -w client dev\" \"npm run -w server dev:hono\"",
     "dev:h3": "concurrently \"npm run -w client dev\" \"npm run -w server dev:h3\"",
+    "dev:h3-vue": "concurrently \"npm run -w client-vue dev\" \"npm run -w server dev:h3\"",
     "build": "npm run -w client build && npm run -w server build",
     "start": "concurrently \"npm run -w client start\" \"npm run -w server start\"",
     "test": "playwright test"
   },
   "dependencies": {
-    "@uploadthing/react": "6.4.4",
+    "@uploadthing/react": "6.5.0",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.5",
-    "uploadthing": "6.9.0"
+    "uploadthing": "6.10.0"
   },
   "devDependencies": {
     "@playwright/test": "1.42.1"

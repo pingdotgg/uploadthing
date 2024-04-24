@@ -198,7 +198,7 @@ Example:
       bind:this={fileInputRef}
       class="sr-only"
       type="file"
-      accept={generateMimeTypes(fileTypes ?? [])?.join(", ")}
+      accept={generateMimeTypes(fileTypes ).join(", ")}
       disabled={__internal_button_disabled ?? !ready}
       {multiple}
       on:change={(e) => {

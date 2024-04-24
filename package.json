@@ -12,6 +12,7 @@
     "examples/*",
     "examples/backend-adapters/*",
     "packages/*",
+    "packages/nuxt/*",
     "tooling/*"
   ],
   "scripts": {

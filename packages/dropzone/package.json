@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/dropzone",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -44,13 +44,24 @@
         "types": "./svelte/index.d.cts",
         "default": "./svelte/index.cjs"
       }
+    },
+    "./vue": {
+      "import": {
+        "types": "./vue/index.d.ts",
+        "default": "./vue/index.js"
+      },
+      "require": {
+        "types": "./vue/index.d.cts",
+        "default": "./vue/index.cjs"
+      }
     }
   },
   "files": [
     "core",
     "react",
     "solid",
-    "svelte"
+    "svelte",
+    "vue"
   ],
   "publishConfig": {
     "access": "public"
@@ -75,12 +86,14 @@
     "react": "18.2.0",
     "solid-js": "^1.8.15",
     "svelte": "^4.2.12",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vue": "^3.4.21"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
     "solid-js": "^1.7.11",
-    "svelte": "^4.2.12"
+    "svelte": "^4.2.12",
+    "vue": "^3.4.0"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -90,6 +103,9 @@
       "optional": true
     },
     "svelte": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },

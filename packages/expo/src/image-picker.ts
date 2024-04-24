@@ -61,11 +61,12 @@ export const GENERATE_useImageUploader =
         { input: inferEndpointInput<TRouter[TEndpoint]> }
       >,
     ) => {
+      const { source = "library", allowsEditing = false } = opts;
       let launchFn: typeof ImagePicker.launchImageLibraryAsync;
       let getPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
       let requestPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
 
-      if (opts.source === "camera") {
+      if (source === "camera") {
         launchFn = ImagePicker.launchCameraAsync;
         getPermissionFn = ImagePicker.getCameraPermissionsAsync;
         requestPermissionFn = ImagePicker.requestCameraPermissionsAsync;
@@ -84,8 +85,8 @@ export const GENERATE_useImageUploader =
       if (!granted) return opts.onInsufficientPermissions?.();
 
       const response = await launchFn({
-        mediaTypes,
-        allowsEditing: multiple ? false : opts.allowsEditing,
+        mediaTypes: mediaTypes ?? ImagePicker.MediaTypeOptions.All,
+        allowsEditing: multiple ? false : allowsEditing,
         allowsMultipleSelection: multiple,
       });
       if (response.canceled) return opts.onCancel?.();
@@ -95,7 +96,7 @@ export const GENERATE_useImageUploader =
           const blob = await fetch(a.uri).then((r) => r.blob());
           const n = a.fileName ?? a.uri.split("/").pop() ?? "unknown-filename";
           const file = new File([blob], n, {
-            type: a.mimeType ?? a.type,
+            type: a.mimeType ?? a.type ?? "application/octet-stream",
           });
           /**
            * According to React Native's FormData implementation:

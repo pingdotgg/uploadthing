@@ -66,7 +66,7 @@ export const GENERATE_useDocumentUploader =
           const blob = await fetch(a.uri).then((r) => r.blob());
           const n = a.name ?? a.uri.split("/").pop() ?? "unknown-filename";
           const file = new File([blob], n, {
-            type: a.mimeType,
+            type: a.mimeType ?? "application/octet-stream",
           });
           /**
            * According to React Native's FormData implementation:

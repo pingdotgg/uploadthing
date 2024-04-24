@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.4.4",
+  "version": "6.5.0",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -80,7 +80,7 @@
   "peerDependencies": {
     "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^6.5.1"
+    "uploadthing": "^6.10.0"
   },
   "peerDependenciesMeta": {
     "next": {

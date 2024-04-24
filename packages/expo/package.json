@@ -33,13 +33,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "^6.4.4",
-    "@uploadthing/shared": "^6.6.0"
+    "@uploadthing/react": "workspace:*",
+    "@uploadthing/shared": "workspace:*"
   },
   "devDependencies": {
     "@types/react": "18.2.78",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
     "expo-constants": "^15.4.5",
@@ -48,14 +48,14 @@
     "react": "18.2.0",
     "react-native": "^0.73.6",
     "typescript": "^5.4.5",
-    "uploadthing": "6.9.0",
+    "uploadthing": "workspace:*",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^11.0.0",
     "expo-image-picker": "^14.0.0",
-    "uploadthing": "^6.9.0"
+    "uploadthing": "^6.10.0"
   },
   "peerDependenciesMeta": {
     "@uploadthing/mime-types": {
