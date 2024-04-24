@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/vue",
-  "version": "6.4.0",
+  "version": "6.5.0",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
