@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/nuxt",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -29,8 +29,7 @@
   "dependencies": {
     "@nuxt/kit": "^3.11.2",
     "@uploadthing/vue": "workspace:*",
-    "defu": "^6.1.4",
-    "uploadthing": "workspace:*"
+    "defu": "^6.1.4"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
@@ -40,7 +39,11 @@
     "@uploadthing/eslint-config": "workspace:*",
     "eslint": "^8.57.0",
     "h3": "^1.11.1",
-    "nuxt": "^3.11.2"
+    "nuxt": "^3.11.2",
+    "uploadthing": "workspace:*"
+  },
+  "peerDependencies": {
+    "uploadthing": "^6.10.0"
   },
   "eslintConfig": {
     "root": true,

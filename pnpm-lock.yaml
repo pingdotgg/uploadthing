@@ -164,7 +164,7 @@ importers:
   examples/backend-adapters/client-vue:
     dependencies:
       '@uploadthing/vue':
-        specifier: 6.3.0
+        specifier: 6.4.0
         version: link:../../../packages/vue
       uploadthing:
         specifier: 6.9.0
@@ -309,7 +309,7 @@ importers:
   examples/minimal-nuxt:
     dependencies:
       '@uploadthing/nuxt':
-        specifier: 6.3.0
+        specifier: 6.4.0
         version: link:../../packages/nuxt
       nuxt:
         specifier: ^3.11.2
@@ -835,9 +835,6 @@ importers:
       defu:
         specifier: ^6.1.4
         version: 6.1.4
-      uploadthing:
-        specifier: workspace:*
-        version: link:../uploadthing
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
@@ -863,6 +860,9 @@ importers:
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@types/node@20.12.7)(@unocss/reset@0.59.4)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@3.29.4)(typescript@5.4.5)(unocss@0.59.4)(vite@5.2.10)
+      uploadthing:
+        specifier: workspace:*
+        version: link:../uploadthing
 
   packages/react:
     dependencies:
@@ -1154,10 +1154,10 @@ importers:
   packages/vue:
     dependencies:
       '@uploadthing/dropzone':
-        specifier: workspace:0.3.1
+        specifier: workspace:*
         version: link:../dropzone
       '@uploadthing/shared':
-        specifier: workspace:6.6.0
+        specifier: workspace:*
         version: link:../shared
       '@vueuse/core':
         specifier: ^10.9.0
@@ -1170,10 +1170,10 @@ importers:
         version: 2.3.0
     devDependencies:
       '@uploadthing/eslint-config':
-        specifier: 0.2.0
+        specifier: workspace:*
         version: link:../../tooling/eslint-config
       '@uploadthing/tsconfig':
-        specifier: 0.1.0
+        specifier: workspace:*
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^5.1.2
@@ -1188,7 +1188,7 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
       uploadthing:
-        specifier: workspace:6.9.0
+        specifier: workspace:*
         version: link:../uploadthing
       vue:
         specifier: ^3.4.21

@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/vue": "6.3.0",
+    "@uploadthing/vue": "6.4.0",
     "uploadthing": "6.9.0",
     "vue": "^3.4.21"
   },
