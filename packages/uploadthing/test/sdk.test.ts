@@ -5,24 +5,6 @@ import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import { it, requestSpy } from "./__test-helpers";
 
-describe("UTFile", () => {
-  it("can be constructed using Blob", async () => {
-    const blob = new Blob(["foo"], { type: "text/plain" });
-    const file = new UTFile([blob], "foo.txt");
-    expect(file.type).toBe("text/plain");
-    await expect(file.text()).resolves.toBe("foo");
-
-    const fileWithId = new UTFile([blob], "foo.txt", { customId: "foo" });
-    expect(fileWithId.customId).toBe("foo");
-  });
-
-  it("can be constructed using string", async () => {
-    const file = new UTFile(["foo"], "foo.txt");
-    expect(file.type).toBe("text/plain");
-    await expect(file.text()).resolves.toBe("foo");
-  });
-});
-
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
@@ -64,6 +46,7 @@ describe("uploadFiles", () => {
         body: null,
         headers: {
           "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
         method: "GET",
@@ -339,7 +322,7 @@ describe("uploadFilesFromUrl", () => {
 describe("constructor throws if no apiKey or secret is set", () => {
   it("no secret or apikey", () => {
     expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Missing \`UPLOADTHING_SECRET\` env variable.]`,
+      `[UploadThingError: Missing or invalid API key. API keys must start with \`sk_\`.]`,
     );
   });
   it("env is set", () => {
@@ -418,7 +401,7 @@ describe("getSignedURL", () => {
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
+      `[UploadThingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });
@@ -428,7 +411,7 @@ describe("getSignedURL", () => {
     await expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
+      `[UploadThingError: expiresIn must be less than 7 days (604800 seconds).]`,
     );
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });

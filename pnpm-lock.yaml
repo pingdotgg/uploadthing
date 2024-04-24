@@ -841,6 +841,12 @@ importers:
 
   packages/shared:
     dependencies:
+      '@effect/schema':
+        specifier: ^0.66.0
+        version: 0.66.0(effect@3.0.0)(fast-check@3.17.1)
+      effect:
+        specifier: ^3.0.0
+        version: 3.0.0
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -970,6 +976,9 @@ importers:
 
   packages/uploadthing:
     dependencies:
+      '@effect/schema':
+        specifier: ^0.66.0
+        version: 0.66.0(effect@3.0.0)(fast-check@3.17.1)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -979,6 +988,9 @@ importers:
       consola:
         specifier: ^3.2.3
         version: 3.2.3
+      effect:
+        specifier: ^3.0.0
+        version: 3.0.0
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -2093,6 +2105,16 @@ packages:
     dependencies:
       superjson: 2.2.1
     dev: true
+
+  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.1):
+    resolution: {integrity: sha512-wbmA4vQ0OswEwBt+vWn4oEgw2QdEDchPiNNisPCHvSy5e5qH0usfppJ3fNX9cwrCz6jEQTCE42Q/7Was2BhVHg==}
+    peerDependencies:
+      effect: ^3.0.0
+      fast-check: ^3.13.2
+    dependencies:
+      effect: 3.0.0
+      fast-check: 3.17.1
+    dev: false
 
   /@elysiajs/cors@0.8.0(elysia@0.8.17):
     resolution: {integrity: sha512-NADcOsokALRv4nljA5DYJPJdIJ7iwq+ouV5lH5W+hLgZRMYsfbKShg82QSmxd7BJQFuGSv2dIIF2dfG9ieUyng==}
@@ -7995,6 +8017,10 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
+  /effect@3.0.0:
+    resolution: {integrity: sha512-8yVxuahojpD8Y6ynrvIlSWD2xsea/PyGnjA4V5c7v0fOMJafgsKUNUHErBAr6YoPikmtOfR9zqNWRd9u5QaWEQ==}
+    dev: false
+
   /electron-to-chromium@1.4.733:
     resolution: {integrity: sha512-gUI9nhI2iBGF0OaYYLKOaOtliFMl+Bt1rY7VmEjwxOxqoYLub/D9xmduPEhbw2imE6gYkJKhIE5it+KE2ulVxQ==}
 
@@ -8992,6 +9018,13 @@ packages:
       chardet: 0.7.0
       iconv-lite: 0.4.24
       tmp: 0.0.33
+    dev: false
+
+  /fast-check@3.17.1:
+    resolution: {integrity: sha512-jIKXJVe6ZO0SpwEgVtEVujTf8TwjI9wMXFJCjsDHUB3RroUbXBgF4kOSz3A7MW0UR26aqsoB8i9O2mjtjERAiA==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      pure-rand: 6.1.0
     dev: false
 
   /fast-content-type-parse@1.1.0:
@@ -13525,6 +13558,10 @@ packages:
   /punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
+
+  /pure-rand@6.1.0:
+    resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
+    dev: false
 
   /pvtsutils@1.3.5:
     resolution: {integrity: sha512-ARvb14YB9Nm2Xi6nBq1ZX6dAM0FsJnuk+31aUp4TrcZEdKUlSqOqsxJHUPJDNE3qiIp+iUPEIeR6Je/tgV7zsA==}
