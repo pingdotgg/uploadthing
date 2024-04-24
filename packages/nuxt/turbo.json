@@ -4,7 +4,12 @@
   "pipeline": {
     "dev:prepare": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".nuxt/**"]
+      "outputs": [
+        "dist/**",
+        ".nuxt/**",
+        "playground/dist/**",
+        "playground/.nuxt/**"
+      ]
     },
     "dev": {
       "dependsOn": ["dev:prepare"],
