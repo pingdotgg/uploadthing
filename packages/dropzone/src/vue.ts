@@ -269,7 +269,7 @@ export function useDropzone(options: DropzoneOptions) {
     ref: inputRef,
     type: "file",
     style: "display: none",
-    accept: acceptAttr.value,
+    accept: acceptAttr.value ?? "", // exactOptionalPropertyTypes: true
     multiple: optionsRef.value.multiple,
     tabindex: -1,
     ...(!optionsRef.value.disabled
