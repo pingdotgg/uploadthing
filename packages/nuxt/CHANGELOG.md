@@ -1,5 +1,11 @@
 # @uploadthing/nuxt
 
+## 6.5.1
+
+### Patch Changes
+
+- [#767](https://github.com/pingdotgg/uploadthing/pull/767) [`2133e57`](https://github.com/pingdotgg/uploadthing/commit/2133e5710e4265b9da4417771eccc5ef9ad8c2ca) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix bad release artifacts
+
 ## 6.5.0
 
 ### Minor Changes
