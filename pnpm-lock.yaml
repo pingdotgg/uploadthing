@@ -309,7 +309,7 @@ importers:
   examples/minimal-nuxt:
     dependencies:
       '@uploadthing/nuxt':
-        specifier: 6.5.0
+        specifier: 6.5.1
         version: link:../../packages/nuxt
       nuxt:
         specifier: ^3.11.2
