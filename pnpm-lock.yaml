@@ -2588,16 +2588,6 @@ packages:
       fast-check: 3.17.1
     dev: false
 
-  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.1):
-    resolution: {integrity: sha512-wbmA4vQ0OswEwBt+vWn4oEgw2QdEDchPiNNisPCHvSy5e5qH0usfppJ3fNX9cwrCz6jEQTCE42Q/7Was2BhVHg==}
-    peerDependencies:
-      effect: ^3.0.0
-      fast-check: ^3.13.2
-    dependencies:
-      effect: 3.0.0
-      fast-check: 3.17.1
-    dev: false
-
   /@elysiajs/cors@0.8.0(elysia@0.8.17):
     resolution: {integrity: sha512-NADcOsokALRv4nljA5DYJPJdIJ7iwq+ouV5lH5W+hLgZRMYsfbKShg82QSmxd7BJQFuGSv2dIIF2dfG9ieUyng==}
     peerDependencies:
@@ -10757,9 +10747,6 @@ packages:
     resolution: {integrity: sha512-8yVxuahojpD8Y6ynrvIlSWD2xsea/PyGnjA4V5c7v0fOMJafgsKUNUHErBAr6YoPikmtOfR9zqNWRd9u5QaWEQ==}
     dev: false
 
-  /electron-to-chromium@1.4.733:
-    resolution: {integrity: sha512-gUI9nhI2iBGF0OaYYLKOaOtliFMl+Bt1rY7VmEjwxOxqoYLub/D9xmduPEhbw2imE6gYkJKhIE5it+KE2ulVxQ==}
-
   /electron-to-chromium@1.4.746:
     resolution: {integrity: sha512-jeWaIta2rIG2FzHaYIhSuVWqC6KJYo7oSBX4Jv7g+aVujKztfvdpf+n6MGwZdC5hQXbax4nntykLH2juIQrfPg==}
 
@@ -11865,6 +11852,19 @@ packages:
       iconv-lite: 0.4.24
       tmp: 0.0.33
     dev: false
+
+  /externality@1.0.2:
+    resolution: {integrity: sha512-LyExtJWKxtgVzmgtEHyQtLFpw1KFhQphF9nTG8TpAIVkiI/xQ3FJh75tRFLYl4hkn7BNIIdLJInuDAavX35pMw==}
+    dependencies:
+      enhanced-resolve: 5.15.0
+      mlly: 1.6.1
+      pathe: 1.1.2
+      ufo: 1.5.3
+
+  /fake-indexeddb@5.0.2:
+    resolution: {integrity: sha512-cB507r5T3D55DfclY01GLkninZLfU7HXV/mhVRTnTRm5k2u+fY7Fof2dBkr80p5t7G7dlA/G5dI87QiMdPpMCQ==}
+    engines: {node: '>=18'}
+    dev: true
 
   /fast-check@3.17.1:
     resolution: {integrity: sha512-jIKXJVe6ZO0SpwEgVtEVujTf8TwjI9wMXFJCjsDHUB3RroUbXBgF4kOSz3A7MW0UR26aqsoB8i9O2mjtjERAiA==}
