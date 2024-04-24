@@ -2,11 +2,11 @@ export type AcceptProp = Record<string, string[]>;
 
 export type DropzoneOptions = {
   multiple?: boolean;
-  accept?: AcceptProp;
+  accept?: AcceptProp | undefined;
   minSize?: number;
   maxSize?: number;
   maxFiles?: number;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   onDrop: <T extends File>(acceptedFiles: T[]) => void;
 };
 
