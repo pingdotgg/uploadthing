@@ -126,7 +126,7 @@
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
-    "uploadthing": "^6.6.0"
+    "uploadthing": "^6.10.0"
   },
   "keywords": [
     "SolidJS",
