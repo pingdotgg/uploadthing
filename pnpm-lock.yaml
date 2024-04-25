@@ -330,7 +330,7 @@ importers:
         specifier: next
         version: 11.0.0-rc.351
       '@uploadthing/expo':
-        specifier: 6.3.0
+        specifier: 6.4.0
         version: link:../../packages/expo
       expo:
         specifier: ~50.0.17
@@ -390,8 +390,8 @@ importers:
         specifier: ~3.29.0
         version: 3.29.0(react-native@0.73.7)(react@18.2.0)
       uploadthing:
-        specifier: 6.9.0
-        version: 6.9.0(tailwindcss@3.4.3)
+        specifier: 6.10.0
+        version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
         version: 3.23.0
@@ -1077,11 +1077,14 @@ importers:
   packages/shared:
     dependencies:
       '@effect/schema':
-        specifier: ^0.66.0
-        version: 0.66.0(effect@3.0.0)(fast-check@3.17.1)
+        specifier: ^0.66.8
+        version: 0.66.8(effect@3.0.5)(fast-check@3.17.2)
       effect:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.5
+        version: 3.0.5
+      fast-check:
+        specifier: 3.17.2
+        version: 3.17.2
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -1215,8 +1218,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/schema':
-        specifier: ^0.66.0
-        version: 0.66.0(effect@3.0.0)(fast-check@3.17.1)
+        specifier: ^0.66.8
+        version: 0.66.8(effect@3.0.5)(fast-check@3.17.2)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1227,8 +1230,11 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.5
+        version: 3.0.5
+      fast-check:
+        specifier: 3.17.2
+        version: 3.17.2
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -3591,14 +3597,14 @@ packages:
       which: 4.0.0
     dev: false
 
-  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.1):
-    resolution: {integrity: sha512-wbmA4vQ0OswEwBt+vWn4oEgw2QdEDchPiNNisPCHvSy5e5qH0usfppJ3fNX9cwrCz6jEQTCE42Q/7Was2BhVHg==}
+  /@effect/schema@0.66.8(effect@3.0.5)(fast-check@3.17.2):
+    resolution: {integrity: sha512-TJ2wGt1O4WqNrZtz9bRd+Mo8sitS33Ifj1u9TqXAg8FlWn7OA+MtULQmktdDVAlWw18QmamKX7grKeatL+0iCg==}
     peerDependencies:
-      effect: ^3.0.0
+      effect: ^3.0.5
       fast-check: ^3.13.2
     dependencies:
-      effect: 3.0.0
-      fast-check: 3.17.1
+      effect: 3.0.5
+      fast-check: 3.17.2
     dev: false
 
   /@egjs/hammerjs@2.0.17:
@@ -9720,22 +9726,6 @@ packages:
     transitivePeerDependencies:
       - rollup
 
-  /@uploadthing/mime-types@0.2.7:
-    resolution: {integrity: sha512-HfQpL1GSyLOOnIT4WqVv8aW3HotEpFKuuCnK+dUZThMzeiFs09s9J0wk5/VBwupXvIXQwMiB//bp9aUE2p/mFg==}
-    dev: false
-
-  /@uploadthing/shared@6.6.0(@uploadthing/mime-types@0.2.7):
-    resolution: {integrity: sha512-3mERSbD9/i83dF4rK6M/K3zcPo70mfo33VvrTE4U2Tf2HS8vjUvu8BmJjNZkZOSIoXenEnKmCxDf9vNPsdO65w==}
-    peerDependencies:
-      '@uploadthing/mime-types': 0.2.7
-    peerDependenciesMeta:
-      '@uploadthing/mime-types':
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.7
-      std-env: 3.7.0
-    dev: false
-
   /@urql/core@2.3.6(graphql@15.8.0):
     resolution: {integrity: sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw==}
     peerDependencies:
@@ -13442,8 +13432,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@3.0.0:
-    resolution: {integrity: sha512-8yVxuahojpD8Y6ynrvIlSWD2xsea/PyGnjA4V5c7v0fOMJafgsKUNUHErBAr6YoPikmtOfR9zqNWRd9u5QaWEQ==}
+  /effect@3.0.5:
+    resolution: {integrity: sha512-cXAKns46iWEQkZHgRU+ehgfV2Au34HopVIBkWwTbD+iRR50zMOHNEHEjXGnyJPtWyYlLBQtB9AZXFoc72ChwPA==}
     dev: false
 
   /electron-to-chromium@1.4.746:
@@ -14886,8 +14876,8 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /fast-check@3.17.1:
-    resolution: {integrity: sha512-jIKXJVe6ZO0SpwEgVtEVujTf8TwjI9wMXFJCjsDHUB3RroUbXBgF4kOSz3A7MW0UR26aqsoB8i9O2mjtjERAiA==}
+  /fast-check@3.17.2:
+    resolution: {integrity: sha512-+3DPTxtxABLgmmVpYxrash3DHoq0cMa1jjLYNp3qqokKKhqVEaS4lbnaDKqWU5Dd6C2pEudPPBAEEQ9nUou9OQ==}
     engines: {node: '>=8.0.0'}
     dependencies:
       pure-rand: 6.1.0
@@ -25838,34 +25828,6 @@ packages:
       browserslist: 4.23.0
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@6.9.0(tailwindcss@3.4.3):
-    resolution: {integrity: sha512-I985NeMkUHFK+ixfu6ztBGCzkAVYiLP8H3bIcYz+Oh13uFsqQAKrrG34ivdUk8mCjssGCOn8eN+skMPA6bNCoQ==}
-    engines: {node: '>=18.13.0'}
-    peerDependencies:
-      express: '*'
-      fastify: '*'
-      h3: '*'
-      next: '*'
-      tailwindcss: '*'
-    peerDependenciesMeta:
-      express:
-        optional: true
-      fastify:
-        optional: true
-      h3:
-        optional: true
-      next:
-        optional: true
-      tailwindcss:
-        optional: true
-    dependencies:
-      '@uploadthing/mime-types': 0.2.7
-      '@uploadthing/shared': 6.6.0(@uploadthing/mime-types@0.2.7)
-      consola: 3.2.3
-      std-env: 3.7.0
-      tailwindcss: 3.4.3
-    dev: false
 
   /uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}

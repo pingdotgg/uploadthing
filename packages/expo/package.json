@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/expo",
-  "version": "6.3.0",
+  "version": "6.4.0",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
@@ -55,6 +55,8 @@
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^11.0.0",
     "expo-image-picker": "^14.0.0",
+    "react": "^17.0.2 || ^18.0.0",
+    "react-native": "*",
     "uploadthing": "^6.10.0"
   },
   "peerDependenciesMeta": {

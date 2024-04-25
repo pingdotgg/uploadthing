@@ -29,15 +29,19 @@ const generateFileTypes = (config: ExpandedRouteConfig | undefined) => {
   return { mimeTypes: allowedMimeTypes, multiple };
 };
 
-export const GENERATE_useDocumentUploader =
-  <TRouter extends FileRouter>(initOpts: { url: URL }) =>
-  <TEndpoint extends keyof TRouter>(
+export const GENERATE_useDocumentUploader = <
+  TRouter extends FileRouter,
+>(initOpts: {
+  url: URL;
+}) => {
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: initOpts.url,
+  });
+
+  const useDocumentUploader = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
-    const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-      url: initOpts.url,
-    });
     const uploadthing = useUploadThing(endpoint, opts);
     const { mimeTypes, multiple } = useMemo(
       () => generateFileTypes(uploadthing.permittedFileInfo?.config),
@@ -87,3 +91,6 @@ export const GENERATE_useDocumentUploader =
 
     return { openDocumentPicker, isUploading: uploadthing.isUploading };
   };
+
+  return useDocumentUploader;
+};

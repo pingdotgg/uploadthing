@@ -21,15 +21,19 @@ const generateMediaTypes = (config: ExpandedRouteConfig | undefined) => {
   return { mediaTypes, multiple };
 };
 
-export const GENERATE_useImageUploader =
-  <TRouter extends FileRouter>(initOpts: { url: URL }) =>
-  <TEndpoint extends keyof TRouter>(
+export const GENERATE_useImageUploader = <
+  TRouter extends FileRouter,
+>(initOpts: {
+  url: URL;
+}) => {
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: initOpts.url,
+  });
+
+  const useImageUploader = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
-    const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-      url: initOpts.url,
-    });
     const uploadthing = useUploadThing(endpoint, opts);
     const { mediaTypes, multiple } = useMemo(
       () => generateMediaTypes(uploadthing.permittedFileInfo?.config),
@@ -117,3 +121,6 @@ export const GENERATE_useImageUploader =
 
     return { openImagePicker, isUploading: uploadthing.isUploading };
   };
+
+  return useImageUploader;
+};

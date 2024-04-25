@@ -1,3 +1,4 @@
+import "./polyfill";
 import "./styles.css";
 
 import FeatherIcon from "@expo/vector-icons/Feather";

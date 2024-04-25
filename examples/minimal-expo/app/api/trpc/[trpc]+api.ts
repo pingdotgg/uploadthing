@@ -4,7 +4,10 @@ import { z } from "zod";
 
 import { UTApi } from "uploadthing/server";
 
-const createContext = () => ({ utapi: new UTApi(), userId: "abc123" });
+const createContext = () => ({
+  utapi: new UTApi({ logLevel: "debug" }),
+  userId: "abc123",
+});
 const t = initTRPC.context<typeof createContext>().create();
 
 const protectedProcedure = t.procedure.use(({ ctx, next }) => {
@@ -25,7 +28,8 @@ const router = t.router({
      * Note to readers: You're better off storing the files
      * in your database and then querying them from there.
      */
-    const files = await ctx.utapi.listFiles();
+    const { files } = await ctx.utapi.listFiles();
+
     const nonDeleted = files.filter((f) => f.status !== "Deletion Pending");
     return nonDeleted.map((f) => {
       // Append a date property to each file
@@ -56,6 +60,9 @@ const handler = (req: Request) => {
     endpoint: "/api/trpc",
     router,
     createContext,
+    onError({ error, path }) {
+      console.error(`>>> tRPC Error on '${path}'`, error);
+    },
   });
 };
 

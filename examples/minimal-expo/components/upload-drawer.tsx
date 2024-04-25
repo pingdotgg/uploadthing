@@ -19,9 +19,9 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
   const router = useRouter();
 
   const imageUploader = useImageUploader("videoAndImage", {
-    onUploadProgress: (p) => {
-      console.log("upload progress", p);
-    },
+    // onUploadProgress: (p) => {
+    //   console.log("upload progress", p);
+    // },
     onUploadError: (e) => {
       Alert.alert("Upload Error", e.data?.reason ?? e.message);
     },
