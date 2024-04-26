@@ -929,10 +929,13 @@ importers:
     dependencies:
       '@effect/schema':
         specifier: ^0.66.0
-        version: 0.66.0(effect@3.0.0)(fast-check@3.17.1)
+        version: 0.66.0(effect@3.0.0)(fast-check@3.17.2)
       effect:
         specifier: ^3.0.0
         version: 3.0.0
+      fast-check:
+        specifier: ^3.17.2
+        version: 3.17.2
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -1067,7 +1070,7 @@ importers:
     dependencies:
       '@effect/schema':
         specifier: ^0.66.0
-        version: 0.66.0(effect@3.0.0)(fast-check@3.17.1)
+        version: 0.66.0(effect@3.0.0)(fast-check@3.17.2)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -2578,14 +2581,14 @@ packages:
       which: 4.0.0
     dev: false
 
-  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.1):
+  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.2):
     resolution: {integrity: sha512-wbmA4vQ0OswEwBt+vWn4oEgw2QdEDchPiNNisPCHvSy5e5qH0usfppJ3fNX9cwrCz6jEQTCE42Q/7Was2BhVHg==}
     peerDependencies:
       effect: ^3.0.0
       fast-check: ^3.13.2
     dependencies:
       effect: 3.0.0
-      fast-check: 3.17.1
+      fast-check: 3.17.2
     dev: false
 
   /@elysiajs/cors@0.8.0(elysia@0.8.17):
@@ -11866,8 +11869,8 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /fast-check@3.17.1:
-    resolution: {integrity: sha512-jIKXJVe6ZO0SpwEgVtEVujTf8TwjI9wMXFJCjsDHUB3RroUbXBgF4kOSz3A7MW0UR26aqsoB8i9O2mjtjERAiA==}
+  /fast-check@3.17.2:
+    resolution: {integrity: sha512-+3DPTxtxABLgmmVpYxrash3DHoq0cMa1jjLYNp3qqokKKhqVEaS4lbnaDKqWU5Dd6C2pEudPPBAEEQ9nUou9OQ==}
     engines: {node: '>=8.0.0'}
     dependencies:
       pure-rand: 6.1.0
