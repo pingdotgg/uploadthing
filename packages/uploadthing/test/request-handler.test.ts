@@ -71,8 +71,8 @@ const handlers = createRouteHandler({
   router,
   config: {
     uploadthingSecret: "sk_live_test123",
-    logLevel: "debug",
-    // logLevel: "silent",
+    // @ts-expect-error - annoying to see error logs
+    logLevel: "silent",
   },
 });
 
