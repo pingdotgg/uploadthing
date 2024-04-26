@@ -46,13 +46,32 @@ export const fetchEff = (
 
 export const fetchEffJson = <Schema>(
   input: RequestInfo | URL,
+  /** Schema to be used if the response returned a 2xx  */
   schema: S.Schema<Schema, any>,
   init?: RequestInit,
-): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> =>
-  fetchEff(input, init).pipe(
+): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> => {
+  const requestUrl =
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+
+  return fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
-        try: () => res.json(),
+        try: async () => {
+          const json = await res.json();
+          if (!res.ok) {
+            throw new FetchError({
+              error: new Error(
+                `Request to ${requestUrl} failed with status ${res.status}: ${JSON.stringify(json)}`,
+              ),
+              input,
+            });
+          }
+          return json;
+        },
         catch: (error) => new FetchError({ error, input }),
       }),
     ),
@@ -61,6 +80,7 @@ export const fetchEffJson = <Schema>(
       attributes: { input: JSON.stringify(input) },
     }),
   );
+};
 
 export const parseRequestJson = <Schema>(
   reqOrRes: Request | ResponseEsque,
