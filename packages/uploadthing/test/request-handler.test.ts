@@ -447,13 +447,11 @@ describe("bad request handling", () => {
         }),
       }),
     );
-
-    console.log(res.status, await res.json());
-    expect(res.status).toBe(400);
-
-    // await expect(res.json()).resolves.toEqual({
-    //   message: "Invalid request",
-    //   cause: "Error: Not found",
-    // });
+    expect(res.status).toBe(500);
+    await expect(res.json()).resolves.toEqual({
+      message:
+        'Request to https://uploadthing.com/api/prepareUpload failed with status 404: {"error":"Not found"}',
+      cause: "FetchError",
+    });
   });
 });

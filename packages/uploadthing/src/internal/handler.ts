@@ -144,7 +144,15 @@ export const buildRequestHandler =
       Effect.catchTags({
         FetchError: (err) =>
           Effect.logError("An error occurred while fetching", err).pipe(
-            Effect.andThen(() => Effect.die(err)),
+            Effect.andThen(
+              () =>
+                new UploadThingError({
+                  code: "INTERNAL_SERVER_ERROR",
+                  message:
+                    typeof err.error === "string" ? err.error : err.message,
+                  cause: err,
+                }),
+            ),
           ),
         ParseError: (err) =>
           Effect.logError(
