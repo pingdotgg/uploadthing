@@ -144,13 +144,13 @@ export const buildRequestHandler =
       Effect.catchTags({
         FetchError: (err) =>
           Effect.logError("An error occurred while fetching", err).pipe(
-            Effect.die,
+            Effect.andThen(() => Effect.die(err)),
           ),
         ParseError: (err) =>
           Effect.logError(
             "An error occurred while parsing input/output",
             err,
-          ).pipe(Effect.die),
+          ).pipe(Effect.andThen(() => Effect.die(err))),
       }),
       // By here we either have a successful result or an UploadThingError defect, return either
       Effect.match({
