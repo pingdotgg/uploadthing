@@ -12,6 +12,7 @@ import {
   middlewareMock,
   requestSpy,
   uploadCompleteMock,
+  useBadUTApi,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -69,8 +70,8 @@ const handlers = createRouteHandler({
   router,
   config: {
     uploadthingSecret: "sk_live_test123",
-    // @ts-expect-error - annoying to see error logs
-    logLevel: "silent",
+    logLevel: "debug",
+    // logLevel: "silent",
   },
 });
 
@@ -428,5 +429,31 @@ describe(".onUploadComplete()", () => {
       message: "Invalid signature",
     });
     expect(uploadCompleteMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("bad request handling", () => {
+  it("throws a more descriptive error instead of ParseError for bad request", async ({
+    db,
+  }) => {
+    useBadUTApi();
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.png", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+
+    console.log(res.status, await res.json());
+    expect(res.status).toBe(400);
+
+    // await expect(res.json()).resolves.toEqual({
+    //   message: "Invalid request",
+    //   cause: "Error: Not found",
+    // });
   });
 });

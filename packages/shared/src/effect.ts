@@ -62,18 +62,20 @@ export const fetchEffJson = <Schema>(
       Effect.tryPromise({
         try: async () => {
           const json = await res.json();
-          if (!res.ok) {
-            throw new FetchError({
-              error: new Error(
-                `Request to ${requestUrl} failed with status ${res.status}: ${JSON.stringify(json)}`,
-              ),
-              input,
-            });
-          }
-          return json;
+          return { ok: res.ok, json, status: res.status };
         },
         catch: (error) => new FetchError({ error, input }),
       }),
+    ),
+    Effect.andThen(({ ok, json, status }) =>
+      ok
+        ? Effect.succeed(json)
+        : Effect.fail(
+            new FetchError({
+              error: `Request to ${requestUrl} failed with status ${status}: ${JSON.stringify(json)}`,
+              input,
+            }),
+          ),
     ),
     Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {

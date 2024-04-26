@@ -279,6 +279,13 @@ export const useBadS3 = () =>
     }),
   );
 
+export const useBadUTApi = () =>
+  msw.use(
+    http.post("https://uploadthing.com/api/*", async () => {
+      return HttpResponse.json({ error: "Not found" }, { status: 404 });
+    }),
+  );
+
 /**
  * Call this in your test to make the S3 requests fail a couple times before succeeding
  */

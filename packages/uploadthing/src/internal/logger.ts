@@ -1,5 +1,6 @@
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
+import { Logger } from "effect";
 import { process } from "std-env";
 
 import { isObject } from "@uploadthing/shared";
@@ -108,3 +109,17 @@ export const initLogger = (level: LogLevel | undefined) => {
   // logger.wrapConsole();
   logger.level = LogLevels[level ?? "info"];
 };
+
+// export const withLogger = Logger.replace(
+//   Logger.defaultLogger,
+//   Logger.make(({ logLevel, message }) => {
+//     console.log("Creaing logger", logLevel, message);
+//     logger.info(message);
+//   }),
+// );
+
+export const withLogger = (level: LogLevel = "info") =>
+  Logger.replace(
+    Logger.defaultLogger,
+    Logger.make((opts) => logger.log(opts)),
+  );

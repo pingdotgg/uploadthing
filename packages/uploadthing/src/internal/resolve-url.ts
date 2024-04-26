@@ -9,7 +9,6 @@ export const resolveCallbackUrl = (opts: {
   config: RouteHandlerConfig | undefined;
   req: Request;
   isDev: boolean;
-  logWarning: (typeof console)["warn"];
 }) => {
   return Effect.gen(function* ($) {
     let callbackUrl = new URL(opts.req.url);
@@ -41,7 +40,7 @@ export const resolveCallbackUrl = (opts: {
 
     if (!parsedFromHeaders || parsedFromHeaders.includes("localhost")) {
       // Didn't find a valid URL in the headers, log a warning and use the original url anyway
-      opts.logWarning(
+      Effect.logWarning(
         "You are using a localhost callback url in production which is not supported.",
         "Read more and learn how to fix it here: https://docs.uploadthing.com/faq#my-callback-runs-in-development-but-not-in-production",
       );

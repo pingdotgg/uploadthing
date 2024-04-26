@@ -15,7 +15,7 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { logger } from "./logger";
+import { withLogger } from "./logger";
 import {
   abortMultipartUpload,
   completeMultipartUpload,
@@ -69,6 +69,7 @@ export const runRequestHandlerAsync = <
   });
 
   return handler(args).pipe(
+    Effect.provide(withLogger(config?.logLevel)),
     Effect.provide(layer),
     Effect.andThen((data) => {
       if ("status" in data && data.status !== 200) {
@@ -95,7 +96,7 @@ export const buildRequestHandler =
 
       const { isDev = isDevelopment } = opts.config ?? {};
       if (isDev) {
-        logger.info("UploadThing dev server is now running!");
+        yield* $(Effect.logInfo("UploadThing dev server is now running!"));
       }
 
       if (hook === "callback") {
@@ -141,14 +142,15 @@ export const buildRequestHandler =
       }
     }).pipe(
       Effect.catchTags({
-        FetchError: (err) => {
-          logger.error("An error occurred while fetching", err);
-          return Effect.die(err);
-        },
-        ParseError: (err) => {
-          logger.error("An error occurred while parsing input/output", err);
-          return Effect.die(err);
-        },
+        FetchError: (err) =>
+          Effect.logError("An error occurred while fetching", err).pipe(
+            Effect.die,
+          ),
+        ParseError: (err) =>
+          Effect.logError(
+            "An error occurred while parsing input/output",
+            err,
+          ).pipe(Effect.die),
       }),
       // By here we either have a successful result or an UploadThingError defect, return either
       Effect.match({
@@ -178,9 +180,9 @@ const handleCallbackRequest = (opts: {
           }),
       }),
     );
-    logger.debug("Signature verified:", verified);
+    yield* $(Effect.logDebug("Signature verified:", verified));
     if (!verified) {
-      logger.error("Invalid signature");
+      yield* $(Effect.logError("Invalid signature"));
       return new UploadThingError({
         code: "BAD_REQUEST",
         message: "Invalid signature",
@@ -197,7 +199,9 @@ const handleCallbackRequest = (opts: {
         }),
       ),
     );
-    logger.debug("Handling callback request with input:", requestInput);
+    yield* $(
+      Effect.logDebug("Handling callback request with input:", requestInput),
+    );
 
     const serverData = yield* $(
       Effect.tryPromise({
@@ -206,26 +210,29 @@ const handleCallbackRequest = (opts: {
             file: requestInput.file,
             metadata: requestInput.metadata,
           }) as Promise<unknown>,
-        catch: (error) => {
-          logger.error(
-            "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
-            error,
-          );
-          return new UploadThingError({
+        catch: (error) =>
+          new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to run onUploadComplete",
             cause: error,
-          });
-        },
+          }),
       }),
+      Effect.tapError((error) =>
+        Effect.logError(
+          "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
+          error,
+        ),
+      ),
     );
     const payload = {
       fileKey: requestInput.file.key,
       callbackData: serverData ?? null,
     };
-    logger.debug(
-      "'onUploadComplete' callback finished. Sending response to UploadThing:",
-      payload,
+    yield* $(
+      Effect.logDebug(
+        "'onUploadComplete' callback finished. Sending response to UploadThing:",
+        payload,
+      ),
     );
 
     yield* $(
@@ -250,8 +257,7 @@ const runRouteMiddleware = (opts: {
 }) =>
   Effect.gen(function* ($) {
     const { files } = opts;
-
-    logger.debug("Running middleware");
+    yield* $(Effect.logDebug("Running middleware"));
     const metadata: ValidMiddlewareObject = yield* $(
       Effect.tryPromise({
         try: async () =>
@@ -261,7 +267,6 @@ const runRouteMiddleware = (opts: {
             files: files,
           }),
         catch: (error) => {
-          logger.error("An error occured in your middleware function", error);
           if (error instanceof UploadThingError) return error;
           return new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
@@ -270,18 +275,22 @@ const runRouteMiddleware = (opts: {
           });
         },
       }),
+      Effect.tapError((error) =>
+        Effect.logError("An error occured in your middleware function", error),
+      ),
     );
 
     if (metadata[UTFiles] && metadata[UTFiles].length !== files.length) {
       const msg = `Expected files override to have the same length as original files, got ${metadata[UTFiles].length} but expected ${files.length}`;
-      logger.error(msg);
       return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Files override must have the same length as files",
-            cause: msg,
-          }),
+        Effect.logError(msg),
+        Effect.andThen(
+          () =>
+            new UploadThingError({
+              code: "BAD_REQUEST",
+              message: "Files override must have the same length as files",
+              cause: msg,
+            }),
         ),
       );
     }
@@ -290,7 +299,7 @@ const runRouteMiddleware = (opts: {
     const filesWithCustomIds = files.map((file, idx) => {
       const theirs = metadata[UTFiles]?.[idx];
       if (theirs && theirs.size !== file.size) {
-        logger.warn("File size mismatch. Reverting to original size");
+        // Effect.logWarning("File size mismatch. Reverting to original size");
       }
       return {
         name: theirs?.name ?? file.name,
@@ -315,25 +324,28 @@ const handleUploadAction = (opts: {
     const { files, input } = yield* $(
       parseRequestJson(opts.req, UploadActionPayload),
     );
-    logger.debug("Handling upload request with input:", { files, input });
+    yield* $(
+      Effect.logDebug("Handling upload request with input:", { files, input }),
+    );
 
     // validate the input
-    logger.debug("Parsing user input");
+    yield* $(Effect.logDebug("Parsing user input"));
     const inputParser = opts.uploadable._def.inputParser;
     const parsedInput = yield* $(
       Effect.tryPromise({
         try: async () => getParseFn(inputParser)(input),
-        catch: (error) => {
-          logger.error("An error occured trying to parse input", error);
-          return new UploadThingError({
+        catch: (error) =>
+          new UploadThingError({
             code: "BAD_REQUEST",
             message: "Invalid input",
             cause: error,
-          });
-        },
+          }),
       }),
+      Effect.tapError((error) =>
+        Effect.logError("An error occured trying to parse input", error),
+      ),
     );
-    logger.debug("Input parsed successfully", parsedInput);
+    yield* $(Effect.logDebug("Input parsed successfully", parsedInput));
 
     const { metadata, filesWithCustomIds } = yield* $(
       runRouteMiddleware({
@@ -344,7 +356,12 @@ const handleUploadAction = (opts: {
       }),
     );
 
-    logger.debug("Parsing route config", opts.uploadable._def.routerConfig);
+    yield* $(
+      Effect.logDebug(
+        "Parsing route config",
+        opts.uploadable._def.routerConfig,
+      ),
+    );
     const parsedConfig = yield* $(
       fillInputRouteConfig(opts.uploadable._def.routerConfig),
       Effect.catchTag("InvalidRouteConfig", (err) =>
@@ -357,9 +374,11 @@ const handleUploadAction = (opts: {
         ),
       ),
     );
-    logger.debug("Route config parsed successfully", parsedConfig);
+    yield* $(Effect.logDebug("Route config parsed successfully", parsedConfig));
 
-    logger.debug("Validating files meet the config requirements", files);
+    yield* $(
+      Effect.logDebug("Validating files meet the config requirements", files),
+    );
     const invalidConfigError = (e: { _tag: string; reason: string }) =>
       new UploadThingError({
         code: "BAD_REQUEST",
@@ -379,25 +398,24 @@ const handleUploadAction = (opts: {
     );
 
     const callbackUrl = yield* $(
-      resolveCallbackUrl({
-        config: opts.config,
-        req: opts.req,
-        isDev: opts.isDev,
-        logWarning: logger.warn,
-      }),
-      Effect.catchTag("InvalidURL", (err) => {
-        logger.error("Failed to resolve callback URL", err);
-        return Effect.fail(
+      resolveCallbackUrl(opts),
+      Effect.tapError((error) =>
+        Effect.logError("Failed to resolve callback URL", error),
+      ),
+      Effect.catchTag(
+        "InvalidURL",
+        (err) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: err.message,
           }),
-        );
-      }),
+      ),
     );
-    logger.debug(
-      "Retrieving presigned URLs from UploadThing. Callback URL is:",
-      callbackUrl.href,
+    yield* $(
+      Effect.logDebug(
+        "Retrieving presigned URLs from UploadThing. Callback URL is:",
+        callbackUrl.href,
+      ),
     );
 
     const presignedUrls = yield* $(
@@ -418,8 +436,8 @@ const handleUploadAction = (opts: {
       ),
     );
 
-    logger.debug("UploadThing responded with:", presignedUrls);
-    logger.debug("Sending presigned URLs to client");
+    yield* $(Effect.logDebug("UploadThing responded with:", presignedUrls));
+    yield* $(Effect.logDebug("Sending presigned URLs to client"));
 
     let promise: Promise<unknown> | undefined = undefined;
     if (opts.isDev) {
@@ -444,11 +462,17 @@ const handleMultipartCompleteAction = (opts: { req: Request }) =>
       parseRequestJson(opts.req, MultipartCompleteActionPayload),
     );
 
-    logger.debug(
-      "Handling multipart-complete request with input:",
-      requestInput,
+    yield* $(
+      Effect.logDebug(
+        "Handling multipart-complete request with input:",
+        requestInput,
+      ),
     );
-    logger.debug("Notifying UploadThing that multipart upload is complete");
+    yield* $(
+      Effect.logDebug(
+        "Notifying UploadThing that multipart upload is complete",
+      ),
+    );
 
     const completionResponse = yield* $(
       completeMultipartUpload(
@@ -459,7 +483,9 @@ const handleMultipartCompleteAction = (opts: { req: Request }) =>
         requestInput.etags,
       ),
     );
-    logger.debug("UploadThing responded with:", completionResponse);
+    yield* $(
+      Effect.logDebug("UploadThing responded with:", completionResponse),
+    );
 
     return {
       status: 200,
@@ -475,14 +501,19 @@ const handleMultipartFailureAction = (opts: {
     const { fileKey, uploadId } = yield* $(
       parseRequestJson(opts.req, FailureActionPayload),
     );
-    logger.debug("Handling failure request with input:", { fileKey, uploadId });
-    logger.debug("Notifying UploadThing that upload failed");
+    yield* $(
+      Effect.logDebug("Handling failure request with input:", {
+        fileKey,
+        uploadId,
+      }),
+    );
+    yield* $(Effect.logDebug("Notifying UploadThing that upload failed"));
 
     const failureResponse = yield* $(
       abortMultipartUpload({ key: fileKey, uploadId }),
     );
-    logger.debug("UploadThing responded with:", failureResponse);
-    logger.debug("Running 'onUploadError' callback");
+    yield* $(Effect.logDebug("UploadThing responded with:", failureResponse));
+    yield* $(Effect.logDebug("Running 'onUploadError' callback"));
 
     yield* $(
       Effect.try({
@@ -495,18 +526,19 @@ const handleMultipartFailureAction = (opts: {
             fileKey,
           });
         },
-        catch: (error) => {
-          logger.error(
-            "Failed to run onUploadError. You probably shouldn't be throwing errors here.",
-            error,
-          );
-          return new UploadThingError({
+        catch: (error) =>
+          new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "Failed to run onUploadError",
             cause: error,
-          });
-        },
+          }),
       }),
+      Effect.tapError((error) =>
+        Effect.logError(
+          "Failed to run onUploadError. You probably shouldn't be throwing errors here.",
+          error,
+        ),
+      ),
     );
 
     return {
