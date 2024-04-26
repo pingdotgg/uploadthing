@@ -267,6 +267,7 @@ const runRouteMiddleware = (opts: {
 }) =>
   Effect.gen(function* ($) {
     const { files } = opts;
+
     yield* $(Effect.logDebug("Running middleware"));
     const metadata: ValidMiddlewareObject = yield* $(
       Effect.tryPromise({
@@ -306,17 +307,25 @@ const runRouteMiddleware = (opts: {
     }
 
     // Attach customIds from middleware to the files
-    const filesWithCustomIds = files.map((file, idx) => {
-      const theirs = metadata[UTFiles]?.[idx];
-      if (theirs && theirs.size !== file.size) {
-        // Effect.logWarning("File size mismatch. Reverting to original size");
-      }
-      return {
-        name: theirs?.name ?? file.name,
-        size: file.size,
-        customId: theirs?.customId,
-      };
-    });
+    const filesWithCustomIds = yield* $(
+      Effect.forEach(files, (file, idx) =>
+        Effect.gen(function* ($) {
+          const theirs = metadata[UTFiles]?.[idx];
+          if (theirs && theirs.size !== file.size) {
+            yield* $(
+              Effect.logWarning(
+                "File size mismatch. Reverting to original size",
+              ),
+            );
+          }
+          return {
+            name: theirs?.name ?? file.name,
+            size: file.size,
+            customId: theirs?.customId,
+          };
+        }),
+      ),
+    );
 
     return { metadata, filesWithCustomIds };
   });
