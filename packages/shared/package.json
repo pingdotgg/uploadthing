@@ -35,8 +35,8 @@
   },
   "dependencies": {
     "@effect/schema": "^0.66.0",
-    "fast-check": "^3.17.2",
     "effect": "^3.0.0",
+    "fast-check": "^3.17.2",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
