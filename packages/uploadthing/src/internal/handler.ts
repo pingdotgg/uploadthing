@@ -151,7 +151,8 @@ export const buildRequestHandler =
                   message:
                     typeof err.error === "string" ? err.error : err.message,
                   cause: err,
-                  data: err.data,
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                  data: err.data as any,
                 }),
             ),
           ),

@@ -18,7 +18,6 @@ import {
   runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger } from "./internal/logger";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -35,7 +34,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(

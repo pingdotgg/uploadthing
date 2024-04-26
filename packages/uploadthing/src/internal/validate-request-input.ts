@@ -23,7 +23,6 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { getApiKey } from "./get-api-key";
-import { logger } from "./logger";
 import type { UploadActionPayload } from "./shared-schemas";
 import type {
   ActionType,
@@ -166,18 +165,22 @@ export const parseAndValidateRequest = (opts: {
     const apiKey = getApiKey(opts.opts.config?.uploadthingSecret);
 
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
-      logger.error("Client version mismatch");
+      yield* $(
+        Effect.logError(
+          `Client version mismatch. Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
+        ),
+      );
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
           message: "Client version mismatch",
-          cause: `Serve version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
+          cause: `Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
         }),
       );
     }
 
     if (!slug) {
-      logger.error("No slug provided in params:", params);
+      yield* $(Effect.logError("No slug provided in params:", params));
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -188,7 +191,7 @@ export const parseAndValidateRequest = (opts: {
 
     if (slug && typeof slug !== "string") {
       const msg = `Expected slug to be of type 'string', got '${typeof slug}'`;
-      logger.error(msg);
+      yield* $(Effect.logError(msg));
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -200,7 +203,7 @@ export const parseAndValidateRequest = (opts: {
 
     if (!apiKey) {
       const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
-      logger.error(msg);
+      yield* $(Effect.logError(msg));
       return yield* $(
         new UploadThingError({
           code: "MISSING_ENV",
@@ -212,7 +215,7 @@ export const parseAndValidateRequest = (opts: {
 
     if (!apiKey.startsWith("sk_")) {
       const msg = `Invalid secret provided, UPLOADTHING_SECRET must start with 'sk_'`;
-      logger.error(msg);
+      yield* $(Effect.logError(msg));
       return yield* $(
         new UploadThingError({
           code: "MISSING_ENV",
@@ -224,7 +227,7 @@ export const parseAndValidateRequest = (opts: {
 
     if (utFrontendPackage && typeof utFrontendPackage !== "string") {
       const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utFrontendPackage}'`;
-      logger.error(msg);
+      yield* $(Effect.logError(msg));
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -238,7 +241,7 @@ export const parseAndValidateRequest = (opts: {
     const uploadable = opts.opts.router[slug];
     if (!uploadable) {
       const msg = `No file route found for slug ${slug}`;
-      logger.error(msg);
+      yield* $(Effect.logError(msg));
       return yield* $(
         new UploadThingError({
           code: "NOT_FOUND",
@@ -251,7 +254,7 @@ export const parseAndValidateRequest = (opts: {
       const msg = `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
         .join(", ")
         .replace(/,(?!.*,)/, " or")} but got "${actionType}"`;
-      logger.error("Invalid action type", msg);
+      yield* $(Effect.logError("Invalid action type", msg));
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -265,7 +268,7 @@ export const parseAndValidateRequest = (opts: {
       const msg = `Expected ${VALID_UT_HOOKS.map((x) => `"${x}"`)
         .join(", ")
         .replace(/,(?!.*,)/, " or")} but got "${uploadthingHook}"`;
-      logger.error("Invalid uploadthing hook", msg);
+      yield* $(Effect.logError("Invalid uploadthing hook", msg));
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -277,7 +280,7 @@ export const parseAndValidateRequest = (opts: {
 
     if ((!actionType && !uploadthingHook) || (actionType && uploadthingHook)) {
       const msg = `Exactly one of 'actionType' or 'uploadthing-hook' must be provided`;
-      logger.error(msg);
+      yield* $(Effect.logError(msg));
       return yield* $(
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -286,11 +289,13 @@ export const parseAndValidateRequest = (opts: {
       );
     }
 
-    logger.debug("All request input is valid", {
-      slug,
-      actionType,
-      uploadthingHook,
-    });
+    yield* $(
+      Effect.logDebug("All request input is valid", {
+        slug,
+        actionType,
+        uploadthingHook,
+      }),
+    );
 
     // FIXME: This should probably provide the full context at once instead of
     // partially in the `runRequestHandlerAsync` and partially in here...

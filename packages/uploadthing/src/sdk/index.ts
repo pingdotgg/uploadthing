@@ -20,7 +20,8 @@ import {
 import { UPLOADTHING_VERSION } from "../internal/constants";
 import { getApiKeyOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import { initLogger, logger } from "../internal/logger";
+import type { LogLevel } from "../internal/logger";
+import { withLogger } from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -48,7 +49,7 @@ export class UTApi {
   private fetch: FetchEsque;
   private defaultHeaders: FetchContextTag["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
-
+  private logLevel: LogLevel | undefined;
   constructor(opts?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
@@ -63,8 +64,7 @@ export class UTApi {
       "x-uploadthing-fe-package": undefined,
     };
     this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
-
-    initLogger(opts?.logLevel);
+    this.logLevel = opts?.logLevel;
   }
 
   private requestUploadThing = <T>(
@@ -73,11 +73,13 @@ export class UTApi {
     responseSchema: S.Schema<T, any>,
   ) => {
     const url = generateUploadThingURL(pathname);
-    logger.debug("Requesting UploadThing:", {
-      url,
-      body,
-      headers: this.defaultHeaders,
-    });
+    Effect.runSync(
+      Effect.logDebug("Requesting UploadThing:", {
+        url,
+        body,
+        headers: this.defaultHeaders,
+      }),
+    );
 
     return fetchEffJson(url, responseSchema, {
       method: "POST",
@@ -91,15 +93,17 @@ export class UTApi {
         "Content-Type": "application/json",
       },
     }).pipe(
-      Effect.catchTag("FetchError", (err) => {
-        logger.error("Request failed:", err);
-        return Effect.die(err);
-      }),
-      Effect.catchTag("ParseError", (err) => {
-        logger.error("Response parsing failed:", err);
-        return Effect.die(err);
-      }),
-      Effect.tap((res) => logger.debug("UploadThing response:", res)),
+      Effect.catchTag("FetchError", (err) =>
+        Effect.logError("Request failed:", err).pipe(
+          Effect.andThen(() => Effect.die(err)),
+        ),
+      ),
+      Effect.catchTag("ParseError", (err) =>
+        Effect.logError("Response parsing failed:", err).pipe(
+          Effect.andThen(() => Effect.die(err)),
+        ),
+      ),
+      Effect.tap((res) => Effect.logDebug("UploadThing response:", res)),
     );
   };
 
@@ -107,6 +111,7 @@ export class UTApi {
     program: Effect.Effect<A, E, FetchContextTag>,
   ) =>
     program.pipe(
+      Effect.provide(withLogger(this.logLevel)),
       Effect.provide(
         Layer.succeed(fetchContext, {
           fetch: this.fetch,
@@ -152,7 +157,7 @@ export class UTApi {
     );
 
     const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
-    logger.debug("Finished uploading:", uploadFileResponse);
+    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
     return uploadFileResponse;
   }
 
@@ -210,7 +215,7 @@ export class UTApi {
     /** Return single object or array based on input urls */
     const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
 
-    logger.debug("Finished uploading:", uploadFileResponse);
+    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
     return uploadFileResponse;
   }
 

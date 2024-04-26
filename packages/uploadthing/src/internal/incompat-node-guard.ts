@@ -1,6 +1,5 @@
+import { Effect } from "effect";
 import { process } from "std-env";
-
-import { logger } from "./logger";
 
 export function incompatibleNodeGuard() {
   if (typeof process === "undefined") return;
@@ -30,10 +29,11 @@ export function incompatibleNodeGuard() {
   if (major > 18) return;
   if (major === 18 && minor >= 13) return;
 
-  logger.fatal(
-    `YOU ARE USING A LEGACY (${major}.${minor}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE ^18.13.`,
+  Effect.runSync(
+    Effect.logError(
+      `YOU ARE USING A LEGACY (${major}.${minor}) NODE VERSION WHICH ISN'T OFFICIALLY SUPPORTED. PLEASE UPGRADE TO NODE ^18.13.`,
+    ),
   );
-
   // Kill the process if it isn't going to work correctly anyway
   // If we've gotten this far we know we have a Node.js runtime so exit is defined. Override std-env type.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call

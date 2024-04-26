@@ -20,7 +20,6 @@ import type {
   TimeShort,
 } from "@uploadthing/shared";
 
-import { logger } from "../internal/logger";
 import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
 import {
@@ -140,7 +139,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       size: file.size,
       ...("customId" in file ? { customId: file.customId } : {}),
     }));
-    logger.debug("Getting presigned URLs for files", fileData);
+    yield* $(Effect.logDebug("Getting presigned URLs for files", fileData));
 
     const responseSchema = S.Struct({
       data: PresignedURLResponseSchema,
@@ -161,7 +160,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       Effect.catchTag("ParseError", (e) => Effect.die(e)),
       Effect.catchTag("FetchError", (e) => Effect.die(e)),
     );
-    logger.debug("Got presigned URLs:", presigneds.data);
+    yield* $(Effect.logDebug("Got presigned URLs:", presigneds.data));
 
     return files.map((file, i) => ({
       file,
@@ -186,7 +185,7 @@ const uploadFile = (
         generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
         PollUploadResponseSchema,
       ),
-      Effect.tap(() => logger.debug("Polled upload", presigned.key)),
+      Effect.tap(Effect.logDebug("Polled upload", presigned.key)),
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(undefined)

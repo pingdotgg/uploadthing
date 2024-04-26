@@ -210,7 +210,7 @@ export type RequestHandlerOutput = Effect.Effect<
       body: UTEvents[keyof UTEvents]["out"];
       cleanup?: Promise<unknown> | undefined;
     }
-  | UploadThingError<any>,
+  | UploadThingError,
   never,
   FetchContextTag
 >;

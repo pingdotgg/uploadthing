@@ -13,14 +13,15 @@ import {
 import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import { logger } from "./logger";
 import { FailureCallbackResponseSchema } from "./shared-schemas";
 import type { MPUResponse } from "./types";
 
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
   Effect.gen(function* ($) {
-    logger.debug(
-      `Uploading file ${file.name} with ${presigned.urls.length} chunks of size ${presigned.chunkSize} bytes each`,
+    yield* $(
+      Effect.logDebug(
+        `Uploading file ${file.name} with ${presigned.urls.length} chunks of size ${presigned.chunkSize} bytes each`,
+      ),
     );
 
     const etags = yield* $(
@@ -49,10 +50,10 @@ export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
       ),
     );
 
-    logger.debug("File", file.name, "uploaded successfully.");
-    logger.debug("Completing multipart upload...");
+    yield* $(Effect.logDebug("File", file.name, "uploaded successfully."));
+    yield* $(Effect.logDebug("Completing multipart upload..."));
     yield* $(completeMultipartUpload(presigned, etags));
-    logger.debug("Multipart upload complete.");
+    yield* $(Effect.logDebug("Multipart upload complete."));
   });
 
 /**

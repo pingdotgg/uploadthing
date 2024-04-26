@@ -82,7 +82,7 @@ function formatArgs(args: any[]) {
   });
 }
 
-export const logger = createConsola({
+const logger = createConsola({
   reporters: [
     {
       log: (logObj: LogObject) => {
@@ -108,11 +108,6 @@ export const logger = createConsola({
     tag: "UPLOADTHING",
   },
 });
-
-export const initLogger = (level: LogLevel | undefined) => {
-  // logger.wrapConsole();
-  logger.level = LogLevels[level ?? "info"];
-};
 
 const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
   {
