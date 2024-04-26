@@ -1,10 +1,14 @@
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
+import type { LogLevel as EffectLogLevel } from "effect";
 import { Logger } from "effect";
 import { process } from "std-env";
 
 import { isObject } from "@uploadthing/shared";
 
+/**
+ * All the public log levels users can set.
+ */
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 
 const colorize = (str: string, level: LogType) => {
@@ -110,16 +114,25 @@ export const initLogger = (level: LogLevel | undefined) => {
   logger.level = LogLevels[level ?? "info"];
 };
 
-// export const withLogger = Logger.replace(
-//   Logger.defaultLogger,
-//   Logger.make(({ logLevel, message }) => {
-//     console.log("Creaing logger", logLevel, message);
-//     logger.info(message);
-//   }),
-// );
+const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
+  {
+    All: "verbose",
+    Fatal: "error",
+    Error: "error",
+    Info: "info",
+    Debug: "debug",
+    Trace: "trace",
+    Warning: "warn",
+    None: "silent",
+  };
 
-export const withLogger = (level: LogLevel = "info") =>
-  Logger.replace(
+export const withLogger = (level: LogLevel = "info") => {
+  logger.level = LogLevels[level];
+  return Logger.replace(
     Logger.defaultLogger,
-    Logger.make((opts) => logger.log(opts)),
+    Logger.make(({ logLevel, message }) => {
+      // FIXME: Probably log other stuff than just message?
+      logger[effectLoggerLevelToConsolaLevel[logLevel._tag]](message);
+    }),
   );
+};

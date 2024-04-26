@@ -18,6 +18,7 @@ import {
 const f = createUploadthing({
   errorFormatter: (e) => ({
     message: e.message,
+    data: e.data,
     cause:
       e.cause instanceof z.ZodError
         ? e.cause.flatten()
@@ -450,7 +451,8 @@ describe("bad request handling", () => {
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({
       message:
-        'Request to https://uploadthing.com/api/prepareUpload failed with status 404: {"error":"Not found"}',
+        "Request to https://uploadthing.com/api/prepareUpload failed with status 404",
+      data: { error: "Not found" },
       cause: "FetchError",
     });
   });

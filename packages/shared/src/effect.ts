@@ -3,7 +3,7 @@ import * as S from "@effect/schema/Schema";
 import { Context, Duration, Effect, pipe, Schedule } from "effect";
 
 import { FetchError } from "./tagged-errors";
-import type { FetchEsque, ResponseEsque } from "./types";
+import type { FetchEsque, Json, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
 export type FetchContextTag = {
@@ -72,7 +72,8 @@ export const fetchEffJson = <Schema>(
         ? Effect.succeed(json)
         : Effect.fail(
             new FetchError({
-              error: `Request to ${requestUrl} failed with status ${status}: ${JSON.stringify(json)}`,
+              error: `Request to ${requestUrl} failed with status ${status}`,
+              data: json as Json,
               input,
             }),
           ),

@@ -1,5 +1,7 @@
 import { TaggedError } from "effect/Data";
 
+import type { Json } from "./types";
+
 export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
   reason: string;
 }> {
@@ -51,4 +53,5 @@ export class RetryError extends TaggedError("RetryError") {}
 export class FetchError extends TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
   readonly error: unknown;
+  readonly data?: Json;
 }> {}
