@@ -60,7 +60,7 @@ const uploadFilesInternal = <
   UploadThingError | RetryError | FetchError | ParseError,
   FetchContextTag
 > =>
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const reportEventToUT = createUTReporter({
       endpoint: String(endpoint),
       package: opts.package,
@@ -68,28 +68,24 @@ const uploadFilesInternal = <
       headers: opts.headers,
     });
 
-    const presigneds = yield* $(
-      reportEventToUT(
-        "upload",
-        {
-          input: "input" in opts ? opts.input : null,
-          files: opts.files.map((f) => ({
-            name: f.name,
-            size: f.size,
-            type: f.type,
-          })),
-        },
-        PresignedURLResponseSchema,
-      ),
+    const presigneds = yield* reportEventToUT(
+      "upload",
+      {
+        input: "input" in opts ? opts.input : null,
+        files: opts.files.map((f) => ({
+          name: f.name,
+          size: f.size,
+          type: f.type,
+        })),
+      },
+      PresignedURLResponseSchema,
     );
 
-    return yield* $(
-      Effect.forEach(
-        presigneds,
-        (presigned) =>
-          uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
-        { concurrency: 6 },
-      ),
+    return yield* Effect.forEach(
+      presigneds,
+      (presigned) =>
+        uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
+      { concurrency: 6 },
     );
   });
 
@@ -140,25 +136,23 @@ const uploadFile = <
   },
   presigned: PresignedURLs[number],
 ) =>
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const file = opts.files.find((f) => f.name === presigned.fileName);
 
     if (!file) {
       console.error("No file found for presigned URL", presigned);
-      return yield* $(
-        new UploadThingError({
-          code: "NOT_FOUND",
-          message: "No file found for presigned URL",
-          cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
-        }),
-      );
+      return yield* new UploadThingError({
+        code: "NOT_FOUND",
+        message: "No file found for presigned URL",
+        cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
+      });
     }
 
     opts.onUploadBegin?.({ file: file.name });
     if ("urls" in presigned) {
-      yield* $(uploadMultipartWithProgress(file, presigned, opts));
+      yield* uploadMultipartWithProgress(file, presigned, opts);
     } else {
-      yield* $(uploadPresignedPostWithProgress(file, presigned, opts));
+      yield* uploadPresignedPostWithProgress(file, presigned, opts);
     }
 
     const PollingResponse = S.Union(
@@ -171,10 +165,9 @@ const uploadFile = <
 
     let serverData: TServerOutput | null = null;
     if (!opts.skipPolling) {
-      serverData = yield* $(
-        fetchEffJson(presigned.pollingUrl, PollingResponse, {
-          headers: { authorization: presigned.pollingJwt },
-        }),
+      serverData = yield* fetchEffJson(presigned.pollingUrl, PollingResponse, {
+        headers: { authorization: presigned.pollingJwt },
+      }).pipe(
         Effect.andThen((res) =>
           res.status === "done"
             ? Effect.succeed(res.callbackData)

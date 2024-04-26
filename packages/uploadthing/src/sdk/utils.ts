@@ -86,7 +86,7 @@ export const downloadFiles = (
   Effect.forEach(
     urls,
     (_url, idx) =>
-      Effect.gen(function* ($) {
+      Effect.gen(function* () {
         let url = isObject(_url) ? _url.url : _url;
         if (typeof url === "string") {
           // since dataurls will result in name being too long, tell the user
@@ -109,7 +109,7 @@ export const downloadFiles = (
           customId = undefined,
         } = isObject(_url) ? _url : {};
 
-        const response = yield* $(fetchEff(url));
+        const response = yield* fetchEff(url);
         if (!response.ok) {
           downloadErrors[idx] = UploadThingError.toObject(
             new UploadThingError({
@@ -121,8 +121,7 @@ export const downloadFiles = (
           return undefined;
         }
 
-        return yield* $(
-          Effect.promise(() => response.blob()),
+        return yield* Effect.promise(() => response.blob()).pipe(
           Effect.andThen((blob) => new UTFile([blob], name, { customId })),
         );
       }),
@@ -130,7 +129,7 @@ export const downloadFiles = (
   );
 
 const getPresignedUrls = (input: UploadFilesInternalOptions) =>
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const { files, metadata, contentDisposition, acl } = input;
 
     const fileData = files.map((file) => ({
@@ -139,14 +138,16 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       size: file.size,
       ...("customId" in file ? { customId: file.customId } : {}),
     }));
-    yield* $(Effect.logDebug("Getting presigned URLs for files", fileData));
+    yield* Effect.logDebug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.Struct({
       data: PresignedURLResponseSchema,
     });
 
-    const presigneds = yield* $(
-      fetchEffJson(generateUploadThingURL("/api/uploadFiles"), responseSchema, {
+    const presigneds = yield* fetchEffJson(
+      generateUploadThingURL("/api/uploadFiles"),
+      responseSchema,
+      {
         method: "POST",
         cache: "no-store",
         body: JSON.stringify({
@@ -156,11 +157,12 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
           acl,
         }),
         headers: { "Content-Type": "application/json" },
-      }),
+      },
+    ).pipe(
       Effect.catchTag("ParseError", (e) => Effect.die(e)),
       Effect.catchTag("FetchError", (e) => Effect.die(e)),
     );
-    yield* $(Effect.logDebug("Got presigned URLs:", presigneds.data));
+    yield* Effect.logDebug("Got presigned URLs:", presigneds.data);
 
     return files.map((file, i) => ({
       file,
@@ -171,20 +173,19 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
 const uploadFile = (
   input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
 ) =>
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const { file, presigned } = input;
 
     if ("urls" in presigned) {
-      yield* $(uploadMultipart(file, presigned));
+      yield* uploadMultipart(file, presigned);
     } else {
-      yield* $(uploadPresignedPost(file, presigned));
+      yield* uploadPresignedPost(file, presigned);
     }
 
-    yield* $(
-      fetchEffJson(
-        generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        PollUploadResponseSchema,
-      ),
+    yield* fetchEffJson(
+      generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
+      PollUploadResponseSchema,
+    ).pipe(
       Effect.tap(Effect.logDebug("Polled upload", presigned.key)),
       Effect.andThen((res) =>
         res.status === "done"

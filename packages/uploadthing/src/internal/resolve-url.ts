@@ -10,12 +10,12 @@ export const resolveCallbackUrl = (opts: {
   req: Request;
   isDev: boolean;
 }) => {
-  return Effect.gen(function* ($) {
+  return Effect.gen(function* () {
     let callbackUrl = new URL(opts.req.url);
     if (opts.config?.callbackUrl) {
-      callbackUrl = yield* $(getFullApiUrl(opts.config.callbackUrl));
+      callbackUrl = yield* getFullApiUrl(opts.config.callbackUrl);
     } else if (process.env.UPLOADTHING_URL) {
-      callbackUrl = yield* $(getFullApiUrl(process.env.UPLOADTHING_URL));
+      callbackUrl = yield* getFullApiUrl(process.env.UPLOADTHING_URL);
     }
 
     if (opts.isDev || !callbackUrl.host.includes("localhost")) {
@@ -47,6 +47,6 @@ export const resolveCallbackUrl = (opts: {
       return callbackUrl;
     }
 
-    return yield* $(getFullApiUrl(parsedFromHeaders));
+    return yield* getFullApiUrl(parsedFromHeaders);
   });
 };

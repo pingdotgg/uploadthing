@@ -266,19 +266,17 @@ export function semverLite(required: string, toCheck: string) {
 export const getFullApiUrl = (
   maybeUrl?: string,
 ): Effect.Effect<URL, InvalidURLError> =>
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const base = (() => {
       if (typeof window !== "undefined") return window.location.origin;
       if (process.env?.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
       return "http://localhost:3000";
     })();
 
-    const url = yield* $(
-      Effect.try({
-        try: () => new URL(maybeUrl ?? "/api/uploadthing", base),
-        catch: () => new InvalidURLError(maybeUrl ?? "/api/uploadthing"),
-      }),
-    );
+    const url = yield* Effect.try({
+      try: () => new URL(maybeUrl ?? "/api/uploadthing", base),
+      catch: () => new InvalidURLError(maybeUrl ?? "/api/uploadthing"),
+    })
 
     if (url.pathname === "/") {
       url.pathname = "/api/uploadthing";

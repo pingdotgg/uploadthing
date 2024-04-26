@@ -46,7 +46,7 @@ export const createUTReporter =
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   }): UTReporter =>
   (type, payload, responseSchema) =>
-    Effect.gen(function* ($) {
+    Effect.gen(function* () {
       const url = createAPIRequestUrl({
         url: cfg.url,
         slug: cfg.endpoint,
@@ -55,22 +55,19 @@ export const createUTReporter =
       let headers =
         typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
       if (headers instanceof Promise) {
-        headers = yield* $(
-          Effect.promise(() => headers as Promise<HeadersInit>),
-        );
+        headers = yield* Effect.promise(() => headers as Promise<HeadersInit>);
       }
 
-      const response = yield* $(
-        fetchEffJson(url, responseSchema, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: {
-            "Content-Type": "application/json",
-            "x-uploadthing-package": cfg.package,
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-            ...headers,
-          },
-        }),
+      const response = yield* fetchEffJson(url, responseSchema, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-package": cfg.package,
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+          ...headers,
+        },
+      }).pipe(
         Effect.catchTag("FetchError", (e) =>
           Effect.fail(
             new UploadThingError({
@@ -97,20 +94,16 @@ export const createUTReporter =
           const p = payload as UTEvents["failure"]["in"];
           const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
           if (parsed?.message) {
-            return yield* $(
-              new UploadThingError({
-                code: parsed.code,
-                message: parsed.message,
-              }),
-            );
+            return yield* new UploadThingError({
+              code: parsed.code,
+              message: parsed.message,
+            });
           } else {
-            return yield* $(
-              new UploadThingError({
-                code: "UPLOAD_FAILED",
-                message: `Failed to upload file ${p.fileName} to S3`,
-                cause: p.storageProviderError,
-              }),
-            );
+            return yield* new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: `Failed to upload file ${p.fileName} to S3`,
+              cause: p.storageProviderError,
+            });
           }
         }
       }
