@@ -34,8 +34,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.66.0",
-    "effect": "^3.0.0",
+    "@effect/schema": "^0.66.9",
+    "effect": "^3.0.6",
     "fast-check": "^3.17.2",
     "std-env": "^3.7.0"
   },

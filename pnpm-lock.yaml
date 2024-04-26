@@ -928,11 +928,11 @@ importers:
   packages/shared:
     dependencies:
       '@effect/schema':
-        specifier: ^0.66.0
-        version: 0.66.0(effect@3.0.0)(fast-check@3.17.2)
+        specifier: ^0.66.9
+        version: 0.66.9(effect@3.0.6)(fast-check@3.17.2)
       effect:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.6
+        version: 3.0.6
       fast-check:
         specifier: ^3.17.2
         version: 3.17.2
@@ -1069,8 +1069,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/schema':
-        specifier: ^0.66.0
-        version: 0.66.0(effect@3.0.0)(fast-check@3.17.2)
+        specifier: ^0.66.9
+        version: 0.66.9(effect@3.0.6)(fast-check@3.17.2)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1081,8 +1081,11 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^3.0.6
+        version: 3.0.6
+      fast-check:
+        specifier: ^3.17.2
+        version: 3.17.2
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -2581,13 +2584,13 @@ packages:
       which: 4.0.0
     dev: false
 
-  /@effect/schema@0.66.0(effect@3.0.0)(fast-check@3.17.2):
-    resolution: {integrity: sha512-wbmA4vQ0OswEwBt+vWn4oEgw2QdEDchPiNNisPCHvSy5e5qH0usfppJ3fNX9cwrCz6jEQTCE42Q/7Was2BhVHg==}
+  /@effect/schema@0.66.9(effect@3.0.6)(fast-check@3.17.2):
+    resolution: {integrity: sha512-52sB+G4GqbUur8tDmiQnwcrqTU2XeZQiVr78SLOvsK3KwLcqHRxQpiHso7zVUbpXHEH/yTa3shbYTz0JNmD9Pg==}
     peerDependencies:
-      effect: ^3.0.0
+      effect: ^3.0.6
       fast-check: ^3.13.2
     dependencies:
-      effect: 3.0.0
+      effect: 3.0.6
       fast-check: 3.17.2
     dev: false
 
@@ -10746,8 +10749,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@3.0.0:
-    resolution: {integrity: sha512-8yVxuahojpD8Y6ynrvIlSWD2xsea/PyGnjA4V5c7v0fOMJafgsKUNUHErBAr6YoPikmtOfR9zqNWRd9u5QaWEQ==}
+  /effect@3.0.6:
+    resolution: {integrity: sha512-mm83ZhJnSH1BRnnWnVxk0w+gMN1WPaxq2LEoxATv2esCtd8bSq9BFLuWysWWmnEO3Q8wkGIcjmeIxZymHo2qZw==}
     dev: false
 
   /electron-to-chromium@1.4.746:
