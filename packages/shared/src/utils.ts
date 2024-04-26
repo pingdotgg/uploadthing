@@ -276,7 +276,7 @@ export const getFullApiUrl = (
     const url = yield* Effect.try({
       try: () => new URL(maybeUrl ?? "/api/uploadthing", base),
       catch: () => new InvalidURLError(maybeUrl ?? "/api/uploadthing"),
-    })
+    });
 
     if (url.pathname === "/") {
       url.pathname = "/api/uploadthing";
