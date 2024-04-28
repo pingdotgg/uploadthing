@@ -928,14 +928,14 @@ importers:
   packages/shared:
     dependencies:
       '@effect/schema':
-        specifier: ^0.66.9
-        version: 0.66.9(effect@3.0.6)(fast-check@3.17.2)
+        specifier: ^0.66.10
+        version: 0.66.10(effect@3.0.7)(fast-check@3.18.0)
       effect:
-        specifier: ^3.0.6
-        version: 3.0.6
+        specifier: ^3.0.7
+        version: 3.0.7
       fast-check:
-        specifier: ^3.17.2
-        version: 3.17.2
+        specifier: ^3.18.0
+        version: 3.18.0
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -1069,8 +1069,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/schema':
-        specifier: ^0.66.9
-        version: 0.66.9(effect@3.0.6)(fast-check@3.17.2)
+        specifier: ^0.66.10
+        version: 0.66.10(effect@3.0.7)(fast-check@3.18.0)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1081,11 +1081,11 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: ^3.0.6
-        version: 3.0.6
+        specifier: ^3.0.7
+        version: 3.0.7
       fast-check:
-        specifier: ^3.17.2
-        version: 3.17.2
+        specifier: ^3.18.0
+        version: 3.18.0
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -2584,14 +2584,14 @@ packages:
       which: 4.0.0
     dev: false
 
-  /@effect/schema@0.66.9(effect@3.0.6)(fast-check@3.17.2):
-    resolution: {integrity: sha512-52sB+G4GqbUur8tDmiQnwcrqTU2XeZQiVr78SLOvsK3KwLcqHRxQpiHso7zVUbpXHEH/yTa3shbYTz0JNmD9Pg==}
+  /@effect/schema@0.66.10(effect@3.0.7)(fast-check@3.18.0):
+    resolution: {integrity: sha512-5lZTPRbncsqAhqQx3cCd3emR/q/CtvFFJZNvwNF66sUD1SjbMsLPbRkEzIaG9k2X8M71YD9GDbUE0lRWG1J+mA==}
     peerDependencies:
-      effect: ^3.0.6
+      effect: ^3.0.7
       fast-check: ^3.13.2
     dependencies:
-      effect: 3.0.6
-      fast-check: 3.17.2
+      effect: 3.0.7
+      fast-check: 3.18.0
     dev: false
 
   /@elysiajs/cors@0.8.0(elysia@0.8.17):
@@ -10749,8 +10749,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@3.0.6:
-    resolution: {integrity: sha512-mm83ZhJnSH1BRnnWnVxk0w+gMN1WPaxq2LEoxATv2esCtd8bSq9BFLuWysWWmnEO3Q8wkGIcjmeIxZymHo2qZw==}
+  /effect@3.0.7:
+    resolution: {integrity: sha512-VlEpWUc3IBc7k9NUdsdbh7cnGFNIdMpIoUFbbiVkt304d40pSr6Zadnr5Tk8m1cniqOLo4SXSZLw0M6f7N17Hg==}
     dev: false
 
   /electron-to-chromium@1.4.746:
@@ -11872,8 +11872,8 @@ packages:
     engines: {node: '>=18'}
     dev: true
 
-  /fast-check@3.17.2:
-    resolution: {integrity: sha512-+3DPTxtxABLgmmVpYxrash3DHoq0cMa1jjLYNp3qqokKKhqVEaS4lbnaDKqWU5Dd6C2pEudPPBAEEQ9nUou9OQ==}
+  /fast-check@3.18.0:
+    resolution: {integrity: sha512-/951xaT0kA40w0GXRsZXEwSTE7LugjZtSA/8vPgFkiPQ8wNp8tRvqWuNDHBgLxJYXtsK11e/7Q4ObkKW5BdTFQ==}
     engines: {node: '>=8.0.0'}
     dependencies:
       pure-rand: 6.1.0
