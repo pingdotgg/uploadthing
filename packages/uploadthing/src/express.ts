@@ -1,9 +1,9 @@
-import { Effect } from "effect";
-import { Router as ExpressRouter } from "express";
+import * as Effect from "effect/Effect";
 import type {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from "express";
+import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
@@ -22,8 +22,8 @@ import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter };
 export { UTFiles } from "./internal/types";
+export type { FileRouter };
 
 type MiddlewareArgs = {
   req: ExpressRequest;

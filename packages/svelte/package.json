@@ -64,6 +64,28 @@
     ],
     "ignorePatterns": [
       "*.config.*"
-    ]
+    ],
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "@uploadthing/svelte",
+                "@uploadthing/svelte/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
+          ]
+        }
+      ]
+    }
   }
 }

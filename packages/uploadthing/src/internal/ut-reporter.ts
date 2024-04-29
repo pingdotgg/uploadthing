@@ -1,5 +1,5 @@
 import type * as S from "@effect/schema/Schema";
-import { Effect } from "effect";
+import * as Effect from "effect/Effect";
 
 import type { FetchContextTag, MaybePromise } from "@uploadthing/shared";
 import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
