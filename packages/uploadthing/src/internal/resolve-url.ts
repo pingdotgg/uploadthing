@@ -3,28 +3,25 @@ import { process } from "std-env";
 
 import { getFullApiUrl } from "@uploadthing/shared";
 
-import type { RouteHandlerConfig } from "./types";
+import { requestContext } from "./validate-request-input";
 
-export const resolveCallbackUrl = (opts: {
-  config: RouteHandlerConfig | undefined;
-  req: Request;
-  isDev: boolean;
-}) => {
+export const resolveCallbackUrl = () => {
   return Effect.gen(function* () {
-    let callbackUrl = new URL(opts.req.url);
-    if (opts.config?.callbackUrl) {
-      callbackUrl = yield* getFullApiUrl(opts.config.callbackUrl);
+    const { config, req, isDev } = yield* requestContext;
+    let callbackUrl = new URL(req.url);
+    if (config?.callbackUrl) {
+      callbackUrl = yield* getFullApiUrl(config.callbackUrl);
     } else if (process.env.UPLOADTHING_URL) {
       callbackUrl = yield* getFullApiUrl(process.env.UPLOADTHING_URL);
     }
 
-    if (opts.isDev || !callbackUrl.host.includes("localhost")) {
+    if (isDev || !callbackUrl.host.includes("localhost")) {
       return callbackUrl;
     }
 
     // Production builds have to have a public URL so UT can send webhook
     // Parse the URL from the headers
-    const headers = opts.req.headers;
+    const headers = req.headers;
     let parsedFromHeaders =
       headers.get("origin") ??
       headers.get("referer") ??

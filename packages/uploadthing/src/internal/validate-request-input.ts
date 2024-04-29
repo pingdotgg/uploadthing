@@ -1,8 +1,11 @@
 import type * as S from "@effect/schema/Schema";
+import * as Context from "effect/Context";
 import { TaggedError } from "effect/Data";
 import * as Effect from "effect/Effect";
+import { isDevelopment } from "std-env";
 
 import type {
+  DistributiveOmit,
   ExpandedRouteConfig,
   FetchContextTag,
   FileRouterInputKey,
@@ -28,6 +31,8 @@ import type {
   ActionType,
   AnyParams,
   FileRouter,
+  MiddlewareFnArgs,
+  RouteHandlerConfig,
   RouteHandlerOptions,
   Uploader,
   UploadThingHook,
@@ -129,25 +134,36 @@ export const assertFilesMeetConfig = (
     return null;
   });
 
+type RequestInputBase = {
+  req: Request;
+  config: RouteHandlerConfig;
+  middlewareArgs: MiddlewareFnArgs<any, any, any>;
+  isDev: boolean;
+  apiKey: string;
+  slug: string;
+  uploadable: Uploader<AnyParams>;
+};
+export type RequestInputTag = RequestInputBase &
+  (
+    | {
+        hook: null;
+        action: ActionType;
+      }
+    | {
+        hook: UploadThingHook;
+        action: null;
+      }
+  );
+
+export const requestContext =
+  Context.GenericTag<RequestInputTag>("RequestInput");
+
 export const parseAndValidateRequest = (opts: {
   req: Request;
   opts: RouteHandlerOptions<FileRouter>;
   adapter: string;
 }): Effect.Effect<
-  | {
-      apiKey: string;
-      slug: string;
-      uploadable: Uploader<AnyParams>;
-      hook: UploadThingHook;
-      action: null;
-    }
-  | {
-      apiKey: string;
-      slug: string;
-      uploadable: Uploader<AnyParams>;
-      hook: null;
-      action: ActionType;
-    },
+  DistributiveOmit<RequestInputTag, "middlewareArgs">,
   UploadThingError,
   FetchContextTag
 > =>
@@ -280,8 +296,14 @@ export const parseAndValidateRequest = (opts: {
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = opts.adapter;
 
+    const { isDev = isDevelopment } = opts.opts.config ?? {};
+    if (isDev) yield* Effect.logInfo("UploadThing dev server is now running!");
+
     if (actionType) {
       return {
+        req: opts.req,
+        config: opts.opts.config ?? {},
+        isDev,
         apiKey,
         slug,
         uploadable,
@@ -290,6 +312,9 @@ export const parseAndValidateRequest = (opts: {
       } as const;
     } else {
       return {
+        req: opts.req,
+        config: opts.opts.config ?? {},
+        isDev,
         apiKey,
         slug,
         uploadable,
