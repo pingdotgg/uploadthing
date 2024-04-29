@@ -139,8 +139,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/solid",
-            "@uploadthing/solid/*"
+            {
+              "group": [
+                "@uploadthing/solid",
+                "@uploadthing/solid/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

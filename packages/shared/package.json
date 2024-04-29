@@ -61,19 +61,30 @@
   },
   "eslintConfig": {
     "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ],
     "rules": {
       "no-restricted-imports": [
         "error",
         {
           "patterns": [
-            "@uploadthing/shared",
-            "@uploadthing/shared/*"
+            {
+              "group": [
+                "@uploadthing/shared",
+                "@uploadthing/shared/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]
-    },
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ]
+    }
   }
 }

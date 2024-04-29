@@ -67,8 +67,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/vue",
-            "@uploadthing/vue/*"
+            {
+              "group": [
+                "@uploadthing/vue",
+                "@uploadthing/vue/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]
