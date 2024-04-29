@@ -1,4 +1,5 @@
-import { Effect, Unify } from "effect";
+import * as Effect from "effect/Effect";
+import * as Unify from "effect/Unify";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";

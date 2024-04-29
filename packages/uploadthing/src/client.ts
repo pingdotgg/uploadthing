@@ -2,7 +2,8 @@
 
 import type { ParseError } from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
-import { Effect, Layer } from "effect";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 
 import type { FetchContextTag, FetchError } from "@uploadthing/shared";
 import {
@@ -35,9 +36,9 @@ import type {
 
 export {
   /** @public */
-  generateMimeTypes,
-  /** @public */
   generateClientDropzoneAccept,
+  /** @public */
+  generateMimeTypes,
   /** @public */
   generatePermittedFileTypes,
 } from "@uploadthing/shared";
