@@ -51,7 +51,7 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     const response = await runRequestHandlerAsync(
       requestHandler,
       {
-        req,
+        req: req,
         middlewareArgs: { req, event: undefined, res: undefined },
       },
       opts.config,
