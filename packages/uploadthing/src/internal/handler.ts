@@ -33,7 +33,6 @@ import {
 } from "./shared-schemas";
 import { UTFiles } from "./types";
 import type {
-  AnyUploader,
   FileRouter,
   MiddlewareFnArgs,
   RequestHandler,
@@ -210,26 +209,18 @@ const handleCallbackRequest = Effect.gen(function* () {
   return { status: 200, body: null };
 });
 
-const runRouteMiddleware = (opts: {
-  uploadable: AnyUploader;
-  middlewareArgs: MiddlewareFnArgs<any, any, any>;
-  routeInput: S.Schema.Type<typeof UploadActionPayload>["input"];
-  files: S.Schema.Type<typeof UploadActionPayload>["files"];
-}) =>
+const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
   Effect.gen(function* () {
-    const { files } = opts;
+    const { uploadable, middlewareArgs } = yield* requestContext;
+    const { files, input } = opts;
 
     yield* Effect.logDebug("Running middleware");
     const metadata: ValidMiddlewareObject = yield* Effect.tryPromise({
       try: async () =>
-        opts.uploadable._def.middleware({
-          ...opts.middlewareArgs,
-          input: opts.routeInput,
-          files: files,
-        }),
+        uploadable._def.middleware({ ...middlewareArgs, input, files }),
       catch: (error) =>
         error instanceof UploadThingError
-          ? (error as UploadThingError<{ message: string }>)
+          ? error
           : new UploadThingError({
               code: "INTERNAL_SERVER_ERROR",
               message: "Failed to run middleware",
@@ -301,9 +292,7 @@ const handleUploadAction = Effect.gen(function* () {
   yield* Effect.logDebug("Input parsed successfully", parsedInput);
 
   const { metadata, filesWithCustomIds } = yield* runRouteMiddleware({
-    uploadable: opts.uploadable,
-    middlewareArgs: opts.middlewareArgs,
-    routeInput: parsedInput,
+    input: parsedInput,
     files,
   });
 
