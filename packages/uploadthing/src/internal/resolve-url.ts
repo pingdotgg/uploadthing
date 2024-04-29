@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import * as Effect from "effect/Effect";
 import { process } from "std-env";
 
 import { getFullApiUrl } from "@uploadthing/shared";

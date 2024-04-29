@@ -205,8 +205,19 @@
         "error",
         {
           "patterns": [
-            "uploadthing",
-            "uploadthing/*"
+            {
+              "group": [
+                "uploadthing",
+                "uploadthing/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

@@ -1,5 +1,5 @@
 import * as S from "@effect/schema/Schema";
-import { Effect } from "effect";
+import * as Effect from "effect/Effect";
 
 import {
   contentDisposition,

@@ -1,6 +1,6 @@
 import type { Schema } from "@effect/schema/Schema";
 import type * as S from "@effect/schema/Schema";
-import type { Effect } from "effect";
+import type * as Effect from "effect/Effect";
 
 import type {
   ErrorMessage,

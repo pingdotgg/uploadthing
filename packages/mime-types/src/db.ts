@@ -109,6 +109,11 @@ const mimeTypesInternal = {
     compressible: true,
     extensions: ["davmount"],
   },
+  "application/dicom": {
+    source: "iana",
+    compressible: false,
+    extensions: ["dcm"],
+  },
   "application/docbook+xml": {
     source: "apache",
     compressible: true,

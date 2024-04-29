@@ -1,5 +1,5 @@
-import { Effect } from "effect";
 import { TaggedError } from "effect/Data";
+import * as Effect from "effect/Effect";
 import { process } from "std-env";
 
 import { filterObjectValues, UploadThingError } from "@uploadthing/shared";

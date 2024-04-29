@@ -1,6 +1,10 @@
 import type { ParseError } from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
-import { Context, Duration, Effect, pipe, Schedule } from "effect";
+import * as Context from "effect/Context";
+import * as Duration from "effect/Duration";
+import * as Effect from "effect/Effect";
+import { pipe } from "effect/Function";
+import * as Schedule from "effect/Schedule";
 
 import { FetchError } from "./tagged-errors";
 import type { FetchEsque, Json, ResponseEsque } from "./types";
