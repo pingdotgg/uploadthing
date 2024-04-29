@@ -124,11 +124,13 @@ const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
 export const withMinimalLogLevel = (level: LogLevel = "info") => {
   return Logger.withMinimumLogLevel(
     {
+      silent: EffectLogLevel.None,
       error: EffectLogLevel.Error,
       warn: EffectLogLevel.Warning,
       info: EffectLogLevel.Info,
       debug: EffectLogLevel.Debug,
       trace: EffectLogLevel.Trace,
+      verbose: EffectLogLevel.All,
     }[level],
   );
 };
