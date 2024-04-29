@@ -16,7 +16,7 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { withLogger } from "./logger";
+import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import {
   abortMultipartUpload,
   completeMultipartUpload,
@@ -70,7 +70,8 @@ export const runRequestHandlerAsync = <
   });
 
   return handler(args).pipe(
-    Effect.provide(withLogger(config?.logLevel)),
+    withMinimalLogLevel(config?.logLevel),
+    Effect.provide(ConsolaLogger),
     Effect.provide(layer),
     Effect.andThen((data) => {
       if ("status" in data && data.status !== 200) {
@@ -432,7 +433,11 @@ const handleUploadAction = (opts: {
         presignedUrls,
         (file) => conditionalDevServer(file.key, opts.apiKey),
         { concurrency: 10 },
-      ).pipe(Effect.provide(layer), Effect.runPromise);
+      ).pipe(
+        Effect.provide(ConsolaLogger),
+        Effect.provide(layer),
+        Effect.runPromise,
+      );
     }
 
     return {

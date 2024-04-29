@@ -22,7 +22,7 @@ import { UPLOADTHING_VERSION } from "../internal/constants";
 import { getApiKeyOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { LogLevel } from "../internal/logger";
-import { withLogger } from "../internal/logger";
+import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -112,7 +112,8 @@ export class UTApi {
     program: Effect.Effect<A, E, FetchContextTag>,
   ) =>
     program.pipe(
-      Effect.provide(withLogger(this.logLevel)),
+      withMinimalLogLevel(this.logLevel),
+      Effect.provide(ConsolaLogger),
       Effect.provide(
         Layer.succeed(fetchContext, {
           fetch: this.fetch,
