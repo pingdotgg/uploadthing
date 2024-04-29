@@ -21,16 +21,15 @@ export const resolveCallbackUrl = () => {
 
     // Production builds have to have a public URL so UT can send webhook
     // Parse the URL from the headers
-    const headers = req.headers;
     let parsedFromHeaders =
-      headers.get("origin") ??
-      headers.get("referer") ??
-      headers.get("host") ??
-      headers.get("x-forwarded-host");
+      req.headers.get("origin") ??
+      req.headers.get("referer") ??
+      req.headers.get("host") ??
+      req.headers.get("x-forwarded-host");
 
     if (parsedFromHeaders && !parsedFromHeaders.includes("http")) {
       parsedFromHeaders =
-        (headers.get("x-forwarded-proto") ?? "https") +
+        (req.headers.get("x-forwarded-proto") ?? "https") +
         "://" +
         parsedFromHeaders;
     }
