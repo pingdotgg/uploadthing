@@ -102,15 +102,16 @@ export const buildRequestHandler =
     opts: RouteHandlerOptions<TRouter>,
     adapter: string,
   ): RequestHandler<Args> =>
-  (input) =>
+  ({ req, middlewareArgs }) =>
     pipe(
-      input.req instanceof Request ? Effect.succeed(input.req) : input.req,
+      req instanceof Request ? Effect.succeed(req) : req,
       Effect.andThen((req) => parseAndValidateRequest({ req, opts, adapter })),
-      Effect.andThen((c) =>
-        Effect.provideService(handleRequest, requestContext, {
-          ...c,
-          middlewareArgs: input.middlewareArgs,
-        }),
+      Effect.andThen((contextValue) =>
+        Effect.provideService(
+          handleRequest,
+          requestContext,
+          Object.assign(contextValue, { middlewareArgs }),
+        ),
       ),
       Effect.catchTags({
         FetchError: (e) =>
