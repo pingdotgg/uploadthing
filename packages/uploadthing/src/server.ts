@@ -1,5 +1,3 @@
-import * as Effect from "effect/Effect";
-
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
 
@@ -53,7 +51,7 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     const response = await runRequestHandlerAsync(
       requestHandler,
       {
-        req: Effect.succeed(req),
+        req,
         middlewareArgs: { req, event: undefined, res: undefined },
       },
       opts.config,
