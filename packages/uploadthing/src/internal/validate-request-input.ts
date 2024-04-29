@@ -299,27 +299,18 @@ export const parseAndValidateRequest = (opts: {
     const { isDev = isDevelopment } = opts.opts.config ?? {};
     if (isDev) yield* Effect.logInfo("UploadThing dev server is now running!");
 
-    if (actionType) {
-      return {
-        req: opts.req,
-        config: opts.opts.config ?? {},
-        isDev,
-        apiKey,
-        slug,
-        uploadable,
-        hook: null,
-        action: actionType as ActionType,
-      } as const;
-    } else {
-      return {
-        req: opts.req,
-        config: opts.opts.config ?? {},
-        isDev,
-        apiKey,
-        slug,
-        uploadable,
-        hook: uploadthingHook as UploadThingHook,
-        action: null,
-      } as const;
-    }
+    const base = {
+      req: opts.req,
+      config: opts.opts.config ?? {},
+      isDev,
+      apiKey,
+      slug,
+      uploadable,
+      hook: null,
+      action: null,
+    };
+
+    return actionType
+      ? { ...base, action: actionType as ActionType }
+      : { ...base, hook: uploadthingHook as UploadThingHook };
   });
