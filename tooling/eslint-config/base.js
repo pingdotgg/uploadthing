@@ -38,6 +38,10 @@ const config = {
       { checksVoidReturn: { attributes: false } },
     ],
     "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+    "no-restricted-imports": ["error", {
+      "name": "effect",
+      "message": "Use alias imports instead (import * as X from \"effect/X\")"
+    }]
   },
   overrides: [
     {
