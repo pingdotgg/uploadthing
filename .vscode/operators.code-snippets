@@ -6,12 +6,7 @@
   },
   "Gen Function": {
     "prefix": "gen",
-    "body": ["function* ($) {}"],
+    "body": ["function* () {}"],
     "description": "Generator FUnction with $ input",
-  },
-  "Gen Yield * tmp": {
-    "prefix": "yy",
-    "body": ["yield* $($0)"],
-    "description": "Yield generator calling $()",
   },
 }

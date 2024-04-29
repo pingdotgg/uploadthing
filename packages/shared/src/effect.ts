@@ -7,7 +7,7 @@ import { pipe } from "effect/Function";
 import * as Schedule from "effect/Schedule";
 
 import { FetchError } from "./tagged-errors";
-import type { FetchEsque, ResponseEsque } from "./types";
+import type { FetchEsque, Json, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
 export type FetchContextTag = {
@@ -50,21 +50,44 @@ export const fetchEff = (
 
 export const fetchEffJson = <Schema>(
   input: RequestInfo | URL,
+  /** Schema to be used if the response returned a 2xx  */
   schema: S.Schema<Schema, any>,
   init?: RequestInit,
-): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> =>
-  fetchEff(input, init).pipe(
+): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> => {
+  const requestUrl =
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+
+  return fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
-        try: () => res.json(),
+        try: async () => {
+          const json = await res.json();
+          return { ok: res.ok, json, status: res.status };
+        },
         catch: (error) => new FetchError({ error, input }),
       }),
+    ),
+    Effect.andThen(({ ok, json, status }) =>
+      ok
+        ? Effect.succeed(json)
+        : Effect.fail(
+            new FetchError({
+              error: `Request to ${requestUrl} failed with status ${status}`,
+              data: json as Json,
+              input,
+            }),
+          ),
     ),
     Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {
       attributes: { input: JSON.stringify(input) },
     }),
   );
+};
 
 export const parseRequestJson = <Schema>(
   reqOrRes: Request | ResponseEsque,

@@ -12,11 +12,13 @@ import {
   middlewareMock,
   requestSpy,
   uploadCompleteMock,
+  useBadUTApi,
 } from "./__test-helpers";
 
 const f = createUploadthing({
   errorFormatter: (e) => ({
     message: e.message,
+    data: e.data,
     cause:
       e.cause instanceof z.ZodError
         ? e.cause.flatten()
@@ -428,5 +430,30 @@ describe(".onUploadComplete()", () => {
       message: "Invalid signature",
     });
     expect(uploadCompleteMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("bad request handling", () => {
+  it("throws a more descriptive error instead of ParseError for bad request", async ({
+    db,
+  }) => {
+    useBadUTApi();
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.png", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+    expect(res.status).toBe(500);
+    await expect(res.json()).resolves.toEqual({
+      message:
+        "Request to https://uploadthing.com/api/prepareUpload failed with status 404",
+      data: { error: "Not found" },
+      cause: "FetchError",
+    });
   });
 });

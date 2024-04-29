@@ -11,7 +11,6 @@ import {
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
-import { logger } from "./logger";
 import { PollUploadResponseSchema } from "./shared-schemas";
 import type { UploadedFileData } from "./shared-schemas";
 
@@ -24,12 +23,11 @@ const isValidResponse = (response: ResponseEsque) => {
 };
 
 export const conditionalDevServer = (fileKey: string, apiKey: string) => {
-  return Effect.gen(function* ($) {
-    const file = yield* $(
-      fetchEffJson(
-        generateUploadThingURL(`/api/pollUpload/${fileKey}`),
-        PollUploadResponseSchema,
-      ),
+  return Effect.gen(function* () {
+    const file = yield* fetchEffJson(
+      generateUploadThingURL(`/api/pollUpload/${fileKey}`),
+      PollUploadResponseSchema,
+    ).pipe(
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(res.fileData)
@@ -43,19 +41,20 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     );
 
     if (file === undefined) {
-      logger.error(`Failed to simulate callback for file ${fileKey}`);
-      return yield* $(
-        new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "File took too long to upload",
-        }),
-      );
+      yield* Effect.logError(`Failed to simulate callback for file ${fileKey}`);
+      return yield* new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "File took too long to upload",
+      });
     }
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
     if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;
 
-    logger.info("SIMULATING FILE UPLOAD WEBHOOK CALLBACK", callbackUrl);
+    yield* Effect.logInfo(
+      `SIMULATING FILE UPLOAD WEBHOOK CALLBACK`,
+      callbackUrl,
+    );
 
     const payload = JSON.stringify({
       status: "uploaded",
@@ -70,44 +69,42 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       } satisfies UploadedFileData,
     });
 
-    const signature = yield* $(
-      Effect.tryPromise({
-        try: () => signPayload(payload, apiKey),
-        catch: (e) =>
-          new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to sign payload",
-            cause: e,
-          }),
-      }),
-    );
+    const signature = yield* Effect.tryPromise({
+      try: () => signPayload(payload, apiKey),
+      catch: (e) =>
+        new UploadThingError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to sign payload",
+          cause: e,
+        }),
+    });
 
-    const callbackResponse = yield* $(
-      fetchEff(callbackUrl, {
-        method: "POST",
-        body: payload,
-        headers: {
-          "Content-Type": "application/json",
-          "uploadthing-hook": "callback",
-          "x-uploadthing-signature": signature,
-        },
-      }),
+    const callbackResponse = yield* fetchEff(callbackUrl, {
+      method: "POST",
+      body: payload,
+      headers: {
+        "Content-Type": "application/json",
+        "uploadthing-hook": "callback",
+        "x-uploadthing-signature": signature,
+      },
+    }).pipe(
       Effect.catchTag("FetchError", () =>
         Effect.succeed(new Response(null, { status: 500 })),
       ),
     );
 
     if (isValidResponse(callbackResponse)) {
-      logger.success("Successfully simulated callback for file", fileKey);
+      yield* Effect.logInfo(
+        "Successfully simulated callback for file",
+        fileKey,
+      );
     } else {
-      logger.error(
-        `Failed to simulate callback for file '${file.fileKey}'. Is your webhook configured correctly?`,
-      );
-      logger.error(
-        `  - Make sure the URL '${callbackUrl}' is accessible without any authentication. You can verify this by running 'curl -X POST ${callbackUrl}' in your terminal`,
-      );
-      logger.error(
-        `  - Still facing issues? Read https://docs.uploadthing.com/faq for common issues`,
+      yield* Effect.logError(
+        `
+Failed to simulate callback for file '${file.fileKey}'. Is your webhook configured correctly?
+  - Make sure the URL '${callbackUrl}' is accessible without any authentication. You can verify this by running 'curl -X POST ${callbackUrl}' in your terminal
+  - Still facing issues? Read https://docs.uploadthing.com/faq for common issues
+`.trim(),
       );
     }
     return file;
