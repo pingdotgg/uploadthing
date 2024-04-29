@@ -1,5 +1,4 @@
 import * as Effect from "effect/Effect";
-import { pipe } from "effect/Function";
 import type {
   Request as ExpressRequest,
   Response as ExpressResponse,
@@ -52,8 +51,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     const response = await runRequestHandlerAsync(
       requestHandler,
       {
-        req: pipe(
-          getPostBody({ req }),
+        req: getPostBody({ req }).pipe(
           Effect.andThen((body) => toWebRequest(req, body)),
         ),
         middlewareArgs: { req, res, event: undefined },
