@@ -1,7 +1,7 @@
 import type * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
-import type { FetchContextTag, MaybePromise } from "@uploadthing/shared";
+import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -32,7 +32,7 @@ export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
   responseSchema: S.Schema<UTEvents[TEvent]["out"]>,
-) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContextTag>;
+) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.

@@ -1,17 +1,16 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
 
 import type {
   ACL,
-  FetchContextTag,
+  FetchContextService,
   FetchEsque,
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 import {
   asArray,
-  fetchContext,
+  FetchContext,
   fetchEffJson,
   filterObjectValues,
   generateUploadThingURL,
@@ -48,7 +47,7 @@ export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
-  private defaultHeaders: FetchContextTag["baseHeaders"];
+  private defaultHeaders: FetchContextService["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
   private logLevel: LogLevel | undefined;
   constructor(opts?: UTApiOptions) {
@@ -108,18 +107,14 @@ export class UTApi {
     );
   };
 
-  private executeAsync = <A, E>(
-    program: Effect.Effect<A, E, FetchContextTag>,
-  ) =>
+  private executeAsync = <A, E>(program: Effect.Effect<A, E, FetchContext>) =>
     program.pipe(
       withMinimalLogLevel(this.logLevel),
       Effect.provide(ConsolaLogger),
-      Effect.provide(
-        Layer.succeed(fetchContext, {
-          fetch: this.fetch,
-          baseHeaders: this.defaultHeaders,
-        }),
-      ),
+      Effect.provideService(FetchContext, {
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
       Effect.runPromise,
     );
 

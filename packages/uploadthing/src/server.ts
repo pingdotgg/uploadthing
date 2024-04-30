@@ -1,5 +1,5 @@
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
+import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -13,9 +13,9 @@ import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export { UTFile } from "./sdk/ut-file";
 export { UTFiles } from "./internal/types";
 export { UTApi } from "./sdk";
+export { UTFile } from "./sdk/ut-file";
 export { UploadThingError, type FileRouter };
 
 type MiddlewareArgs = { req: Request; res: undefined; event: undefined };
@@ -51,19 +51,22 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     const response = await runRequestHandlerAsync(
       requestHandler,
       {
-        req: req,
+        req,
         middlewareArgs: { req, event: undefined, res: undefined },
       },
       opts.config,
     );
 
-    if (response instanceof UploadThingError) {
-      return new Response(JSON.stringify(formatError(response, opts.router)), {
-        status: getStatusCodeFromError(response),
-        headers: {
-          "x-uploadthing-version": UPLOADTHING_VERSION,
+    if (response.success === false) {
+      return new Response(
+        JSON.stringify(formatError(response.error, opts.router)),
+        {
+          status: getStatusCodeFromError(response.error),
+          headers: {
+            "x-uploadthing-version": UPLOADTHING_VERSION,
+          },
         },
-      });
+      );
     }
 
     const res = new Response(JSON.stringify(response.body), {

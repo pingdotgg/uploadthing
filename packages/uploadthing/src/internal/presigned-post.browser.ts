@@ -1,7 +1,7 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
-import type { FetchContextTag, UploadThingError } from "@uploadthing/shared";
+import type { FetchContext, UploadThingError } from "@uploadthing/shared";
 
 import type { PSPResponse, UTEvents } from "./types";
 import type { UTReporter } from "./ut-reporter";
@@ -16,53 +16,53 @@ export const uploadPresignedPostWithProgress = (
       | undefined;
   },
 ) =>
-  Effect.async<
-    UTEvents[keyof UTEvents]["out"],
-    UploadThingError,
-    FetchContextTag
-  >((resume) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", presigned.url);
-    xhr.setRequestHeader("Accept", "application/xml");
+  Effect.async<UTEvents[keyof UTEvents]["out"], UploadThingError, FetchContext>(
+    (resume) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", presigned.url);
+      xhr.setRequestHeader("Accept", "application/xml");
 
-    xhr.upload.addEventListener("progress", ({ loaded, total }) => {
-      opts.onUploadProgress?.({
-        file: file.name,
-        progress: (loaded / total) * 100,
+      xhr.upload.addEventListener("progress", ({ loaded, total }) => {
+        opts.onUploadProgress?.({
+          file: file.name,
+          progress: (loaded / total) * 100,
+        });
       });
-    });
-    xhr.addEventListener("load", () =>
-      resume(
-        xhr.status >= 200 && xhr.status < 300
-          ? Effect.succeed(null)
-          : opts.reportEventToUT(
-              "failure",
-              {
-                fileKey: presigned.key,
-                uploadId: null,
-                fileName: file.name,
-                storageProviderError: xhr.responseText,
-              },
-              S.Null,
-            ),
-      ),
-    );
-    xhr.addEventListener("error", () =>
-      resume(
-        opts.reportEventToUT(
-          "failure",
-          {
-            fileKey: presigned.key,
-            uploadId: null,
-            fileName: file.name,
-          },
-          S.Null,
+      xhr.addEventListener("load", () =>
+        resume(
+          xhr.status >= 200 && xhr.status < 300
+            ? Effect.succeed(null)
+            : opts.reportEventToUT(
+                "failure",
+                {
+                  fileKey: presigned.key,
+                  uploadId: null,
+                  fileName: file.name,
+                  storageProviderError: xhr.responseText,
+                },
+                S.Null,
+              ),
         ),
-      ),
-    );
+      );
+      xhr.addEventListener("error", () =>
+        resume(
+          opts.reportEventToUT(
+            "failure",
+            {
+              fileKey: presigned.key,
+              uploadId: null,
+              fileName: file.name,
+            },
+            S.Null,
+          ),
+        ),
+      );
 
-    const formData = new FormData();
-    Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
-    formData.append("file", file); // File data **MUST GO LAST**
-    xhr.send(formData);
-  });
+      const formData = new FormData();
+      Object.entries(presigned.fields).forEach(([k, v]) =>
+        formData.append(k, v),
+      );
+      formData.append("file", file); // File data **MUST GO LAST**
+      xhr.send(formData);
+    },
+  );
