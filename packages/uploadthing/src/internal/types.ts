@@ -245,6 +245,10 @@ export type ActionType = (typeof VALID_ACTION_TYPES)[number];
 export const isActionType = (input: unknown): input is ActionType =>
   typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
 
+/**
+ * Valid options for the `uploadthing-hook` header
+ * for requests coming from UT server
+ */
 export const VALID_UT_HOOKS = ["callback"] as const;
 export type UploadThingHook = (typeof VALID_UT_HOOKS)[number];
 export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
