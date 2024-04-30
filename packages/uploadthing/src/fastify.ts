@@ -6,7 +6,7 @@ import type {
 } from "fastify";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -21,8 +21,8 @@ import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter };
 export { UTFiles } from "./internal/types";
+export type { FileRouter };
 
 type MiddlewareArgs = {
   req: FastifyRequest;
@@ -57,21 +57,16 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       opts.config,
     );
 
-    if (response instanceof UploadThingError) {
+    if (response.success === false) {
       void res
-        .status(getStatusCodeFromError(response))
-        .headers({
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        })
-        .send(formatError(response, opts.router));
+        .status(getStatusCodeFromError(response.error))
+        .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
+        .send(formatError(response.error, opts.router));
       return;
     }
 
     void res
-      .status(response.status)
-      .headers({
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      })
+      .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
       .send(response.body);
   };
 

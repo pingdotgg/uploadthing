@@ -6,7 +6,7 @@ import type {
 import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -59,14 +59,13 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       opts.config,
     );
 
-    if (response instanceof UploadThingError) {
-      res.status(getStatusCodeFromError(response));
+    if (response.success === false) {
+      res.status(getStatusCodeFromError(response.error));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(JSON.stringify(formatError(response, opts.router)));
+      res.send(JSON.stringify(formatError(response.error, opts.router)));
       return;
     }
 
-    res.status(response.status);
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
     res.send(JSON.stringify(response.body));
   });
