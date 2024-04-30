@@ -1,5 +1,12 @@
 # @uploadthing/svelte
 
+## 6.5.1
+
+### Patch Changes
+
+- Updated dependencies [[`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc), [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc), [`0abfa03`](https://github.com/pingdotgg/uploadthing/commit/0abfa031d108edead78d9b71a61d2bfb7ad53a64)]:
+  - @uploadthing/shared@6.7.1
+
 ## 6.5.0
 
 ### Minor Changes

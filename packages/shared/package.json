@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "6.7.0",
+  "version": "6.7.1",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
