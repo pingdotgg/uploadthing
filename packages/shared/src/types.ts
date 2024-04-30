@@ -18,9 +18,6 @@ export type MaybePromise<TType> = TType | Promise<TType>;
 export type Either<TData, TError> =
   | { data: TData; error: null }
   | { data: null; error: TError };
-export type DistributiveOmit<T, K extends keyof any> = T extends any
-  ? Omit<T, K>
-  : never;
 export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}

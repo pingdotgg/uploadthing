@@ -5,7 +5,6 @@ import * as Effect from "effect/Effect";
 import { isDevelopment } from "std-env";
 
 import type {
-  DistributiveOmit,
   ExpandedRouteConfig,
   FileRouterInputKey,
   FileSize,
@@ -31,6 +30,7 @@ import type {
   AnyParams,
   FileRouter,
   MiddlewareFnArgs,
+  RequestHandlerInput,
   RouteHandlerConfig,
   RouteHandlerOptions,
   Uploader,
@@ -143,16 +143,10 @@ type RequestInputBase = {
   uploadable: Uploader<AnyParams>;
 };
 
-export type RequestInputService = RequestInputBase &
+type RequestInputService = RequestInputBase &
   (
-    | {
-        hook: null;
-        action: ActionType;
-      }
-    | {
-        hook: UploadThingHook;
-        action: null;
-      }
+    | { hook: null; action: ActionType }
+    | { hook: UploadThingHook; action: null }
   );
 
 export class RequestInput extends Context.Tag("uploadthing/RequestInput")<
@@ -160,26 +154,25 @@ export class RequestInput extends Context.Tag("uploadthing/RequestInput")<
   RequestInputService
 >() {}
 
-export const parseAndValidateRequest = (opts: {
-  req: Request;
-  opts: RouteHandlerOptions<FileRouter>;
-  adapter: string;
-}): Effect.Effect<
-  DistributiveOmit<RequestInputService, "middlewareArgs">,
-  UploadThingError,
-  FetchContext
-> =>
+export const parseAndValidateRequest = (
+  input: RequestHandlerInput<MiddlewareFnArgs<any, any, any>>,
+  opts: RouteHandlerOptions<FileRouter>,
+  adapter: string,
+): Effect.Effect<RequestInputService, UploadThingError, FetchContext> =>
   Effect.gen(function* () {
+    const req = yield* Effect.isEffect(input.req)
+      ? input.req
+      : Effect.succeed(input.req);
     // Get inputs from query and params
-    const url = new URL(opts.req.url);
-    const headers = opts.req.headers;
+    const url = new URL(req.url);
+    const headers = req.headers;
     const params = url.searchParams;
-    const actionType = params.get("actionType");
+    const action = params.get("actionType");
     const slug = params.get("slug");
-    const uploadthingHook = headers.get("uploadthing-hook");
+    const hook = headers.get("uploadthing-hook");
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
     const clientVersion = headers.get("x-uploadthing-version");
-    const apiKey = getApiKey(opts.opts.config?.uploadthingSecret);
+    const apiKey = getApiKey(opts.config?.uploadthingSecret);
 
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       yield* Effect.logError(
@@ -241,7 +234,7 @@ export const parseAndValidateRequest = (opts: {
       });
     }
 
-    const uploadable = opts.opts.router[slug];
+    const uploadable = opts.router[slug];
     if (!uploadable) {
       const msg = `No file route found for slug ${slug}`;
       yield* Effect.logError(msg);
@@ -251,31 +244,31 @@ export const parseAndValidateRequest = (opts: {
       });
     }
 
-    if (actionType && !isActionType(actionType)) {
+    if (action && !isActionType(action)) {
       const msg = `Expected ${VALID_ACTION_TYPES.map((x) => `"${x}"`)
         .join(", ")
-        .replace(/,(?!.*,)/, " or")} but got "${actionType}"`;
+        .replace(/,(?!.*,)/, " or")} but got "${action}"`;
       yield* Effect.logError("Invalid action type", msg);
       return yield* new UploadThingError({
         code: "BAD_REQUEST",
-        cause: `Invalid action type ${actionType}`,
+        cause: `Invalid action type ${action}`,
         message: msg,
       });
     }
 
-    if (uploadthingHook && !isUploadThingHook(uploadthingHook)) {
+    if (hook && !isUploadThingHook(hook)) {
       const msg = `Expected ${VALID_UT_HOOKS.map((x) => `"${x}"`)
         .join(", ")
-        .replace(/,(?!.*,)/, " or")} but got "${uploadthingHook}"`;
+        .replace(/,(?!.*,)/, " or")} but got "${hook}"`;
       yield* Effect.logError("Invalid uploadthing hook", msg);
       return yield* new UploadThingError({
         code: "BAD_REQUEST",
-        cause: `Invalid uploadthing hook ${uploadthingHook}`,
+        cause: `Invalid uploadthing hook ${hook}`,
         message: msg,
       });
     }
 
-    if ((!actionType && !uploadthingHook) || (actionType && uploadthingHook)) {
+    if ((!action && !hook) || (action && hook)) {
       const msg = `Exactly one of 'actionType' or 'uploadthing-hook' must be provided`;
       yield* Effect.logError(msg);
       return yield* new UploadThingError({
@@ -284,11 +277,7 @@ export const parseAndValidateRequest = (opts: {
       });
     }
 
-    yield* Effect.logDebug("All request input is valid", {
-      slug,
-      actionType,
-      uploadthingHook,
-    });
+    yield* Effect.logDebug("✔︎ All request input is valid");
 
     // FIXME: This should probably provide the full context at once instead of
     // partially in the `runRequestHandlerAsync` and partially in here...
@@ -296,14 +285,15 @@ export const parseAndValidateRequest = (opts: {
     const contextValue = yield* FetchContext;
     contextValue.baseHeaders["x-uploadthing-api-key"] = apiKey;
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
-    contextValue.baseHeaders["x-uploadthing-be-adapter"] = opts.adapter;
+    contextValue.baseHeaders["x-uploadthing-be-adapter"] = adapter;
 
-    const { isDev = isDevelopment } = opts.opts.config ?? {};
+    const { isDev = isDevelopment } = opts.config ?? {};
     if (isDev) yield* Effect.logInfo("UploadThing dev server is now running!");
 
     const base = {
-      req: opts.req,
-      config: opts.opts.config ?? {},
+      req,
+      config: opts.config ?? {},
+      middlewareArgs: input.middlewareArgs,
       isDev,
       apiKey,
       slug,
@@ -312,7 +302,7 @@ export const parseAndValidateRequest = (opts: {
       action: null,
     };
 
-    return actionType
-      ? { ...base, action: actionType as ActionType }
-      : { ...base, hook: uploadthingHook as UploadThingHook };
+    return action
+      ? { ...base, action: action as ActionType }
+      : { ...base, hook: hook as UploadThingHook };
   });
