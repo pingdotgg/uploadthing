@@ -234,6 +234,7 @@ export type inferErrorShape<TRouter extends FileRouter> =
 
 /**
  * Valid options for the `?actionType` query param
+ * @todo Look into using @effect/rpc :thinking:
  */
 export const VALID_ACTION_TYPES = [
   "upload",
