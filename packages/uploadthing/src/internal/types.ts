@@ -234,7 +234,6 @@ export type inferErrorShape<TRouter extends FileRouter> =
 
 /**
  * Valid options for the `?actionType` query param
- * @todo Look into using @effect/rpc :thinking:
  */
 export const VALID_ACTION_TYPES = [
   "upload",
@@ -257,6 +256,7 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
 
 /**
  * Map actionType to the required payload for that action
+ * @todo Look into using @effect/rpc :thinking:
  */
 export type UTEvents = {
   upload: {
