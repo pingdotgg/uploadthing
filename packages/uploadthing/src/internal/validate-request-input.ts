@@ -7,7 +7,6 @@ import { isDevelopment } from "std-env";
 import type {
   DistributiveOmit,
   ExpandedRouteConfig,
-  FetchContextTag,
   FileRouterInputKey,
   FileSize,
   InvalidFileSizeError,
@@ -16,7 +15,7 @@ import type {
 } from "@uploadthing/shared";
 import {
   bytesToFileSize,
-  fetchContext,
+  FetchContext,
   fileSizeToBytes,
   getTypeFromFileName,
   InvalidRouteConfigError,
@@ -143,7 +142,8 @@ type RequestInputBase = {
   slug: string;
   uploadable: Uploader<AnyParams>;
 };
-export type RequestInputTag = RequestInputBase &
+
+export type RequestInputService = RequestInputBase &
   (
     | {
         hook: null;
@@ -155,17 +155,19 @@ export type RequestInputTag = RequestInputBase &
       }
   );
 
-export const requestContext =
-  Context.GenericTag<RequestInputTag>("RequestInput");
+export class RequestInput extends Context.Tag("uploadthing/RequestInput")<
+  RequestInput,
+  RequestInputService
+>() {}
 
 export const parseAndValidateRequest = (opts: {
   req: Request;
   opts: RouteHandlerOptions<FileRouter>;
   adapter: string;
 }): Effect.Effect<
-  DistributiveOmit<RequestInputTag, "middlewareArgs">,
+  DistributiveOmit<RequestInputService, "middlewareArgs">,
   UploadThingError,
-  FetchContextTag
+  FetchContext
 > =>
   Effect.gen(function* () {
     // Get inputs from query and params
@@ -291,7 +293,7 @@ export const parseAndValidateRequest = (opts: {
     // FIXME: This should probably provide the full context at once instead of
     // partially in the `runRequestHandlerAsync` and partially in here...
     // Ref: https://discord.com/channels/@me/1201977154577891369/1207441839972548669
-    const contextValue = yield* fetchContext;
+    const contextValue = yield* FetchContext;
     contextValue.baseHeaders["x-uploadthing-api-key"] = apiKey;
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = opts.adapter;

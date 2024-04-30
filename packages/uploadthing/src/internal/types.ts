@@ -4,7 +4,7 @@ import type * as Effect from "effect/Effect";
 
 import type {
   ErrorMessage,
-  FetchContextTag,
+  FetchContext,
   FetchEsque,
   FileRouterInputConfig,
   Json,
@@ -204,20 +204,21 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
     req: Request | Effect.Effect<Request, UploadThingError>;
     middlewareArgs: TArgs;
   };
-export type RequestHandlerOutput = Effect.Effect<
-  | {
-      status: number;
-      body: UTEvents[keyof UTEvents]["out"];
-      cleanup?: Promise<unknown> | undefined;
-    }
-  | UploadThingError,
-  never,
-  FetchContextTag
->;
+export type RequestHandlerSuccess = {
+  success: true;
+  status: number;
+  body: UTEvents[keyof UTEvents]["out"];
+  cleanup?: Promise<unknown> | undefined;
+};
+export type RequestHandlerError = {
+  success: false;
+  error: UploadThingError;
+};
+export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
 
 export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
   input: RequestHandlerInput<TArgs>,
-) => RequestHandlerOutput;
+) => Effect.Effect<RequestHandlerSuccess, UploadThingError, FetchContext>;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker

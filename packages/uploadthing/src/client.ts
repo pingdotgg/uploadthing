@@ -3,12 +3,11 @@
 import type { ParseError } from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
 
-import type { FetchContextTag, FetchError } from "@uploadthing/shared";
+import type { FetchError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
-  fetchContext,
+  FetchContext,
   fetchEffJson,
   resolveMaybeUrlArg,
   RetryError,
@@ -59,7 +58,7 @@ const uploadFilesInternal = <
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
   UploadThingError | RetryError | FetchError | ParseError,
-  FetchContextTag
+  FetchContext
 > =>
   Effect.gen(function* () {
     const reportEventToUT = createUTReporter({
@@ -102,25 +101,25 @@ export const genUploader = <TRouter extends FileRouter>(
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
       keyof GenerateUploaderOptions
     >,
-  ) => {
-    const layer = Layer.succeed(fetchContext, {
-      fetch: globalThis.fetch.bind(globalThis),
-      baseHeaders: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-        "x-uploadthing-api-key": undefined,
-        "x-uploadthing-fe-package": initOpts.package,
-        "x-uploadthing-be-adapter": undefined,
-      },
-    });
-
-    return uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+  ) =>
+    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
-    }).pipe(Effect.provide(layer), Effect.runPromise);
-  };
+    }).pipe(
+      Effect.provideService(FetchContext, {
+        fetch: globalThis.fetch.bind(globalThis),
+        baseHeaders: {
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+          "x-uploadthing-api-key": undefined,
+          "x-uploadthing-fe-package": initOpts.package,
+          "x-uploadthing-be-adapter": undefined,
+        },
+      }),
+      Effect.runPromise,
+    );
 };
 
 const uploadFile = <

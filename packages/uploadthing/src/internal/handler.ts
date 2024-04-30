@@ -1,10 +1,9 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
-import * as Layer from "effect/Layer";
 
 import {
-  fetchContext,
+  FetchContext,
   fetchEffJson,
   fillInputRouteConfig,
   generateUploadThingURL,
@@ -31,21 +30,23 @@ import {
   UploadActionPayload,
   UploadedFileDataSchema,
 } from "./shared-schemas";
-import { UTFiles } from "./types";
 import type {
   FileRouter,
   MiddlewareFnArgs,
   RequestHandler,
   RequestHandlerInput,
+  RequestHandlerOutput,
+  RequestHandlerSuccess,
   RouteHandlerConfig,
   RouteHandlerOptions,
   UTEvents,
   ValidMiddlewareObject,
 } from "./types";
+import { UTFiles } from "./types";
 import {
   assertFilesMeetConfig,
   parseAndValidateRequest,
-  requestContext,
+  RequestInput,
 } from "./validate-request-input";
 
 /**
@@ -57,33 +58,39 @@ export const runRequestHandlerAsync = <
   handler: RequestHandler<TArgs>,
   args: RequestHandlerInput<TArgs>,
   config?: RouteHandlerConfig | undefined,
-) => {
-  const layer = Layer.succeed(fetchContext, {
-    fetch: config?.fetch ?? globalThis.fetch,
-    baseHeaders: {
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-      // These are filled in later in `parseAndValidateRequest`
-      "x-uploadthing-api-key": undefined,
-      "x-uploadthing-be-adapter": undefined,
-      "x-uploadthing-fe-package": undefined,
-    },
-  });
-
-  return handler(args).pipe(
+) =>
+  handler(args).pipe(
     withMinimalLogLevel(config?.logLevel),
     Effect.provide(ConsolaLogger),
-    Effect.provide(layer),
-    Effect.andThen((data) => {
-      if ("status" in data && data.status !== 200) {
-        return Effect.fail(new UploadThingError("An unknown error occured"));
-      }
-      return Effect.succeed(data);
+    Effect.provideService(FetchContext, {
+      fetch: config?.fetch ?? globalThis.fetch,
+      baseHeaders: {
+        "x-uploadthing-version": UPLOADTHING_VERSION,
+        // These are filled in later in `parseAndValidateRequest`
+        "x-uploadthing-api-key": undefined,
+        "x-uploadthing-be-adapter": undefined,
+        "x-uploadthing-fe-package": undefined,
+      },
     }),
+    Effect.filterOrFail(
+      (data) => data.status === 200,
+      (_) => new UploadThingError("An unknown error occured"),
+    ),
+    asHandlerOutput,
     Effect.runPromise,
   );
-};
 
-const handleRequest = requestContext.pipe(
+const asHandlerOutput = <R>(
+  effect: Effect.Effect<RequestHandlerSuccess, UploadThingError, R>,
+): Effect.Effect<RequestHandlerOutput, never, R> =>
+  Effect.catchAll(effect, (error) =>
+    Effect.succeed({
+      success: false,
+      error,
+    }),
+  );
+
+const handleRequest = RequestInput.pipe(
   Effect.andThen(({ action, hook }) => {
     if (hook === "callback") return handleCallbackRequest;
     switch (action) {
@@ -95,6 +102,12 @@ const handleRequest = requestContext.pipe(
         return handleMultipartFailureAction;
     }
   }),
+  Effect.map(
+    (output): RequestHandlerSuccess => ({
+      success: true,
+      ...output,
+    }),
+  ),
 );
 
 export const buildRequestHandler =
@@ -104,12 +117,12 @@ export const buildRequestHandler =
   ): RequestHandler<Args> =>
   ({ req, middlewareArgs }) =>
     pipe(
-      req instanceof Request ? Effect.succeed(req) : req,
+      Effect.isEffect(req) ? req : Effect.succeed(req),
       Effect.andThen((req) => parseAndValidateRequest({ req, opts, adapter })),
       Effect.andThen((contextValue) =>
         Effect.provideService(
           handleRequest,
-          requestContext,
+          RequestInput,
           Object.assign(contextValue, { middlewareArgs }),
         ),
       ),
@@ -129,14 +142,10 @@ export const buildRequestHandler =
           }),
       }),
       Effect.tapError((e) => Effect.logError(e.message)),
-      Effect.match({
-        onSuccess: (x) => x,
-        onFailure: (e) => e,
-      }),
     );
 
 const handleCallbackRequest = Effect.gen(function* () {
-  const { req, uploadable, apiKey } = yield* requestContext;
+  const { req, uploadable, apiKey } = yield* RequestInput;
   const verified = yield* Effect.tryPromise({
     try: async () =>
       verifySignature(
@@ -212,7 +221,7 @@ const handleCallbackRequest = Effect.gen(function* () {
 
 const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
   Effect.gen(function* () {
-    const { uploadable, middlewareArgs } = yield* requestContext;
+    const { uploadable, middlewareArgs } = yield* RequestInput;
     const { files, input } = opts;
 
     yield* Effect.logDebug("Running middleware");
@@ -264,7 +273,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
   });
 
 const handleUploadAction = Effect.gen(function* () {
-  const opts = yield* requestContext;
+  const opts = yield* RequestInput;
   const { files, input } = yield* parseRequestJson(
     opts.req,
     UploadActionPayload,
@@ -331,7 +340,7 @@ const handleUploadAction = Effect.gen(function* () {
     ),
   );
 
-  const callbackUrl = yield* resolveCallbackUrl().pipe(
+  const callbackUrl = yield* resolveCallbackUrl.pipe(
     Effect.tapError((error) =>
       Effect.logError("Failed to resolve callback URL", error),
     ),
@@ -370,13 +379,14 @@ const handleUploadAction = Effect.gen(function* () {
 
   let promise: Promise<unknown> | undefined = undefined;
   if (opts.isDev) {
+    const fetchContext = yield* FetchContext;
     promise = Effect.forEach(
       presignedUrls,
       (file) => conditionalDevServer(file.key, opts.apiKey),
       { concurrency: 10 },
     ).pipe(
       Effect.provide(ConsolaLogger),
-      Effect.provideService(fetchContext, yield* fetchContext),
+      Effect.provideService(FetchContext, fetchContext),
       Effect.runPromise,
     );
   }
@@ -389,7 +399,7 @@ const handleUploadAction = Effect.gen(function* () {
 });
 
 const handleMultipartCompleteAction = Effect.gen(function* () {
-  const opts = yield* requestContext;
+  const opts = yield* RequestInput;
   const requestInput = yield* parseRequestJson(
     opts.req,
     MultipartCompleteActionPayload,
@@ -419,7 +429,7 @@ const handleMultipartCompleteAction = Effect.gen(function* () {
 });
 
 const handleMultipartFailureAction = Effect.gen(function* () {
-  const { req, uploadable } = yield* requestContext;
+  const { req, uploadable } = yield* RequestInput;
   const { fileKey, uploadId } = yield* parseRequestJson(
     req,
     FailureActionPayload,

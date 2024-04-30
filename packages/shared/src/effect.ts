@@ -10,7 +10,7 @@ import { FetchError } from "./tagged-errors";
 import type { FetchEsque, Json, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
-export type FetchContextTag = {
+export type FetchContextService = {
   fetch: FetchEsque;
   baseHeaders: Record<string, string | undefined> & {
     "x-uploadthing-version": string;
@@ -19,8 +19,10 @@ export type FetchContextTag = {
     "x-uploadthing-be-adapter": string | undefined;
   };
 };
-export const fetchContext =
-  Context.GenericTag<FetchContextTag>("fetch-context");
+export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
+  FetchContext,
+  FetchContextService
+>() {}
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
@@ -28,8 +30,8 @@ export const fetchContext =
 export const fetchEff = (
   input: RequestInfo | URL,
   init?: RequestInit,
-): Effect.Effect<ResponseEsque, FetchError, FetchContextTag> =>
-  fetchContext.pipe(
+): Effect.Effect<ResponseEsque, FetchError, FetchContext> =>
+  FetchContext.pipe(
     Effect.andThen(({ fetch, baseHeaders }) =>
       Effect.tryPromise({
         try: () =>
@@ -53,7 +55,7 @@ export const fetchEffJson = <Schema>(
   /** Schema to be used if the response returned a 2xx  */
   schema: S.Schema<Schema, any>,
   init?: RequestInit,
-): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> => {
+): Effect.Effect<Schema, FetchError | ParseError, FetchContext> => {
   const requestUrl =
     typeof input === "string"
       ? input
