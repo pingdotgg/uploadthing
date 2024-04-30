@@ -71,10 +71,6 @@ export const runRequestHandlerAsync = <
         "x-uploadthing-fe-package": undefined,
       },
     }),
-    Effect.filterOrFail(
-      (data) => data.success,
-      (_) => new UploadThingError("An unknown error occured"),
-    ),
     asHandlerOutput,
     Effect.runPromise,
   );
