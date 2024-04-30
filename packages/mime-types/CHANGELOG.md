@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.2.9
+
+### Patch Changes
+
+- [#773](https://github.com/pingdotgg/uploadthing/pull/773) [`6906254`](https://github.com/pingdotgg/uploadthing/commit/690625458338a70df5927f1d2405de0de4a58d8f) Thanks [@Bodykudo](https://github.com/Bodykudo)! - Extend supported filetypes by adding dcm (DICOM files) mime type
+
 ## 0.2.8
 
 ### Patch Changes

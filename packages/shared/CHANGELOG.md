@@ -1,5 +1,15 @@
 # @uploadthing/shared
 
+## 6.7.1
+
+### Patch Changes
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add missing `fast-check` peer dependency from `@effect/schema`
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: better error logging for bad requests
+
+- [#775](https://github.com/pingdotgg/uploadthing/pull/775) [`0abfa03`](https://github.com/pingdotgg/uploadthing/commit/0abfa031d108edead78d9b71a61d2bfb7ad53a64) Thanks [@tim-smart](https://github.com/tim-smart)! - update "effect" & switch to alias imports
+
 ## 6.7.0
 
 ### Minor Changes
