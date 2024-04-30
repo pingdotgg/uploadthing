@@ -108,9 +108,12 @@ export const buildRequestHandler =
   (input) =>
     pipe(
       parseAndValidateRequest(input, opts, adapter),
-      Effect.andThen((c) =>
-        Effect.provideService(handleRequest, RequestInput, c),
-      ),
+      Effect.andThen(() => handleRequest),
+      // handleRequest,
+      // handleRequest,
+      // Effect.andThen((c) =>
+      //   Effect.provideService(handleRequest, RequestInput, c),
+      // ),
       Effect.catchTags({
         FetchError: (e) =>
           new UploadThingError({
