@@ -58,22 +58,14 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     );
 
     if (response.success === false) {
-      return new Response(
-        JSON.stringify(formatError(response.error, opts.router)),
-        {
-          status: getStatusCodeFromError(response.error),
-          headers: {
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-          },
-        },
-      );
+      return Response.json(formatError(response.error, opts.router), {
+        status: getStatusCodeFromError(response.error),
+        headers: { "x-uploadthing-version": UPLOADTHING_VERSION },
+      });
     }
 
-    const res = new Response(JSON.stringify(response.body), {
-      status: response.status,
-      headers: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      },
+    const res = Response.json(response.body, {
+      headers: { "x-uploadthing-version": UPLOADTHING_VERSION },
     });
     // @ts-expect-error - this is a custom property
     res.cleanup = response.cleanup;
@@ -83,11 +75,8 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   const GET = (request: Request | { request: Request }) => {
     const _req = request instanceof Request ? request : request.request;
 
-    return new Response(JSON.stringify(getBuildPerms()), {
-      status: 200,
-      headers: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      },
+    return Response.json(getBuildPerms(), {
+      headers: { "x-uploadthing-version": UPLOADTHING_VERSION },
     });
   };
 

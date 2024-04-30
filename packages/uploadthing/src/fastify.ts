@@ -60,18 +60,13 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     if (response.success === false) {
       void res
         .status(getStatusCodeFromError(response.error))
-        .headers({
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        })
+        .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
         .send(formatError(response.error, opts.router));
       return;
     }
 
     void res
-      .status(response.status)
-      .headers({
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      })
+      .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
       .send(response.body);
   };
 

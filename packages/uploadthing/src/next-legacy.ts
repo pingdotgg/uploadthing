@@ -67,7 +67,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return res.json(formatError(response.error, opts.router));
     }
 
-    res.status(response.status);
     return res.json(response.body);
   };
 };

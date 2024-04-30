@@ -73,7 +73,7 @@ export const runRequestHandlerAsync = <
       },
     }),
     Effect.filterOrFail(
-      (data) => data.status === 200,
+      (data) => data.success,
       (_) => new UploadThingError("An unknown error occured"),
     ),
     asHandlerOutput,
@@ -83,12 +83,7 @@ export const runRequestHandlerAsync = <
 const asHandlerOutput = <R>(
   effect: Effect.Effect<RequestHandlerSuccess, UploadThingError, R>,
 ): Effect.Effect<RequestHandlerOutput, never, R> =>
-  Effect.catchAll(effect, (error) =>
-    Effect.succeed({
-      success: false,
-      error,
-    }),
-  );
+  Effect.catchAll(effect, (error) => Effect.succeed({ success: false, error }));
 
 const handleRequest = RequestInput.pipe(
   Effect.andThen(({ action, hook }) => {
@@ -102,12 +97,7 @@ const handleRequest = RequestInput.pipe(
         return handleMultipartFailureAction;
     }
   }),
-  Effect.map(
-    (output): RequestHandlerSuccess => ({
-      success: true,
-      ...output,
-    }),
-  ),
+  Effect.map((output): RequestHandlerSuccess => ({ success: true, ...output })),
 );
 
 export const buildRequestHandler =
@@ -216,7 +206,7 @@ const handleCallbackRequest = Effect.gen(function* () {
       headers: { "Content-Type": "application/json" },
     },
   );
-  return { status: 200, body: null };
+  return { body: null };
 });
 
 const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
@@ -392,7 +382,6 @@ const handleUploadAction = Effect.gen(function* () {
   }
 
   return {
-    status: 200,
     body: presignedUrls satisfies UTEvents["upload"]["out"],
     cleanup: promise,
   };
@@ -423,7 +412,6 @@ const handleMultipartCompleteAction = Effect.gen(function* () {
   yield* Effect.logDebug("UploadThing responded with:", completionResponse);
 
   return {
-    status: 200,
     body: null satisfies UTEvents["multipart-complete"]["out"],
   };
 });
@@ -473,7 +461,6 @@ const handleMultipartFailureAction = Effect.gen(function* () {
   );
 
   return {
-    status: 200,
     body: null satisfies UTEvents["failure"]["out"],
   };
 });

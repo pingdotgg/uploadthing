@@ -206,7 +206,6 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
   };
 export type RequestHandlerSuccess = {
   success: true;
-  status: number;
   body: UTEvents[keyof UTEvents]["out"];
   cleanup?: Promise<unknown> | undefined;
 };
