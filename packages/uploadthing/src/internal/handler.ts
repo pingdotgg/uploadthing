@@ -1,6 +1,5 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
-import { pipe } from "effect/Function";
 
 import {
   FetchContext,
@@ -106,14 +105,11 @@ export const buildRequestHandler =
     adapter: string,
   ): RequestHandler<Args> =>
   (input) =>
-    pipe(
-      parseAndValidateRequest(input, opts, adapter),
-      Effect.andThen(() => handleRequest),
-      // handleRequest,
-      // handleRequest,
-      // Effect.andThen((c) =>
-      //   Effect.provideService(handleRequest, RequestInput, c),
-      // ),
+    handleRequest.pipe(
+      Effect.provideServiceEffect(
+        RequestInput,
+        parseAndValidateRequest(input, opts, adapter),
+      ),
       Effect.catchTags({
         FetchError: (e) =>
           new UploadThingError({

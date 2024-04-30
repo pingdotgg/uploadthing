@@ -158,7 +158,7 @@ export const parseAndValidateRequest = (
   input: RequestHandlerInput<MiddlewareFnArgs<any, any, any>>,
   opts: RouteHandlerOptions<FileRouter>,
   adapter: string,
-) =>
+): Effect.Effect<RequestInputService, UploadThingError, FetchContext> =>
   Effect.gen(function* () {
     const req = yield* Effect.isEffect(input.req)
       ? input.req
@@ -301,12 +301,6 @@ export const parseAndValidateRequest = (
       hook: null,
       action: null,
     };
-
-    const service: RequestInputService = action
-      ? { ...base, action: action as ActionType }
-      : { ...base, hook: hook as UploadThingHook };
-
-    return Effect.provideService(RequestInput, service);
 
     return action
       ? { ...base, action: action as ActionType }
