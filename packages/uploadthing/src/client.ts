@@ -13,6 +13,7 @@ import {
   exponentialBackoff,
   FetchContext,
   fetchEffUnknown,
+  isObject,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -140,8 +141,7 @@ interface StillWaiting {
 type PollingResponse = Done | StillWaiting;
 
 const isPollingResponse = (input: unknown): input is PollingResponse =>
-  input != null && // @datner: != is not accidental
-  typeof input === "object" &&
+  isObject(input) &&
   "status" in input &&
   typeof input.status === "string" &&
   (input.status === "done"
