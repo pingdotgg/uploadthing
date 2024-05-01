@@ -1,14 +1,18 @@
 /* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
 
 import type { ParseError } from "@effect/schema/ParseResult";
-import * as S from "@effect/schema/Schema";
+import * as Array from "effect/Array";
+import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
+import * as Option from "effect/Option";
+import type * as Predicate from "effect/Predicate";
 
 import type { FetchError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
   FetchContext,
-  fetchEffJson,
+  fetchEffUnknown,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -59,16 +63,17 @@ const uploadFilesInternal = <
   // TODO: Handle these errors instead of letting them bubble
   UploadThingError | RetryError | FetchError | ParseError,
   FetchContext
-> =>
-  Effect.gen(function* () {
-    const reportEventToUT = createUTReporter({
-      endpoint: String(endpoint),
-      package: opts.package,
-      url: resolveMaybeUrlArg(opts.url),
-      headers: opts.headers,
-    });
+> => {
+  // classic service right here
+  const reportEventToUT = createUTReporter({
+    endpoint: String(endpoint),
+    package: opts.package,
+    url: resolveMaybeUrlArg(opts.url),
+    headers: opts.headers,
+  });
 
-    const presigneds = yield* reportEventToUT(
+  return Effect.flatMap(
+    reportEventToUT(
       "upload",
       {
         input: "input" in opts ? opts.input : null,
@@ -78,16 +83,19 @@ const uploadFilesInternal = <
           type: f.type,
         })),
       },
-      PresignedURLResponseSchema,
-    );
-
-    return yield* Effect.forEach(
-      presigneds,
+      PresignedURLResponseSchema, // don't want to break this, you do it
+    ),
+    Effect.forEach(
       (presigned) =>
-        uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
+        uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(
+          String(endpoint),
+          { ...opts, reportEventToUT },
+          presigned,
+        ),
       { concurrency: 6 },
-    );
-  });
+    ),
+  );
+};
 
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
@@ -122,6 +130,28 @@ export const genUploader = <TRouter extends FileRouter>(
     );
 };
 
+interface Done {
+  status: "done";
+  callbackData: unknown;
+}
+interface StillWaiting {
+  status: "still waiting";
+}
+type PollingResponse = Done | StillWaiting;
+
+const isPollingResponse = (input: unknown): input is PollingResponse =>
+  input != null && // @datner: != is not accidental
+  typeof input === "object" &&
+  "status" in input &&
+  typeof input.status === "string" &&
+  (input.status === "done"
+    ? "callbackData" in input
+    : input.status === "still waiting");
+
+const isPollDone: Predicate.Refinement<PollingResponse, Done> = (
+  input,
+): input is Done => input.status === "done";
+
 const uploadFile = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
@@ -136,58 +166,50 @@ const uploadFile = <
   },
   presigned: PresignedURLs[number],
 ) =>
-  Effect.gen(function* () {
-    const file = opts.files.find((f) => f.name === presigned.fileName);
-
-    if (!file) {
-      console.error("No file found for presigned URL", presigned);
-      return yield* new UploadThingError({
-        code: "NOT_FOUND",
-        message: "No file found for presigned URL",
-        cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
-      });
-    }
-
-    opts.onUploadBegin?.({ file: file.name });
-    if ("urls" in presigned) {
-      yield* uploadMultipartWithProgress(file, presigned, opts);
-    } else {
-      yield* uploadPresignedPostWithProgress(file, presigned, opts);
-    }
-
-    const PollingResponse = S.Union(
-      S.Struct({
-        status: S.Literal("done"),
-        callbackData: S.Any as S.Schema<TServerOutput, any>,
-      }),
-      S.Struct({ status: S.Literal("still waiting") }),
-    );
-
-    let serverData: TServerOutput | null = null;
-    if (!opts.skipPolling) {
-      serverData = yield* fetchEffJson(presigned.pollingUrl, PollingResponse, {
+  Array.findFirst(opts.files, (_) => _.name === presigned.fileName).pipe(
+    Effect.tapError(() =>
+      Console.error("No file found for presigned URL", presigned),
+    ),
+    Effect.mapError(
+      () =>
+        new UploadThingError({
+          code: "NOT_FOUND",
+          message: "No file found for presigned URL",
+          cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
+        }),
+    ),
+    Effect.tap((_) => opts.onUploadBegin?.({ file: _.name })),
+    Effect.tap((_) =>
+      "urls" in presigned
+        ? uploadMultipartWithProgress(_, presigned, opts)
+        : uploadPresignedPostWithProgress(_, presigned, opts),
+    ),
+    Effect.zip(
+      fetchEffUnknown(presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }).pipe(
-        Effect.andThen((res) =>
-          res.status === "done"
-            ? Effect.succeed(res.callbackData)
-            : Effect.fail(new RetryError()),
+        Effect.filterOrDieMessage(
+          isPollingResponse,
+          "received a non PollingResponse from the polling endpoint",
         ),
+        Effect.filterOrFail(isPollDone, () => new RetryError()),
+        Effect.map((_) => _.callbackData),
         Effect.retry({
           while: (res) => res instanceof RetryError,
           schedule: exponentialBackoff,
         }),
-      );
-    }
-
-    return {
+        Effect.when(() => !opts.skipPolling),
+        Effect.map(Option.getOrNull),
+        Effect.map(unsafeCoerce<unknown, TServerOutput>),
+      ),
+    ),
+    Effect.map(([file, serverData]) => ({
       name: file.name,
       size: file.size,
       key: presigned.key,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      serverData: serverData as any,
+      serverData,
       url: "https://utfs.io/f/" + presigned.key,
       customId: presigned.customId,
       type: file.type,
-    };
-  });
+    })),
+  );
