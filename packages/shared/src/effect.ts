@@ -57,7 +57,12 @@ export const fetchEffUnknown = (
   /** Schema to be used if the response returned a 2xx  */
   init?: RequestInit,
 ): Effect.Effect<unknown, FetchError, FetchContext> => {
-  const requestUrl = input instanceof Request ? input.url : input.toString();
+  const requestUrl =
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
 
   return fetchEff(input, init).pipe(
     Effect.andThen((res) =>
