@@ -1,5 +1,3 @@
-/* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
-
 import type { ParseError } from "@effect/schema/ParseResult";
 import * as Array from "effect/Array";
 import * as Console from "effect/Console";
@@ -142,8 +140,6 @@ type PollingResponse = Done | StillWaiting;
 
 const isPollingResponse = (input: unknown): input is PollingResponse =>
   isObject(input) &&
-  "status" in input &&
-  typeof input.status === "string" &&
   (input.status === "done"
     ? "callbackData" in input
     : input.status === "still waiting");
@@ -166,7 +162,7 @@ const uploadFile = <
   },
   presigned: PresignedURLs[number],
 ) =>
-  Array.findFirst(opts.files, (_) => _.name === presigned.fileName).pipe(
+  Array.findFirst(opts.files, ({ name }) => name === presigned.fileName).pipe(
     Effect.tapError(() =>
       Console.error("No file found for presigned URL", presigned),
     ),
@@ -178,11 +174,11 @@ const uploadFile = <
           cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
         }),
     ),
-    Effect.tap((_) => opts.onUploadBegin?.({ file: _.name })),
-    Effect.tap((_) =>
+    Effect.tap((file) => opts.onUploadBegin?.({ file: file.name })),
+    Effect.tap((file) =>
       "urls" in presigned
-        ? uploadMultipartWithProgress(_, presigned, opts)
-        : uploadPresignedPostWithProgress(_, presigned, opts),
+        ? uploadMultipartWithProgress(file, presigned, opts)
+        : uploadPresignedPostWithProgress(file, presigned, opts),
     ),
     Effect.zip(
       fetchEffUnknown(presigned.pollingUrl, {
@@ -193,7 +189,7 @@ const uploadFile = <
           "received a non PollingResponse from the polling endpoint",
         ),
         Effect.filterOrFail(isPollDone, () => new RetryError()),
-        Effect.map((_) => _.callbackData),
+        Effect.map(({ callbackData }) => callbackData),
         Effect.retry({
           while: (res) => res instanceof RetryError,
           schedule: exponentialBackoff,
