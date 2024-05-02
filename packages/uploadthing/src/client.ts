@@ -1,5 +1,5 @@
 import type { ParseError } from "@effect/schema/ParseResult";
-import * as Array from "effect/Array";
+import * as Arr from "effect/Array";
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
@@ -155,7 +155,7 @@ const uploadFile = <
   },
   presigned: PresignedURLs[number],
 ) =>
-  Array.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
+  Arr.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
     Effect.tapError(() =>
       Console.error("No file found for presigned URL", presigned),
     ),
