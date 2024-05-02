@@ -157,7 +157,7 @@ const uploadFile = <
   },
   presigned: PresignedURLs[number],
 ) =>
-  Array.findFirst(opts.files, ({ name }) => name === presigned.fileName).pipe(
+  Array.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
     Effect.tapError(() =>
       Console.error("No file found for presigned URL", presigned),
     ),
