@@ -8,7 +8,7 @@ import * as Schedule from "effect/Schedule";
 
 import { FetchError } from "./tagged-errors";
 import type { FetchEsque, Json, ResponseEsque } from "./types";
-import { filterObjectValues } from "./utils";
+import { filterObjectValues, getRequestUrl } from "./utils";
 
 export type FetchContextService = {
   fetch: FetchEsque;
@@ -56,13 +56,6 @@ export const fetchEffJson = <Schema>(
   schema: S.Schema<Schema, any>,
   init?: RequestInit,
 ): Effect.Effect<Schema, FetchError | ParseError, FetchContext> => {
-  const requestUrl =
-    typeof input === "string"
-      ? input
-      : input instanceof URL
-        ? input.toString()
-        : input.url;
-
   return fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
@@ -78,7 +71,7 @@ export const fetchEffJson = <Schema>(
         ? Effect.succeed(json)
         : Effect.fail(
             new FetchError({
-              error: `Request to ${requestUrl} failed with status ${status}`,
+              error: `Request to ${getRequestUrl(input)} failed with status ${status}`,
               data: json as Json,
               input,
             }),
