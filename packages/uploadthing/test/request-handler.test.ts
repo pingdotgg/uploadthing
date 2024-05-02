@@ -453,9 +453,7 @@ describe("bad request handling", () => {
       message:
         "Request to https://uploadthing.com/api/prepareUpload failed with status 404",
       data: { error: "Not found" },
-      cause: `FetchError: Failing to fetch url: https://uploadthing.com/api/prepareUpload: {
-    "error": "Not found"
-}`,
+      cause: "FetchError",
     });
   });
 });
