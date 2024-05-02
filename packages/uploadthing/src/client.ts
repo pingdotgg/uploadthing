@@ -4,7 +4,6 @@ import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
 import * as Option from "effect/Option";
-import type * as Predicate from "effect/Predicate";
 
 import type { FetchError } from "@uploadthing/shared";
 import {
@@ -139,9 +138,8 @@ const isPollingResponse = (input: unknown): input is PollingResponse => {
   return input.status === "still waiting";
 };
 
-const isPollDone: Predicate.Refinement<PollingResponse, Done> = (
-  input,
-): input is Done => input.status === "done";
+const isPollDone = (input: PollingResponse): input is Done =>
+  input.status === "done";
 
 const uploadFile = <
   TRouter extends FileRouter,
