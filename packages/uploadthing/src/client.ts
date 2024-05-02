@@ -129,13 +129,8 @@ export const genUploader = <TRouter extends FileRouter>(
     );
 };
 
-interface Done {
-  status: "done";
-  callbackData: unknown;
-}
-interface StillWaiting {
-  status: "still waiting";
-}
+type Done = { status: "done"; callbackData: unknown };
+type StillWaiting = { status: "still waiting" };
 type PollingResponse = Done | StillWaiting;
 
 const isPollingResponse = (input: unknown): input is PollingResponse => {
