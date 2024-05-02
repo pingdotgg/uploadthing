@@ -6,9 +6,9 @@ import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
 import * as Schedule from "effect/Schedule";
 
-import { FetchError } from "./tagged-errors";
+import { FetchError, getRequestUrl } from "./tagged-errors";
 import type { FetchEsque, Json, ResponseEsque } from "./types";
-import { filterObjectValues, getRequestUrl } from "./utils";
+import { filterObjectValues } from "./utils";
 
 export type FetchContextService = {
   fetch: FetchEsque;

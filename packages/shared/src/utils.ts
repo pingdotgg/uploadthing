@@ -291,13 +291,3 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
     ? maybeUrl
     : Effect.runSync(getFullApiUrl(maybeUrl));
 };
-
-/**
- * @internal
- */
-export const getRequestUrl = (input: RequestInfo | URL) => {
-  if (input instanceof Request) {
-    return input.url;
-  }
-  return input.toString();
-};

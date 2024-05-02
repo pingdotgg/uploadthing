@@ -1,7 +1,5 @@
 import { TaggedError } from "effect/Data";
 
-import { getRequestUrl } from "./utils";
-
 export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
   reason: string;
 }> {
@@ -49,6 +47,16 @@ export class InvalidURLError extends TaggedError("InvalidURL")<{
 }
 
 export class RetryError extends TaggedError("RetryError") {}
+
+/**
+ * @internal
+ */
+export const getRequestUrl = (input: RequestInfo | URL) => {
+  if (input instanceof Request) {
+    return input.url;
+  }
+  return input.toString();
+};
 
 export class FetchError<T = unknown> extends TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
