@@ -138,11 +138,11 @@ interface StillWaiting {
 }
 type PollingResponse = Done | StillWaiting;
 
-const isPollingResponse = (input: unknown): input is PollingResponse =>
-  isObject(input) &&
-  (input.status === "done"
-    ? "callbackData" in input
-    : input.status === "still waiting");
+const isPollingResponse = (input: unknown): input is PollingResponse => {
+  if (!isObject(input)) return false;
+  if (input.status === "done") return "callbackData" in input;
+  return input.status === "still waiting";
+};
 
 const isPollDone: Predicate.Refinement<PollingResponse, Done> = (
   input,
