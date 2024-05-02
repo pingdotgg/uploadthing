@@ -62,6 +62,4 @@ export class FetchError<T = unknown> extends TaggedError("FetchError")<{
   readonly input: RequestInfo | URL;
   readonly error: unknown;
   readonly data?: T;
-}> {
-  message = `Failing to fetch url: ${getRequestUrl(this.input)}: ${JSON.stringify(this.data, null, 4)}`;
-}
+}> {}
