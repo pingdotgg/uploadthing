@@ -50,6 +50,45 @@ export const fetchEff = (
     }),
   );
 
+// TODO: rename the other one to fetchEffJsonSchema and this to fetchEffJson
+// though generally I would avoid XandY kind utils in favor of composition
+export const fetchEffUnknown = (
+  input: RequestInfo | URL,
+  /** Schema to be used if the response returned a 2xx  */
+  init?: RequestInit,
+): Effect.Effect<unknown, FetchError, FetchContext> => {
+  const requestUrl =
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+
+  return fetchEff(input, init).pipe(
+    Effect.andThen((res) =>
+      Effect.tryPromise({
+        try: async () => {
+          const json = await res.json();
+          return { json, ok: res.ok, status: res.status };
+        },
+        catch: (error) => new FetchError({ error, input }),
+      }),
+    ),
+    Effect.filterOrFail(
+      ({ ok }) => ok,
+      ({ json, status }) =>
+        new FetchError({
+          error: `Request to ${requestUrl} failed with status ${status}`,
+          data: json as Json,
+          input,
+        }),
+    ),
+    Effect.withSpan("fetchRawJson", {
+      attributes: { input: JSON.stringify(input) },
+    }),
+  );
+};
+
 export const fetchEffJson = <Schema>(
   input: RequestInfo | URL,
   /** Schema to be used if the response returned a 2xx  */
@@ -66,17 +105,16 @@ export const fetchEffJson = <Schema>(
         catch: (error) => new FetchError({ error, input }),
       }),
     ),
-    Effect.andThen(({ ok, json, status }) =>
-      ok
-        ? Effect.succeed(json)
-        : Effect.fail(
-            new FetchError({
-              error: `Request to ${getRequestUrl(input)} failed with status ${status}`,
-              data: json as Json,
-              input,
-            }),
-          ),
+    Effect.filterOrFail(
+      ({ ok }) => ok,
+      ({ json, status }) =>
+        new FetchError({
+          error: `Request to ${getRequestUrl(input)} failed with status ${status}`,
+          data: json as Json,
+          input,
+        }),
     ),
+    Effect.map(({ json }) => json),
     Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {
       attributes: { input: JSON.stringify(input) },
