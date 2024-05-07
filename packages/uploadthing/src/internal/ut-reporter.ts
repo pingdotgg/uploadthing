@@ -1,7 +1,7 @@
 import type * as S from "@effect/schema/Schema";
-import { Effect } from "effect";
+import * as Effect from "effect/Effect";
 
-import type { FetchContextTag, MaybePromise } from "@uploadthing/shared";
+import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
@@ -32,7 +32,7 @@ export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
   responseSchema: S.Schema<UTEvents[TEvent]["out"]>,
-) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContextTag>;
+) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
@@ -46,7 +46,7 @@ export const createUTReporter =
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   }): UTReporter =>
   (type, payload, responseSchema) =>
-    Effect.gen(function* ($) {
+    Effect.gen(function* () {
       const url = createAPIRequestUrl({
         url: cfg.url,
         slug: cfg.endpoint,
@@ -55,22 +55,19 @@ export const createUTReporter =
       let headers =
         typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
       if (headers instanceof Promise) {
-        headers = yield* $(
-          Effect.promise(() => headers as Promise<HeadersInit>),
-        );
+        headers = yield* Effect.promise(() => headers as Promise<HeadersInit>);
       }
 
-      const response = yield* $(
-        fetchEffJson(url, responseSchema, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: {
-            "Content-Type": "application/json",
-            "x-uploadthing-package": cfg.package,
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-            ...headers,
-          },
-        }),
+      const response = yield* fetchEffJson(url, responseSchema, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-package": cfg.package,
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+          ...headers,
+        },
+      }).pipe(
         Effect.catchTag("FetchError", (e) =>
           Effect.fail(
             new UploadThingError({
@@ -97,20 +94,16 @@ export const createUTReporter =
           const p = payload as UTEvents["failure"]["in"];
           const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
           if (parsed?.message) {
-            return yield* $(
-              new UploadThingError({
-                code: parsed.code,
-                message: parsed.message,
-              }),
-            );
+            return yield* new UploadThingError({
+              code: parsed.code,
+              message: parsed.message,
+            });
           } else {
-            return yield* $(
-              new UploadThingError({
-                code: "UPLOAD_FAILED",
-                message: `Failed to upload file ${p.fileName} to S3`,
-                cause: p.storageProviderError,
-              }),
-            );
+            return yield* new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: `Failed to upload file ${p.fileName} to S3`,
+              cause: p.storageProviderError,
+            });
           }
         }
       }

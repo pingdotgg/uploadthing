@@ -1,4 +1,4 @@
-import { Effect, Unify } from "effect";
+import * as Effect from "effect/Effect";
 import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
@@ -46,86 +46,82 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
  * ```
  */
 
-export const fillInputRouteConfig = Unify.unify(
-  (
-    routeConfig: FileRouterInputConfig,
-  ): Effect.Effect<ExpandedRouteConfig, InvalidRouteConfigError> => {
-    // If array, apply defaults
-    if (isRouteArray(routeConfig)) {
-      return Effect.succeed(
-        routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
-          acc[fileType] = {
-            // Apply defaults
-            maxFileSize: getDefaultSizeForType(fileType),
-            maxFileCount: 1,
-            minFileCount: 1,
-            contentDisposition: "inline" as const,
-          };
-          return acc;
-        }, {}),
-      );
+export const fillInputRouteConfig = (
+  routeConfig: FileRouterInputConfig,
+): Effect.Effect<ExpandedRouteConfig, InvalidRouteConfigError> => {
+  // If array, apply defaults
+  if (isRouteArray(routeConfig)) {
+    return Effect.succeed(
+      routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
+        acc[fileType] = {
+          // Apply defaults
+          maxFileSize: getDefaultSizeForType(fileType),
+          maxFileCount: 1,
+          minFileCount: 1,
+          contentDisposition: "inline" as const,
+        };
+        return acc;
+      }, {}),
+    );
+  }
+
+  // Backfill defaults onto config
+  const newConfig: ExpandedRouteConfig = {};
+  for (const key of objectKeys(routeConfig)) {
+    const value = routeConfig[key];
+    if (!value) return Effect.fail(new InvalidRouteConfigError(key));
+
+    const defaultValues = {
+      maxFileSize: getDefaultSizeForType(key),
+      maxFileCount: 1,
+      minFileCount: 1,
+      contentDisposition: "inline" as const,
+    };
+
+    newConfig[key] = { ...defaultValues, ...value };
+  }
+
+  return Effect.succeed(newConfig);
+};
+
+export const getTypeFromFileName = (
+  fileName: string,
+  allowedTypes: FileRouterInputKey[],
+): Effect.Effect<
+  FileRouterInputKey,
+  UnknownFileTypeError | InvalidFileTypeError
+> => {
+  const mimeType = lookup(fileName);
+  if (!mimeType) {
+    if (allowedTypes.includes("blob")) return Effect.succeed("blob");
+    return Effect.fail(new UnknownFileTypeError(fileName));
+  }
+
+  // If the user has specified a specific mime type, use that
+  if (allowedTypes.some((type) => type.includes("/"))) {
+    if (allowedTypes.includes(mimeType)) {
+      return Effect.succeed(mimeType);
     }
+  }
 
-    // Backfill defaults onto config
-    const newConfig: ExpandedRouteConfig = {};
-    for (const key of objectKeys(routeConfig)) {
-      const value = routeConfig[key];
-      if (!value) return Effect.fail(new InvalidRouteConfigError(key));
+  // Otherwise, we have a "magic" type eg. "image" or "video"
+  const type = (
+    mimeType.toLowerCase() === "application/pdf"
+      ? "pdf"
+      : mimeType.split("/")[0]
+  ) as AllowedFileType;
 
-      const defaultValues = {
-        maxFileSize: getDefaultSizeForType(key),
-        maxFileCount: 1,
-        minFileCount: 1,
-        contentDisposition: "inline" as const,
-      };
-
-      newConfig[key] = { ...defaultValues, ...value };
+  if (!allowedTypes.includes(type)) {
+    // Blob is a catch-all for any file type not explicitly supported
+    if (allowedTypes.includes("blob")) {
+      return Effect.succeed("blob");
+    } else {
+      return Effect.fail(new InvalidFileTypeError(type, fileName));
     }
+  }
 
-    return Effect.succeed(newConfig);
-  },
-);
-
-export const getTypeFromFileName = Unify.unify(
-  (
-    fileName: string,
-    allowedTypes: FileRouterInputKey[],
-  ): Effect.Effect<
-    FileRouterInputKey,
-    UnknownFileTypeError | InvalidFileTypeError
-  > => {
-    const mimeType = lookup(fileName);
-    if (!mimeType) {
-      if (allowedTypes.includes("blob")) return Effect.succeed("blob");
-      return Effect.fail(new UnknownFileTypeError(fileName));
-    }
-
-    // If the user has specified a specific mime type, use that
-    if (allowedTypes.some((type) => type.includes("/"))) {
-      if (allowedTypes.includes(mimeType)) {
-        return Effect.succeed(mimeType);
-      }
-    }
-
-    // Otherwise, we have a "magic" type eg. "image" or "video"
-    const type = (
-      mimeType.toLowerCase() === "application/pdf"
-        ? "pdf"
-        : mimeType.split("/")[0]
-    ) as AllowedFileType;
-
-    if (!allowedTypes.includes(type)) {
-      // Blob is a catch-all for any file type not explicitly supported
-      if (allowedTypes.includes("blob")) {
-        return Effect.succeed("blob");
-      } else {
-        return Effect.fail(new InvalidFileTypeError(type, fileName));
-      }
-    }
-
-    return Effect.succeed(type);
-  },
-);
+  return Effect.succeed(type);
+};
 
 export function generateUploadThingURL(path: `/${string}`) {
   let host = "https://uploadthing.com";
@@ -137,25 +133,25 @@ export function generateUploadThingURL(path: `/${string}`) {
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
-export const fileSizeToBytes = Unify.unify(
-  (fileSize: FileSize): Effect.Effect<number, InvalidFileSizeError> => {
-    const regex = new RegExp(
-      `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
-      "i",
-    );
+export const fileSizeToBytes = (
+  fileSize: FileSize,
+): Effect.Effect<number, InvalidFileSizeError> => {
+  const regex = new RegExp(
+    `^(\\d+)(\\.\\d+)?\\s*(${FILESIZE_UNITS.join("|")})$`,
+    "i",
+  );
 
-    // make sure the string is in the format of 123KB
-    const match = fileSize.match(regex);
-    if (!match) {
-      return Effect.fail(new InvalidFileSizeError(fileSize));
-    }
+  // make sure the string is in the format of 123KB
+  const match = fileSize.match(regex);
+  if (!match) {
+    return Effect.fail(new InvalidFileSizeError(fileSize));
+  }
 
-    const sizeValue = parseFloat(match[1]);
-    const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
-    const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
-    return Effect.succeed(Math.floor(bytes));
-  },
-);
+  const sizeValue = parseFloat(match[1]);
+  const sizeUnit = match[3].toUpperCase() as FileSizeUnit;
+  const bytes = sizeValue * Math.pow(1024, FILESIZE_UNITS.indexOf(sizeUnit));
+  return Effect.succeed(Math.floor(bytes));
+};
 
 export const bytesToFileSize = (bytes: number) => {
   if (bytes === 0 || bytes === -1) {
@@ -266,19 +262,17 @@ export function semverLite(required: string, toCheck: string) {
 export const getFullApiUrl = (
   maybeUrl?: string,
 ): Effect.Effect<URL, InvalidURLError> =>
-  Effect.gen(function* ($) {
+  Effect.gen(function* () {
     const base = (() => {
       if (typeof window !== "undefined") return window.location.origin;
       if (process.env?.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
       return "http://localhost:3000";
     })();
 
-    const url = yield* $(
-      Effect.try({
-        try: () => new URL(maybeUrl ?? "/api/uploadthing", base),
-        catch: () => new InvalidURLError(maybeUrl ?? "/api/uploadthing"),
-      }),
-    );
+    const url = yield* Effect.try({
+      try: () => new URL(maybeUrl ?? "/api/uploadthing", base),
+      catch: () => new InvalidURLError(maybeUrl ?? "/api/uploadthing"),
+    });
 
     if (url.pathname === "/") {
       url.pathname = "/api/uploadthing";

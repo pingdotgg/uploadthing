@@ -1,12 +1,16 @@
 import type { ParseError } from "@effect/schema/ParseResult";
 import * as S from "@effect/schema/Schema";
-import { Context, Duration, Effect, pipe, Schedule } from "effect";
+import * as Context from "effect/Context";
+import * as Duration from "effect/Duration";
+import * as Effect from "effect/Effect";
+import { pipe } from "effect/Function";
+import * as Schedule from "effect/Schedule";
 
-import { FetchError } from "./tagged-errors";
-import type { FetchEsque, ResponseEsque } from "./types";
+import { FetchError, getRequestUrl } from "./tagged-errors";
+import type { FetchEsque, Json, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
-export type FetchContextTag = {
+export type FetchContextService = {
   fetch: FetchEsque;
   baseHeaders: Record<string, string | undefined> & {
     "x-uploadthing-version": string;
@@ -15,8 +19,10 @@ export type FetchContextTag = {
     "x-uploadthing-be-adapter": string | undefined;
   };
 };
-export const fetchContext =
-  Context.GenericTag<FetchContextTag>("fetch-context");
+export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
+  FetchContext,
+  FetchContextService
+>() {}
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
@@ -24,8 +30,8 @@ export const fetchContext =
 export const fetchEff = (
   input: RequestInfo | URL,
   init?: RequestInit,
-): Effect.Effect<ResponseEsque, FetchError, FetchContextTag> =>
-  fetchContext.pipe(
+): Effect.Effect<ResponseEsque, FetchError, FetchContext> =>
+  FetchContext.pipe(
     Effect.andThen(({ fetch, baseHeaders }) =>
       Effect.tryPromise({
         try: () =>
@@ -44,23 +50,77 @@ export const fetchEff = (
     }),
   );
 
-export const fetchEffJson = <Schema>(
+// TODO: rename the other one to fetchEffJsonSchema and this to fetchEffJson
+// though generally I would avoid XandY kind utils in favor of composition
+export const fetchEffUnknown = (
   input: RequestInfo | URL,
-  schema: S.Schema<Schema, any>,
+  /** Schema to be used if the response returned a 2xx  */
   init?: RequestInit,
-): Effect.Effect<Schema, FetchError | ParseError, FetchContextTag> =>
-  fetchEff(input, init).pipe(
+): Effect.Effect<unknown, FetchError, FetchContext> => {
+  const requestUrl =
+    typeof input === "string"
+      ? input
+      : input instanceof URL
+        ? input.toString()
+        : input.url;
+
+  return fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
-        try: () => res.json(),
+        try: async () => {
+          const json = await res.json();
+          return { json, ok: res.ok, status: res.status };
+        },
         catch: (error) => new FetchError({ error, input }),
       }),
     ),
+    Effect.filterOrFail(
+      ({ ok }) => ok,
+      ({ json, status }) =>
+        new FetchError({
+          error: `Request to ${requestUrl} failed with status ${status}`,
+          data: json as Json,
+          input,
+        }),
+    ),
+    Effect.withSpan("fetchRawJson", {
+      attributes: { input: JSON.stringify(input) },
+    }),
+  );
+};
+
+export const fetchEffJson = <Schema>(
+  input: RequestInfo | URL,
+  /** Schema to be used if the response returned a 2xx  */
+  schema: S.Schema<Schema, any>,
+  init?: RequestInit,
+): Effect.Effect<Schema, FetchError | ParseError, FetchContext> => {
+  return fetchEff(input, init).pipe(
+    Effect.andThen((res) =>
+      Effect.tryPromise({
+        try: async () => {
+          const json = await res.json();
+          return { ok: res.ok, json, status: res.status };
+        },
+        catch: (error) => new FetchError({ error, input }),
+      }),
+    ),
+    Effect.filterOrFail(
+      ({ ok }) => ok,
+      ({ json, status }) =>
+        new FetchError({
+          error: `Request to ${getRequestUrl(input)} failed with status ${status}`,
+          data: json as Json,
+          input,
+        }),
+    ),
+    Effect.map(({ json }) => json),
     Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {
       attributes: { input: JSON.stringify(input) },
     }),
   );
+};
 
 export const parseRequestJson = <Schema>(
   reqOrRes: Request | ResponseEsque,

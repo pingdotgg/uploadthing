@@ -1,5 +1,5 @@
 import * as S from "@effect/schema/Schema";
-import { Effect } from "effect";
+import * as Effect from "effect/Effect";
 
 import {
   contentDisposition,
@@ -13,46 +13,43 @@ import {
 import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import { logger } from "./logger";
 import { FailureCallbackResponseSchema } from "./shared-schemas";
 import type { MPUResponse } from "./types";
 
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
-  Effect.gen(function* ($) {
-    logger.debug(
+  Effect.gen(function* () {
+    yield* Effect.logDebug(
       `Uploading file ${file.name} with ${presigned.urls.length} chunks of size ${presigned.chunkSize} bytes each`,
     );
 
-    const etags = yield* $(
-      Effect.forEach(
-        presigned.urls,
-        (url, index) => {
-          const offset = presigned.chunkSize * index;
-          const end = Math.min(offset + presigned.chunkSize, file.size);
-          const chunk = file.slice(offset, end);
+    const etags = yield* Effect.forEach(
+      presigned.urls,
+      (url, index) => {
+        const offset = presigned.chunkSize * index;
+        const end = Math.min(offset + presigned.chunkSize, file.size);
+        const chunk = file.slice(offset, end);
 
-          return uploadPart({
-            url,
-            chunk: chunk as Blob,
-            contentDisposition: presigned.contentDisposition,
-            contentType: file.type,
-            fileName: file.name,
-            maxRetries: 10,
-            key: presigned.key,
-            uploadId: presigned.uploadId,
-          }).pipe(
-            Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
-            Effect.catchTag("RetryError", (e) => Effect.die(e)),
-          );
-        },
-        { concurrency: "inherit" },
-      ),
+        return uploadPart({
+          url,
+          chunk: chunk as Blob,
+          contentDisposition: presigned.contentDisposition,
+          contentType: file.type,
+          fileName: file.name,
+          maxRetries: 10,
+          key: presigned.key,
+          uploadId: presigned.uploadId,
+        }).pipe(
+          Effect.andThen((etag) => ({ tag: etag, partNumber: index + 1 })),
+          Effect.catchTag("RetryError", (e) => Effect.die(e)),
+        );
+      },
+      { concurrency: "inherit" },
     );
 
-    logger.debug("File", file.name, "uploaded successfully.");
-    logger.debug("Completing multipart upload...");
-    yield* $(completeMultipartUpload(presigned, etags));
-    logger.debug("Multipart upload complete.");
+    yield* Effect.logDebug("File", file.name, "uploaded successfully.");
+    yield* Effect.logDebug("Completing multipart upload...");
+    yield* completeMultipartUpload(presigned, etags);
+    yield* Effect.logDebug("Multipart upload complete.");
   });
 
 /**

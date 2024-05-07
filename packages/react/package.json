@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.5.0",
+  "version": "6.5.1",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -111,8 +111,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/react",
-            "@uploadthing/react/*"
+            {
+              "group": [
+                "@uploadthing/react",
+                "@uploadthing/react/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

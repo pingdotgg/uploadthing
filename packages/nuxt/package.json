@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/nuxt",
-  "version": "6.5.1",
+  "version": "6.5.2",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -51,7 +51,27 @@
       "@uploadthing/eslint-config/base"
     ],
     "rules": {
-      "@typescript-eslint/no-unused-vars": "off"
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "@uploadthing/nuxt",
+                "@uploadthing/nuxt/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
+          ]
+        }
+      ]
     }
   }
 }

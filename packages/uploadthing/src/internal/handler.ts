@@ -1,9 +1,8 @@
 import * as S from "@effect/schema/Schema";
-import { Effect, Layer } from "effect";
-import { isDevelopment } from "std-env";
+import * as Effect from "effect/Effect";
 
 import {
-  fetchContext,
+  FetchContext,
   fetchEffJson,
   fillInputRouteConfig,
   generateUploadThingURL,
@@ -15,7 +14,7 @@ import {
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
-import { logger } from "./logger";
+import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import {
   abortMultipartUpload,
   completeMultipartUpload,
@@ -30,21 +29,23 @@ import {
   UploadActionPayload,
   UploadedFileDataSchema,
 } from "./shared-schemas";
-import { UTFiles } from "./types";
 import type {
-  AnyUploader,
   FileRouter,
   MiddlewareFnArgs,
   RequestHandler,
   RequestHandlerInput,
+  RequestHandlerOutput,
+  RequestHandlerSuccess,
   RouteHandlerConfig,
   RouteHandlerOptions,
   UTEvents,
   ValidMiddlewareObject,
 } from "./types";
+import { UTFiles } from "./types";
 import {
   assertFilesMeetConfig,
   parseAndValidateRequest,
+  RequestInput,
 } from "./validate-request-input";
 
 /**
@@ -56,29 +57,43 @@ export const runRequestHandlerAsync = <
   handler: RequestHandler<TArgs>,
   args: RequestHandlerInput<TArgs>,
   config?: RouteHandlerConfig | undefined,
-) => {
-  const layer = Layer.succeed(fetchContext, {
-    fetch: config?.fetch ?? globalThis.fetch,
-    baseHeaders: {
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-      // These are filled in later in `parseAndValidateRequest`
-      "x-uploadthing-api-key": undefined,
-      "x-uploadthing-be-adapter": undefined,
-      "x-uploadthing-fe-package": undefined,
-    },
-  });
-
-  return handler(args).pipe(
-    Effect.provide(layer),
-    Effect.andThen((data) => {
-      if ("status" in data && data.status !== 200) {
-        return Effect.fail(new UploadThingError("An unknown error occured"));
-      }
-      return Effect.succeed(data);
+) =>
+  handler(args).pipe(
+    withMinimalLogLevel(config?.logLevel),
+    Effect.provide(ConsolaLogger),
+    Effect.provideService(FetchContext, {
+      fetch: config?.fetch ?? globalThis.fetch,
+      baseHeaders: {
+        "x-uploadthing-version": UPLOADTHING_VERSION,
+        // These are filled in later in `parseAndValidateRequest`
+        "x-uploadthing-api-key": undefined,
+        "x-uploadthing-be-adapter": undefined,
+        "x-uploadthing-fe-package": undefined,
+      },
     }),
+    asHandlerOutput,
     Effect.runPromise,
   );
-};
+
+const asHandlerOutput = <R>(
+  effect: Effect.Effect<RequestHandlerSuccess, UploadThingError, R>,
+): Effect.Effect<RequestHandlerOutput, never, R> =>
+  Effect.catchAll(effect, (error) => Effect.succeed({ success: false, error }));
+
+const handleRequest = RequestInput.pipe(
+  Effect.andThen(({ action, hook }) => {
+    if (hook === "callback") return handleCallbackRequest;
+    switch (action) {
+      case "upload":
+        return handleUploadAction;
+      case "multipart-complete":
+        return handleMultipartCompleteAction;
+      case "failure":
+        return handleMultipartFailureAction;
+    }
+  }),
+  Effect.map((output): RequestHandlerSuccess => ({ success: true, ...output })),
+);
 
 export const buildRequestHandler =
   <TRouter extends FileRouter, Args extends MiddlewareFnArgs<any, any, any>>(
@@ -86,434 +101,359 @@ export const buildRequestHandler =
     adapter: string,
   ): RequestHandler<Args> =>
   (input) =>
-    Effect.gen(function* ($) {
-      const request =
-        input.req instanceof Request ? input.req : yield* $(input.req);
-      const { apiKey, slug, uploadable, hook, action } = yield* $(
-        parseAndValidateRequest({ req: request, opts, adapter }),
-      );
-
-      const { isDev = isDevelopment } = opts.config ?? {};
-      if (isDev) {
-        logger.info("UploadThing dev server is now running!");
-      }
-
-      if (hook === "callback") {
-        // This is when we receive the webhook from uploadthing
-        return yield* $(
-          handleCallbackRequest({
-            req: request,
-            uploadable,
-            apiKey,
-          }),
-        );
-      }
-
-      switch (action) {
-        case "upload": {
-          return yield* $(
-            handleUploadAction({
-              req: request,
-              middlewareArgs: input.middlewareArgs,
-              uploadable,
-              apiKey,
-              config: opts.config,
-              isDev,
-              slug,
-            }),
-          );
-        }
-        case "multipart-complete": {
-          return yield* $(
-            handleMultipartCompleteAction({
-              req: request,
-            }),
-          );
-        }
-        case "failure": {
-          return yield* $(
-            handleMultipartFailureAction({
-              req: request,
-              uploadable,
-            }),
-          );
-        }
-      }
-    }).pipe(
+    handleRequest.pipe(
+      Effect.provideServiceEffect(
+        RequestInput,
+        parseAndValidateRequest(input, opts, adapter),
+      ),
       Effect.catchTags({
-        FetchError: (err) => {
-          logger.error("An error occurred while fetching", err);
-          return Effect.die(err);
-        },
-        ParseError: (err) => {
-          logger.error("An error occurred while parsing input/output", err);
-          return Effect.die(err);
-        },
-      }),
-      // By here we either have a successful result or an UploadThingError defect, return either
-      Effect.match({
-        onSuccess: (x) => x,
-        onFailure: (e) => e,
-      }),
-    );
-
-const handleCallbackRequest = (opts: {
-  req: Request;
-  uploadable: AnyUploader;
-  apiKey: string;
-}) =>
-  Effect.gen(function* ($) {
-    const verified = yield* $(
-      Effect.tryPromise({
-        try: async () =>
-          verifySignature(
-            await opts.req.clone().text(),
-            opts.req.headers.get("x-uploadthing-signature"),
-            opts.apiKey,
-          ),
-        catch: () =>
+        FetchError: (e) =>
           new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid signature",
+            code: "INTERNAL_SERVER_ERROR",
+            message: typeof e.error === "string" ? e.error : e.message,
+            cause: e,
+            data: e.data as never,
+          }),
+        ParseError: (e) =>
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing input/output",
+            cause: e,
           }),
       }),
+      Effect.tapError((e) => Effect.logError(e.message)),
     );
-    logger.debug("Signature verified:", verified);
-    if (!verified) {
-      logger.error("Invalid signature");
-      return new UploadThingError({
+
+const handleCallbackRequest = Effect.gen(function* () {
+  const { req, uploadable, apiKey } = yield* RequestInput;
+  const verified = yield* Effect.tryPromise({
+    try: async () =>
+      verifySignature(
+        await req.clone().text(),
+        req.headers.get("x-uploadthing-signature"),
+        apiKey,
+      ),
+    catch: () =>
+      new UploadThingError({
         code: "BAD_REQUEST",
         message: "Invalid signature",
-      });
-    }
-
-    const requestInput = yield* $(
-      parseRequestJson(
-        opts.req,
-        S.Struct({
-          status: S.String,
-          file: UploadedFileDataSchema,
-          metadata: S.Record(S.String, S.Unknown),
-        }),
-      ),
-    );
-    logger.debug("Handling callback request with input:", requestInput);
-
-    const serverData = yield* $(
-      Effect.tryPromise({
-        try: async () =>
-          opts.uploadable.resolver({
-            file: requestInput.file,
-            metadata: requestInput.metadata,
-          }) as Promise<unknown>,
-        catch: (error) => {
-          logger.error(
-            "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
-            error,
-          );
-          return new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run onUploadComplete",
-            cause: error,
-          });
-        },
       }),
-    );
-    const payload = {
-      fileKey: requestInput.file.key,
-      callbackData: serverData ?? null,
-    };
-    logger.debug(
-      "'onUploadComplete' callback finished. Sending response to UploadThing:",
-      payload,
-    );
-
-    yield* $(
-      fetchEffJson(
-        generateUploadThingURL("/api/serverCallback"),
-        ServerCallbackPostResponseSchema,
-        {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: { "Content-Type": "application/json" },
-        },
-      ),
-    );
-    return { status: 200, body: null };
   });
+  yield* Effect.logDebug("Signature verified:", verified);
+  if (!verified) {
+    yield* Effect.logError("Invalid signature");
+    return yield* new UploadThingError({
+      code: "BAD_REQUEST",
+      message: "Invalid signature",
+    });
+  }
 
-const runRouteMiddleware = (opts: {
-  uploadable: AnyUploader;
-  middlewareArgs: MiddlewareFnArgs<any, any, any>;
-  routeInput: S.Schema.Type<typeof UploadActionPayload>["input"];
-  files: S.Schema.Type<typeof UploadActionPayload>["files"];
-}) =>
-  Effect.gen(function* ($) {
-    const { files } = opts;
+  const requestInput = yield* parseRequestJson(
+    req,
+    S.Struct({
+      status: S.String,
+      file: UploadedFileDataSchema,
+      metadata: S.Record(S.String, S.Unknown),
+    }),
+  );
+  yield* Effect.logDebug("Handling callback request with input:", requestInput);
 
-    logger.debug("Running middleware");
-    const metadata: ValidMiddlewareObject = yield* $(
-      Effect.tryPromise({
-        try: async () =>
-          opts.uploadable._def.middleware({
-            ...opts.middlewareArgs,
-            input: opts.routeInput,
-            files: files,
-          }),
-        catch: (error) => {
-          logger.error("An error occured in your middleware function", error);
-          if (error instanceof UploadThingError) return error;
-          return new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run middleware",
-            cause: error,
-          });
-        },
+  const serverData = yield* Effect.tryPromise({
+    try: async () =>
+      uploadable.resolver({
+        file: requestInput.file,
+        metadata: requestInput.metadata,
+      }) as Promise<unknown>,
+    catch: (error) =>
+      new UploadThingError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to run onUploadComplete",
+        cause: error,
       }),
+  }).pipe(
+    Effect.tapError((error) =>
+      Effect.logError(
+        "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
+        error,
+      ),
+    ),
+  );
+  const payload = {
+    fileKey: requestInput.file.key,
+    callbackData: serverData ?? null,
+  };
+  yield* Effect.logDebug(
+    "'onUploadComplete' callback finished. Sending response to UploadThing:",
+    payload,
+  );
+
+  yield* fetchEffJson(
+    generateUploadThingURL("/api/serverCallback"),
+    ServerCallbackPostResponseSchema,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+  return { body: null };
+});
+
+const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
+  Effect.gen(function* () {
+    const { uploadable, middlewareArgs } = yield* RequestInput;
+    const { files, input } = opts;
+
+    yield* Effect.logDebug("Running middleware");
+    const metadata: ValidMiddlewareObject = yield* Effect.tryPromise({
+      try: async () =>
+        uploadable._def.middleware({ ...middlewareArgs, input, files }),
+      catch: (error) =>
+        error instanceof UploadThingError
+          ? error
+          : new UploadThingError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Failed to run middleware",
+              cause: error,
+            }),
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.logError("An error occured in your middleware function", error),
+      ),
     );
 
     if (metadata[UTFiles] && metadata[UTFiles].length !== files.length) {
       const msg = `Expected files override to have the same length as original files, got ${metadata[UTFiles].length} but expected ${files.length}`;
-      logger.error(msg);
-      return yield* $(
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Files override must have the same length as files",
-            cause: msg,
-          }),
-        ),
-      );
+      yield* Effect.logError(msg);
+      return yield* new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Files override must have the same length as files",
+        cause: msg,
+      });
     }
 
     // Attach customIds from middleware to the files
-    const filesWithCustomIds = files.map((file, idx) => {
-      const theirs = metadata[UTFiles]?.[idx];
-      if (theirs && theirs.size !== file.size) {
-        logger.warn("File size mismatch. Reverting to original size");
-      }
-      return {
-        name: theirs?.name ?? file.name,
-        size: file.size,
-        customId: theirs?.customId,
-      };
-    });
+    const filesWithCustomIds = yield* Effect.forEach(files, (file, idx) =>
+      Effect.gen(function* () {
+        const theirs = metadata[UTFiles]?.[idx];
+        if (theirs && theirs.size !== file.size) {
+          yield* Effect.logWarning(
+            "File size mismatch. Reverting to original size",
+          );
+        }
+        return {
+          name: theirs?.name ?? file.name,
+          size: file.size,
+          customId: theirs?.customId,
+        };
+      }),
+    );
 
     return { metadata, filesWithCustomIds };
   });
 
-const handleUploadAction = (opts: {
-  req: Request;
-  uploadable: AnyUploader;
-  middlewareArgs: MiddlewareFnArgs<any, any, any>;
-  config: RouteHandlerConfig | undefined;
-  apiKey: string;
-  isDev: boolean;
-  slug: string;
-}) =>
-  Effect.gen(function* ($) {
-    const { files, input } = yield* $(
-      parseRequestJson(opts.req, UploadActionPayload),
-    );
-    logger.debug("Handling upload request with input:", { files, input });
+const handleUploadAction = Effect.gen(function* () {
+  const opts = yield* RequestInput;
+  const { files, input } = yield* parseRequestJson(
+    opts.req,
+    UploadActionPayload,
+  );
+  yield* Effect.logDebug("Handling upload request with input:", {
+    files,
+    input,
+  });
 
-    // validate the input
-    logger.debug("Parsing user input");
-    const inputParser = opts.uploadable._def.inputParser;
-    const parsedInput = yield* $(
-      Effect.tryPromise({
-        try: async () => getParseFn(inputParser)(input),
-        catch: (error) => {
-          logger.error("An error occured trying to parse input", error);
-          return new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid input",
-            cause: error,
-          });
-        },
-      }),
-    );
-    logger.debug("Input parsed successfully", parsedInput);
-
-    const { metadata, filesWithCustomIds } = yield* $(
-      runRouteMiddleware({
-        uploadable: opts.uploadable,
-        middlewareArgs: opts.middlewareArgs,
-        routeInput: parsedInput,
-        files,
-      }),
-    );
-
-    logger.debug("Parsing route config", opts.uploadable._def.routerConfig);
-    const parsedConfig = yield* $(
-      fillInputRouteConfig(opts.uploadable._def.routerConfig),
-      Effect.catchTag("InvalidRouteConfig", (err) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "BAD_REQUEST",
-            message: "Invalid config",
-            cause: err,
-          }),
-        ),
-      ),
-    );
-    logger.debug("Route config parsed successfully", parsedConfig);
-
-    logger.debug("Validating files meet the config requirements", files);
-    const invalidConfigError = (e: { _tag: string; reason: string }) =>
+  // validate the input
+  yield* Effect.logDebug("Parsing user input");
+  const inputParser = opts.uploadable._def.inputParser;
+  const parsedInput = yield* Effect.tryPromise({
+    try: async () => getParseFn(inputParser)(input),
+    catch: (error) =>
       new UploadThingError({
         code: "BAD_REQUEST",
-        message: `Invalid config: ${e._tag}`,
-        cause: e.reason,
+        message: "Invalid input",
+        cause: error,
+      }),
+  }).pipe(
+    Effect.tapError((error) =>
+      Effect.logError("An error occured trying to parse input", error),
+    ),
+  );
+  yield* Effect.logDebug("Input parsed successfully", parsedInput);
+
+  const { metadata, filesWithCustomIds } = yield* runRouteMiddleware({
+    input: parsedInput,
+    files,
+  });
+
+  yield* Effect.logDebug(
+    "Parsing route config",
+    opts.uploadable._def.routerConfig,
+  );
+  const parsedConfig = yield* fillInputRouteConfig(
+    opts.uploadable._def.routerConfig,
+  ).pipe(
+    Effect.catchTag(
+      "InvalidRouteConfig",
+      (err) =>
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid config",
+          cause: err,
+        }),
+    ),
+  );
+  yield* Effect.logDebug("Route config parsed successfully", parsedConfig);
+
+  yield* Effect.logDebug(
+    "Validating files meet the config requirements",
+    files,
+  );
+  yield* assertFilesMeetConfig(files, parsedConfig).pipe(
+    Effect.catchAll(
+      (e) =>
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: `Invalid config: ${e._tag}`,
+          cause: "reason" in e ? e.reason : e.message,
+        }),
+    ),
+  );
+
+  const callbackUrl = yield* resolveCallbackUrl.pipe(
+    Effect.tapError((error) =>
+      Effect.logError("Failed to resolve callback URL", error),
+    ),
+    Effect.catchTag(
+      "InvalidURL",
+      (err) =>
+        new UploadThingError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        }),
+    ),
+  );
+  yield* Effect.logDebug(
+    "Retrieving presigned URLs from UploadThing. Callback URL is:",
+    callbackUrl.href,
+  );
+
+  const presignedUrls = yield* fetchEffJson(
+    generateUploadThingURL("/api/prepareUpload"),
+    PresignedURLResponseSchema,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        files: filesWithCustomIds,
+        routeConfig: parsedConfig,
+        metadata,
+        callbackUrl: callbackUrl.origin + callbackUrl.pathname,
+        callbackSlug: opts.slug,
+      }),
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+
+  yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
+  yield* Effect.logDebug("Sending presigned URLs to client");
+
+  let promise: Promise<unknown> | undefined = undefined;
+  if (opts.isDev) {
+    const fetchContext = yield* FetchContext;
+    promise = Effect.forEach(
+      presignedUrls,
+      (file) => conditionalDevServer(file.key, opts.apiKey),
+      { concurrency: 10 },
+    ).pipe(
+      Effect.provide(ConsolaLogger),
+      Effect.provideService(FetchContext, fetchContext),
+      Effect.runPromise,
+    );
+  }
+
+  return {
+    body: presignedUrls satisfies UTEvents["upload"]["out"],
+    cleanup: promise,
+  };
+});
+
+const handleMultipartCompleteAction = Effect.gen(function* () {
+  const opts = yield* RequestInput;
+  const requestInput = yield* parseRequestJson(
+    opts.req,
+    MultipartCompleteActionPayload,
+  );
+
+  yield* Effect.logDebug(
+    "Handling multipart-complete request with input:",
+    requestInput,
+  );
+  yield* Effect.logDebug(
+    "Notifying UploadThing that multipart upload is complete",
+  );
+
+  const completionResponse = yield* completeMultipartUpload(
+    {
+      key: requestInput.fileKey,
+      uploadId: requestInput.uploadId,
+    },
+    requestInput.etags,
+  );
+  yield* Effect.logDebug("UploadThing responded with:", completionResponse);
+
+  return {
+    body: null satisfies UTEvents["multipart-complete"]["out"],
+  };
+});
+
+const handleMultipartFailureAction = Effect.gen(function* () {
+  const { req, uploadable } = yield* RequestInput;
+  const { fileKey, uploadId } = yield* parseRequestJson(
+    req,
+    FailureActionPayload,
+  );
+  yield* Effect.logDebug("Handling failure request with input:", {
+    fileKey,
+    uploadId,
+  });
+  yield* Effect.logDebug("Notifying UploadThing that upload failed");
+
+  const failureResponse = yield* abortMultipartUpload({
+    key: fileKey,
+    uploadId,
+  });
+  yield* Effect.logDebug("UploadThing responded with:", failureResponse);
+  yield* Effect.logDebug("Running 'onUploadError' callback");
+
+  yield* Effect.try({
+    try: () => {
+      uploadable._def.onUploadError({
+        error: new UploadThingError({
+          code: "UPLOAD_FAILED",
+          message: `Upload failed for ${fileKey}`,
+        }),
+        fileKey,
       });
-    yield* $(
-      assertFilesMeetConfig(files, parsedConfig),
-      Effect.catchTags({
-        FileSizeMismatch: invalidConfigError,
-        FileCountMismatch: invalidConfigError,
-        InvalidRouteConfig: invalidConfigError,
-        InvalidFileSize: invalidConfigError,
-        InvalidFileType: invalidConfigError,
-        UnknownFileType: invalidConfigError,
+    },
+    catch: (error) =>
+      new UploadThingError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to run onUploadError",
+        cause: error,
       }),
-    );
-
-    const callbackUrl = yield* $(
-      resolveCallbackUrl({
-        config: opts.config,
-        req: opts.req,
-        isDev: opts.isDev,
-        logWarning: logger.warn,
-      }),
-      Effect.catchTag("InvalidURL", (err) => {
-        logger.error("Failed to resolve callback URL", err);
-        return Effect.fail(
-          new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: err.message,
-          }),
-        );
-      }),
-    );
-    logger.debug(
-      "Retrieving presigned URLs from UploadThing. Callback URL is:",
-      callbackUrl.href,
-    );
-
-    const presignedUrls = yield* $(
-      fetchEffJson(
-        generateUploadThingURL("/api/prepareUpload"),
-        PresignedURLResponseSchema,
-        {
-          method: "POST",
-          body: JSON.stringify({
-            files: filesWithCustomIds,
-            routeConfig: parsedConfig,
-            metadata,
-            callbackUrl: callbackUrl.origin + callbackUrl.pathname,
-            callbackSlug: opts.slug,
-          }),
-          headers: { "Content-Type": "application/json" },
-        },
+  }).pipe(
+    Effect.tapError((error) =>
+      Effect.logError(
+        "Failed to run onUploadError. You probably shouldn't be throwing errors here.",
+        error,
       ),
-    );
+    ),
+  );
 
-    logger.debug("UploadThing responded with:", presignedUrls);
-    logger.debug("Sending presigned URLs to client");
-
-    let promise: Promise<unknown> | undefined = undefined;
-    if (opts.isDev) {
-      const layer = Layer.succeed(fetchContext, yield* $(fetchContext));
-      promise = Effect.forEach(
-        presignedUrls,
-        (file) => conditionalDevServer(file.key, opts.apiKey),
-        { concurrency: 10 },
-      ).pipe(Effect.provide(layer), Effect.runPromise);
-    }
-
-    return {
-      status: 200,
-      body: presignedUrls satisfies UTEvents["upload"]["out"],
-      cleanup: promise,
-    };
-  });
-
-const handleMultipartCompleteAction = (opts: { req: Request }) =>
-  Effect.gen(function* ($) {
-    const requestInput = yield* $(
-      parseRequestJson(opts.req, MultipartCompleteActionPayload),
-    );
-
-    logger.debug(
-      "Handling multipart-complete request with input:",
-      requestInput,
-    );
-    logger.debug("Notifying UploadThing that multipart upload is complete");
-
-    const completionResponse = yield* $(
-      completeMultipartUpload(
-        {
-          key: requestInput.fileKey,
-          uploadId: requestInput.uploadId,
-        },
-        requestInput.etags,
-      ),
-    );
-    logger.debug("UploadThing responded with:", completionResponse);
-
-    return {
-      status: 200,
-      body: null satisfies UTEvents["multipart-complete"]["out"],
-    };
-  });
-
-const handleMultipartFailureAction = (opts: {
-  req: Request;
-  uploadable: AnyUploader;
-}) =>
-  Effect.gen(function* ($) {
-    const { fileKey, uploadId } = yield* $(
-      parseRequestJson(opts.req, FailureActionPayload),
-    );
-    logger.debug("Handling failure request with input:", { fileKey, uploadId });
-    logger.debug("Notifying UploadThing that upload failed");
-
-    const failureResponse = yield* $(
-      abortMultipartUpload({ key: fileKey, uploadId }),
-    );
-    logger.debug("UploadThing responded with:", failureResponse);
-    logger.debug("Running 'onUploadError' callback");
-
-    yield* $(
-      Effect.try({
-        try: () => {
-          opts.uploadable._def.onUploadError({
-            error: new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Upload failed for ${fileKey}`,
-            }),
-            fileKey,
-          });
-        },
-        catch: (error) => {
-          logger.error(
-            "Failed to run onUploadError. You probably shouldn't be throwing errors here.",
-            error,
-          );
-          return new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to run onUploadError",
-            cause: error,
-          });
-        },
-      }),
-    );
-
-    return {
-      status: 200,
-      body: null satisfies UTEvents["failure"]["out"],
-    };
-  });
+  return {
+    body: null satisfies UTEvents["failure"]["out"],
+  };
+});
 
 export const buildPermissionsInfoHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,

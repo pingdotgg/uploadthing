@@ -2,8 +2,8 @@
 // https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 import type { Json } from "@uploadthing/shared";
+import { getStatusCodeFromError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -13,14 +13,13 @@ import {
   runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger } from "./internal/logger";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter };
 export { UTFiles } from "./internal/types";
+export type { FileRouter };
 
 type MiddlewareArgs = {
   req: NextApiRequest;
@@ -35,7 +34,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
@@ -63,13 +61,12 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
 
-    if (response instanceof UploadThingError) {
-      res.status(getStatusCodeFromError(response));
+    if (response.success === false) {
+      res.status(getStatusCodeFromError(response.error));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      return res.json(formatError(response, opts.router));
+      return res.json(formatError(response.error, opts.router));
     }
 
-    res.status(response.status);
     return res.json(response.body);
   };
 };

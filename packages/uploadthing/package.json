@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.10.0",
+  "version": "6.10.1",
   "type": "module",
   "engines": {
     "node": ">=18.13.0"
@@ -127,12 +127,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.66.8",
+    "@effect/schema": "^0.66.12",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
-    "effect": "^3.0.5",
-    "fast-check": "3.17.2",
+    "effect": "^3.1.0",
+    "fast-check": "^3.18.0",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
@@ -205,8 +205,19 @@
         "error",
         {
           "patterns": [
-            "uploadthing",
-            "uploadthing/*"
+            {
+              "group": [
+                "uploadthing",
+                "uploadthing/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

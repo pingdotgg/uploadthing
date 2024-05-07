@@ -1,10 +1,10 @@
 import type { Schema } from "@effect/schema/Schema";
 import type * as S from "@effect/schema/Schema";
-import type { Effect } from "effect";
+import type * as Effect from "effect/Effect";
 
 import type {
   ErrorMessage,
-  FetchContextTag,
+  FetchContext,
   FetchEsque,
   FileRouterInputConfig,
   Json,
@@ -204,20 +204,20 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
     req: Request | Effect.Effect<Request, UploadThingError>;
     middlewareArgs: TArgs;
   };
-export type RequestHandlerOutput = Effect.Effect<
-  | {
-      status: number;
-      body: UTEvents[keyof UTEvents]["out"];
-      cleanup?: Promise<unknown> | undefined;
-    }
-  | UploadThingError,
-  never,
-  FetchContextTag
->;
+export type RequestHandlerSuccess = {
+  success: true;
+  body: UTEvents[keyof UTEvents]["out"];
+  cleanup?: Promise<unknown> | undefined;
+};
+export type RequestHandlerError = {
+  success: false;
+  error: UploadThingError;
+};
+export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
 
 export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
   input: RequestHandlerInput<TArgs>,
-) => RequestHandlerOutput;
+) => Effect.Effect<RequestHandlerSuccess, UploadThingError, FetchContext>;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
@@ -244,6 +244,10 @@ export type ActionType = (typeof VALID_ACTION_TYPES)[number];
 export const isActionType = (input: unknown): input is ActionType =>
   typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
 
+/**
+ * Valid options for the `uploadthing-hook` header
+ * for requests coming from UT server
+ */
 export const VALID_UT_HOOKS = ["callback"] as const;
 export type UploadThingHook = (typeof VALID_UT_HOOKS)[number];
 export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
@@ -252,6 +256,7 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
 
 /**
  * Map actionType to the required payload for that action
+ * @todo Look into using @effect/rpc :thinking:
  */
 export type UTEvents = {
   upload: {

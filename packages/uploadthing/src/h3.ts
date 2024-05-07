@@ -8,7 +8,7 @@ import {
 } from "h3";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -18,13 +18,12 @@ import {
   runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger } from "./internal/logger";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter };
 export { UTFiles } from "./internal/types";
+export type { FileRouter };
 
 type MiddlewareArgs = { req: undefined; res: undefined; event: H3Event };
 
@@ -35,7 +34,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
@@ -63,9 +61,9 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       opts.config,
     );
 
-    if (response instanceof UploadThingError) {
-      setResponseStatus(event, getStatusCodeFromError(response));
-      return formatError(response, opts.router);
+    if (response.success === false) {
+      setResponseStatus(event, getStatusCodeFromError(response.error));
+      return formatError(response.error, opts.router);
     }
 
     return response.body ?? "OK";

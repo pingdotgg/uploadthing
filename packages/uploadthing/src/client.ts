@@ -1,14 +1,16 @@
-/* eslint-disable no-console -- Don't ship our logger to client, reduce size*/
-
 import type { ParseError } from "@effect/schema/ParseResult";
-import * as S from "@effect/schema/Schema";
-import { Effect, Layer } from "effect";
+import * as Arr from "effect/Array";
+import * as Console from "effect/Console";
+import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
+import * as Option from "effect/Option";
 
-import type { FetchContextTag, FetchError } from "@uploadthing/shared";
+import type { FetchError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
-  fetchContext,
-  fetchEffJson,
+  FetchContext,
+  fetchEffUnknown,
+  isObject,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -35,9 +37,9 @@ import type {
 
 export {
   /** @public */
-  generateMimeTypes,
-  /** @public */
   generateClientDropzoneAccept,
+  /** @public */
+  generateMimeTypes,
   /** @public */
   generatePermittedFileTypes,
 } from "@uploadthing/shared";
@@ -58,40 +60,40 @@ const uploadFilesInternal = <
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
   UploadThingError | RetryError | FetchError | ParseError,
-  FetchContextTag
-> =>
-  Effect.gen(function* ($) {
-    const reportEventToUT = createUTReporter({
-      endpoint: String(endpoint),
-      package: opts.package,
-      url: resolveMaybeUrlArg(opts.url),
-      headers: opts.headers,
-    });
-
-    const presigneds = yield* $(
-      reportEventToUT(
-        "upload",
-        {
-          input: "input" in opts ? opts.input : null,
-          files: opts.files.map((f) => ({
-            name: f.name,
-            size: f.size,
-            type: f.type,
-          })),
-        },
-        PresignedURLResponseSchema,
-      ),
-    );
-
-    return yield* $(
-      Effect.forEach(
-        presigneds,
-        (presigned) =>
-          uploadFile(String(endpoint), { ...opts, reportEventToUT }, presigned),
-        { concurrency: 6 },
-      ),
-    );
+  FetchContext
+> => {
+  // classic service right here
+  const reportEventToUT = createUTReporter({
+    endpoint: String(endpoint),
+    package: opts.package,
+    url: resolveMaybeUrlArg(opts.url),
+    headers: opts.headers,
   });
+
+  return Effect.flatMap(
+    reportEventToUT(
+      "upload",
+      {
+        input: "input" in opts ? opts.input : null,
+        files: opts.files.map((f) => ({
+          name: f.name,
+          size: f.size,
+          type: f.type,
+        })),
+      },
+      PresignedURLResponseSchema, // don't want to break this, you do it
+    ),
+    Effect.forEach(
+      (presigned) =>
+        uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(
+          String(endpoint),
+          { ...opts, reportEventToUT },
+          presigned,
+        ),
+      { concurrency: 6 },
+    ),
+  );
+};
 
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
@@ -105,26 +107,39 @@ export const genUploader = <TRouter extends FileRouter>(
       UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
       keyof GenerateUploaderOptions
     >,
-  ) => {
-    const layer = Layer.succeed(fetchContext, {
-      fetch: globalThis.fetch.bind(globalThis),
-      baseHeaders: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-        "x-uploadthing-api-key": undefined,
-        "x-uploadthing-fe-package": initOpts.package,
-        "x-uploadthing-be-adapter": undefined,
-      },
-    });
-
-    return uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+  ) =>
+    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
       ...opts,
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
-    }).pipe(Effect.provide(layer), Effect.runPromise);
-  };
+    }).pipe(
+      Effect.provideService(FetchContext, {
+        fetch: globalThis.fetch.bind(globalThis),
+        baseHeaders: {
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+          "x-uploadthing-api-key": undefined,
+          "x-uploadthing-fe-package": initOpts.package,
+          "x-uploadthing-be-adapter": undefined,
+        },
+      }),
+      Effect.runPromise,
+    );
 };
+
+type Done = { status: "done"; callbackData: unknown };
+type StillWaiting = { status: "still waiting" };
+type PollingResponse = Done | StillWaiting;
+
+const isPollingResponse = (input: unknown): input is PollingResponse => {
+  if (!isObject(input)) return false;
+  if (input.status === "done") return "callbackData" in input;
+  return input.status === "still waiting";
+};
+
+const isPollDone = (input: PollingResponse): input is Done =>
+  input.status === "done";
 
 const uploadFile = <
   TRouter extends FileRouter,
@@ -140,61 +155,50 @@ const uploadFile = <
   },
   presigned: PresignedURLs[number],
 ) =>
-  Effect.gen(function* ($) {
-    const file = opts.files.find((f) => f.name === presigned.fileName);
-
-    if (!file) {
-      console.error("No file found for presigned URL", presigned);
-      return yield* $(
+  Arr.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
+    Effect.tapError(() =>
+      Console.error("No file found for presigned URL", presigned),
+    ),
+    Effect.mapError(
+      () =>
         new UploadThingError({
           code: "NOT_FOUND",
           message: "No file found for presigned URL",
           cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
         }),
-      );
-    }
-
-    opts.onUploadBegin?.({ file: file.name });
-    if ("urls" in presigned) {
-      yield* $(uploadMultipartWithProgress(file, presigned, opts));
-    } else {
-      yield* $(uploadPresignedPostWithProgress(file, presigned, opts));
-    }
-
-    const PollingResponse = S.Union(
-      S.Struct({
-        status: S.Literal("done"),
-        callbackData: S.Any as S.Schema<TServerOutput, any>,
-      }),
-      S.Struct({ status: S.Literal("still waiting") }),
-    );
-
-    let serverData: TServerOutput | null = null;
-    if (!opts.skipPolling) {
-      serverData = yield* $(
-        fetchEffJson(presigned.pollingUrl, PollingResponse, {
-          headers: { authorization: presigned.pollingJwt },
-        }),
-        Effect.andThen((res) =>
-          res.status === "done"
-            ? Effect.succeed(res.callbackData)
-            : Effect.fail(new RetryError()),
+    ),
+    Effect.tap((file) => opts.onUploadBegin?.({ file: file.name })),
+    Effect.tap((file) =>
+      "urls" in presigned
+        ? uploadMultipartWithProgress(file, presigned, opts)
+        : uploadPresignedPostWithProgress(file, presigned, opts),
+    ),
+    Effect.zip(
+      fetchEffUnknown(presigned.pollingUrl, {
+        headers: { authorization: presigned.pollingJwt },
+      }).pipe(
+        Effect.filterOrDieMessage(
+          isPollingResponse,
+          "received a non PollingResponse from the polling endpoint",
         ),
+        Effect.filterOrFail(isPollDone, () => new RetryError()),
+        Effect.map(({ callbackData }) => callbackData),
         Effect.retry({
           while: (res) => res instanceof RetryError,
           schedule: exponentialBackoff,
         }),
-      );
-    }
-
-    return {
+        Effect.when(() => !opts.skipPolling),
+        Effect.map(Option.getOrNull),
+        Effect.map(unsafeCoerce<unknown, TServerOutput>),
+      ),
+    ),
+    Effect.map(([file, serverData]) => ({
       name: file.name,
       size: file.size,
       key: presigned.key,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      serverData: serverData as any,
+      serverData,
       url: "https://utfs.io/f/" + presigned.key,
       customId: presigned.customId,
       type: file.type,
-    };
-  });
+    })),
+  );
