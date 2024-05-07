@@ -1,20 +1,6 @@
-// FIXME: Remove polyfills when Expo SDK 51 drops which has TextEncoder and TextDecoder built-in
-globalThis.TextEncoder = class TextEncoder {
-  encoding = "utf-8";
-  constructor() {}
-  encode = (str: string) => {
-    if (typeof str !== "string") {
-      throw new TypeError("passed argument must be of tye string");
-    }
-    var binstr = unescape(encodeURIComponent(str)),
-      arr = new Uint8Array(binstr.length);
-    const split = binstr.split("");
-    for (let i = 0; i < split.length; i++) {
-      arr[i] = split[i].charCodeAt(0);
-    }
-    return arr;
-  };
-} as any;
+/**
+ * @remarks If you're on Expo < 51 (or using a different engine than Hermes), you'll also need to polyfill TextEncoder.
+ */
 globalThis.TextDecoder = class TextDecoder {
   encoding = "utf-8";
   constructor() {}
