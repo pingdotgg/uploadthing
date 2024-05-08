@@ -6,7 +6,7 @@ import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
 import * as Schedule from "effect/Schedule";
 
-import { FetchError, getRequestUrl } from "./tagged-errors";
+import { BadRequestError, FetchError, getRequestUrl } from "./tagged-errors";
 import type { FetchEsque, Json, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
@@ -56,7 +56,7 @@ export const fetchEffUnknown = (
   input: RequestInfo | URL,
   /** Schema to be used if the response returned a 2xx  */
   init?: RequestInit,
-): Effect.Effect<unknown, FetchError, FetchContext> => {
+): Effect.Effect<unknown, FetchError | BadRequestError, FetchContext> => {
   const requestUrl =
     typeof input === "string"
       ? input
@@ -77,10 +77,11 @@ export const fetchEffUnknown = (
     Effect.filterOrFail(
       ({ ok }) => ok,
       ({ json, status }) =>
-        new FetchError({
-          error: `Request to ${requestUrl} failed with status ${status}`,
-          data: json as Json,
+        new BadRequestError({
           input,
+          status,
+          message: `Request to ${requestUrl} failed with status ${status}`,
+          error: json as Json,
         }),
     ),
     Effect.withSpan("fetchRawJson", {
@@ -94,7 +95,11 @@ export const fetchEffJson = <Schema>(
   /** Schema to be used if the response returned a 2xx  */
   schema: S.Schema<Schema, any>,
   init?: RequestInit,
-): Effect.Effect<Schema, FetchError | ParseError, FetchContext> => {
+): Effect.Effect<
+  Schema,
+  BadRequestError | FetchError | ParseError,
+  FetchContext
+> => {
   return fetchEff(input, init).pipe(
     Effect.andThen((res) =>
       Effect.tryPromise({
@@ -108,10 +113,11 @@ export const fetchEffJson = <Schema>(
     Effect.filterOrFail(
       ({ ok }) => ok,
       ({ json, status }) =>
-        new FetchError({
-          error: `Request to ${getRequestUrl(input)} failed with status ${status}`,
-          data: json as Json,
+        new BadRequestError({
           input,
+          status,
+          message: `Request to ${getRequestUrl(input)} failed with status ${status}`,
+          error: json,
         }),
     ),
     Effect.map(({ json }) => json),

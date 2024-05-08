@@ -107,12 +107,21 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
+        BadRequestError: (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: e.getMessage(),
+              cause: e,
+              data: e.error as never,
+            }),
+          ),
         FetchError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: typeof e.error === "string" ? e.error : e.message,
             cause: e,
-            data: e.data as never,
+            data: e.error as never,
           }),
         ParseError: (e) =>
           new UploadThingError({
