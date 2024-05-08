@@ -61,7 +61,17 @@ export const getRequestUrl = (input: RequestInfo | URL) => {
 };
 
 export class FetchError extends TaggedError("FetchError")<{
-  readonly input: RequestInfo | URL;
+  readonly input: {
+    url: string;
+    method: string | undefined;
+    body: unknown;
+    headers: Record<string, string>;
+  };
+  readonly error: unknown;
+}> {}
+
+export class InvalidJsonError extends TaggedError("InvalidJsonError")<{
+  readonly input: unknown;
   readonly error: unknown;
 }> {}
 
@@ -69,13 +79,12 @@ export class BadRequestError<T = unknown> extends TaggedError(
   "BadRequestError",
 )<{
   readonly message: string;
-  readonly input: RequestInfo | URL;
   readonly status: number;
-  readonly error: T;
+  readonly json: T;
 }> {
   getMessage() {
-    if (isObject(this.error)) {
-      if (typeof this.error.message === "string") return this.error.message;
+    if (isObject(this.json)) {
+      if (typeof this.json.message === "string") return this.json.message;
     }
     return this.message;
   }

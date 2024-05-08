@@ -7,14 +7,14 @@ import { unsafeCoerce } from "effect/Function";
 import * as Option from "effect/Option";
 import * as Runtime from "effect/Runtime";
 
-import type { FetchError } from "@uploadthing/shared";
+import type { FetchError, InvalidJsonError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
   FetchContext,
   fetchEff,
   getErrorTypeFromStatusCode,
   isObject,
-  json,
+  parseJson,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -63,7 +63,7 @@ const uploadFilesInternal = <
 ): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
-  UploadThingError | RetryError | FetchError | ParseError,
+  UploadThingError | RetryError | FetchError | ParseError | InvalidJsonError,
   FetchContext
 > => {
   // classic service right here
@@ -187,13 +187,13 @@ const uploadFile = <
       fetchEff(presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }).pipe(
-        Effect.flatMap(json),
+        Effect.flatMap(parseJson),
         Effect.catchTag("BadRequestError", (e) =>
           Effect.fail(
             new UploadThingError({
               code: getErrorTypeFromStatusCode(e.status),
               message: e.message,
-              cause: e.error,
+              cause: e,
             }),
           ),
         ),

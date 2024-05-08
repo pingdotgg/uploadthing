@@ -6,8 +6,8 @@ import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
 import * as Schedule from "effect/Schedule";
 
-import { BadRequestError, FetchError } from "./tagged-errors";
-import type { FetchEsque, Json, ResponseEsque } from "./types";
+import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
+import type { FetchEsque, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
 export type FetchContextService = {
@@ -24,72 +24,72 @@ export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
   FetchContextService
 >() {}
 
-interface ResponseWithBoundRequest extends ResponseEsque {
-  request: Request;
+interface ResponseWithURL extends ResponseEsque {
+  requestUrl: string;
 }
 
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly
 export const fetchEff = (
-  input: RequestInfo | URL,
+  input: string | URL,
   init?: RequestInit,
-): Effect.Effect<ResponseWithBoundRequest, FetchError, FetchContext> =>
+): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
   Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
-    const req = new Request(input, {
-      ...init,
+    const reqInfo = {
+      url: input.toString(),
+      method: init?.method,
+      body: init?.body,
       headers: {
         ...filterObjectValues(baseHeaders, (v): v is string => v != null),
         ...init?.headers,
       },
-    });
+    };
     return Effect.tryPromise({
-      try: () => fetch(req.clone()),
-      catch: (error) => new FetchError({ error, input: req.clone() }),
+      try: () => fetch(input, { ...init, headers: reqInfo.headers }),
+      catch: (error) => new FetchError({ error, input: reqInfo }),
     }).pipe(
-      Effect.map((res) => Object.assign(res.clone(), { request: req.clone() })),
-      Effect.withSpan("fetch", {
-        attributes: { input: JSON.stringify(input) },
-      }),
+      Effect.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
+      Effect.withSpan("fetch", { attributes: { reqInfo } }),
     );
   });
 
-export const json = (
-  res: ResponseWithBoundRequest,
-): Effect.Effect<unknown, FetchError | BadRequestError<Json>, never> =>
+export const parseJson = (
+  res: ResponseWithURL,
+): Effect.Effect<unknown, InvalidJsonError | BadRequestError, never> =>
   Effect.tryPromise({
     try: async () => {
       const json = await res.json();
       return { json, ok: res.ok, status: res.status };
     },
-    catch: (error) => new FetchError({ error, input: res.request }),
+    catch: (error) => new InvalidJsonError({ error, input: res.requestUrl }),
   }).pipe(
     Effect.filterOrFail(
       ({ ok }) => ok,
       ({ json, status }) =>
         new BadRequestError({
-          input: res.request,
           status,
-          message: `Request to ${res.request.url} failed with status ${status}`,
-          error: json as Json,
+          message: `Request to ${res.requestUrl} failed with status ${status}`,
+          json,
         }),
     ),
     Effect.map(({ json }) => json),
     Effect.withSpan("parseJson"),
   );
 
+// TODO: Remove in favor of composing parseJson and fetchEff at the caller
 export const fetchEffJson = <Schema>(
-  input: RequestInfo | URL,
+  input: string | URL,
   /** Schema to be used if the response returned a 2xx  */
   schema: S.Schema<Schema, any>,
   init?: RequestInit,
 ): Effect.Effect<
   Schema,
-  BadRequestError | FetchError | ParseError,
+  BadRequestError | FetchError | ParseError | InvalidJsonError,
   FetchContext
 > => {
   return fetchEff(input, init).pipe(
-    Effect.flatMap(json),
+    Effect.flatMap(parseJson),
     Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {
       attributes: { input: JSON.stringify(input) },
@@ -100,11 +100,11 @@ export const fetchEffJson = <Schema>(
 export const parseRequestJson = <Schema>(
   reqOrRes: Request | ResponseEsque,
   schema: S.Schema<Schema, any>,
-): Effect.Effect<Schema, FetchError | ParseError> =>
+) =>
   Effect.tryPromise({
     try: () => reqOrRes.json(),
     catch: (error) =>
-      new FetchError({
+      new InvalidJsonError({
         error,
         input:
           "url" in reqOrRes

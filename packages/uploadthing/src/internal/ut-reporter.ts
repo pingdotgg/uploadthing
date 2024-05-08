@@ -72,33 +72,32 @@ export const createUTReporter =
           ...headers,
         },
       }).pipe(
-        Effect.catchTag("BadRequestError", (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: getErrorTypeFromStatusCode(e.status),
-              message: e.getMessage(),
-              cause: e.error,
-            }),
-          ),
-        ),
-        Effect.catchTag("FetchError", (e) =>
-          Effect.fail(
+        Effect.catchTags({
+          FetchError: (e) =>
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: `Failed to report event "${type}" to UploadThing server`,
               cause: e,
             }),
-          ),
-        ),
-        Effect.catchTag("ParseError", (e) =>
-          Effect.fail(
+          BadRequestError: (e) =>
+            new UploadThingError({
+              code: getErrorTypeFromStatusCode(e.status),
+              message: e.getMessage(),
+              cause: e.json,
+            }),
+          InvalidJsonError: (e) =>
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: "Failed to parse response from UploadThing server",
               cause: e,
             }),
-          ),
-        ),
+          ParseError: (e) =>
+            new UploadThingError({
+              code: "INTERNAL_CLIENT_ERROR",
+              message: "Failed to parse response from UploadThing server",
+              cause: e,
+            }),
+        }),
       );
 
       switch (type) {

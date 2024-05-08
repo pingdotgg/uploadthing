@@ -107,13 +107,19 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
+        InvalidJsonError: (e) =>
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing input/output",
+            cause: e,
+          }),
         BadRequestError: (e) =>
           Effect.fail(
             new UploadThingError({
               code: "INTERNAL_SERVER_ERROR",
               message: e.getMessage(),
               cause: e,
-              data: e.error as never,
+              data: e.json as never,
             }),
           ),
         FetchError: (e) =>
