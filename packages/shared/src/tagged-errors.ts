@@ -1,5 +1,7 @@
 import { TaggedError } from "effect/Data";
 
+import { isObject } from "./utils";
+
 export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
   reason: string;
 }> {
@@ -70,4 +72,12 @@ export class BadRequestError<T = unknown> extends TaggedError(
   readonly input: RequestInfo | URL;
   readonly status: number;
   readonly error: T;
-}> {}
+}> {
+  getMessage() {
+    if (isObject(this.error)) {
+      if (typeof this.error.message === "string") return this.error.message;
+      if (typeof this.error.error === "string") return this.error.error;
+    }
+    return this.message;
+  }
+}

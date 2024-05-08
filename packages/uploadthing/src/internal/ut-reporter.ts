@@ -5,7 +5,6 @@ import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import {
   fetchEffJson,
   getErrorTypeFromStatusCode,
-  isObject,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -77,10 +76,7 @@ export const createUTReporter =
           Effect.fail(
             new UploadThingError({
               code: getErrorTypeFromStatusCode(e.status),
-              message:
-                isObject(e.error) && typeof e.error.message === "string"
-                  ? e.error.message
-                  : e.message,
+              message: e.getMessage(),
               cause: e.error,
             }),
           ),
