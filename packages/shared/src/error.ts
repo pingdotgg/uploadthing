@@ -104,6 +104,15 @@ export class UploadThingError<
   }
 }
 
+export function getErrorTypeFromStatusCode(statusCode: number): ErrorCode {
+  for (const [code, status] of Object.entries(ERROR_CODES)) {
+    if (status === statusCode) {
+      return code as ErrorCode;
+    }
+  }
+  return "INTERNAL_SERVER_ERROR";
+}
+
 export function getStatusCodeFromError(error: UploadThingError<any>) {
   return ERROR_CODES[error.code] ?? 500;
 }

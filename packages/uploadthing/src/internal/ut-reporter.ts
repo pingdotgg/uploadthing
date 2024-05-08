@@ -2,7 +2,12 @@ import type * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
 import type { FetchContext, MaybePromise } from "@uploadthing/shared";
-import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
+import {
+  fetchEffJson,
+  getErrorTypeFromStatusCode,
+  isObject,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -68,6 +73,18 @@ export const createUTReporter =
           ...headers,
         },
       }).pipe(
+        Effect.catchTag("BadRequestError", (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: getErrorTypeFromStatusCode(e.status),
+              message:
+                isObject(e.error) && typeof e.error.message === "string"
+                  ? e.error.message
+                  : e.message,
+              cause: e.error,
+            }),
+          ),
+        ),
         Effect.catchTag("FetchError", (e) =>
           Effect.fail(
             new UploadThingError({
