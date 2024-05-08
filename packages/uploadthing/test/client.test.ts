@@ -369,17 +369,11 @@ describe("uploadFiles", () => {
   it("handles invalid file type errors", async ({ db, task }) => {
     const { uploadFiles, close } = setupUTServer(task);
 
-    const tooBigFile = new File(
-      [new ArrayBuffer(10 * 1024 * 1024)],
-      "foo.png",
-      {
-        type: "image/png",
-      },
-    );
+    const file = new File(["foo"], "foo.png", { type: "image/png" });
 
     await expect(
       uploadFiles("foo", {
-        files: [tooBigFile],
+        files: [file],
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
