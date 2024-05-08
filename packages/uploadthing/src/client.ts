@@ -1,4 +1,3 @@
-import type { ParseError } from "@effect/schema/ParseResult";
 import * as Arr from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as Console from "effect/Console";
@@ -24,7 +23,6 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type {
   FileRouter,
   inferEndpointOutput,
@@ -63,7 +61,7 @@ const uploadFilesInternal = <
 ): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
-  UploadThingError | RetryError | FetchError | ParseError | InvalidJsonError,
+  UploadThingError | RetryError | FetchError | InvalidJsonError,
   FetchContext
 > => {
   // classic service right here
@@ -75,18 +73,14 @@ const uploadFilesInternal = <
   });
 
   return Effect.flatMap(
-    reportEventToUT(
-      "upload",
-      {
-        input: "input" in opts ? opts.input : null,
-        files: opts.files.map((f) => ({
-          name: f.name,
-          size: f.size,
-          type: f.type,
-        })),
-      },
-      PresignedURLResponseSchema, // don't want to break this, you do it
-    ),
+    reportEventToUT("upload", {
+      input: "input" in opts ? opts.input : null,
+      files: opts.files.map((f) => ({
+        name: f.name,
+        size: f.size,
+        type: f.type,
+      })),
+    }),
     Effect.forEach(
       (presigned) =>
         uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(

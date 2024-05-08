@@ -1,5 +1,5 @@
-import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
 
 import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import {
@@ -36,7 +36,6 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
-  responseSchema: S.Schema<UTEvents[TEvent]["out"]>,
 ) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
@@ -50,7 +49,7 @@ export const createUTReporter =
     package: string;
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   }): UTReporter =>
-  (type, payload, responseSchema) =>
+  (type, payload) =>
     Effect.gen(function* () {
       const url = createAPIRequestUrl({
         url: cfg.url,
@@ -74,7 +73,11 @@ export const createUTReporter =
         },
       }).pipe(
         Effect.andThen(parseResponseJson),
-        Effect.andThen(S.decodeUnknown(responseSchema)),
+        /**
+         * We don't _need_ to validate the response here, just cast it for now.
+         * As of now, @effect/schema includes quite a few bytes we cut out by this...
+         */
+        Effect.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
         Effect.catchTags({
           FetchError: (e) =>
             new UploadThingError({
@@ -89,12 +92,6 @@ export const createUTReporter =
               cause: e.json,
             }),
           InvalidJsonError: (e) =>
-            new UploadThingError({
-              code: "INTERNAL_CLIENT_ERROR",
-              message: "Failed to parse response from UploadThing server",
-              cause: e,
-            }),
-          ParseError: (e) =>
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: "Failed to parse response from UploadThing server",

@@ -1,4 +1,3 @@
-import * as S from "@effect/schema/Schema";
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import { isTest } from "std-env";
@@ -6,9 +5,6 @@ import { isTest } from "std-env";
 import {
   contentDisposition,
   exponentialBackoff,
-  fetchEff,
-  generateUploadThingURL,
-  parseResponseJson,
   RetryError,
 } from "@uploadthing/shared";
 import type { ContentDisposition, UploadThingError } from "@uploadthing/shared";
@@ -58,51 +54,22 @@ export const uploadMultipartWithProgress = (
       { concurrency: "inherit" },
     ).pipe(
       Effect.tapErrorCause((error) =>
-        opts.reportEventToUT(
-          "failure",
-          {
-            fileKey: presigned.key,
-            uploadId: presigned.uploadId,
-            fileName: file.name,
-            storageProviderError: Cause.pretty(error).toString(),
-          },
-          S.Null,
-        ),
+        opts.reportEventToUT("failure", {
+          fileKey: presigned.key,
+          uploadId: presigned.uploadId,
+          fileName: file.name,
+          storageProviderError: Cause.pretty(error).toString(),
+        }),
       ),
     );
 
     // Tell the server that the upload is complete
-    yield* opts.reportEventToUT(
-      "multipart-complete",
-      {
-        uploadId: presigned.uploadId,
-        fileKey: presigned.key,
-        etags,
-      },
-      S.Null,
-    );
-  });
-
-export const completeMultipartUpload = (
-  presigned: { key: string; uploadId: string },
-  etags: { tag: string; partNumber: number }[],
-) =>
-  fetchEff(generateUploadThingURL("/api/completeMultipart"), {
-    method: "POST",
-    body: JSON.stringify({
-      fileKey: presigned.key,
+    yield* opts.reportEventToUT("multipart-complete", {
       uploadId: presigned.uploadId,
+      fileKey: presigned.key,
       etags,
-    }),
-    headers: { "Content-Type": "application/json" },
-  }).pipe(
-    Effect.andThen(parseResponseJson),
-    Effect.andThen(
-      S.decodeUnknown(
-        S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
-      ),
-    ),
-  );
+    });
+  });
 
 interface UploadPartOptions {
   url: string;
