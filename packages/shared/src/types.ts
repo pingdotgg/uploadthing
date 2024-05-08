@@ -62,8 +62,6 @@ export interface ResponseEsque {
   text: () => Promise<string>;
   blob: () => Promise<Blob>;
 
-  request: Request;
-
   headers: Headers;
 
   clone: () => ResponseEsque;

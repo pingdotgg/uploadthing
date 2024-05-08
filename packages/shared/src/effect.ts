@@ -24,13 +24,17 @@ export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
   FetchContextService
 >() {}
 
+interface ResponseWithBoundRequest extends ResponseEsque {
+  request: Request;
+}
+
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly
 export const fetchEff = (
   input: RequestInfo | URL,
   init?: RequestInit,
-): Effect.Effect<ResponseEsque, FetchError, FetchContext> =>
+): Effect.Effect<ResponseWithBoundRequest, FetchError, FetchContext> =>
   Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
     const req = new Request(input, {
       ...init,
@@ -50,7 +54,9 @@ export const fetchEff = (
     );
   });
 
-export const json: (res: ResponseEsque) => Effect.Effect<
+export const json = (
+  res: ResponseWithBoundRequest,
+): Effect.Effect<
   {
     json: unknown;
     ok: boolean;
@@ -58,7 +64,7 @@ export const json: (res: ResponseEsque) => Effect.Effect<
   },
   FetchError | BadRequestError<Json>,
   never
-> = (res: ResponseEsque) =>
+> =>
   Effect.tryPromise({
     try: async () => {
       const json = await res.json();
