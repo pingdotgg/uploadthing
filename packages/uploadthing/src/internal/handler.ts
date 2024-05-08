@@ -163,13 +163,15 @@ const handleCallbackRequest = Effect.gen(function* () {
     });
   }
 
-  const requestInput = yield* parseRequestJson(
-    req,
-    S.Struct({
-      status: S.String,
-      file: UploadedFileDataSchema,
-      metadata: S.Record(S.String, S.Unknown),
-    }),
+  const requestInput = yield* Effect.flatMap(
+    parseRequestJson(req),
+    S.decodeUnknown(
+      S.Struct({
+        status: S.String,
+        file: UploadedFileDataSchema,
+        metadata: S.Record(S.String, S.Unknown),
+      }),
+    ),
   );
   yield* Effect.logDebug("Handling callback request with input:", requestInput);
 
@@ -269,9 +271,9 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
 
 const handleUploadAction = Effect.gen(function* () {
   const opts = yield* RequestInput;
-  const { files, input } = yield* parseRequestJson(
-    opts.req,
-    UploadActionPayload,
+  const { files, input } = yield* Effect.flatMap(
+    parseRequestJson(opts.req),
+    S.decodeUnknown(UploadActionPayload),
   );
   yield* Effect.logDebug("Handling upload request with input:", {
     files,
@@ -394,11 +396,10 @@ const handleUploadAction = Effect.gen(function* () {
 
 const handleMultipartCompleteAction = Effect.gen(function* () {
   const opts = yield* RequestInput;
-  const requestInput = yield* parseRequestJson(
-    opts.req,
-    MultipartCompleteActionPayload,
+  const requestInput = yield* Effect.flatMap(
+    parseRequestJson(opts.req),
+    S.decodeUnknown(MultipartCompleteActionPayload),
   );
-
   yield* Effect.logDebug(
     "Handling multipart-complete request with input:",
     requestInput,
@@ -423,9 +424,9 @@ const handleMultipartCompleteAction = Effect.gen(function* () {
 
 const handleMultipartFailureAction = Effect.gen(function* () {
   const { req, uploadable } = yield* RequestInput;
-  const { fileKey, uploadId } = yield* parseRequestJson(
-    req,
-    FailureActionPayload,
+  const { fileKey, uploadId } = yield* Effect.flatMap(
+    parseRequestJson(req),
+    S.decodeUnknown(FailureActionPayload),
   );
   yield* Effect.logDebug("Handling failure request with input:", {
     fileKey,

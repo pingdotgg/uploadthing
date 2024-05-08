@@ -54,7 +54,7 @@ export const fetchEff = (
     );
   });
 
-export const parseJson = (
+export const parseResponseJson = (
   res: ResponseWithURL,
 ): Effect.Effect<unknown, InvalidJsonError | BadRequestError, never> =>
   Effect.tryPromise({
@@ -89,7 +89,7 @@ export const fetchEffJson = <Schema>(
   FetchContext
 > => {
   return fetchEff(input, init).pipe(
-    Effect.flatMap(parseJson),
+    Effect.flatMap(parseResponseJson),
     Effect.andThen(S.decode(schema)),
     Effect.withSpan("fetchJson", {
       attributes: { input: JSON.stringify(input) },
@@ -97,21 +97,11 @@ export const fetchEffJson = <Schema>(
   );
 };
 
-export const parseRequestJson = <Schema>(
-  reqOrRes: Request | ResponseEsque,
-  schema: S.Schema<Schema, any>,
-) =>
+export const parseRequestJson = (req: Request) =>
   Effect.tryPromise({
-    try: () => reqOrRes.json(),
-    catch: (error) =>
-      new InvalidJsonError({
-        error,
-        input:
-          "url" in reqOrRes
-            ? reqOrRes.url
-            : `Response ${reqOrRes.status} - ${reqOrRes.statusText}`,
-      }),
-  }).pipe(Effect.andThen(S.decode(schema)));
+    try: () => req.json() as Promise<unknown>,
+    catch: (error) => new InvalidJsonError({ error, input: req.url }),
+  }).pipe(Effect.withSpan("parseRequestJson"));
 
 /**
  * Schedule that retries with exponential backoff, up to 1 minute.

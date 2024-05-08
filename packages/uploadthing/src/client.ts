@@ -14,7 +14,7 @@ import {
   fetchEff,
   getErrorTypeFromStatusCode,
   isObject,
-  parseJson,
+  parseResponseJson,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -187,7 +187,7 @@ const uploadFile = <
       fetchEff(presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }).pipe(
-        Effect.flatMap(parseJson),
+        Effect.flatMap(parseResponseJson),
         Effect.catchTag("BadRequestError", (e) =>
           Effect.fail(
             new UploadThingError({
