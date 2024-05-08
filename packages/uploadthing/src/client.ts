@@ -11,9 +11,10 @@ import type { FetchError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
   FetchContext,
-  fetchEffUnknown,
+  fetchEff,
   getErrorTypeFromStatusCode,
   isObject,
+  json,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -183,9 +184,10 @@ const uploadFile = <
         : uploadPresignedPostWithProgress(file, presigned, opts),
     ),
     Effect.zip(
-      fetchEffUnknown(presigned.pollingUrl, {
+      fetchEff(presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }).pipe(
+        Effect.flatMap(json),
         Effect.catchTag("BadRequestError", (e) =>
           Effect.fail(
             new UploadThingError({
@@ -195,7 +197,6 @@ const uploadFile = <
             }),
           ),
         ),
-        Effect.map((r) => r.json),
         Effect.filterOrDieMessage(
           isPollingResponse,
           "received a non PollingResponse from the polling endpoint",
