@@ -195,6 +195,7 @@ const uploadFile = <
             }),
           ),
         ),
+        Effect.map((r) => r.json),
         Effect.filterOrDieMessage(
           isPollingResponse,
           "received a non PollingResponse from the polling endpoint",

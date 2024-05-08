@@ -56,7 +56,11 @@ export const fetchEffUnknown = (
   input: RequestInfo | URL,
   /** Schema to be used if the response returned a 2xx  */
   init?: RequestInit,
-): Effect.Effect<unknown, FetchError | BadRequestError, FetchContext> => {
+): Effect.Effect<
+  { json: unknown; ok: boolean; status: number },
+  FetchError | BadRequestError,
+  FetchContext
+> => {
   const requestUrl =
     typeof input === "string"
       ? input
