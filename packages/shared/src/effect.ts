@@ -31,23 +31,52 @@ export const fetchEff = (
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Effect.Effect<ResponseEsque, FetchError, FetchContext> =>
-  FetchContext.pipe(
-    Effect.andThen(({ fetch, baseHeaders }) =>
-      Effect.tryPromise({
-        try: () =>
-          fetch(input, {
-            ...init,
-            headers: {
-              ...filterObjectValues(baseHeaders, (v): v is string => v != null),
-              ...init?.headers,
-            },
-          }),
-        catch: (error) => new FetchError({ error, input }),
+  Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
+    const req = new Request(input, {
+      ...init,
+      headers: {
+        ...filterObjectValues(baseHeaders, (v): v is string => v != null),
+        ...init?.headers,
+      },
+    });
+    return Effect.tryPromise({
+      try: () => fetch(req.clone()),
+      catch: (error) => new FetchError({ error, input: req.clone() }),
+    }).pipe(
+      Effect.map((res) => Object.assign(res.clone(), { request: req.clone() })),
+      Effect.withSpan("fetch", {
+        attributes: { input: JSON.stringify(input) },
       }),
+    );
+  });
+
+export const json: (res: ResponseEsque) => Effect.Effect<
+  {
+    json: unknown;
+    ok: boolean;
+    status: number;
+  },
+  FetchError | BadRequestError<Json>,
+  never
+> = (res: ResponseEsque) =>
+  Effect.tryPromise({
+    try: async () => {
+      const json = await res.json();
+      return { json, ok: res.ok, status: res.status };
+    },
+    catch: (error) => new FetchError({ error, input: res.request }),
+  }).pipe(
+    Effect.filterOrFail(
+      ({ ok }) => ok,
+      ({ json, status }) =>
+        new BadRequestError({
+          input: res.request,
+          status,
+          message: `Request to ${res.request.url} failed with status ${status}`,
+          error: json as Json,
+        }),
     ),
-    Effect.withSpan("fetch", {
-      attributes: { input: JSON.stringify(input) },
-    }),
+    Effect.withSpan("parseJson"),
   );
 
 // TODO: rename the other one to fetchEffJsonSchema and this to fetchEffJson
@@ -56,43 +85,13 @@ export const fetchEffUnknown = (
   input: RequestInfo | URL,
   /** Schema to be used if the response returned a 2xx  */
   init?: RequestInit,
-): Effect.Effect<
-  { json: unknown; ok: boolean; status: number },
-  FetchError | BadRequestError,
-  FetchContext
-> => {
-  const requestUrl =
-    typeof input === "string"
-      ? input
-      : input instanceof URL
-        ? input.toString()
-        : input.url;
-
-  return fetchEff(input, init).pipe(
-    Effect.andThen((res) =>
-      Effect.tryPromise({
-        try: async () => {
-          const json = await res.json();
-          return { json, ok: res.ok, status: res.status };
-        },
-        catch: (error) => new FetchError({ error, input }),
-      }),
-    ),
-    Effect.filterOrFail(
-      ({ ok }) => ok,
-      ({ json, status }) =>
-        new BadRequestError({
-          input,
-          status,
-          message: `Request to ${requestUrl} failed with status ${status}`,
-          error: json as Json,
-        }),
-    ),
+) =>
+  fetchEff(input, init).pipe(
+    Effect.flatMap(json),
     Effect.withSpan("fetchRawJson", {
       attributes: { input: JSON.stringify(input) },
     }),
   );
-};
 
 export const fetchEffJson = <Schema>(
   input: RequestInfo | URL,
