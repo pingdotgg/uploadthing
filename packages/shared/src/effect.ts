@@ -1,5 +1,3 @@
-import type { ParseError } from "@effect/schema/ParseResult";
-import * as S from "@effect/schema/Schema";
 import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
@@ -76,26 +74,6 @@ export const parseResponseJson = (
     Effect.map(({ json }) => json),
     Effect.withSpan("parseJson"),
   );
-
-// TODO: Remove in favor of composing parseJson and fetchEff at the caller
-export const fetchEffJson = <Schema>(
-  input: string | URL,
-  /** Schema to be used if the response returned a 2xx  */
-  schema: S.Schema<Schema, any>,
-  init?: RequestInit,
-): Effect.Effect<
-  Schema,
-  BadRequestError | FetchError | ParseError | InvalidJsonError,
-  FetchContext
-> => {
-  return fetchEff(input, init).pipe(
-    Effect.flatMap(parseResponseJson),
-    Effect.andThen(S.decode(schema)),
-    Effect.withSpan("fetchJson", {
-      attributes: { input: JSON.stringify(input) },
-    }),
-  );
-};
 
 export const parseRequestJson = (req: Request) =>
   Effect.tryPromise({

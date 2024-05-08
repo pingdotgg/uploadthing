@@ -3,11 +3,12 @@ import * as Effect from "effect/Effect";
 
 import {
   FetchContext,
-  fetchEffJson,
+  fetchEff,
   fillInputRouteConfig,
   generateUploadThingURL,
   objectKeys,
   parseRequestJson,
+  parseResponseJson,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
@@ -204,14 +205,13 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEffJson(
-    generateUploadThingURL("/api/serverCallback"),
-    ServerCallbackPostResponseSchema,
-    {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    },
+  yield* fetchEff(generateUploadThingURL("/api/serverCallback"), {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: { "Content-Type": "application/json" },
+  }).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(S.decodeUnknown(ServerCallbackPostResponseSchema)),
   );
   return { body: null };
 });
@@ -355,9 +355,8 @@ const handleUploadAction = Effect.gen(function* () {
     callbackUrl.href,
   );
 
-  const presignedUrls = yield* fetchEffJson(
+  const presignedUrls = yield* fetchEff(
     generateUploadThingURL("/api/prepareUpload"),
-    PresignedURLResponseSchema,
     {
       method: "POST",
       body: JSON.stringify({
@@ -369,6 +368,9 @@ const handleUploadAction = Effect.gen(function* () {
       }),
       headers: { "Content-Type": "application/json" },
     },
+  ).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(S.decodeUnknown(PresignedURLResponseSchema)),
   );
 
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);

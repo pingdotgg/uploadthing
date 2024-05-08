@@ -1,10 +1,11 @@
-import type * as S from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
 import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import {
-  fetchEffJson,
+  fetchEff,
   getErrorTypeFromStatusCode,
+  parseResponseJson,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -62,7 +63,7 @@ export const createUTReporter =
         headers = yield* Effect.promise(() => headers as Promise<HeadersInit>);
       }
 
-      const response = yield* fetchEffJson(url, responseSchema, {
+      const response = yield* fetchEff(url, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
@@ -72,6 +73,8 @@ export const createUTReporter =
           ...headers,
         },
       }).pipe(
+        Effect.andThen(parseResponseJson),
+        Effect.andThen(S.decodeUnknown(responseSchema)),
         Effect.catchTags({
           FetchError: (e) =>
             new UploadThingError({

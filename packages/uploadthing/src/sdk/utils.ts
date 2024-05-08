@@ -4,9 +4,9 @@ import * as Effect from "effect/Effect";
 import {
   exponentialBackoff,
   fetchEff,
-  fetchEffJson,
   generateUploadThingURL,
   isObject,
+  parseResponseJson,
   RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -144,9 +144,8 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       data: PresignedURLResponseSchema,
     });
 
-    const presigneds = yield* fetchEffJson(
+    const presigneds = yield* fetchEff(
       generateUploadThingURL("/api/uploadFiles"),
-      responseSchema,
       {
         method: "POST",
         cache: "no-store",
@@ -159,6 +158,8 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
         headers: { "Content-Type": "application/json" },
       },
     ).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(responseSchema)),
       Effect.catchTag("ParseError", (e) => Effect.die(e)),
       Effect.catchTag("FetchError", (e) => Effect.die(e)),
     );
@@ -182,10 +183,11 @@ const uploadFile = (
       yield* uploadPresignedPost(file, presigned);
     }
 
-    yield* fetchEffJson(
+    yield* fetchEff(
       generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-      PollUploadResponseSchema,
     ).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(PollUploadResponseSchema)),
       Effect.tap(Effect.logDebug("Polled upload", presigned.key)),
       Effect.andThen((res) =>
         res.status === "done"

@@ -6,8 +6,9 @@ import { isTest } from "std-env";
 import {
   contentDisposition,
   exponentialBackoff,
-  fetchEffJson,
+  fetchEff,
   generateUploadThingURL,
+  parseResponseJson,
   RetryError,
 } from "@uploadthing/shared";
 import type { ContentDisposition, UploadThingError } from "@uploadthing/shared";
@@ -86,18 +87,21 @@ export const completeMultipartUpload = (
   presigned: { key: string; uploadId: string },
   etags: { tag: string; partNumber: number }[],
 ) =>
-  fetchEffJson(
-    generateUploadThingURL("/api/completeMultipart"),
-    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        fileKey: presigned.key,
-        uploadId: presigned.uploadId,
-        etags,
-      }),
-      headers: { "Content-Type": "application/json" },
-    },
+  fetchEff(generateUploadThingURL("/api/completeMultipart"), {
+    method: "POST",
+    body: JSON.stringify({
+      fileKey: presigned.key,
+      uploadId: presigned.uploadId,
+      etags,
+    }),
+    headers: { "Content-Type": "application/json" },
+  }).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(
+      S.decodeUnknown(
+        S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
+      ),
+    ),
   );
 
 interface UploadPartOptions {
