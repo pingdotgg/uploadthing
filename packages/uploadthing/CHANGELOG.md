@@ -1,5 +1,14 @@
 # uploadthing
 
+## 6.10.3
+
+### Patch Changes
+
+- [#792](https://github.com/pingdotgg/uploadthing/pull/792) [`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: isPollingResponse was not checking against response json
+
+- Updated dependencies [[`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544)]:
+  - @uploadthing/shared@6.7.3
+
 ## 6.10.2
 
 ### Patch Changes

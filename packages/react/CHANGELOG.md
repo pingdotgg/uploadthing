@@ -1,5 +1,12 @@
 # @uploadthing/react
 
+## 6.5.3
+
+### Patch Changes
+
+- Updated dependencies [[`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544)]:
+  - @uploadthing/shared@6.7.3
+
 ## 6.5.2
 
 ### Patch Changes
