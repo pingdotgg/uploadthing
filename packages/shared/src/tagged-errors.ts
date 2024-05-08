@@ -76,7 +76,6 @@ export class BadRequestError<T = unknown> extends TaggedError(
   getMessage() {
     if (isObject(this.error)) {
       if (typeof this.error.message === "string") return this.error.message;
-      if (typeof this.error.error === "string") return this.error.error;
     }
     return this.message;
   }
