@@ -1,5 +1,12 @@
 # @uploadthing/vue
 
+## 6.5.2
+
+### Patch Changes
+
+- Updated dependencies [[`69165fc`](https://github.com/pingdotgg/uploadthing/commit/69165fc4b4e4b02fe27e02d1991ea2cd3ae45c8a), [`6da018b`](https://github.com/pingdotgg/uploadthing/commit/6da018bfd4f2812ad81f36a7e3c9e3567c435b0b)]:
+  - @uploadthing/shared@6.7.2
+
 ## 6.5.1
 
 ### Patch Changes

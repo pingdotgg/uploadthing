@@ -20,10 +20,10 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@uploadthing/react": "6.5.1",
+    "@uploadthing/react": "6.5.2",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.5",
-    "uploadthing": "6.10.1"
+    "uploadthing": "6.10.2"
   },
   "devDependencies": {
     "@playwright/test": "1.42.1"
