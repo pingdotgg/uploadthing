@@ -9,7 +9,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@next/bundle-analyzer": "^14.2.3",
     "@uploadthing/react": "6.5.3",
     "next": "14.2.1",
     "react": "18.2.0",
@@ -17,6 +16,7 @@
     "uploadthing": "6.10.3"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "14.2.1",
     "@types/node": "^20.11.21",
     "@types/react": "18.2.78",
     "@types/react-dom": "18.2.25",
