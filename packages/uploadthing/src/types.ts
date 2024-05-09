@@ -11,6 +11,8 @@ export type {
 
 export * from "./sdk/types";
 
+export type { EndpointMetadata } from "@uploadthing/shared";
+
 export type {
   FileUploadData,
   FileUploadDataWithCustomId,

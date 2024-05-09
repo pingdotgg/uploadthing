@@ -1,13 +1,11 @@
-import type { ParseError } from "@effect/schema/ParseResult";
-import * as S from "@effect/schema/Schema";
 import * as Context from "effect/Context";
 import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
 import * as Schedule from "effect/Schedule";
 
-import { BadRequestError, FetchError, getRequestUrl } from "./tagged-errors";
-import type { FetchEsque, Json, ResponseEsque } from "./types";
+import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
+import type { FetchEsque, ResponseEsque } from "./types";
 import { filterObjectValues } from "./utils";
 
 export type FetchContextService = {
@@ -24,129 +22,64 @@ export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
   FetchContextService
 >() {}
 
+interface ResponseWithURL extends ResponseEsque {
+  requestUrl: string;
+}
+
 // Temporary Effect wrappers below.
 // TODO should be refactored with much love
 // TODO handle error properly
 export const fetchEff = (
-  input: RequestInfo | URL,
+  input: string | URL,
   init?: RequestInit,
-): Effect.Effect<ResponseEsque, FetchError, FetchContext> =>
-  FetchContext.pipe(
-    Effect.andThen(({ fetch, baseHeaders }) =>
-      Effect.tryPromise({
-        try: () =>
-          fetch(input, {
-            ...init,
-            headers: {
-              ...filterObjectValues(baseHeaders, (v): v is string => v != null),
-              ...init?.headers,
-            },
-          }),
-        catch: (error) => new FetchError({ error, input }),
-      }),
-    ),
-    Effect.withSpan("fetch", {
-      attributes: { input: JSON.stringify(input) },
-    }),
-  );
+): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
+  Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
+    const reqInfo = {
+      url: input.toString(),
+      method: init?.method,
+      body: init?.body,
+      headers: {
+        ...filterObjectValues(baseHeaders, (v): v is string => v != null),
+        ...init?.headers,
+      },
+    };
+    return Effect.tryPromise({
+      try: () => fetch(input, { ...init, headers: reqInfo.headers }),
+      catch: (error) => new FetchError({ error, input: reqInfo }),
+    }).pipe(
+      Effect.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
+      Effect.withSpan("fetch", { attributes: { reqInfo } }),
+    );
+  });
 
-// TODO: rename the other one to fetchEffJsonSchema and this to fetchEffJson
-// though generally I would avoid XandY kind utils in favor of composition
-export const fetchEffUnknown = (
-  input: RequestInfo | URL,
-  /** Schema to be used if the response returned a 2xx  */
-  init?: RequestInit,
-): Effect.Effect<
-  { json: unknown; ok: boolean; status: number },
-  FetchError | BadRequestError,
-  FetchContext
-> => {
-  const requestUrl =
-    typeof input === "string"
-      ? input
-      : input instanceof URL
-        ? input.toString()
-        : input.url;
-
-  return fetchEff(input, init).pipe(
-    Effect.andThen((res) =>
-      Effect.tryPromise({
-        try: async () => {
-          const json = await res.json();
-          return { json, ok: res.ok, status: res.status };
-        },
-        catch: (error) => new FetchError({ error, input }),
-      }),
-    ),
+export const parseResponseJson = (
+  res: ResponseWithURL,
+): Effect.Effect<unknown, InvalidJsonError | BadRequestError, never> =>
+  Effect.tryPromise({
+    try: async () => {
+      const json = await res.json();
+      return { json, ok: res.ok, status: res.status };
+    },
+    catch: (error) => new InvalidJsonError({ error, input: res.requestUrl }),
+  }).pipe(
     Effect.filterOrFail(
       ({ ok }) => ok,
       ({ json, status }) =>
         new BadRequestError({
-          input,
           status,
-          message: `Request to ${requestUrl} failed with status ${status}`,
-          error: json as Json,
-        }),
-    ),
-    Effect.withSpan("fetchRawJson", {
-      attributes: { input: JSON.stringify(input) },
-    }),
-  );
-};
-
-export const fetchEffJson = <Schema>(
-  input: RequestInfo | URL,
-  /** Schema to be used if the response returned a 2xx  */
-  schema: S.Schema<Schema, any>,
-  init?: RequestInit,
-): Effect.Effect<
-  Schema,
-  BadRequestError | FetchError | ParseError,
-  FetchContext
-> => {
-  return fetchEff(input, init).pipe(
-    Effect.andThen((res) =>
-      Effect.tryPromise({
-        try: async () => {
-          const json = await res.json();
-          return { ok: res.ok, json, status: res.status };
-        },
-        catch: (error) => new FetchError({ error, input }),
-      }),
-    ),
-    Effect.filterOrFail(
-      ({ ok }) => ok,
-      ({ json, status }) =>
-        new BadRequestError({
-          input,
-          status,
-          message: `Request to ${getRequestUrl(input)} failed with status ${status}`,
-          error: json,
+          message: `Request to ${res.requestUrl} failed with status ${status}`,
+          json,
         }),
     ),
     Effect.map(({ json }) => json),
-    Effect.andThen(S.decode(schema)),
-    Effect.withSpan("fetchJson", {
-      attributes: { input: JSON.stringify(input) },
-    }),
+    Effect.withSpan("parseJson"),
   );
-};
 
-export const parseRequestJson = <Schema>(
-  reqOrRes: Request | ResponseEsque,
-  schema: S.Schema<Schema, any>,
-): Effect.Effect<Schema, FetchError | ParseError> =>
+export const parseRequestJson = (req: Request) =>
   Effect.tryPromise({
-    try: () => reqOrRes.json(),
-    catch: (error) =>
-      new FetchError({
-        error,
-        input:
-          "url" in reqOrRes
-            ? reqOrRes.url
-            : `Response ${reqOrRes.status} - ${reqOrRes.statusText}`,
-      }),
-  }).pipe(Effect.andThen(S.decode(schema)));
+    try: () => req.json() as Promise<unknown>,
+    catch: (error) => new InvalidJsonError({ error, input: req.url }),
+  }).pipe(Effect.withSpan("parseRequestJson"));
 
 /**
  * Schedule that retries with exponential backoff, up to 1 minute.

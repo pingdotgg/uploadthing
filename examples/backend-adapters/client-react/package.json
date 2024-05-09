@@ -1,5 +1,5 @@
 {
-  "name": "@example/backend-adapters-client",
+  "name": "@example/backend-adapters-client-react",
   "private": true,
   "type": "module",
   "scripts": {

@@ -11,9 +11,10 @@ import type {
 import {
   asArray,
   FetchContext,
-  fetchEffJson,
+  fetchEff,
   filterObjectValues,
   generateUploadThingURL,
+  parseResponseJson,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -81,7 +82,7 @@ export class UTApi {
       }),
     );
 
-    return fetchEffJson(url, responseSchema, {
+    return fetchEff(url, {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
@@ -93,6 +94,8 @@ export class UTApi {
         "Content-Type": "application/json",
       },
     }).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(responseSchema)),
       Effect.catchTag("FetchError", (err) =>
         Effect.logError("Request failed:", err).pipe(
           Effect.andThen(() => Effect.die(err)),

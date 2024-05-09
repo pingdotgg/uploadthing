@@ -1,4 +1,3 @@
-import * as S from "@effect/schema/Schema";
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import { isTest } from "std-env";
@@ -6,8 +5,6 @@ import { isTest } from "std-env";
 import {
   contentDisposition,
   exponentialBackoff,
-  fetchEffJson,
-  generateUploadThingURL,
   RetryError,
 } from "@uploadthing/shared";
 import type { ContentDisposition, UploadThingError } from "@uploadthing/shared";
@@ -57,48 +54,22 @@ export const uploadMultipartWithProgress = (
       { concurrency: "inherit" },
     ).pipe(
       Effect.tapErrorCause((error) =>
-        opts.reportEventToUT(
-          "failure",
-          {
-            fileKey: presigned.key,
-            uploadId: presigned.uploadId,
-            fileName: file.name,
-            storageProviderError: Cause.pretty(error).toString(),
-          },
-          S.Null,
-        ),
+        opts.reportEventToUT("failure", {
+          fileKey: presigned.key,
+          uploadId: presigned.uploadId,
+          fileName: file.name,
+          storageProviderError: Cause.pretty(error).toString(),
+        }),
       ),
     );
 
     // Tell the server that the upload is complete
-    yield* opts.reportEventToUT(
-      "multipart-complete",
-      {
-        uploadId: presigned.uploadId,
-        fileKey: presigned.key,
-        etags,
-      },
-      S.Null,
-    );
+    yield* opts.reportEventToUT("multipart-complete", {
+      uploadId: presigned.uploadId,
+      fileKey: presigned.key,
+      etags,
+    });
   });
-
-export const completeMultipartUpload = (
-  presigned: { key: string; uploadId: string },
-  etags: { tag: string; partNumber: number }[],
-) =>
-  fetchEffJson(
-    generateUploadThingURL("/api/completeMultipart"),
-    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        fileKey: presigned.key,
-        uploadId: presigned.uploadId,
-        etags,
-      }),
-      headers: { "Content-Type": "application/json" },
-    },
-  );
 
 interface UploadPartOptions {
   url: string;
