@@ -1,7 +1,10 @@
 import * as S from "@effect/schema/Schema";
 
 import type { FileRouterInputKey, Json } from "@uploadthing/shared";
-import { ContentDispositionSchema } from "@uploadthing/shared";
+import { ValidACLs, ValidContentDispositions } from "@uploadthing/shared";
+
+export const ContentDispositionSchema = S.Literal(...ValidContentDispositions);
+export const ACLSchema = S.Literal(...ValidACLs);
 
 /**
  * =============================================================================

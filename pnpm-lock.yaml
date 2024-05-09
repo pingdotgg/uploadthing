@@ -934,15 +934,9 @@ importers:
 
   packages/shared:
     dependencies:
-      '@effect/schema':
-        specifier: ^0.66.12
-        version: 0.66.12(effect@3.1.0)(fast-check@3.18.0)
       effect:
         specifier: ^3.1.0
         version: 3.1.0
-      fast-check:
-        specifier: ^3.18.0
-        version: 3.18.0
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
