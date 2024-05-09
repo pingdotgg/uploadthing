@@ -168,10 +168,10 @@ importers:
         version: link:../../../packages/uploadthing
     devDependencies:
       typescript:
-        specifier: ^5.2.2
+        specifier: ^5.4.5
         version: 5.4.5
       vite:
-        specifier: ^5.2.0
+        specifier: ^5.1.4
         version: 5.2.10(@types/node@20.12.7)
 
   examples/backend-adapters/client-vue:

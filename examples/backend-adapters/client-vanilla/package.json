@@ -12,7 +12,7 @@
     "uploadthing": "6.10.3"
   },
   "devDependencies": {
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "typescript": "^5.4.5",
+    "vite": "^5.1.4"
   }
 }
