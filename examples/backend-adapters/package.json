@@ -7,17 +7,17 @@
     "server"
   ],
   "scripts": {
-    "clean": "git clean -xdf node_modules client/node_modules client/dist server/node_modules server/dist",
-    "dev:cf": "concurrently \"npm run -w client dev\" \"npm run -w server dev:cf\"",
-    "dev:elysia": "concurrently \"npm run -w client dev\" \"npm run -w server dev:elysia\"",
-    "dev:express": "concurrently \"npm run -w client dev\" \"npm run -w server dev:express\"",
-    "dev:fastify": "concurrently \"npm run -w client dev\" \"npm run -w server dev:fastify\"",
-    "dev:hono": "concurrently \"npm run -w client dev\" \"npm run -w server dev:hono\"",
-    "dev:h3": "concurrently \"npm run -w client dev\" \"npm run -w server dev:h3\"",
+    "clean": "git clean -xdf node_modules client-react/node_modules client-react/dist client-vanilla/node_modules client-vanilla/dist client-vue/node_modules client-vue/dist server/node_modules server/dist",
+    "dev:cf": "concurrently \"npm run -w client-react dev\" \"npm run -w server dev:cf\"",
+    "dev:elysia": "concurrently \"npm run -w client-react dev\" \"npm run -w server dev:elysia\"",
+    "dev:express": "concurrently \"npm run -w client-react dev\" \"npm run -w server dev:express\"",
+    "dev:fastify": "concurrently \"npm run -w client-react dev\" \"npm run -w server dev:fastify\"",
+    "dev:hono": "concurrently \"npm run -w client-react dev\" \"npm run -w server dev:hono\"",
+    "dev:h3": "concurrently \"npm run -w client-react dev\" \"npm run -w server dev:h3\"",
     "dev:h3-vue": "concurrently \"npm run -w client-vue dev\" \"npm run -w server dev:h3\"",
     "dev:h3-vanilla": "concurrently \"npm run -w client-vanilla dev\" \"npm run -w server dev:h3\"",
-    "build": "npm run -w client build && npm run -w server build",
-    "start": "concurrently \"npm run -w client start\" \"npm run -w server start\"",
+    "build": "npm run -w client-react build && npm run -w server build",
+    "start": "concurrently \"npm run -w client-react start\" \"npm run -w server start\"",
     "test": "playwright test"
   },
   "dependencies": {
