@@ -76,6 +76,7 @@ export const createUTReporter =
         /**
          * We don't _need_ to validate the response here, just cast it for now.
          * As of now, @effect/schema includes quite a few bytes we cut out by this...
+         * We have "strong typing" on the backend that ensures the shape should match.
          */
         Effect.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
         Effect.catchTags({
