@@ -13,7 +13,7 @@ import {
 } from "@/ui/card";
 import { useUploadThing } from "@/uploadthing/client";
 import { invariant } from "@/utils";
-import { Loader2 } from "lucide-react";
+import { ImageIcon, Loader2, User2Icon, XIcon } from "lucide-react";
 import { User } from "next-auth";
 import Cropper, { Area, Point } from "react-easy-crop";
 import { toast } from "sonner";
@@ -22,13 +22,15 @@ import {
   generateMimeTypes,
   generatePermittedFileTypes,
 } from "uploadthing/client";
+import { ExpandedRouteConfig } from "uploadthing/types";
+
+import { updateUserImage } from "../_actions";
+import { RetryImage } from "./retry-image";
 
 type FileWithPreview = File & { preview: string };
 
-// TODO: Pull from server config
-const IMAGE_SIZE = { w: 400, h: 400 };
-
 export function ProfilePictureCard(props: { user: User }) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [file, setFile] = React.useState<FileWithPreview | null>(null);
   const [crop, setCrop] = React.useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
@@ -37,7 +39,7 @@ export function ProfilePictureCard(props: { user: User }) {
   const [output, setOutput] = React.useState<FileWithPreview | null>(null);
   React.useEffect(() => {
     if (file && croppedArea) {
-      cropAndScaleImage(file, croppedArea, IMAGE_SIZE).then((image) => {
+      cropAndScaleImage(file, croppedArea, imageProperties).then((image) => {
         setOutput(image);
       });
     }
@@ -47,17 +49,21 @@ export function ProfilePictureCard(props: { user: User }) {
   const { isUploading, startUpload, permittedFileInfo } = useUploadThing(
     "profilePicture",
     {
-      onClientUploadComplete: () => {
+      skipPolling: true,
+      onClientUploadComplete: async ([uploadedFile]) => {
         if (file) URL.revokeObjectURL(file.preview);
         if (output) URL.revokeObjectURL(output.preview);
         setFile(null);
         setOutput(null);
+        await updateUserImage(uploadedFile.url);
+        await new Promise((resolve) => setTimeout(resolve, 500));
         router.refresh();
       },
       onUploadError: () => toast.error("Failed to upload profile picture"),
     },
   );
   const routeConfig = permittedFileInfo?.config;
+  const imageProperties = expandImageProperties(routeConfig);
 
   const uploadCroppedImage = async () => {
     if (!croppedArea || !file || !output) return;
@@ -67,6 +73,21 @@ export function ProfilePictureCard(props: { user: User }) {
 
   return (
     <Card>
+      <input
+        type="file"
+        ref={inputRef}
+        accept={generateMimeTypes(
+          generatePermittedFileTypes(routeConfig).fileTypes,
+        ).join(",")}
+        className="hidden"
+        onChange={(e) => {
+          if (!e.target.files?.[0]) return;
+          const file = e.target.files[0];
+          const preview = URL.createObjectURL(file);
+          setFile(Object.assign(file, { preview }));
+        }}
+      />
+
       <div className="flex justify-between">
         <CardHeader>
           <CardTitle>Profile Picture</CardTitle>
@@ -74,38 +95,37 @@ export function ProfilePictureCard(props: { user: User }) {
             Upload a profile picture for your account.
           </CardDescription>
         </CardHeader>
+
         {props.user.image && !file && (
           <div className="p-6">
-            <label>
-              <img
-                src={props.user.image}
-                alt="Profile Picture"
-                className="size-32 cursor-pointer rounded-full hover:opacity-75"
-              />
-              <input
-                type="file"
-                accept={generateMimeTypes(
-                  generatePermittedFileTypes(routeConfig).fileTypes,
-                ).join(",")}
-                className="hidden"
-                onChange={(e) => {
-                  if (!e.target.files?.[0]) return;
-                  const file = e.target.files[0];
-                  const preview = URL.createObjectURL(file);
-                  setFile(Object.assign(file, { preview }));
-                }}
-              />
-            </label>
+            <RetryImage
+              src={props.user.image}
+              onClick={() => inputRef.current?.click()}
+              alt="Profile Picture"
+              className="size-32 cursor-pointer rounded-2xl hover:opacity-75"
+              fallback={<User2Icon className="size-16" />}
+            />
           </div>
         )}
       </div>
       {file && (
         <CardContent>
           <div className="relative h-full min-h-[400px] w-full">
+            <Button
+              size="icon"
+              variant="destructive"
+              className="z-100 absolute right-2 top-2"
+              onClick={() => {
+                setFile(null);
+                if (inputRef.current) inputRef.current.value = "";
+              }}
+            >
+              <XIcon className="size-5" />
+            </Button>
             <Cropper
               maxZoom={5}
               image={file?.preview}
-              aspect={IMAGE_SIZE.w / IMAGE_SIZE.h}
+              aspect={imageProperties?.aspectRatio}
               crop={crop}
               zoom={zoom}
               objectFit="contain"
@@ -115,26 +135,90 @@ export function ProfilePictureCard(props: { user: User }) {
             />
           </div>
           {output && (
-            <div className="h-[400px] w-full">
-              <img src={output.preview} alt="Cropped image" />
+            <div
+              className="mt-2 flex w-full items-center justify-center"
+              style={{ height: imageProperties?.height ?? 200 }}
+            >
+              <img
+                src={output.preview}
+                alt="Cropped image"
+                className="border"
+              />
             </div>
           )}
         </CardContent>
       )}
       <CardFooter className="justify-between border-t px-6 py-4">
         <p className="text-muted-foreground text-sm">
-          Click on the profile picture to upload a new one.
+          {file
+            ? "Zoom and Drag to crop the image."
+            : "Click on the profile picture to upload a new one."}
         </p>
         {file && (
-          <Button size="sm" onClick={uploadCroppedImage} disabled={isUploading}>
-            {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
-            Save
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => inputRef.current?.click()}
+            >
+              <ImageIcon className="size-5" />
+            </Button>
+            <Button
+              size="sm"
+              onClick={uploadCroppedImage}
+              disabled={isUploading}
+            >
+              {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Save
+            </Button>
+          </div>
         )}
       </CardFooter>
     </Card>
   );
 }
+
+function expandImageProperties(config: ExpandedRouteConfig | undefined) {
+  const imageProperties = config?.image?.imageProperties;
+  if (!imageProperties) return;
+  const { width, height, aspectRatio } = imageProperties;
+
+  if (width && height) {
+    return { width, height, aspectRatio: width / height };
+  }
+
+  if (width && aspectRatio) {
+    return { width, height: width / aspectRatio, aspectRatio };
+  }
+
+  if (height && aspectRatio) {
+    return { width: height * aspectRatio, height, aspectRatio };
+  }
+
+  if (aspectRatio) {
+    return { width: undefined, height: undefined, aspectRatio };
+  }
+}
+
+const canvasToPreviewImage = async (
+  canvas: HTMLCanvasElement,
+  imageFile: File,
+): Promise<FileWithPreview> => {
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+      } else {
+        reject(new Error("Could not convert canvas to blob"));
+      }
+    });
+  });
+
+  return Object.assign(
+    new File([blob], imageFile.name, { type: imageFile.type }),
+    { preview: canvas.toDataURL("image/png") },
+  );
+};
 
 /**
  * Draw image onto canvas using the cropped area.
@@ -144,7 +228,7 @@ export function ProfilePictureCard(props: { user: User }) {
 const cropAndScaleImage = async (
   imageFile: FileWithPreview,
   crop: Area,
-  imageSize: { w: number; h: number },
+  imageSize?: { width?: number; height?: number },
 ) => {
   const image = new Image();
   image.src = imageFile.preview;
@@ -172,6 +256,9 @@ const cropAndScaleImage = async (
     crop.height,
   );
 
+  if (!imageSize?.height || !imageSize.width) {
+    return canvasToPreviewImage(cropCanvas, imageFile);
+  }
   /**
    * Then, let's scale the cropped image to the desired size.
    */
@@ -179,8 +266,8 @@ const cropAndScaleImage = async (
   const scaledCtx = scaledCanvas.getContext("2d");
   invariant(scaledCtx, "Could not get canvas context");
 
-  scaledCanvas.width = imageSize.w;
-  scaledCanvas.height = imageSize.h;
+  scaledCanvas.width = imageSize?.width;
+  scaledCanvas.height = imageSize.height;
 
   scaledCtx.drawImage(
     cropCanvas,
@@ -190,22 +277,9 @@ const cropAndScaleImage = async (
     cropCanvas.height,
     0,
     0,
-    imageSize.w,
-    imageSize.h,
+    imageSize.width,
+    imageSize.height,
   );
 
-  const blob = await new Promise<Blob>((resolve, reject) => {
-    scaledCanvas.toBlob((blob) => {
-      if (blob) {
-        resolve(blob);
-      } else {
-        reject(new Error("Could not convert canvas to blob"));
-      }
-    });
-  });
-
-  return Object.assign(
-    new File([blob], imageFile.name, { type: imageFile.type }),
-    { preview: scaledCanvas.toDataURL("image/png") },
-  );
+  return canvasToPreviewImage(scaledCanvas, imageFile);
 };

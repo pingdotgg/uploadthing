@@ -20,6 +20,14 @@ export const uploadRouter = {
     image: {
       maxFileSize: "4MB",
       maxFileCount: 1,
+      imageProperties: {
+        width: 200,
+        aspectRatio: 1,
+      },
+    },
+    video: {
+      // @ts-expect-error - only avail on image types
+      imageProperties: {},
     },
   })
     .middleware(async () => {

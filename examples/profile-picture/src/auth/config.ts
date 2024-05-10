@@ -16,16 +16,29 @@ export const authConfig = {
   providers: [],
   pages: { signIn: "/" },
   callbacks: {
+    jwt: async ({ token, user, session, trigger }) => {
+      if (trigger === "update") {
+        token.picture = session.user.image;
+      }
+      if (user) {
+        token.sub = user.id;
+      }
+      return token;
+    },
     session: async ({ session, token }) => {
       if (token?.sub) {
-        const [user] = await db
-          .select({ image: User.image })
-          .from(User)
-          .where(eq(User.id, token.sub));
+        const image =
+          token.picture ??
+          (await db
+            .select({ image: User.image })
+            .from(User)
+            .where(eq(User.id, token.sub))
+            .then(([user]) => user?.image));
 
         session.user.id = token.sub;
-        session.user.image = user?.image;
+        session.user.image = image;
       }
+
       return session;
     },
   },

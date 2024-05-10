@@ -11,8 +11,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { CircleUser } from "lucide-react";
+import { CircleUser, User2Icon } from "lucide-react";
 import { User } from "next-auth";
+
+import { RetryImage } from "./retry-image";
 
 export function UserMenu(props: { user: Promise<User | null> }) {
   const user = use(props.user);
@@ -22,10 +24,11 @@ export function UserMenu(props: { user: Promise<User | null> }) {
       <DropdownMenuTrigger asChild>
         <Button variant="secondary" size="icon" className="rounded-full">
           {user?.image ? (
-            <img
+            <RetryImage
               src={user.image}
               alt="Profile Picture"
-              className="h-8 w-8 rounded-full"
+              className="size-8 rounded-full"
+              fallback={<User2Icon className="size-8" />}
             />
           ) : (
             <CircleUser className="h-5 w-5" />

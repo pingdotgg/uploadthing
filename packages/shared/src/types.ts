@@ -20,6 +20,11 @@ export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}
   : ToAdd;
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
 
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
@@ -98,18 +103,37 @@ export type ContentDisposition = (typeof ValidContentDispositions)[number];
 export const ValidACLs = ["public-read", "private"] as const;
 export type ACL = (typeof ValidACLs)[number];
 
-type RouteConfig = {
+type ImageConfig = {
+  /** Specify the width of the image. */
+  width?: number;
+  /** Specify the height of the image. */
+  height?: number;
+  /**
+   * Specify the aspect ratio of the image.
+   * @remarks If both width and height are specified, this will be ignored.
+   */
+  aspectRatio?: number;
+};
+
+type RouteConfig<TExtraProps extends Record<string, unknown>> = {
   maxFileSize: FileSize;
   maxFileCount: number;
   minFileCount: number; // must be <= maxFileCount
   contentDisposition: ContentDisposition;
   acl?: ACL; // default is set on UT server, not backfilled like other options
-};
+} & TExtraProps;
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
 export type ExpandedRouteConfig = {
-  [key in FileRouterInputKey]?: RouteConfig;
+  [key in FileRouterInputKey]?: key extends `image${string}`
+    ? RouteConfig<{
+        /**
+         * @remarks These properties are not validated on the server
+         */
+        imageProperties?: ImageConfig;
+      }>
+    : RouteConfig<NonNullable<unknown>>;
 };
 
 export type EndpointMetadata = {
@@ -117,8 +141,6 @@ export type EndpointMetadata = {
   config: ExpandedRouteConfig;
 }[];
 
-type PartialRouteConfig = Partial<
-  Record<FileRouterInputKey, Partial<RouteConfig>>
->;
-
-export type FileRouterInputConfig = FileRouterInputKey[] | PartialRouteConfig;
+export type FileRouterInputConfig =
+  | FileRouterInputKey[]
+  | DeepPartial<ExpandedRouteConfig>;
