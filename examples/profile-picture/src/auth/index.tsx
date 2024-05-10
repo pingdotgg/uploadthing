@@ -90,15 +90,15 @@ const {
         }
 
         // Auto-signup new users - whatever...
-        const username = credentials.data.email.split("@")[0];
+        const name = credentials.data.email.split("@")[0];
         console.debug(
-          `Auto-signup new user ${credentials.data.email} as ${username}`,
+          `Auto-signup new user ${credentials.data.email} as ${name}`,
         );
         const [newUser] = await db
           .insert(User)
           .values({
             email: credentials.data.email,
-            name: username,
+            name,
             hashedPassword: await hash(credentials.data.password),
           })
           .returning();

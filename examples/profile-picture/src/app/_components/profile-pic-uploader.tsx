@@ -166,7 +166,7 @@ export function ProfilePictureCard(props: { user: User }) {
               onCropComplete={(_, area) => setCroppedArea(area)}
             />
           </div>
-          {output && (
+          {/* {output && (
             <div
               className="mt-2 flex w-full items-center justify-center"
               style={{ height: imageProperties?.height ?? 200 }}
@@ -177,7 +177,7 @@ export function ProfilePictureCard(props: { user: User }) {
                 className="border"
               />
             </div>
-          )}
+          )} */}
         </CardContent>
       )}
       <CardFooter className="justify-between border-t px-6 py-4">
