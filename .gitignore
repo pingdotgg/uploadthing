@@ -25,6 +25,7 @@ expo-env.d.ts
 *.pem
 .data
 .idea
+*.db
 
 # debug
 npm-debug.log*
