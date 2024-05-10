@@ -29,7 +29,8 @@ export async function signInWithCredentials(
 
 /**
  * Used to optimistically update the user's image
- * before it's in the database.
+ * without waiting for `onUploadComplete` to finish
+ * and updating the database record
  */
 export async function updateUserImage(url: string) {
   await unstable_update({
