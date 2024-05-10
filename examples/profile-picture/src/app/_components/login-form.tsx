@@ -31,6 +31,9 @@ export default function LoginForm() {
           <CardDescription>
             Enter your email below to login to your account.
           </CardDescription>
+          <p className="text-muted-foreground border-l-3 pl-2 text-sm italic">
+            New emails will auto-signup.
+          </p>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
