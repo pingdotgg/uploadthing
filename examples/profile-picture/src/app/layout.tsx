@@ -8,10 +8,14 @@ import { GeistSans } from "geist/font/sans";
 import { Menu, Package2, Search } from "lucide-react";
 import { Toaster } from "sonner";
 
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+
 import "./globals.css";
 
 import { Suspense } from "react";
 import { auth } from "@/auth";
+import { uploadRouter } from "@/uploadthing/server";
 
 export const metadata: Metadata = {
   title: "UploadThing",
@@ -31,6 +35,15 @@ export default function RootLayout({
           "h-[100dvh] bg-slate-100 text-slate-900",
         ].join(" ")}
       >
+        <NextSSRPlugin
+          /**
+           * The `extractRouterConfig` will extract **only** the route configs
+           * from the router to prevent additional information from being
+           * leaked to the client. The data passed to the client is the same
+           * as if you were to fetch `/api/uploadthing` directly.
+           */
+          routerConfig={extractRouterConfig(uploadRouter)}
+        />
         <div className="flex min-h-screen w-full flex-col">
           <header className="bg-background sticky top-0 flex h-16 items-center gap-4 border-b px-4 md:px-6">
             <Nav />
