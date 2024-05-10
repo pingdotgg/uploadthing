@@ -21,7 +21,7 @@ export default function LoginForm() {
 
   useEffect(() => {
     if (state?.error) toast.error(state.error);
-  });
+  }, [state?.error]);
 
   return (
     <form action={signIn}>
