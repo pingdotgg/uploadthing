@@ -30,12 +30,17 @@ import { updateUserImage } from "../_actions";
 type FileWithPreview = File & { preview: string };
 
 const waitForImageToLoad = (src: string) => {
-  return new Promise<void>((resolve) => {
+  const maxAttempts = 10;
+  let attempt = 0;
+  return new Promise<void>((resolve, reject) => {
     const image = new Image();
     image.src = src;
     image.onload = () => resolve();
     image.onerror = () => {
       console.error("Failed to load image", src);
+      if (attempt++ >= maxAttempts) {
+        reject(new Error("Failed to load image"));
+      }
       setTimeout(() => (image.src = src), 250);
     };
   });
@@ -48,17 +53,6 @@ export function ProfilePictureCard(props: { user: User }) {
   const [zoom, setZoom] = React.useState(1);
   const [croppedArea, setCroppedArea] = React.useState<Area | null>(null);
   const [newImageLoading, setNewImageLoading] = React.useState(false);
-
-  const [output, setOutput] = React.useState<FileWithPreview | null>(null);
-  React.useEffect(() => {
-    if (file && croppedArea) {
-      void cropAndScaleImage(file, croppedArea, imageProperties).then(
-        (image) => {
-          setOutput(image);
-        },
-      );
-    }
-  }, [file, crop, croppedArea]);
 
   const router = useRouter();
   const { isUploading, startUpload, permittedFileInfo } = useUploadThing(
@@ -73,7 +67,7 @@ export function ProfilePictureCard(props: { user: User }) {
         setNewImageLoading(true);
         await Promise.all([
           updateUserImage(uploadedFile.url),
-          waitForImageToLoad(uploadedFile.url),
+          waitForImageToLoad(uploadedFile.url).catch(toast.error),
         ]);
         setNewImageLoading(false);
         router.refresh();
@@ -85,6 +79,17 @@ export function ProfilePictureCard(props: { user: User }) {
   );
   const routeConfig = permittedFileInfo?.config;
   const imageProperties = expandImageProperties(routeConfig);
+
+  const [output, setOutput] = React.useState<FileWithPreview | null>(null);
+  React.useEffect(() => {
+    if (file && croppedArea) {
+      void cropAndScaleImage(file, croppedArea, imageProperties).then(
+        (image) => {
+          setOutput(image);
+        },
+      );
+    }
+  }, [file, croppedArea]);
 
   const uploadCroppedImage = async () => {
     if (!croppedArea || !file) return;
@@ -161,7 +166,7 @@ export function ProfilePictureCard(props: { user: User }) {
               onCropComplete={(_, area) => setCroppedArea(area)}
             />
           </div>
-          {/* {output && (
+          {output && (
             <div
               className="mt-2 flex w-full items-center justify-center"
               style={{ height: imageProperties?.height ?? 200 }}
@@ -172,7 +177,7 @@ export function ProfilePictureCard(props: { user: User }) {
                 className="border"
               />
             </div>
-          )} */}
+          )}
         </CardContent>
       )}
       <CardFooter className="justify-between border-t px-6 py-4">
@@ -233,6 +238,7 @@ const canvasToPreviewImage = async (
   canvas: HTMLCanvasElement,
   imageFile: File,
 ): Promise<FileWithPreview> => {
+  console.log("imageFile", imageFile);
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => {
       if (blob) {
@@ -240,13 +246,15 @@ const canvasToPreviewImage = async (
       } else {
         reject(new Error("Could not convert canvas to blob"));
       }
-    });
+    }, imageFile.type);
   });
 
-  return Object.assign(
-    new File([blob], imageFile.name, { type: imageFile.type }),
-    { preview: canvas.toDataURL("image/png") },
-  );
+  // SVGs rendered to canvas turns into pngs, match extension
+  const name = imageFile.name.replace(/\.svg$/, ".png");
+
+  return Object.assign(new File([blob], name, { type: blob.type }), {
+    preview: canvas.toDataURL(imageFile.type),
+  });
 };
 
 /**
