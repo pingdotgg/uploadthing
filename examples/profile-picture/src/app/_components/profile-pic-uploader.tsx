@@ -37,7 +37,7 @@ export function ProfilePictureCard(props: { user: User }) {
   const [output, setOutput] = React.useState<FileWithPreview | null>(null);
   React.useEffect(() => {
     if (file && croppedArea) {
-      drawImage(file, croppedArea, IMAGE_SIZE).then((image) => {
+      cropAndScaleImage(file, croppedArea, IMAGE_SIZE).then((image) => {
         setOutput(image);
       });
     }
@@ -141,7 +141,7 @@ export function ProfilePictureCard(props: { user: User }) {
  * The resulting image should be of size `imageSize`, and  be scaled to fit.
  * Account for the device pixel ratio to ensure the image is crisp when scaled.
  */
-const drawImage = async (
+const cropAndScaleImage = async (
   imageFile: FileWithPreview,
   crop: Area,
   imageSize: { w: number; h: number },
