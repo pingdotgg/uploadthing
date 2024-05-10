@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { signInWithCredentials } from "@/app/_actions";
 import { Button } from "@/ui/button";
 import {
@@ -13,9 +14,14 @@ import {
 import { Input } from "@/ui/input";
 import { Label } from "@/ui/label";
 import { useFormState } from "react-dom";
+import { toast } from "sonner";
 
 export default function LoginForm() {
   const [state, signIn] = useFormState(signInWithCredentials, undefined);
+
+  useEffect(() => {
+    if (state?.error) toast.error(state.error);
+  });
 
   return (
     <form action={signIn}>

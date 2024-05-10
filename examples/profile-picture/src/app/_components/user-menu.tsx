@@ -11,8 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/ui/dropdown-menu";
-import { CircleUser, User2Icon } from "lucide-react";
-import { User } from "next-auth";
+import { CircleUser } from "lucide-react";
+import type { User } from "next-auth";
 
 export function UserMenu(props: { user: Promise<User | null> }) {
   const user = use(props.user);

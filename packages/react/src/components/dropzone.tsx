@@ -118,7 +118,7 @@ export function UploadDropzone<
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         setFiles([]);
-        $props.onClientUploadComplete?.(res);
+        void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
       onUploadProgress: (p) => {

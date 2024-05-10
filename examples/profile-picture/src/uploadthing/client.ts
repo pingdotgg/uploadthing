@@ -1,6 +1,6 @@
 import { generateReactHelpers, generateUploadButton } from "@uploadthing/react";
 
-import { UploadRouter } from "./server";
+import type { UploadRouter } from "./server";
 
 export const UploadButton = generateUploadButton<UploadRouter>();
 

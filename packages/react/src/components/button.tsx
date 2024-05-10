@@ -127,7 +127,7 @@ export function UploadButton<
         }
         setIsManualTriggerDisplayed(false);
         setFiles([]);
-        $props.onClientUploadComplete?.(res);
+        void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
       onUploadProgress: (p) => {

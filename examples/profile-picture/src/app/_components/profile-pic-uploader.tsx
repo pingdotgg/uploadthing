@@ -13,17 +13,17 @@ import {
 } from "@/ui/card";
 import { useUploadThing } from "@/uploadthing/client";
 import { invariant } from "@/utils";
-import { ImageIcon, Loader2, User2Icon, XIcon } from "lucide-react";
-import { User } from "next-auth";
-import Cropper, { Area, Point } from "react-easy-crop";
+import { ImageIcon, Loader2, XIcon } from "lucide-react";
+import type { User } from "next-auth";
+import type { Area, Point } from "react-easy-crop";
+import Cropper from "react-easy-crop";
 import { toast } from "sonner";
-import { twMerge } from "tailwind-merge";
 
 import {
   generateMimeTypes,
   generatePermittedFileTypes,
 } from "uploadthing/client";
-import { ExpandedRouteConfig } from "uploadthing/types";
+import type { ExpandedRouteConfig } from "uploadthing/types";
 
 import { updateUserImage } from "../_actions";
 
@@ -52,9 +52,11 @@ export function ProfilePictureCard(props: { user: User }) {
   const [output, setOutput] = React.useState<FileWithPreview | null>(null);
   React.useEffect(() => {
     if (file && croppedArea) {
-      cropAndScaleImage(file, croppedArea, imageProperties).then((image) => {
-        setOutput(image);
-      });
+      void cropAndScaleImage(file, croppedArea, imageProperties).then(
+        (image) => {
+          setOutput(image);
+        },
+      );
     }
   }, [file, crop, croppedArea]);
 
@@ -76,16 +78,22 @@ export function ProfilePictureCard(props: { user: User }) {
         setNewImageLoading(false);
         router.refresh();
       },
-      onUploadError: () => toast.error("Failed to upload profile picture"),
+      onUploadError: () => {
+        toast.error("Failed to upload profile picture");
+      },
     },
   );
   const routeConfig = permittedFileInfo?.config;
   const imageProperties = expandImageProperties(routeConfig);
 
   const uploadCroppedImage = async () => {
-    if (!croppedArea || !file || !output) return;
-    // const croppedFile = await drawImage(file, croppedArea, IMAGE_SIZE);
-    startUpload([output]);
+    if (!croppedArea || !file) return;
+    const croppedFile = await cropAndScaleImage(
+      file,
+      croppedArea,
+      imageProperties,
+    );
+    await startUpload([croppedFile]);
   };
 
   return (
@@ -153,7 +161,7 @@ export function ProfilePictureCard(props: { user: User }) {
               onCropComplete={(_, area) => setCroppedArea(area)}
             />
           </div>
-          {output && (
+          {/* {output && (
             <div
               className="mt-2 flex w-full items-center justify-center"
               style={{ height: imageProperties?.height ?? 200 }}
@@ -164,7 +172,7 @@ export function ProfilePictureCard(props: { user: User }) {
                 className="border"
               />
             </div>
-          )}
+          )} */}
         </CardContent>
       )}
       <CardFooter className="justify-between border-t px-6 py-4">
@@ -173,8 +181,8 @@ export function ProfilePictureCard(props: { user: User }) {
             ? "Zoom and Drag to crop the image."
             : "Click on the profile picture to upload a new one."}
         </p>
-        {file && (
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2">
+          {file && !isUploading && (
             <Button
               size="sm"
               variant="secondary"
@@ -182,16 +190,18 @@ export function ProfilePictureCard(props: { user: User }) {
             >
               <ImageIcon className="size-5" />
             </Button>
+          )}
+          {file && (
             <Button
               size="sm"
               onClick={uploadCroppedImage}
               disabled={isUploading}
             >
-              {isUploading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Save
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </CardFooter>
     </Card>
   );
