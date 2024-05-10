@@ -13,7 +13,7 @@ import {
 } from "@/ui/card";
 import { useUploadThing } from "@/uploadthing/client";
 import { invariant } from "@/utils";
-import { ImageIcon, Loader2, User2Icon, XIcon } from "lucide-react";
+import { ImageIcon, Loader2, XIcon } from "lucide-react";
 import type { User } from "next-auth";
 import type { Area, Point } from "react-easy-crop";
 import Cropper from "react-easy-crop";
@@ -28,23 +28,6 @@ import type { ExpandedRouteConfig } from "uploadthing/types";
 import { updateUserImage } from "../_actions";
 
 type FileWithPreview = File & { preview: string };
-
-const waitForImageToLoad = (src: string) => {
-  const maxAttempts = 10;
-  let attempt = 0;
-  return new Promise<void>((resolve, reject) => {
-    const image = new Image();
-    image.src = src;
-    image.onload = () => resolve();
-    image.onerror = () => {
-      console.error("Failed to load image", src);
-      if (attempt++ >= maxAttempts) {
-        reject(new Error("Failed to load image"));
-      }
-      setTimeout(() => (image.src = src), 250);
-    };
-  });
-};
 
 export function ProfilePictureCard(props: { user: User }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -212,6 +195,23 @@ export function ProfilePictureCard(props: { user: User }) {
       </CardFooter>
     </Card>
   );
+}
+
+function waitForImageToLoad(src: string) {
+  const maxAttempts = 10;
+  let attempt = 0;
+  return new Promise<void>((resolve, reject) => {
+    const image = new Image();
+    image.src = src;
+    image.onload = () => resolve();
+    image.onerror = () => {
+      console.error("Failed to load image", src);
+      if (attempt++ >= maxAttempts) {
+        reject(new Error("Failed to load image"));
+      }
+      setTimeout(() => (image.src = src), 250);
+    };
+  });
 }
 
 function expandImageProperties(config: ExpandedRouteConfig | undefined) {

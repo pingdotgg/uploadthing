@@ -3,7 +3,7 @@
 import { Button } from "@/ui/button";
 import { CardContent, CardFooter } from "@/ui/card";
 import { Input } from "@/ui/input";
-import { User } from "next-auth";
+import type { User } from "next-auth";
 import { toast } from "sonner";
 
 import { updateDisplayName } from "../_actions";
