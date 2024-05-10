@@ -38,11 +38,7 @@ export async function signInWithCredentials(
 export async function updateDisplayName(name: string) {
   const user = await currentUser();
   await Promise.all([
-    unstable_update({
-      user: {
-        name,
-      },
-    }),
+    unstable_update({ user: { name } }),
     db.update(User).set({ name }).where(eq(User.id, user.id)),
   ]);
   revalidatePath("/", "layout");
@@ -54,14 +50,10 @@ export async function updateDisplayName(name: string) {
  * and updating the database record
  */
 export async function updateUserImage(url: string) {
-  await unstable_update({
-    user: {
-      image: url,
-    },
-  });
+  await unstable_update({ user: { image: url } });
   revalidatePath("/", "layout");
 }
 
 export async function signOut() {
-  await $signOut();
+  await $signOut({ redirectTo: "/" });
 }
