@@ -17,6 +17,7 @@ import { ImageIcon, Loader2, User2Icon, XIcon } from "lucide-react";
 import { User } from "next-auth";
 import Cropper, { Area, Point } from "react-easy-crop";
 import { toast } from "sonner";
+import { twMerge } from "tailwind-merge";
 
 import {
   generateMimeTypes,
@@ -25,9 +26,20 @@ import {
 import { ExpandedRouteConfig } from "uploadthing/types";
 
 import { updateUserImage } from "../_actions";
-import { RetryImage } from "./retry-image";
 
 type FileWithPreview = File & { preview: string };
+
+const waitForImageToLoad = (src: string) => {
+  return new Promise<void>((resolve) => {
+    const image = new Image();
+    image.src = src;
+    image.onload = () => resolve();
+    image.onerror = () => {
+      console.error("Failed to load image", src);
+      setTimeout(() => (image.src = src), 250);
+    };
+  });
+};
 
 export function ProfilePictureCard(props: { user: User }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -35,6 +47,7 @@ export function ProfilePictureCard(props: { user: User }) {
   const [crop, setCrop] = React.useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = React.useState(1);
   const [croppedArea, setCroppedArea] = React.useState<Area | null>(null);
+  const [newImageLoading, setNewImageLoading] = React.useState(false);
 
   const [output, setOutput] = React.useState<FileWithPreview | null>(null);
   React.useEffect(() => {
@@ -55,8 +68,12 @@ export function ProfilePictureCard(props: { user: User }) {
         if (output) URL.revokeObjectURL(output.preview);
         setFile(null);
         setOutput(null);
-        await updateUserImage(uploadedFile.url);
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        setNewImageLoading(true);
+        await Promise.all([
+          updateUserImage(uploadedFile.url),
+          waitForImageToLoad(uploadedFile.url),
+        ]);
+        setNewImageLoading(false);
         router.refresh();
       },
       onUploadError: () => toast.error("Failed to upload profile picture"),
@@ -97,13 +114,15 @@ export function ProfilePictureCard(props: { user: User }) {
         </CardHeader>
 
         {props.user.image && !file && (
-          <div className="p-6">
-            <RetryImage
+          <div className="relative p-6">
+            {newImageLoading && (
+              <div className="absolute inset-6 flex animate-pulse items-center justify-center rounded-2xl bg-black/80" />
+            )}
+            <img
               src={props.user.image}
               onClick={() => inputRef.current?.click()}
               alt="Profile Picture"
-              className="size-32 cursor-pointer rounded-2xl hover:opacity-75"
-              fallback={<User2Icon className="size-16" />}
+              className={"size-32 cursor-pointer rounded-2xl hover:opacity-75"}
             />
           </div>
         )}
