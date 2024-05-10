@@ -29,12 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={[
-          GeistSans.variable,
-          "h-[100dvh] bg-slate-100 text-slate-900",
-        ].join(" ")}
-      >
+      <body className={GeistSans.variable}>
         <NextSSRPlugin
           /**
            * The `extractRouterConfig` will extract **only** the route configs

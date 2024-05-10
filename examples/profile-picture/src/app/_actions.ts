@@ -2,12 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect";
-import { signOut as _signOut, signIn, unstable_update } from "@/auth";
+import { signOut as $signOut, signIn, unstable_update } from "@/auth";
 import { AuthError } from "next-auth";
-
-export async function signOut() {
-  await _signOut();
-}
 
 export async function signInWithCredentials(
   _prevState: { error: string } | undefined,
@@ -31,10 +27,6 @@ export async function signInWithCredentials(
   }
 }
 
-export async function signInWithGithub() {
-  await signIn("github");
-}
-
 /**
  * Used to optimistically update the user's image
  * before it's in the database.
@@ -46,4 +38,8 @@ export async function updateUserImage(url: string) {
     },
   });
   revalidatePath("/", "page");
+}
+
+export async function signOut() {
+  await $signOut();
 }
