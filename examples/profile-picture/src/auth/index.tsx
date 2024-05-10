@@ -61,7 +61,7 @@ const {
       async authorize(c) {
         const credentials = z
           .object({
-            username: z.string().min(1).max(32),
+            email: z.string().email(),
             password: z.string().min(6).max(32),
           })
           .safeParse(c);
@@ -69,7 +69,7 @@ const {
 
         const user = await db.query.User.findFirst({
           where: (fields, ops) =>
-            ops.sql`${fields.name} = ${credentials.data.username} COLLATE NOCASE`,
+            ops.sql`${fields.email} = ${credentials.data.email} COLLATE NOCASE`,
         });
         if (user) {
           if (!user.hashedPassword) {
@@ -90,12 +90,15 @@ const {
         }
 
         // Auto-signup new users - whatever...
-        console.debug(`Auto-signup new user ${credentials.data.username}`);
+        const username = credentials.data.email.split("@")[0];
+        console.debug(
+          `Auto-signup new user ${credentials.data.email} as ${username}`,
+        );
         const [newUser] = await db
           .insert(User)
           .values({
-            email: `${credentials.data.username}@example.com`,
-            name: credentials.data.username,
+            email: credentials.data.email,
+            name: username,
             hashedPassword: await hash(credentials.data.password),
           })
           .returning();

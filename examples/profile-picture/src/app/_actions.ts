@@ -2,7 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { isRedirectError } from "next/dist/client/components/redirect";
-import { signOut as $signOut, signIn, unstable_update } from "@/auth";
+import {
+  signOut as $signOut,
+  currentUser,
+  signIn,
+  unstable_update,
+} from "@/auth";
+import { db } from "@/db/client";
+import { User } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { AuthError } from "next-auth";
 
 export async function signInWithCredentials(
@@ -27,6 +35,19 @@ export async function signInWithCredentials(
   }
 }
 
+export async function updateDisplayName(name: string) {
+  const user = await currentUser();
+  await Promise.all([
+    unstable_update({
+      user: {
+        name,
+      },
+    }),
+    db.update(User).set({ name }).where(eq(User.id, user.id)),
+  ]);
+  revalidatePath("/", "layout");
+}
+
 /**
  * Used to optimistically update the user's image
  * without waiting for `onUploadComplete` to finish
@@ -38,7 +59,7 @@ export async function updateUserImage(url: string) {
       image: url,
     },
   });
-  revalidatePath("/", "page");
+  revalidatePath("/", "layout");
 }
 
 export async function signOut() {

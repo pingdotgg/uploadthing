@@ -2,16 +2,9 @@ import Link from "next/link";
 import LoginForm from "@/app/_components/login-form";
 import { ProfilePictureCard } from "@/app/_components/profile-pic-uploader";
 import { SignedIn, SignedOut } from "@/auth";
-import { Button } from "@/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/ui/card";
-import { Input } from "@/ui/input";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/ui/card";
+
+import { UpdateNameForm } from "./_components/update-name";
 
 export default async function Dashboard() {
   return (
@@ -22,6 +15,7 @@ export default async function Dashboard() {
             <div className="mx-auto grid w-full max-w-6xl gap-2">
               <h1 className="text-3xl font-semibold">Settings</h1>
             </div>
+
             <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
               <nav
                 className="text-muted-foreground grid gap-4 text-sm"
@@ -45,21 +39,7 @@ export default async function Dashboard() {
                       comfortable with.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <form>
-                      <Input
-                        disabled
-                        placeholder="John Doe"
-                        defaultValue={user.name ?? ""}
-                      />
-                    </form>
-                  </CardContent>
-                  <CardFooter className="justify-between border-t px-6 py-4">
-                    <p className="text-muted-foreground text-sm">
-                      Please use 32 characters at maximum.
-                    </p>
-                    <Button size="sm">Save</Button>
-                  </CardFooter>
+                  <UpdateNameForm user={user} />
                 </Card>
                 <ProfilePictureCard user={user} />
               </div>

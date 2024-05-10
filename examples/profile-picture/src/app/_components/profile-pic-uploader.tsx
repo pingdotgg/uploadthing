@@ -13,7 +13,7 @@ import {
 } from "@/ui/card";
 import { useUploadThing } from "@/uploadthing/client";
 import { invariant } from "@/utils";
-import { ImageIcon, Loader2, XIcon } from "lucide-react";
+import { ImageIcon, Loader2, User2Icon, XIcon } from "lucide-react";
 import type { User } from "next-auth";
 import type { Area, Point } from "react-easy-crop";
 import Cropper from "react-easy-crop";
@@ -126,13 +126,13 @@ export function ProfilePictureCard(props: { user: User }) {
           </CardDescription>
         </CardHeader>
 
-        {props.user.image && !file && (
+        {!file && (
           <div className="relative p-6">
             {newImageLoading && (
               <div className="absolute inset-6 flex animate-pulse items-center justify-center rounded-2xl bg-black/80" />
             )}
             <img
-              src={props.user.image}
+              src={props.user.image ?? "/fallback.svg"}
               onClick={() => inputRef.current?.click()}
               alt="Profile Picture"
               className={"size-32 cursor-pointer rounded-2xl hover:opacity-75"}
@@ -184,7 +184,9 @@ export function ProfilePictureCard(props: { user: User }) {
         <p className="text-muted-foreground text-sm">
           {file
             ? "Zoom and Drag to crop the image."
-            : "Click on the profile picture to upload a new one."}
+            : props.user.image
+              ? "Click on the profile picture to upload a new one."
+              : "You do not yet have a profile picture, click on the placeholder to upload one."}
         </p>
         <div className="flex items-center gap-2">
           {file && !isUploading && (

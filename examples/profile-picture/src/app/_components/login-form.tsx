@@ -34,13 +34,13 @@ export default function LoginForm() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="username">Email</Label>
+            <Label htmlFor="email">Email</Label>
             <Input
-              id="username"
-              name="username"
-              placeholder="johndoe"
+              id="email"
+              name="email"
+              type="email"
+              placeholder="johndoe@example.com"
               required
-              minLength={6}
             />
           </div>
           <div className="grid gap-2">
