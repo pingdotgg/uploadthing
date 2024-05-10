@@ -17,7 +17,6 @@ export const authConfig = {
   pages: { signIn: "/" },
   callbacks: {
     jwt: async ({ token, user, session, trigger }) => {
-      console.log("jwt", { token, user, session, trigger });
       if (trigger === "update") {
         if ((session as Session)?.user?.image)
           token.picture = (session as Session).user.image;
@@ -30,7 +29,6 @@ export const authConfig = {
       return token;
     },
     session: async ({ session, token }) => {
-      console.log("session", { session, token });
       if (token?.sub) {
         const image =
           token.picture ??

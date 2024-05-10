@@ -44,15 +44,17 @@ export function ProfilePictureCard(props: { user: User }) {
       skipPolling: true,
       onClientUploadComplete: async ([uploadedFile]) => {
         if (file) URL.revokeObjectURL(file.preview);
-        if (output) URL.revokeObjectURL(output.preview);
         setFile(null);
-        setOutput(null);
+
         setNewImageLoading(true);
         await Promise.all([
           updateUserImage(uploadedFile.url),
           waitForImageToLoad(uploadedFile.url).catch(toast.error),
         ]);
         setNewImageLoading(false);
+
+        if (output) URL.revokeObjectURL(output.preview);
+        setOutput(null);
         router.refresh();
       },
       onUploadError: () => {
@@ -75,13 +77,8 @@ export function ProfilePictureCard(props: { user: User }) {
   }, [file, croppedArea]);
 
   const uploadCroppedImage = async () => {
-    if (!croppedArea || !file) return;
-    const croppedFile = await cropAndScaleImage(
-      file,
-      croppedArea,
-      imageProperties,
-    );
-    await startUpload([croppedFile]);
+    if (!croppedArea || !output) return;
+    await startUpload([output]);
   };
 
   return (
@@ -115,7 +112,7 @@ export function ProfilePictureCard(props: { user: User }) {
               <div className="absolute inset-6 flex animate-pulse items-center justify-center rounded-2xl bg-black/80" />
             )}
             <img
-              src={props.user.image ?? "/fallback.svg"}
+              src={output?.preview ?? props.user.image ?? "/fallback.svg"}
               onClick={() => inputRef.current?.click()}
               alt="Profile Picture"
               className={"size-32 cursor-pointer rounded-2xl hover:opacity-75"}
