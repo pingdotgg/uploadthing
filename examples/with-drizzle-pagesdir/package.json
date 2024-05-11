@@ -12,13 +12,13 @@
   "dependencies": {
     "@libsql/client": "^0.6.0",
     "@t3-oss/env-nextjs": "^0.10.1",
-    "@uploadthing/react": "6.5.1",
+    "@uploadthing/react": "6.5.3",
     "drizzle-orm": "^0.30.10",
     "next": "14.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "swr": "^2.2.5",
-    "uploadthing": "6.10.1",
+    "uploadthing": "6.10.3",
     "zod": "^3.22.4"
   },
   "devDependencies": {

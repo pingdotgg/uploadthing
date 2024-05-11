@@ -1,5 +1,7 @@
 import { TaggedError } from "effect/Data";
 
+import { isObject } from "./utils";
+
 export class InvalidRouteConfigError extends TaggedError("InvalidRouteConfig")<{
   reason: string;
 }> {
@@ -58,8 +60,32 @@ export const getRequestUrl = (input: RequestInfo | URL) => {
   return input.toString();
 };
 
-export class FetchError<T = unknown> extends TaggedError("FetchError")<{
-  readonly input: RequestInfo | URL;
+export class FetchError extends TaggedError("FetchError")<{
+  readonly input: {
+    url: string;
+    method: string | undefined;
+    body: unknown;
+    headers: Record<string, string>;
+  };
   readonly error: unknown;
-  readonly data?: T;
 }> {}
+
+export class InvalidJsonError extends TaggedError("InvalidJsonError")<{
+  readonly input: unknown;
+  readonly error: unknown;
+}> {}
+
+export class BadRequestError<T = unknown> extends TaggedError(
+  "BadRequestError",
+)<{
+  readonly message: string;
+  readonly status: number;
+  readonly json: T;
+}> {
+  getMessage() {
+    if (isObject(this.json)) {
+      if (typeof this.json.message === "string") return this.json.message;
+    }
+    return this.message;
+  }
+}

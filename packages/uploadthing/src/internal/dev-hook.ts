@@ -1,10 +1,11 @@
+import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
 import {
   exponentialBackoff,
   fetchEff,
-  fetchEffJson,
   generateUploadThingURL,
+  parseResponseJson,
   RetryError,
   signPayload,
   UploadThingError,
@@ -24,10 +25,11 @@ const isValidResponse = (response: ResponseEsque) => {
 
 export const conditionalDevServer = (fileKey: string, apiKey: string) => {
   return Effect.gen(function* () {
-    const file = yield* fetchEffJson(
+    const file = yield* fetchEff(
       generateUploadThingURL(`/api/pollUpload/${fileKey}`),
-      PollUploadResponseSchema,
     ).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(PollUploadResponseSchema)),
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(res.fileData)

@@ -43,10 +43,10 @@
     "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
     "expo-constants": "^15.4.5",
-    "expo-document-picker": "^11.10.1",
-    "expo-image-picker": "^14.7.1",
+    "expo-document-picker": "^12.0.1",
+    "expo-image-picker": "^15.0.4",
     "react": "18.2.0",
-    "react-native": "^0.73.6",
+    "react-native": "^0.74.1",
     "typescript": "^5.4.5",
     "uploadthing": "workspace:*",
     "wait-on": "^7.2.0"

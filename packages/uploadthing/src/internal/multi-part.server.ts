@@ -5,8 +5,8 @@ import {
   contentDisposition,
   exponentialBackoff,
   fetchEff,
-  fetchEffJson,
   generateUploadThingURL,
+  parseResponseJson,
   RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -107,27 +107,33 @@ export const completeMultipartUpload = (
   presigned: { key: string; uploadId: string },
   etags: readonly { tag: string; partNumber: number }[],
 ) =>
-  fetchEffJson(
-    generateUploadThingURL("/api/completeMultipart"),
-    S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        fileKey: presigned.key,
-        uploadId: presigned.uploadId,
-        etags,
-      }),
-      headers: { "Content-Type": "application/json" },
-    },
+  fetchEff(generateUploadThingURL("/api/completeMultipart"), {
+    method: "POST",
+    body: JSON.stringify({
+      fileKey: presigned.key,
+      uploadId: presigned.uploadId,
+      etags,
+    }),
+    headers: { "Content-Type": "application/json" },
+  }).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(
+      S.decodeUnknown(
+        S.Struct({ success: S.Boolean, message: S.optional(S.String) }),
+      ),
+    ),
+    Effect.withSpan("completeMultipartUpload", {
+      attributes: { etags, presigned },
+    }),
   );
 
 export const abortMultipartUpload = (presigned: {
   key: string;
   uploadId: string | null;
 }) =>
-  fetchEffJson(
+  fetchEff(
     generateUploadThingURL("/api/failureCallback"),
-    FailureCallbackResponseSchema,
+
     {
       method: "POST",
       body: JSON.stringify({
@@ -136,4 +142,10 @@ export const abortMultipartUpload = (presigned: {
       }),
       headers: { "Content-Type": "application/json" },
     },
+  ).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(S.decodeUnknown(FailureCallbackResponseSchema)),
+    Effect.withSpan("abortMultipartUpload", {
+      attributes: { presigned },
+    }),
   );

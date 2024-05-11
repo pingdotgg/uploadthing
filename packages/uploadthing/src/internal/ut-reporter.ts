@@ -1,8 +1,13 @@
-import type * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
 
 import type { FetchContext, MaybePromise } from "@uploadthing/shared";
-import { fetchEffJson, UploadThingError } from "@uploadthing/shared";
+import {
+  fetchEff,
+  getErrorTypeFromStatusCode,
+  parseResponseJson,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -31,7 +36,6 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
-  responseSchema: S.Schema<UTEvents[TEvent]["out"]>,
 ) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
@@ -45,7 +49,7 @@ export const createUTReporter =
     package: string;
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   }): UTReporter =>
-  (type, payload, responseSchema) =>
+  (type, payload) =>
     Effect.gen(function* () {
       const url = createAPIRequestUrl({
         url: cfg.url,
@@ -58,7 +62,7 @@ export const createUTReporter =
         headers = yield* Effect.promise(() => headers as Promise<HeadersInit>);
       }
 
-      const response = yield* fetchEffJson(url, responseSchema, {
+      const response = yield* fetchEff(url, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
@@ -68,24 +72,33 @@ export const createUTReporter =
           ...headers,
         },
       }).pipe(
-        Effect.catchTag("FetchError", (e) =>
-          Effect.fail(
+        Effect.andThen(parseResponseJson),
+        /**
+         * We don't _need_ to validate the response here, just cast it for now.
+         * As of now, @effect/schema includes quite a few bytes we cut out by this...
+         * We have "strong typing" on the backend that ensures the shape should match.
+         */
+        Effect.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
+        Effect.catchTags({
+          FetchError: (e) =>
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: `Failed to report event "${type}" to UploadThing server`,
               cause: e,
             }),
-          ),
-        ),
-        Effect.catchTag("ParseError", (e) =>
-          Effect.fail(
+          BadRequestError: (e) =>
+            new UploadThingError({
+              code: getErrorTypeFromStatusCode(e.status),
+              message: e.getMessage(),
+              cause: e.json,
+            }),
+          InvalidJsonError: (e) =>
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: "Failed to parse response from UploadThing server",
               cause: e,
             }),
-          ),
-        ),
+        }),
       );
 
       switch (type) {

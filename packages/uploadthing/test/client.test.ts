@@ -285,7 +285,7 @@ describe("uploadFiles", () => {
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[(FiberFailure) UploadThingError: Failed to upload file foo.txt to S3]`,
+      `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
     expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
@@ -322,7 +322,7 @@ describe("uploadFiles", () => {
         skipPolling: true,
       }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[(FiberFailure) UploadThingError: Failed to upload file foo.txt to S3]`,
+      `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
 
     expect(requestsToDomain("amazonaws.com")).toHaveLength(7);
@@ -343,5 +343,41 @@ describe("uploadFiles", () => {
     );
 
     close();
+  });
+
+  it("handles too big file size errors", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
+
+    const tooBigFile = new File(
+      [new ArrayBuffer(20 * 1024 * 1024)],
+      "foo.txt",
+      {
+        type: "text/plain",
+      },
+    );
+
+    await expect(
+      uploadFiles("foo", {
+        files: [tooBigFile],
+        skipPolling: true,
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: Invalid config: FileSizeMismatch]`,
+    );
+  });
+
+  it("handles invalid file type errors", async ({ db, task }) => {
+    const { uploadFiles, close } = setupUTServer(task);
+
+    const file = new File(["foo"], "foo.png", { type: "image/png" });
+
+    await expect(
+      uploadFiles("foo", {
+        files: [file],
+        skipPolling: true,
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: Invalid config: InvalidFileType]`,
+    );
   });
 });

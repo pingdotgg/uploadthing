@@ -3,11 +3,12 @@ import * as Effect from "effect/Effect";
 
 import {
   FetchContext,
-  fetchEffJson,
+  fetchEff,
   fillInputRouteConfig,
   generateUploadThingURL,
   objectKeys,
   parseRequestJson,
+  parseResponseJson,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
@@ -107,12 +108,27 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
+        InvalidJsonError: (e) =>
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing input/output",
+            cause: e,
+          }),
+        BadRequestError: (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: e.getMessage(),
+              cause: e,
+              data: e.json as never,
+            }),
+          ),
         FetchError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: typeof e.error === "string" ? e.error : e.message,
             cause: e,
-            data: e.data as never,
+            data: e.error as never,
           }),
         ParseError: (e) =>
           new UploadThingError({
@@ -148,13 +164,15 @@ const handleCallbackRequest = Effect.gen(function* () {
     });
   }
 
-  const requestInput = yield* parseRequestJson(
-    req,
-    S.Struct({
-      status: S.String,
-      file: UploadedFileDataSchema,
-      metadata: S.Record(S.String, S.Unknown),
-    }),
+  const requestInput = yield* Effect.flatMap(
+    parseRequestJson(req),
+    S.decodeUnknown(
+      S.Struct({
+        status: S.String,
+        file: UploadedFileDataSchema,
+        metadata: S.Record(S.String, S.Unknown),
+      }),
+    ),
   );
   yield* Effect.logDebug("Handling callback request with input:", requestInput);
 
@@ -187,14 +205,13 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEffJson(
-    generateUploadThingURL("/api/serverCallback"),
-    ServerCallbackPostResponseSchema,
-    {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    },
+  yield* fetchEff(generateUploadThingURL("/api/serverCallback"), {
+    method: "POST",
+    body: JSON.stringify(payload),
+    headers: { "Content-Type": "application/json" },
+  }).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(S.decodeUnknown(ServerCallbackPostResponseSchema)),
   );
   return { body: null };
 });
@@ -254,9 +271,9 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
 
 const handleUploadAction = Effect.gen(function* () {
   const opts = yield* RequestInput;
-  const { files, input } = yield* parseRequestJson(
-    opts.req,
-    UploadActionPayload,
+  const { files, input } = yield* Effect.flatMap(
+    parseRequestJson(opts.req),
+    S.decodeUnknown(UploadActionPayload),
   );
   yield* Effect.logDebug("Handling upload request with input:", {
     files,
@@ -338,9 +355,8 @@ const handleUploadAction = Effect.gen(function* () {
     callbackUrl.href,
   );
 
-  const presignedUrls = yield* fetchEffJson(
+  const presignedUrls = yield* fetchEff(
     generateUploadThingURL("/api/prepareUpload"),
-    PresignedURLResponseSchema,
     {
       method: "POST",
       body: JSON.stringify({
@@ -352,6 +368,9 @@ const handleUploadAction = Effect.gen(function* () {
       }),
       headers: { "Content-Type": "application/json" },
     },
+  ).pipe(
+    Effect.andThen(parseResponseJson),
+    Effect.andThen(S.decodeUnknown(PresignedURLResponseSchema)),
   );
 
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
@@ -379,11 +398,10 @@ const handleUploadAction = Effect.gen(function* () {
 
 const handleMultipartCompleteAction = Effect.gen(function* () {
   const opts = yield* RequestInput;
-  const requestInput = yield* parseRequestJson(
-    opts.req,
-    MultipartCompleteActionPayload,
+  const requestInput = yield* Effect.flatMap(
+    parseRequestJson(opts.req),
+    S.decodeUnknown(MultipartCompleteActionPayload),
   );
-
   yield* Effect.logDebug(
     "Handling multipart-complete request with input:",
     requestInput,
@@ -408,9 +426,9 @@ const handleMultipartCompleteAction = Effect.gen(function* () {
 
 const handleMultipartFailureAction = Effect.gen(function* () {
   const { req, uploadable } = yield* RequestInput;
-  const { fileKey, uploadId } = yield* parseRequestJson(
-    req,
-    FailureActionPayload,
+  const { fileKey, uploadId } = yield* Effect.flatMap(
+    parseRequestJson(req),
+    S.decodeUnknown(FailureActionPayload),
   );
   yield* Effect.logDebug("Handling failure request with input:", {
     fileKey,

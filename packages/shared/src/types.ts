@@ -1,5 +1,3 @@
-import * as S from "@effect/schema/Schema";
-
 import type { MimeType } from "@uploadthing/mime-types";
 
 import type { AllowedFileType } from "./file-types";
@@ -94,10 +92,11 @@ export type Time =
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
-export const ContentDispositionSchema = S.Literal("inline", "attachment");
-export type ContentDisposition = S.Schema.Type<typeof ContentDispositionSchema>;
-export const ACLSchema = S.Literal("public-read", "private");
-export type ACL = S.Schema.Type<typeof ACLSchema>;
+export const ValidContentDispositions = ["inline", "attachment"] as const;
+export type ContentDisposition = (typeof ValidContentDispositions)[number];
+
+export const ValidACLs = ["public-read", "private"] as const;
+export type ACL = (typeof ValidACLs)[number];
 
 type RouteConfig = {
   maxFileSize: FileSize;

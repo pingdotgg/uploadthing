@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "6.7.1",
+  "version": "6.7.3",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
@@ -34,9 +34,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.66.12",
     "effect": "^3.1.0",
-    "fast-check": "^3.18.0",
     "std-env": "^3.7.0"
   },
   "devDependencies": {

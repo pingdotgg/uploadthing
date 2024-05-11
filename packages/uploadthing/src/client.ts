@@ -1,16 +1,19 @@
-import type { ParseError } from "@effect/schema/ParseResult";
 import * as Arr from "effect/Array";
+import * as Cause from "effect/Cause";
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
 import * as Option from "effect/Option";
+import * as Runtime from "effect/Runtime";
 
-import type { FetchError } from "@uploadthing/shared";
+import type { FetchError, InvalidJsonError } from "@uploadthing/shared";
 import {
   exponentialBackoff,
   FetchContext,
-  fetchEffUnknown,
+  fetchEff,
+  getErrorTypeFromStatusCode,
   isObject,
+  parseResponseJson,
   resolveMaybeUrlArg,
   RetryError,
   UploadThingError,
@@ -20,7 +23,6 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import { PresignedURLResponseSchema } from "./internal/shared-schemas";
 import type {
   FileRouter,
   inferEndpointOutput,
@@ -59,7 +61,7 @@ const uploadFilesInternal = <
 ): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
-  UploadThingError | RetryError | FetchError | ParseError,
+  UploadThingError | RetryError | FetchError | InvalidJsonError,
   FetchContext
 > => {
   // classic service right here
@@ -71,18 +73,14 @@ const uploadFilesInternal = <
   });
 
   return Effect.flatMap(
-    reportEventToUT(
-      "upload",
-      {
-        input: "input" in opts ? opts.input : null,
-        files: opts.files.map((f) => ({
-          name: f.name,
-          size: f.size,
-          type: f.type,
-        })),
-      },
-      PresignedURLResponseSchema, // don't want to break this, you do it
-    ),
+    reportEventToUT("upload", {
+      input: "input" in opts ? opts.input : null,
+      files: opts.files.map((f) => ({
+        name: f.name,
+        size: f.size,
+        type: f.type,
+      })),
+    }),
     Effect.forEach(
       (presigned) =>
         uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(
@@ -114,18 +112,23 @@ export const genUploader = <TRouter extends FileRouter>(
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
-    }).pipe(
-      Effect.provideService(FetchContext, {
-        fetch: globalThis.fetch.bind(globalThis),
-        baseHeaders: {
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-          "x-uploadthing-api-key": undefined,
-          "x-uploadthing-fe-package": initOpts.package,
-          "x-uploadthing-be-adapter": undefined,
-        },
-      }),
-      Effect.runPromise,
-    );
+    })
+      .pipe(
+        Effect.provideService(FetchContext, {
+          fetch: globalThis.fetch.bind(globalThis),
+          baseHeaders: {
+            "x-uploadthing-version": UPLOADTHING_VERSION,
+            "x-uploadthing-api-key": undefined,
+            "x-uploadthing-fe-package": initOpts.package,
+            "x-uploadthing-be-adapter": undefined,
+          },
+        }),
+        Effect.runPromise,
+      )
+      .catch((error) => {
+        if (!Runtime.isFiberFailure(error)) throw error;
+        throw Cause.squash(error[Runtime.FiberFailureCauseId]);
+      });
 };
 
 type Done = { status: "done"; callbackData: unknown };
@@ -138,8 +141,9 @@ const isPollingResponse = (input: unknown): input is PollingResponse => {
   return input.status === "still waiting";
 };
 
-const isPollDone = (input: PollingResponse): input is Done =>
-  input.status === "done";
+const isPollingDone = (input: PollingResponse): input is Done => {
+  return input.status === "done";
+};
 
 const uploadFile = <
   TRouter extends FileRouter,
@@ -174,14 +178,24 @@ const uploadFile = <
         : uploadPresignedPostWithProgress(file, presigned, opts),
     ),
     Effect.zip(
-      fetchEffUnknown(presigned.pollingUrl, {
+      fetchEff(presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }).pipe(
+        Effect.flatMap(parseResponseJson),
+        Effect.catchTag("BadRequestError", (e) =>
+          Effect.fail(
+            new UploadThingError({
+              code: getErrorTypeFromStatusCode(e.status),
+              message: e.message,
+              cause: e,
+            }),
+          ),
+        ),
         Effect.filterOrDieMessage(
           isPollingResponse,
           "received a non PollingResponse from the polling endpoint",
         ),
-        Effect.filterOrFail(isPollDone, () => new RetryError()),
+        Effect.filterOrFail(isPollingDone, () => new RetryError()),
         Effect.map(({ callbackData }) => callbackData),
         Effect.retry({
           while: (res) => res instanceof RetryError,
