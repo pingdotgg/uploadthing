@@ -305,6 +305,7 @@ export class UTApi {
           id: S.String,
           key: S.String,
           name: S.String,
+          customId: S.NullOr(S.String),
           status: S.Literal(
             "Deletion Pending",
             "Failed",
