@@ -15,6 +15,8 @@ import {
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
+import type { FileWithState } from "@uploadthing/shared";
+
 import {
   allFilesAccepted,
   initialState,
@@ -170,14 +172,18 @@ export function createDropzone(_props: DropzoneOptions) {
   };
 
   const setFiles = (files: File[]) => {
-    const acceptedFiles: File[] = [];
+    const acceptedFiles: FileWithState[] = [];
 
     files.forEach((file) => {
       const accepted = isFileAccepted(file, routeProps().accept);
       const sizeMatch = isValidSize(file, props.minSize, routeProps().maxSize);
 
       if (accepted && sizeMatch) {
-        acceptedFiles.push(file);
+        const fileWithState: FileWithState = Object.assign(file, {
+          status: "pending" as const,
+          key: null,
+        });
+        acceptedFiles.push(fileWithState);
       }
     });
 
@@ -192,10 +198,8 @@ export function createDropzone(_props: DropzoneOptions) {
     }
 
     setState({
-      // @ts-expect-error - FIXME LATER
       acceptedFiles,
     });
-    // @ts-expect-error - FIXME LATER
     props.onDrop?.(acceptedFiles);
   };
 

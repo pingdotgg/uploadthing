@@ -10,6 +10,8 @@ import {
   watch,
 } from "vue";
 
+import type { FileWithState } from "@uploadthing/shared";
+
 import {
   allFilesAccepted,
   initialState,
@@ -166,7 +168,7 @@ export function useDropzone(options: DropzoneOptions) {
   };
 
   const setFiles = (files: File[]) => {
-    const acceptedFiles: File[] = [];
+    const acceptedFiles: FileWithState[] = [];
 
     files.forEach((file) => {
       const accepted = isFileAccepted(file, routeProps.value.accept);
@@ -177,7 +179,11 @@ export function useDropzone(options: DropzoneOptions) {
       );
 
       if (accepted && sizeMatch) {
-        acceptedFiles.push(file);
+        const fileWithState: FileWithState = Object.assign(file, {
+          status: "pending" as const,
+          key: null,
+        });
+        acceptedFiles.push(fileWithState);
       }
     });
 
@@ -191,9 +197,7 @@ export function useDropzone(options: DropzoneOptions) {
       acceptedFiles.splice(0);
     }
 
-    // @ts-expect-error - FIXME LATER
     state.acceptedFiles = acceptedFiles;
-    // @ts-expect-error - FIXME LATER
     optionsRef.value.onDrop?.(acceptedFiles);
   };
 
