@@ -153,21 +153,12 @@ export const fileSizeToBytes = (
   return Effect.succeed(Math.floor(bytes));
 };
 
-export const bytesToFileSize = (bytes: number) => {
-  if (bytes === 0 || bytes === -1) {
-    return "0B";
-  }
-
-  const i = Math.floor(Math.log(bytes) / Math.log(1000));
-  return `${(bytes / Math.pow(1000, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
-};
-
 /**
  * Converts a file size in bytes to a human readable string, uses 1000 as the base
- * @example `fileSizeToHumanReadable(2500)` => `2.5MB`
+ * @example `bytesToFileSize(2500)` => `2.5MB`
  * @public
  */
-export const bytesToHumanReadable = (bytes: number) => {
+export const bytesToFileSize = (bytes: number) => {
   if (bytes === 0 || bytes === -1) {
     return "0B";
   }

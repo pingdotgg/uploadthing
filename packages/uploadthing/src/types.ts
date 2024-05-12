@@ -5,6 +5,7 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
 } from "./internal/types";
+import type { ClientUploadedFileData } from "./types";
 
 export type {
   inferEndpointInput,
