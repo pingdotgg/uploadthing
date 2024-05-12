@@ -57,7 +57,9 @@ export type UploadFilesOptions<
   /**
    * Called when the upload is complete
    */
-  onUploadComplete?: (res: ClientUploadedFileData<TServerOutput>) => void;
+  onUploadComplete?:
+    | ((res: ClientUploadedFileData<TServerOutput>) => void)
+    | undefined;
   /**
    * URL to the UploadThing API endpoint
    * @example URL { http://localhost:3000/api/uploadthing }

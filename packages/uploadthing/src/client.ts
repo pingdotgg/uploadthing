@@ -52,7 +52,7 @@ export {
   /** @public */
   generatePermittedFileTypes,
   /** @public */
-  bytesToHumanReadable,
+  bytesToFileSize,
 } from "@uploadthing/shared";
 
 /**
@@ -82,11 +82,11 @@ export const isValidFileSize = (
   routeConfig: ExpandedRouteConfig,
 ) => {
   try {
-    const type = Effect.runSync(
-      getTypeFromFileName(file.name, objectKeys(routeConfig)),
-    );
     const maxFileSize = Effect.runSync(
-      fileSizeToBytes(routeConfig[type]!.maxFileSize),
+      Effect.flatMap(
+        getTypeFromFileName(file.name, objectKeys(routeConfig)),
+        (type) => fileSizeToBytes(routeConfig[type]!.maxFileSize),
+      ),
     );
     return file.size <= maxFileSize;
   } catch {
