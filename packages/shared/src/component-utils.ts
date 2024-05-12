@@ -24,14 +24,34 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
+export type FileWithState = File &
+  (
+    | {
+        status: "pending";
+        key: null;
+      }
+    | {
+        status: "uploading" | "uploaded";
+        key: string;
+      }
+  );
+
 export function getFilesFromClipboardEvent(event: ClipboardEvent) {
   const dataTransferItems = event.clipboardData?.items;
   if (!dataTransferItems) return;
 
-  const files = Array.from(dataTransferItems).reduce<File[]>((acc, curr) => {
-    const f = curr.getAsFile();
-    return f ? [...acc, f] : acc;
-  }, []);
+  const files = Array.from(dataTransferItems).reduce<FileWithState[]>(
+    (acc, curr) => {
+      const f = curr.getAsFile();
+      if (!f) return acc;
+      const fileWithState = Object.assign(f, {
+        status: "pending" as const,
+        key: null,
+      });
+      return [...acc, fileWithState];
+    },
+    [],
+  );
 
   return files;
 }
@@ -178,35 +198,3 @@ export const contentFieldToContent = <T extends MinCallbackArg>(
     return result;
   }
 };
-
-export type FileWithState = File &
-  (
-    | {
-        status: "pending";
-        key: null;
-      }
-    | {
-        status: "uploading" | "uploaded";
-        key: string;
-      }
-  );
-
-export function getFilesFromClipboardEvent(event: ClipboardEvent) {
-  const dataTransferItems = event.clipboardData?.items;
-  if (!dataTransferItems) return;
-
-  const files = Array.from(dataTransferItems).reduce<FileWithState[]>(
-    (acc, curr) => {
-      const f = curr.getAsFile();
-      if (!f) return acc;
-      const fileWithState = Object.assign(f, {
-        status: "pending" as const,
-        key: null,
-      });
-      return [...acc, fileWithState];
-    },
-    [],
-  );
-
-  return files;
-}
