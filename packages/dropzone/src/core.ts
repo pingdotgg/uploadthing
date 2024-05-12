@@ -4,6 +4,7 @@
  * See original source here: https://github.com/react-dropzone/react-dropzone
  * The original package is licensed under the MIT license.
  */
+import * as E from "effect/Effect";
 
 import type { ExpandedRouteConfig, FileWithState } from "@uploadthing/shared";
 import {
@@ -177,7 +178,10 @@ export const routeConfigToDropzoneProps = (
       // Don't think it makes sense to have a minFileCount since they can select many times
       // acc.minFiles = Math.min(acc.minFiles, curr.minFileCount);
       acc.maxFiles = Math.max(acc.maxFiles, curr.maxFileCount);
-      acc.maxSize = Math.max(acc.maxSize, fileSizeToBytes(curr.maxFileSize));
+      acc.maxSize = Math.max(
+        acc.maxSize,
+        E.runSync(fileSizeToBytes(curr.maxFileSize)),
+      );
       return acc;
     },
     { maxFiles: 0, maxSize: 0 },

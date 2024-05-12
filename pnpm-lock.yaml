@@ -857,6 +857,9 @@ importers:
       '@uploadthing/shared':
         specifier: workspace:*
         version: link:../shared
+      effect:
+        specifier: ^3.1.0
+        version: 3.1.0
       file-selector:
         specifier: ^0.6.0
         version: 0.6.0

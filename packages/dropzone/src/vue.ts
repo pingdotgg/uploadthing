@@ -11,7 +11,6 @@ import {
 } from "vue";
 
 import {
-  acceptPropAsAcceptAttr,
   allFilesAccepted,
   initialState,
   isEnterOrSpace,
@@ -22,6 +21,7 @@ import {
   isValidQuantity,
   isValidSize,
   noop,
+  routeConfigToDropzoneProps,
 } from "./core";
 import type { DropzoneOptions } from "./types";
 
@@ -45,8 +45,8 @@ export function useDropzone(options: DropzoneOptions) {
     },
   );
 
-  const acceptAttr = computed(() =>
-    acceptPropAsAcceptAttr(optionsRef.value.accept),
+  const routeProps = computed(() =>
+    routeConfigToDropzoneProps(optionsRef.value.routeConfig),
   );
 
   const rootRef = ref<HTMLElement>();
@@ -108,7 +108,7 @@ export function useDropzone(options: DropzoneOptions) {
             fileCount > 0 &&
             allFilesAccepted({
               files: files as File[],
-              accept: acceptAttr.value!,
+              accept: routeProps.value.accept,
               minSize: optionsRef.value.minSize,
               maxSize: optionsRef.value.maxSize,
               multiple: optionsRef.value.multiple,
@@ -169,7 +169,7 @@ export function useDropzone(options: DropzoneOptions) {
     const acceptedFiles: File[] = [];
 
     files.forEach((file) => {
-      const accepted = isFileAccepted(file, acceptAttr.value!);
+      const accepted = isFileAccepted(file, routeProps.value.accept);
       const sizeMatch = isValidSize(
         file,
         optionsRef.value.minSize,
@@ -191,7 +191,9 @@ export function useDropzone(options: DropzoneOptions) {
       acceptedFiles.splice(0);
     }
 
+    // @ts-expect-error - FIXME LATER
     state.acceptedFiles = acceptedFiles;
+    // @ts-expect-error - FIXME LATER
     optionsRef.value.onDrop?.(acceptedFiles);
   };
 
@@ -269,7 +271,7 @@ export function useDropzone(options: DropzoneOptions) {
     ref: inputRef,
     type: "file",
     style: "display: none",
-    accept: acceptAttr.value ?? "", // exactOptionalPropertyTypes: true
+    accept: routeProps.value.accept!,
     multiple: optionsRef.value.multiple,
     tabindex: -1,
     ...(!optionsRef.value.disabled
