@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type {
+  EndpointMetadata,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
@@ -26,13 +29,16 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-const useEndpointMetadata = (url: URL, endpoint: string) => {
+const useRouteConfig = (
+  url: URL,
+  endpoint: string,
+): ExpandedRouteConfig | undefined => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
-  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
+  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -65,12 +71,6 @@ export const INTERNAL_uploadthingHookGen = <
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
     const fileProgress = useRef<Map<string, number>>(new Map());
-
-    const permittedFileInfo = useEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
-    const routeConfig = permittedFileInfo?.config;
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -132,14 +132,19 @@ export const INTERNAL_uploadthingHookGen = <
       }
     });
 
+    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+
     return {
       startUpload,
       isUploading,
+      routeConfig,
+
       /**
        * @deprecated Use `routeConfig` instead
        */
-      permittedFileInfo,
-      routeConfig,
+      permittedFileInfo: routeConfig
+        ? { slug: endpoint, config: routeConfig }
+        : undefined,
     } as const;
   };
 
