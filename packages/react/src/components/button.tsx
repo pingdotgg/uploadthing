@@ -190,7 +190,7 @@ export function UploadButton<
   });
 
   const styleFieldArg = {
-    ready: state === "ready",
+    ready: state !== "readying",
     isUploading: state === "uploading",
     uploadProgress,
     fileTypes,
