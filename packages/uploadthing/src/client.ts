@@ -62,14 +62,13 @@ export {
 export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
-): boolean => {
-  return Effect.runSync(
-    Effect.flatMap(
-      getTypeFromFileName(file.name, objectKeys(routeConfig)),
-      (type) => Effect.succeed(file.type.includes(type)),
-    ).pipe(Effect.catchAll(() => Effect.succeed(false))),
+): boolean =>
+  Effect.runSync(
+    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+      Effect.flatMap((type) => Effect.succeed(file.type.includes(type))),
+      Effect.catchAll(() => Effect.succeed(false)),
+    ),
   );
-};
 
 /**
  * Validate that a file is of a valid size given a route config
@@ -78,15 +77,14 @@ export const isValidFileType = (
 export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
-): boolean => {
-  return Effect.runSync(
+): boolean =>
+  Effect.runSync(
     getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
-      Effect.andThen((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
-      Effect.andThen((maxFileSize) => Effect.succeed(file.size <= maxFileSize)),
+      Effect.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
+      Effect.flatMap((maxFileSize) => Effect.succeed(file.size <= maxFileSize)),
       Effect.catchAll(() => Effect.succeed(false)),
     ),
   );
-};
 
 const uploadFilesInternal = <
   TRouter extends FileRouter,
