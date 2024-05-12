@@ -99,6 +99,18 @@ export type UploadthingComponentProps<
   config?: {
     mode?: "auto" | "manual";
     appendOnPaste?: boolean;
+    /**
+     * Enabling this will disable all default rendering.
+     * You'll have to render the different parts of the component yourself using the `content` prop
+     * @default false
+     */
+    headless?: boolean;
+    /**
+     * Enabling this will disable the default styling of the component.
+     * Unlike `headless`, elements will still be rendered, but they will have no styling applied to them.
+     * @default false
+     */
+    unstyled?: boolean;
   };
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,

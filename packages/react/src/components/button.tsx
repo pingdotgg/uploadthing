@@ -99,7 +99,13 @@ export function UploadButton<
   > &
     UploadThingInternalProps;
 
-  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+  const {
+    mode = "auto",
+    appendOnPaste = false,
+    headless = false,
+    unstyled = false,
+  } = $props.config ?? {};
+  const applyDefaultStyling = !headless && !unstyled;
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -202,6 +208,7 @@ export function UploadButton<
       styleFieldArg,
     );
     if (customContent) return customContent;
+    if (headless) return null;
 
     if (state === "readying") {
       return "Loading...";
@@ -231,7 +238,8 @@ export function UploadButton<
         }
       }}
       className={twMerge(
-        "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
+        applyDefaultStyling &&
+          "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
         styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
       )}
       style={styleFieldToCssObject($props.appearance?.clearBtn, styleFieldArg)}
@@ -246,7 +254,7 @@ export function UploadButton<
   const renderAllowedContent = () => (
     <div
       className={twMerge(
-        "h-[1.25rem]  text-xs leading-5 text-gray-600",
+        applyDefaultStyling && "h-[1.25rem]  text-xs leading-5 text-gray-600",
         styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
       )}
       style={styleFieldToCssObject(
@@ -264,7 +272,8 @@ export function UploadButton<
   return (
     <div
       className={twMerge(
-        "flex flex-col items-center justify-center gap-1",
+        applyDefaultStyling &&
+          "flex flex-col items-center justify-center gap-1",
         $props.className,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
@@ -273,11 +282,15 @@ export function UploadButton<
     >
       <label
         className={twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state === "readying" && "cursor-not-allowed bg-blue-400",
-          state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-          state === "ready" && "bg-blue-600",
+          ...(applyDefaultStyling
+            ? [
+                "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+                state === "readying" && "cursor-not-allowed bg-blue-400",
+                state === "uploading" &&
+                  `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
+                state === "ready" && "bg-blue-600",
+              ]
+            : []),
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
