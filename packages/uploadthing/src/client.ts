@@ -63,14 +63,12 @@ export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ) => {
-  try {
-    const type = Effect.runSync(
+  return Effect.runSync(
+    Effect.flatMap(
       getTypeFromFileName(file.name, objectKeys(routeConfig)),
-    );
-    return file.type.includes(type);
-  } catch {
-    return false;
-  }
+      (type) => Effect.succeed(file.type.includes(type)),
+    ).pipe(Effect.catchAll(() => Effect.succeed(false))),
+  );
 };
 
 /**
@@ -81,17 +79,13 @@ export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ) => {
-  try {
-    const maxFileSize = Effect.runSync(
-      Effect.flatMap(
-        getTypeFromFileName(file.name, objectKeys(routeConfig)),
-        (type) => fileSizeToBytes(routeConfig[type]!.maxFileSize),
-      ),
-    );
-    return file.size <= maxFileSize;
-  } catch {
-    return false;
-  }
+  return Effect.runSync(
+    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+      Effect.andThen((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
+      Effect.andThen((maxFileSize) => Effect.succeed(file.size <= maxFileSize)),
+      Effect.catchAll(() => Effect.succeed(false)),
+    ),
+  );
 };
 
 const uploadFilesInternal = <
