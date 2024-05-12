@@ -24,7 +24,7 @@ function useCallbackRef<T extends (...args: never[]) => unknown>(
 type UseControllableStateParams<T> = {
   prop?: T | undefined;
   defaultProp: NoInfer<T>;
-  onChange?: (state: T) => void;
+  onChange?: ((state: T) => void) | undefined;
 };
 
 type SetStateFn<T> = (prevState?: T) => T;
