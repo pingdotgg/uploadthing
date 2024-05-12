@@ -70,6 +70,7 @@ export const INTERNAL_uploadthingHookGen = <
       initOpts.url,
       endpoint as string,
     );
+    const routeConfig = permittedFileInfo?.config;
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -134,7 +135,11 @@ export const INTERNAL_uploadthingHookGen = <
     return {
       startUpload,
       isUploading,
+      /**
+       * @deprecated Use `routeConfig` instead
+       */
       permittedFileInfo,
+      routeConfig,
     } as const;
   };
 
@@ -146,11 +151,28 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
 
+  const getRouteConfig = (endpoint: keyof TRouter) => {
+    const maybeServerData = globalThis.__UPLOADTHING;
+    const config = maybeServerData?.find((x) => x.slug === endpoint)?.config;
+    if (!config) {
+      throw new Error(
+        `No config found for endpoint "${endpoint.toString()}". Please make sure to use the NextSSRPlugin in your Next.js app.`,
+      );
+    }
+    return config;
+  };
+
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/react",
     }),
+
+    /**
+     * Get the config for a given endpoint outside of React context.
+     * @remarks Can only be used if the NextSSRPlugin is used in the app.
+     */
+    getRouteConfig,
   } as const;
 };

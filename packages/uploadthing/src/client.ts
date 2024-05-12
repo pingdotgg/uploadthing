@@ -6,13 +6,20 @@ import { unsafeCoerce } from "effect/Function";
 import * as Option from "effect/Option";
 import * as Runtime from "effect/Runtime";
 
-import type { FetchError, InvalidJsonError } from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  FetchError,
+  InvalidJsonError,
+} from "@uploadthing/shared";
 import {
   exponentialBackoff,
   FetchContext,
   fetchEff,
+  fileSizeToBytes,
   getErrorTypeFromStatusCode,
+  getTypeFromFileName,
   isObject,
+  objectKeys,
   parseResponseJson,
   resolveMaybeUrlArg,
   RetryError,
@@ -37,6 +44,8 @@ import type {
   UploadFilesOptions,
 } from "./types";
 
+export const version = pkgJson.version;
+
 export {
   /** @public */
   generateClientDropzoneAccept,
@@ -46,7 +55,44 @@ export {
   generatePermittedFileTypes,
 } from "@uploadthing/shared";
 
-export const version = pkgJson.version;
+/**
+ * Validate that a file is of a valid type given a route config
+ * @public
+ */
+export const isValidFileType = (
+  file: File,
+  routeConfig: ExpandedRouteConfig,
+) => {
+  try {
+    const type = Effect.runSync(
+      getTypeFromFileName(file.name, objectKeys(routeConfig)),
+    );
+    return file.type.includes(type);
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Validate that a file is of a valid size given a route config
+ * @public
+ */
+export const isValidFileSize = (
+  file: File,
+  routeConfig: ExpandedRouteConfig,
+) => {
+  try {
+    const maxFileSize = Effect.runSync(
+      Effect.flatMap(
+        getTypeFromFileName(file.name, objectKeys(routeConfig)),
+        (type) => fileSizeToBytes(routeConfig[type]!.maxFileSize),
+      ),
+    );
+    return file.size <= maxFileSize;
+  } catch {
+    return false;
+  }
+};
 
 const uploadFilesInternal = <
   TRouter extends FileRouter,
