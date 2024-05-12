@@ -12,6 +12,7 @@
     "examples/*",
     "examples/backend-adapters/*",
     "packages/*",
+    "packages/nuxt/*",
     "tooling/*"
   ],
   "scripts": {
@@ -20,6 +21,7 @@
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev:all": "turbo run dev",
     "dev": "turbo run dev --filter \"./packages/*\"",
+    "dev:react": "turbo run dev --filter @uploadthing/react...",
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",

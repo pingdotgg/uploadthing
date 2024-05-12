@@ -1,7 +1,9 @@
+import { createHash } from "node:crypto";
 import type { StrictRequest } from "msw";
 import { delay, http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import { afterAll, beforeAll, beforeEach, it as itBase, vi } from "vitest";
+import type { Test } from "vitest";
+import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
 import { lookup } from "@uploadthing/mime-types";
 import { generateUploadThingURL } from "@uploadthing/shared";
@@ -32,6 +34,14 @@ export const createApiUrl = (slug: string, action?: ActionType) => {
 export const baseHeaders = {
   "x-uploadthing-version": UPLOADTHING_VERSION,
   "x-uploadthing-package": "vitest",
+};
+
+export const genPort = (test: Test) => {
+  const str = `${test.id}-${test.name}-${Date.now()}`;
+  const hashedValue = createHash("sha256").update(str).digest("hex");
+  const hashedInteger = parseInt(hashedValue, 16);
+  const port = 1024 + (hashedInteger % (65535 - 1024 + 1));
+  return port;
 };
 
 const mockPresigned = (file: {
@@ -144,16 +154,19 @@ export const it = itBase.extend({
             const presigned = mockPresigned(file);
             db.insertFile({
               ...file,
+              customId: file.customId ?? null,
+              type: presigned.fileType,
               key: presigned.key,
               callbackUrl: body.callbackUrl,
               callbackSlug: body.callbackSlug,
+              metadata: JSON.stringify(body.metadata ?? "{}"),
             });
             return presigned;
           });
           return HttpResponse.json(presigneds);
         },
       ),
-      http.post<never, { files: any[] }>(
+      http.post<never, { files: any[]; metadata: unknown }>(
         "https://uploadthing.com/api/uploadFiles",
         async ({ request }) => {
           await callRequestSpy(request);
@@ -162,8 +175,10 @@ export const it = itBase.extend({
           const presigneds = body?.files.map((file) => {
             const presigned = mockPresigned(file);
             db.insertFile({
-              ...file,
               key: presigned.key,
+              metadata: JSON.stringify(body.metadata ?? "{}"),
+              customId: file.customId ?? null,
+              ...file,
             });
             return presigned;
           });
@@ -189,13 +204,24 @@ export const it = itBase.extend({
         // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
         async function* ({ request, params }) {
           await callRequestSpy(request);
+          let file = null;
 
-          // Simulate polling
+          // Simulate polling - at least once
           yield HttpResponse.json({ status: "still waiting" });
+          if (!file) {
+            file = db.getFileByKey(params.key);
+            yield HttpResponse.json({ status: "still waiting" });
+          }
 
           return HttpResponse.json({
             status: "done",
-            fileData: db.getFileByKey(params.key),
+            fileData: {
+              ...file,
+              fileName: file.name,
+              fileSize: file.size,
+              fileType: file.type,
+              fileKey: file.key,
+            },
           });
         },
       ),
@@ -212,7 +238,7 @@ export const it = itBase.extend({
         "https://uploadthing.com/api/serverCallback",
         async ({ request }) => {
           await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
+          return HttpResponse.json({ status: "ok" });
         },
       ),
       http.get(
@@ -250,6 +276,13 @@ export const useBadS3 = () =>
     http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
       await callRequestSpy(request);
       return new HttpResponse(null, { status: 204 });
+    }),
+  );
+
+export const useBadUTApi = () =>
+  msw.use(
+    http.post("https://uploadthing.com/api/*", async () => {
+      return HttpResponse.json({ error: "Not found" }, { status: 404 });
     }),
   );
 

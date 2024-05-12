@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
+import type { RenderFunction, StyleValue } from "vue";
 
 import type { ExpandedRouteConfig } from "./types";
 import { objectKeys } from "./utils";
@@ -13,18 +14,27 @@ export const generateMimeTypes = (fileTypes: string[]) => {
   });
 
   if (accepted.includes("blob")) {
-    return undefined;
+    return [];
   }
   return accepted;
 };
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
-
-  if (!mimeTypes) return undefined;
-
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+export function getFilesFromClipboardEvent(event: ClipboardEvent) {
+  const dataTransferItems = event.clipboardData?.items;
+  if (!dataTransferItems) return;
+
+  const files = Array.from(dataTransferItems).reduce<File[]>((acc, curr) => {
+    const f = curr.getAsFile();
+    return f ? [...acc, f] : acc;
+  }, []);
+
+  return files;
+}
 
 /**
  * Shared helpers for our premade components that's reusable by multiple frameworks
@@ -84,7 +94,7 @@ export const allowedContentTextLabelGenerator = (
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
-type AnyRuntime = "react" | "solid" | "svelte";
+type AnyRuntime = "react" | "solid" | "svelte" | "vue";
 type MinCallbackArg = { __runtime: AnyRuntime };
 type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"
@@ -92,18 +102,24 @@ type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
     ? "solid"
     : T["__runtime"] extends "svelte"
       ? "svelte"
-      : never;
+      : T["__runtime"] extends "vue"
+        ? "vue"
+        : never;
 
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? ReactNode
-  : JSX.Element;
+  : TRuntime extends "solid"
+    ? JSX.Element
+    : ReturnType<RenderFunction>;
 type CSSPropertiesEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? CSSProperties
   : TRuntime extends "solid"
     ? JSX.CSSProperties
     : TRuntime extends "svelte"
       ? string
-      : never;
+      : TRuntime extends "vue"
+        ? StyleValue
+        : never;
 
 export type StyleField<
   CallbackArg extends MinCallbackArg,

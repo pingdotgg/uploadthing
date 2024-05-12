@@ -158,7 +158,7 @@ export function UploadButton<
           ref={inputRef!}
           type="file"
           multiple={fileInfo().multiple}
-          accept={generateMimeTypes(fileInfo().fileTypes ?? [])?.join(", ")}
+          accept={generateMimeTypes(fileInfo().fileTypes).join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
             const input = "input" in $props ? $props.input : undefined;

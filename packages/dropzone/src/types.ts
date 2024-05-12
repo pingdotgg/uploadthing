@@ -5,7 +5,7 @@ export type AcceptProp = Record<string, string[]>;
 export type DropzoneOptions = {
   routeConfig: ExpandedRouteConfig | undefined;
   minSize?: number;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
   onDrop: (acceptedFiles: FileWithState[]) => void;
 };
 

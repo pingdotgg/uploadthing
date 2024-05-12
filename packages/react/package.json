@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.4.4",
+  "version": "6.5.3",
   "type": "module",
   "license": "MIT",
   "main": "./dist/index.cjs",
@@ -69,7 +69,7 @@
   "peerDependencies": {
     "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^6.5.1"
+    "uploadthing": "^6.10.0"
   },
   "peerDependenciesMeta": {
     "next": {
@@ -100,8 +100,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/react",
-            "@uploadthing/react/*"
+            {
+              "group": [
+                "@uploadthing/react",
+                "@uploadthing/react/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

@@ -109,7 +109,7 @@ export const INTERNAL_uploadthingHookGen = <
         }
         opts?.onUploadProgress?.(0, undefined);
         try {
-          const res = await uploadFiles(endpoint, {
+          const res = await uploadFiles<TRouter, TEndpoint>(endpoint, {
             headers: opts?.headers,
             files: filesToUpload,
             skipPolling: opts?.skipPolling,

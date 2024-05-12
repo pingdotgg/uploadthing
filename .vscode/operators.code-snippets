@@ -1,0 +1,12 @@
+{
+  "Effect Gen Function": {
+    "prefix": "egen",
+    "body": ["Effect.gen(function* ($) {\n\t$0\n})"],
+    "description": "Effect generator FUnction with $ input",
+  },
+  "Gen Function": {
+    "prefix": "gen",
+    "body": ["function* () {}"],
+    "description": "Generator FUnction with $ input",
+  },
+}

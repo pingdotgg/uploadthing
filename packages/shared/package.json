@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "6.6.0",
+  "version": "6.7.3",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
@@ -33,6 +33,10 @@
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "effect": "^3.1.0",
+    "std-env": "^3.7.0"
+  },
   "devDependencies": {
     "@types/react": "18.2.78",
     "@uploadthing/eslint-config": "workspace:",
@@ -43,6 +47,7 @@
     "react": "18.2.0",
     "solid-js": "^1.8.15",
     "typescript": "^5.4.5",
+    "vue": "^3.4.21",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {
@@ -55,22 +60,30 @@
   },
   "eslintConfig": {
     "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ],
     "rules": {
       "no-restricted-imports": [
         "error",
         {
           "patterns": [
-            "@uploadthing/shared",
-            "@uploadthing/shared/*"
+            {
+              "group": [
+                "@uploadthing/shared",
+                "@uploadthing/shared/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]
-    },
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ]
-  },
-  "dependencies": {
-    "std-env": "^3.7.0"
+    }
   }
 }

@@ -1,5 +1,13 @@
-import type { FetchEsque, MaybePromise } from "@uploadthing/shared";
-import { safeParseJSON, UploadThingError } from "@uploadthing/shared";
+import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
+
+import type { FetchContext, MaybePromise } from "@uploadthing/shared";
+import {
+  fetchEff,
+  getErrorTypeFromStatusCode,
+  parseResponseJson,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
 import { maybeParseResponseXML } from "./s3-error-parser";
@@ -28,76 +36,90 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
-  headers?: HeadersInit,
-) => Promise<UTEvents[TEvent]["out"]>;
+) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
- * Events are handled in "./handler.ts starting at L200"
+ * Events are handled in "./handler.ts starting at L112"
  */
-export const createUTReporter = (cfg: {
-  url: URL;
-  endpoint: string;
-  package: string;
-  fetch: FetchEsque;
-  headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
-}): UTReporter => {
-  return async (type, payload) => {
-    const url = createAPIRequestUrl({
-      url: cfg.url,
-      slug: cfg.endpoint,
-      actionType: type,
-    });
-    let customHeaders =
-      typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
-    if (customHeaders instanceof Promise) customHeaders = await customHeaders;
+export const createUTReporter =
+  (cfg: {
+    url: URL;
+    endpoint: string;
+    package: string;
+    headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+  }): UTReporter =>
+  (type, payload) =>
+    Effect.gen(function* () {
+      const url = createAPIRequestUrl({
+        url: cfg.url,
+        slug: cfg.endpoint,
+        actionType: type,
+      });
+      let headers =
+        typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
+      if (headers instanceof Promise) {
+        headers = yield* Effect.promise(() => headers as Promise<HeadersInit>);
+      }
 
-    const response = await cfg.fetch(url, {
-      method: "POST",
-      body: JSON.stringify(payload),
-      headers: {
-        "Content-Type": "application/json",
-        "x-uploadthing-package": cfg.package,
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-        ...customHeaders,
-      },
-    });
+      const response = yield* fetchEff(url, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-package": cfg.package,
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+          ...headers,
+        },
+      }).pipe(
+        Effect.andThen(parseResponseJson),
+        /**
+         * We don't _need_ to validate the response here, just cast it for now.
+         * As of now, @effect/schema includes quite a few bytes we cut out by this...
+         * We have "strong typing" on the backend that ensures the shape should match.
+         */
+        Effect.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
+        Effect.catchTags({
+          FetchError: (e) =>
+            new UploadThingError({
+              code: "INTERNAL_CLIENT_ERROR",
+              message: `Failed to report event "${type}" to UploadThing server`,
+              cause: e,
+            }),
+          BadRequestError: (e) =>
+            new UploadThingError({
+              code: getErrorTypeFromStatusCode(e.status),
+              message: e.getMessage(),
+              cause: e.json,
+            }),
+          InvalidJsonError: (e) =>
+            new UploadThingError({
+              code: "INTERNAL_CLIENT_ERROR",
+              message: "Failed to parse response from UploadThing server",
+              cause: e,
+            }),
+        }),
+      );
 
-    switch (type) {
-      case "failure": {
-        // why isn't this narrowed automatically?
-        const p = payload as UTEvents["failure"]["in"];
-        const parsed = maybeParseResponseXML(p.s3Error ?? "");
-        if (parsed?.message) {
-          throw new UploadThingError({
-            code: parsed.code,
-            message: parsed.message,
-          });
-        } else {
-          throw new UploadThingError({
-            code: "UPLOAD_FAILED",
-            message: `Failed to upload file ${p.fileName} to S3`,
-            cause: p.s3Error,
-          });
+      switch (type) {
+        case "failure": {
+          // why isn't this narrowed automatically?
+          const p = payload as UTEvents["failure"]["in"];
+          const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
+          if (parsed?.message) {
+            return yield* new UploadThingError({
+              code: parsed.code,
+              message: parsed.message,
+            });
+          } else {
+            return yield* new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: `Failed to upload file ${p.fileName} to S3`,
+              cause: p.storageProviderError,
+            });
+          }
         }
       }
-    }
 
-    if (!response.ok) {
-      const error = await UploadThingError.fromResponse(response);
-      throw error;
-    }
-
-    const jsonOrError =
-      await safeParseJSON<UTEvents[typeof type]["out"]>(response);
-    if (jsonOrError instanceof Error) {
-      throw new UploadThingError({
-        code: "BAD_REQUEST",
-        message: jsonOrError.message,
-        cause: response,
-      });
-    }
-
-    return jsonOrError;
-  };
-};
+      return response;
+    });

@@ -1,5 +1,41 @@
 # @uploadthing/shared
 
+## 6.7.3
+
+### Patch Changes
+
+- [#792](https://github.com/pingdotgg/uploadthing/pull/792) [`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: isPollingResponse was not checking against response json
+
+## 6.7.2
+
+### Patch Changes
+
+- [#791](https://github.com/pingdotgg/uploadthing/pull/791) [`69165fc`](https://github.com/pingdotgg/uploadthing/commit/69165fc4b4e4b02fe27e02d1991ea2cd3ae45c8a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: catch FiberFailure's and squash them to the original error
+
+- [#783](https://github.com/pingdotgg/uploadthing/pull/783) [`6da018b`](https://github.com/pingdotgg/uploadthing/commit/6da018bfd4f2812ad81f36a7e3c9e3567c435b0b) Thanks [@datner](https://github.com/datner)! - refactoring small parts of uploadFile and related utils
+
+## 6.7.1
+
+### Patch Changes
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add missing `fast-check` peer dependency from `@effect/schema`
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: better error logging for bad requests
+
+- [#775](https://github.com/pingdotgg/uploadthing/pull/775) [`0abfa03`](https://github.com/pingdotgg/uploadthing/commit/0abfa031d108edead78d9b71a61d2bfb7ad53a64) Thanks [@tim-smart](https://github.com/tim-smart)! - update "effect" & switch to alias imports
+
+## 6.7.0
+
+### Minor Changes
+
+- [#457](https://github.com/pingdotgg/uploadthing/pull/457) [`ea7e41b`](https://github.com/pingdotgg/uploadthing/commit/ea7e41b5d9d85135540d9b51fa5551859fbe7623) Thanks [@markflorkowski](https://github.com/markflorkowski)! - Effect rewrite
+
+- [#293](https://github.com/pingdotgg/uploadthing/pull/293) [`09870e4`](https://github.com/pingdotgg/uploadthing/commit/09870e43f310c15e48f0089e875c6d9663fd305b) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: vue and nuxt support!
+
+### Patch Changes
+
+- [`41de3c5`](https://github.com/pingdotgg/uploadthing/commit/41de3c55c8bd808166449c09e9006650178067d5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: force dependency bumps
+
 ## 6.6.0
 
 ### Minor Changes

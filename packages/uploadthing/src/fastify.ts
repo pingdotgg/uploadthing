@@ -6,23 +6,23 @@ import type {
 } from "fastify";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger } from "./internal/logger";
-import { toWebRequest } from "./internal/node-http/toWebRequest";
+import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter };
 export { UTFiles } from "./internal/types";
+export type { FileRouter };
 
 type MiddlewareArgs = {
   req: FastifyRequest;
@@ -39,7 +39,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
   done: (err?: Error) => void,
 ) => {
-  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
@@ -49,37 +48,25 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   const POST: RouteHandlerMethod = async (req, res) => {
-    const response = await requestHandler({
-      req: toWebRequest(req),
-      middlewareArgs: { req, res, event: undefined },
-    });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: toWebRequest(req),
+        middlewareArgs: { req, res, event: undefined },
+      },
+      opts.config,
+    );
 
-    if (response instanceof UploadThingError) {
+    if (response.success === false) {
       void res
-        .status(getStatusCodeFromError(response))
-        .headers({
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        })
-        .send(formatError(response, opts.router));
-      return;
-    }
-
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      void res
-        .status(500)
-        .headers({
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        })
-        .send("An unknown error occurred");
+        .status(getStatusCodeFromError(response.error))
+        .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
+        .send(formatError(response.error, opts.router));
       return;
     }
 
     void res
-      .status(response.status)
-      .headers({
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      })
+      .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
       .send(response.body);
   };
 

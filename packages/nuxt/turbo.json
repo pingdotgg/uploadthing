@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "pipeline": {
+    "dev:prepare": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        "dist/**",
+        ".nuxt/**",
+        "playground/dist/**",
+        "playground/.nuxt/**"
+      ],
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["dev:prepare"],
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build", "dev:prepare"],
+      "outputs": ["dist/**", ".nuxt/**"],
+      "cache": false
+    },
+    "lint": {
+      "dependsOn": ["^topo", "^build", "dev:prepare"],
+      "outputs": [],
+      "cache": false
+    }
+  }
+}

@@ -1,28 +1,28 @@
-import { Router as ExpressRouter } from "express";
+import * as Effect from "effect/Effect";
 import type {
   Request as ExpressRequest,
   Response as ExpressResponse,
 } from "express";
+import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import { getStatusCodeFromError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
+  runRequestHandlerAsync,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { initLogger, logger } from "./internal/logger";
-import { getPostBody } from "./internal/node-http/getBody";
-import { toWebRequest } from "./internal/node-http/toWebRequest";
+import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
-export type { FileRouter };
 export { UTFiles } from "./internal/types";
+export type { FileRouter };
 
 type MiddlewareArgs = {
   req: ExpressRequest;
@@ -37,7 +37,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  initLogger(opts.config?.logLevel);
   incompatibleNodeGuard();
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
@@ -49,46 +48,24 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
   router.post("/", async (req, res) => {
-    const bodyResult = await getPostBody({ req });
+    const response = await runRequestHandlerAsync(
+      requestHandler,
+      {
+        req: getPostBody({ req }).pipe(
+          Effect.andThen((body) => toWebRequest(req, body)),
+        ),
+        middlewareArgs: { req, res, event: undefined },
+      },
+      opts.config,
+    );
 
-    if (!bodyResult.ok) {
-      logger.error(
-        "Error parsing body. UploadThing expects a raw JSON body, make sure any body-parsing middlewares are registered after uploadthing.",
-      );
-      res.status(400);
+    if (response.success === false) {
+      res.status(getStatusCodeFromError(response.error));
       res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(
-        JSON.stringify({
-          error: "BAD_REQUEST",
-          message: bodyResult.error.message,
-        }),
-      );
-
+      res.send(JSON.stringify(formatError(response.error, opts.router)));
       return;
     }
 
-    const response = await requestHandler({
-      req: toWebRequest(req, bodyResult.data),
-      middlewareArgs: { req, res, event: undefined },
-    });
-
-    if (response instanceof UploadThingError) {
-      res.status(getStatusCodeFromError(response));
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(JSON.stringify(formatError(response, opts.router)));
-      return;
-    }
-
-    if (response.status !== 200) {
-      // We messed up - this should never happen
-      res.status(500);
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send("An unknown error occurred");
-
-      return;
-    }
-
-    res.status(response.status);
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
     res.send(JSON.stringify(response.body));
   });

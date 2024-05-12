@@ -16,7 +16,6 @@ export type MaybePromise<TType> = TType | Promise<TType>;
 export type Either<TData, TError> =
   | { data: TData; error: null }
   | { data: null; error: TError };
-
 export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
   ? // eslint-disable-next-line @typescript-eslint/ban-types
     {}
@@ -49,6 +48,7 @@ export interface RequestInitEsque {
  */
 export interface ResponseEsque {
   status: number;
+  statusText: string;
   ok: boolean;
   /**
    * @remarks
@@ -92,8 +92,11 @@ export type Time =
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
-export type ContentDisposition = "inline" | "attachment";
-export type ACL = "public-read" | "private";
+export const ValidContentDispositions = ["inline", "attachment"] as const;
+export type ContentDisposition = (typeof ValidContentDispositions)[number];
+
+export const ValidACLs = ["public-read", "private"] as const;
+export type ACL = (typeof ValidACLs)[number];
 
 type RouteConfig = {
   maxFileSize: FileSize;
