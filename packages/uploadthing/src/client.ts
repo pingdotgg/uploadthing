@@ -62,7 +62,7 @@ export {
 export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
-) => {
+): boolean => {
   return Effect.runSync(
     Effect.flatMap(
       getTypeFromFileName(file.name, objectKeys(routeConfig)),
@@ -78,7 +78,7 @@ export const isValidFileType = (
 export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
-) => {
+): boolean => {
   return Effect.runSync(
     getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
       Effect.andThen((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
