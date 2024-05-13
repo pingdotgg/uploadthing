@@ -2,6 +2,7 @@
   "name": "@uploadthing/shared",
   "version": "6.7.3",
   "type": "module",
+  "sideEffects": false,
   "license": "MIT",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
