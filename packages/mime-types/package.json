@@ -2,6 +2,7 @@
   "name": "@uploadthing/mime-types",
   "version": "0.2.9",
   "type": "module",
+  "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
