@@ -1,5 +1,15 @@
 # @uploadthing/react
 
+## 6.5.4
+
+### Patch Changes
+
+- [#806](https://github.com/pingdotgg/uploadthing/pull/806) [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - set `sideEffects: false` for better tree-shaking
+
+- Updated dependencies [[`811b4cb`](https://github.com/pingdotgg/uploadthing/commit/811b4cb96938dd498f55e323f34685cbc8cfea9c), [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14)]:
+  - @uploadthing/shared@6.7.4
+  - @uploadthing/dropzone@0.4.1
+
 ## 6.5.3
 
 ### Patch Changes

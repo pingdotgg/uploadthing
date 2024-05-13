@@ -1,5 +1,13 @@
 # @uploadthing/shared
 
+## 6.7.4
+
+### Patch Changes
+
+- [`811b4cb`](https://github.com/pingdotgg/uploadthing/commit/811b4cb96938dd498f55e323f34685cbc8cfea9c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove `@effect/schema` from client bundle resulting in up to 15kB less JS shipped to client (#794)
+
+- [#806](https://github.com/pingdotgg/uploadthing/pull/806) [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - set `sideEffects: false` for better tree-shaking
+
 ## 6.7.3
 
 ### Patch Changes
