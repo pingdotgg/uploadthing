@@ -196,7 +196,7 @@ const uploadFile = (
       ),
       Effect.retry({
         while: (err) => err instanceof RetryError,
-        schedule: exponentialBackoff,
+        schedule: exponentialBackoff(),
       }),
       Effect.catchTag("RetryError", (e) => Effect.die(e)),
     );

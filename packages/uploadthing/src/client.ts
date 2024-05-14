@@ -199,7 +199,7 @@ const uploadFile = <
         Effect.map(({ callbackData }) => callbackData),
         Effect.retry({
           while: (res) => res instanceof RetryError,
-          schedule: exponentialBackoff,
+          schedule: exponentialBackoff(),
         }),
         Effect.when(() => !opts.skipPolling),
         Effect.map(Option.getOrNull),

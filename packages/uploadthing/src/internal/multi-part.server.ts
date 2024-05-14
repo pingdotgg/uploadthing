@@ -84,7 +84,7 @@ const uploadPart = (opts: {
     ),
     Effect.retry({
       while: (res) => res instanceof RetryError,
-      schedule: exponentialBackoff,
+      schedule: exponentialBackoff(),
       times: opts.maxRetries,
     }),
     Effect.tapErrorTag("RetryError", () =>

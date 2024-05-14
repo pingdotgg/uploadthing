@@ -37,7 +37,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       ),
       Effect.retry({
         while: (err) => err instanceof RetryError,
-        schedule: exponentialBackoff,
+        schedule: exponentialBackoff(),
       }),
       Effect.catchTag("RetryError", (e) => Effect.die(e)),
     );

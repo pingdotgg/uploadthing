@@ -47,7 +47,7 @@ export const uploadMultipartWithProgress = (
           Effect.retry({
             while: (error) => error instanceof RetryError,
             times: isTest ? 3 : 10, // less retries in tests just to make it faster
-            schedule: exponentialBackoff,
+            schedule: exponentialBackoff(),
           }),
         );
       },
