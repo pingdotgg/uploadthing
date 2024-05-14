@@ -153,10 +153,11 @@ type RequestInputService = RequestInputBase &
     | { hook: UploadThingHook; action: null }
   );
 
-export class RequestInput extends Context.Tag("uploadthing/RequestInput")<
-  RequestInput,
-  RequestInputService
->() {}
+export class RequestInput
+  extends /** #__PURE__ */ Context.Tag("uploadthing/RequestInput")<
+    RequestInput,
+    RequestInputService
+  >() {}
 
 export const parseAndValidateRequest = (
   input: RequestHandlerInput<MiddlewareFnArgs<any, any, any>>,
