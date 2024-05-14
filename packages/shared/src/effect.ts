@@ -17,10 +17,11 @@ export type FetchContextService = {
     "x-uploadthing-be-adapter": string | undefined;
   };
 };
-export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
-  FetchContext,
-  FetchContextService
->() {}
+export class FetchContext
+  extends /** #__PURE__ */ Context.Tag("uploadthing/FetchContext")<
+    FetchContext,
+    FetchContextService
+  >() {}
 
 interface ResponseWithURL extends ResponseEsque {
   requestUrl: string;
