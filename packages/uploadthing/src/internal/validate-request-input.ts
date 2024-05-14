@@ -1,6 +1,6 @@
 import type * as S from "@effect/schema/Schema";
 import * as Context from "effect/Context";
-import { TaggedError } from "effect/Data";
+import * as Data from "effect/Data";
 import * as Effect from "effect/Effect";
 import { isDevelopment } from "std-env";
 
@@ -43,18 +43,22 @@ import {
   VALID_UT_HOOKS,
 } from "./types";
 
-class FileSizeMismatch extends TaggedError("FileSizeMismatch")<{
+class FileSizeMismatch extends Data.Error<{
   reason: string;
 }> {
+  readonly _tag = "FileSizeMismatch";
+  readonly name = "FileSizeMismatchError";
   constructor(type: FileRouterInputKey, max: FileSize, actual: number) {
     const reason = `You uploaded a ${type} file that was ${bytesToFileSize(actual)}, but the limit for that type is ${max}`;
     super({ reason });
   }
 }
 
-class FileCountMismatch extends TaggedError("FileCountMismatch")<{
+class FileCountMismatch extends Data.Error<{
   reason: string;
 }> {
+  readonly _tag = "FileCountMismatch";
+  readonly name = "FileCountMismatchError";
   constructor(
     type: FileRouterInputKey,
     boundtype: "minimum" | "maximum",

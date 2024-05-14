@@ -1,4 +1,4 @@
-import { TaggedError } from "effect/Data";
+import * as Data from "effect/Data";
 import * as Effect from "effect/Effect";
 import { process } from "std-env";
 
@@ -11,9 +11,11 @@ type IncomingMessageLike = {
   body?: any;
 };
 
-class InvalidURL extends TaggedError("InvalidURL")<{
+class InvalidURL extends Data.Error<{
   reason: string;
 }> {
+  readonly _tag = "InvalidURL";
+  readonly name = "InvalidURLError";
   constructor(attemptedUrl: string, base?: string) {
     Effect.runSync(
       Effect.logError(
