@@ -27,8 +27,8 @@
     generatePermittedFileTypes,
   } from "uploadthing/client";
 
-  import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import type { UploadthingComponentProps } from "../types";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -55,7 +55,9 @@
     TSkipPolling
   >;
   export let appearance: UploadDropzoneAppearance = {};
-  export let onDrop: (acceptedFiles: File[]) => void = () => {};
+  export let onDrop: (acceptedFiles: File[]) => void = () => {
+    /** no-op */
+  };
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
     undefined;
@@ -107,8 +109,8 @@
   $: className = ($$props.class as string) ?? "";
 
   const _onDrop = (acceptedFiles: File[]) => {
-    onDrop(acceptedFiles);
-    
+    onDrop?.(acceptedFiles);
+
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
