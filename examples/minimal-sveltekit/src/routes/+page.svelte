@@ -14,8 +14,7 @@
     onUploadError: (error: Error) => {
       alert(`ERROR! ${error.message}`);
     },
-      
-  })
+  });
 
   const { startUpload } = createUploadThing("videoAndImage", {
     /**
@@ -25,7 +24,6 @@
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
     },
-
   });
 </script>
 
