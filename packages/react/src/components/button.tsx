@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -22,6 +22,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { usePaste } from "../utils/usePaste";
 import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
@@ -64,9 +65,17 @@ export type UploadButtonProps<
   content?: ButtonContent;
 };
 
+/** These are some internal stuff we use to test the component and for forcing a state in docs */
+type UploadThingInternalProps = {
+  __internal_state?: "readying" | "ready" | "uploading";
+  __internal_upload_progress?: number;
+  __internal_button_disabled?: boolean;
+};
+
 /**
+ * @remarks It is not recommended using this directly as it requires manually binding generics. Instead, use `createUploadButton`.
  * @example
- * <UploadButton<OurFileRouter>
+ * <UploadButton<OurFileRouter, "someEndpoint">
  *   endpoint="someEndpoint"
  *   onUploadComplete={(res) => console.log(res)}
  *   onUploadError={(err) => console.log(err)}
@@ -87,17 +96,8 @@ export function UploadButton<
     TRouter,
     TEndpoint,
     TSkipPolling
-  > & {
-    // props not exposed on public type
-    // Allow to set internal state for testing
-    __internal_state?: "readying" | "ready" | "uploading";
-    // Allow to set upload progress for testing
-    __internal_upload_progress?: number;
-    // Allow to set ready explicitly and independently of internal state
-    __internal_ready?: boolean;
-    // Allow to disable the button
-    __internal_button_disabled?: boolean;
-  };
+  > &
+    UploadThingInternalProps;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
@@ -107,16 +107,12 @@ export function UploadButton<
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const labelRef = useRef<HTMLLabelElement>(null);
-  const [uploadProgressState, setUploadProgress] = useState(
+  const [uploadProgress, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
   const [files, setFiles] = useState<File[]>([]);
-  const [isManualTriggerDisplayed, setIsManualTriggerDisplayed] =
-    useState(false);
-  const uploadProgress =
-    $props.__internal_upload_progress ?? uploadProgressState;
 
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
       headers: $props.headers,
@@ -125,7 +121,6 @@ export function UploadButton<
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
-        setIsManualTriggerDisplayed(false);
         setFiles([]);
         $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
@@ -140,95 +135,92 @@ export function UploadButton<
     },
   );
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
+
+  const fileRouteInput = "input" in $props ? $props.input : undefined;
+  const inputProps = useMemo(
+    () => ({
+      type: "file",
+      ref: fileInputRef,
+      multiple,
+      accept: generateMimeTypes(fileTypes).join(", "),
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        const selectedFiles = Array.from(e.target.files);
+
+        if (mode === "manual") {
+          setFiles(selectedFiles);
+          return;
+        }
+
+        void startUpload(selectedFiles, fileRouteInput);
+      },
+      disabled: fileTypes.length === 0,
+      tabIndex: fileTypes.length === 0 ? -1 : 0,
+    }),
+    [fileRouteInput, fileTypes, mode, multiple, startUpload],
   );
 
-  const ready =
-    $props.__internal_ready ??
-    ($props.__internal_state === "ready" || fileTypes.length > 0);
+  if ($props.__internal_button_disabled) inputProps.disabled = true;
 
-  useEffect(() => {
-    const handlePaste = (event: ClipboardEvent) => {
-      if (!appendOnPaste) return;
-      if (document.activeElement !== labelRef.current) return;
+  const state = (() => {
+    if ($props.__internal_state) return $props.__internal_state;
+    if (inputProps.disabled) return "readying";
+    if (!inputProps.disabled && !isUploading) return "ready";
+    return "uploading";
+  })();
 
-      const pastedFiles = getFilesFromClipboardEvent(event);
-      if (!pastedFiles) return;
+  usePaste((event) => {
+    if (!appendOnPaste) return;
+    if (document.activeElement !== fileInputRef.current) return;
 
-      setFiles((prev) => [...prev, ...pastedFiles]);
+    const pastedFiles = getFilesFromClipboardEvent(event);
+    if (!pastedFiles) return;
 
-      if (mode === "auto") {
-        const input = "input" in $props ? $props.input : undefined;
-        void startUpload(files, input);
-      }
-    };
+    let filesToUpload = pastedFiles;
+    setFiles((prev) => {
+      filesToUpload = [...prev, ...pastedFiles];
+      return filesToUpload;
+    });
 
-    window.addEventListener("paste", handlePaste);
-    return () => {
-      window.removeEventListener("paste", handlePaste);
-    };
-  }, [startUpload, appendOnPaste, $props, files, mode, fileTypes]);
-
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (isManualTriggerDisplayed)
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-    if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
-
-  const getUploadButtonContents = (fileTypes: string[]) => {
-    if (state !== "uploading") {
-      return getUploadButtonText(fileTypes);
-    }
-    if (uploadProgress === 100) {
-      return <Spinner />;
-    }
-    return <span className="z-50">{uploadProgress}%</span>;
-  };
-
-  const getInputProps = () => ({
-    type: "file",
-    ref: fileInputRef,
-    multiple,
-    accept: generateMimeTypes(fileTypes).join(", "),
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files) return;
-      const selectedFiles = Array.from(e.target.files);
-
-      if (mode === "manual") {
-        setFiles(selectedFiles);
-        setIsManualTriggerDisplayed(true);
-        return;
-      }
-
+    if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
-      void startUpload(selectedFiles, input);
-    },
-    disabled: $props.__internal_button_disabled ?? !ready,
-    ...(!($props.__internal_button_disabled ?? !ready) ? { tabIndex: 0 } : {}),
+      void startUpload(files, input);
+    }
   });
 
   const styleFieldArg = {
-    ready: ready,
-    isUploading: $props.__internal_state === "uploading" || isUploading,
+    ready: state !== "readying",
+    isUploading: state === "uploading",
     uploadProgress,
     fileTypes,
   } as ButtonStyleFieldCallbackArgs;
 
-  const state = (() => {
-    if ($props.__internal_state) return $props.__internal_state;
-    if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
+  const renderButton = () => {
+    const customContent = contentFieldToContent(
+      $props.content?.button,
+      styleFieldArg,
+    );
+    if (customContent) return customContent;
 
-    return "uploading";
-  })();
+    if (state === "readying") return "Loading...";
+
+    if (state !== "uploading") {
+      if (mode === "manual" && files.length > 0) {
+        return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+      }
+      return `Choose File${inputProps.multiple ? `(s)` : ``}`;
+    }
+
+    if (uploadProgress === 100) return <Spinner />;
+
+    return <span className="z-50">{uploadProgress}%</span>;
+  };
 
   const renderClearButton = () => (
     <button
       onClick={() => {
         setFiles([]);
-        setIsManualTriggerDisplayed(false);
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -261,7 +253,7 @@ export function UploadButton<
       data-ut-element="allowed-content"
     >
       {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-        allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+        allowedContentTextLabelGenerator(routeConfig)}
     </div>
   );
 
@@ -289,7 +281,7 @@ export function UploadButton<
         data-ut-element="button"
         ref={labelRef}
         onClick={(e) => {
-          if (isManualTriggerDisplayed) {
+          if (mode === "manual" && files.length > 0) {
             e.preventDefault();
             e.stopPropagation();
             const input = "input" in $props ? $props.input : undefined;
@@ -297,9 +289,8 @@ export function UploadButton<
           }
         }}
       >
-        <input {...getInputProps()} className="sr-only" />
-        {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          getUploadButtonContents(fileTypes)}
+        <input {...inputProps} className="sr-only" />
+        {renderButton()}
       </label>
       {mode === "manual" && files.length > 0
         ? renderClearButton()
