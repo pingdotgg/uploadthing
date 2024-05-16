@@ -1,5 +1,5 @@
 import type { LogObject, LogType } from "consola/core";
-import { createConsola } from "consola/core";
+import { createConsola, LogLevels } from "consola/core";
 import * as Logger from "effect/Logger";
 import * as EffectLogLevel from "effect/LogLevel";
 import { process } from "std-env";
@@ -122,6 +122,8 @@ const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
   };
 
 export const withMinimalLogLevel = (level: LogLevel = "info") => {
+  logger.level = LogLevels[level];
+
   return Logger.withMinimumLogLevel(
     {
       silent: EffectLogLevel.None,

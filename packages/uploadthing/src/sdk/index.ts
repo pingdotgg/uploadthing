@@ -148,17 +148,17 @@ export class UTApi {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
-      uploadFilesInternal({
-        files: asArray(files),
-        contentDisposition: opts?.contentDisposition ?? "inline",
-        metadata: opts?.metadata ?? {},
-        acl: opts?.acl,
-      }),
+      Effect.flatMap(
+        uploadFilesInternal({
+          files: asArray(files),
+          contentDisposition: opts?.contentDisposition ?? "inline",
+          metadata: opts?.metadata ?? {},
+          acl: opts?.acl,
+        }),
+        (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
+      ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
     );
-
-    const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
-    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
-    return uploadFileResponse;
+    return uploads;
   }
 
   /**
