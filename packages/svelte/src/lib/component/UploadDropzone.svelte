@@ -109,7 +109,7 @@
   $: className = ($$props.class as string) ?? "";
 
   const _onDrop = (acceptedFiles: File[]) => {
-    onDrop?.(acceptedFiles);
+    onDrop(acceptedFiles);
 
     files = acceptedFiles;
 
