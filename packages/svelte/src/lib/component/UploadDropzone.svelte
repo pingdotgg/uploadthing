@@ -108,7 +108,7 @@
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
 
-  const _onDrop = (acceptedFiles: File[]) => {
+  const onDropCallback = (acceptedFiles: File[]) => {
     onDrop(acceptedFiles);
 
     files = acceptedFiles;
@@ -122,7 +122,7 @@
   };
 
   $: dropzoneOptions = {
-    onDrop: _onDrop,
+    onDrop: onDropCallback,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: __internal_dropzone_disabled,
