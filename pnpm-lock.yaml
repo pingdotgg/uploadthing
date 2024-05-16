@@ -1092,6 +1092,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@uploadthing/mime-types':
+        specifier: workspace:*
+        version: link:../mime-types
       effect:
         specifier: ^3.1.0
         version: 3.1.0
@@ -1105,9 +1108,6 @@ importers:
       '@uploadthing/eslint-config':
         specifier: 'workspace:'
         version: link:../../tooling/eslint-config
-      '@uploadthing/mime-types':
-        specifier: 'workspace:'
-        version: link:../mime-types
       '@uploadthing/tsconfig':
         specifier: 'workspace:'
         version: link:../../tooling/tsconfig

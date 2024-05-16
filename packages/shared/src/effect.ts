@@ -45,7 +45,19 @@ export const fetchEff = (
     };
     return Effect.tryPromise({
       try: () => fetch(input, { ...init, headers: reqInfo.headers }),
-      catch: (error) => new FetchError({ error, input: reqInfo }),
+      catch: (error) =>
+        new FetchError({
+          error:
+            error instanceof Error
+              ? {
+                  ...error,
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack,
+                }
+              : error,
+          input: reqInfo,
+        }),
     }).pipe(
       Effect.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
       Effect.withSpan("fetch", { attributes: { reqInfo } }),
