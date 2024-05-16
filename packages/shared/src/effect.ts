@@ -42,7 +42,7 @@ export const fetchEff = (
       url: input.toString(),
       method: init?.method,
       body: init?.body,
-      headers: Object.fromEntries(headers.entries()),
+      headers: Object.fromEntries(headers),
     };
 
     return Effect.tryPromise({
