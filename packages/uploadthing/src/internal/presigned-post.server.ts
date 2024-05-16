@@ -9,8 +9,8 @@ import {
 } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import { FailureCallbackResponseSchema } from "./shared-schemas";
-import type { PSPResponse } from "./types";
+import type { PSPResponse } from "./shared-schemas";
+import { FailureCallbackResponse } from "./shared-schemas";
 
 export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
   Effect.gen(function* () {
@@ -38,7 +38,7 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
           headers: { "Content-Type": "application/json" },
         }).pipe(
           Effect.andThen(parseResponseJson),
-          Effect.andThen(S.decodeUnknown(FailureCallbackResponseSchema)),
+          Effect.andThen(S.decodeUnknown(FailureCallbackResponse)),
         ),
       ),
     );

@@ -12,7 +12,7 @@ import {
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
-import { PollUploadResponseSchema } from "./shared-schemas";
+import { PollUploadResponse } from "./shared-schemas";
 import type { UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
@@ -29,7 +29,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       generateUploadThingURL(`/api/pollUpload/${fileKey}`),
     ).pipe(
       Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(PollUploadResponseSchema)),
+      Effect.andThen(S.decodeUnknown(PollUploadResponse)),
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(res.fileData)

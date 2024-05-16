@@ -13,8 +13,8 @@ import {
 import type { ContentDisposition } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import { FailureCallbackResponseSchema } from "./shared-schemas";
-import type { MPUResponse } from "./types";
+import type { MPUResponse } from "./shared-schemas";
+import { FailureCallbackResponse } from "./shared-schemas";
 
 export const uploadMultipart = (file: FileEsque, presigned: MPUResponse) =>
   Effect.gen(function* () {
@@ -144,7 +144,7 @@ export const abortMultipartUpload = (presigned: {
     },
   ).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(FailureCallbackResponseSchema)),
+    Effect.andThen(S.decodeUnknown(FailureCallbackResponse)),
     Effect.withSpan("abortMultipartUpload", {
       attributes: { presigned },
     }),
