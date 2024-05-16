@@ -2,7 +2,7 @@ import { TaggedError } from "effect/Data";
 import * as Effect from "effect/Effect";
 import { process } from "std-env";
 
-import { filterObjectValues, UploadThingError } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 
 type IncomingMessageLike = {
   method?: string | undefined;
@@ -119,16 +119,19 @@ export const toWebRequest = (
   const method = req.method ?? "GET";
   const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
 
+  const headers = new Headers();
+  for (const [key, value] of Object.entries(req.headers ?? [])) {
+    if (typeof value === "string") headers.set(key, value);
+    if (Array.isArray(value)) headers.set(key, value.join(","));
+  }
+
   return parseURL(req).pipe(
     Effect.catchTag("InvalidURL", (e) => Effect.die(e)),
     Effect.andThen(
       (url) =>
         new Request(url, {
           method,
-          headers: filterObjectValues(
-            req.headers ?? {},
-            (v): v is string => typeof v === "string",
-          ),
+          headers,
           ...(allowsBody ? { body: bodyStr } : {}),
         }),
     ),

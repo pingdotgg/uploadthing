@@ -12,7 +12,6 @@ import {
   asArray,
   FetchContext,
   fetchEff,
-  filterObjectValues,
   generateUploadThingURL,
   parseResponseJson,
   UploadThingError,
@@ -82,17 +81,16 @@ export class UTApi {
       }),
     );
 
+    const headers = new Headers([["Content-Type", "application/json"]]);
+    for (const [key, value] of Object.entries(this.defaultHeaders)) {
+      if (typeof value === "string") headers.set(key, value);
+    }
+
     return fetchEff(url, {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
-      headers: {
-        ...filterObjectValues(
-          this.defaultHeaders,
-          (v): v is string => typeof v === "string",
-        ),
-        "Content-Type": "application/json",
-      },
+      headers,
     }).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(responseSchema)),

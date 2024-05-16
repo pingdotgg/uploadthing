@@ -6,7 +6,6 @@ import * as Schedule from "effect/Schedule";
 
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
-import { filterObjectValues } from "./utils";
 
 export type FetchContextService = {
   fetch: FetchEsque;
@@ -34,17 +33,20 @@ export const fetchEff = (
   init?: RequestInit,
 ): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
   Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
+    const headers = new Headers(init?.headers ?? []);
+    for (const [key, value] of Object.entries(baseHeaders)) {
+      if (typeof value === "string") headers.set(key, value);
+    }
+
     const reqInfo = {
       url: input.toString(),
       method: init?.method,
       body: init?.body,
-      headers: {
-        ...filterObjectValues(baseHeaders, (v): v is string => v != null),
-        ...init?.headers,
-      },
+      headers: Object.fromEntries(headers),
     };
+
     return Effect.tryPromise({
-      try: () => fetch(input, { ...init, headers: reqInfo.headers }),
+      try: () => fetch(input, { ...init, headers }),
       catch: (error) =>
         new FetchError({
           error:
