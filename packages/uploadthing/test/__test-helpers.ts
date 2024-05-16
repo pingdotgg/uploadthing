@@ -10,11 +10,11 @@ import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
 import type {
-  ActionType,
   MPUResponse,
   PresignedBase,
   PSPResponse,
-} from "../src/internal/types";
+} from "../src/internal/shared-schemas";
+import type { ActionType } from "../src/internal/types";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
 export const requestsToDomain = (domain: string) =>
@@ -85,7 +85,7 @@ const mockPresigned = (file: {
 const callRequestSpy = async (request: StrictRequest<any>) =>
   requestSpy(new URL(request.url).toString(), {
     method: request.method,
-    headers: Object.fromEntries(request.headers.entries()),
+    headers: Object.fromEntries(request.headers),
     body: await (() => {
       if (request.method === "GET") return null;
       const ct = request.headers.get("content-type");

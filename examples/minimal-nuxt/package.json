@@ -9,9 +9,9 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "@uploadthing/nuxt": "6.5.4",
+    "@uploadthing/nuxt": "6.5.5",
     "nuxt": "^3.11.2",
-    "uploadthing": "6.10.3",
+    "uploadthing": "6.10.4",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   }

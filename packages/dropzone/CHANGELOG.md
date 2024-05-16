@@ -1,5 +1,11 @@
 # @uploadthing/dropzone
 
+## 0.4.1
+
+### Patch Changes
+
+- [#806](https://github.com/pingdotgg/uploadthing/pull/806) [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - set `sideEffects: false` for better tree-shaking
+
 ## 0.4.0
 
 ### Minor Changes

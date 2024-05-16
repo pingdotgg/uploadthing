@@ -12,8 +12,7 @@ import {
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
-import { PollUploadResponseSchema } from "./shared-schemas";
-import type { UploadedFileData } from "./shared-schemas";
+import { PollUploadResponse, UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
   if (!response.ok) return false;
@@ -29,7 +28,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       generateUploadThingURL(`/api/pollUpload/${fileKey}`),
     ).pipe(
       Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(PollUploadResponseSchema)),
+      Effect.andThen(S.decodeUnknown(PollUploadResponse)),
       Effect.andThen((res) =>
         res.status === "done"
           ? Effect.succeed(res.fileData)
@@ -37,7 +36,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       ),
       Effect.retry({
         while: (err) => err instanceof RetryError,
-        schedule: exponentialBackoff,
+        schedule: exponentialBackoff(),
       }),
       Effect.catchTag("RetryError", (e) => Effect.die(e)),
     );
@@ -61,14 +60,14 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: JSON.parse(file.metadata ?? "{}") as unknown,
-      file: {
+      file: new UploadedFileData({
         url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
         key: fileKey,
         name: file.fileName,
         size: file.fileSize,
         customId: file.customId,
         type: file.fileType,
-      } satisfies UploadedFileData,
+      }),
     });
 
     const signature = yield* Effect.tryPromise({

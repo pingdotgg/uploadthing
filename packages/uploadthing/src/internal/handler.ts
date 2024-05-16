@@ -25,10 +25,10 @@ import { resolveCallbackUrl } from "./resolve-url";
 import {
   FailureActionPayload,
   MultipartCompleteActionPayload,
-  PresignedURLResponseSchema,
-  ServerCallbackPostResponseSchema,
+  PresignedURLResponse,
+  ServerCallbackPostResponse,
   UploadActionPayload,
-  UploadedFileDataSchema,
+  UploadedFileData,
 } from "./shared-schemas";
 import type {
   FileRouter,
@@ -169,7 +169,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     S.decodeUnknown(
       S.Struct({
         status: S.String,
-        file: UploadedFileDataSchema,
+        file: UploadedFileData,
         metadata: S.Record(S.String, S.Unknown),
       }),
     ),
@@ -211,7 +211,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     headers: { "Content-Type": "application/json" },
   }).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(ServerCallbackPostResponseSchema)),
+    Effect.andThen(S.decodeUnknown(ServerCallbackPostResponse)),
   );
   return { body: null };
 });
@@ -370,7 +370,7 @@ const handleUploadAction = Effect.gen(function* () {
     },
   ).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(PresignedURLResponseSchema)),
+    Effect.andThen(S.decodeUnknown(PresignedURLResponse)),
   );
 
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);

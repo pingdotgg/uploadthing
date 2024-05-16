@@ -12,7 +12,6 @@ import {
   asArray,
   FetchContext,
   fetchEff,
-  filterObjectValues,
   generateUploadThingURL,
   parseResponseJson,
   UploadThingError,
@@ -82,17 +81,16 @@ export class UTApi {
       }),
     );
 
+    const headers = new Headers([["Content-Type", "application/json"]]);
+    for (const [key, value] of Object.entries(this.defaultHeaders)) {
+      if (typeof value === "string") headers.set(key, value);
+    }
+
     return fetchEff(url, {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
-      headers: {
-        ...filterObjectValues(
-          this.defaultHeaders,
-          (v): v is string => typeof v === "string",
-        ),
-        "Content-Type": "application/json",
-      },
+      headers,
     }).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(responseSchema)),
@@ -148,17 +146,17 @@ export class UTApi {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
-      uploadFilesInternal({
-        files: asArray(files),
-        contentDisposition: opts?.contentDisposition ?? "inline",
-        metadata: opts?.metadata ?? {},
-        acl: opts?.acl,
-      }),
+      Effect.flatMap(
+        uploadFilesInternal({
+          files: asArray(files),
+          contentDisposition: opts?.contentDisposition ?? "inline",
+          metadata: opts?.metadata ?? {},
+          acl: opts?.acl,
+        }),
+        (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
+      ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
     );
-
-    const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
-    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
-    return uploadFileResponse;
+    return uploads;
   }
 
   /**
@@ -305,6 +303,7 @@ export class UTApi {
           id: S.String,
           key: S.String,
           name: S.String,
+          customId: S.NullOr(S.String),
           status: S.Literal(
             "Deletion Pending",
             "Failed",

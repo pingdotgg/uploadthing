@@ -2,7 +2,8 @@ import * as Effect from "effect/Effect";
 
 import type { FetchContext, UploadThingError } from "@uploadthing/shared";
 
-import type { PSPResponse, UTEvents } from "./types";
+import type { PSPResponse } from "./shared-schemas";
+import type { UTEvents } from "./types";
 import type { UTReporter } from "./ut-reporter";
 
 export const uploadPresignedPostWithProgress = (

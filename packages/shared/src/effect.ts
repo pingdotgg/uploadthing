@@ -6,7 +6,6 @@ import * as Schedule from "effect/Schedule";
 
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
-import { filterObjectValues } from "./utils";
 
 export type FetchContextService = {
   fetch: FetchEsque;
@@ -17,10 +16,11 @@ export type FetchContextService = {
     "x-uploadthing-be-adapter": string | undefined;
   };
 };
-export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
-  FetchContext,
-  FetchContextService
->() {}
+export class FetchContext
+  extends /** #__PURE__ */ Context.Tag("uploadthing/FetchContext")<
+    FetchContext,
+    FetchContextService
+  >() {}
 
 interface ResponseWithURL extends ResponseEsque {
   requestUrl: string;
@@ -34,18 +34,33 @@ export const fetchEff = (
   init?: RequestInit,
 ): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
   Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
+    const headers = new Headers(init?.headers ?? []);
+    for (const [key, value] of Object.entries(baseHeaders)) {
+      if (typeof value === "string") headers.set(key, value);
+    }
+
     const reqInfo = {
       url: input.toString(),
       method: init?.method,
       body: init?.body,
-      headers: {
-        ...filterObjectValues(baseHeaders, (v): v is string => v != null),
-        ...init?.headers,
-      },
+      headers: Object.fromEntries(headers),
     };
+
     return Effect.tryPromise({
-      try: () => fetch(input, { ...init, headers: reqInfo.headers }),
-      catch: (error) => new FetchError({ error, input: reqInfo }),
+      try: () => fetch(input, { ...init, headers }),
+      catch: (error) =>
+        new FetchError({
+          error:
+            error instanceof Error
+              ? {
+                  ...error,
+                  name: error.name,
+                  message: error.message,
+                  stack: error.stack,
+                }
+              : error,
+          input: reqInfo,
+        }),
     }).pipe(
       Effect.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
       Effect.withSpan("fetch", { attributes: { reqInfo } }),
@@ -85,9 +100,10 @@ export const parseRequestJson = (req: Request) =>
  * Schedule that retries with exponential backoff, up to 1 minute.
  * 10ms * 4^n, where n is the number of retries.
  */
-export const exponentialBackoff = pipe(
-  Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms...
-  Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
-  Schedule.compose(Schedule.elapsed),
-  Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
-);
+export const exponentialBackoff = () =>
+  pipe(
+    Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms...
+    Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
+    Schedule.compose(Schedule.elapsed),
+    Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
+  );

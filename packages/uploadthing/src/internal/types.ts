@@ -18,21 +18,15 @@ import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
   FailureActionPayload,
-  MPUResponseSchema,
   MultipartCompleteActionPayload,
-  PresignedBaseSchema,
-  PresignedURLResponseSchema,
-  PSPResponseSchema,
+  PresignedURLResponse,
   UploadActionPayload,
 } from "./shared-schemas";
 
 /**
  * Returned by `/api/prepareUpload` and `/api/uploadFiles`
  */
-export type PresignedBase = S.Schema.Type<typeof PresignedBaseSchema>;
-export type PSPResponse = S.Schema.Type<typeof PSPResponseSchema>;
-export type MPUResponse = S.Schema.Type<typeof MPUResponseSchema>;
-export type PresignedURLs = S.Schema.Type<typeof PresignedURLResponseSchema>;
+export type PresignedURLs = S.Schema.Type<typeof PresignedURLResponse>;
 
 /**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
@@ -261,7 +255,7 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
 export type UTEvents = {
   upload: {
     in: S.Schema.Type<typeof UploadActionPayload>;
-    out: S.Schema.Type<typeof PresignedURLResponseSchema>;
+    out: S.Schema.Type<typeof PresignedURLResponse>;
   };
   failure: {
     in: S.Schema.Type<typeof FailureActionPayload>;

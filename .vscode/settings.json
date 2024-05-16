@@ -10,5 +10,8 @@
     "docs",
     { "pattern": "./packages/**" },
     { "pattern": "./examples/**" }
-  ]
+  ],
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  }
 }

@@ -1,7 +1,8 @@
 {
   "name": "uploadthing",
-  "version": "6.10.3",
+  "version": "6.10.4",
   "type": "module",
+  "sideEffects": false,
   "engines": {
     "node": ">=18.13.0"
   },
