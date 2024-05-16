@@ -2,25 +2,34 @@ import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
 import type { RenderFunction, StyleValue } from "vue";
 
-import { mimeTypes } from "@uploadthing/mime-types";
-
 import type { ExpandedRouteConfig } from "./types";
 import { objectKeys } from "./utils";
 
 export const generateMimeTypes = (fileTypes: string[]) => {
-  if (fileTypes.includes("blob")) return [];
-
-  return fileTypes.map((type) => {
+  const accepted = fileTypes.map((type) => {
+    if (type === "blob") return "blob";
     if (type === "pdf") return "application/pdf";
     if (type.includes("/")) return type;
-    return [
-      // Add wildcard to support all subtypes, e.g. image => "image/*"
-      `${type}/*`,
-      // But some browsers/OSes don't support it, so we'll also dump all the mime types
-      // we know that starts with the type, e.g. image => "image/png, image/jpeg, ..."
-      ...objectKeys(mimeTypes).filter((t) => t.startsWith(type)),
-    ].join(", ");
+    else return `${type}/*`;
   });
+  if (accepted.includes("blob")) {
+    return [];
+  }
+  return accepted;
+
+  // if (fileTypes.includes("blob")) return [];
+
+  // return fileTypes.map((type) => {
+  //   if (type === "pdf") return "application/pdf";
+  //   if (type.includes("/")) return type;
+  //   return [
+  //     // Add wildcard to support all subtypes, e.g. image => "image/*"
+  //     `${type}/*`,
+  //     // But some browsers/OSes don't support it, so we'll also dump all the mime types
+  //     // we know that starts with the type, e.g. image => "image/png, image/jpeg, ..."
+  //     ...objectKeys(mimeTypes).filter((t) => t.startsWith(type)),
+  //   ].join(", ");
+  // });
 };
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
