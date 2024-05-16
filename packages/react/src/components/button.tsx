@@ -203,9 +203,7 @@ export function UploadButton<
     );
     if (customContent) return customContent;
 
-    if (state === "readying") {
-      return "Loading...";
-    }
+    if (state === "readying") return "Loading...";
 
     if (state !== "uploading") {
       if (mode === "manual" && files.length > 0) {
@@ -214,9 +212,7 @@ export function UploadButton<
       return `Choose File${inputProps.multiple ? `(s)` : ``}`;
     }
 
-    if (uploadProgress === 100) {
-      return <Spinner />;
-    }
+    if (uploadProgress === 100) return <Spinner />;
 
     return <span className="z-50">{uploadProgress}%</span>;
   };
