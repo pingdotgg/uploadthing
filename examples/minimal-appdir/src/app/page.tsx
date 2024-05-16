@@ -30,7 +30,7 @@ export default function Home() {
         onUploadBegin={() => {
           console.log("upload begin");
         }}
-        config={{ appendOnPaste: true }}
+        config={{ appendOnPaste: true, mode: "manual" }}
       />
       <UploadDropzone
         /**
