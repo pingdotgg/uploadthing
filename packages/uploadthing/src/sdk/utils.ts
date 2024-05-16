@@ -53,6 +53,9 @@ export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
         presigneds,
         (file) =>
           uploadFile(file).pipe(
+            Effect.tapError((error) =>
+              Effect.logError("Upload failed:", error),
+            ),
             Effect.match({
               onFailure: (error) => ({
                 data: null,
