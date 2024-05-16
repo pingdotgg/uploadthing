@@ -38,7 +38,7 @@ export function ProfilePictureCard(props: { user: User }) {
   const [newImageLoading, setNewImageLoading] = React.useState(false);
 
   const router = useRouter();
-  const { isUploading, startUpload, permittedFileInfo } = useUploadThing(
+  const { isUploading, startUpload, routeConfig } = useUploadThing(
     "profilePicture",
     {
       skipPolling: true,
@@ -62,7 +62,6 @@ export function ProfilePictureCard(props: { user: User }) {
       },
     },
   );
-  const routeConfig = permittedFileInfo?.config;
   const imageProperties = expandImageProperties(routeConfig);
 
   const [output, setOutput] = React.useState<FileWithPreview | null>(null);
@@ -212,7 +211,7 @@ function waitForImageToLoad(src: string) {
 }
 
 function expandImageProperties(config: ExpandedRouteConfig | undefined) {
-  const imageProperties = config?.image?.imageProperties;
+  const imageProperties = config?.image?.additionalProperties;
   if (!imageProperties) return;
   const { width, height, aspectRatio } = imageProperties;
 

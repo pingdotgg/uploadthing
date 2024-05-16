@@ -103,7 +103,7 @@ export type ContentDisposition = (typeof ValidContentDispositions)[number];
 export const ValidACLs = ["public-read", "private"] as const;
 export type ACL = (typeof ValidACLs)[number];
 
-type ImageConfig = {
+type ImageProperties = {
   /** Specify the width of the image. */
   width?: number;
   /** Specify the height of the image. */
@@ -115,25 +115,54 @@ type ImageConfig = {
   aspectRatio?: number;
 };
 
-type RouteConfig<TExtraProps extends Record<string, unknown>> = {
+type AdditionalProperties<T> = Record<string, unknown> & T;
+
+type RouteConfig<TAdditionalProperties extends Record<string, unknown>> = {
+  /**
+   * Human-readable file size limit
+   * @example "1MB"
+   * @default https://docs.uploadthing.com/api-reference/server#defaults
+   */
   maxFileSize: FileSize;
+  /**
+   * Maximum number of files allowed to be uploaded of this type
+   * @example 10
+   * @default https://docs.uploadthing.com/api-reference/server#defaults
+   */
   maxFileCount: number;
-  minFileCount: number; // must be <= maxFileCount
+  /**
+   * Minimum number of files allowed to be uploaded of this type
+   * @remarks Must be <= maxFileCount
+   * @example 2
+   * @default 1
+   */
+  minFileCount: number;
+  /**
+   * Specify the [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) of the uploaded file
+   * @example "attachment"
+   * @default "inline"
+   */
   contentDisposition: ContentDisposition;
-  acl?: ACL; // default is set on UT server, not backfilled like other options
-} & TExtraProps;
+  /**
+   * Specify the [access control list](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) of the uploaded file
+   * @remarks This must be enabled for your app. See https://docs.uploadthing.com/regions-and-acl#access-controls.
+   * @example "private"
+   * @default "public-read"
+   */
+  acl?: ACL;
+  /**
+   * Additional properties to be passed to the client-side `useRouteConfig` hook
+   * @remarks These properties are not validated on the server on upload
+   */
+  additionalProperties?: AdditionalProperties<TAdditionalProperties>;
+};
 
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
 export type ExpandedRouteConfig = {
   [key in FileRouterInputKey]?: key extends `image${string}`
-    ? RouteConfig<{
-        /**
-         * @remarks These properties are not validated on the server
-         */
-        imageProperties?: ImageConfig;
-      }>
-    : RouteConfig<NonNullable<unknown>>;
+    ? RouteConfig<ImageProperties>
+    : RouteConfig<Record<string, unknown>>;
 };
 
 export type EndpointMetadata = {
