@@ -9,7 +9,7 @@ describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
   it("uploads successfully", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFiles(fooFile);
 
     expect(requestSpy).toHaveBeenCalledTimes(3);
@@ -67,21 +67,21 @@ describe("uploadFiles", () => {
   });
 
   it("returns array if array is passed", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFiles([fooFile]);
     expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
   it("returns single object if no array is passed", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFiles(fooFile);
     expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
   it("accepts UTFile", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const file = new UTFile(["foo"], "foo.txt");
     await utapi.uploadFiles(file);
     expect(file.type).toBe("text/plain");
@@ -93,14 +93,14 @@ describe("uploadFiles", () => {
   });
 
   it("accepts UndiciFile", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const { File } = await import("undici");
     const file = new File(["foo"], "foo.txt");
     await utapi.uploadFiles(file);
   });
 
   it("accepts UTFile with customId", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });
     await utapi.uploadFiles(fileWithId);
     expect(fileWithId.customId).toBe("foo");
@@ -129,7 +129,7 @@ describe("uploadFiles", () => {
 
 describe("uploadFilesFromUrl", () => {
   it("downloads, then uploads successfully", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
     );
@@ -180,7 +180,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   it("returns array if array is passed", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFilesFromUrl([
       "https://cdn.foo.com/foo.txt",
       "https://cdn.foo.com/bar.txt",
@@ -190,7 +190,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   it("returns single object if no array is passed", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
     );
@@ -199,7 +199,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   it("can override name", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await utapi.uploadFilesFromUrl({
       url: "https://cdn.foo.com/my-super-long-pathname-thats-too-long-for-ut.txt",
       name: "bar.txt",
@@ -225,7 +225,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   it("can provide a customId", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await utapi.uploadFilesFromUrl({
       url: "https://cdn.foo.com/foo.txt",
       customId: "my-custom-id",
@@ -259,7 +259,7 @@ describe("uploadFilesFromUrl", () => {
 
   // if passed data url, array contains UploadThingError
   it("returns error if data url is passed", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFilesFromUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
     );
@@ -276,7 +276,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   it("preserves order if some download fails", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     const result = await utapi.uploadFilesFromUrl([
       "https://cdn.foo.com/foo.txt",
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
@@ -336,7 +336,7 @@ describe("constructor throws if no apiKey or secret is set", () => {
 
 describe("getSignedURL", () => {
   it("sends request without expiresIn", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await utapi.getSignedURL("foo");
 
     expect(requestSpy).toHaveBeenCalledOnce();
@@ -356,7 +356,7 @@ describe("getSignedURL", () => {
   });
 
   it("sends request with valid expiresIn (1)", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
     expect(requestSpy).toHaveBeenCalledOnce();
@@ -376,7 +376,7 @@ describe("getSignedURL", () => {
   });
 
   it("sends request with valid expiresIn (2)", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
 
     expect(requestSpy).toHaveBeenCalledOnce();
@@ -396,7 +396,7 @@ describe("getSignedURL", () => {
   });
 
   it("throws if expiresIn is invalid", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await expect(() =>
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
@@ -407,7 +407,7 @@ describe("getSignedURL", () => {
   });
 
   it("throws if expiresIn is longer than 7 days", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
     await expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
@@ -419,7 +419,7 @@ describe("getSignedURL", () => {
 
 describe("updateACL", () => {
   it("single file", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
 
     await expect(utapi.updateACL("ut-key", "public-read")).resolves.toEqual({
       success: true,
@@ -441,7 +441,7 @@ describe("updateACL", () => {
   });
 
   it("many keys", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
 
     await expect(
       utapi.updateACL(["ut-key1", "ut-key2"], "public-read"),
@@ -468,7 +468,7 @@ describe("updateACL", () => {
   });
 
   it("many keys with keytype override", async ({ db }) => {
-    const utapi = new UTApi({ apiKey: "sk_foo" });
+    const utapi = new UTApi({ apiKey: "sk_foo", logLevel: "debug" });
 
     await expect(
       utapi.updateACL(["my-custom-id1", "my-custom-id2"], "public-read", {
