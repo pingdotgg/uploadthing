@@ -12,40 +12,33 @@ export const ACLSchema = S.Literal(...ValidACLs);
  * =============================================================================
  */
 
-export const FileUploadDataSchema = S.Struct({
-  name: S.String,
-  size: S.Number,
-  type: S.String,
-});
 /**
  * Properties from the web File object, this is what the client sends when initiating an upload
  */
-export type FileUploadData = S.Schema.Type<typeof FileUploadDataSchema>;
+export class FileUploadData extends S.Class<FileUploadData>("FileUploadData")({
+  name: S.String,
+  size: S.Number,
+  type: S.String,
+}) {}
 
-export const FileUploadDataWithCustomIdSchema = S.extend(
-  FileUploadDataSchema,
-  S.Struct({
-    customId: S.NullOr(S.String),
-  }),
-);
 /**
  * `.middleware()` can add a customId to the incoming file data
  */
-export type FileUploadDataWithCustomId = S.Schema.Type<
-  typeof FileUploadDataWithCustomIdSchema
->;
+export class FileUploadDataWithCustomId extends FileUploadData.extend<FileUploadDataWithCustomId>(
+  "FileUploadDataWithCustomId",
+)({
+  customId: S.NullOr(S.String),
+}) {}
 
-export const UploadedFileDataSchema = S.extend(
-  FileUploadDataWithCustomIdSchema,
-  S.Struct({
-    key: S.String,
-    url: S.String,
-  }),
-);
 /**
  * When files are uploaded, we get back a key and a URL for the file
  */
-export type UploadedFileData = S.Schema.Type<typeof UploadedFileDataSchema>;
+export class UploadedFileData extends FileUploadDataWithCustomId.extend<UploadedFileData>(
+  "UploadedFileData",
+)({
+  key: S.String,
+  url: S.String,
+}) {}
 
 /**
  * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
@@ -63,7 +56,9 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-export const PresignedBaseSchema = S.Struct({
+export class PresignedBase extends S.Class<PresignedBase>(
+  "PresignedBaseSchema",
+)({
   key: S.String,
   fileName: S.String,
   fileType: S.String as S.Schema<FileRouterInputKey>,
@@ -72,31 +67,29 @@ export const PresignedBaseSchema = S.Struct({
   pollingUrl: S.String,
   contentDisposition: ContentDispositionSchema,
   customId: S.NullOr(S.String),
-});
+}) {}
 
-export const MPUResponseSchema = S.extend(
-  PresignedBaseSchema,
-  S.Struct({
-    urls: S.Array(S.String),
-    uploadId: S.String,
-    chunkSize: S.Number,
-    chunkCount: S.Number,
-  }),
-);
+export class MPUResponse extends PresignedBase.extend<MPUResponse>(
+  "MPUResponseSchema",
+)({
+  urls: S.Array(S.String),
+  uploadId: S.String,
+  chunkSize: S.Number,
+  chunkCount: S.Number,
+}) {}
 
-export const PSPResponseSchema = S.extend(
-  PresignedBaseSchema,
-  S.Struct({
-    url: S.String,
-    fields: S.Record(S.String, S.String),
-  }),
-);
+export class PSPResponse extends PresignedBase.extend<PSPResponse>(
+  "PSPResponseSchema",
+)({
+  url: S.String,
+  fields: S.Record(S.String, S.String),
+}) {}
 
-export const PresignedURLResponseSchema = S.Array(
-  S.Union(PSPResponseSchema, MPUResponseSchema),
-);
+export const PresignedURLResponse = S.Array(S.Union(PSPResponse, MPUResponse));
 
-export const PollUploadResponseSchema = S.Struct({
+export class PollUploadResponse extends S.Class<PollUploadResponse>(
+  "PollUploadResponse",
+)({
   status: S.String,
   fileData: S.optional(
     S.Struct({
@@ -111,16 +104,20 @@ export const PollUploadResponseSchema = S.Struct({
       callbackSlug: S.optional(S.String),
     }),
   ),
-});
+}) {}
 
-export const FailureCallbackResponseSchema = S.Struct({
+export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
+  "FailureCallbackResponse",
+)({
   success: S.Boolean,
   message: S.optional(S.String),
-});
+}) {}
 
-export const ServerCallbackPostResponseSchema = S.Struct({
+export class ServerCallbackPostResponse extends S.Class<ServerCallbackPostResponse>(
+  "ServerCallbackPostResponse",
+)({
   status: S.String,
-});
+}) {}
 
 /**
  * =============================================================================
@@ -128,19 +125,25 @@ export const ServerCallbackPostResponseSchema = S.Struct({
  * =============================================================================
  */
 
-export const UploadActionPayload = S.Struct({
-  files: S.Array(FileUploadDataSchema),
+export class UploadActionPayload extends S.Class<UploadActionPayload>(
+  "UploadActionPayload",
+)({
+  files: S.Array(FileUploadData),
   input: S.Unknown as S.Schema<Json>,
-});
+}) {}
 
-export const FailureActionPayload = S.Struct({
+export class FailureActionPayload extends S.Class<FailureActionPayload>(
+  "FailureActionPayload",
+)({
   fileKey: S.String,
   uploadId: S.NullOr(S.String),
   storageProviderError: S.optional(S.String),
   fileName: S.String,
-});
+}) {}
 
-export const MultipartCompleteActionPayload = S.Struct({
+export class MultipartCompleteActionPayload extends S.Class<MultipartCompleteActionPayload>(
+  "MultipartCompleteActionPayload",
+)({
   fileKey: S.String,
   uploadId: S.String,
   etags: S.Array(
@@ -149,4 +152,4 @@ export const MultipartCompleteActionPayload = S.Struct({
       partNumber: S.Number,
     }),
   ),
-});
+}) {}

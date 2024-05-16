@@ -3,8 +3,8 @@ import { z } from "zod";
 
 import { signPayload } from "@uploadthing/shared";
 
+import { UploadedFileData } from "../src/internal/shared-schemas";
 import { createRouteHandler, createUploadthing } from "../src/server";
-import type { UploadedFileData } from "../src/types";
 import {
   baseHeaders,
   createApiUrl,
@@ -330,14 +330,14 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      file: {
+      file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
-      } satisfies UploadedFileData,
+      }),
     });
     const signature = await signPayload(payload, "sk_live_test123");
 
@@ -372,14 +372,14 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      file: {
+      file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
-      } satisfies UploadedFileData,
+      }),
     });
 
     const res = await handlers.POST(
@@ -403,14 +403,14 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      file: {
+      file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
-      } satisfies UploadedFileData,
+      }),
     });
     const signature = await signPayload(payload, "sk_live_badkey");
 

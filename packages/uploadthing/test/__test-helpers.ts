@@ -10,11 +10,11 @@ import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
 import type {
-  ActionType,
   MPUResponse,
   PresignedBase,
   PSPResponse,
-} from "../src/internal/types";
+} from "../src/internal/shared-schemas";
+import type { ActionType } from "../src/internal/types";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
 export const requestsToDomain = (domain: string) =>

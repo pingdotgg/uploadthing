@@ -23,8 +23,8 @@ import type {
 import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
 import {
-  PollUploadResponseSchema,
-  PresignedURLResponseSchema,
+  PollUploadResponse,
+  PresignedURLResponse,
 } from "../internal/shared-schemas";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
@@ -144,7 +144,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
     yield* Effect.logDebug("Getting presigned URLs for files", fileData);
 
     const responseSchema = S.Struct({
-      data: PresignedURLResponseSchema,
+      data: PresignedURLResponse,
     });
 
     const presigneds = yield* fetchEff(
@@ -190,7 +190,7 @@ const uploadFile = (
       generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
     ).pipe(
       Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(PollUploadResponseSchema)),
+      Effect.andThen(S.decodeUnknown(PollUploadResponse)),
       Effect.tap(Effect.logDebug("Polled upload", presigned.key)),
       Effect.andThen((res) =>
         res.status === "done"
@@ -199,7 +199,7 @@ const uploadFile = (
       ),
       Effect.retry({
         while: (err) => err instanceof RetryError,
-        schedule: exponentialBackoff,
+        schedule: exponentialBackoff(),
       }),
       Effect.catchTag("RetryError", (e) => Effect.die(e)),
     );
