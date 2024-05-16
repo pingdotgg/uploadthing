@@ -85,7 +85,7 @@ const mockPresigned = (file: {
 const callRequestSpy = async (request: StrictRequest<any>) =>
   requestSpy(new URL(request.url).toString(), {
     method: request.method,
-    headers: Object.fromEntries(request.headers.entries()),
+    headers: Object.fromEntries(request.headers),
     body: await (() => {
       if (request.method === "GET") return null;
       const ct = request.headers.get("content-type");
