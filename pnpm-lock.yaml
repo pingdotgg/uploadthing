@@ -406,8 +406,8 @@ importers:
         specifier: ~3.31.1
         version: 3.31.1(react-native@0.74.1)(react@18.2.0)
       uploadthing:
-        specifier: 6.10.3
-        version: 6.10.3(tailwindcss@3.4.3)
+        specifier: 6.10.4
+        version: link:../../packages/uploadthing
       zod:
         specifier: ^3.22.4
         version: 3.23.8
@@ -10817,25 +10817,6 @@ packages:
       vite: 5.2.10(@types/node@20.12.7)
     transitivePeerDependencies:
       - rollup
-
-  /@uploadthing/mime-types@0.2.9:
-    resolution: {integrity: sha512-7Ap2evP+niXNSXoOck4DUZUAKYrMRRpJ85n+ZxCuRsnr3iziOgv/Rt6es5SnMVgE/aOObxddOxbrxyOhISQWHQ==}
-    dev: false
-
-  /@uploadthing/shared@6.7.3(@uploadthing/mime-types@0.2.9):
-    resolution: {integrity: sha512-gyVnUDDxJMbTd8ojPvZ2eaBeGhjcVtQAbBTGOv7mOdnIFAIK2ggacK7lsG9SU5CnVSUgfUTvae/n5+HOp4uLew==}
-    peerDependencies:
-      '@uploadthing/mime-types': 0.2.9
-    peerDependenciesMeta:
-      '@uploadthing/mime-types':
-        optional: true
-    dependencies:
-      '@effect/schema': 0.66.12(effect@3.1.0)(fast-check@3.18.0)
-      '@uploadthing/mime-types': 0.2.9
-      effect: 3.1.0
-      fast-check: 3.18.0
-      std-env: 3.7.0
-    dev: false
 
   /@urql/core@2.3.6(graphql@15.8.0):
     resolution: {integrity: sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw==}
@@ -27681,37 +27662,6 @@ packages:
       browserslist: 4.23.0
       escalade: 3.1.1
       picocolors: 1.0.0
-
-  /uploadthing@6.10.3(tailwindcss@3.4.3):
-    resolution: {integrity: sha512-0TvK8IvJbdCDYcRmDzZWeOZDLFDxU7Eoh+e0mJPeustsA9bXHZgozdBHGh0uLM//tNXB+iv4TqabT31YlU810g==}
-    engines: {node: '>=18.13.0'}
-    peerDependencies:
-      express: '*'
-      fastify: '*'
-      h3: '*'
-      next: '*'
-      tailwindcss: '*'
-    peerDependenciesMeta:
-      express:
-        optional: true
-      fastify:
-        optional: true
-      h3:
-        optional: true
-      next:
-        optional: true
-      tailwindcss:
-        optional: true
-    dependencies:
-      '@effect/schema': 0.66.12(effect@3.1.0)(fast-check@3.18.0)
-      '@uploadthing/mime-types': 0.2.9
-      '@uploadthing/shared': 6.7.3(@uploadthing/mime-types@0.2.9)
-      consola: 3.2.3
-      effect: 3.1.0
-      fast-check: 3.18.0
-      std-env: 3.7.0
-      tailwindcss: 3.4.3
-    dev: false
 
   /uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
