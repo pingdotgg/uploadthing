@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type {
+  EndpointMetadata,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
@@ -26,13 +29,16 @@ declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
 };
 
-const useEndpointMetadata = (url: URL, endpoint: string) => {
+const useRouteConfig = (
+  url: URL,
+  endpoint: string,
+): ExpandedRouteConfig | undefined => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
-  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint);
+  return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
 };
 
 export const INTERNAL_uploadthingHookGen = <
@@ -65,11 +71,6 @@ export const INTERNAL_uploadthingHookGen = <
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
     const fileProgress = useRef<Map<string, number>>(new Map());
-
-    const permittedFileInfo = useEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -131,10 +132,19 @@ export const INTERNAL_uploadthingHookGen = <
       }
     });
 
+    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+
     return {
       startUpload,
       isUploading,
-      permittedFileInfo,
+      routeConfig,
+
+      /**
+       * @deprecated Use `routeConfig` instead
+       */
+      permittedFileInfo: routeConfig
+        ? { slug: endpoint, config: routeConfig }
+        : undefined,
     } as const;
   };
 
@@ -146,11 +156,28 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
 
+  const getRouteConfig = (endpoint: keyof TRouter) => {
+    const maybeServerData = globalThis.__UPLOADTHING;
+    const config = maybeServerData?.find((x) => x.slug === endpoint)?.config;
+    if (!config) {
+      throw new Error(
+        `No config found for endpoint "${endpoint.toString()}". Please make sure to use the NextSSRPlugin in your Next.js app.`,
+      );
+    }
+    return config;
+  };
+
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
     uploadFiles: genUploader<TRouter>({
       url,
       package: "@uploadthing/react",
     }),
+
+    /**
+     * Get the config for a given endpoint outside of React context.
+     * @remarks Can only be used if the NextSSRPlugin is used in the app.
+     */
+    getRouteConfig,
   } as const;
 };
