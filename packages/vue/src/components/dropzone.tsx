@@ -66,6 +66,12 @@ export type UploadDropzoneProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: DropzoneContent;
+  /**
+   * Callback called when files are dropped or pasted.
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
+  onDrop?: (acceptedFiles: File[]) => void;
 };
 
 export const generateUploadDropzone = <TRouter extends FileRouter>(
@@ -125,7 +131,8 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
 
       const onDrop = (acceptedFiles: File[]) => {
-        if (acceptedFiles === null) return;
+        $props.onDrop?.(acceptedFiles);
+
         files.value = acceptedFiles;
 
         // If mode is auto, start upload immediately.

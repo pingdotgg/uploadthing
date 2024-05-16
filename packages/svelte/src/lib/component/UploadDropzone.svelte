@@ -55,6 +55,7 @@
     TSkipPolling
   >;
   export let appearance: UploadDropzoneAppearance = {};
+  export let onDrop: (acceptedFiles: File[]) => void = () => {};
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
     undefined;
@@ -105,7 +106,9 @@
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
 
-  const onDrop = (acceptedFiles: File[]) => {
+  const _onDrop = (acceptedFiles: File[]) => {
+    onDrop(acceptedFiles);
+    
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
@@ -117,7 +120,7 @@
   };
 
   $: dropzoneOptions = {
-    onDrop,
+    onDrop: _onDrop,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: __internal_dropzone_disabled,
