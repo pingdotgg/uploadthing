@@ -25,7 +25,6 @@ export const uploadRouter = {
         aspectRatio: 1,
       },
     },
-    video: {},
   })
     .middleware(async () => {
       const user = (await auth())?.user;
