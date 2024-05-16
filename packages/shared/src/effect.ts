@@ -33,7 +33,7 @@ export const fetchEff = (
   init?: RequestInit,
 ): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
   Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
-    const headers = new Headers(init?.headers ?? {});
+    const headers = new Headers(init?.headers ?? []);
     for (const [key, value] of Object.entries(baseHeaders)) {
       if (typeof value === "string") headers.set(key, value);
     }

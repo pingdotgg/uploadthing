@@ -120,7 +120,7 @@ export const toWebRequest = (
   const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
 
   const headers = new Headers();
-  for (const [key, value] of Object.entries(req.headers ?? {})) {
+  for (const [key, value] of Object.entries(req.headers ?? [])) {
     if (typeof value === "string") headers.set(key, value);
     if (Array.isArray(value)) headers.set(key, value.join(","));
   }
