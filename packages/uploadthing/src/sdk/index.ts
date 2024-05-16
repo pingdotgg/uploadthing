@@ -81,7 +81,7 @@ export class UTApi {
       }),
     );
 
-    const headers = new Headers([["Content-Type", "application/json"]]);
+    const headers = new Headers([["Content-Type", "application/jso"]]);
     for (const [key, value] of Object.entries(this.defaultHeaders)) {
       if (typeof value === "string") headers.set(key, value);
     }
