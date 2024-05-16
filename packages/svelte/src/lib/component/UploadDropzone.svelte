@@ -55,6 +55,11 @@
     TSkipPolling
   >;
   export let appearance: UploadDropzoneAppearance = {};
+  /**
+   * Callback called when files are dropped or pasted.
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
   export let onDrop: (acceptedFiles: File[]) => void = () => {
     /** no-op */
   };
