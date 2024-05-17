@@ -8,5 +8,7 @@ A Raycast extension for uploading files to your UploadThing app.
 
 > [!NOTE]
 >
+> Contributions to further develop the extension are welcome. 
+> 
 > Source code lives in Raycast Extensions Repo:
 > https://github.com/raycast/extensions/tree/main/extensions/uploadthing/
