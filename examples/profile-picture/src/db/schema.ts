@@ -1,4 +1,3 @@
-import { genId } from "@/utils";
 import { relations } from "drizzle-orm";
 import {
   integer,
@@ -11,7 +10,7 @@ import type { AdapterAccount } from "next-auth/adapters";
 export const User = sqliteTable("user", {
   id: text("id")
     .primaryKey()
-    .$defaultFn(() => genId("usr")),
+    .$defaultFn(() => `usr_` + crypto.randomUUID().replace(/-/g, "")),
   name: text("name").notNull(),
   email: text("email").notNull(),
   hashedPassword: text("hashedPassword"),

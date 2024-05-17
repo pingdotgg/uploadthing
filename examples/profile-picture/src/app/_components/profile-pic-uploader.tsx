@@ -19,10 +19,7 @@ import type { Area, Point } from "react-easy-crop";
 import Cropper from "react-easy-crop";
 import { toast } from "sonner";
 
-import {
-  generateMimeTypes,
-  generatePermittedFileTypes,
-} from "uploadthing/client";
+import { generateMimeTypes } from "uploadthing/client";
 import type { ExpandedRouteConfig } from "uploadthing/types";
 
 import { updateUserImage } from "../_actions";
@@ -85,9 +82,7 @@ export function ProfilePictureCard(props: { user: User }) {
       <input
         type="file"
         ref={inputRef}
-        accept={generateMimeTypes(
-          generatePermittedFileTypes(routeConfig).fileTypes,
-        ).join(",")}
+        accept={generateMimeTypes(routeConfig ?? {}).join(",")}
         className="hidden"
         onChange={(e) => {
           if (!e.target.files?.[0]) return;

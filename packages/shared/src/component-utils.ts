@@ -7,7 +7,12 @@ import { mimeTypes } from "@uploadthing/mime-types";
 import type { ExpandedRouteConfig } from "./types";
 import { objectKeys } from "./utils";
 
-export const generateMimeTypes = (fileTypes: string[]) => {
+export const generateMimeTypes = (
+  typesOrRouteConfig: string[] | ExpandedRouteConfig,
+) => {
+  const fileTypes = Array.isArray(typesOrRouteConfig)
+    ? typesOrRouteConfig
+    : objectKeys(typesOrRouteConfig);
   if (fileTypes.includes("blob")) return [];
 
   return fileTypes.map((type) => {
