@@ -85,7 +85,9 @@ export class PSPResponse extends PresignedBase.extend<PSPResponse>(
   fields: S.Record(S.String, S.String),
 }) {}
 
-export const PresignedURLResponse = S.Array(S.Union(PSPResponse, MPUResponse));
+export const PrepareUploadResponse = S.Struct({
+  data: S.Array(S.Union(PSPResponse, MPUResponse)),
+});
 
 export class PollUploadResponse extends S.Class<PollUploadResponse>(
   "PollUploadResponse",

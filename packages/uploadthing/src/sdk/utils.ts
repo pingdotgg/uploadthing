@@ -24,7 +24,7 @@ import { uploadMultipart } from "../internal/multi-part.server";
 import { uploadPresignedPost } from "../internal/presigned-post.server";
 import {
   PollUploadResponse,
-  PresignedURLResponse,
+  PrepareUploadResponse,
 } from "../internal/shared-schemas";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
@@ -135,42 +135,41 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
   Effect.gen(function* () {
     const { files, metadata, contentDisposition, acl } = input;
 
-    const fileData = files.map((file) => ({
+    const fileUploadRequests = files.map((file) => ({
       name: file.name ?? "unnamed-blob",
       type: file.type,
       size: file.size,
-      ...("customId" in file ? { customId: file.customId } : {}),
+      customId: "customId" in file ? file.customId : null,
+      contentDisposition,
+      acl,
     }));
-    yield* Effect.logDebug("Getting presigned URLs for files", fileData);
+    yield* Effect.logDebug(
+      "Getting presigned URLs for files",
+      fileUploadRequests,
+    );
 
-    const responseSchema = S.Struct({
-      data: PresignedURLResponse,
-    });
-
-    const presigneds = yield* fetchEff(
-      generateUploadThingURL("/v6/uploadFiles"),
+    const { data: presigneds } = yield* fetchEff(
+      generateUploadThingURL("/v7/prepareUpload"),
       {
         method: "POST",
         cache: "no-store",
         body: JSON.stringify({
-          files: fileData,
+          files: fileUploadRequests,
           metadata,
-          contentDisposition,
-          acl,
         }),
         headers: { "Content-Type": "application/json" },
       },
     ).pipe(
       Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(responseSchema)),
+      Effect.andThen(S.decodeUnknown(PrepareUploadResponse)),
       Effect.catchTag("ParseError", (e) => Effect.die(e)),
       Effect.catchTag("FetchError", (e) => Effect.die(e)),
     );
-    yield* Effect.logDebug("Got presigned URLs:", presigneds.data);
+    yield* Effect.logDebug("Got presigned URLs:", presigneds);
 
     return files.map((file, i) => ({
       file,
-      presigned: presigneds.data[i],
+      presigned: presigneds[i],
     }));
   });
 

@@ -30,11 +30,8 @@ import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
 import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import type {
-  FileRouter,
-  inferEndpointOutput,
-  PresignedURLs,
-} from "./internal/types";
+import type { MPUResponse, PSPResponse } from "./internal/shared-schemas";
+import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import type { UTReporter } from "./internal/ut-reporter";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
@@ -195,7 +192,7 @@ const uploadFile = <
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling> & {
     reportEventToUT: UTReporter;
   },
-  presigned: PresignedURLs[number],
+  presigned: MPUResponse | PSPResponse,
 ) =>
   Arr.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
     Effect.tapError(() =>
