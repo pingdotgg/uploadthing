@@ -6,6 +6,8 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
+import { contentDisposition } from "@uploadthing/shared";
+
 import {
   baseHeaders,
   createApiUrl,
@@ -67,18 +69,17 @@ describe("adapters:h3", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v7/prepareUpload",
       {
         body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
+          files: [
+            {
+              name: "foo.txt",
+              size: 48,
               contentDisposition: "inline",
+              type: "text/plain",
             },
-          },
+          ],
           metadata: {},
           callbackUrl: "http://localhost:3000/",
           callbackSlug: "middleware",
@@ -142,18 +143,17 @@ describe("adapters:server", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v7/prepareUpload",
       {
         body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
+          files: [
+            {
+              name: "foo.txt",
+              size: 48,
               contentDisposition: "inline",
+              type: "text/plain",
             },
-          },
+          ],
           metadata: {},
           callbackUrl: "http://localhost:3000/",
           callbackSlug: "middleware",
@@ -214,18 +214,17 @@ describe("adapters:next", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v7/prepareUpload",
       {
         body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
+          files: [
+            {
+              name: "foo.txt",
+              size: 48,
               contentDisposition: "inline",
+              type: "text/plain",
             },
-          },
+          ],
           metadata: {},
           callbackUrl: "http://localhost:3000/",
           callbackSlug: "middleware",
@@ -328,18 +327,17 @@ describe("adapters:next-legacy", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v7/prepareUpload",
       {
         body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
+          files: [
+            {
+              name: "foo.txt",
+              size: 48,
               contentDisposition: "inline",
+              type: "text/plain",
             },
-          },
+          ],
           metadata: {},
           callbackUrl: "http://localhost:3000/",
           callbackSlug: "middleware",
@@ -426,18 +424,17 @@ describe("adapters:express", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v7/prepareUpload",
       {
         body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
+          files: [
+            {
+              name: "foo.txt",
+              size: 48,
               contentDisposition: "inline",
+              type: "text/plain",
             },
-          },
+          ],
           metadata: {},
           callbackUrl: url,
           callbackSlug: "middleware",
@@ -564,18 +561,17 @@ describe("adapters:fastify", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v7/prepareUpload",
       {
         body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
+          files: [
+            {
+              name: "foo.txt",
+              size: 48,
               contentDisposition: "inline",
+              type: "text/plain",
             },
-          },
+          ],
           metadata: {},
           callbackUrl: url,
           callbackSlug: "middleware",

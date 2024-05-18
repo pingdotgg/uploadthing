@@ -124,7 +124,7 @@ export const getTypeFromFileName = (
 };
 
 export function generateUploadThingURL(path: `/${string}`) {
-  let host = "https://uploadthing.com";
+  let host = "https://api.uploadthing.com";
   if (process.env.CUSTOM_INFRA_URL) {
     host = process.env.CUSTOM_INFRA_URL;
   }
