@@ -145,7 +145,7 @@ export const it = itBase.extend({
     // prepend msw listeners to use db instance
     msw.use(
       http.post<never, { files: any[] } & Record<string, string>>(
-        "https://uploadthing.com/api/prepareUpload",
+        "https://api.uploadthing.com/v6/prepareUpload",
         async ({ request }) => {
           await callRequestSpy(request);
           const body = await request.json();
@@ -167,7 +167,7 @@ export const it = itBase.extend({
         },
       ),
       http.post<never, { files: any[]; metadata: unknown }>(
-        "https://uploadthing.com/api/uploadFiles",
+        "https://api.uploadthing.com/v6/uploadFiles",
         async ({ request }) => {
           await callRequestSpy(request);
           const body = await request.json();
@@ -186,21 +186,21 @@ export const it = itBase.extend({
         },
       ),
       http.post(
-        "https://uploadthing.com/api/completeMultipart",
+        "https://api.uploadthing.com/v6/completeMultipart",
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({ success: true });
         },
       ),
       http.post(
-        "https://uploadthing.com/api/failureCallback",
+        "https://api.uploadthing.com/v6/failureCallback",
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({ success: true });
         },
       ),
       http.get<{ key: string }>(
-        "https://uploadthing.com/api/pollUpload/:key",
+        "https://api.uploadthing.com/v6/pollUpload/:key",
         // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
         async function* ({ request, params }) {
           await callRequestSpy(request);
@@ -226,7 +226,7 @@ export const it = itBase.extend({
         },
       ),
       http.post(
-        "https://uploadthing.com/api/requestFileAccess",
+        "https://api.uploadthing.com/v6/requestFileAccess",
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({
@@ -235,14 +235,14 @@ export const it = itBase.extend({
         },
       ),
       http.post(
-        "https://uploadthing.com/api/serverCallback",
+        "https://api.uploadthing.com/v6/serverCallback",
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({ status: "ok" });
         },
       ),
       http.get(
-        "https://uploadthing.com/api/serverCallback",
+        "https://api.uploadthing.com/v6/serverCallback",
         // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
         async function* ({ request }) {
           await callRequestSpy(request);
@@ -252,7 +252,7 @@ export const it = itBase.extend({
         },
       ),
       http.post(
-        "https://uploadthing.com/api/updateACL",
+        "https://api.uploadthing.com/v6/updateACL",
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({ success: true });
@@ -281,7 +281,7 @@ export const useBadS3 = () =>
 
 export const useBadUTApi = () =>
   msw.use(
-    http.post("https://uploadthing.com/api/*", async () => {
+    http.post("https://api.uploadthing.com/v6/*", async () => {
       return HttpResponse.json({ error: "Not found" }, { status: 404 });
     }),
   );
