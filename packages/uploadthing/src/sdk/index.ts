@@ -240,7 +240,7 @@ export class UTApi {
 
     return await this.executeAsync(
       this.requestUploadThing(
-        "/api/deleteFiles",
+        "/v6/deleteFiles",
         keyType === "fileKey"
           ? { fileKeys: asArray(keys) }
           : { customIds: asArray(keys) },
@@ -277,7 +277,7 @@ export class UTApi {
 
     return await this.executeAsync(
       this.requestUploadThing(
-        "/api/getFileUrl",
+        "/v6/getFileUrl",
         keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
         responseSchema,
       ),
@@ -315,7 +315,7 @@ export class UTApi {
     });
 
     return await this.executeAsync(
-      this.requestUploadThing("/api/listFiles", { ...opts }, responseSchema),
+      this.requestUploadThing("/v6/listFiles", { ...opts }, responseSchema),
     );
   };
 
@@ -328,7 +328,7 @@ export class UTApi {
 
     return await this.executeAsync(
       this.requestUploadThing(
-        "/api/renameFiles",
+        "/v6/renameFiles",
         { updates: asArray(updates) },
         responseSchema,
       ),
@@ -352,7 +352,7 @@ export class UTApi {
     });
 
     return await this.executeAsync(
-      this.requestUploadThing("/api/getUsageInfo", {}, responseSchema),
+      this.requestUploadThing("/v6/getUsageInfo", {}, responseSchema),
     );
   };
 
@@ -385,7 +385,7 @@ export class UTApi {
 
     return await this.executeAsync(
       this.requestUploadThing(
-        "/api/requestFileAccess",
+        "/v6/requestFileAccess",
         keyType === "fileKey"
           ? { fileKey: key, expiresIn }
           : { customId: key, expiresIn },
@@ -429,7 +429,7 @@ export class UTApi {
     });
 
     return await this.executeAsync(
-      this.requestUploadThing("/api/updateACL", { updates }, responseSchema),
+      this.requestUploadThing("/v6/updateACL", { updates }, responseSchema),
     );
   };
 }

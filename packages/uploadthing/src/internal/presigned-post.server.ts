@@ -29,7 +29,7 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
       }),
     }).pipe(
       Effect.tapErrorCause(() =>
-        fetchEff(generateUploadThingURL("/api/failureCallback"), {
+        fetchEff(generateUploadThingURL("/v6/failureCallback"), {
           method: "POST",
           body: JSON.stringify({
             fileKey: presigned.key,

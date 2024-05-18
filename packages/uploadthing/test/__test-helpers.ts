@@ -57,7 +57,7 @@ const mockPresigned = (file: {
     fileUrl: "https://utfs.io/f/abc-123.txt",
     key: "abc-123.txt",
     pollingJwt: "random-jwt",
-    pollingUrl: generateUploadThingURL("/api/serverCallback"),
+    pollingUrl: generateUploadThingURL("/v6/serverCallback"),
   };
   if (file.size > 5 * 1024 * 1024) {
     return {
