@@ -251,7 +251,7 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
 export type UTEvents = {
   upload: {
     in: S.Schema.Type<typeof UploadActionPayload>;
-    out: readonly (MPUResponse | PSPResponse)[];
+    out: ReadonlyArray<MPUResponse | PSPResponse>;
   };
   failure: {
     in: S.Schema.Type<typeof FailureActionPayload>;
