@@ -6,8 +6,6 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
-import { contentDisposition } from "@uploadthing/shared";
-
 import {
   baseHeaders,
   createApiUrl,
