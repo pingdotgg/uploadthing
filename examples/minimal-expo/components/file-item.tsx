@@ -6,8 +6,8 @@ import { Animated, Text, View } from "react-native";
 import { RectButton } from "react-native-gesture-handler";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 
-import { isImage } from "~/utils/image-utils";
-import { RouterOutputs, trpc } from "~/utils/trpc";
+import { RouterOutputs, trpc } from "~/lib/trpc";
+import { isImage } from "~/lib/utils";
 
 const AnimatedRectButton = Animated.createAnimatedComponent(RectButton);
 const AnimatedIcon = Animated.createAnimatedComponent(FeatherIcon);

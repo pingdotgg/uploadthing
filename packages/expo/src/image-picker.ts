@@ -34,10 +34,13 @@ export const GENERATE_useImageUploader = <
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
-    const uploadthing = useUploadThing(endpoint, opts);
+    const { routeConfig, startUpload, isUploading } = useUploadThing(
+      endpoint,
+      opts,
+    );
     const { mediaTypes, multiple } = useMemo(
-      () => generateMediaTypes(uploadthing.permittedFileInfo?.config),
-      [uploadthing.permittedFileInfo?.config],
+      () => generateMediaTypes(routeConfig),
+      [routeConfig],
     );
 
     const openImagePicker = async (
@@ -113,13 +116,13 @@ export const GENERATE_useImageUploader = <
       );
 
       // This cast works cause you can append { uri, type, name } as FormData
-      return uploadthing.startUpload(
+      return startUpload(
         files as unknown as File[],
         "input" in opts ? opts.input : undefined,
       );
     };
 
-    return { openImagePicker, isUploading: uploadthing.isUploading };
+    return { openImagePicker, isUploading };
   };
 
   return useImageUploader;

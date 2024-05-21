@@ -10,6 +10,7 @@
     "ios": "expo run:ios"
   },
   "dependencies": {
+    "@bacons/text-decoder": "^0.0.0",
     "@expo/vector-icons": "^14.0.1",
     "@gorhom/bottom-sheet": "^4.6.1",
     "@shopify/flash-list": "1.6.4",

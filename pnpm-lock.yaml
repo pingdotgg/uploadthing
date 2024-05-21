@@ -324,6 +324,9 @@ importers:
 
   examples/minimal-expo:
     dependencies:
+      '@bacons/text-decoder':
+        specifier: ^0.0.0
+        version: 0.0.0(react-native@0.74.1)
       '@expo/vector-icons':
         specifier: ^14.0.1
         version: 14.0.1
@@ -3176,6 +3179,14 @@ packages:
       '@babel/helper-string-parser': 7.24.1
       '@babel/helper-validator-identifier': 7.24.5
       to-fast-properties: 2.0.0
+
+  /@bacons/text-decoder@0.0.0(react-native@0.74.1):
+    resolution: {integrity: sha512-8KNbnXSHfhZRR1S1IQEdWQNa9HE/ylWRisDdkoCmHiaP53mksnPaxyqUSlwpJ3DyG1xEekRwFDEG+pbCbSsrkQ==}
+    peerDependencies:
+      react-native: '*'
+    dependencies:
+      react-native: 0.74.1(@babel/core@7.24.4)(@babel/preset-env@7.24.5)(@types/react@18.2.78)(react@18.2.0)
+    dev: false
 
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}

@@ -1,8 +1,9 @@
-import { isObject } from "@trpc/server/unstable-core-do-not-import";
 import { z } from "zod";
 
 import { createRouteHandler, createUploadthing } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
+
+import { isObject } from "~/lib/utils";
 
 const f = createUploadthing({
   /**

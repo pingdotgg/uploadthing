@@ -42,10 +42,13 @@ export const GENERATE_useDocumentUploader = <
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
-    const uploadthing = useUploadThing(endpoint, opts);
+    const { routeConfig, startUpload, isUploading } = useUploadThing(
+      endpoint,
+      opts,
+    );
     const { mimeTypes, multiple } = useMemo(
-      () => generateFileTypes(uploadthing.permittedFileInfo?.config),
-      [uploadthing.permittedFileInfo?.config],
+      () => generateFileTypes(routeConfig),
+      [routeConfig],
     );
 
     const openDocumentPicker = async (
@@ -83,13 +86,13 @@ export const GENERATE_useDocumentUploader = <
       );
 
       // This cast works cause you can append { uri, type, name } as FormData
-      return uploadthing.startUpload(
+      return startUpload(
         files as unknown as File[],
         "input" in opts ? opts.input : undefined,
       );
     };
 
-    return { openDocumentPicker, isUploading: uploadthing.isUploading };
+    return { openDocumentPicker, isUploading };
   };
 
   return useDocumentUploader;

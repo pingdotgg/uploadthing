@@ -1,4 +1,3 @@
-import "./polyfill";
 import "./styles.css";
 
 import FeatherIcon from "@expo/vector-icons/Feather";
@@ -12,7 +11,7 @@ import {
   RectButton,
 } from "react-native-gesture-handler";
 
-import { TRPCProvider } from "~/utils/trpc";
+import { TRPCProvider } from "~/lib/trpc";
 
 export default function RootLayout() {
   return (

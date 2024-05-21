@@ -5,7 +5,7 @@ import { ActivityIndicator, RefreshControl, Text, View } from "react-native";
 
 import { FileItem } from "~/components/file-item";
 import { UploadActionDrawer } from "~/components/upload-drawer";
-import { trpc } from "~/utils/trpc";
+import { trpc } from "~/lib/trpc";
 
 export default function HomeScreen() {
   const utils = trpc.useUtils();

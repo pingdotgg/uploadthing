@@ -9,8 +9,8 @@ import { openSettings } from "expo-linking";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 
-import { trpc } from "~/utils/trpc";
-import { useDocumentUploader, useImageUploader } from "~/utils/uploadthing";
+import { trpc } from "~/lib/trpc";
+import { useDocumentUploader, useImageUploader } from "~/lib/uploadthing";
 
 export function UploadActionDrawer(props: { showTrigger: boolean }) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
