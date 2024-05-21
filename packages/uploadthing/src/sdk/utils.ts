@@ -185,9 +185,9 @@ const uploadFile = (
       yield* uploadPresignedPost(file, presigned);
     }
 
-    yield* fetchEff(
-      generateUploadThingURL(`/v6/pollUpload/${presigned.key}`),
-    ).pipe(
+    yield* fetchEff(presigned.pollingUrl, {
+      headers: { Authorization: presigned.pollingJwt },
+    }).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(PollUploadResponse)),
       Effect.tap(Effect.logDebug("Polled upload", presigned.key)),

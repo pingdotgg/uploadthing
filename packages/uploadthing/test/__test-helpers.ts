@@ -49,15 +49,16 @@ const mockPresigned = (file: {
   size: number;
   customId: string | null;
 }): PSPResponse | MPUResponse => {
+  const key = "abc-123.txt";
   const base: PresignedBase = {
     contentDisposition: "inline",
     customId: file.customId ?? null,
     fileName: file.name,
     fileType: lookup(file.name) as any,
-    fileUrl: "https://utfs.io/f/abc-123.txt",
-    key: "abc-123.txt",
-    pollingJwt: "random-jwt",
-    pollingUrl: generateUploadThingURL("/v6/serverCallback"),
+    fileUrl: `https://utfs.io/f/${key}`,
+    key,
+    pollingJwt: `random-jwt:${key}`,
+    pollingUrl: generateUploadThingURL("/v7/pollUpload"),
   };
   if (file.size > 5 * 1024 * 1024) {
     return {
@@ -74,7 +75,7 @@ const mockPresigned = (file: {
   return {
     ...base,
     url: "https://bucket.s3.amazonaws.com",
-    fields: { key: "abc-123.txt" },
+    fields: { key },
   };
 };
 
@@ -183,29 +184,32 @@ export const it = itBase.extend({
           return HttpResponse.json({ success: true });
         },
       ),
-      http.get<{ key: string }>(
-        "https://api.uploadthing.com/v6/pollUpload/:key",
+      http.get(
+        "https://api.uploadthing.com/v7/pollUpload",
         // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-        async function* ({ request, params }) {
+        async function* ({ request }) {
           await callRequestSpy(request);
           let file = null;
+          const fileKey = request.headers.get("Authorization")!.split(":")[1];
 
           // Simulate polling - at least once
-          yield HttpResponse.json({ status: "still waiting" });
+          yield HttpResponse.json({ status: "not done" });
           if (!file) {
-            file = db.getFileByKey(params.key);
-            yield HttpResponse.json({ status: "still waiting" });
+            file = db.getFileByKey(fileKey);
+            yield HttpResponse.json({ status: "not done" });
           }
 
           return HttpResponse.json({
             status: "done",
-            fileData: {
+            file: {
               ...file,
               fileName: file.name,
               fileSize: file.size,
               fileType: file.type,
               fileKey: file.key,
+              fileUrl: `https://utfs.io/f/${file.key}`,
             },
+            metadata: JSON.parse(file.metadata ?? "{}") as unknown,
           });
         },
       ),
@@ -223,16 +227,6 @@ export const it = itBase.extend({
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({ status: "ok" });
-        },
-      ),
-      http.get(
-        "https://api.uploadthing.com/v6/serverCallback",
-        // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-        async function* ({ request }) {
-          await callRequestSpy(request);
-
-          yield HttpResponse.json({ status: "still waiting" });
-          return HttpResponse.json({ status: "done", callbackData: null });
         },
       ),
       http.post(

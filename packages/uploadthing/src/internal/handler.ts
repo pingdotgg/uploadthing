@@ -402,7 +402,7 @@ const handleUploadAction = Effect.gen(function* () {
     const fetchContext = yield* FetchContext;
     promise = Effect.forEach(
       presignedUrls,
-      (file) => conditionalDevServer(file.key, opts.apiKey),
+      (presigned) => conditionalDevServer(presigned, opts.apiKey),
       { concurrency: 10 },
     ).pipe(
       Effect.provide(ConsolaLogger),

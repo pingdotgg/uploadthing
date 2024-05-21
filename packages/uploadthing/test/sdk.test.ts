@@ -56,10 +56,11 @@ describe("uploadFiles", () => {
     );
     expect(requestSpy).toHaveBeenNthCalledWith(
       3,
-      "https://api.uploadthing.com/v6/pollUpload/abc-123.txt",
+      "https://api.uploadthing.com/v7/pollUpload",
       {
         body: null,
         headers: {
+          authorization: "random-jwt:abc-123.txt",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -182,8 +183,10 @@ describe.skip("uploadFilesFromUrl", () => {
     );
     expect(requestSpy).toHaveBeenNthCalledWith(
       4,
-      "https://api.uploadthing.com/v6/pollUpload/abc-123.txt",
-      expect.objectContaining({}),
+      "https://api.uploadthing.com/v7/pollUpload",
+      expect.objectContaining({
+        headers: { authorization: "random-jwt:abc-123.txt" },
+      }),
     );
 
     expect(result).toEqual({

@@ -166,18 +166,18 @@ export const genUploader = <TRouter extends FileRouter>(
       });
 };
 
-type Done = { status: "done"; callbackData: unknown };
-type StillWaiting = { status: "still waiting" };
+type Done = { status: "done"; file: unknown; callbackData: unknown };
+type StillWaiting = { status: "not done" };
 type PollingResponse = Done | StillWaiting;
 
 const isPollingResponse = (input: unknown): input is PollingResponse => {
   if (!isObject(input)) return false;
-  if (input.status === "done") return "callbackData" in input;
-  return input.status === "still waiting";
+  if (input.status === "done") return "file" in input && isObject(input.file);
+  return input.status === "not done";
 };
 
 const isPollingDone = (input: PollingResponse): input is Done => {
-  return input.status === "done";
+  return input.status === "done" && "callbackData" in input;
 };
 
 const uploadFile = <
