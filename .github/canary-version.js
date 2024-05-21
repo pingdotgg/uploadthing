@@ -4,7 +4,7 @@ import prettier from "@prettier/sync";
 
 const pkgJsonPaths = fs
   .readdirSync("packages")
-  .filter((dir) => dir !== "config")
+  .filter((dir) => fs.existsSync(`packages/${dir}/package.json`))
   .map((dir) => `packages/${dir}/package.json`);
 
 try {
