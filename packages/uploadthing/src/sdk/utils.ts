@@ -139,7 +139,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       name: file.name ?? "unnamed-blob",
       type: file.type,
       size: file.size,
-      customId: "customId" in file ? file.customId : null,
+      customId: file.customId ?? null,
       contentDisposition,
       acl,
     }));
