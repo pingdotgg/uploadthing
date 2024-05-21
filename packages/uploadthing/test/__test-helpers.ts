@@ -96,35 +96,11 @@ const callRequestSpy = async (request: StrictRequest<any>) =>
     })(),
   });
 
-const msw = setupServer(
-  /**
-   * S3
-   */
-  http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
-    await callRequestSpy(request);
-    return new HttpResponse();
-  }),
-  http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
-    await callRequestSpy(request);
-    return new HttpResponse(null, {
-      status: 204,
-      headers: { ETag: "abc123" },
-    });
-  }),
-  /**
-   * Static Assets
-   */
-  http.get("https://cdn.foo.com/:fileKey", async ({ request }) => {
-    await callRequestSpy(request);
-    return HttpResponse.text("Lorem ipsum doler sit amet");
-  }),
-  http.get("https://utfs.io/f/:key", async ({ request }) => {
-    await callRequestSpy(request);
-    return HttpResponse.text("Lorem ipsum doler sit amet");
-  }),
-);
+const msw = setupServer();
 beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
 afterAll(() => msw.close());
+
+export const resetMocks = () => msw.close();
 
 /**
  * Extend the base `it` function to provide a `db` instance to our tests
@@ -142,8 +118,35 @@ export const it = itBase.extend({
       insertFile: (file: any) => files.push(file),
       getFileByKey: (key: string) => files.find((f) => f.key === key),
     };
-    // prepend msw listeners to use db instance
     msw.use(
+      /**
+       * S3
+       */
+      http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+        await callRequestSpy(request);
+        return new HttpResponse();
+      }),
+      http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
+        await callRequestSpy(request);
+        return new HttpResponse(null, {
+          status: 204,
+          headers: { ETag: "abc123" },
+        });
+      }),
+      /**
+       * Static Assets
+       */
+      http.get("https://cdn.foo.com/:fileKey", async ({ request }) => {
+        await callRequestSpy(request);
+        return HttpResponse.text("Lorem ipsum doler sit amet");
+      }),
+      http.get("https://utfs.io/f/:key", async ({ request }) => {
+        await callRequestSpy(request);
+        return HttpResponse.text("Lorem ipsum doler sit amet");
+      }),
+      /**
+       * UploadThing API
+       */
       http.post<never, { files: any[] } & Record<string, string>>(
         "https://api.uploadthing.com/v7/prepareUpload",
         async ({ request }) => {
