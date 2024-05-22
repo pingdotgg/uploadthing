@@ -60,7 +60,6 @@ test("limits number of files", async ({ page, context }) => {
     testFile("small-file.png"),
     testFile("small-file.png"),
     testFile("small-file.png"),
-    testFile("small-file.png"),
   ]);
   await page.waitForEvent("dialog", {
     predicate: (d) => d.message() === "Upload failed",
