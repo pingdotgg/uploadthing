@@ -50,5 +50,5 @@ jobs:
         if: ${{ !cancelled() && matrix.dir == 'backend-adapters' }}
         with:
           name: playwright-report
-          path: ${{ matrix.dir}}/playwright-report/
+          path: ./examples/${{ matrix.dir}}/playwright-report/
           retention-days: 7
