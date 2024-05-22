@@ -52,7 +52,7 @@ test("limits number of files", async ({ page, context }) => {
   });
 
   const fileChooserPromise = page.waitForEvent("filechooser");
-  await page.locator("label").filter({ hasText: "Choose Files(s)" }).click();
+  await page.locator("label").filter({ hasText: "Choose File(s)" }).click();
   const fileChooser = await fileChooserPromise;
   await fileChooser.setFiles([
     testFile("small-file.png"),
