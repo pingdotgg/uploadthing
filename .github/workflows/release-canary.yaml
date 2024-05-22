@@ -29,7 +29,7 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           for dir in packages/*/; do
-              if [ -d "$dir/package.json" ]; then
+              if [ -f "$dir/package.json" ]; then
                 npm publish "$dir" --access public --tag canary
               fi;
           done
