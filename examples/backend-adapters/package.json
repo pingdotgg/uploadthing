@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "client",
+    "client-react",
+    "client-vanilla",
+    "client-vue",
     "server"
   ],
   "scripts": {

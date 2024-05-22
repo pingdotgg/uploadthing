@@ -35,6 +35,7 @@
     "@changesets/cli": "^2.27.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@manypkg/cli": "^0.21.3",
+    "@playwright/test": "1.42.1",
     "@prettier/sync": "^0.5.1",
     "@types/bun": "^1.0.8",
     "@types/node": "^20.11.21",
