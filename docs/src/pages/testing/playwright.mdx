@@ -1,0 +1,82 @@
+import { Callout } from "nextra-theme-docs";
+
+# Testing with Playwright
+
+Playwright is a end-to-end testing tool that allows you to test your web
+applications in a browser.
+
+We can use Playwright to create **integration tests** for our `UploadThing`
+funcionality, independently of the frontend framework we are using.
+
+<Callout type="info">
+  Integration tests are used to test the interaction between different parts of
+  your application. In the case of `UploadThing`, we can use Playwright to test
+  the interaction between the frontend and the backend.
+</Callout>
+
+## Installation
+
+If you haven't already, install Playwright by running:
+
+```bash
+npm install -D playwright
+```
+
+## Writing the test
+
+When writing your test, you can think of it as a user interacting with your
+application. For example, a real user would:
+
+1. Open the browser
+2. Go to the page where the file upload form is
+3. Upload a file
+4. Click the submit button
+5. Check if the file was uploaded successfully
+
+But instead of uploading a real file to `Uploadthing` cloud storage, we will
+mock the API endpoint and check if the frontend is sending the file correctly.
+
+```ts
+import { expect, test } from "@playwright/test";
+
+test("should upload a file successfully", async ({ page }) => {
+  // Mock the API endpoint, so we don't actually upload a file
+  // This is a Next.js API route, but you can replace it with your own
+  await page.route(
+    "*/**/api/uploadthing?actionType=upload&slug=courseImage",
+    async (route) => {
+      const json = { data: [] };
+      await route.fulfill({ json });
+    },
+  );
+
+  // Go to the page with the upload form
+  await page.goto("/your-page-with-upload-form");
+
+  // Find the form element by role and name
+  const formEl = page.getByRole("form", {
+    name: "upload-form",
+  });
+
+  // Find the input element by label
+  const uploadButtonEl = formEl.getByLabel(/select a file/i);
+
+  // Validate that the upload button is visible
+  await expect(uploadButtonEl).toBeVisible();
+
+  // Upload a file
+  await uploadButton.click();
+  // The real file to upload, in the same directory as the test file
+  const imagePath = path.join(__dirname, "your-test-file.png");
+  await uploadButton.setInputFiles(imagePath);
+
+  // Submit the form
+  await page.getByRole("button", { name: /Submit/i }).click();
+
+  // Validate that the file was uploaded successfully via a toast message
+  await expect(page.getByText(/uploaded successfully/i)).toBeVisible();
+});
+```
+
+The form, labels, and buttons in the test above are placeholders. You should
+replace them with the actual elements in your application.
