@@ -1,6 +1,6 @@
 ---
-"@uploadthing/shared": patch
-"uploadthing": patch
+"@uploadthing/shared": minor
+"uploadthing": minor
 ---
 
 chore: update paths to future api domain
