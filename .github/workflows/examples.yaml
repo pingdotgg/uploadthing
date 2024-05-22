@@ -44,7 +44,7 @@ jobs:
       - name: Run E2E Tests (if exists)
         run: pnpm turbo --filter ./examples/${{ matrix.dir }} test
         env:
-          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_TEST_SECRET }}
+          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
       
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() && matrix.dir == 'backend-adapters' }}
