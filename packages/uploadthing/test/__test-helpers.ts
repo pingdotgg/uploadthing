@@ -57,6 +57,10 @@ const mockPresigned = (file: {
     fileType: lookup(file.name) as any,
     fileUrl: `https://utfs.io/f/${key}`,
     key,
+    /**
+     * This isn't the actual format of the polling JWT, but we use it in
+     * tests just to easily be able to pull out the key from it.
+     */
     pollingJwt: `random-jwt:${key}`,
     pollingUrl: generateUploadThingURL("/v7/pollUpload"),
   };
