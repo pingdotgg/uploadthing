@@ -24,16 +24,18 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const debuggerHost = Constants.expoConfig?.hostUri;
-  let url: URL;
+  let url = new URL("http://localhost:8081/api/uploadthing")
   try {
     url = new URL(
       initOpts?.url ?? "/api/uploadthing",
-      process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`,
+      typeof window.location !== "undefined"
+        ? window.location.origin
+        : process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`,
     );
   } catch (e) {
-    throw new Error(
-      `Failed to resolve URL from ${initOpts?.url?.toString()} and ${process.env.EXPO_PUBLIC_SERVER_ORIGIN} or ${debuggerHost}`,
-    );
+    // Can't throw since window.location is undefined in Metro pass
+    // but may get defined when app mounts.
+    console.warn(`Failed to resolve URL from ${initOpts?.url?.toString()} and ${process.env.EXPO_PUBLIC_SERVER_ORIGIN} or ${debuggerHost}. Your application may not work as expected.`);
   }
 
   const vanillaHelpers = generateReactHelpers<TRouter>({ ...initOpts, url });

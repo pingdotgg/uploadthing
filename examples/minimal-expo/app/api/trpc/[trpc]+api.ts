@@ -5,7 +5,7 @@ import { z } from "zod";
 import { UTApi } from "uploadthing/server";
 
 const createContext = () => ({
-  utapi: new UTApi({ logLevel: "debug" }),
+  utapi: new UTApi({ logLevel: "info" }),
   userId: "abc123",
 });
 const t = initTRPC.context<typeof createContext>().create();

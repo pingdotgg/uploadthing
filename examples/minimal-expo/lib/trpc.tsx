@@ -32,7 +32,9 @@ const resolveUrl = () => {
   try {
     return new URL(
       "/api/trpc",
-      process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`,
+      typeof window.location !== "undefined"
+        ? window.location.origin
+        : process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`,
     );
   } catch (e) {
     throw new Error(
