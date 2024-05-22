@@ -12,6 +12,7 @@ declare module "bun" {
 
 const pkgJsonPaths = fs
   .readdirSync("..")
+  .filter((dir) => fs.existsSync(`../${dir}/package.json`))
   .map((dir) => `../${dir}/package.json`);
 
 /**
