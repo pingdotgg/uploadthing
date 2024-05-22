@@ -38,7 +38,7 @@ jobs:
         run: |
           cat ./examples/${{ matrix.dir }}/package.json | 
           if grep --silent '"@playwright/test"';
-            then pnpm dlx playwright install chromium --with-deps;
+            then pnpm dlx playwright install --with-deps;
           fi
 
       - name: Run E2E Tests (if exists)
