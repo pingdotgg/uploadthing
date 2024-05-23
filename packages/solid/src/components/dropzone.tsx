@@ -211,7 +211,7 @@ export const UploadDropzone = <
             $props.appearance?.button,
             styleFieldArg,
           )}
-          onClick={(e) => {
+          onMouseDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
             if (!files()) return;

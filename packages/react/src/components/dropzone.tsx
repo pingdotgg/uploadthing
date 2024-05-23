@@ -266,7 +266,7 @@ export function UploadDropzone<
             $props.appearance?.button,
             styleFieldArg,
           )}
-          onClick={onUploadClick}
+          onMouseDown={onUploadClick}
           data-ut-element="button"
           data-state={state}
           disabled={$props.__internal_button_disabled ?? state === "uploading"}

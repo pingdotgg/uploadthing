@@ -200,7 +200,7 @@ export function UploadButton<
 
   const renderClearButton = () => (
     <button
-      onClick={() => {
+      onMouseDown={() => {
         setFiles([]);
         setIsManualTriggerDisplayed(false);
 
@@ -263,7 +263,7 @@ export function UploadButton<
         data-ut-element="button"
         tabIndex={0}
         ref={labelRef}
-        onClick={(e) => {
+        onMouseDown={(e) => {
           if (isManualTriggerDisplayed) {
             e.preventDefault();
             e.stopPropagation();

@@ -251,7 +251,7 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onFocus = () => setState("isFocused", true);
   const onBlur = () => setState("isFocused", false);
-  const onClick = () => () => {
+  const onMouseDown = () => () => {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
@@ -267,7 +267,7 @@ export function createDropzone(_props: DropzoneOptions) {
           onKeyDown,
           onFocus,
           onBlur,
-          onClick,
+          onMouseDown,
           onDragEnter,
           onDragOver,
           onDragLeave,
@@ -286,7 +286,7 @@ export function createDropzone(_props: DropzoneOptions) {
     ...(!props.disabled
       ? {
           onChange: onDrop,
-          onClick: onInputElementClick,
+          onMouseDown: onInputElementClick,
         }
       : {}),
   });

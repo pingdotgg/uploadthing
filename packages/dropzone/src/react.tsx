@@ -280,7 +280,7 @@ export function useDropzone({
   const onFocus = useCallback(() => dispatch({ type: "focus" }), []);
   const onBlur = useCallback(() => dispatch({ type: "blur" }), []);
 
-  const onClick = useCallback(() => {
+  const onMouseDown = useCallback(() => {
     // In IE11/Edge the file-browser dialog is blocking, therefore,
     // use setTimeout() to ensure React can handle state changes
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
@@ -296,7 +296,7 @@ export function useDropzone({
             onKeyDown,
             onFocus,
             onBlur,
-            onClick,
+            onMouseDown,
             onDragEnter,
             onDragOver,
             onDragLeave,
@@ -308,7 +308,7 @@ export function useDropzone({
     [
       disabled,
       onBlur,
-      onClick,
+      onMouseDown,
       onDragEnter,
       onDragLeave,
       onDragOver,
@@ -330,7 +330,7 @@ export function useDropzone({
         ? {
             // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             onChange: onDropCb as any,
-            onClick: onInputElementClick,
+            onMouseDown: onInputElementClick,
           }
         : {}),
     }),

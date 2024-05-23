@@ -80,7 +80,7 @@ export const Pre = ({
         )}
       >
         <Button
-          onClick={toggleWordWrap}
+          onMouseDown={toggleWordWrap}
           className="md:nx-hidden"
           title="Toggle word wrap"
         >
