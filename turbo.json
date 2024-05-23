@@ -28,6 +28,7 @@
       "dependsOn": []
     },
     "test": {
+      "cache": false,
       "dependsOn": []
     },
     "test:watch": {

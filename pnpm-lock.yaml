@@ -28,6 +28,9 @@ importers:
       '@manypkg/cli':
         specifier: ^0.21.3
         version: 0.21.4
+      '@playwright/test':
+        specifier: 1.42.1
+        version: 1.42.1
       '@prettier/sync':
         specifier: ^0.5.1
         version: 0.5.2(prettier@3.2.5)
@@ -81,7 +84,7 @@ importers:
         version: link:../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       nextra:
         specifier: ^2.13.2
         version: 2.13.4(next@14.2.1)(react-dom@18.2.0)(react@18.2.0)
@@ -264,7 +267,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -347,7 +350,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -458,7 +461,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -513,7 +516,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -571,7 +574,7 @@ importers:
         version: 0.30.10(@libsql/client@0.6.0)(@types/react@18.2.78)(react@18.2.0)
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -632,7 +635,7 @@ importers:
         version: 0.30.10(@libsql/client@0.6.0)(@types/react@18.2.78)(react@18.2.0)
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -708,7 +711,7 @@ importers:
         version: 0.368.0(react@18.2.0)
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.2.0)(react@18.2.0)
@@ -760,7 +763,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -791,7 +794,7 @@ importers:
     dependencies:
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -822,7 +825,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -930,7 +933,7 @@ importers:
         version: 3.11.2(rollup@3.29.4)
       '@nuxt/test-utils':
         specifier: ^3.12.0
-        version: 3.12.1(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25)
+        version: 3.12.1(@playwright/test@1.42.1)(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25)
       '@uploadthing/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
@@ -988,7 +991,7 @@ importers:
         version: 8.57.0
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -1205,7 +1208,7 @@ importers:
         version: 1.11.1
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@types/node@20.12.7)(@unocss/reset@0.59.4)(eslint@8.57.0)(floating-vue@5.2.2)(rollup@4.16.2)(typescript@5.4.5)(unocss@0.59.4)(vite@5.2.10)
@@ -2447,7 +2450,7 @@ packages:
       '@clerk/clerk-sdk-node': 4.13.15(react@18.2.0)
       '@clerk/shared': 1.4.1(react@18.2.0)
       '@clerk/types': 3.64.0
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       path-to-regexp: 6.2.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -5272,7 +5275,7 @@ packages:
       - supports-color
     dev: true
 
-  /@nuxt/test-utils@3.12.1(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25):
+  /@nuxt/test-utils@3.12.1(@playwright/test@1.42.1)(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25):
     resolution: {integrity: sha512-VRLNcDz9Ad/4pjHdNRVLPs5DVIO5IJ0ij81PLmsE/lt+5oeeIQld+AgHgcqM4BM1YKsXTBuavbk1mEBqj7h/+A==}
     engines: {node: ^14.18.0 || >=16.10.0}
     peerDependencies:
@@ -5314,6 +5317,7 @@ packages:
     dependencies:
       '@nuxt/kit': 3.11.2(rollup@3.29.4)
       '@nuxt/schema': 3.11.2(rollup@3.29.4)
+      '@playwright/test': 1.42.1
       c12: 1.10.0
       consola: 3.2.3
       defu: 6.1.4
@@ -5338,7 +5342,7 @@ packages:
       unplugin: 1.10.1
       vite: 5.2.10(@types/node@20.12.7)
       vitest: 1.5.0(@types/node@20.12.7)(happy-dom@13.10.1)
-      vitest-environment-nuxt: 1.0.0(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25)
+      vitest-environment-nuxt: 1.0.0(@playwright/test@1.42.1)(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25)
       vue: 3.4.25(typescript@5.4.5)
       vue-router: 4.3.2(vue@3.4.25)
     transitivePeerDependencies:
@@ -5725,7 +5729,6 @@ packages:
     hasBin: true
     dependencies:
       playwright: 1.42.1
-    dev: true
 
   /@pnpm/config.env-replace@1.1.0:
     resolution: {integrity: sha512-htyl8TWnKL7K/ESFa1oW2UB5lVDxuF5DpM7tBi6Hu2LNL3mWkIzNLG6N4zoCUP1lCKNxWy/3iu8mS8MvToGd6w==}
@@ -13707,7 +13710,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /fsevents@2.3.3:
@@ -17167,7 +17169,7 @@ packages:
       react: '>=16.0.0'
       react-dom: '>=16.0.0'
     dependencies:
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -17179,7 +17181,7 @@ packages:
       react: '*'
       react-dom: '*'
     dependencies:
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
@@ -17198,7 +17200,7 @@ packages:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: true
 
-  /next@14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0):
+  /next@14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-SF3TJnKdH43PMkCcErLPv+x/DY1YCklslk3ZmwaVoyUfDgHKexuKlf9sEfBQ69w+ue8jQ3msLb+hSj1T19hGag==}
     engines: {node: '>=18.17.0'}
     hasBin: true
@@ -17217,6 +17219,7 @@ packages:
         optional: true
     dependencies:
       '@next/env': 14.2.1
+      '@playwright/test': 1.42.1
       '@swc/helpers': 0.5.5
       busboy: 1.6.0
       caniuse-lite: 1.0.30001612
@@ -17256,7 +17259,7 @@ packages:
       git-url-parse: 13.1.0
       intersection-observer: 0.12.2
       match-sorter: 6.3.1
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       next-seo: 6.1.0(next@14.2.1)(react-dom@18.2.0)(react@18.2.0)
       next-themes: 0.2.1(next@14.2.1)(react-dom@18.2.0)(react@18.2.0)
       nextra: 2.13.4(next@14.2.1)(react-dom@18.2.0)(react@18.2.0)
@@ -17286,7 +17289,7 @@ packages:
       gray-matter: 4.0.3
       katex: 0.16.10
       lodash.get: 4.4.2
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       next-mdx-remote: 4.4.1(react-dom@18.2.0)(react@18.2.0)
       p-limit: 3.1.0
       react: 18.2.0
@@ -18667,7 +18670,6 @@ packages:
     resolution: {integrity: sha512-mxz6zclokgrke9p1vtdy/COWBH+eOZgYUVVU34C73M+4j4HLlQJHtfcqiqqxpP0o8HhMkflvfbquLX5dg6wlfA==}
     engines: {node: '>=16'}
     hasBin: true
-    dev: true
 
   /playwright@1.42.1:
     resolution: {integrity: sha512-PgwB03s2DZBcNRoW+1w9E+VkLBxweib6KTXM0M3tkiT4jVxKSi6PmVJ591J+0u10LUrgxB7dLRbiJqO5s2QPMg==}
@@ -18677,7 +18679,6 @@ packages:
       playwright-core: 1.42.1
     optionalDependencies:
       fsevents: 2.3.2
-    dev: true
 
   /possible-typed-array-names@1.0.0:
     resolution: {integrity: sha512-d7Uw+eZoloe0EHDIYoe+bQ5WXnGMOpmiZFTuMWCwpjzzkL2nTjcKiAk4hh8TjnGye2TwWOk3UXucZ+3rbmBa8Q==}
@@ -23704,10 +23705,10 @@ packages:
     dependencies:
       vite: 5.2.10(@types/node@20.12.7)
 
-  /vitest-environment-nuxt@1.0.0(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25):
+  /vitest-environment-nuxt@1.0.0(@playwright/test@1.42.1)(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25):
     resolution: {integrity: sha512-AWMO9h4HdbaFdPWZw34gALFI8gbBiOpvfbyeZwHIPfh4kWg/TwElYHvYMQ61WPUlCGaS5LebfHkaI0WPyb//Iw==}
     dependencies:
-      '@nuxt/test-utils': 3.12.1(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25)
+      '@nuxt/test-utils': 3.12.1(@playwright/test@1.42.1)(h3@1.11.1)(happy-dom@13.10.1)(rollup@3.29.4)(vite@5.2.10)(vitest@1.5.0)(vue-router@4.3.2)(vue@3.4.25)
     transitivePeerDependencies:
       - '@cucumber/cucumber'
       - '@jest/globals'
