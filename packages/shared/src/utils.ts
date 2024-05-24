@@ -204,21 +204,6 @@ export function asArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
-/**
- * Filters an object's values based on a predicate
- * @example
- * filterObjectValues({ a: "a", b: null }, (v): v is string => v != null)
- * // ^? Record<string, string> { a: "a" }
- */
-export const filterObjectValues = <V, T extends Record<string, V>, D extends V>(
-  obj: T,
-  predicate: (val: V) => val is D,
-) => {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => predicate(v)),
-  ) as Record<string, D>;
-};
-
 /** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,

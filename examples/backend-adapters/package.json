@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "client",
+    "client-react",
+    "client-vanilla",
+    "client-vue",
     "server"
   ],
   "scripts": {
@@ -21,10 +23,10 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@uploadthing/react": "6.5.3",
+    "@uploadthing/react": "6.5.4",
     "concurrently": "^8.2.2",
     "typescript": "^5.4.5",
-    "uploadthing": "6.10.3"
+    "uploadthing": "6.10.4"
   },
   "devDependencies": {
     "@playwright/test": "1.42.1"

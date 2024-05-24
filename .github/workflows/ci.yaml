@@ -5,7 +5,8 @@ name: CI
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-
+  UPLOADTHING_TEST_SECRET: ${{ secrets.UPLOADTHING_TEST_SECRET }}
+  
 on:
   push:
     branches:

@@ -1,4 +1,4 @@
-import { TaggedError } from "effect/Data";
+import * as Data from "effect/Data";
 
 import type { Json } from "./types";
 import { isObject } from "./utils";
@@ -58,7 +58,10 @@ export interface SerializedUploadThingError {
 
 export class UploadThingError<
   TShape extends Json = { message: string },
-> extends TaggedError("UploadThingError")<{ message: string }> {
+> extends Data.Error<{ message: string }> {
+  readonly _tag = "UploadThingError";
+  readonly name = "UploadThingError";
+
   public readonly cause?: unknown;
   public readonly code: ErrorCode;
   public readonly data: TShape | undefined;

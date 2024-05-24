@@ -18,18 +18,17 @@
   import { createDropzone } from "@uploadthing/dropzone/svelte";
   import {
     allowedContentTextLabelGenerator,
+    generateClientDropzoneAccept,
+    getFilesFromClipboardEvent,
     resolveMaybeUrlArg,
     styleFieldToClassName,
-    getFilesFromClipboardEvent
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
-  import {
-    generatePermittedFileTypes,
-  } from "uploadthing/client";
+  import { generatePermittedFileTypes } from "uploadthing/client";
 
-  import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
-  import {  progressWidths } from "./shared";
+  import type { UploadthingComponentProps } from "../types";
+  import { progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
   type DropzoneStyleFieldCallbackArgs = {
@@ -55,6 +54,14 @@
     TSkipPolling
   >;
   export let appearance: UploadDropzoneAppearance = {};
+  /**
+   * Callback called when files are dropped or pasted.
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
+  export let onDrop: (acceptedFiles: File[]) => void = () => {
+    /** no-op */
+  };
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
     undefined;
@@ -98,14 +105,14 @@
 
   $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes(
-    $routeConfig,
-  ));
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
   $: ready =
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
 
-  const onDrop = (acceptedFiles: File[]) => {
+  const onDropCallback = (acceptedFiles: File[]) => {
+    onDrop(acceptedFiles);
+
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
@@ -117,8 +124,9 @@
   };
 
   $: dropzoneOptions = {
-    onDrop,
-    routeConfig: $routeConfig,
+    onDrop: onDropCallback,
+    multiple,
+    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: __internal_dropzone_disabled,
   };
 

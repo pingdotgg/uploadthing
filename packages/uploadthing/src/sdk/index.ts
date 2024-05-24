@@ -12,7 +12,6 @@ import {
   asArray,
   FetchContext,
   fetchEff,
-  filterObjectValues,
   generateUploadThingURL,
   parseResponseJson,
   UploadThingError,
@@ -82,17 +81,16 @@ export class UTApi {
       }),
     );
 
+    const headers = new Headers([["Content-Type", "application/json"]]);
+    for (const [key, value] of Object.entries(this.defaultHeaders)) {
+      if (typeof value === "string") headers.set(key, value);
+    }
+
     return fetchEff(url, {
       method: "POST",
       cache: "no-store",
       body: JSON.stringify(body),
-      headers: {
-        ...filterObjectValues(
-          this.defaultHeaders,
-          (v): v is string => typeof v === "string",
-        ),
-        "Content-Type": "application/json",
-      },
+      headers,
     }).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(responseSchema)),
@@ -148,17 +146,17 @@ export class UTApi {
     guardServerOnly();
 
     const uploads = await this.executeAsync(
-      uploadFilesInternal({
-        files: asArray(files),
-        contentDisposition: opts?.contentDisposition ?? "inline",
-        metadata: opts?.metadata ?? {},
-        acl: opts?.acl,
-      }),
+      Effect.flatMap(
+        uploadFilesInternal({
+          files: asArray(files),
+          contentDisposition: opts?.contentDisposition ?? "inline",
+          metadata: opts?.metadata ?? {},
+          acl: opts?.acl,
+        }),
+        (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
+      ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
     );
-
-    const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
-    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
-    return uploadFileResponse;
+    return uploads;
   }
 
   /**
@@ -236,9 +234,12 @@ export class UTApi {
     guardServerOnly();
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const responseSchema = S.Struct({
+    class DeleteFileResponse extends S.Class<DeleteFileResponse>(
+      "DeleteFileResponse",
+    )({
       success: S.Boolean,
-    });
+      deletedCount: S.Number,
+    }) {}
 
     return await this.executeAsync(
       this.requestUploadThing(
@@ -246,7 +247,7 @@ export class UTApi {
         keyType === "fileKey"
           ? { fileKeys: asArray(keys) }
           : { customIds: asArray(keys) },
-        responseSchema,
+        DeleteFileResponse,
       ),
     );
   };
@@ -268,20 +269,22 @@ export class UTApi {
 
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const responseSchema = S.Struct({
+    class GetFileUrlResponse extends S.Class<GetFileUrlResponse>(
+      "GetFileUrlResponse",
+    )({
       data: S.Array(
         S.Struct({
           key: S.String,
           url: S.String,
         }),
       ),
-    });
+    }) {}
 
     return await this.executeAsync(
       this.requestUploadThing(
         "/api/getFileUrl",
         keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
-        responseSchema,
+        GetFileUrlResponse,
       ),
     );
   };
@@ -299,10 +302,14 @@ export class UTApi {
   listFiles = async (opts?: ListFilesOptions) => {
     guardServerOnly();
 
-    const responseSchema = S.Struct({
+    class ListFileResponse extends S.Class<ListFileResponse>(
+      "ListFileResponse",
+    )({
+      hasMore: S.Boolean,
       files: S.Array(
         S.Struct({
           id: S.String,
+          customId: S.NullOr(S.String),
           key: S.String,
           name: S.String,
           status: S.Literal(
@@ -313,25 +320,27 @@ export class UTApi {
           ),
         }),
       ),
-    });
+    }) {}
 
     return await this.executeAsync(
-      this.requestUploadThing("/api/listFiles", { ...opts }, responseSchema),
+      this.requestUploadThing("/api/listFiles", { ...opts }, ListFileResponse),
     );
   };
 
   renameFiles = async (updates: RenameFileUpdate | RenameFileUpdate[]) => {
     guardServerOnly();
 
-    const responseSchema = S.Struct({
+    class RenameFileResponse extends S.Class<RenameFileResponse>(
+      "RenameFileResponse",
+    )({
       success: S.Boolean,
-    });
+    }) {}
 
     return await this.executeAsync(
       this.requestUploadThing(
         "/api/renameFiles",
         { updates: asArray(updates) },
-        responseSchema,
+        RenameFileResponse,
       ),
     );
   };
@@ -342,18 +351,17 @@ export class UTApi {
   getUsageInfo = async () => {
     guardServerOnly();
 
-    const responseSchema = S.Struct({
+    class GetUsageInfoResponse extends S.Class<GetUsageInfoResponse>(
+      "GetUsageInfoResponse",
+    )({
       totalBytes: S.Number,
-      totalReadable: S.String,
       appTotalBytes: S.Number,
-      appTotalReadable: S.String,
       filesUploaded: S.Number,
       limitBytes: S.Number,
-      limitReadable: S.String,
-    });
+    }) {}
 
     return await this.executeAsync(
-      this.requestUploadThing("/api/getUsageInfo", {}, responseSchema),
+      this.requestUploadThing("/api/getUsageInfo", {}, GetUsageInfoResponse),
     );
   };
 
@@ -380,9 +388,11 @@ export class UTApi {
       });
     }
 
-    const responseSchema = S.Struct({
+    class GetSignedUrlResponse extends S.Class<GetSignedUrlResponse>(
+      "GetSignedUrlResponse",
+    )({
       url: S.String,
-    });
+    }) {}
 
     return await this.executeAsync(
       this.requestUploadThing(
@@ -390,7 +400,7 @@ export class UTApi {
         keyType === "fileKey"
           ? { fileKey: key, expiresIn }
           : { customId: key, expiresIn },
-        responseSchema,
+        GetSignedUrlResponse,
       ),
     );
   };

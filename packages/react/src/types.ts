@@ -83,13 +83,13 @@ export type UseUploadthingProps<
    *   the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?:
-    | ((res: ClientUploadedFileData<TServerOutput>[]) => void)
+    | ((res: ClientUploadedFileData<TServerOutput>[]) => MaybePromise<void>)
     | undefined;
   /**
    * Called if the upload fails
    */
   onUploadError?:
-    | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
+    | ((e: UploadThingError<inferErrorShape<TRouter>>) => MaybePromise<void>)
     | undefined;
   /**
    * Set custom headers that'll get sent with requests

@@ -44,6 +44,8 @@ import type {
   UploadFilesOptions,
 } from "./types";
 
+export const version = pkgJson.version;
+
 export {
   /** @public */
   generateClientDropzoneAccept,
@@ -62,16 +64,13 @@ export {
 export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
-) => {
-  try {
-    const type = Effect.runSync(
-      getTypeFromFileName(file.name, objectKeys(routeConfig)),
-    );
-    return file.type.includes(type);
-  } catch {
-    return false;
-  }
-};
+): boolean =>
+  Effect.runSync(
+    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+      Effect.flatMap((type) => Effect.succeed(file.type.includes(type))),
+      Effect.catchAll(() => Effect.succeed(false)),
+    ),
+  );
 
 /**
  * Validate that a file is of a valid size given a route config
@@ -80,21 +79,14 @@ export const isValidFileType = (
 export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
-) => {
-  try {
-    const maxFileSize = Effect.runSync(
-      Effect.flatMap(
-        getTypeFromFileName(file.name, objectKeys(routeConfig)),
-        (type) => fileSizeToBytes(routeConfig[type]!.maxFileSize),
-      ),
-    );
-    return file.size <= maxFileSize;
-  } catch {
-    return false;
-  }
-};
-
-export const version = pkgJson.version;
+): boolean =>
+  Effect.runSync(
+    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+      Effect.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
+      Effect.flatMap((maxFileSize) => Effect.succeed(file.size <= maxFileSize)),
+      Effect.catchAll(() => Effect.succeed(false)),
+    ),
+  );
 
 const uploadFilesInternal = <
   TRouter extends FileRouter,
@@ -247,7 +239,7 @@ const uploadFile = <
         Effect.map(({ callbackData }) => callbackData),
         Effect.retry({
           while: (res) => res instanceof RetryError,
-          schedule: exponentialBackoff,
+          schedule: exponentialBackoff(),
         }),
         Effect.when(() => !opts.skipPolling),
         Effect.map(Option.getOrNull),
