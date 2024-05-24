@@ -52,8 +52,7 @@ export type DropzoneContent = {
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -82,11 +81,8 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
   });
 
   return Vue.defineComponent(
-    <
-      TEndpoint extends keyof TRouter,
-      TSkipPolling extends boolean = false,
-    >(props: {
-      config: UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
+    <TEndpoint extends keyof TRouter>(props: {
+      config: UploadDropzoneProps<TRouter, TEndpoint>;
     }) => {
       const $props = props.config;
 
@@ -95,29 +91,22 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const files = ref<File[]>([]);
       const uploadProgress = ref(0);
 
-      const useUploadthingProps: UseUploadthingProps<
-        TRouter,
-        TEndpoint,
-        TSkipPolling
-      > = reactive({
-        headers: $props.headers,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        skipPolling: !$props?.onClientUploadComplete
-          ? true
-          : ($props?.skipPolling as any),
-        onClientUploadComplete: (res) => {
-          files.value = [];
-          $props.onClientUploadComplete?.(res);
-          uploadProgress.value = 0;
-        },
-        onUploadProgress: (p) => {
-          uploadProgress.value = p;
-          $props.onUploadProgress?.(p);
-        },
-        onUploadError: $props.onUploadError,
-        onUploadBegin: $props.onUploadBegin,
-        onBeforeUploadBegin: $props.onBeforeUploadBegin,
-      });
+      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+        reactive({
+          headers: $props.headers,
+          onClientUploadComplete: (res) => {
+            files.value = [];
+            $props.onClientUploadComplete?.(res);
+            uploadProgress.value = 0;
+          },
+          onUploadProgress: (p) => {
+            uploadProgress.value = p;
+            $props.onUploadProgress?.(p);
+          },
+          onUploadError: $props.onUploadError,
+          onUploadBegin: $props.onUploadBegin,
+          onBeforeUploadBegin: $props.onBeforeUploadBegin,
+        });
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
         useUploadthingProps,

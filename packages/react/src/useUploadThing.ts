@@ -61,12 +61,9 @@ export const INTERNAL_uploadthingHookGen = <
     package: "@uploadthing/react",
   });
 
-  const useUploadThing = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
@@ -84,10 +81,9 @@ export const INTERNAL_uploadthingHookGen = <
       setUploading(true);
       opts?.onUploadProgress?.(0);
       try {
-        const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
+        const res = await uploadFiles<TEndpoint>(endpoint, {
           headers: opts?.headers,
           files,
-          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.current.set(progress.file, progress.progress);

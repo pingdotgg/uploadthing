@@ -1,4 +1,8 @@
-import type { ExtendObjectIf, UploadThingError } from "@uploadthing/shared";
+import type {
+  ErrorMessage,
+  ExtendObjectIf,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type {
   ClientUploadedFileData,
   FileRouter,
@@ -23,10 +27,7 @@ export interface GenerateTypedHelpersOptions {
 export type UseUploadthingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-  TServerOutput = false extends TSkipPolling
-    ? inferEndpointOutput<TRouter[TEndpoint]>
-    : null,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 > = {
   /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
@@ -42,18 +43,24 @@ export type UseUploadthingProps<
    */
   onUploadProgress?: (p: number) => void;
   /**
-   * Skip polling for server data after upload is complete
-   * Useful if you want faster response times and don't need
-   * any data returned from the server `onUploadComplete` callback
-   * @default false
+   * This option has been moved to your serverside route config.
+   * Please opt-in by setting `awaitServerData: true` in your route
+   * config instead.
+   * ### Example
+   * ```ts
+   * f(
+   *   { image: { maxFileSize: "1MB" } },
+   *   { awaitServerData: false }
+   * ).middleware(...)
+   * ```
+   * @deprecated
+   * @see https://docs.uploadthing.com/FIX_THIS_URL
    */
-  skipPolling?: TSkipPolling;
+  skipPolling?: ErrorMessage<"This option has been moved to your serverside route config. Please use `awaitServerData` in your route config instead.">;
   /**
    * Called when the file uploads are completed
-   * - If `skipPolling` is `true`, this will be called once
-   *   all the files are uploaded to the storage provider.
-   * - If `skipPolling` is `false`, this will be called after
-   *   the serverside `onUploadComplete` callback has finished
+   * @remarks If `RouteOptions.awaitServerData` is `true`, this will be
+   * called after the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?: (
     res: ClientUploadedFileData<TServerOutput>[],
@@ -67,8 +74,7 @@ export type UseUploadthingProps<
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UseUploadthingProps<TRouter, TEndpoint> & {
   /**
    * The endpoint from your FileRouter to use for the upload
    */

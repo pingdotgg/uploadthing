@@ -49,8 +49,7 @@ type DropzoneContent = {
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -77,14 +76,13 @@ export type UploadDropzoneProps<
 export const UploadDropzone = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
-  const $props = props as UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
+  const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
 
   const { mode = "manual" } = $props.config ?? {};
 
@@ -93,7 +91,6 @@ export const UploadDropzone = <
   });
   const uploadThing = useUploadThing($props.endpoint, {
     headers: $props.headers,
-    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);
       $props.onClientUploadComplete?.(res);

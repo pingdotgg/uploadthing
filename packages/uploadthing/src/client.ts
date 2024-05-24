@@ -143,7 +143,7 @@ export const genUploader = <TRouter extends FileRouter>(
   ) =>
     uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
       ...opts,
-      skipPolling: {} as never,
+      skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
