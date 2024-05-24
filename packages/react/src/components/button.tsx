@@ -122,7 +122,7 @@ export function UploadButton<
           fileInputRef.current.value = "";
         }
         setFiles([]);
-        $props.onClientUploadComplete?.(res);
+        void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
       onUploadProgress: (p) => {
