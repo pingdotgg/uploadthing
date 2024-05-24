@@ -12,9 +12,9 @@ files to UploadThing:
 
 The most common approach to uploading files is to use client-side uploads. With
 client side uploads, you do not have to pay ingress / egress fees for
-transferring the files through your server. Your server instead acts as a
-"proxy" for requesting presigned URLs from the UploadThing API that the client
-will then use to upload the files directly to the storage provider.
+transferring the files through your server. Your server instead acts as a proxy
+for requesting presigned URLs from the UploadThing API that the client will then
+use to upload the files directly to the storage provider.
 
 <img src="/client-uploads.png" alt="Client side uploads" width="100%" />{" "}
 
@@ -29,8 +29,8 @@ will then use to upload the files directly to the storage provider.
 </Callout>
 
 The easiest way to get started with client-side uploads it to define a
-[File Routes](/api-reference/server#file-routes), expose it on your server using
-on of our adapters, and then upload the files using our built-in components or
+[File Route](/api-reference/server#file-routes), expose it on your server using
+one of our adapters, and then upload the files using our built-in components or
 upload helpers. Here are some examples that should fit most of your needs, no
 matter what framework you're using:
 
@@ -48,8 +48,8 @@ matter what framework you're using:
 | Nuxt                 | [Getting Started with Nuxt](/getting-started/nuxt)                                                                                                                                                                           | [minimal-nuxt](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-nuxt)                                       |
 
 If none of the above suits your needs, you can also use the
-[OpenAPI specification](/api-reference/openapi-spec) to build your own SDKs. We
-will now go in depth how to do just that.
+[OpenAPI specification](/api-reference/openapi-spec) to build your own SDKs. In
+the following sections, we will describe how to do just that.
 
 ### Building the backend adapter
 
@@ -58,23 +58,24 @@ for receiving the client request, validating that the request conforms to your
 requirements, and then retrieving and sending back the presigned URLs to the
 client.
 
-We will not go in depth on the implementation details here, you can reference
-either the
-[TypeScript SDK's](https://github.com/pingdotgg/uploadthing/blob/3376306731d34c36fea8df3c6b117eeb17328f0f/packages/uploadthing/src/internal/handler.ts#L84-L109)
+We will not go in depth on the details here, however, you can refer to the
+implementations of the official
+[TypeScript SDK](https://github.com/pingdotgg/uploadthing/blob/3376306731d34c36fea8df3c6b117eeb17328f0f/packages/uploadthing/src/internal/handler.ts#L84-L109)
 or the
-[community Python SDK's](https://github.com/juliusmarminge/uploadthing-py/blob/07b57ede675440881f311f63c166fdfcca2b5880/uploadthing_py/request_handler.py#L244)
-implementations for reference.
+[community Python SDK](https://github.com/juliusmarminge/uploadthing-py/blob/07b57ede675440881f311f63c166fdfcca2b5880/uploadthing_py/request_handler.py#L244)
+for reference.
 
 If you want your adapter to be compatible with the official frontend SDKs, it
 should follow this interface:
 
 - `GET /api/uploadthing`
 
-  - Input parameters: None
+  - Input Query Parameters: None
   - Output JSON:
     [`EndpointMetadata`](https://github.com/pingdotgg/uploadthing/blob/3376306731d34c36fea8df3c6b117eeb17328f0f/packages/shared/src/types.ts#L115-L118)
 
 - `POST /api/uploadthing`
+
   - Input Query Parameters:
     - `slug: string`: The slug of the file route
     - `actionType: "upload" | "failure" | "multipart-complete"`: The action type
@@ -84,10 +85,10 @@ should follow this interface:
 
 ### Requesting presigned URLs
 
-Once your backend adapter has received and validated the request it's time to
-request the presigned URLs from the UploadThing API. Include the file
+Once your backend adapter has received and validated the request, you will next
+need to request the presigned URLs from the UploadThing API. Include the file
 information, the result of running the
-[file route's middleware](/api-reference/server#middleware) as well as the
+[file route middleware](/api-reference/server#middleware) as well as the
 callback URL and slugs. The latter will be used by the UploadThing API to
 callback to your server when the upload has been completed.
 
@@ -113,20 +114,20 @@ curl -X POST https://api.uploadthing.com/v7/prepareUpload \
     }'
 ```
 
-The response will contain a list of presigned URLs for each file. Depending on
-the size of the file, each presigned URL you received in the previous step will
-contain either a `url` string or a list of `urls` strings. The `urls` list will
-be used for multi-part uploads while a single URL should be submitted as a
-single part upload. Return them back to the client.
+The response will contain an array of objects, one for each file. Depending on
+the size of the file, it's corresponding object will contain either a string
+`url` or a array of strings `urls`. The `urls` list will be used for multi-part
+uploads while a single URL string should be submitted as a single part upload.
+Return them back to the client.
 
 ### Uploading the files using the presigned URLs
 
-For each presigned URL you received in the previous step, check if the object
+For each object in the array you received in the previous step, check if it
 contains the `url` or `urls` field, and upload accordingly:
 
 #### Single Part Upload
 
-Submit a POST requets to `presigned.url` you received in the previous step.
+Submit a POST request to `presigned.url` you received in the previous step.
 Create a `FormData` object, and append all the `presigned.fields` to it. Lastly,
 append the file. Here is some sample JavaScript code you can use as reference:
 
@@ -144,7 +145,12 @@ await fetch(presigned.url, {
 });
 ```
 
-#### Multi Part Upload
+<Callout type="warning">
+  It is important that the file is the last field in the `FormData` object,
+  otherwise the storage provider may reject the upload.
+</Callout>
+
+#### Multipart Upload
 
 For each URL in `presigned.urls`, submit a PUT request to the URL. Submit the
 `Content-Disposition` and `Content-Type` Headers. Split the file into chunks and
@@ -174,8 +180,8 @@ const tags = await Promise.all(presigned.urls.map((url, index) => {
 }))
 ```
 
-Once all the parts has been uploaded, tell the server that the upload is
-complete:
+Once all the parts have been uploaded, you will need to tell Uploadthing that
+the upload is complete:
 
 ```sh
 curl -X POST https://api.uploadthing.com/v6/completeMultipart \
@@ -188,10 +194,10 @@ curl -X POST https://api.uploadthing.com/v6/completeMultipart \
     }'
 ```
 
-If some part did not upload successfully, you can implement some retry logic to
-retry the failed part. If that still doesn't succeed, notify the server that the
-upload failed to release the preserved storage usage from your application's
-quota:
+If some parts did not upload successfully, you can implement retry logic to
+attempt the upload of those parts again. If the retries still fail, notify
+Uploadthing of the upload failure to release the reserved storage from your
+application's quota.:
 
 ```sh
 curl -X POST https://api.uploadthing.com/v6/failureCallback \
@@ -210,9 +216,9 @@ no further work the client has to do.
 
 ### (Optional) Poll for the server data
 
-If you want to get the server-side data, you can poll for it using the
-`/pollUpload` endpoint. Include the `pollingJwt` returned alongside the
-presigned URL to authenticate the request.
+If you want to get data returned from the server-side `onUploadComplete`
+callback, you can poll for it using the `/pollUpload` endpoint. Include the
+`pollingJwt` returned alongside the presigned URL to authenticate the request.
 
 ```js
 let retryDelay = 40;
@@ -234,14 +240,14 @@ while (true) {
 ### Handling the callback request
 
 When your file has been uploaded, the UploadThing API will send a callback
-request (similar to a Webhook) to the `callbackUrl` you provided when requesting
+request (similar to a webhook) to the `callbackUrl` you provided when requesting
 the presigned URLs. The callback request will contain the the file information
 along with the `metadata`.
 
-You can identify the hook by the `uploadthing-hook` and
-`x-uploadthing-signature` headers. The signature is a HMAC SHA256 of the request
-body signed using your API key, which you can verify to ensure the request is
-authentic and originates from the UploadThing API.
+You can identify the hook by the presence of the `uploadthing-hook` header and
+verify it using the `x-uploadthing-signature` header. The signature is a HMAC
+SHA256 of the request body signed using your API key, which you can verify to
+ensure the request is authentic and originates from the UploadThing API.
 
 After you have verified the request is authentic, run the `onUploadComplete`
 function for the file route. The data returned from the callback can then be
@@ -250,11 +256,11 @@ the data has been submitted, the client polling we started earlier will finish,
 and you can use the `callbackData` to do whatever you want.
 
 <Callout type="info">
-  Please note that waiting for the server callback data takes time and requires
-  extra roundtrips which can lead to a decreased user experience. If you do not
-  need the server callback data, don't wait for it on the client side. If you're
-  using our SDKs, you can skip polling by setting the `skipPolling` option to
-  `true`.
+  Please note that waiting for the server callback data requires additional
+  roundtrips which take time and can lead to a decreased user experience. If you
+  do not need the server callback data, don't wait for it on the client side. If
+  you're using our SDKs, you can skip polling by setting the `skipPolling`
+  option to `true`.
 </Callout>
 
 Congratulations, you have now uploaded your files to UploadThing.
@@ -278,15 +284,15 @@ upload the files to the storage provider.
 Going forward, we will assume you have already received the file on your server,
 for example using FormData from a file upload form.
 
-Fortunately, server side uploads are very straight forward, and in ways similar
-to client side uploads.
+Fortunately, server side uploads are very straight forward, and in many ways
+similar to client side uploads.
 
 ### Requesting presigned URLs
 
-Requesting presigned URLs works the same was as for client side uploads. Send a
-request to `/prepareUpload` and include the information about the file, what
-[access controls](/regions-and-acl#access-controls) it should have as well as
-the
+Requesting presigned URLs works the same way as for client side uploads. You'll
+need to send a request to `/prepareUpload` and include the information about the
+file, what [access controls](/regions-and-acl#access-controls) it should have as
+well as the
 [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
 Since we're not using file routers, we do not need to include the `metadata`
 field. Since we're not leaving our server, there is also no need for a callback
