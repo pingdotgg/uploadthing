@@ -1,5 +1,12 @@
 # @uploadthing/nuxt
 
+## 6.5.6
+
+### Patch Changes
+
+- Updated dependencies [[`ab89d48`](https://github.com/pingdotgg/uploadthing/commit/ab89d48177857cc4dfccc55346c425c4f103d63f)]:
+  - @uploadthing/vue@6.6.0
+
 ## 6.5.5
 
 ### Patch Changes
