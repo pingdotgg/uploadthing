@@ -31,6 +31,10 @@ export const createApiUrl = (slug: string, action?: ActionType) => {
   return url;
 };
 
+export const doNotExecute = (_fn: (...args: any[]) => any) => {
+  // noop
+};
+
 export const baseHeaders = {
   "x-uploadthing-version": UPLOADTHING_VERSION,
   "x-uploadthing-package": "vitest",
