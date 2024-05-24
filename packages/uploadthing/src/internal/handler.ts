@@ -1,7 +1,6 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
-import type { RouteOptions } from "@uploadthing/shared";
 import {
   FetchContext,
   fetchEff,

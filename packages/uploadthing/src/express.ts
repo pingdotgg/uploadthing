@@ -66,8 +66,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return;
     }
 
-    console.log("response", response);
-
     res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
     res.send(JSON.stringify(response.body));
   });
