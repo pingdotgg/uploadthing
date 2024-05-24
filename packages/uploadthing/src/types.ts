@@ -57,7 +57,7 @@ export type UploadFilesOptions<
    * ).middleware(...)
    * ```
    * @deprecated
-   * @see https://docs.uploadthing.com/FIX_THIS_URL
+   * @see https://docs.uploadthing.com/api-reference/server#route-options
    */
   skipPolling?: ErrorMessage<"This option has been moved to your serverside route config. Please use `awaitServerData` in your route config instead.">;
   /**
