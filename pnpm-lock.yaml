@@ -488,7 +488,7 @@ importers:
         version: 0.368.0(react@18.2.0)
       next:
         specifier: 14.2.1
-        version: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+        version: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       next-auth:
         specifier: 5.0.0-beta.17
         version: 5.0.0-beta.17(next@14.2.1)(react@18.2.0)
@@ -14277,7 +14277,7 @@ packages:
     peerDependencies:
       next: '>=13.2.0 <15.0.0-0'
     dependencies:
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
   /gensync@1.0.0-beta.2:
@@ -17781,7 +17781,7 @@ packages:
         optional: true
     dependencies:
       '@auth/core': 0.30.0
-      next: 14.2.1(@babel/core@7.24.4)(react-dom@18.2.0)(react@18.2.0)
+      next: 14.2.1(@babel/core@7.24.4)(@playwright/test@1.42.1)(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
     dev: false
 
