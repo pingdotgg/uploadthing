@@ -1,5 +1,24 @@
 # uploadthing
 
+## 6.12.0
+
+### Minor Changes
+
+- [#796](https://github.com/pingdotgg/uploadthing/pull/796) [`24cdb51`](https://github.com/pingdotgg/uploadthing/commit/24cdb5191f42d1f2603f45acb392ab05acd0cb64) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: accept `routeConfig` directly in `uploadthing/client.generateMimeTypes`
+
+  You no longer have to combine `generatePermittedFileTypes` and `generateMimeTypes`:
+
+  ```diff
+  - accept={generateMimeTypes(
+  -   generatePermittedFileTypes(routeConfig).fileTypes,
+  - ).join(",")}
+  + accept={generateMimeTypes(routeConfig ?? {}).join(",")}
+  ```
+
+### Patch Changes
+
+- [#796](https://github.com/pingdotgg/uploadthing/pull/796) [`24cdb51`](https://github.com/pingdotgg/uploadthing/commit/24cdb5191f42d1f2603f45acb392ab05acd0cb64) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add `additionalProperties` option to file route configs to allow configurations such as image dimension / aspect ratio to propagate down to client
+
 ## 6.11.0
 
 ### Minor Changes
