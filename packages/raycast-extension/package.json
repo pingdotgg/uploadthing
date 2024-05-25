@@ -1,1 +1,6 @@
-{}
+{
+  "name": "@uploadthing/raycast-extension",
+  "description": "This package.json only exists for changesets to behave",
+  "version": "0.0.0",
+  "private": true
+}
