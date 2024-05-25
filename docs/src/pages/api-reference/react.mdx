@@ -140,6 +140,7 @@ export const OurUploadButton = () => (
 | onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | Config                                               | No                      | Added in `v5.7` | object to pass additional configuration for button                                                                          |
+| disabled               | boolean                                              | No                      | Added in `v6.7` | Disables the button.                                                                                                        |
 
 Config object
 
@@ -226,6 +227,7 @@ export const OurUploadDropzone = () => (
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | object                                               | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                                                        |
 | onDrop                 | (acceptedFiles: File[]) => void                      | No                      | Added in `v6.5` | Callback called when files are dropped or pasted.                                                                           |
+| disabled               | boolean                                              | No                      | Added in `v6.7` | Disables the dropzone.                                                                                                      |
 
 Config object
 
