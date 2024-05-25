@@ -63,6 +63,7 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
+  disabled?: boolean;
 };
 
 /** These are some internal stuff we use to test the component and for forcing a state in docs */
@@ -162,6 +163,8 @@ export function UploadButton<
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
+  if ($props.disabled) inputProps.disabled = true;
+  // TODO: need to figure out how to get the zod validator for the input
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
