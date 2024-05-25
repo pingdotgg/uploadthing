@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/vue": "6.5.4",
-    "uploadthing": "6.10.4",
+    "@uploadthing/vue": "6.6.0",
+    "uploadthing": "6.12.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
