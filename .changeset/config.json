@@ -13,6 +13,7 @@
   },
   "ignore": [
     "docs",
-    "@example/*"
+    "@example/*",
+    "packages/raycast-extension"
   ]
 }
