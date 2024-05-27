@@ -209,6 +209,13 @@ pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
 the input in the middleware without returning it, the Uploadthing server won't
 have any knowledge of it.
 
+<Callout type="info">
+  If you want to disable FE components based when your `input` is not satisfied,
+  you can place your validator in a shared file, so that you can import it in
+  both the server-side `.input()` and on the client-side for your `disabled`
+  prop logic.
+</Callout>
+
 ```ts
 import { z } from "zod";
 

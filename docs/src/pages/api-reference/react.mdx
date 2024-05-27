@@ -148,6 +148,13 @@ Config object
 | :------------ | :------ | :------- | :-------------- | :-------------------------------------------- |
 | appendOnPaste | boolean | No       | Added in `v5.7` | enables ability to paste files from clipboard |
 
+<Callout type="info">
+  If you want to disable the button based when your `input` is not satisfied,
+  you can place your validator in a shared file, so that you can import it in
+  both the server-side `.input()` and on the client-side for your `disabled`
+  prop logic.
+</Callout>
+
 The interface for `UploadFileResponse` is:
 
 ```ts
@@ -235,6 +242,13 @@ Config object
 | :------------ | :----------------- | :------- | :-------------- | :-------------------------------------------------------------------------------------- |
 | mode          | 'auto' \| 'manual' | No       | Added in `v5.4` | mode of dropzone. 'manual' is default one. 'auto' triggers upload right after selection |
 | appendOnPaste | boolean            | No       | Added in `v5.7` | enables ability to paste files from clipboard                                           |
+
+<Callout type="info">
+  If you want to disable the dropzone based when your `input` is not satisfied,
+  you can place your validator in a shared file, so that you can import it in
+  both the server-side `.input()` and on the client-side for your `disabled`
+  prop logic.
+</Callout>
 
 ## generateReactHelpers
 
