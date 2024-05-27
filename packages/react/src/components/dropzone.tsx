@@ -161,10 +161,7 @@ export function UploadDropzone<
   const isDisabled = (() => {
     if ($props.__internal_dropzone_disabled) return true;
     if ($props.disabled) return true;
-    if ("input" in $props) {
-      // we are expecting input, check if it is valid
-      // TODO: need to figure out how to get the zod validator for the input
-    }
+
     return false;
   })();
 
