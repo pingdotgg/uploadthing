@@ -131,7 +131,7 @@ export const INTERNAL_uploadthingHookGen = <
        * @deprecated Use `routeConfig` instead
        */
       permittedFileInfo: computed(() => {
-        if (!routeConfig) return undefined;
+        if (!routeConfig.value) return undefined;
         return { slug: endpoint, config: routeConfig };
       }),
     };
