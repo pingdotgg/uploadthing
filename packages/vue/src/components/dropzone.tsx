@@ -123,7 +123,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
 
       const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(routeConfig.value),
+        generatePermittedFileTypes(routeConfig?.value),
       );
 
       const onDrop = (acceptedFiles: File[]) => {
@@ -237,7 +237,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         if (customContent) return customContent;
 
         return (
-          allowedContentTextLabelGenerator(routeConfig.value) || " " // ensure no empty string
+          allowedContentTextLabelGenerator(routeConfig?.value) || " " // ensure no empty string
         );
       };
 
