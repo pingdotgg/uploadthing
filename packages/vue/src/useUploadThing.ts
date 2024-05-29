@@ -130,10 +130,11 @@ export const INTERNAL_uploadthingHookGen = <
       /**
        * @deprecated Use `routeConfig` instead
        */
-      permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: routeConfig }
-        : undefined,
-    } as const;
+      permittedFileInfo: computed(() => {
+        if (!routeConfig) return undefined;
+        return { slug: endpoint, config: routeConfig };
+      }),
+    };
   };
 
   return useUploadThing;
