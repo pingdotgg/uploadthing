@@ -118,7 +118,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       );
 
       const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(routeConfig.value),
+        generatePermittedFileTypes(routeConfig?.value),
       );
 
       const inputProps = computed(() => ({
@@ -252,7 +252,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           {contentFieldToContent(
             $props.content?.allowedContent,
             styleFieldArg.value,
-          ) ?? allowedContentTextLabelGenerator(routeConfig.value)}
+          ) ?? allowedContentTextLabelGenerator(routeConfig?.value)}
         </div>
       );
 
