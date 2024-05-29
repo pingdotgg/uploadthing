@@ -1,0 +1,326 @@
+import Image from "next/image";
+import { Callout } from "nextra-theme-docs";
+
+# Uploading Files
+
+Uploading files is the first step in the process of uploading files to
+UploadThing. This page explains the general process of uploading files and how
+you can use the UploadThing API to upload files. There are two ways to upload
+files to UploadThing:
+
+## Client Side Uploads
+
+The most common approach to uploading files is to use client-side uploads. With
+client side uploads, you do not have to pay ingress / egress fees for
+transferring the files through your server. Your server instead acts as a proxy
+for requesting presigned URLs from the UploadThing API that the client will then
+use to upload the files directly to the storage provider.
+
+<img src="/client-uploads.png" alt="Client side uploads" width="100%" />{" "}
+
+<Callout type="default">
+  The UploadThing SDKs provide a convenient way to perform client-side uploads
+  using [File Routes](/api-reference/server#file-routes) that let you define
+  what type of files are allowed for each route, how large the files can be and
+  how many files can be uploaded. You can also define middleware validation
+  based on the request to [authenticate the
+  user](/auth-security#protecting-unauthenticated-users-from-uploading-files)
+  before continuing the upload process.
+</Callout>
+
+The easiest way to get started with client-side uploads it to define a
+[File Route](/api-reference/server#file-routes), expose it on your server using
+one of our adapters, and then upload the files using our built-in components or
+upload helpers. Here are some examples that should fit most of your needs, no
+matter what framework you're using:
+
+| Framework            | Docs                                                                                                                                                                                                                         | Example                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Backend Adapters     | [Express](http://localhost:3030/backend-adapters/express), [Fastify](http://localhost:3030/backend-adapters/fastify), [Fetch](http://localhost:3030/backend-adapters/fetch), [H3](http://localhost:3030/backend-adapters/h3) | [backend-adapters/server](https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/server)                 |
+| Vanilla JavaScript   | -                                                                                                                                                                                                                            | [backend-adapters/client-vanilla](https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/client-vanilla) |
+| React                | [API Reference - React](/api-reference/react)                                                                                                                                                                                | [backend-adapters/client-react](https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/client-react)     |
+| Vue.js               | -                                                                                                                                                                                                                            | [backend-adapters/client-react](https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/client-vue)       |
+| Next.js App Router   | [Next.js App Router Setup](/getting-started/appdir)                                                                                                                                                                          | [minimal-appdir](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-appdir)                                   |
+| Next.js Pages Router | [Next.js Page Router Setup](/getting-started/pagedir)                                                                                                                                                                        | [minimal-pagedir](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-pagedir)                                 |
+| SolidStart           | [SolidStart Setup](/getting-started/solid)                                                                                                                                                                                   | [minimal-solidstart](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-solidstart)                           |
+| Astro                | [Getting Started with Astro](/getting-started/astro)                                                                                                                                                                         | [minimal-astro-react](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-astro-react)                         |
+| SvelteKit            | [Getting Started with SvelteKit](/getting-started/svelte)                                                                                                                                                                    | [minimal-sveltekit](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-sveltekit)                             |
+| Nuxt                 | [Getting Started with Nuxt](/getting-started/nuxt)                                                                                                                                                                           | [minimal-nuxt](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-nuxt)                                       |
+
+If none of the above suits your needs, you can also use the
+[OpenAPI specification](/api-reference/openapi-spec) to build your own SDKs. In
+the following sections, we will describe how to do just that.
+
+### Building the backend adapter
+
+The first step is to build a backend adapter. The adapter will be responsible
+for receiving the client request, validating that the request conforms to your
+requirements, and then retrieving and sending back the presigned URLs to the
+client.
+
+We will not go in depth on the details here, however, you can refer to the
+implementations of the official
+[TypeScript SDK](https://github.com/pingdotgg/uploadthing/blob/3376306731d34c36fea8df3c6b117eeb17328f0f/packages/uploadthing/src/internal/handler.ts#L84-L109)
+or the
+[community Python SDK](https://github.com/juliusmarminge/uploadthing-py/blob/07b57ede675440881f311f63c166fdfcca2b5880/uploadthing_py/request_handler.py#L244)
+for reference.
+
+If you want your adapter to be compatible with the official frontend SDKs, it
+should follow this interface:
+
+- `GET /api/uploadthing`
+
+  - Input Query Parameters: None
+  - Output JSON:
+    [`EndpointMetadata`](https://github.com/pingdotgg/uploadthing/blob/3376306731d34c36fea8df3c6b117eeb17328f0f/packages/shared/src/types.ts#L115-L118)
+
+- `POST /api/uploadthing`
+
+  - Input Query Parameters:
+    - `slug: string`: The slug of the file route
+    - `actionType: "upload" | "failure" | "multipart-complete"`: The action type
+      of the file route the client wish to perform
+  - Input / Output JSON:
+    [Depends on action](https://github.com/pingdotgg/uploadthing/blob/3376306731d34c36fea8df3c6b117eeb17328f0f/packages/uploadthing/src/internal/types.ts#L255-L268)
+
+### Requesting presigned URLs
+
+Once your backend adapter has received and validated the request, you will next
+need to request the presigned URLs from the UploadThing API. Include the file
+information, the result of running the
+[file route middleware](/api-reference/server#middleware) as well as the
+callback URL and slugs. The latter will be used by the UploadThing API to
+callback to your server when the upload has been completed.
+
+```sh
+curl -X POST https://api.uploadthing.com/v7/prepareUpload \
+    --header 'content-type: application/json' \
+    --header 'x-uploadthing-api-key: YOUR_SECRET_KEY' \
+    --data '{
+        "files": [
+          {
+            "name": "My Image.png",
+            "size": 524288,
+            "type": "image/png",
+            "acl": "public-read",
+            "contentDisposition": "inline"
+          }
+        ],
+        "metadata": {
+          "uploadedBy": "user_123"
+        },
+        "callbackUrl": "https://your-domain.com/api/uploadthing",
+        "callbackSlug": "imageUploader"
+    }'
+```
+
+The response will contain an array of objects, one for each file. Depending on
+the size of the file, it's corresponding object will contain either a string
+`url` or a array of strings `urls`. The `urls` list will be used for multi-part
+uploads while a single URL string should be submitted as a single part upload.
+Return them back to the client.
+
+### Uploading the files using the presigned URLs
+
+For each object in the array you received in the previous step, check if it
+contains the `url` or `urls` field, and upload accordingly:
+
+#### Single Part Upload
+
+Submit a POST request to `presigned.url` you received in the previous step.
+Create a `FormData` object, and append all the `presigned.fields` to it. Lastly,
+append the file. Here is some sample JavaScript code you can use as reference:
+
+```js
+const formData = new FormData();
+
+Object.entries(presigned.fields).forEach(([fieldName, fieldValue]) => {
+  formData.append(fieldName, fieldValue);
+});
+formData.append("file", file);
+
+await fetch(presigned.url, {
+  method: "POST",
+  body: formData,
+});
+```
+
+<Callout type="warning">
+  It is important that the file is the last field in the `FormData` object,
+  otherwise the storage provider may reject the upload.
+</Callout>
+
+#### Multipart Upload
+
+For each URL in `presigned.urls`, submit a PUT request to the URL. Submit the
+`Content-Disposition` and `Content-Type` Headers. Split the file into chunks and
+upload each chunk separately.
+
+```js
+const tags = await Promise.all(presigned.urls.map((url, index) => {
+    const headers = new Headers([
+        ["Content-Disposition", presigned.contentDisposition],
+        ["Content-Type", file.type],
+    ])
+
+    const offset = presigned.chunkSize * index;
+    const end = Math.min(offset + presigned.chunkSize, file.size);
+    const chunk = file.slice(offset, end);
+
+    const res = await fetch(url, {
+        method: "PUT",
+        body: chunk,
+        headers,
+    })
+
+    return {
+        partNumber: index + 1,
+        tag: res.headers.get("Etag")
+    }
+}))
+```
+
+Once all the parts have been uploaded, you will need to tell Uploadthing that
+the upload is complete:
+
+```sh
+curl -X POST https://api.uploadthing.com/v6/completeMultipart \
+    --header 'content-type: application/json' \
+    --header 'x-uploadthing-api-key: YOUR_SECRET_KEY' \
+    --data '{
+        "fileKey": "<PRESIGNED.KEY>",
+        "uploadId": "<PRESIGNED.UPLOAD_ID>",
+        "etags": <TAGS>
+    }'
+```
+
+If some parts did not upload successfully, you can implement retry logic to
+attempt the upload of those parts again. If the retries still fail, notify
+Uploadthing of the upload failure to release the reserved storage from your
+application's quota.:
+
+```sh
+curl -X POST https://api.uploadthing.com/v6/failureCallback \
+    --header 'content-type: application/json' \
+    --header 'x-uploadthing-api-key: YOUR_SECRET_KEY' \
+    --data '{
+        "fileKey": "<PRESIGNED.KEY>",
+        "uploadId": "<PRESIGNED.UPLOAD_ID>",
+    }'
+```
+
+Your files have now been uploaded to the storage provider. If you do not require
+any data from the server-side
+[`onUploadComplete` callback](/api-reference/server#onuploadcomplete), there is
+no further work the client has to do.
+
+### (Optional) Poll for the server data
+
+If you want to get data returned from the server-side `onUploadComplete`
+callback, you can poll for it using the `/pollUpload` endpoint. Include the
+`pollingJwt` returned alongside the presigned URL to authenticate the request.
+
+```js
+let retryDelay = 40;
+while (true) {
+  const response = await fetch("https://api.uploadthing.com/v7/pollUpload", {
+    headers: { Authorization: `Bearer ${presigned.pollingJwt}` },
+  })
+  const data = await response.json()
+
+  if (data.status === "done" && "callbackData" in data) {
+    return data.callbackData;
+  }
+
+  await sleep(retryDelay);
+  retryDelay *= 2
+}
+```
+
+### Handling the callback request
+
+When your file has been uploaded, the UploadThing API will send a callback
+request (similar to a webhook) to the `callbackUrl` you provided when requesting
+the presigned URLs. The callback request will contain the the file information
+along with the `metadata`.
+
+You can identify the hook by the presence of the `uploadthing-hook` header and
+verify it using the `x-uploadthing-signature` header. The signature is a HMAC
+SHA256 of the request body signed using your API key, which you can verify to
+ensure the request is authentic and originates from the UploadThing API.
+
+After you have verified the request is authentic, run the `onUploadComplete`
+function for the file route. The data returned from the callback can then be
+submitted back to the UploadThing API using the `/serverCallback` endpoint. Once
+the data has been submitted, the client polling we started earlier will finish,
+and you can use the `callbackData` to do whatever you want.
+
+<Callout type="info">
+  Please note that waiting for the server callback data requires additional
+  roundtrips which take time and can lead to a decreased user experience. If you
+  do not need the server callback data, don't wait for it on the client side. If
+  you're using our SDKs, you can skip polling by setting the `skipPolling`
+  option to `true`.
+</Callout>
+
+Congratulations, you have now uploaded your files to UploadThing.
+
+## Server Side Uploads
+
+Sometimes you may either produce the file on your server, or want to validate
+the file's content before uploading it. In these cases, you can use server-side
+uploads and first submit the files to your server and then from your server
+upload the files to the storage provider.
+
+<img src="/server-uploads.png" alt="Server side uploads" width="100%" />
+
+<Callout type="default">
+  For server-side uploads, you will need to do your own validation based on your
+  needs, the upload request does not go through any file router. You can use the
+  [UTApi.uploadFiles](/api-reference/ut-api#uploadfiles) method to upload the
+  files after you have validated and processed the request.
+</Callout>
+
+Going forward, we will assume you have already received the file on your server,
+for example using FormData from a file upload form.
+
+Fortunately, server side uploads are very straight forward, and in many ways
+similar to client side uploads.
+
+### Requesting presigned URLs
+
+Requesting presigned URLs works the same way as for client side uploads. You'll
+need to send a request to `/prepareUpload` and include the information about the
+file, what [access controls](/regions-and-acl#access-controls) it should have as
+well as the
+[content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
+Since we're not using file routers, we do not need to include the `metadata`
+field. Since we're not leaving our server, there is also no need for a callback
+request, so we can omit the `callbackUrl` and `callbackSlug` fields too.
+
+```sh
+curl -X POST https://api.uploadthing.com/v7/prepareUpload \
+    --header 'content-type: application/json' \
+    --header 'x-uploadthing-api-key: YOUR_SECRET_KEY' \
+    --data '{
+        "files": [
+          {
+            "name": "My Image.png",
+            "size": 524288,
+            "type": "image/png",
+            "acl": "public-read",
+            "contentDisposition": "inline"
+          }
+        ]
+    }'
+```
+
+### Uploading the files to the storage provider
+
+Uploading the files to the storage provider works exactly the same as explained
+for the client-side uploads. Refer to
+[the steps explained above](#uploading-the-files-using-the-presigned-urls).
+
+And that's it. You have now uploaded your files to UploadThing. Check out
+[working with files](/working-with-files) to learn how to access and work with
+the files you just uploaded.

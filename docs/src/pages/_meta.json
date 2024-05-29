@@ -8,17 +8,24 @@
     }
   },
   "getting-started": "Getting Started",
-  "--1": {
-    "type": "separator"
-  },
   "backend-adapters": "Backend Adapters",
+  "community": "Community SDKs",
+  "--2": {
+    "type": "separator",
+    "title": "Guides"
+  },
+  "uploading-files": "Uploading Files",
   "working-with-files": "Working with Files",
   "auth-security": "Authentication & Security",
   "theming": "Theming",
   "regions-and-acl": "Regions and Access Controls",
-  "api-reference": "API Reference",
+
   "errors": "Error Handling",
-  "--2": {
+  "--3": {
+    "type": "separator"
+  },
+  "api-reference": "API Reference",
+  "--4": {
     "type": "separator"
   },
 
@@ -33,7 +40,6 @@
     "href": "https://t3-tools.notion.site/776334c06d814dd08d450975bb983085?v=a04ee69d18a047859717b279df504a6b",
     "newWindow": true
   },
-
   "project-link": {
     "title": "Dashboard ↗",
     "type": "page",
