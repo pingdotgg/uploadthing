@@ -153,7 +153,7 @@ export const INTERNAL_uploadthingHookGen = <
               }),
             ),
           );
-          opts?.onClientUploadComplete?.(res);
+          void opts?.onClientUploadComplete?.(res);
           return res;
         } catch (e) {
           let error: UploadThingError<inferErrorShape<TRouter>>;
@@ -168,7 +168,7 @@ export const INTERNAL_uploadthingHookGen = <
                 : error.cause,
             );
           }
-          opts?.onUploadError?.(error);
+          void opts?.onUploadError?.(error);
         } finally {
           setUploading(false);
           // setProgresses(new Map());

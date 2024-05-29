@@ -16,7 +16,6 @@ import {
 import type {
   ContentField,
   ErrorMessage,
-  FileWithState,
   StyleField,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
