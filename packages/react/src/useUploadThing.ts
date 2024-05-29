@@ -21,9 +21,9 @@ import type {
 } from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
+import { useEvent } from "./hooks/use-event";
+import useFetch from "./hooks/use-fetch";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
-import { useEvent } from "./utils/useEvent";
-import useFetch from "./utils/useFetch";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
