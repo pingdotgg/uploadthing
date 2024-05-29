@@ -22,7 +22,7 @@ export type {
   ExpandedRouteConfig,
 } from "@uploadthing/shared";
 
-const useEndpointMetadata = (url: URL, endpoint: string) => {
+const useRouteConfig = (url: URL, endpoint: string) => {
   // TODO: useState with server-inserted data to skip fetch on client
   const { data } = useFetch<string>(url.href);
   return computed(() => {
@@ -31,7 +31,7 @@ const useEndpointMetadata = (url: URL, endpoint: string) => {
       typeof data.value === "string"
         ? (JSON.parse(data.value) as EndpointMetadata)
         : (data.value as EndpointMetadata);
-    return endpointData?.find((x) => x.slug === endpoint);
+    return endpointData?.find((x) => x.slug === endpoint)?.config;
   });
 };
 
@@ -61,10 +61,7 @@ export const INTERNAL_uploadthingHookGen = <
     const uploadProgress = ref(0);
     const fileProgress = ref(new Map<string, number>());
 
-    const permittedFileInfo = useEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -129,7 +126,13 @@ export const INTERNAL_uploadthingHookGen = <
     return {
       startUpload,
       isUploading,
-      permittedFileInfo,
+      routeConfig,
+      /**
+       * @deprecated Use `routeConfig` instead
+       */
+      permittedFileInfo: routeConfig
+        ? { slug: endpoint, config: routeConfig }
+        : undefined,
     } as const;
   };
 
