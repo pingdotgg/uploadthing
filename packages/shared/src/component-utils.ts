@@ -1,30 +1,49 @@
 import type { CSSProperties, ReactNode } from "react";
 import type { JSX } from "solid-js/jsx-runtime";
+import type { RenderFunction, StyleValue } from "vue";
+
+import { mimeTypes } from "@uploadthing/mime-types";
 
 import type { ExpandedRouteConfig } from "./types";
 import { objectKeys } from "./utils";
 
-export const generateMimeTypes = (fileTypes: string[]) => {
-  const accepted = fileTypes.map((type) => {
-    if (type === "blob") return "blob";
+export const generateMimeTypes = (
+  typesOrRouteConfig: string[] | ExpandedRouteConfig,
+) => {
+  const fileTypes = Array.isArray(typesOrRouteConfig)
+    ? typesOrRouteConfig
+    : objectKeys(typesOrRouteConfig);
+  if (fileTypes.includes("blob")) return [];
+
+  return fileTypes.map((type) => {
     if (type === "pdf") return "application/pdf";
     if (type.includes("/")) return type;
-    else return `${type}/*`;
+    return [
+      // Add wildcard to support all subtypes, e.g. image => "image/*"
+      `${type}/*`,
+      // But some browsers/OSes don't support it, so we'll also dump all the mime types
+      // we know that starts with the type, e.g. image => "image/png, image/jpeg, ..."
+      ...objectKeys(mimeTypes).filter((t) => t.startsWith(type)),
+    ].join(", ");
   });
-
-  if (accepted.includes("blob")) {
-    return undefined;
-  }
-  return accepted;
 };
 
 export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   const mimeTypes = generateMimeTypes(fileTypes);
-
-  if (!mimeTypes) return undefined;
-
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
+
+export function getFilesFromClipboardEvent(event: ClipboardEvent) {
+  const dataTransferItems = event.clipboardData?.items;
+  if (!dataTransferItems) return;
+
+  const files = Array.from(dataTransferItems).reduce<File[]>((acc, curr) => {
+    const f = curr.getAsFile();
+    return f ? [...acc, f] : acc;
+  }, []);
+
+  return files;
+}
 
 /**
  * Shared helpers for our premade components that's reusable by multiple frameworks
@@ -80,18 +99,32 @@ export const allowedContentTextLabelGenerator = (
   return capitalizeStart(INTERNAL_doFormatting(config));
 };
 
-type AnyRuntime = "react" | "solid";
+type AnyRuntime = "react" | "solid" | "svelte" | "vue";
 type MinCallbackArg = { __runtime: AnyRuntime };
 type inferRuntime<T extends MinCallbackArg> = T["__runtime"] extends "react"
   ? "react"
-  : "solid";
+  : T["__runtime"] extends "solid"
+    ? "solid"
+    : T["__runtime"] extends "svelte"
+      ? "svelte"
+      : T["__runtime"] extends "vue"
+        ? "vue"
+        : never;
 
 type ElementEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? ReactNode
-  : JSX.Element;
+  : TRuntime extends "solid"
+    ? JSX.Element
+    : ReturnType<RenderFunction>;
 type CSSPropertiesEsque<TRuntime extends AnyRuntime> = TRuntime extends "react"
   ? CSSProperties
-  : JSX.CSSProperties;
+  : TRuntime extends "solid"
+    ? JSX.CSSProperties
+    : TRuntime extends "svelte"
+      ? string
+      : TRuntime extends "vue"
+        ? StyleValue
+        : never;
 
 export type StyleField<
   CallbackArg extends MinCallbackArg,

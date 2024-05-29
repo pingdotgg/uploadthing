@@ -1,5 +1,75 @@
 # @uploadthing/shared
 
+## 6.7.5
+
+### Patch Changes
+
+- [#808](https://github.com/pingdotgg/uploadthing/pull/808) [`4fea8f4`](https://github.com/pingdotgg/uploadthing/commit/4fea8f409dd0baa921c41b09a8f2d87dfa269233) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix treeshakeability of `Effect` dependency by avoiding top-level function calls, and falling back to `#__PURE__` directives otherwise
+
+  Importing some utility from e.g. `@uploadthing/shared` should not explode bundle if `Effect` isn't used for other stuff
+
+- [#810](https://github.com/pingdotgg/uploadthing/pull/810) [`4f57264`](https://github.com/pingdotgg/uploadthing/commit/4f5726421e4c732857451bde23d833cd8c53c4b5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - dump all matching mimetypes when using "catch-all" generic types to support more browser / OS configurations
+
+- [#813](https://github.com/pingdotgg/uploadthing/pull/813) [`7d93270`](https://github.com/pingdotgg/uploadthing/commit/7d93270cc008666ebcb982c62754df9bbd2f62bf) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor header parsing to support breaking change in Node.js 20.13
+
+## 6.7.4
+
+### Patch Changes
+
+- [`811b4cb`](https://github.com/pingdotgg/uploadthing/commit/811b4cb96938dd498f55e323f34685cbc8cfea9c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove `@effect/schema` from client bundle resulting in up to 15kB less JS shipped to client (#794)
+
+- [#806](https://github.com/pingdotgg/uploadthing/pull/806) [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - set `sideEffects: false` for better tree-shaking
+
+## 6.7.3
+
+### Patch Changes
+
+- [#792](https://github.com/pingdotgg/uploadthing/pull/792) [`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: isPollingResponse was not checking against response json
+
+## 6.7.2
+
+### Patch Changes
+
+- [#791](https://github.com/pingdotgg/uploadthing/pull/791) [`69165fc`](https://github.com/pingdotgg/uploadthing/commit/69165fc4b4e4b02fe27e02d1991ea2cd3ae45c8a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: catch FiberFailure's and squash them to the original error
+
+- [#783](https://github.com/pingdotgg/uploadthing/pull/783) [`6da018b`](https://github.com/pingdotgg/uploadthing/commit/6da018bfd4f2812ad81f36a7e3c9e3567c435b0b) Thanks [@datner](https://github.com/datner)! - refactoring small parts of uploadFile and related utils
+
+## 6.7.1
+
+### Patch Changes
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add missing `fast-check` peer dependency from `@effect/schema`
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: better error logging for bad requests
+
+- [#775](https://github.com/pingdotgg/uploadthing/pull/775) [`0abfa03`](https://github.com/pingdotgg/uploadthing/commit/0abfa031d108edead78d9b71a61d2bfb7ad53a64) Thanks [@tim-smart](https://github.com/tim-smart)! - update "effect" & switch to alias imports
+
+## 6.7.0
+
+### Minor Changes
+
+- [#457](https://github.com/pingdotgg/uploadthing/pull/457) [`ea7e41b`](https://github.com/pingdotgg/uploadthing/commit/ea7e41b5d9d85135540d9b51fa5551859fbe7623) Thanks [@markflorkowski](https://github.com/markflorkowski)! - Effect rewrite
+
+- [#293](https://github.com/pingdotgg/uploadthing/pull/293) [`09870e4`](https://github.com/pingdotgg/uploadthing/commit/09870e43f310c15e48f0089e875c6d9663fd305b) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: vue and nuxt support!
+
+### Patch Changes
+
+- [`41de3c5`](https://github.com/pingdotgg/uploadthing/commit/41de3c55c8bd808166449c09e9006650178067d5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: force dependency bumps
+
+## 6.6.0
+
+### Minor Changes
+
+- [#225](https://github.com/pingdotgg/uploadthing/pull/225) [`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe) Thanks [@AlanAcDz](https://github.com/AlanAcDz)! - feat: sveltekit support
+
+  📚 Read the docs to get started: https://docs.uploadthing.com/getting-started/svelte
+
+## 6.5.0
+
+### Minor Changes
+
+- [#739](https://github.com/pingdotgg/uploadthing/pull/739) [`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: minFileCount option on RouteConfig
+
 ## 6.4.0
 
 ### Minor Changes

@@ -1,22 +1,27 @@
-import { process } from "std-env";
+import * as S from "@effect/schema/Schema";
+import * as Effect from "effect/Effect";
 
-import { lookup } from "@uploadthing/mime-types";
 import type {
   ACL,
+  FetchContextService,
   FetchEsque,
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 import {
   asArray,
+  FetchContext,
+  fetchEff,
   generateUploadThingURL,
-  isObject,
+  parseResponseJson,
   UploadThingError,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
+import { getApiKeyOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
-import { initLogger, logger } from "../internal/logger";
+import type { LogLevel } from "../internal/logger";
+import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -30,105 +35,89 @@ import type {
   UrlWithOverrides,
   UTApiOptions,
 } from "./types";
+import { UTFile } from "./ut-file";
 import {
-  getApiKeyOrThrow,
+  downloadFiles,
   guardServerOnly,
   parseTimeToSeconds,
   uploadFilesInternal,
 } from "./utils";
 
-interface UTFilePropertyBag extends BlobPropertyBag {
-  lastModified?: number;
-  customId?: string;
-}
-
-/**
- * Extension of the Blob class that simplifies setting the `name` and `customId` properties,
- * similar to the built-in File class from Node > 20.
- */
-export class UTFile extends Blob {
-  name: string;
-  lastModified: number;
-  customId?: string;
-
-  constructor(parts: BlobPart[], name: string, options?: UTFilePropertyBag) {
-    const optionsWithDefaults = {
-      ...options,
-      type: options?.type ?? (lookup(name) || undefined),
-      lastModified: options?.lastModified ?? Date.now(),
-    };
-    super(parts, optionsWithDefaults);
-    this.name = name;
-    this.customId = optionsWithDefaults.customId;
-    this.lastModified = optionsWithDefaults.lastModified;
-  }
-}
+export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
-  private apiKey: string | undefined;
-  private defaultHeaders: Record<string, string>;
+  private defaultHeaders: FetchContextService["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
-
+  private logLevel: LogLevel | undefined;
   constructor(opts?: UTApiOptions) {
-    this.fetch = opts?.fetch ?? globalThis.fetch;
-    this.apiKey = opts?.apiKey ?? process.env.UPLOADTHING_SECRET;
-    this.defaultHeaders = {
-      "Content-Type": "application/json",
-      "x-uploadthing-api-key": this.apiKey!,
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-be-adapter": "server-sdk",
-    };
-    this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
-
-    initLogger(opts?.logLevel);
-
     // Assert some stuff
     guardServerOnly();
-    getApiKeyOrThrow(this.apiKey);
-    if (!this.apiKey?.startsWith("sk_")) {
-      throw new UploadThingError({
-        code: "MISSING_ENV",
-        message: "Invalid API key. API keys must start with `sk_`.",
-      });
-    }
     incompatibleNodeGuard();
+    const apiKey = getApiKeyOrThrow(opts?.apiKey);
+
+    this.fetch = opts?.fetch ?? globalThis.fetch;
+    this.defaultHeaders = {
+      "x-uploadthing-api-key": apiKey,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+      "x-uploadthing-be-adapter": "server-sdk",
+      "x-uploadthing-fe-package": undefined,
+    };
+    this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
+    this.logLevel = opts?.logLevel;
   }
 
-  private async requestUploadThing<T extends Record<string, unknown>>(
+  private requestUploadThing = <T>(
     pathname: `/${string}`,
     body: Record<string, unknown>,
-    fallbackErrorMessage: string,
-  ) {
+    responseSchema: S.Schema<T, any>,
+  ) => {
     const url = generateUploadThingURL(pathname);
-    logger.debug("Requesting UploadThing:", {
-      url,
-      body,
-      headers: this.defaultHeaders,
-    });
-    const res = await this.fetch(url, {
-      method: "POST",
-      cache: "no-store",
-      headers: this.defaultHeaders,
-      body: JSON.stringify(body),
-    });
-    logger.debug("UploadThing responsed with status:", res.status);
+    Effect.runSync(
+      Effect.logDebug("Requesting UploadThing:", {
+        url,
+        body,
+        headers: this.defaultHeaders,
+      }),
+    );
 
-    const json = await res.json<T | { error: string }>();
-    if (!res.ok || "error" in json) {
-      logger.error("Error:", json);
-      throw new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message:
-          "error" in json && typeof json.error === "string"
-            ? json.error
-            : fallbackErrorMessage,
-      });
+    const headers = new Headers([["Content-Type", "application/json"]]);
+    for (const [key, value] of Object.entries(this.defaultHeaders)) {
+      if (typeof value === "string") headers.set(key, value);
     }
 
-    logger.debug("UploadThing response:", json);
-    return json;
-  }
+    return fetchEff(url, {
+      method: "POST",
+      cache: "no-store",
+      body: JSON.stringify(body),
+      headers,
+    }).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(responseSchema)),
+      Effect.catchTag("FetchError", (err) =>
+        Effect.logError("Request failed:", err).pipe(
+          Effect.andThen(() => Effect.die(err)),
+        ),
+      ),
+      Effect.catchTag("ParseError", (err) =>
+        Effect.logError("Response parsing failed:", err).pipe(
+          Effect.andThen(() => Effect.die(err)),
+        ),
+      ),
+      Effect.tap((res) => Effect.logDebug("UploadThing response:", res)),
+    );
+  };
+
+  private executeAsync = <A, E>(program: Effect.Effect<A, E, FetchContext>) =>
+    program.pipe(
+      withMinimalLogLevel(this.logLevel),
+      Effect.provide(ConsolaLogger),
+      Effect.provideService(FetchContext, {
+        fetch: this.fetch,
+        baseHeaders: this.defaultHeaders,
+      }),
+      Effect.runPromise,
+    );
 
   /**
    * Upload files to UploadThing storage.
@@ -156,23 +145,18 @@ export class UTApi {
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const uploads = await uploadFilesInternal(
-      {
-        files: asArray(files),
-        metadata: opts?.metadata ?? {},
-        contentDisposition: opts?.contentDisposition ?? "inline",
-        acl: opts?.acl,
-      },
-      {
-        fetch: this.fetch,
-        utRequestHeaders: this.defaultHeaders,
-      },
+    const uploads = await this.executeAsync(
+      Effect.flatMap(
+        uploadFilesInternal({
+          files: asArray(files),
+          contentDisposition: opts?.contentDisposition ?? "inline",
+          metadata: opts?.metadata ?? {},
+          acl: opts?.acl,
+        }),
+        (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
+      ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
     );
-
-    const uploadFileResponse = Array.isArray(files) ? uploads : uploads[0];
-    logger.debug("Finished uploading:", uploadFileResponse);
-
-    return uploadFileResponse;
+    return uploads;
   }
 
   /**
@@ -202,69 +186,20 @@ export class UTApi {
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const formData = new FormData();
-    formData.append("metadata", JSON.stringify(opts?.metadata ?? {}));
-
     const downloadErrors: Record<number, SerializedUploadThingError> = {};
 
-    const files = await Promise.all(
-      asArray(urls).map(async (_url, index) => {
-        let url = isObject(_url) ? _url.url : _url;
-
-        if (typeof url === "string") {
-          // since dataurls will result in name being too long, tell the user
-          // to use uploadFiles instead.
-          if (url.startsWith("data:")) {
-            downloadErrors[index] = UploadThingError.toObject(
-              new UploadThingError({
-                code: "BAD_REQUEST",
-                message:
-                  "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
-              }),
-            );
-            return undefined;
-          }
-          url = new URL(url);
-        }
-
-        const {
-          name = url.pathname.split("/").pop() ?? "unknown-filename",
-          customId = undefined,
-        } = isObject(_url) ? _url : {};
-
-        // Download the file on the user's server to avoid egress charges
-        logger.debug("Downloading file:", url);
-        const fileResponse = await this.fetch(url);
-        if (!fileResponse.ok) {
-          downloadErrors[index] = UploadThingError.toObject(
-            new UploadThingError({
-              code: "BAD_REQUEST",
-              message: "Failed to download requested file.",
-              cause: fileResponse,
-            }),
-          );
-          return undefined;
-        }
-        logger.debug("Finished downloading file. Reading blob...");
-        const blob = await fileResponse.blob();
-        logger.debug("Finished reading blob.");
-        return new UTFile([blob], name, { customId });
-      }),
-    ).then((files) => files.filter((x): x is UTFile => x !== undefined));
-
-    logger.debug("Uploading files:", files);
-
-    const uploads = await uploadFilesInternal(
-      {
-        files,
-        metadata: opts?.metadata ?? {},
-        contentDisposition: opts?.contentDisposition ?? "inline",
-        acl: opts?.acl,
-      },
-      {
-        fetch: this.fetch,
-        utRequestHeaders: this.defaultHeaders,
-      },
+    const uploads = await this.executeAsync(
+      downloadFiles(asArray(urls), downloadErrors).pipe(
+        Effect.andThen((files) => files.filter((f): f is UTFile => f != null)),
+        Effect.andThen((files) =>
+          uploadFilesInternal({
+            files,
+            contentDisposition: opts?.contentDisposition ?? "inline",
+            metadata: opts?.metadata ?? {},
+            acl: opts?.acl,
+          }),
+        ),
+      ),
     );
 
     /** Put it all back together, preserve the order of files */
@@ -278,7 +213,7 @@ export class UTApi {
     /** Return single object or array based on input urls */
     const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
 
-    logger.debug("Finished uploading:", uploadFileResponse);
+    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
     return uploadFileResponse;
   }
 
@@ -299,12 +234,21 @@ export class UTApi {
     guardServerOnly();
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    return this.requestUploadThing<{ success: boolean }>(
-      "/api/deleteFile",
-      keyType === "fileKey"
-        ? { fileKeys: asArray(keys) }
-        : { customIds: asArray(keys) },
-      "An unknown error occurred while deleting files.",
+    class DeleteFileResponse extends S.Class<DeleteFileResponse>(
+      "DeleteFileResponse",
+    )({
+      success: S.Boolean,
+      deletedCount: S.Number,
+    }) {}
+
+    return await this.executeAsync(
+      this.requestUploadThing(
+        "/api/deleteFiles",
+        keyType === "fileKey"
+          ? { fileKeys: asArray(keys) }
+          : { customIds: asArray(keys) },
+        DeleteFileResponse,
+      ),
     );
   };
 
@@ -322,19 +266,27 @@ export class UTApi {
    */
   getFileUrls = async (keys: string[] | string, opts?: GetFileUrlsOptions) => {
     guardServerOnly();
+
     const { keyType = this.defaultKeyType } = opts ?? {};
 
-    const json = await this.requestUploadThing<{
-      data: { key: string; url: string }[];
-    }>(
-      "/api/getFileUrl",
-      keyType === "fileKey"
-        ? { fileKeys: asArray(keys) }
-        : { customIds: asArray(keys) },
-      "An unknown error occurred while retrieving file URLs.",
-    );
+    class GetFileUrlResponse extends S.Class<GetFileUrlResponse>(
+      "GetFileUrlResponse",
+    )({
+      data: S.Array(
+        S.Struct({
+          key: S.String,
+          url: S.String,
+        }),
+      ),
+    }) {}
 
-    return json.data;
+    return await this.executeAsync(
+      this.requestUploadThing(
+        "/api/getFileUrl",
+        keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
+        GetFileUrlResponse,
+      ),
+    );
   };
 
   /**
@@ -350,50 +302,66 @@ export class UTApi {
   listFiles = async (opts?: ListFilesOptions) => {
     guardServerOnly();
 
-    const json = await this.requestUploadThing<{
-      files: {
-        id: string;
-        customId: string | null;
-        key: string;
-        name: string;
-        status: "Deletion Pending" | "Failed" | "Uploaded" | "Uploading";
-      }[];
-    }>(
-      "/api/listFiles",
-      { ...opts },
-      "An unknown error occurred while listing files.",
-    );
+    class ListFileResponse extends S.Class<ListFileResponse>(
+      "ListFileResponse",
+    )({
+      hasMore: S.Boolean,
+      files: S.Array(
+        S.Struct({
+          id: S.String,
+          customId: S.NullOr(S.String),
+          key: S.String,
+          name: S.String,
+          status: S.Literal(
+            "Deletion Pending",
+            "Failed",
+            "Uploaded",
+            "Uploading",
+          ),
+        }),
+      ),
+    }) {}
 
-    return json.files;
+    return await this.executeAsync(
+      this.requestUploadThing("/api/listFiles", { ...opts }, ListFileResponse),
+    );
   };
 
   renameFiles = async (updates: RenameFileUpdate | RenameFileUpdate[]) => {
     guardServerOnly();
 
-    return this.requestUploadThing<{ success: true }>(
-      "/api/renameFiles",
-      { updates: asArray(updates) },
-      "An unknown error occurred while renaming files.",
+    class RenameFileResponse extends S.Class<RenameFileResponse>(
+      "RenameFileResponse",
+    )({
+      success: S.Boolean,
+    }) {}
+
+    return await this.executeAsync(
+      this.requestUploadThing(
+        "/api/renameFiles",
+        { updates: asArray(updates) },
+        RenameFileResponse,
+      ),
     );
   };
+
   /** @deprecated Use {@link renameFiles} instead. */
   public renameFile = this.renameFiles;
 
   getUsageInfo = async () => {
     guardServerOnly();
 
-    return this.requestUploadThing<{
-      totalBytes: number;
-      totalReadable: string;
-      appTotalBytes: number;
-      appTotalReadable: string;
-      filesUploaded: number;
-      limitBytes: number;
-      limitReadable: string;
-    }>(
-      "/api/getUsageInfo",
-      {},
-      "An unknown error occurred while getting usage info.",
+    class GetUsageInfoResponse extends S.Class<GetUsageInfoResponse>(
+      "GetUsageInfoResponse",
+    )({
+      totalBytes: S.Number,
+      appTotalBytes: S.Number,
+      filesUploaded: S.Number,
+      limitBytes: S.Number,
+    }) {}
+
+    return await this.executeAsync(
+      this.requestUploadThing("/api/getUsageInfo", {}, GetUsageInfoResponse),
     );
   };
 
@@ -420,15 +388,21 @@ export class UTApi {
       });
     }
 
-    const json = await this.requestUploadThing<{ url: string }>(
-      "/api/requestFileAccess",
-      keyType === "fileKey"
-        ? { fileKey: key, expiresIn }
-        : { customId: key, expiresIn },
-      "An unknown error occurred while retrieving presigned URLs.",
-    );
+    class GetSignedUrlResponse extends S.Class<GetSignedUrlResponse>(
+      "GetSignedUrlResponse",
+    )({
+      url: S.String,
+    }) {}
 
-    return json.url;
+    return await this.executeAsync(
+      this.requestUploadThing(
+        "/api/requestFileAccess",
+        keyType === "fileKey"
+          ? { fileKey: key, expiresIn }
+          : { customId: key, expiresIn },
+        GetSignedUrlResponse,
+      ),
+    );
   };
 
   /**
@@ -447,7 +421,11 @@ export class UTApi {
    *   "private",
    * );
    */
-  updateACL = (keys: string | string[], acl: ACL, opts?: ACLUpdateOptions) => {
+  updateACL = async (
+    keys: string | string[],
+    acl: ACL,
+    opts?: ACLUpdateOptions,
+  ) => {
     guardServerOnly();
 
     const { keyType = this.defaultKeyType } = opts ?? {};
@@ -457,10 +435,12 @@ export class UTApi {
         : { customId: key, acl };
     });
 
-    return this.requestUploadThing<{ success: true }>(
-      "/api/updateACL",
-      { updates },
-      "An unknown error occurred while updating ACLs.",
+    const responseSchema = S.Struct({
+      success: S.Boolean,
+    });
+
+    return await this.executeAsync(
+      this.requestUploadThing("/api/updateACL", { updates }, responseSchema),
     );
   };
 }

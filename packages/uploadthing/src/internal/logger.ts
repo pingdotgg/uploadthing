@@ -1,9 +1,14 @@
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
+import * as Logger from "effect/Logger";
+import * as EffectLogLevel from "effect/LogLevel";
 import { process } from "std-env";
 
 import { isObject } from "@uploadthing/shared";
 
+/**
+ * All the public log levels users can set.
+ */
 export type LogLevel = "error" | "warn" | "info" | "debug" | "trace";
 
 const colorize = (str: string, level: LogType) => {
@@ -77,7 +82,7 @@ function formatArgs(args: any[]) {
   });
 }
 
-export const logger = createConsola({
+const logger = createConsola({
   reporters: [
     {
       log: (logObj: LogObject) => {
@@ -104,7 +109,38 @@ export const logger = createConsola({
   },
 });
 
-export const initLogger = (level: LogLevel | undefined) => {
-  // logger.wrapConsole();
-  logger.level = LogLevels[level ?? "info"];
+const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
+  {
+    All: "verbose",
+    Fatal: "error",
+    Error: "error",
+    Info: "info",
+    Debug: "debug",
+    Trace: "trace",
+    Warning: "warn",
+    None: "silent",
+  };
+
+export const withMinimalLogLevel = (level: LogLevel = "info") => {
+  logger.level = LogLevels[level];
+
+  return Logger.withMinimumLogLevel(
+    {
+      silent: EffectLogLevel.None,
+      error: EffectLogLevel.Error,
+      warn: EffectLogLevel.Warning,
+      info: EffectLogLevel.Info,
+      debug: EffectLogLevel.Debug,
+      trace: EffectLogLevel.Trace,
+      verbose: EffectLogLevel.All,
+    }[level],
+  );
 };
+
+export const ConsolaLogger = Logger.replace(
+  Logger.defaultLogger,
+  Logger.make(({ logLevel, message }) => {
+    // FIXME: Probably log other stuff than just message?
+    logger[effectLoggerLevelToConsolaLevel[logLevel._tag]](message);
+  }),
+);

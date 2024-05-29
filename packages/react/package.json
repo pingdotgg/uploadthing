@@ -1,7 +1,8 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.4.1",
+  "version": "6.6.0",
   "type": "module",
+  "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -50,8 +51,8 @@
   },
   "scripts": {
     "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --minify",
-    "build:js": "bunchee --tsconfig tsconfig.build.json && bun build:css",
-    "build": "bun build:js && bun build:css",
+    "build:js": "bunchee --tsconfig tsconfig.build.json && pnpm build:css",
+    "build": "pnpm build:js && pnpm build:css",
     "dev:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
     "dev:js": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "dev": "conc npm:dev:*",
@@ -61,15 +62,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:0.2.1",
-    "@uploadthing/shared": "workspace:6.4.0",
+    "@uploadthing/dropzone": "workspace:*",
+    "@uploadthing/shared": "workspace:*",
     "file-selector": "^0.6.0",
     "tailwind-merge": "^2.2.1"
   },
   "peerDependencies": {
     "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^6.5.1"
+    "uploadthing": "^6.10.0"
   },
   "peerDependenciesMeta": {
     "next": {
@@ -78,18 +79,18 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.21",
-    "@types/react": "18.2.60",
-    "@types/react-dom": "18.2.19",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
+    "@types/react": "18.2.78",
+    "@types/react-dom": "18.2.25",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.1.2",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "next": "14.1.0",
+    "next": "14.2.1",
     "react": "18.2.0",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.2",
-    "uploadthing": "workspace:6.7.0",
+    "typescript": "^5.4.5",
+    "uploadthing": "workspace:*",
     "wait-on": "^7.2.0",
     "zod": "^3.22.4"
   },
@@ -100,8 +101,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/react",
-            "@uploadthing/react/*"
+            {
+              "group": [
+                "@uploadthing/react",
+                "@uploadthing/react/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

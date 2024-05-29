@@ -1,28 +1,34 @@
-import { process } from "std-env";
+import * as S from "@effect/schema/Schema";
+import * as Effect from "effect/Effect";
 
+import {
+  exponentialBackoff,
+  fetchEff,
+  generateUploadThingURL,
+  isObject,
+  parseResponseJson,
+  RetryError,
+  UploadThingError,
+} from "@uploadthing/shared";
 import type {
-  FetchEsque,
+  ACL,
+  ContentDisposition,
+  Json,
+  MaybeUrl,
   SerializedUploadThingError,
   Time,
   TimeShort,
 } from "@uploadthing/shared";
-import {
-  generateUploadThingURL,
-  pollForFileData,
-  UploadThingError,
-} from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "../internal/constants";
-import { logger } from "../internal/logger";
-import { uploadPart } from "../internal/multi-part";
-import type {
-  MPUResponse,
-  PresignedURLs,
-  PSPResponse,
-  UTEvents,
-} from "../internal/types";
+import { uploadMultipart } from "../internal/multi-part.server";
+import { uploadPresignedPost } from "../internal/presigned-post.server";
+import {
+  PollUploadResponse,
+  PresignedURLResponse,
+} from "../internal/shared-schemas";
 import type { UploadedFileData } from "../types";
-import type { FileEsque, UploadFilesOptions } from "./types";
+import type { FileEsque, UrlWithOverrides } from "./types";
+import { UTFile } from "./ut-file";
 
 export function guardServerOnly() {
   if (typeof window !== "undefined") {
@@ -33,215 +39,180 @@ export function guardServerOnly() {
   }
 }
 
-export function getApiKeyOrThrow(apiKey?: string) {
-  if (apiKey) return apiKey;
-  if (process.env.UPLOADTHING_SECRET) return process.env.UPLOADTHING_SECRET;
-
-  throw new UploadThingError({
-    code: "MISSING_ENV",
-    message: "Missing `UPLOADTHING_SECRET` env variable.",
-  });
-}
-
-export const uploadFilesInternal = async (
-  data: UploadFilesOptions & {
-    files: FileEsque[];
-  },
-  opts: {
-    fetch: FetchEsque;
-    utRequestHeaders: Record<string, string>;
-  },
-) => {
-  // Request presigned URLs for each file
-  const fileData = data.files.map((file) => ({
-    name: file.name ?? "unnamed-blob",
-    type: file.type,
-    size: file.size,
-    ...("customId" in file ? { customId: file.customId } : {}),
-  }));
-  logger.debug("Getting presigned URLs for files", fileData);
-  const res = await opts.fetch(generateUploadThingURL("/api/uploadFiles"), {
-    method: "POST",
-    headers: opts.utRequestHeaders,
-    cache: "no-store",
-    body: JSON.stringify({
-      files: fileData,
-      metadata: data.metadata,
-      contentDisposition: data.contentDisposition,
-      acl: data.acl,
-    }),
-  });
-
-  if (!res.ok) {
-    const error = await UploadThingError.fromResponse(res);
-    logger.debug("Failed getting presigned URLs:", error);
-    throw error;
-  }
-
-  const json = await res.json<{
-    data: PresignedURLs;
-  }>();
-
-  logger.debug("Got presigned URLs:", json.data);
-  logger.debug("Starting uploads...");
-
-  // Upload each file to S3 in chunks using multi-part uploads
-  const uploads = await Promise.allSettled(
-    data.files.map(async (file, i) => {
-      const presigned = json.data[i];
-
-      if (!presigned) {
-        logger.error(
-          "Failed to generate presigned URL for file:",
-          file,
-          presigned,
-        );
-        throw new UploadThingError({
-          code: "URL_GENERATION_FAILED",
-          message: "Failed to generate presigned URL",
-          cause: JSON.stringify(presigned),
-        });
-      }
-
-      if ("urls" in presigned) {
-        await uploadMultipart(file, presigned, { ...opts });
-      } else {
-        await uploadPresignedPost(file, presigned, { ...opts });
-      }
-
-      // Poll for file to be available
-      logger.debug("Polling for file data...");
-      await pollForFileData({
-        url: generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
-        apiKey: opts.utRequestHeaders["x-uploadthing-api-key"],
-        sdkVersion: UPLOADTHING_VERSION,
-        fetch: opts.fetch,
-      });
-      logger.debug("Polling complete.");
-
-      return {
-        key: presigned.key,
-        url: presigned.fileUrl,
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        customId: "customId" in file ? file.customId ?? null : null,
-      };
-    }),
-  );
-
-  logger.debug("All uploads complete, aggregating results...");
-
-  return uploads.map((upload) => {
-    if (upload.status === "fulfilled") {
-      const data: UploadedFileData = upload.value;
-      return { data, error: null };
-    }
-    // We only throw UploadThingErrors, so this is safe
-    const reason = upload.reason as UploadThingError;
-    const error: SerializedUploadThingError = UploadThingError.toObject(reason);
-    return { data: null, error };
-  });
+type UploadFilesInternalOptions = {
+  files: FileEsque[];
+  metadata: Json;
+  contentDisposition: ContentDisposition;
+  acl: ACL | undefined;
 };
 
-async function uploadMultipart(
-  file: FileEsque,
-  presigned: MPUResponse,
-  opts: {
-    fetch: FetchEsque;
-    utRequestHeaders: Record<string, string>;
-  },
-) {
-  logger.debug(
-    "Uploading file",
-    file.name,
-    "with",
-    presigned.urls.length,
-    "chunks of size",
-    presigned.chunkSize,
-    "bytes each",
+export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
+  getPresignedUrls(input).pipe(
+    Effect.andThen((presigneds) =>
+      Effect.forEach(
+        presigneds,
+        (file) =>
+          uploadFile(file).pipe(
+            Effect.tapError((error) =>
+              Effect.logError("Upload failed:", error),
+            ),
+            Effect.match({
+              onFailure: (error) => ({
+                data: null,
+                error: UploadThingError.toObject(
+                  error instanceof UploadThingError
+                    ? error
+                    : new UploadThingError({
+                        message: "Failed to upload file.",
+                        code: "BAD_REQUEST",
+                        cause: error,
+                      }),
+                ),
+              }),
+              onSuccess: (data: UploadedFileData) => ({ data, error: null }),
+            }),
+          ),
+        { concurrency: 10 },
+      ),
+    ),
   );
 
-  const etags = await Promise.all(
-    presigned.urls.map(async (url, index) => {
-      const offset = presigned.chunkSize * index;
-      const end = Math.min(offset + presigned.chunkSize, file.size);
-      const chunk = file.slice(offset, end);
+/**
+ * FIXME: downloading everything into memory and then upload
+ * isn't the best. We should support streams so we can download
+ * just as much as we need at any time.
+ */
+export const downloadFiles = (
+  urls: (MaybeUrl | UrlWithOverrides)[],
+  downloadErrors: Record<number, SerializedUploadThingError>,
+) =>
+  Effect.forEach(
+    urls,
+    (_url, idx) =>
+      Effect.gen(function* () {
+        let url = isObject(_url) ? _url.url : _url;
+        if (typeof url === "string") {
+          // since dataurls will result in name being too long, tell the user
+          // to use uploadFiles instead.
+          if (url.startsWith("data:")) {
+            downloadErrors[idx] = UploadThingError.toObject(
+              new UploadThingError({
+                code: "BAD_REQUEST",
+                message:
+                  "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+              }),
+            );
+            return null;
+          }
+        }
+        url = new URL(url);
 
-      const etag = await uploadPart({
-        fetch: opts.fetch,
-        url,
-        chunk: chunk as Blob,
-        contentDisposition: presigned.contentDisposition,
-        contentType: file.type,
-        fileName: file.name,
-        maxRetries: 10,
-        key: presigned.key,
-        utRequestHeaders: opts.utRequestHeaders,
-      });
+        const {
+          name = url.pathname.split("/").pop() ?? "unknown-filename",
+          customId = undefined,
+        } = isObject(_url) ? _url : {};
 
-      logger.debug("Part", index + 1, "uploaded successfully:", etag);
+        const response = yield* fetchEff(url);
+        if (!response.ok) {
+          downloadErrors[idx] = UploadThingError.toObject(
+            new UploadThingError({
+              code: "BAD_REQUEST",
+              message: "Failed to download requested file.",
+              cause: response,
+            }),
+          );
+          return undefined;
+        }
 
-      return { tag: etag, partNumber: index + 1 };
-    }),
+        return yield* Effect.promise(() => response.blob()).pipe(
+          Effect.andThen((blob) => new UTFile([blob], name, { customId })),
+        );
+      }),
+    { concurrency: 10 },
   );
 
-  logger.debug(
-    "File",
-    file.name,
-    "uploaded successfully. Notifying UploadThing to complete multipart upload.",
-  );
+const getPresignedUrls = (input: UploadFilesInternalOptions) =>
+  Effect.gen(function* () {
+    const { files, metadata, contentDisposition, acl } = input;
 
-  // Complete multipart upload
-  const completionRes = await opts.fetch(
-    generateUploadThingURL("/api/completeMultipart"),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        fileKey: presigned.key,
-        uploadId: presigned.uploadId,
-        etags,
-      } satisfies UTEvents["multipart-complete"]["in"]),
-      headers: opts.utRequestHeaders,
-    },
-  );
+    const fileData = files.map((file) => ({
+      name: file.name ?? "unnamed-blob",
+      type: file.type,
+      size: file.size,
+      ...("customId" in file ? { customId: file.customId } : {}),
+    }));
+    yield* Effect.logDebug("Getting presigned URLs for files", fileData);
 
-  logger.debug("UploadThing responsed with status:", completionRes.status);
-}
+    const responseSchema = S.Struct({
+      data: PresignedURLResponse,
+    });
 
-async function uploadPresignedPost(
-  file: FileEsque,
-  presigned: PSPResponse,
-  opts: {
-    fetch: FetchEsque;
-  },
-) {
-  logger.debug("Uploading file", file.name, "using presigned POST URL");
+    const presigneds = yield* fetchEff(
+      generateUploadThingURL("/api/uploadFiles"),
+      {
+        method: "POST",
+        cache: "no-store",
+        body: JSON.stringify({
+          files: fileData,
+          metadata,
+          contentDisposition,
+          acl,
+        }),
+        headers: { "Content-Type": "application/json" },
+      },
+    ).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(responseSchema)),
+      Effect.catchTag("ParseError", (e) => Effect.die(e)),
+      Effect.catchTag("FetchError", (e) => Effect.die(e)),
+    );
+    yield* Effect.logDebug("Got presigned URLs:", presigneds.data);
 
-  const formData = new FormData();
-  Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
-  formData.append("file", file as Blob); // File data **MUST GO LAST**
-
-  const res = await opts.fetch(presigned.url, {
-    method: "POST",
-    body: formData,
-    headers: new Headers({
-      Accept: "application/xml",
-    }),
+    return files.map((file, i) => ({
+      file,
+      presigned: presigneds.data[i],
+    }));
   });
 
-  if (!res.ok) {
-    const text = await res.text();
-    logger.error("Failed to upload file:", text);
-    throw new UploadThingError({
-      code: "UPLOAD_FAILED",
-      message: "Failed to upload file",
-      cause: text,
-    });
-  }
+const uploadFile = (
+  input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
+) =>
+  Effect.gen(function* () {
+    const { file, presigned } = input;
 
-  logger.debug("File", file.name, "uploaded successfully");
-}
+    if ("urls" in presigned) {
+      yield* uploadMultipart(file, presigned);
+    } else {
+      yield* uploadPresignedPost(file, presigned);
+    }
+
+    yield* fetchEff(
+      generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
+    ).pipe(
+      Effect.andThen(parseResponseJson),
+      Effect.andThen(S.decodeUnknown(PollUploadResponse)),
+      Effect.tap(Effect.logDebug("Polled upload", presigned.key)),
+      Effect.andThen((res) =>
+        res.status === "done"
+          ? Effect.succeed(undefined)
+          : Effect.fail(new RetryError()),
+      ),
+      Effect.retry({
+        while: (err) => err instanceof RetryError,
+        schedule: exponentialBackoff(),
+      }),
+      Effect.catchTag("RetryError", (e) => Effect.die(e)),
+    );
+
+    return {
+      key: presigned.key,
+      url: presigned.fileUrl,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      customId: "customId" in file ? file.customId ?? null : null,
+    };
+  });
 
 export function parseTimeToSeconds(time: Time) {
   const match = time.toString().split(/(\d+)/).filter(Boolean);

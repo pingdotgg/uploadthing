@@ -1,7 +1,8 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.2.6",
+  "version": "0.2.10",
   "type": "module",
+  "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -35,7 +36,7 @@
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -47,8 +48,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/mime-types",
-            "@uploadthing/mime-types/*"
+            {
+              "group": [
+                "@uploadthing/mime-types",
+                "@uploadthing/mime-types/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

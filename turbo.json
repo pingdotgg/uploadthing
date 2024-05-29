@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "experimentalUI": true,
+  "experimentalUI": false,
   "globalDependencies": ["**/.env.*local"],
   "pipeline": {
     "topo": {
@@ -8,7 +8,7 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", ".svelte-kit/**"]
     },
     "lint": {
       "dependsOn": ["^topo", "^build"],
@@ -28,6 +28,7 @@
       "dependsOn": []
     },
     "test": {
+      "cache": false,
       "dependsOn": []
     },
     "test:watch": {

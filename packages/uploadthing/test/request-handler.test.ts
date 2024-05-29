@@ -3,8 +3,8 @@ import { z } from "zod";
 
 import { signPayload } from "@uploadthing/shared";
 
+import { UploadedFileData } from "../src/internal/shared-schemas";
 import { createRouteHandler, createUploadthing } from "../src/server";
-import type { UploadedFileData } from "../src/types";
 import {
   baseHeaders,
   createApiUrl,
@@ -12,11 +12,13 @@ import {
   middlewareMock,
   requestSpy,
   uploadCompleteMock,
+  useBadUTApi,
 } from "./__test-helpers";
 
 const f = createUploadthing({
   errorFormatter: (e) => ({
     message: e.message,
+    data: e.data,
     cause:
       e.cause instanceof z.ZodError
         ? e.cause.flatten()
@@ -131,13 +133,11 @@ describe("file route config", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: File type text not allowed for foo.txt",
-      message: "Invalid config.",
+      message: "Invalid config: InvalidFileType",
     });
   });
 
-  it.skip("CURR HANDLED ON INFRA SIDE - blocks for too big files", async ({
-    db,
-  }) => {
+  it("blocks for too big files", async ({ db }) => {
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -152,7 +152,11 @@ describe("file route config", () => {
 
     expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
-    await expect(res.json()).resolves.toEqual({});
+    await expect(res.json()).resolves.toEqual({
+      cause:
+        "Error: You uploaded a image file that was 3.15MB, but the limit for that type is 2MB",
+      message: "Invalid config: FileSizeMismatch",
+    });
   });
 
   it("blocks for too many files", async ({ db }) => {
@@ -173,8 +177,8 @@ describe("file route config", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause:
-        "Error: You uploaded 2 file(s) of type 'image', but the limit for that type is 1",
-      message: "Maximum file count not met",
+        "Error: You uploaded 2 file(s) of type 'image', but the maximum for that type is 1",
+      message: "Invalid config: FileCountMismatch",
     });
   });
 
@@ -194,7 +198,7 @@ describe("file route config", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         "Error: You uploaded 1 file(s) of type 'image', but the minimum for that type is 2",
-      message: "Minimum file count not met",
+      message: "Invalid config: FileCountMismatch",
     });
   });
 });
@@ -215,7 +219,7 @@ describe(".input()", () => {
     expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      message: "Invalid input.",
+      message: "Invalid input",
       cause: {
         fieldErrors: {},
         formErrors: ["Required"],
@@ -239,7 +243,7 @@ describe(".input()", () => {
     expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      message: "Invalid input.",
+      message: "Invalid input",
       cause: {
         fieldErrors: {
           foo: ["Invalid enum value. Expected 'BAR' | 'BAZ', received 'QUX'"],
@@ -316,7 +320,7 @@ describe(".middleware()", () => {
     await expect(res.json()).resolves.toEqual({
       cause:
         'TypeError: Headers.get: "i dont exist" is an invalid header name.',
-      message: "Failed to run middleware.",
+      message: "Failed to run middleware",
     });
   });
 });
@@ -326,14 +330,14 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      file: {
+      file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
-      } satisfies UploadedFileData,
+      }),
     });
     const signature = await signPayload(payload, "sk_live_test123");
 
@@ -368,14 +372,14 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      file: {
+      file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
-      } satisfies UploadedFileData,
+      }),
     });
 
     const res = await handlers.POST(
@@ -399,14 +403,14 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      file: {
+      file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
-      } satisfies UploadedFileData,
+      }),
     });
     const signature = await signPayload(payload, "sk_live_badkey");
 
@@ -426,5 +430,31 @@ describe(".onUploadComplete()", () => {
       message: "Invalid signature",
     });
     expect(uploadCompleteMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("bad request handling", () => {
+  it("throws a more descriptive error instead of ParseError for bad request", async ({
+    db,
+  }) => {
+    useBadUTApi();
+
+    const res = await handlers.POST(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.png", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+    expect(res.status).toBe(500);
+    await expect(res.json()).resolves.toEqual({
+      message:
+        "Request to https://uploadthing.com/api/prepareUpload failed with status 404",
+      data: { error: "Not found" },
+      cause:
+        "BadRequestError: Request to https://uploadthing.com/api/prepareUpload failed with status 404",
+    });
   });
 });

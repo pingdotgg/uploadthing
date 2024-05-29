@@ -1,1 +1,235 @@
-# Nuxt (Coming Soon!)
+import { Callout, Steps, Tab, Tabs } from "nextra-theme-docs";
+
+import EnvSetup from "./_shared/env-setup.mdx";
+import TailwindSetup from "./_shared/tailwind-setup.mdx";
+
+# Getting Started using Nuxt
+
+The UploadThing Nuxt module makes it super easy to get started with uploading in
+Nuxt apps. It is a wrapper around `@uploadthing/vue` and the H3 backend adapter.
+
+<Callout type="info">
+  Check out a full example
+  [here](https://github.com/pingdotgg/uploadthing/tree/Mr0Bread/nuxt-support/examples/minimal-nuxt)
+</Callout>
+<Callout type="info">
+  Using standalone Vue without Nuxt? Checkout the standalone example
+  [here](https://github.com/pingdotgg/uploadthing/tree/Mr0Bread/nuxt-support/examples/backend-adapters/client-vue)
+</Callout>
+
+## Package Setup
+
+<Steps>
+
+### Install the packages
+
+```bash copy npm2yarn
+npm install uploadthing @uploadthing/nuxt
+```
+
+### Add env variables
+
+```bash
+NUXT_UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+# 🖕 NUXT_ prefix is **important**
+```
+
+<Callout type="warning">
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Callout>
+
+</Steps>
+
+## Initialize the Uploadthing module
+
+Add the `@uploadthing/nuxt` module to your `nuxt.config.js` file:
+
+```ts copy filename="nuxt.config.js"
+export default {
+  modules: ["@uploadthing/nuxt"],
+  uploadthing: {
+    /**
+     * Path to your router definition file
+     * @default `~/server/uploadthing.ts`
+     */
+    routerPath: "",
+  },
+};
+```
+
+You can set some module options in the `uploadthing` property of your
+`nuxt.config.js` file:
+
+```ts
+/**
+ * See https://docs.uploadthing.com/api-reference/server#createroutehandler
+ * for more information about the `RouteHandlerConfig` options.
+ */
+export type ModuleOptions = Omit<
+  RouteHandlerConfig,
+  "uploadthingSecret" | "uploadthingId"
+> & {
+  /**
+   * Path to your router definition file
+   * @default `~/server/uploadthing.ts`
+   */
+  routerPath?: string;
+  /**
+   * Your UploadThing secret key
+   * @default `process.env.NUXT_UPLOADTHING_SECRET`
+   */
+  secret?: string;
+  /**
+   * Your UploadThing app ID
+   * @default `process.env.NUXT_UPLOADTHING_APP_ID`
+   */
+  appId?: string;
+};
+```
+
+## Set Up A FileRouter
+
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/api-reference/server#file-routes).
+
+<Callout type="info">
+  It is import you export the router as `uploadRouter` and the inferred type as
+  `UploadRouter` for the module to pick up your router and it's types.
+</Callout>
+
+```ts copy filename="src/lib/server/uploadthing.ts"
+import type { H3Event } from "h3";
+
+import { createUploadthing } from "uploadthing/h3";
+import type { FileRouter } from "uploadthing/h3";
+
+const f = createUploadthing();
+
+const auth = (ev: H3Event) => ({ id: "fakeId" }); // Fake auth function
+
+// FileRouter for your app, can contain multiple FileRoutes
+export const uploadRouter = {
+  // Define as many FileRoutes as you like, each with a unique routeSlug
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    // Set permissions and file types for this FileRoute
+    .middleware(async ({ event }) => {
+      // This code runs on your server before upload
+      const user = await auth(event);
+
+      // If you throw, the user will not be able to upload
+      if (!user) throw new Error("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
+    }),
+} satisfies FileRouter;
+
+export type UploadRouter = typeof uploadRouter;
+```
+
+### Upload some files!
+
+Just mount one of our components in your app and start uploading files!
+
+```vue copy filename="pages/index.vue"
+<script setup lang="ts">
+const alert = (msg: string) => {
+  window.alert(msg);
+};
+</script>
+
+<template>
+  <div>
+    <UploadButton
+      :config="{
+        endpoint: 'imageUploader',
+        skipPolling: true,
+        onClientUploadComplete: (file) => {
+          console.log('uploaded', file);
+          alert('Upload complete');
+        },
+        onUploadError: (error) => {
+          console.error(error, error.cause);
+          alert('Upload failed');
+        },
+      }"
+    />
+    <UploadDropzone
+      :config="{
+        endpoint: 'imageUploader',
+        skipPolling: true,
+        onClientUploadComplete: (file) => {
+          console.log('uploaded', file);
+          alert('Upload complete');
+        },
+        onUploadError: (error) => {
+          console.error(error, error.cause);
+          alert('Upload failed');
+        },
+      }"
+    />
+  </div>
+</template>
+```
+
+<Callout type="info">
+  For component API reference, refer to [the React API
+  reference](/api-reference/react). Framework specific docs will be added soon.
+</Callout>
+
+### Custom flows with the `useUploadThing` composable
+
+If the premade components don't fit your needs, you can use the `useUploadThing`
+to create your own custom components.
+
+```vue copy filename="pages/index.vue"
+<script setup lang="ts">
+const alert = (msg: string) => {
+  window.alert(msg);
+};
+
+const { startUpload } = useUploadThing("videoAndImage", {
+  onClientUploadComplete(res) {
+    console.log(`onClientUploadComplete`, res);
+    alert("Upload Completed");
+  },
+});
+</script>
+
+<template>
+  <label>
+    <input
+      type="file"
+      @change="
+        async (e) => {
+          console.log(`e`, e);
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (!file) return;
+
+          // Do something with files
+
+          // Then start the upload
+          await startUpload([file]);
+        }
+      "
+    />
+  </label>
+</template>
+```

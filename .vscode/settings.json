@@ -5,11 +5,13 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
-  "explorer.excludeGitIgnore": true,
   "typescript.tsdk": "node_modules/typescript/lib",
   "eslint.workingDirectories": [
     "docs",
     { "pattern": "./packages/**" },
     { "pattern": "./examples/**" }
-  ]
+  ],
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
+  }
 }

@@ -1,50 +1,32 @@
+import type { Schema } from "@effect/schema/Schema";
+import type * as S from "@effect/schema/Schema";
+import type * as Effect from "effect/Effect";
+
 import type {
-  ContentDisposition,
   ErrorMessage,
+  FetchContext,
   FetchEsque,
   FileRouterInputConfig,
-  FileRouterInputKey,
   Json,
   MaybePromise,
   Simplify,
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type {
-  FileUploadData,
-  FileUploadDataWithCustomId,
-  UploadedFileData,
-} from "../types";
+import type { FileUploadDataWithCustomId, UploadedFileData } from "../types";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
-
-export interface PresignedBase {
-  key: string;
-  fileName: string;
-  fileType: FileRouterInputKey;
-  fileUrl: string;
-  contentDisposition: ContentDisposition;
-  pollingJwt: string;
-  pollingUrl: string;
-  customId: string | null;
-}
-
-export interface PSPResponse extends PresignedBase {
-  url: string;
-  fields: Record<string, string>;
-}
-
-export interface MPUResponse extends PresignedBase {
-  urls: string[];
-  uploadId: string;
-  chunkSize: number;
-  chunkCount: number;
-}
+import type {
+  FailureActionPayload,
+  MultipartCompleteActionPayload,
+  PresignedURLResponse,
+  UploadActionPayload,
+} from "./shared-schemas";
 
 /**
  * Returned by `/api/prepareUpload` and `/api/uploadFiles`
  */
-export type PresignedURLs = (PSPResponse | MPUResponse)[];
+export type PresignedURLs = S.Schema.Type<typeof PresignedURLResponse>;
 
 /**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
@@ -106,7 +88,7 @@ type MiddlewareFn<
   TArgs extends MiddlewareFnArgs<any, any, any>,
 > = (
   opts: TArgs & {
-    files: FileUploadData[];
+    files: Schema.Type<typeof UploadActionPayload>["files"];
     input: TInput extends UnsetMarker ? undefined : TInput;
   },
 ) => MaybePromise<TOutput>;
@@ -182,6 +164,7 @@ export interface Uploader<TParams extends AnyParams> {
   _def: TParams & UploadBuilderDef<TParams>;
   resolver: ResolverFn<TParams["_output"], TParams>;
 }
+export type AnyUploader = Uploader<AnyParams>;
 
 export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
   string,
@@ -210,29 +193,32 @@ export type RouteHandlerOptions<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> = {
-  req: Request;
-  middlewareArgs: TArgs;
+export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
+  {
+    req: Request | Effect.Effect<Request, UploadThingError>;
+    middlewareArgs: TArgs;
+  };
+export type RequestHandlerSuccess = {
+  success: true;
+  body: UTEvents[keyof UTEvents]["out"];
+  cleanup?: Promise<unknown> | undefined;
 };
-type RequestHandlerOutput = Promise<
-  | {
-      status: number;
-      body: UTEvents[keyof UTEvents]["out"];
-      cleanup?: Promise<unknown>;
-    }
-  | UploadThingError
->;
+export type RequestHandlerError = {
+  success: false;
+  error: UploadThingError;
+};
+export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
 
 export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
   input: RequestHandlerInput<TArgs>,
-) => RequestHandlerOutput;
+) => Effect.Effect<RequestHandlerSuccess, UploadThingError, FetchContext>;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
     ? undefined
     : TUploader["_def"]["_input"];
 
-export type inferEndpointOutput<TUploader extends Uploader<any>> =
+export type inferEndpointOutput<TUploader extends AnyUploader> =
   TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
     ? null
     : TUploader["_def"]["_output"];
@@ -249,36 +235,34 @@ export const VALID_ACTION_TYPES = [
   "multipart-complete",
 ] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
+export const isActionType = (input: unknown): input is ActionType =>
+  typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
+
+/**
+ * Valid options for the `uploadthing-hook` header
+ * for requests coming from UT server
+ */
+export const VALID_UT_HOOKS = ["callback"] as const;
+export type UploadThingHook = (typeof VALID_UT_HOOKS)[number];
+export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
+  typeof input === "string" &&
+  VALID_UT_HOOKS.includes(input as UploadThingHook);
 
 /**
  * Map actionType to the required payload for that action
+ * @todo Look into using @effect/rpc :thinking:
  */
 export type UTEvents = {
   upload: {
-    in: {
-      files: FileUploadData[];
-      input: Json;
-    };
-    out: PresignedURLs;
+    in: S.Schema.Type<typeof UploadActionPayload>;
+    out: S.Schema.Type<typeof PresignedURLResponse>;
   };
   failure: {
-    in: {
-      fileKey: string;
-      uploadId: string | null;
-      s3Error?: string;
-      fileName: string;
-    };
+    in: S.Schema.Type<typeof FailureActionPayload>;
     out: null;
   };
   "multipart-complete": {
-    in: {
-      fileKey: string;
-      uploadId: string;
-      etags: {
-        tag: string;
-        partNumber: number;
-      }[];
-    };
+    in: S.Schema.Type<typeof MultipartCompleteActionPayload>;
     out: null;
   };
 };

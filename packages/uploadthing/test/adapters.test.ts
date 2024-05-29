@@ -318,7 +318,7 @@ describe("adapters:next-legacy", async () => {
     const { res, status } = mockRes();
 
     await handler(req, res);
-    expect(status).toHaveBeenCalledWith(200);
+    expect(status).not.toHaveBeenCalled(); // implicit 200
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(

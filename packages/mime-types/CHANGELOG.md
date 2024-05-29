@@ -1,5 +1,31 @@
 # @uploadthing/mime-types
 
+## 0.2.10
+
+### Patch Changes
+
+- [#806](https://github.com/pingdotgg/uploadthing/pull/806) [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - set `sideEffects: false` for better tree-shaking
+
+## 0.2.9
+
+### Patch Changes
+
+- [#773](https://github.com/pingdotgg/uploadthing/pull/773) [`6906254`](https://github.com/pingdotgg/uploadthing/commit/690625458338a70df5927f1d2405de0de4a58d8f) Thanks [@Bodykudo](https://github.com/Bodykudo)! - Extend supported filetypes by adding dcm (DICOM files) mime type
+
+## 0.2.8
+
+### Patch Changes
+
+- [#758](https://github.com/pingdotgg/uploadthing/pull/758) [`e637c43`](https://github.com/pingdotgg/uploadthing/commit/e637c43d203b72dabfeb17755b6d22d03c05ea3c) Thanks [@ertucode](https://github.com/ertucode)! - dont initialize exported value in the global scope to improve treeshaking
+
+- [#764](https://github.com/pingdotgg/uploadthing/pull/764) [`5efcdda`](https://github.com/pingdotgg/uploadthing/commit/5efcddafe9aa11993e16824dae4822bd7a8c8199) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update jpeg file extensions
+
+## 0.2.7
+
+### Patch Changes
+
+- [#740](https://github.com/pingdotgg/uploadthing/pull/740) [`0069ead`](https://github.com/pingdotgg/uploadthing/commit/0069eadbffd90db29df1966eae4f0a85aa3a8490) Thanks [@kaspnilsson](https://github.com/kaspnilsson)! - Add support for 'model/step' MIME type
+
 ## 0.2.6
 
 ### Patch Changes

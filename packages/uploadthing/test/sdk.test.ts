@@ -1,27 +1,17 @@
+/* eslint-disable no-restricted-globals */
 import { process } from "std-env";
-import { describe, expect, expectTypeOf } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it as rawIt,
+} from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
-import { it, requestSpy } from "./__test-helpers";
-
-describe("UTFile", () => {
-  it("can be constructed using Blob", async () => {
-    const blob = new Blob(["foo"], { type: "text/plain" });
-    const file = new UTFile([blob], "foo.txt");
-    expect(file.type).toBe("text/plain");
-    await expect(file.text()).resolves.toBe("foo");
-
-    const fileWithId = new UTFile([blob], "foo.txt", { customId: "foo" });
-    expect(fileWithId.customId).toBe("foo");
-  });
-
-  it("can be constructed using string", async () => {
-    const file = new UTFile(["foo"], "foo.txt");
-    expect(file.type).toBe("text/plain");
-    await expect(file.text()).resolves.toBe("foo");
-  });
-});
+import { it, requestSpy, resetMocks } from "./__test-helpers";
 
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -64,6 +54,7 @@ describe("uploadFiles", () => {
         body: null,
         headers: {
           "x-uploadthing-api-key": "sk_foo",
+          "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
         method: "GET",
@@ -339,7 +330,7 @@ describe("uploadFilesFromUrl", () => {
 describe("constructor throws if no apiKey or secret is set", () => {
   it("no secret or apikey", () => {
     expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      `[Error: Missing \`UPLOADTHING_SECRET\` env variable.]`,
+      `[UploadThingError: Missing or invalid API key. API keys must start with \`sk_\`.]`,
     );
   });
   it("env is set", () => {
@@ -418,7 +409,7 @@ describe("getSignedURL", () => {
       // @ts-expect-error - intentionally passing invalid expiresIn
       utapi.getSignedURL("foo", { expiresIn: "something" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
+      `[UploadThingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
     );
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });
@@ -428,7 +419,7 @@ describe("getSignedURL", () => {
     await expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: expiresIn must be less than 7 days (604800 seconds).]`,
+      `[UploadThingError: expiresIn must be less than 7 days (604800 seconds).]`,
     );
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });
@@ -513,3 +504,217 @@ describe("updateACL", () => {
     );
   });
 });
+
+describe.runIf(process.env.UPLOADTHING_TEST_SECRET)(
+  "smoke test with live api",
+  { timeout: 15_000 },
+  () => {
+    const utapi = new UTApi({
+      apiKey: process.env.UPLOADTHING_TEST_SECRET ?? "sk_foo",
+    });
+
+    const localInfo = { totalBytes: 0, filesUploaded: 0 };
+    const TEST_APP_LIMIT_BYTES = 2147483648;
+
+    // Clean up any files before and after tests
+    beforeAll(async () => {
+      resetMocks();
+      const { files } = await utapi.listFiles();
+      await utapi.deleteFiles(files.map((f) => f.key));
+    });
+    afterAll(async () => {
+      const { files } = await utapi.listFiles();
+      await utapi.deleteFiles(files.map((f) => f.key));
+    });
+
+    // These will all run in serial
+
+    rawIt("should have no files", async () => {
+      const { files, hasMore } = await utapi.listFiles();
+      expect(files).toHaveLength(0);
+      expect(hasMore).toBe(false);
+
+      const usageInfo = await utapi.getUsageInfo();
+      expect(usageInfo).toEqual({
+        totalBytes: 0,
+        appTotalBytes: 0,
+        filesUploaded: 0,
+        limitBytes: TEST_APP_LIMIT_BYTES,
+      });
+      localInfo.totalBytes = usageInfo.totalBytes;
+      localInfo.filesUploaded = usageInfo.filesUploaded;
+    });
+
+    rawIt("should upload a file", async () => {
+      const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+      const result = await utapi.uploadFiles(file);
+      expect(result).toEqual({
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          name: "foo.txt",
+          size: 3,
+          type: "text/plain",
+          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+        },
+        error: null,
+      });
+
+      const content = await fetch(result.data!.url).then((r) => r.text());
+      expect(content).toBe("foo");
+
+      const usageInfo = await utapi.getUsageInfo();
+      expect(usageInfo).toEqual({
+        totalBytes: 3,
+        appTotalBytes: 3,
+        filesUploaded: 1,
+        limitBytes: TEST_APP_LIMIT_BYTES,
+      });
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should upload a private file", async () => {
+      const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+      const result = await utapi.uploadFiles(file, {
+        acl: "private",
+      });
+      expect(result).toEqual({
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          name: "foo.txt",
+          size: 3,
+          type: "text/plain",
+          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+        },
+        error: null,
+      });
+
+      const response = await fetch(result.data!.url);
+      expect(response.status).toBe(403);
+
+      const { url } = await utapi.getSignedURL(result.data!.key);
+      const content = await fetch(url).then((r) => r.text());
+      expect(content).toBe("foo");
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should upload a file from a url", async () => {
+      const result = await utapi.uploadFilesFromUrl(
+        "https://uploadthing.com/favicon.ico",
+      );
+      expect(result).toEqual({
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          name: "favicon.ico",
+          size: expect.any(Number),
+          type: "image/vnd.microsoft.icon",
+          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+        },
+        error: null,
+      });
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should rename a file", async () => {
+      const customId = crypto.randomUUID();
+
+      const file = new UTFile(["foo"], "bar.txt", { customId });
+      const result = await utapi.uploadFiles(file);
+      expect(result).toEqual({
+        data: {
+          customId: customId,
+          key: expect.stringMatching(/.+/),
+          name: "bar.txt",
+          size: 3,
+          type: "text/plain",
+          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+        },
+        error: null,
+      });
+
+      const { success } = await utapi.renameFiles({
+        customId,
+        newName: "baz.txt",
+      });
+      expect(success).toBe(true);
+
+      const { files } = await utapi.listFiles();
+      expect(files.find((f) => f.customId === customId)).toHaveProperty(
+        "name",
+        "baz.txt",
+      );
+
+      // FIXME: Bug in uploadthing server
+      // const heads = await fetch(result.data!.url).then((r) => r.headers);
+      // expect(heads.get("Content-Disposition")).toEqual(
+      //   expect.stringContaining("filename=baz.txt"),
+      // );
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should update ACL", async () => {
+      const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+      const result = await utapi.uploadFiles(file);
+      expect(result).toEqual({
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          name: "foo.txt",
+          size: 3,
+          type: "text/plain",
+          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+        },
+        error: null,
+      });
+      const { url, key } = result.data!;
+
+      const firstChange = await utapi.updateACL(key, "private");
+      expect(firstChange.success).toBe(true);
+      await expect(fetch(url)).resolves.toHaveProperty("status", 403);
+
+      const secondChange = await utapi.updateACL(key, "public-read");
+      expect(secondChange.success).toBe(true);
+      await expect(fetch(url)).resolves.toHaveProperty("status", 200);
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should delete a file", async () => {
+      const { files } = await utapi.listFiles();
+      const someFile = files[0];
+
+      const response = await fetch(`https://utfs.io/f/${someFile.key}`);
+      const size = Number(response.headers.get("Content-Length"));
+
+      const result = await utapi.deleteFiles(someFile.key);
+      expect(result).toEqual({
+        deletedCount: 1,
+        success: true,
+      });
+
+      localInfo.totalBytes -= size;
+      localInfo.filesUploaded--;
+    });
+
+    rawIt("should have correct usage info", async () => {
+      const usageInfo = await utapi.getUsageInfo();
+      expect(usageInfo).toEqual({
+        totalBytes: localInfo.totalBytes,
+        appTotalBytes: localInfo.totalBytes,
+        filesUploaded: localInfo.filesUploaded,
+        limitBytes: TEST_APP_LIMIT_BYTES,
+      });
+    });
+  },
+);

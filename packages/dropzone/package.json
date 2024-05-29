@@ -1,7 +1,8 @@
 {
   "name": "@uploadthing/dropzone",
-  "version": "0.2.1",
+  "version": "0.4.1",
   "type": "module",
+  "sideEffects": false,
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
@@ -34,12 +35,34 @@
         "types": "./solid/index.d.cts",
         "default": "./solid/index.cjs"
       }
+    },
+    "./svelte": {
+      "import": {
+        "types": "./svelte/index.d.ts",
+        "default": "./svelte/index.js"
+      },
+      "require": {
+        "types": "./svelte/index.d.cts",
+        "default": "./svelte/index.cjs"
+      }
+    },
+    "./vue": {
+      "import": {
+        "types": "./vue/index.d.ts",
+        "default": "./vue/index.js"
+      },
+      "require": {
+        "types": "./vue/index.d.cts",
+        "default": "./vue/index.cjs"
+      }
     }
   },
   "files": [
     "core",
     "react",
-    "solid"
+    "solid",
+    "svelte",
+    "vue"
   ],
   "publishConfig": {
     "access": "public"
@@ -56,24 +79,34 @@
     "file-selector": "^0.6.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.60",
+    "@types/react": "18.2.78",
     "@uploadthing/eslint-config": "0.2.0",
     "@uploadthing/tsconfig": "0.1.0",
     "bunchee": "^5.1.2",
     "eslint": "^8.57.0",
     "react": "18.2.0",
     "solid-js": "^1.8.15",
-    "typescript": "^5.4.2"
+    "svelte": "^4.2.12",
+    "typescript": "^5.4.5",
+    "vue": "^3.4.21"
   },
   "peerDependencies": {
     "react": "^16.8.0 || ^17.0.0 || ^18.0.0",
-    "solid-js": "^1.7.11"
+    "solid-js": "^1.7.11",
+    "svelte": "^4.2.12",
+    "vue": "^3.4.0"
   },
   "peerDependenciesMeta": {
     "react": {
       "optional": true
     },
     "solid-js": {
+      "optional": true
+    },
+    "svelte": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   },
@@ -87,8 +120,19 @@
         "error",
         {
           "patterns": [
-            "@uploadthing/dropzone",
-            "@uploadthing/dropzone/*"
+            {
+              "group": [
+                "@uploadthing/dropzone",
+                "@uploadthing/dropzone/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
           ]
         }
       ]

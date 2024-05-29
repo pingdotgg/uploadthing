@@ -1,0 +1,7 @@
+packages:
+  - "docs"
+  - "examples/*"
+  - "examples/backend-adapters/*"
+  - "packages/*"
+  - "!packages/raycast-extension"
+  - "tooling/*"

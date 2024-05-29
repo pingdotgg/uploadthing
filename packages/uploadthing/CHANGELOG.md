@@ -1,5 +1,134 @@
 # uploadthing
 
+## 6.12.0
+
+### Minor Changes
+
+- [#796](https://github.com/pingdotgg/uploadthing/pull/796) [`24cdb51`](https://github.com/pingdotgg/uploadthing/commit/24cdb5191f42d1f2603f45acb392ab05acd0cb64) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: accept `routeConfig` directly in `uploadthing/client.generateMimeTypes`
+
+  You no longer have to combine `generatePermittedFileTypes` and `generateMimeTypes`:
+
+  ```diff
+  - accept={generateMimeTypes(
+  -   generatePermittedFileTypes(routeConfig).fileTypes,
+  - ).join(",")}
+  + accept={generateMimeTypes(routeConfig ?? {}).join(",")}
+  ```
+
+### Patch Changes
+
+- [#796](https://github.com/pingdotgg/uploadthing/pull/796) [`24cdb51`](https://github.com/pingdotgg/uploadthing/commit/24cdb5191f42d1f2603f45acb392ab05acd0cb64) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add `additionalProperties` option to file route configs to allow configurations such as image dimension / aspect ratio to propagate down to client
+
+## 6.11.0
+
+### Minor Changes
+
+- [#800](https://github.com/pingdotgg/uploadthing/pull/800) [`43b685a`](https://github.com/pingdotgg/uploadthing/commit/43b685a61a90ab44830a0589785869bd11149bca) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add `generateReactHelpers.getRouteConfig`, `isValidFileSize` and `isValidFileType` helpers
+
+  💡 See https://github.com/pingdotgg/uploadthing/blob/main/examples/with-novel/uploadthing/novel-plugin.ts#L50-L61 for a live example utilizing these helpers.
+
+### Patch Changes
+
+- [#808](https://github.com/pingdotgg/uploadthing/pull/808) [`4fea8f4`](https://github.com/pingdotgg/uploadthing/commit/4fea8f409dd0baa921c41b09a8f2d87dfa269233) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix treeshakeability of `Effect` dependency by avoiding top-level function calls, and falling back to `#__PURE__` directives otherwise
+
+  Importing some utility from e.g. `@uploadthing/shared` should not explode bundle if `Effect` isn't used for other stuff
+
+- [#810](https://github.com/pingdotgg/uploadthing/pull/810) [`4f57264`](https://github.com/pingdotgg/uploadthing/commit/4f5726421e4c732857451bde23d833cd8c53c4b5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix regression in debug logs not showing
+
+- [#813](https://github.com/pingdotgg/uploadthing/pull/813) [`7d93270`](https://github.com/pingdotgg/uploadthing/commit/7d93270cc008666ebcb982c62754df9bbd2f62bf) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor header parsing to support breaking change in Node.js 20.13
+
+- [#821](https://github.com/pingdotgg/uploadthing/pull/821) [`3509fb4`](https://github.com/pingdotgg/uploadthing/commit/3509fb42567d9ec3f8b3ad7b0f4b3418fc0e81ba) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: invalid response schema for `utapi.getUsageInfo`
+
+- Updated dependencies [[`4fea8f4`](https://github.com/pingdotgg/uploadthing/commit/4fea8f409dd0baa921c41b09a8f2d87dfa269233), [`4f57264`](https://github.com/pingdotgg/uploadthing/commit/4f5726421e4c732857451bde23d833cd8c53c4b5), [`7d93270`](https://github.com/pingdotgg/uploadthing/commit/7d93270cc008666ebcb982c62754df9bbd2f62bf)]:
+  - @uploadthing/shared@6.7.5
+
+## 6.10.4
+
+### Patch Changes
+
+- [`811b4cb`](https://github.com/pingdotgg/uploadthing/commit/811b4cb96938dd498f55e323f34685cbc8cfea9c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove `@effect/schema` from client bundle resulting in up to 15kB less JS shipped to client (#794)
+
+- [#798](https://github.com/pingdotgg/uploadthing/pull/798) [`cea8e9d`](https://github.com/pingdotgg/uploadthing/commit/cea8e9d66ee7b3c8d324894d27e95e98ad62c9fc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add customid to response schema for utapi.listFiles
+
+- Updated dependencies [[`811b4cb`](https://github.com/pingdotgg/uploadthing/commit/811b4cb96938dd498f55e323f34685cbc8cfea9c), [`5e6e64c`](https://github.com/pingdotgg/uploadthing/commit/5e6e64c53ac9765ceee4bb758a48e08eabb36d14)]:
+  - @uploadthing/shared@6.7.4
+  - @uploadthing/mime-types@0.2.10
+
+## 6.10.3
+
+### Patch Changes
+
+- [#792](https://github.com/pingdotgg/uploadthing/pull/792) [`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: isPollingResponse was not checking against response json
+
+- Updated dependencies [[`a1481a2`](https://github.com/pingdotgg/uploadthing/commit/a1481a2ae1221dc7e1091a364c8efd7fa3035544)]:
+  - @uploadthing/shared@6.7.3
+
+## 6.10.2
+
+### Patch Changes
+
+- [#791](https://github.com/pingdotgg/uploadthing/pull/791) [`69165fc`](https://github.com/pingdotgg/uploadthing/commit/69165fc4b4e4b02fe27e02d1991ea2cd3ae45c8a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: catch FiberFailure's and squash them to the original error
+
+- [#783](https://github.com/pingdotgg/uploadthing/pull/783) [`6da018b`](https://github.com/pingdotgg/uploadthing/commit/6da018bfd4f2812ad81f36a7e3c9e3567c435b0b) Thanks [@datner](https://github.com/datner)! - refactoring small parts of uploadFile and related utils
+
+- Updated dependencies [[`69165fc`](https://github.com/pingdotgg/uploadthing/commit/69165fc4b4e4b02fe27e02d1991ea2cd3ae45c8a), [`6da018b`](https://github.com/pingdotgg/uploadthing/commit/6da018bfd4f2812ad81f36a7e3c9e3567c435b0b)]:
+  - @uploadthing/shared@6.7.2
+
+## 6.10.1
+
+### Patch Changes
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: add missing `fast-check` peer dependency from `@effect/schema`
+
+- [#770](https://github.com/pingdotgg/uploadthing/pull/770) [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: better error logging for bad requests
+
+- [#775](https://github.com/pingdotgg/uploadthing/pull/775) [`0abfa03`](https://github.com/pingdotgg/uploadthing/commit/0abfa031d108edead78d9b71a61d2bfb7ad53a64) Thanks [@tim-smart](https://github.com/tim-smart)! - update "effect" & switch to alias imports
+
+- Updated dependencies [[`6906254`](https://github.com/pingdotgg/uploadthing/commit/690625458338a70df5927f1d2405de0de4a58d8f), [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc), [`594ae8a`](https://github.com/pingdotgg/uploadthing/commit/594ae8ae214ff717937c4787a3b8d1bd40b832cc), [`0abfa03`](https://github.com/pingdotgg/uploadthing/commit/0abfa031d108edead78d9b71a61d2bfb7ad53a64)]:
+  - @uploadthing/mime-types@0.2.9
+  - @uploadthing/shared@6.7.1
+
+## 6.10.0
+
+### Minor Changes
+
+- [#457](https://github.com/pingdotgg/uploadthing/pull/457) [`ea7e41b`](https://github.com/pingdotgg/uploadthing/commit/ea7e41b5d9d85135540d9b51fa5551859fbe7623) Thanks [@markflorkowski](https://github.com/markflorkowski)! - Effect rewrite
+
+- [#293](https://github.com/pingdotgg/uploadthing/pull/293) [`09870e4`](https://github.com/pingdotgg/uploadthing/commit/09870e43f310c15e48f0089e875c6d9663fd305b) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: vue and nuxt support!
+
+### Patch Changes
+
+- Updated dependencies [[`e637c43`](https://github.com/pingdotgg/uploadthing/commit/e637c43d203b72dabfeb17755b6d22d03c05ea3c), [`ea7e41b`](https://github.com/pingdotgg/uploadthing/commit/ea7e41b5d9d85135540d9b51fa5551859fbe7623), [`41de3c5`](https://github.com/pingdotgg/uploadthing/commit/41de3c55c8bd808166449c09e9006650178067d5), [`5efcdda`](https://github.com/pingdotgg/uploadthing/commit/5efcddafe9aa11993e16824dae4822bd7a8c8199), [`09870e4`](https://github.com/pingdotgg/uploadthing/commit/09870e43f310c15e48f0089e875c6d9663fd305b)]:
+  - @uploadthing/mime-types@0.2.8
+  - @uploadthing/shared@6.7.0
+
+## 6.9.0
+
+### Minor Changes
+
+- [#225](https://github.com/pingdotgg/uploadthing/pull/225) [`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe) Thanks [@AlanAcDz](https://github.com/AlanAcDz)! - feat: sveltekit support
+
+  📚 Read the docs to get started: https://docs.uploadthing.com/getting-started/svelte
+
+### Patch Changes
+
+- Updated dependencies [[`838c242`](https://github.com/pingdotgg/uploadthing/commit/838c242806824f87f1a6f5788f34b1c470cb6bfe)]:
+  - @uploadthing/shared@6.6.0
+
+## 6.8.0
+
+### Minor Changes
+
+- [#739](https://github.com/pingdotgg/uploadthing/pull/739) [`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: minFileCount option on RouteConfig
+
+- [#742](https://github.com/pingdotgg/uploadthing/pull/742) [`946cb99`](https://github.com/pingdotgg/uploadthing/commit/946cb99d3051c3982f14740874b6613bf3c4bc65) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add ability to update a file's ACL to UTApi
+
+### Patch Changes
+
+- Updated dependencies [[`d627742`](https://github.com/pingdotgg/uploadthing/commit/d6277425c8b11ff92ad3168d302e54f70e6f2667), [`0069ead`](https://github.com/pingdotgg/uploadthing/commit/0069eadbffd90db29df1966eae4f0a85aa3a8490)]:
+  - @uploadthing/shared@6.5.0
+  - @uploadthing/mime-types@0.2.7
+
 ## 6.7.0
 
 ### Minor Changes

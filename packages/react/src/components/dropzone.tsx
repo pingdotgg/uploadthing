@@ -9,6 +9,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -22,7 +23,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { getFilesFromClipboardEvent, progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -65,6 +66,13 @@ export type UploadDropzoneProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: DropzoneContent;
+  /**
+   * Callback called when files are dropped or pasted.
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
+  onDrop?: (acceptedFiles: File[]) => void;
+  disabled?: boolean;
 };
 
 export function UploadDropzone<
@@ -117,7 +125,7 @@ export function UploadDropzone<
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         setFiles([]);
-        $props.onClientUploadComplete?.(res);
+        void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
       onUploadProgress: (p) => {
@@ -136,6 +144,8 @@ export function UploadDropzone<
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
+      $props.onDrop?.(acceptedFiles);
+
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
@@ -148,11 +158,18 @@ export function UploadDropzone<
     [$props, mode, startUpload],
   );
 
+  const isDisabled = (() => {
+    if ($props.__internal_dropzone_disabled) return true;
+    if ($props.disabled) return true;
+
+    return false;
+  })();
+
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: $props.__internal_dropzone_disabled,
+    disabled: isDisabled,
   });
 
   const ready =

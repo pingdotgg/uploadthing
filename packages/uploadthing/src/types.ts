@@ -11,6 +11,18 @@ export type {
 
 export * from "./sdk/types";
 
+export type {
+  EndpointMetadata,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
+
+export type {
+  FileUploadData,
+  FileUploadDataWithCustomId,
+  UploadedFileData,
+  ClientUploadedFileData,
+} from "./internal/shared-schemas";
+
 export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
@@ -23,18 +35,20 @@ export type UploadFilesOptions<
   /**
    * Called when presigned URLs have been retrieved and the file upload is about to begin
    */
-  onUploadBegin?: (opts: { file: string }) => void;
+  onUploadBegin?: ((opts: { file: string }) => void) | undefined;
   /**
    * Called continuously as the file is uploaded to the storage provider
    */
-  onUploadProgress?: (opts: { file: string; progress: number }) => void;
+  onUploadProgress?:
+    | ((opts: { file: string; progress: number }) => void)
+    | undefined;
   /**
    * Skip polling for server data after upload is complete
    * Useful if you want faster response times and don't need
    * any data returned from the server `onUploadComplete` callback
    * @default false
    */
-  skipPolling?: TSkipPolling;
+  skipPolling?: TSkipPolling | undefined;
   /**
    * URL to the UploadThing API endpoint
    * @example URL { http://localhost:3000/api/uploadthing }
@@ -46,7 +60,7 @@ export type UploadFilesOptions<
    * Set custom headers that'll get sent with requests
    * to your server
    */
-  headers?: HeadersInit | (() => MaybePromise<HeadersInit>);
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   /**
    * The uploadthing package that is making this request, used to identify the client in the server logs
    * @example "@uploadthing/react"
@@ -77,40 +91,3 @@ export type GenerateUploaderOptions = {
    */
   package: string;
 };
-
-/**
- * Properties from the web File object, this is what the client sends when initiating an upload
- */
-export interface FileUploadData {
-  name: string;
-  size: number;
-  type: string;
-}
-
-/**
- * `.middleware()` can add a customId to the incoming file data
- */
-export interface FileUploadDataWithCustomId extends FileUploadData {
-  /**
-   * As set by `.middleware()` using @link {UTFiles}
-   */
-  customId: string | null;
-}
-
-/**
- * When files are uploaded, we get back a key and a URL for the file
- */
-export interface UploadedFileData extends FileUploadDataWithCustomId {
-  key: string;
-  url: string;
-}
-
-/**
- * When the client has uploaded a file and polled for data returned by `.onUploadComplete()`
- */
-export interface ClientUploadedFileData<T> extends UploadedFileData {
-  /**
-   * Matches what's returned from the serverside `onUploadComplete` callback
-   */
-  serverData: T;
-}

@@ -1,0 +1,92 @@
+{
+  "name": "@uploadthing/vue",
+  "version": "6.6.0",
+  "type": "module",
+  "sideEffects": false,
+  "license": "MIT",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./styles.css": "./dist/index.css",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --minify",
+    "build:js": "bunchee --tsconfig tsconfig.build.json && bun build:css",
+    "build": "bun build:js && bun build:css",
+    "dev:css": "tailwindcss -i ./src/styles.css -o ./dist/index.css --watch",
+    "dev:js": "wait-on ../uploadthing/server/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "dev": "conc npm:dev:*",
+    "clean": "git clean -xdf dist node_modules",
+    "lint": "eslint src --max-warnings 0",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uploadthing/dropzone": "workspace:*",
+    "@uploadthing/shared": "workspace:*",
+    "@vueuse/core": "^10.9.0",
+    "file-selector": "^0.6.0",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
+    "bunchee": "^5.1.2",
+    "concurrently": "^8.2.2",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.5",
+    "uploadthing": "workspace:*",
+    "vue": "^3.4.21",
+    "wait-on": "^7.2.0"
+  },
+  "peerDependencies": {
+    "uploadthing": "^6.10.0",
+    "vue": "^3.4.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "@uploadthing/vue",
+                "@uploadthing/vue/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
+          ]
+        }
+      ]
+    },
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ]
+  }
+}

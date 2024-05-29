@@ -12,6 +12,9 @@ coverage
 .next/
 out/
 build
+ios
+.expo
+expo-env.d.ts
 
 # solid
 .output
@@ -22,6 +25,7 @@ build
 *.pem
 .data
 .idea
+*.db
 
 # debug
 npm-debug.log*
@@ -40,10 +44,6 @@ yarn-error.log*
 # turbo
 .turbo
 
-dist
-.solid
-.vercel
-
 # cf
 .wrangler
 .dev.vars
@@ -52,3 +52,12 @@ dist
 packages/*/*/
 !packages/*/src/
 !packages/*/test/
+!packages/*/playground/
+
+dist
+
+.svelte-kit
+.solid
+.vercel
+.output
+.nuxt

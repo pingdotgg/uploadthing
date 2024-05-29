@@ -1,0 +1,91 @@
+{
+  "name": "@uploadthing/svelte",
+  "version": "6.6.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build && pnpm package",
+    "build:styles": "tailwindcss -i ./src/lib/styles.css -o ./dist/styles.css",
+    "preview": "vite preview",
+    "package": "svelte-kit sync && svelte-package && pnpm build:styles && publint",
+    "prepublishOnly": "pnpm package",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "eslint \"**/*.{ts,svelte}\"",
+    "prepare": "svelte-kit sync",
+    "prepack": "bun ../../.github/replace-workspace-protocol.ts",
+    "clean": "git clean -xdf dist .svelte-kit node_modules"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*",
+    "!dist/**/*.spec.*"
+  ],
+  "peerDependencies": {
+    "svelte": "^4.0.0",
+    "uploadthing": "^6.10.0"
+  },
+  "dependencies": {
+    "@uploadthing/dropzone": "workspace:*",
+    "@uploadthing/shared": "workspace:*",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-auto": "^3.1.1",
+    "@sveltejs/kit": "^2.5.4",
+    "@sveltejs/package": "^2.3.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.0",
+    "postcss": "8.4.38",
+    "postcss-load-config": "^5.0.3",
+    "publint": "^0.2.7",
+    "svelte": "^4.2.12",
+    "svelte-check": "^3.6.7",
+    "tailwindcss": "^3.4.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.4.5",
+    "uploadthing": "workspace:*",
+    "vite": "^5.1.4"
+  },
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@uploadthing/eslint-config/base",
+      "@uploadthing/eslint-config/svelte"
+    ],
+    "ignorePatterns": [
+      "*.config.*"
+    ],
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            {
+              "group": [
+                "@uploadthing/svelte",
+                "@uploadthing/svelte/*"
+              ],
+              "message": "Use relative src imports instead"
+            }
+          ],
+          "paths": [
+            {
+              "name": "effect",
+              "message": "Use alias imports instead (import * as X from \"effect/X\")"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
