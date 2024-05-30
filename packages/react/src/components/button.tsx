@@ -304,8 +304,6 @@ export function UploadButton<
         data-ut-element="button"
         ref={labelRef}
         onClick={(e) => {
-          console.log("Event", e);
-          console.log({ state, files, mode });
           if (state === "uploading") {
             e.preventDefault();
             e.stopPropagation();
@@ -317,7 +315,6 @@ export function UploadButton<
             e.preventDefault();
             e.stopPropagation();
             const input = "input" in $props ? $props.input : undefined;
-            console.log("Uploading", files, input);
             uploadFiles(files, input);
           }
         }}

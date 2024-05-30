@@ -20,7 +20,7 @@ const f = createUploadthing({
 export const uploadRouter = {
   videoAndImage: f({
     image: {
-      maxFileSize: "256MB",
+      maxFileSize: "4MB",
       maxFileCount: 4,
     },
     video: {
