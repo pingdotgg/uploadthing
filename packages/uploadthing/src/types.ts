@@ -33,6 +33,10 @@ export type UploadFilesOptions<
    */
   files: File[];
   /**
+   * An AbortSignal to cancel the upload
+   */
+  signal?: AbortSignal | undefined;
+  /**
    * Called when presigned URLs have been retrieved and the file upload is about to begin
    */
   onUploadBegin?: ((opts: { file: string }) => void) | undefined;
