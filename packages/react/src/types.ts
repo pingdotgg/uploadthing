@@ -75,6 +75,13 @@ export type UseUploadthingProps<
    * to your server
    */
   headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+  /**
+   * An AbortSignal to cancel the upload
+   * Calling `signal.abort()` will cause the upload to throw
+   * an `UploadAbortedError`. In a future version the function
+   * will not throw in favor of an `onUploadAborted` callback.
+   */
+  signal?: AbortSignal | undefined;
 };
 
 export type UploadthingComponentProps<
@@ -82,6 +89,14 @@ export type UploadthingComponentProps<
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
 > = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
+  /**
+   * An AbortSignal to cancel the upload
+   */
+  signal?: AbortSignal | undefined;
+  /**
+   * Called when the upload is aborted
+   */
+  onUploadAborted?: (() => MaybePromise<void>) | undefined;
   /**
    * The endpoint from your FileRouter to use for the upload
    */

@@ -34,6 +34,8 @@ export type UploadFilesOptions<
   files: File[];
   /**
    * An AbortSignal to cancel the upload
+   * Calling `signal.abort()` will cause this
+   * function to throw an `UploadAbortedError`
    */
   signal?: AbortSignal | undefined;
   /**

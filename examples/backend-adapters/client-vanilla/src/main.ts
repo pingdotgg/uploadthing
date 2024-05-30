@@ -9,8 +9,8 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
       <form id="upload-form">
         <input type="file" />
         <button>Upload</button>
-        <button id="abort" disabled="true">Abort</button>
       </form>
+      <button id="abort" disabled="true">Abort</button>
     </div>
   </div>
 `;

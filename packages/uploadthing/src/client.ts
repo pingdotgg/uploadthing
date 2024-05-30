@@ -23,6 +23,7 @@ import {
   parseResponseJson,
   resolveMaybeUrlArg,
   RetryError,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -53,6 +54,8 @@ export {
   generateMimeTypes,
   /** @public */
   generatePermittedFileTypes,
+  /** @public */
+  UploadAbortedError,
 } from "@uploadthing/shared";
 
 /**
@@ -124,7 +127,11 @@ export const genUploader = <TRouter extends FileRouter>(
       )
       .catch((error) => {
         if (!Runtime.isFiberFailure(error)) throw error;
-        throw Cause.squash(error[Runtime.FiberFailureCauseId]);
+        const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
+        if (Cause.isInterruptedException(ogError)) {
+          throw new UploadAbortedError();
+        }
+        throw ogError;
       });
 };
 
@@ -168,12 +175,12 @@ const uploadFilesInternal = <
           { ...opts, reportEventToUT },
           presigned,
         ).pipe(
-          Effect.onInterrupt((e) => {
-            reportEventToUT("failure", {
+          Effect.onInterrupt(() => {
+            return reportEventToUT("failure", {
               fileKey: presigned.key,
               uploadId: "uploadId" in presigned ? presigned.uploadId : null,
               fileName: presigned.fileName,
-            });
+            }).pipe(Effect.orDie);
           }),
         ),
       { concurrency: 6 },

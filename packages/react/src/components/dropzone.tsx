@@ -13,6 +13,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -121,6 +122,7 @@ export function UploadDropzone<
   const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
     $props.endpoint,
     {
+      signal: $props.signal,
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
@@ -138,6 +140,19 @@ export function UploadDropzone<
     },
   );
 
+  const uploadFiles = useCallback(
+    (...args: Parameters<typeof startUpload>) => {
+      void startUpload(...args).catch((e) => {
+        if (e instanceof UploadAbortedError) {
+          void $props.onUploadAborted?.();
+        } else {
+          throw e;
+        }
+      });
+    },
+    [$props, startUpload],
+  );
+
   const { fileTypes, multiple } = generatePermittedFileTypes(
     permittedFileInfo?.config,
   );
@@ -151,11 +166,11 @@ export function UploadDropzone<
       // If mode is auto, start upload immediately
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        void startUpload(acceptedFiles, input);
+        uploadFiles(acceptedFiles, input);
         return;
       }
     },
-    [$props, mode, startUpload],
+    [$props, mode, uploadFiles],
   );
 
   const isDisabled = (() => {
@@ -184,7 +199,7 @@ export function UploadDropzone<
     if (!files) return;
 
     const input = "input" in $props ? $props.input : undefined;
-    void startUpload(files, input);
+    uploadFiles(files, input);
   };
 
   useEffect(() => {
@@ -203,7 +218,7 @@ export function UploadDropzone<
 
       if (mode === "auto") {
         const input = "input" in $props ? $props.input : undefined;
-        void startUpload(filesToUpload, input);
+        uploadFiles(filesToUpload, input);
       }
     };
 
@@ -211,7 +226,7 @@ export function UploadDropzone<
     return () => {
       window.removeEventListener("paste", handlePaste);
     };
-  }, [startUpload, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
+  }, [uploadFiles, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (files.length > 0)

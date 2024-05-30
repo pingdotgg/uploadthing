@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -12,6 +12,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -23,7 +24,7 @@ import type { FileRouter } from "uploadthing/types";
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { usePaste } from "../utils/usePaste";
-import { progressWidths, Spinner } from "./shared";
+import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -101,6 +102,7 @@ export function UploadButton<
     UploadThingInternalProps;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+  const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -116,6 +118,7 @@ export function UploadButton<
   const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
+      signal: $props.signal ?? acRef.current.signal,
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
@@ -136,6 +139,19 @@ export function UploadButton<
     },
   );
 
+  const uploadFiles = useCallback(
+    (...args: Parameters<typeof startUpload>) => {
+      void startUpload(...args).catch((e) => {
+        if (e instanceof UploadAbortedError) {
+          void $props.onUploadAborted?.();
+        } else {
+          throw e;
+        }
+      });
+    },
+    [$props, startUpload],
+  );
+
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const fileRouteInput = "input" in $props ? $props.input : undefined;
@@ -154,12 +170,12 @@ export function UploadButton<
           return;
         }
 
-        void startUpload(selectedFiles, fileRouteInput);
+        uploadFiles(selectedFiles, fileRouteInput);
       },
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
     }),
-    [fileRouteInput, fileTypes, mode, multiple, startUpload],
+    [fileRouteInput, fileTypes, mode, multiple, uploadFiles],
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
@@ -187,7 +203,7 @@ export function UploadButton<
 
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
-      void startUpload(files, input);
+      uploadFiles(files, input);
     }
   });
 
@@ -216,7 +232,12 @@ export function UploadButton<
 
     if (uploadProgress === 100) return <Spinner />;
 
-    return <span className="z-50">{uploadProgress}%</span>;
+    return (
+      <span className="z-50">
+        <span className="block group-hover:hidden">{uploadProgress}%</span>
+        <Cancel className="hidden size-4 group-hover:block" />
+      </span>
+    );
   };
 
   const renderClearButton = () => (
@@ -271,7 +292,7 @@ export function UploadButton<
     >
       <label
         className={twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
@@ -283,11 +304,20 @@ export function UploadButton<
         data-ut-element="button"
         ref={labelRef}
         onClick={(e) => {
+          console.log("Event", e);
+          console.log({ state, files, mode });
+          if (state === "uploading") {
+            e.preventDefault();
+            e.stopPropagation();
+            acRef.current.abort();
+            return;
+          }
           if (mode === "manual" && files.length > 0) {
             e.preventDefault();
             e.stopPropagation();
             const input = "input" in $props ? $props.input : undefined;
-            void startUpload(files, input);
+            console.log("Uploading", files, input);
+            uploadFiles(files, input);
           }
         }}
       >

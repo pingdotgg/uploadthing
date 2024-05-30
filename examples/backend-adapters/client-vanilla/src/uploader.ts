@@ -2,6 +2,7 @@ import {
   generateMimeTypes,
   generatePermittedFileTypes,
   genUploader,
+  UploadAbortedError,
 } from "uploadthing/client";
 import { EndpointMetadata } from "uploadthing/types";
 
@@ -28,11 +29,17 @@ export const setupUploader = (el: HTMLFormElement) => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const files = Array.from(input.files || []);
+    console.log("files", files);
     button.disabled = true;
     abortButton.disabled = false;
     const res = await uploadFiles("videoAndImage", {
       files,
       signal: ac.signal,
+    }).catch((error) => {
+      if (error instanceof UploadAbortedError) {
+        alert("Upload aborted");
+      }
+      throw error;
     });
     form.reset();
     alert(`Upload complete! ${res.length} files uploaded`);
