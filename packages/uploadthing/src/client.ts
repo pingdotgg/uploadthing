@@ -167,6 +167,14 @@ const uploadFilesInternal = <
           String(endpoint),
           { ...opts, reportEventToUT },
           presigned,
+        ).pipe(
+          Effect.onInterrupt((e) => {
+            reportEventToUT("failure", {
+              fileKey: presigned.key,
+              uploadId: "uploadId" in presigned ? presigned.uploadId : null,
+              fileName: presigned.fileName,
+            });
+          }),
         ),
       { concurrency: 6 },
     ),
