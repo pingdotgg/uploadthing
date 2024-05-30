@@ -310,6 +310,7 @@ export function UploadButton<
             e.preventDefault();
             e.stopPropagation();
             acRef.current.abort();
+            acRef.current = new AbortController();
             return;
           }
           if (mode === "manual" && files.length > 0) {
