@@ -99,31 +99,37 @@ export const assertFilesMeetConfig = (
 
       const sizeLimit = routeConfig[type]?.maxFileSize;
       if (!sizeLimit) {
-        return yield* new InvalidRouteConfigError(type, "maxFileSize");
+        return yield* Effect.fail(
+          new InvalidRouteConfigError(type, "maxFileSize"),
+        );
       }
       const sizeLimitBytes = yield* fileSizeToBytes(sizeLimit);
 
       if (file.size > sizeLimitBytes) {
-        return yield* new FileSizeMismatch(type, sizeLimit, file.size);
+        return yield* Effect.fail(
+          new FileSizeMismatch(type, sizeLimit, file.size),
+        );
       }
     }
 
     for (const _key in counts) {
       const key = _key as FileRouterInputKey;
       const config = routeConfig[key];
-      if (!config) return yield* new InvalidRouteConfigError(key);
+      if (!config) return yield* Effect.fail(new InvalidRouteConfigError(key));
 
       const count = counts[key];
       const min = config.minFileCount;
       const max = config.maxFileCount;
 
       if (min > max) {
-        return yield* new UploadThingError({
-          code: "BAD_REQUEST",
-          message:
-            "Invalid config during file count - minFileCount > maxFileCount",
-          cause: `minFileCount must be less than maxFileCount for key ${key}. got: ${min} > ${max}`,
-        });
+        return yield* Effect.fail(
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message:
+              "Invalid config during file count - minFileCount > maxFileCount",
+            cause: `minFileCount must be less than maxFileCount for key ${key}. got: ${min} > ${max}`,
+          }),
+        );
       }
 
       if (count < min) {
@@ -183,70 +189,84 @@ export const parseAndValidateRequest = (
       yield* Effect.logError(
         `Client version mismatch. Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
       );
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "Client version mismatch",
-        cause: `Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Client version mismatch",
+          cause: `Server version: ${UPLOADTHING_VERSION}, Client version: ${clientVersion}`,
+        }),
+      );
     }
 
     if (!slug) {
       yield* Effect.logError("No slug provided in params:", params);
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "No slug provided in params",
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "No slug provided in params",
+        }),
+      );
     }
 
     if (slug && typeof slug !== "string") {
       const msg = `Expected slug to be of type 'string', got '${typeof slug}'`;
       yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "`slug` must be a string",
-        cause: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "`slug` must be a string",
+          cause: msg,
+        }),
+      );
     }
 
     if (!apiKey) {
       const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
       yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "MISSING_ENV",
-        message: `No secret provided`,
-        cause: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "MISSING_ENV",
+          message: `No secret provided`,
+          cause: msg,
+        }),
+      );
     }
 
     if (!apiKey.startsWith("sk_")) {
       const msg = `Invalid secret provided, UPLOADTHING_SECRET must start with 'sk_'`;
       yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "MISSING_ENV",
-        message: "Invalid API key. API keys must start with 'sk_'.",
-        cause: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "MISSING_ENV",
+          message: "Invalid API key. API keys must start with 'sk_'.",
+          cause: msg,
+        }),
+      );
     }
 
     if (utFrontendPackage && typeof utFrontendPackage !== "string") {
       const msg = `Expected x-uploadthing-package to be of type 'string', got '${typeof utFrontendPackage}'`;
       yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        message:
-          "`x-uploadthing-package` must be a string. eg. '@uploadthing/react'",
-        cause: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message:
+            "`x-uploadthing-package` must be a string. eg. '@uploadthing/react'",
+          cause: msg,
+        }),
+      );
     }
 
     const uploadable = opts.router[slug];
     if (!uploadable) {
       const msg = `No file route found for slug ${slug}`;
       yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "NOT_FOUND",
-        message: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "NOT_FOUND",
+          message: msg,
+        }),
+      );
     }
 
     if (action && !isActionType(action)) {
@@ -254,11 +274,13 @@ export const parseAndValidateRequest = (
         .join(", ")
         .replace(/,(?!.*,)/, " or")} but got "${action}"`;
       yield* Effect.logError("Invalid action type", msg);
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        cause: `Invalid action type ${action}`,
-        message: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          cause: `Invalid action type ${action}`,
+          message: msg,
+        }),
+      );
     }
 
     if (hook && !isUploadThingHook(hook)) {
@@ -266,20 +288,24 @@ export const parseAndValidateRequest = (
         .join(", ")
         .replace(/,(?!.*,)/, " or")} but got "${hook}"`;
       yield* Effect.logError("Invalid uploadthing hook", msg);
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        cause: `Invalid uploadthing hook ${hook}`,
-        message: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          cause: `Invalid uploadthing hook ${hook}`,
+          message: msg,
+        }),
+      );
     }
 
     if ((!action && !hook) || (action && hook)) {
       const msg = `Exactly one of 'actionType' or 'uploadthing-hook' must be provided`;
       yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "BAD_REQUEST",
-        message: msg,
-      });
+      return yield* Effect.fail(
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: msg,
+        }),
+      );
     }
 
     yield* Effect.logDebug("✔︎ All request input is valid");

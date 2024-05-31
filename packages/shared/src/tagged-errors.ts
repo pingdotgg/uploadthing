@@ -1,7 +1,7 @@
 import * as Data from "effect/Data";
 import * as Predicate from "effect/Predicate";
 
-export class InvalidRouteConfigError extends Data.Error<{
+export class InvalidRouteConfigError extends Data.Class<{
   reason: string;
 }> {
   readonly _tag = "InvalidRouteConfig";
@@ -14,7 +14,7 @@ export class InvalidRouteConfigError extends Data.Error<{
   }
 }
 
-export class UnknownFileTypeError extends Data.Error<{
+export class UnknownFileTypeError extends Data.Class<{
   reason: string;
 }> {
   readonly _tag = "UnknownFileType";
@@ -25,7 +25,7 @@ export class UnknownFileTypeError extends Data.Error<{
   }
 }
 
-export class InvalidFileTypeError extends Data.Error<{
+export class InvalidFileTypeError extends Data.Class<{
   reason: string;
 }> {
   readonly _tag = "InvalidFileType";
@@ -36,7 +36,7 @@ export class InvalidFileTypeError extends Data.Error<{
   }
 }
 
-export class InvalidFileSizeError extends Data.Error<{
+export class InvalidFileSizeError extends Data.Class<{
   reason: string;
 }> {
   readonly _tag = "InvalidFileSize";
@@ -47,7 +47,7 @@ export class InvalidFileSizeError extends Data.Error<{
   }
 }
 
-export class InvalidURLError extends Data.Error<{
+export class InvalidURLError extends Data.Class<{
   reason: string;
 }> {
   readonly _tag = "InvalidURL";
@@ -57,7 +57,7 @@ export class InvalidURLError extends Data.Error<{
   }
 }
 
-export class RetryError extends Data.Error {
+export class RetryError extends Data.Class {
   readonly _tag = "RetryError";
   readonly name = "RetryError";
 }
@@ -72,7 +72,7 @@ export const getRequestUrl = (input: RequestInfo | URL) => {
   return input.toString();
 };
 
-export class FetchError extends Data.Error<{
+export class FetchError extends Data.Class<{
   readonly input: {
     url: string;
     method: string | undefined;
@@ -85,7 +85,7 @@ export class FetchError extends Data.Error<{
   readonly name = "FetchError";
 }
 
-export class InvalidJsonError extends Data.Error<{
+export class InvalidJsonError extends Data.Class<{
   readonly input: unknown;
   readonly error: unknown;
 }> {
@@ -93,7 +93,7 @@ export class InvalidJsonError extends Data.Error<{
   readonly name = "InvalidJsonError";
 }
 
-export class BadRequestError<T = unknown> extends Data.Error<{
+export class BadRequestError<T = unknown> extends Data.Class<{
   readonly message: string;
   readonly status: number;
   readonly json: T;

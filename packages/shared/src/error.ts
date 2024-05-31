@@ -58,7 +58,7 @@ export interface SerializedUploadThingError {
 
 export class UploadThingError<
   TShape extends Json = { message: string },
-> extends Data.Error<{ message: string }> {
+> extends Data.Class<{ message: string }> {
   readonly _tag = "UploadThingError";
   readonly name = "UploadThingError";
 

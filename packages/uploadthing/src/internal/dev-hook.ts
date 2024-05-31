@@ -2,7 +2,6 @@ import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 
 import {
-  exponentialBackoff,
   fetchEff,
   generateUploadThingURL,
   parseResponseJson,
@@ -36,7 +35,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       ),
       Effect.retry({
         while: (err) => err instanceof RetryError,
-        schedule: exponentialBackoff(),
+        // schedule: exponentialBackoff(),
       }),
       Effect.catchTag("RetryError", () =>
         Effect.fail(

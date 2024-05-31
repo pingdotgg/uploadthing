@@ -26,6 +26,7 @@
         default = with pkgs;
           mkShell {
             buildInputs = [
+              bun
               corepackEnable
               node
             ];
