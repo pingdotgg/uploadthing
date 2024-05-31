@@ -15,4 +15,4 @@
 
 ## Further reference
 
-Check out the docs at: https://docs.uploadthing.com/solid
+Check out the docs at: https://docs.uploadthing.com/getting-started/solid
