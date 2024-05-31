@@ -88,6 +88,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
         "x-uploadthing-signature": signature,
       },
     }).pipe(
+      Effect.onExit((exit) => Effect.log(exit)),
       Effect.catchTag("FetchError", () =>
         Effect.succeed(new Response(null, { status: 500 })),
       ),

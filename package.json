@@ -57,6 +57,9 @@
     "patchedDependencies": {
       "msw@2.2.13": "patches/msw@2.2.13.patch",
       "@mswjs/interceptors@0.26.15": "patches/@mswjs__interceptors@0.26.15.patch"
+    },
+    "overrides": {
+      "effect": "file:effect-3.2.6.tgz"
     }
   }
 }

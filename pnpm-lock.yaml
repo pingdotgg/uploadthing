@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  effect: file:effect-3.2.6.tgz
+
 patchedDependencies:
   '@mswjs/interceptors@0.26.15':
     hash: b4i3mfjisdgapabfrhqgz5r23e
@@ -209,10 +212,10 @@ importers:
     dependencies:
       '@effect/platform':
         specifier: ^0.57.1
-        version: 0.57.1(@effect/schema@0.67.23)(effect@3.3.2)
+        version: 0.57.8(@effect/schema@0.68.4)(effect@3.2.6)
       '@effect/platform-bun':
         specifier: ^0.36.10
-        version: 0.36.10(@effect/platform@0.57.1)(effect@3.3.2)
+        version: 0.36.17(@effect/platform@0.57.8)(effect@3.2.6)
       '@elysiajs/cors':
         specifier: ^0.8.0
         version: 0.8.0(elysia@0.8.17)
@@ -229,8 +232,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: ^3.3.2
-        version: 3.3.2
+        specifier: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+        version: file:effect-3.2.6.tgz
       elysia:
         specifier: ^0.8.17
         version: 0.8.17(typescript@5.4.5)
@@ -576,7 +579,7 @@ importers:
     dependencies:
       '@auth/drizzle-adapter':
         specifier: ^1.2.0
-        version: 1.2.0
+        version: 1.3.0
       '@libsql/client':
         specifier: ^0.6.0
         version: 0.6.0
@@ -1290,8 +1293,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: ^3.3.2
-        version: 3.3.2
+        specifier: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+        version: file:effect-3.2.6.tgz
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -1423,7 +1426,7 @@ importers:
     dependencies:
       '@effect/schema':
         specifier: ^0.66.12
-        version: 0.66.12(effect@3.3.2)(fast-check@3.18.0)
+        version: 0.66.12(effect@3.2.6)(fast-check@3.18.0)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1434,8 +1437,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: ^3.3.2
-        version: 3.3.2
+        specifier: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+        version: file:effect-3.2.6.tgz
       fast-check:
         specifier: ^3.18.0
         version: 3.18.0
@@ -1807,10 +1810,33 @@ packages:
       preact-render-to-string: 5.2.3(preact@10.11.3)
     dev: false
 
-  /@auth/drizzle-adapter@1.2.0:
-    resolution: {integrity: sha512-95LHWlgtR4rQeHy4bACiVgTZdWkkEpVXYJim1IqbF1Hy0MnnMalmfGuIlNcOi64+6iC17j5FkDsMchqGwvj2Dg==}
+  /@auth/core@0.33.0:
+    resolution: {integrity: sha512-QPWvnoAbolCO7I8/h3xITwS59bjA2fZRG+p4Qf2ZSMuPE3AFO9xYI3xjwdXZ0jl772aL7Ya8ZUedxCatXgwMZg==}
+    peerDependencies:
+      '@simplewebauthn/browser': ^9.0.1
+      '@simplewebauthn/server': ^9.0.2
+      nodemailer: ^6.8.0
+    peerDependenciesMeta:
+      '@simplewebauthn/browser':
+        optional: true
+      '@simplewebauthn/server':
+        optional: true
+      nodemailer:
+        optional: true
     dependencies:
-      '@auth/core': 0.32.0
+      '@panva/hkdf': 1.1.1
+      '@types/cookie': 0.6.0
+      cookie: 0.6.0
+      jose: 5.3.0
+      oauth4webapi: 2.10.4
+      preact: 10.11.3
+      preact-render-to-string: 5.2.3(preact@10.11.3)
+    dev: false
+
+  /@auth/drizzle-adapter@1.3.0:
+    resolution: {integrity: sha512-zqJMXf0f7Ly/ih+hW2iCAV12h9J635TUVT3x5g92nQzqmDBd/qI6MjOJH5GRzSUtYT6ceewa5j+ERPTT/w2/zg==}
+    dependencies:
+      '@auth/core': 0.33.0
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -3733,58 +3759,58 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: true
 
-  /@effect/platform-bun@0.36.10(@effect/platform@0.57.1)(effect@3.3.2):
-    resolution: {integrity: sha512-bVaOfDuj4Tx26GlUexzfvPI/vF5sQZ4HVpyeFdrz/zH/oGlBlEsUFlos7WEmDn5pUu742orysTTtUf3Y/eyM7Q==}
+  /@effect/platform-bun@0.36.17(@effect/platform@0.57.8)(effect@3.2.6):
+    resolution: {integrity: sha512-7MDdtdLUMgB0d/QlGF0zlS9DYyDb7jl4ypf9XArwWGqL392y4MiMOQxjpN0QgFYPs1SG/cieFvUJqyjBIlAAOg==}
     peerDependencies:
-      '@effect/platform': ^0.57.1
-      effect: ^3.3.2
+      '@effect/platform': ^0.57.8
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
     dependencies:
-      '@effect/platform': 0.57.1(@effect/schema@0.67.23)(effect@3.3.2)
-      '@effect/platform-node-shared': 0.6.10(@effect/platform@0.57.1)(effect@3.3.2)
-      effect: 3.3.2
+      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@3.2.6)
+      '@effect/platform-node-shared': 0.6.17(@effect/platform@0.57.8)(effect@3.2.6)
+      effect: file:effect-3.2.6.tgz
     dev: false
 
-  /@effect/platform-node-shared@0.6.10(@effect/platform@0.57.1)(effect@3.3.2):
-    resolution: {integrity: sha512-h6mE8KEBNYBOy2KTmSJUKhqQ+6uYzExDj/JaL0rvsvcDee3qrh4gxOBidsmwyJrSexlqkMp7p7ihPIRY9QQ84g==}
+  /@effect/platform-node-shared@0.6.17(@effect/platform@0.57.8)(effect@3.2.6):
+    resolution: {integrity: sha512-24iAKaLSuU4v7mEAvepfMOLrdzNxNjAiQ0C1vuD9ci4NAJ46ueiUQxQJJCQe7F1H4vtAwWWDFeHPKmqDk5JF4w==}
     peerDependencies:
-      '@effect/platform': ^0.57.1
-      effect: ^3.3.2
+      '@effect/platform': ^0.57.8
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
     dependencies:
-      '@effect/platform': 0.57.1(@effect/schema@0.67.23)(effect@3.3.2)
+      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@3.2.6)
       '@parcel/watcher': 2.4.1
-      effect: 3.3.2
-      multipasta: 0.2.1
+      effect: file:effect-3.2.6.tgz
+      multipasta: 0.2.2
     dev: false
 
-  /@effect/platform@0.57.1(@effect/schema@0.67.23)(effect@3.3.2):
-    resolution: {integrity: sha512-O9x4YVtyFKKuoIc5KJkvr5dtu4J7W2HQSj4KGo5QU4FZKW4HkCNQqBpAGChJTMTA7RlqCea7Rn0Z22wzsm3svA==}
+  /@effect/platform@0.57.8(@effect/schema@0.68.4)(effect@3.2.6):
+    resolution: {integrity: sha512-MC/Ny9hd1xCdhIvYyKnheUtKacYXD3hYD1DEpPfU9JrqQuHxXUBrN3/BdetTOn0UOivJx4k2WOhGRAvaZA5krg==}
     peerDependencies:
-      '@effect/schema': ^0.67.23
-      effect: ^3.3.2
+      '@effect/schema': ^0.68.3
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
     dependencies:
-      '@effect/schema': 0.67.23(effect@3.3.2)
-      effect: 3.3.2
-      find-my-way-ts: 0.1.2
-      multipasta: 0.2.1
+      '@effect/schema': 0.68.4(effect@3.2.6)
+      effect: file:effect-3.2.6.tgz
+      find-my-way-ts: 0.1.4
+      multipasta: 0.2.2
       path-browserify: 1.0.1
     dev: false
 
-  /@effect/schema@0.66.12(effect@3.3.2)(fast-check@3.18.0):
+  /@effect/schema@0.66.12(effect@3.2.6)(fast-check@3.18.0):
     resolution: {integrity: sha512-14X3D2FxTFDtll41MWw5OkLQCWqcs6pLYhs38oRK1o7rQ9gM2fdL4sw/gJu4dayAqv122GMgoIEOrzO5PyBuYA==}
     peerDependencies:
-      effect: ^3.1.0
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
       fast-check: ^3.13.2
     dependencies:
-      effect: 3.3.2
+      effect: file:effect-3.2.6.tgz
       fast-check: 3.18.0
     dev: false
 
-  /@effect/schema@0.67.23(effect@3.3.2):
-    resolution: {integrity: sha512-REKPOCm8guN6CEMvlQfR5ovjldeVRSnf3sj8FhyOIOeWuUtWlqghyBtgXLbAniSkjFFMFxWwDFyAoxVX9C0wGw==}
+  /@effect/schema@0.68.4(effect@3.2.6):
+    resolution: {integrity: sha512-MLYK3gAW0QYdX+hVsH9dG8AZFoCH4oS0bfOsRTy+D5hN7EsbIomsUhzqYlhOy30oOuodTV9sdS1SQPLr74RL4g==}
     peerDependencies:
-      effect: ^3.3.2
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
     dependencies:
-      effect: 3.3.2
+      effect: file:effect-3.2.6.tgz
       fast-check: 3.18.0
     dev: false
 
@@ -9532,8 +9558,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-darwin-arm64@1.5.29:
-    resolution: {integrity: sha512-6F/sSxpHaq3nzg2ADv9FHLi4Fu2A8w8vP8Ich8gIl16D2htStlwnaPmCLjRswO+cFkzgVqy/l01gzNGWd4DFqA==}
+  /@swc/core-darwin-arm64@1.6.3:
+    resolution: {integrity: sha512-3r7cJf1BcE30iyF1rnOSKrEzIR+cqnyYSZvivrm62TZdXVsIjfXe1xulsKGxZgNeLY5erIu7ukvMvBvPhnQvqA==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [darwin]
@@ -9550,8 +9576,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-darwin-x64@1.5.29:
-    resolution: {integrity: sha512-rF/rXkvUOTdTIfoYbmszbSUGsCyvqACqy1VeP3nXONS+LxFl4bRmRcUTRrblL7IE5RTMCKUuPbqbQSE2hK7bqg==}
+  /@swc/core-darwin-x64@1.6.3:
+    resolution: {integrity: sha512-8GLZ23IgVpF5xh2SbS5ZW/12/EEBuRU1hFOLB5rKERJU0y1RJ6YhDMf/FuOWhfHQcFM7TeedBwHIzaF+tdKKlw==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [darwin]
@@ -9568,8 +9594,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-arm-gnueabihf@1.5.29:
-    resolution: {integrity: sha512-2OAPL8iWBsmmwkjGXqvuUhbmmoLxS1xNXiMq87EsnCNMAKohGc7wJkdAOUL6J/YFpean/vwMWg64rJD4pycBeg==}
+  /@swc/core-linux-arm-gnueabihf@1.6.3:
+    resolution: {integrity: sha512-VQ/bduX7WhLOlGbJLMG7UH0LBehjjx43R4yuk55rjjJLqpvX5fQzMsWhQdIZ5vsc+4ORzdgtEAlpumTv6bsD1A==}
     engines: {node: '>=10'}
     cpu: [arm]
     os: [linux]
@@ -9586,8 +9612,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-arm64-gnu@1.5.29:
-    resolution: {integrity: sha512-eH/Q9+8O5qhSxMestZnhuS1xqQMr6M7SolZYxiXJqxArXYILLCF+nq2R9SxuMl0CfjHSpb6+hHPk/HXy54eIRA==}
+  /@swc/core-linux-arm64-gnu@1.6.3:
+    resolution: {integrity: sha512-jHIQ/PCwtdDBIF/BiC5DochswuCAIW/T5skJ+eDMbta7+QtEnZCXTZWpT5ORoEY/gtsE2fjpOA4TS6fBBvXqUw==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
@@ -9604,8 +9630,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-arm64-musl@1.5.29:
-    resolution: {integrity: sha512-TERh2OICAJz+SdDIK9+0GyTUwF6r4xDlFmpoiHKHrrD/Hh3u+6Zue0d7jQ/he/i80GDn4tJQkHlZys+RZL5UZg==}
+  /@swc/core-linux-arm64-musl@1.6.3:
+    resolution: {integrity: sha512-gA6velEUD27Dwu0BlR9hCcFzkWq2YL2pDAU5qbgeuGhaMiUCBssfqTQB+2ctEnV+AZx+hSMJOHvtA+uFZjfRrw==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
@@ -9622,8 +9648,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-x64-gnu@1.5.29:
-    resolution: {integrity: sha512-WMDPqU7Ji9dJpA+Llek2p9t7pcy7Bob8ggPUvgsIlv3R/eesF9DIzSbrgl6j3EAEPB9LFdSafsgf6kT/qnvqFg==}
+  /@swc/core-linux-x64-gnu@1.6.3:
+    resolution: {integrity: sha512-fy4qoBDr5I8r+ZNCZxs/oZcmu4j/8mtSud6Ka102DaSxEjNg0vfIdo9ITsVIPsofhUTmDKjQsPB2O7YUlJAioQ==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
@@ -9640,8 +9666,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-linux-x64-musl@1.5.29:
-    resolution: {integrity: sha512-DO14glwpdKY4POSN0201OnGg1+ziaSVr6/RFzuSLggshwXeeyVORiHv3baj7NENhJhWhUy3NZlDsXLnRFkmhHQ==}
+  /@swc/core-linux-x64-musl@1.6.3:
+    resolution: {integrity: sha512-c/twcMbq/Gpq47G+b3kWgoaCujpXO11aRgJx6am+CprvP4uNeBHEpQkxD+DQmdWFHisZd0i9GB8NG3e7L9Rz9Q==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
@@ -9658,8 +9684,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-win32-arm64-msvc@1.5.29:
-    resolution: {integrity: sha512-V3Y1+a1zG1zpYXUMqPIHEMEOd+rHoVnIpO/KTyFwAmKVu8v+/xPEVx/AGoYE67x4vDAAvPQrKI3Aokilqa5yVg==}
+  /@swc/core-win32-arm64-msvc@1.6.3:
+    resolution: {integrity: sha512-y6RxMtX45acReQmzkxcEfJscfBXce6QjuNgWQHHs9exA592BZzmolDUwgmAyjyvopz1lWX+KdymdZFKvuDSx4w==}
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [win32]
@@ -9676,8 +9702,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-win32-ia32-msvc@1.5.29:
-    resolution: {integrity: sha512-OrM6yfXw4wXhnVFosOJzarw0Fdz5Y0okgHfn9oFbTPJhoqxV5Rdmd6kXxWu2RiVKs6kGSJFZXHDeUq2w5rTIMg==}
+  /@swc/core-win32-ia32-msvc@1.6.3:
+    resolution: {integrity: sha512-41h7z3xgukl1HDDwhquaeOPSP1OWeHl+mWKnJVmmwd3ui/oowUDCO856qa6JagBgPSnAGfyXwv6vthuXwyCcWA==}
     engines: {node: '>=10'}
     cpu: [ia32]
     os: [win32]
@@ -9694,8 +9720,8 @@ packages:
     dev: true
     optional: true
 
-  /@swc/core-win32-x64-msvc@1.5.29:
-    resolution: {integrity: sha512-eD/gnxqKyZQQR0hR7TMkIlJ+nCF9dzYmVVNbYZWuA1Xy94aBPUsEk3Uw3oG7q6R3ErrEUPP0FNf2ztEnv+I+dw==}
+  /@swc/core-win32-x64-msvc@1.6.3:
+    resolution: {integrity: sha512-//bnwo9b8Vp1ED06eXCHyGZ5xIpdkQgg2fuFDdtd1FITl7r5bdQh2ryRzPiKiGwgXZwZQitUshI4JeEX9IuW+Q==}
     engines: {node: '>=10'}
     cpu: [x64]
     os: [win32]
@@ -9728,8 +9754,8 @@ packages:
       '@swc/core-win32-x64-msvc': 1.4.16
     dev: true
 
-  /@swc/core@1.5.29(@swc/helpers@0.5.11):
-    resolution: {integrity: sha512-nvTtHJI43DUSOAf3h9XsqYg8YXKc0/N4il9y4j0xAkO0ekgDNo+3+jbw6MInawjKJF9uulyr+f5bAutTsOKVlw==}
+  /@swc/core@1.6.3(@swc/helpers@0.5.11):
+    resolution: {integrity: sha512-mZpei+LqE+AL+nwgERMQey9EJA9/yhHTN6nwbobH5GnSij/lhfTdGfAb1iumOrroqEcXbHUaK//7wOw7DjBGdA==}
     engines: {node: '>=10'}
     requiresBuild: true
     peerDependencies:
@@ -9742,16 +9768,16 @@ packages:
       '@swc/helpers': 0.5.11
       '@swc/types': 0.1.8
     optionalDependencies:
-      '@swc/core-darwin-arm64': 1.5.29
-      '@swc/core-darwin-x64': 1.5.29
-      '@swc/core-linux-arm-gnueabihf': 1.5.29
-      '@swc/core-linux-arm64-gnu': 1.5.29
-      '@swc/core-linux-arm64-musl': 1.5.29
-      '@swc/core-linux-x64-gnu': 1.5.29
-      '@swc/core-linux-x64-musl': 1.5.29
-      '@swc/core-win32-arm64-msvc': 1.5.29
-      '@swc/core-win32-ia32-msvc': 1.5.29
-      '@swc/core-win32-x64-msvc': 1.5.29
+      '@swc/core-darwin-arm64': 1.6.3
+      '@swc/core-darwin-x64': 1.6.3
+      '@swc/core-linux-arm-gnueabihf': 1.6.3
+      '@swc/core-linux-arm64-gnu': 1.6.3
+      '@swc/core-linux-arm64-musl': 1.6.3
+      '@swc/core-linux-x64-gnu': 1.6.3
+      '@swc/core-linux-x64-musl': 1.6.3
+      '@swc/core-win32-arm64-msvc': 1.6.3
+      '@swc/core-win32-ia32-msvc': 1.6.3
+      '@swc/core-win32-x64-msvc': 1.6.3
     dev: true
 
   /@swc/counter@0.1.3:
@@ -12853,7 +12879,7 @@ packages:
       '@rollup/plugin-replace': 5.0.5(rollup@4.18.0)
       '@rollup/plugin-wasm': 6.2.2(rollup@4.18.0)
       '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
-      '@swc/core': 1.5.29(@swc/helpers@0.5.11)
+      '@swc/core': 1.6.3(@swc/helpers@0.5.11)
       '@swc/helpers': 0.5.11
       arg: 5.0.2
       clean-css: 5.3.3
@@ -12862,7 +12888,7 @@ packages:
       pretty-bytes: 5.6.0
       rollup: 4.18.0
       rollup-plugin-dts: 6.1.0(rollup@4.18.0)(typescript@5.4.5)
-      rollup-plugin-swc3: 0.11.1(@swc/core@1.5.29)(rollup@4.18.0)
+      rollup-plugin-swc3: 0.11.1(@swc/core@1.6.3)(rollup@4.18.0)
       rollup-preserve-directives: 1.1.1(rollup@4.18.0)
       tslib: 2.6.2
       typescript: 5.4.5
@@ -14686,10 +14712,6 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@3.3.2:
-    resolution: {integrity: sha512-695XQBtp+UUYG50oREG9ujnRoeQU7xhwHDhT6ZAexm3Q+umdml1kjxcPoYRrS65crmaLlhVpjZHePJNzWOODnA==}
-    dev: false
-
   /electron-to-chromium@1.4.746:
     resolution: {integrity: sha512-jeWaIta2rIG2FzHaYIhSuVWqC6KJYo7oSBX4Jv7g+aVujKztfvdpf+n6MGwZdC5hQXbax4nntykLH2juIQrfPg==}
 
@@ -16244,8 +16266,8 @@ packages:
       make-dir: 2.1.0
       pkg-dir: 3.0.0
 
-  /find-my-way-ts@0.1.2:
-    resolution: {integrity: sha512-AWsH49RGcyayzzxSAkwQKC1bToY5ForAfNreix88slo7wijg1wwTtCPvUUoVm/qhIY3UVSHBKApw8mOGPxsvSg==}
+  /find-my-way-ts@0.1.4:
+    resolution: {integrity: sha512-naNl2YZ8m9LlYtPZathQBjXQQ8069uYBFq8We6w9AEGddJErVh0JZw8jd/C/2W9Ib3BjTnu+YN0/rR+ytWxNdw==}
     dependencies:
       fast-querystring: 1.1.2
     dev: false
@@ -20652,8 +20674,8 @@ packages:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
     dev: true
 
-  /multipasta@0.2.1:
-    resolution: {integrity: sha512-0NR15o5iewJFMsZ4jN6cztCd4izTLZPyHUfBrakbg/x70B8zplPE6qumbs+A7LmhGtQMzpN/K8MOOdifMgAKFA==}
+  /multipasta@0.2.2:
+    resolution: {integrity: sha512-KKGdmXIJUmt9BV45LsbUdMnju8eCNSyF9KpbyqK2E3wQXjpPQOg52/Hc+nsmBacmEkNxLVT5h1y3ZgEXB4prXg==}
     dev: false
 
   /mustache@4.2.0:
@@ -24383,7 +24405,7 @@ packages:
       rollup-plugin-inject: 3.0.2
     dev: true
 
-  /rollup-plugin-swc3@0.11.1(@swc/core@1.5.29)(rollup@4.18.0):
+  /rollup-plugin-swc3@0.11.1(@swc/core@1.6.3)(rollup@4.18.0):
     resolution: {integrity: sha512-6j8kWS6HM63P9pc6O5UtfhZkW9vVmkYfoEmZxR3Nua6KQRDCM3a6RrskqiGeiCnJ9s1W+tAmlVYz80G9yy2/Kg==}
     engines: {node: '>=12'}
     peerDependencies:
@@ -24392,7 +24414,7 @@ packages:
     dependencies:
       '@fastify/deepmerge': 1.3.0
       '@rollup/pluginutils': 5.1.0(rollup@4.18.0)
-      '@swc/core': 1.5.29(@swc/helpers@0.5.11)
+      '@swc/core': 1.6.3(@swc/helpers@0.5.11)
       get-tsconfig: 4.7.3
       rollup: 4.18.0
       rollup-preserve-directives: 1.1.1(rollup@4.18.0)
@@ -28487,4 +28509,10 @@ packages:
 
   /zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
+    dev: false
+
+  file:effect-3.2.6.tgz:
+    resolution: {integrity: sha512-XF3jux2iedqMeh/YyDLOxpfYL0g2ytWf/2NDPZOAS+luvZZzOlhta62vNiwaMqkShYmetTZfAqBrPLAgVNoTtQ==, tarball: file:effect-3.2.6.tgz}
+    name: effect
+    version: 3.2.6
     dev: false

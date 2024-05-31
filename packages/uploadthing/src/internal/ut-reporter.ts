@@ -1,5 +1,5 @@
-import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
+import * as Micro from "effect/Micro";
 
 import type { FetchContext, MaybePromise } from "@uploadthing/shared";
 import {
@@ -36,7 +36,7 @@ const createAPIRequestUrl = (config: {
 export type UTReporter = <TEvent extends keyof UTEvents>(
   type: TEvent,
   payload: UTEvents[TEvent]["in"],
-) => Effect.Effect<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
+) => Micro.Micro<UTEvents[TEvent]["out"], UploadThingError, FetchContext>;
 
 /**
  * Creates a "client" for reporting events to the UploadThing server via the user's API endpoint.
@@ -50,7 +50,7 @@ export const createUTReporter =
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   }): UTReporter =>
   (type, payload) =>
-    Effect.gen(function* () {
+    Micro.gen(function* () {
       const url = createAPIRequestUrl({
         url: cfg.url,
         slug: cfg.endpoint,
@@ -59,7 +59,7 @@ export const createUTReporter =
       let headers =
         typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
       if (headers instanceof Promise) {
-        headers = yield* Effect.promise(() => headers as Promise<HeadersInit>);
+        headers = yield* Micro.promise(() => headers as Promise<HeadersInit>);
       }
 
       const response = yield* fetchEff(url, {
@@ -72,33 +72,40 @@ export const createUTReporter =
           ...headers,
         },
       }).pipe(
-        Effect.andThen(parseResponseJson),
+        Micro.andThen(parseResponseJson),
         /**
          * We don't _need_ to validate the response here, just cast it for now.
          * As of now, @effect/schema includes quite a few bytes we cut out by this...
          * We have "strong typing" on the backend that ensures the shape should match.
          */
-        Effect.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
-        Effect.catchTags({
-          FetchError: (e) =>
+        Micro.map(unsafeCoerce<unknown, UTEvents[typeof type]["out"]>),
+        Micro.catchTag("FetchError", (e) =>
+          Micro.fail(
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: `Failed to report event "${type}" to UploadThing server`,
               cause: e,
             }),
-          BadRequestError: (e) =>
+          ),
+        ),
+        Micro.catchTag("BadRequestError", (e) =>
+          Micro.fail(
             new UploadThingError({
               code: getErrorTypeFromStatusCode(e.status),
               message: e.getMessage(),
               cause: e.json,
             }),
-          InvalidJsonError: (e) =>
+          ),
+        ),
+        Micro.catchTag("InvalidJsonError", (e) =>
+          Micro.fail(
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",
               message: "Failed to parse response from UploadThing server",
               cause: e,
             }),
-        }),
+          ),
+        ),
       );
 
       switch (type) {
@@ -107,16 +114,20 @@ export const createUTReporter =
           const p = payload as UTEvents["failure"]["in"];
           const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
           if (parsed?.message) {
-            return yield* new UploadThingError({
-              code: parsed.code,
-              message: parsed.message,
-            });
+            return yield* Micro.fail(
+              new UploadThingError({
+                code: parsed.code,
+                message: parsed.message,
+              }),
+            );
           } else {
-            return yield* new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Failed to upload file ${p.fileName} to S3`,
-              cause: p.storageProviderError,
-            });
+            return yield* Micro.fail(
+              new UploadThingError({
+                code: "UPLOAD_FAILED",
+                message: `Failed to upload file ${p.fileName} to S3`,
+                cause: p.storageProviderError,
+              }),
+            );
           }
         }
       }
