@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  effect: file:effect-3.2.6.tgz
+  effect: file:effect-3.2.7.tgz
 
 patchedDependencies:
   '@mswjs/interceptors@0.26.15':
@@ -212,10 +212,10 @@ importers:
     dependencies:
       '@effect/platform':
         specifier: ^0.57.1
-        version: 0.57.8(@effect/schema@0.68.4)(effect@3.2.6)
+        version: 0.57.8(@effect/schema@0.68.4)(effect@3.2.7)
       '@effect/platform-bun':
         specifier: ^0.36.10
-        version: 0.36.17(@effect/platform@0.57.8)(effect@3.2.6)
+        version: 0.36.17(@effect/platform@0.57.8)(effect@3.2.7)
       '@elysiajs/cors':
         specifier: ^0.8.0
         version: 0.8.0(elysia@0.8.17)
@@ -232,8 +232,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
-        version: file:effect-3.2.6.tgz
+        specifier: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
+        version: file:effect-3.2.7.tgz
       elysia:
         specifier: ^0.8.17
         version: 0.8.17(typescript@5.4.5)
@@ -1293,8 +1293,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
-        version: file:effect-3.2.6.tgz
+        specifier: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
+        version: file:effect-3.2.7.tgz
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -1426,7 +1426,7 @@ importers:
     dependencies:
       '@effect/schema':
         specifier: ^0.66.12
-        version: 0.66.12(effect@3.2.6)(fast-check@3.18.0)
+        version: 0.66.12(effect@3.2.7)(fast-check@3.18.0)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1437,8 +1437,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
-        version: file:effect-3.2.6.tgz
+        specifier: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
+        version: file:effect-3.2.7.tgz
       fast-check:
         specifier: ^3.18.0
         version: 3.18.0
@@ -3759,58 +3759,58 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: true
 
-  /@effect/platform-bun@0.36.17(@effect/platform@0.57.8)(effect@3.2.6):
+  /@effect/platform-bun@0.36.17(@effect/platform@0.57.8)(effect@3.2.7):
     resolution: {integrity: sha512-7MDdtdLUMgB0d/QlGF0zlS9DYyDb7jl4ypf9XArwWGqL392y4MiMOQxjpN0QgFYPs1SG/cieFvUJqyjBIlAAOg==}
     peerDependencies:
       '@effect/platform': ^0.57.8
-      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
     dependencies:
-      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@3.2.6)
-      '@effect/platform-node-shared': 0.6.17(@effect/platform@0.57.8)(effect@3.2.6)
-      effect: file:effect-3.2.6.tgz
+      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@3.2.7)
+      '@effect/platform-node-shared': 0.6.17(@effect/platform@0.57.8)(effect@3.2.7)
+      effect: file:effect-3.2.7.tgz
     dev: false
 
-  /@effect/platform-node-shared@0.6.17(@effect/platform@0.57.8)(effect@3.2.6):
+  /@effect/platform-node-shared@0.6.17(@effect/platform@0.57.8)(effect@3.2.7):
     resolution: {integrity: sha512-24iAKaLSuU4v7mEAvepfMOLrdzNxNjAiQ0C1vuD9ci4NAJ46ueiUQxQJJCQe7F1H4vtAwWWDFeHPKmqDk5JF4w==}
     peerDependencies:
       '@effect/platform': ^0.57.8
-      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
     dependencies:
-      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@3.2.6)
+      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@3.2.7)
       '@parcel/watcher': 2.4.1
-      effect: file:effect-3.2.6.tgz
+      effect: file:effect-3.2.7.tgz
       multipasta: 0.2.2
     dev: false
 
-  /@effect/platform@0.57.8(@effect/schema@0.68.4)(effect@3.2.6):
+  /@effect/platform@0.57.8(@effect/schema@0.68.4)(effect@3.2.7):
     resolution: {integrity: sha512-MC/Ny9hd1xCdhIvYyKnheUtKacYXD3hYD1DEpPfU9JrqQuHxXUBrN3/BdetTOn0UOivJx4k2WOhGRAvaZA5krg==}
     peerDependencies:
       '@effect/schema': ^0.68.3
-      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
     dependencies:
-      '@effect/schema': 0.68.4(effect@3.2.6)
-      effect: file:effect-3.2.6.tgz
+      '@effect/schema': 0.68.4(effect@3.2.7)
+      effect: file:effect-3.2.7.tgz
       find-my-way-ts: 0.1.4
       multipasta: 0.2.2
       path-browserify: 1.0.1
     dev: false
 
-  /@effect/schema@0.66.12(effect@3.2.6)(fast-check@3.18.0):
+  /@effect/schema@0.66.12(effect@3.2.7)(fast-check@3.18.0):
     resolution: {integrity: sha512-14X3D2FxTFDtll41MWw5OkLQCWqcs6pLYhs38oRK1o7rQ9gM2fdL4sw/gJu4dayAqv122GMgoIEOrzO5PyBuYA==}
     peerDependencies:
-      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
       fast-check: ^3.13.2
     dependencies:
-      effect: file:effect-3.2.6.tgz
+      effect: file:effect-3.2.7.tgz
       fast-check: 3.18.0
     dev: false
 
-  /@effect/schema@0.68.4(effect@3.2.6):
+  /@effect/schema@0.68.4(effect@3.2.7):
     resolution: {integrity: sha512-MLYK3gAW0QYdX+hVsH9dG8AZFoCH4oS0bfOsRTy+D5hN7EsbIomsUhzqYlhOy30oOuodTV9sdS1SQPLr74RL4g==}
     peerDependencies:
-      effect: file:/Volumes/Code/uploadthing/effect-3.2.6.tgz
+      effect: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
     dependencies:
-      effect: file:effect-3.2.6.tgz
+      effect: file:effect-3.2.7.tgz
       fast-check: 3.18.0
     dev: false
 
@@ -28511,8 +28511,8 @@ packages:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
     dev: false
 
-  file:effect-3.2.6.tgz:
-    resolution: {integrity: sha512-XF3jux2iedqMeh/YyDLOxpfYL0g2ytWf/2NDPZOAS+luvZZzOlhta62vNiwaMqkShYmetTZfAqBrPLAgVNoTtQ==, tarball: file:effect-3.2.6.tgz}
+  file:effect-3.2.7.tgz:
+    resolution: {integrity: sha512-tE3sJxCdJtPptRgvB44dytSPgD8TunVmrhQkkjhUpUILXOaojA5iC6jPt4S9RB10Bim5fCtwRavacEbr/WYZnQ==, tarball: file:effect-3.2.7.tgz}
     name: effect
-    version: 3.2.6
+    version: 3.2.7
     dev: false

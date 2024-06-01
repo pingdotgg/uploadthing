@@ -1,7 +1,7 @@
-import * as Data from "effect/Data";
+import * as Micro from "effect/Micro";
 import * as Predicate from "effect/Predicate";
 
-export class InvalidRouteConfigError extends Data.Class<{
+export class InvalidRouteConfigError extends Micro.Error<{
   reason: string;
 }> {
   readonly _tag = "InvalidRouteConfig";
@@ -14,7 +14,7 @@ export class InvalidRouteConfigError extends Data.Class<{
   }
 }
 
-export class UnknownFileTypeError extends Data.Class<{
+export class UnknownFileTypeError extends Micro.Error<{
   reason: string;
 }> {
   readonly _tag = "UnknownFileType";
@@ -25,7 +25,7 @@ export class UnknownFileTypeError extends Data.Class<{
   }
 }
 
-export class InvalidFileTypeError extends Data.Class<{
+export class InvalidFileTypeError extends Micro.Error<{
   reason: string;
 }> {
   readonly _tag = "InvalidFileType";
@@ -36,7 +36,7 @@ export class InvalidFileTypeError extends Data.Class<{
   }
 }
 
-export class InvalidFileSizeError extends Data.Class<{
+export class InvalidFileSizeError extends Micro.Error<{
   reason: string;
 }> {
   readonly _tag = "InvalidFileSize";
@@ -47,7 +47,7 @@ export class InvalidFileSizeError extends Data.Class<{
   }
 }
 
-export class InvalidURLError extends Data.Class<{
+export class InvalidURLError extends Micro.Error<{
   reason: string;
 }> {
   readonly _tag = "InvalidURL";
@@ -57,7 +57,7 @@ export class InvalidURLError extends Data.Class<{
   }
 }
 
-export class RetryError extends Data.Class {
+export class RetryError extends Micro.Error {
   readonly _tag = "RetryError";
   readonly name = "RetryError";
 }
@@ -72,7 +72,7 @@ export const getRequestUrl = (input: RequestInfo | URL) => {
   return input.toString();
 };
 
-export class FetchError extends Data.Class<{
+export class FetchError extends Micro.Error<{
   readonly input: {
     url: string;
     method: string | undefined;
@@ -85,7 +85,7 @@ export class FetchError extends Data.Class<{
   readonly name = "FetchError";
 }
 
-export class InvalidJsonError extends Data.Class<{
+export class InvalidJsonError extends Micro.Error<{
   readonly input: unknown;
   readonly error: unknown;
 }> {
@@ -93,7 +93,7 @@ export class InvalidJsonError extends Data.Class<{
   readonly name = "InvalidJsonError";
 }
 
-export class BadRequestError<T = unknown> extends Data.Class<{
+export class BadRequestError<T = unknown> extends Micro.Error<{
   readonly message: string;
   readonly status: number;
   readonly json: T;
