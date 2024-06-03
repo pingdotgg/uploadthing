@@ -12,7 +12,11 @@ declare module "bun" {
 
 const pkgJsonPaths = fs
   .readdirSync("..")
-  .filter((dir) => fs.existsSync(`../${dir}/package.json`))
+  .filter((dir) => {
+    if (!fs.existsSync(`../${dir}/package.json`)) return false;
+    const pkg = JSON.parse(fs.readFileSync(`../${dir}/package.json`, "utf-8"));
+    return pkg.private === false;
+  })
   .map((dir) => `../${dir}/package.json`);
 
 /**
