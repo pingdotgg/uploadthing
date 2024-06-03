@@ -9,6 +9,7 @@ const router = {
     })
     .onUploadComplete(() => {}),
 };
+
 export default createRouteHandler({
   router,
   config: { uploadthingSecret: "sk_foo" },
