@@ -5,6 +5,11 @@ on:
     types: [labeled]
     branches:
       - main
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
   release:
     if: contains(github.event.pull_request.labels.*.name, 'release canary')
