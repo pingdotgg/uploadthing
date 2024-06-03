@@ -1,4 +1,7 @@
+// @ts-check
+
 import { exec } from "node:child_process";
+import { getOctokit, context } from "@actions/github";
 import { promisify } from "node:util";
 import fs from "fs";
 import prettier from "@prettier/sync";
@@ -56,11 +59,16 @@ async function publish() {
 }
 
 async function comment() {
+  const token = process.env.GITHUB_TOKEN;
+  if (!token) throw new Error("GITHUB_TOKEN is not set");
+  if (!context.payload.pull_request) throw new Error("No pull request");
+
+  const github = getOctokit(token);
+
   // Get package version
   let text = 'A new canary is available for testing. You can install this latest build in your project with:\n\n```sh\n'
-
   for (const pkgJsonPath of pkgJsonPaths) {
-    const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath));
+    const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
     const version = packageJson.version;
     text += `pnpm add ${packageJson.name}@${version}\n`
   }
