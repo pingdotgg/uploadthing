@@ -16,7 +16,7 @@ const pkgJsonPaths = fs
   .map((dir) => `packages/${dir}/package.json`);
 
 async function version() {
-  const { stdout } = await execa("git", ["rev-parse", "--short", "HEAD"]);
+  const { stdout } = await execa("git rev-parse --short HEAD");
   const commitHash = stdout.trim();
 
   // First pass to get the new version of everything
@@ -50,7 +50,7 @@ async function publish() {
   for await (const pkgJsonPath of pkgJsonPaths) {
     const pkgPath = pkgJsonPath.replace("package.json", "");
     console.log(`Publishing ${pkgPath}...`);
-    await execa("npm", ["publish", pkgPath, "--tag", "canary", "--access", "public"]);
+    await execa(`npm publish ${pkgPath} --tag canary --access public`);
     console.log(`Published ${pkgPath}.`);
   }
 }
