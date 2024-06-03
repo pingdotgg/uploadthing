@@ -1,12 +1,12 @@
 // @ts-check
 
-import fs from "fs";
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
+import * as cp from "node:child_process";
+import * as fs from "node:fs";
+import * as utils from "node:util";
 import { context, getOctokit } from "@actions/github";
 import prettier from "@prettier/sync";
 
-const execa = promisify(exec);
+const execa = utils.promisify(cp.exec);
 
 const pkgJsonPaths = fs
   .readdirSync("packages")
