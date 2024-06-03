@@ -50,11 +50,12 @@ async function version() {
 }
 
 async function publish() {
-  for await (const pkgJsonPath of pkgJsonPaths) {
+  for (const pkgJsonPath of pkgJsonPaths) {
     const pkgPath = pkgJsonPath.replace("package.json", "");
-    console.log(`Publishing ${pkgPath}...`);
+    const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+    console.log(`⚙️ Publishing ${pkgPath}@${pkg.version}...`);
     await execa(`npm publish ${pkgPath} --tag canary --access public`);
-    console.log(`Published ${pkgPath}.`);
+    console.log(`✅ Published ${pkgPath}`);
   }
 }
 
