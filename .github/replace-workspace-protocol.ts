@@ -37,15 +37,15 @@ for (const dep in workspacePkg.dependencies) {
     workspacePkg.dependencies[dep] = packageVersions[dep];
   }
 }
-for (const dep in workspacePkg.devDependencies) {
-  if (dep in packageVersions) {
-    workspacePkg.devDependencies[dep] = packageVersions[dep];
-  }
-}
 for (const dep in workspacePkg.peerDependencies) {
   if (dep in packageVersions) {
     workspacePkg.peerDependencies[dep] = packageVersions[dep];
   }
 }
+
+// Remove unnecessary fields
+workspacePkg.eslintConfig = undefined;
+workspacePkg.devDependencies = undefined;
+workspacePkg.scripts = undefined;
 
 await Bun.write("package.json", JSON.stringify(workspacePkg, null, 2));
