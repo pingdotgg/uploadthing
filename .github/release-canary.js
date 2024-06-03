@@ -1,9 +1,9 @@
 // @ts-check
 
-import { exec } from "node:child_process";
-import { getOctokit, context } from "@actions/github";
-import { promisify } from "node:util";
 import fs from "fs";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import { context, getOctokit } from "@actions/github";
 import prettier from "@prettier/sync";
 
 const execa = promisify(exec);
@@ -13,7 +13,9 @@ const pkgJsonPaths = fs
   .filter((dir) => fs.existsSync(`packages/${dir}/package.json`))
   .filter((dir) => {
     if (!fs.existsSync(`packages/${dir}/package.json`)) return false;
-    const pkg = JSON.parse(fs.readFileSync(`packages/${dir}/package.json`, "utf-8"));
+    const pkg = JSON.parse(
+      fs.readFileSync(`packages/${dir}/package.json`, "utf-8"),
+    );
     return pkg.private !== true;
   })
   .map((dir) => `packages/${dir}/package.json`);
@@ -31,7 +33,7 @@ async function version() {
 
     acc[pkg.name] = newVersion;
     return acc;
-  }, {})
+  }, {});
 
   for (const pkgJsonPath of pkgJsonPaths) {
     const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
@@ -44,19 +46,21 @@ async function version() {
       }
     }
 
-    const fmt = prettier.format(JSON.stringify(pkg), { filepath: pkgJsonPath })
-    fs.writeFileSync(pkgJsonPath, fmt)
+    const fmt = prettier.format(JSON.stringify(pkg), { filepath: pkgJsonPath });
+    fs.writeFileSync(pkgJsonPath, fmt);
   }
 }
 
 async function publish() {
-  for (const pkgJsonPath of pkgJsonPaths) {
-    const pkgPath = pkgJsonPath.replace("package.json", "");
-    const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
-    console.log(`⚙️ Publishing ${pkgPath}@${pkg.version}...`);
-    await execa(`npm publish ${pkgPath} --tag canary --access public`);
-    console.log(`✅ Published ${pkgPath}`);
-  }
+  await Promise.allSettled(
+    pkgJsonPaths.map(async (pkgJsonPath) => {
+      const pkgPath = pkgJsonPath.replace("package.json", "");
+      const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
+      console.log(`⚙️ Publishing ${pkgPath}@${pkg.version}...`);
+      await execa(`npm publish ${pkgPath} --tag canary --access public`);
+      console.log(`✅ Published ${pkgPath}`);
+    }),
+  );
 }
 
 async function comment() {
@@ -67,28 +71,35 @@ async function comment() {
   const github = getOctokit(token);
 
   // Get package version
-  let text = 'A new canary is available for testing. You can install this latest build in your project with:\n\n```sh\n'
+  let text =
+    "A new canary is available for testing. You can install this latest build in your project with:\n\n```sh\n";
   for (const pkgJsonPath of pkgJsonPaths) {
     const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf-8"));
     const version = packageJson.version;
-    text += `pnpm add ${packageJson.name}@${version}\n`
+    text += `pnpm add ${packageJson.name}@${version}\n`;
   }
-  text += '```\n\n'
+  text += "```\n\n";
 
   // Create a comment on the PR with the new canary version
-  github.rest.issues.createComment({
+  console.log(
+    `⚙️ Creating comment on PR #${context.payload.pull_request.number}...`,
+  );
+  await github.rest.issues.createComment({
     owner: context.repo.owner,
     repo: context.repo.repo,
     issue_number: context.payload.pull_request.number,
     body: text,
-  })
+  });
 
   // Remove the label
-  github.rest.issues.removeLabel({
+  console.log(
+    `⚙️ Removing label "release canary" from PR #${context.payload.pull_request.number}...`,
+  );
+  await github.rest.issues.removeLabel({
     owner: context.repo.owner,
     repo: context.repo.repo,
     issue_number: context.payload.pull_request.number,
-    name: 'release canary',
+    name: "release canary",
   });
 }
 
@@ -96,9 +107,9 @@ async function comment() {
   await version();
   await publish();
   await comment();
-})()
-  .catch(error => {
-    console.error(error);
-    process.exit(1);
-  })
 
+  console.log("✅ Done");
+})().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

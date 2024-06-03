@@ -1,6 +1,7 @@
 /// <reference types="bun" />
 
 import fs from "fs";
+
 export const MODULE = true;
 
 declare module "bun" {
@@ -23,10 +24,12 @@ const pkgJsonPaths = fs
  * Hack to replace the workspace protocol with the actual version
  */
 const packageVersions = {};
-await Promise.all(pkgJsonPaths.map(async (path) => {
-  const pkg = await Bun.file(path).json();
-  packageVersions[pkg.name] = pkg.version;
-}))
+await Promise.all(
+  pkgJsonPaths.map(async (path) => {
+    const pkg = await Bun.file(path).json();
+    packageVersions[pkg.name] = pkg.version;
+  }),
+);
 
 const workspacePkg = await Bun.file("package.json").json();
 for (const dep in workspacePkg.dependencies) {
