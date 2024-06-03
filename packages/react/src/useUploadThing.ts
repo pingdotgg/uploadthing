@@ -111,7 +111,7 @@ export const INTERNAL_uploadthingHookGen = <
           input,
         });
 
-        opts?.onClientUploadComplete?.(res);
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         let error: UploadThingError<inferErrorShape<TRouter>>;
@@ -124,7 +124,7 @@ export const INTERNAL_uploadthingHookGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
       } finally {
         setUploading(false);
         fileProgress.current = new Map();

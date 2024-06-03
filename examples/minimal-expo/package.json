@@ -31,8 +31,8 @@
     "expo-status-bar": "~1.12.1",
     "expo-web-browser": "^13.0.3",
     "nativewind": "^4.0.36",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-native": "^0.74.1",
     "react-native-gesture-handler": "~2.16.2",
     "react-native-reanimated": "~3.10.0",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.4",
     "@babel/runtime": "^7.24.4",
-    "@types/react": "18.2.78",
+    "@types/react": "18.3.3",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.5"
   }

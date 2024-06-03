@@ -1,5 +1,17 @@
 # @uploadthing/shared
 
+## 6.7.5
+
+### Patch Changes
+
+- [#808](https://github.com/pingdotgg/uploadthing/pull/808) [`4fea8f4`](https://github.com/pingdotgg/uploadthing/commit/4fea8f409dd0baa921c41b09a8f2d87dfa269233) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix treeshakeability of `Effect` dependency by avoiding top-level function calls, and falling back to `#__PURE__` directives otherwise
+
+  Importing some utility from e.g. `@uploadthing/shared` should not explode bundle if `Effect` isn't used for other stuff
+
+- [#810](https://github.com/pingdotgg/uploadthing/pull/810) [`4f57264`](https://github.com/pingdotgg/uploadthing/commit/4f5726421e4c732857451bde23d833cd8c53c4b5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - dump all matching mimetypes when using "catch-all" generic types to support more browser / OS configurations
+
+- [#813](https://github.com/pingdotgg/uploadthing/pull/813) [`7d93270`](https://github.com/pingdotgg/uploadthing/commit/7d93270cc008666ebcb982c62754df9bbd2f62bf) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor header parsing to support breaking change in Node.js 20.13
+
 ## 6.7.4
 
 ### Patch Changes
