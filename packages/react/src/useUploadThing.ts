@@ -118,7 +118,7 @@ export const INTERNAL_uploadthingHookGen = <
       } catch (e) {
         /**
          * This is the only way to introduce this as a non-breaking change
-         * Consider refactoring API in the next major version
+         * TODO: Consider refactoring API in the next major version
          */
         if (e instanceof UploadAbortedError) throw e;
 
