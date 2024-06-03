@@ -1,4 +1,4 @@
-/// <reference types="bun-types" />
+/// <reference types="bun" />
 
 import fs from "fs";
 export const MODULE = true;
@@ -12,6 +12,11 @@ declare module "bun" {
 
 const pkgJsonPaths = fs
   .readdirSync("..")
+  .filter((dir) => {
+    if (!fs.existsSync(`../${dir}/package.json`)) return false;
+    const pkg = JSON.parse(fs.readFileSync(`../${dir}/package.json`, "utf-8"));
+    return pkg.private !== true;
+  })
   .map((dir) => `../${dir}/package.json`);
 
 /**
