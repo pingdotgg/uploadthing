@@ -164,7 +164,7 @@
     "express": "*",
     "fastify": "*",
     "h3": "*",
-    "next": "14.2.3",
+    "next": "*",
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
