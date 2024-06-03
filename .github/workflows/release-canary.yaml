@@ -28,3 +28,5 @@ jobs:
 
       - name: Publish canary releases
         run: node .github/release-canary.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
