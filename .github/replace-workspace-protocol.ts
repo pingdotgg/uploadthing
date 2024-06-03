@@ -15,7 +15,7 @@ const pkgJsonPaths = fs
   .filter((dir) => {
     if (!fs.existsSync(`../${dir}/package.json`)) return false;
     const pkg = JSON.parse(fs.readFileSync(`../${dir}/package.json`, "utf-8"));
-    return pkg.private === false;
+    return pkg.private !== true;
   })
   .map((dir) => `../${dir}/package.json`);
 
