@@ -1293,7 +1293,7 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
+        specifier: file:/Users/julius/dev/uploadthing/effect-3.2.7.tgz
         version: file:effect-3.2.7.tgz
       std-env:
         specifier: ^3.7.0
@@ -1437,7 +1437,7 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
+        specifier: file:/Users/julius/dev/uploadthing/effect-3.2.7.tgz
         version: file:effect-3.2.7.tgz
       fast-check:
         specifier: ^3.18.0
@@ -3798,7 +3798,7 @@ packages:
   /@effect/schema@0.66.12(effect@3.2.7)(fast-check@3.18.0):
     resolution: {integrity: sha512-14X3D2FxTFDtll41MWw5OkLQCWqcs6pLYhs38oRK1o7rQ9gM2fdL4sw/gJu4dayAqv122GMgoIEOrzO5PyBuYA==}
     peerDependencies:
-      effect: file:/Volumes/Code/uploadthing/effect-3.2.7.tgz
+      effect: file:/Users/julius/dev/uploadthing/effect-3.2.7.tgz
       fast-check: ^3.13.2
     dependencies:
       effect: file:effect-3.2.7.tgz
