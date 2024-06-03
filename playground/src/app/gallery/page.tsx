@@ -12,6 +12,8 @@ import { ReactHookFormDemo } from "./rhf";
 
 const PAGE_SIZE = 20;
 
+export const dynamic = "force-dynamic";
+
 const UploadFilesList = (props: {
   uploadedFiles: { key: string; name: string }[];
 }) => {
@@ -29,14 +31,22 @@ const UploadFilesList = (props: {
 const loadUploadedFiles = async (offset = 0) => {
   "use server";
 
-  const files = await utapi.listFiles({ offset, limit: PAGE_SIZE });
+  const { files } = await utapi.listFiles({ offset, limit: PAGE_SIZE });
   const nextOffset = files.length >= PAGE_SIZE ? offset + PAGE_SIZE : null;
 
-  return [<UploadFilesList uploadedFiles={files} />, nextOffset] as const;
+  return [
+    <UploadFilesList
+      uploadedFiles={files.map((f) => ({ key: f.key, name: f.name }))}
+    />,
+    nextOffset,
+  ] as const;
 };
 
 export default async function HomePage() {
-  const uploadedFiles = await utapi.listFiles({ offset: 0, limit: PAGE_SIZE });
+  const { files: uploadedFiles } = await utapi.listFiles({
+    offset: 0,
+    limit: PAGE_SIZE,
+  });
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-8 py-8 lg:px-0">
@@ -51,7 +61,12 @@ export default async function HomePage() {
             initialOffset={PAGE_SIZE}
             loadMoreAction={loadUploadedFiles}
           >
-            <UploadFilesList uploadedFiles={uploadedFiles} />
+            <UploadFilesList
+              uploadedFiles={uploadedFiles.map((f) => ({
+                key: f.key,
+                name: f.name,
+              }))}
+            />
           </LoadMore>
         </CardContent>
       </Card>

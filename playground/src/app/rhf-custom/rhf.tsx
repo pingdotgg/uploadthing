@@ -6,7 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
 import { useDropzone } from "@uploadthing/react";
-import { FileWithState } from "@uploadthing/shared";
+import { FileWithState } from "uploadthing/types";
 
 import { Button } from "~/components/ui/button";
 import {

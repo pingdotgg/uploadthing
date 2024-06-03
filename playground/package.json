@@ -20,7 +20,6 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
-    "@uploadthing/shared": "^6.7.3",
     "@uploadthing/react": "6.6.0",
     "class-variance-authority": "^0.7.0",
     "client-only": "^0.0.1",
@@ -37,8 +36,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.21",
-    "@types/react": "18.2.78",
-    "@types/react-dom": "18.2.25",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
     "postcss": "8.4.38",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.5"

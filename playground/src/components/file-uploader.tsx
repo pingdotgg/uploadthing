@@ -6,8 +6,8 @@ import { Cross2Icon, UploadIcon } from "@radix-ui/react-icons";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/react";
-import { FileWithState } from "@uploadthing/shared";
-import { bytesToHumanReadable } from "uploadthing/client";
+import { bytesToFileSize } from "uploadthing/client";
+import { FileWithState } from "uploadthing/types";
 
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
@@ -160,7 +160,7 @@ function FileCard({ file, progress = 0, onRemove }: FileCardProps) {
                 {file.name}
               </p>
               <p className="text-muted-foreground text-xs">
-                {bytesToHumanReadable(file.size)}
+                {bytesToFileSize(file.size)}
               </p>
             </div>
             {file.status === "uploading" && (

@@ -19,6 +19,7 @@ export * from "./sdk/types";
 export type {
   EndpointMetadata,
   ExpandedRouteConfig,
+  FileWithState,
 } from "@uploadthing/shared";
 
 export type {
