@@ -78,21 +78,21 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^20.11.21",
-    "@types/react": "18.2.78",
-    "@types/react-dom": "18.2.25",
+    "@types/node": "^20.14.0",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.1.2",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "next": "14.2.1",
-    "react": "18.2.0",
+    "next": "14.2.3",
+    "react": "18.3.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.4.5",
     "uploadthing": "workspace:*",
     "wait-on": "^7.2.0",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "eslintConfig": {
     "root": true,
