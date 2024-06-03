@@ -30,9 +30,7 @@ jobs:
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           for dir in packages/*; do
             if [ -f "$dir/package.json" ]; then
-              pkg=$(basename "$dir")
-              pkgJson=$(realpath "$dir/package.json")
-              private=$(jq -r '.private' "$pkgJson")
+              private=$(jq -r '.private' "$dir/package.json")
         
               if [ "$private" != "true" ]; then
                 npm publish "$dir" --access public --tag canary
