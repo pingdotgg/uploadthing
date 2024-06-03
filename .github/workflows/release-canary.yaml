@@ -44,9 +44,13 @@ jobs:
             let text = 'A new canary is available for testing. You can install this latest build in your project with:\n\n```sh\n'
 
             const pkgJsonPaths = fs
-              .readdirSync("packages")
-              .filter((dir) => fs.existsSync(`packages/${dir}/package.json`))
-              .map((dir) => `packages/${dir}/package.json`);
+            .readdirSync("packages")
+            .filter((dir) => {
+              if (!fs.existsSync(`packages/${dir}/package.json`)) return false;
+              const pkg = JSON.parse(fs.readFileSync(`packages/${dir}/package.json`, "utf-8"));
+              return pkg.private !== true;
+            })
+            .map((dir) => `packages/${dir}/package.json`);
 
             for (const pkgJsonPath of pkgJsonPaths) {
               const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath));
