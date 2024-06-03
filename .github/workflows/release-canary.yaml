@@ -28,10 +28,16 @@ jobs:
       - name: Authenticate to npm and publish
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          for dir in packages/*/; do
-              if [ -f "$dir/package.json" ]; then
+          for dir in packages/*; do
+            if [ -f "$dir/package.json" ]; then
+              pkg=$(basename "$dir")
+              pkgJson=$(realpath "$dir/package.json")
+              private=$(jq -r '.private' "$pkgJson")
+        
+              if [ "$private" != "true" ]; then
                 npm publish "$dir" --access public --tag canary
-              fi;
+              fi
+            fi
           done
 
       - name: Create a new comment notifying of the new canary version
