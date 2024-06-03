@@ -1,5 +1,16 @@
 # @uploadthing/vue
 
+## 6.6.0
+
+### Minor Changes
+
+- [#809](https://github.com/pingdotgg/uploadthing/pull/809) [`ab89d48`](https://github.com/pingdotgg/uploadthing/commit/ab89d48177857cc4dfccc55346c425c4f103d63f) Thanks [@growupanand](https://github.com/growupanand)! - added onDrop prop for UploadDropzone component
+
+### Patch Changes
+
+- Updated dependencies [[`4fea8f4`](https://github.com/pingdotgg/uploadthing/commit/4fea8f409dd0baa921c41b09a8f2d87dfa269233), [`4f57264`](https://github.com/pingdotgg/uploadthing/commit/4f5726421e4c732857451bde23d833cd8c53c4b5), [`7d93270`](https://github.com/pingdotgg/uploadthing/commit/7d93270cc008666ebcb982c62754df9bbd2f62bf)]:
+  - @uploadthing/shared@6.7.5
+
 ## 6.5.4
 
 ### Patch Changes

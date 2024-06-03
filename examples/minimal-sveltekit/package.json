@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",
-    "@uploadthing/svelte": "6.5.4",
-    "uploadthing": "6.10.4"
+    "@uploadthing/svelte": "6.6.0",
+    "uploadthing": "6.12.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.1.1",

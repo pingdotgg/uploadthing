@@ -139,12 +139,20 @@ export const OurUploadButton = () => (
 | onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | Config                                               | No                      | Added in `v5.7` | object to pass additional configuration for button                                                                          |
+| disabled               | boolean                                              | No                      | Added in `v6.7` | Disables the button.                                                                                                        |
 
 Config object
 
 | Attribute     | Type    | Required | Notes           | Description                                   |
 | :------------ | :------ | :------- | :-------------- | :-------------------------------------------- |
 | appendOnPaste | boolean | No       | Added in `v5.7` | enables ability to paste files from clipboard |
+
+<Callout type="info">
+  If you want to disable the button based on when your `input` is not satisfied,
+  you can place your validator in a shared file, so that you can import it in
+  both the server-side `.input()` and on the client-side for your `disabled`
+  prop logic.
+</Callout>
 
 The interface for `UploadFileResponse` is:
 
@@ -224,6 +232,7 @@ export const OurUploadDropzone = () => (
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | object                                               | No                      | Added in `v5.4` | object to pass additional configuration for dropzone                                                                        |
 | onDrop                 | (acceptedFiles: File[]) => void                      | No                      | Added in `v6.5` | Callback called when files are dropped or pasted.                                                                           |
+| disabled               | boolean                                              | No                      | Added in `v6.7` | Disables the dropzone.                                                                                                      |
 
 Config object
 
@@ -231,6 +240,13 @@ Config object
 | :------------ | :----------------- | :------- | :-------------- | :-------------------------------------------------------------------------------------- |
 | mode          | 'auto' \| 'manual' | No       | Added in `v5.4` | mode of dropzone. 'manual' is default one. 'auto' triggers upload right after selection |
 | appendOnPaste | boolean            | No       | Added in `v5.7` | enables ability to paste files from clipboard                                           |
+
+<Callout type="info">
+  If you want to disable the dropzone based on when your `input` is not
+  satisfied, you can place your validator in a shared file, so that you can
+  import it in both the server-side `.input()` and on the client-side for your
+  `disabled` prop logic.
+</Callout>
 
 ## generateReactHelpers
 

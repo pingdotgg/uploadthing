@@ -20,7 +20,8 @@ jobs:
         dir:
           [
             minimal-appdir,
-            minimal-pagedir
+            minimal-pagedir,
+            backend-adapters
           ]
     steps:
       - uses: actions/checkout@v4
@@ -32,3 +33,22 @@ jobs:
 
       - name: Run build
         run: pnpm turbo --filter ./examples/${{ matrix.dir }} build
+
+      - name: Install playwright
+        run: |
+          cat ./examples/${{ matrix.dir }}/package.json | 
+          if grep --silent '"@playwright/test"'; then
+            pnpm playwright install --with-deps
+          fi
+
+      - name: Run E2E Tests (if exists)
+        run: pnpm turbo --filter ./examples/${{ matrix.dir }} test
+        env:
+          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
+      
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() && matrix.dir == 'backend-adapters' }}
+        with:
+          name: playwright-report
+          path: ./examples/${{ matrix.dir}}/playwright-report/
+          retention-days: 7

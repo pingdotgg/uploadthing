@@ -71,6 +71,7 @@ export type UploadDropzoneProps<
    * @param acceptedFiles - The files that were accepted.
    */
   onDrop?: (acceptedFiles: File[]) => void;
+  disabled?: boolean;
 };
 
 export function UploadDropzone<
@@ -150,11 +151,18 @@ export function UploadDropzone<
     [$props, mode, startUpload],
   );
 
+  const isDisabled = (() => {
+    if ($props.__internal_dropzone_disabled) return true;
+    if ($props.disabled) return true;
+
+    return false;
+  })();
+
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: $props.__internal_dropzone_disabled,
+    disabled: isDisabled,
   });
 
   const ready =
