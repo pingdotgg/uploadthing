@@ -100,6 +100,7 @@ export function UploadButton<
     TSkipPolling
   > &
     UploadThingInternalProps;
+  const fileRouteInput = "input" in $props ? $props.input : undefined;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
   const acRef = useRef(new AbortController());
@@ -140,8 +141,8 @@ export function UploadButton<
   );
 
   const uploadFiles = useCallback(
-    (...args: Parameters<typeof startUpload>) => {
-      void startUpload(...args).catch((e) => {
+    (files: File[]) => {
+      void startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
@@ -149,12 +150,11 @@ export function UploadButton<
         }
       });
     },
-    [$props, startUpload],
+    [$props, startUpload, fileRouteInput],
   );
 
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
   const inputProps = useMemo(
     () => ({
       type: "file",
@@ -170,12 +170,12 @@ export function UploadButton<
           return;
         }
 
-        uploadFiles(selectedFiles, fileRouteInput);
+        uploadFiles(selectedFiles);
       },
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
     }),
-    [fileRouteInput, fileTypes, mode, multiple, uploadFiles],
+    [fileTypes, mode, multiple, uploadFiles],
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
@@ -201,10 +201,7 @@ export function UploadButton<
       return filesToUpload;
     });
 
-    if (mode === "auto") {
-      const input = "input" in $props ? $props.input : undefined;
-      uploadFiles(files, input);
-    }
+    if (mode === "auto") uploadFiles(files);
   });
 
   const styleFieldArg = {
@@ -314,8 +311,7 @@ export function UploadButton<
           if (mode === "manual" && files.length > 0) {
             e.preventDefault();
             e.stopPropagation();
-            const input = "input" in $props ? $props.input : undefined;
-            uploadFiles(files, input);
+            uploadFiles(files);
           }
         }}
       >

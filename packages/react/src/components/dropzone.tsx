@@ -76,6 +76,21 @@ export type UploadDropzoneProps<
   disabled?: boolean;
 };
 
+/** These are some internal stuff we use to test the component and for forcing a state in docs */
+type UploadThingInternalProps = {
+  __internal_state?: "readying" | "ready" | "uploading";
+  // Allow to set upload progress for testing
+  __internal_upload_progress?: number;
+  // Allow to set ready explicitly and independently of internal state
+  __internal_ready?: boolean;
+  // Allow to show the button even if no files were added
+  __internal_show_button?: boolean;
+  // Allow to disable the button
+  __internal_button_disabled?: boolean;
+  // Allow to disable the dropzone
+  __internal_dropzone_disabled?: boolean;
+};
+
 export function UploadDropzone<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
@@ -91,21 +106,10 @@ export function UploadDropzone<
     TRouter,
     TEndpoint,
     TSkipPolling
-  > & {
-    // props not exposed on public type
-    // Allow to set internal state for testing
-    __internal_state?: "readying" | "ready" | "uploading";
-    // Allow to set upload progress for testing
-    __internal_upload_progress?: number;
-    // Allow to set ready explicitly and independently of internal state
-    __internal_ready?: boolean;
-    // Allow to show the button even if no files were added
-    __internal_show_button?: boolean;
-    // Allow to disable the button
-    __internal_button_disabled?: boolean;
-    // Allow to disable the dropzone
-    __internal_dropzone_disabled?: boolean;
-  };
+  > &
+    UploadThingInternalProps;
+  const fileRouteInput = "input" in $props ? $props.input : undefined;
+
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
   const acRef = useRef(new AbortController());
 
@@ -142,8 +146,8 @@ export function UploadDropzone<
   );
 
   const uploadFiles = useCallback(
-    (...args: Parameters<typeof startUpload>) => {
-      void startUpload(...args).catch((e) => {
+    (files: File[]) => {
+      void startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
@@ -151,7 +155,7 @@ export function UploadDropzone<
         }
       });
     },
-    [$props, startUpload],
+    [$props, startUpload, fileRouteInput],
   );
 
   const { fileTypes, multiple } = generatePermittedFileTypes(
@@ -165,11 +169,7 @@ export function UploadDropzone<
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if (mode === "auto") {
-        const input = "input" in $props ? $props.input : undefined;
-        uploadFiles(acceptedFiles, input);
-        return;
-      }
+      if (mode === "auto") uploadFiles(acceptedFiles);
     },
     [$props, mode, uploadFiles],
   );
@@ -207,8 +207,7 @@ export function UploadDropzone<
       e.preventDefault();
       e.stopPropagation();
 
-      const input = "input" in $props ? $props.input : undefined;
-      uploadFiles(files, input);
+      uploadFiles(files);
     }
   };
 
@@ -226,10 +225,7 @@ export function UploadDropzone<
         return filesToUpload;
       });
 
-      if (mode === "auto") {
-        const input = "input" in $props ? $props.input : undefined;
-        uploadFiles(filesToUpload, input);
-      }
+      if (mode === "auto") uploadFiles(filesToUpload);
     };
 
     window.addEventListener("paste", handlePaste);
