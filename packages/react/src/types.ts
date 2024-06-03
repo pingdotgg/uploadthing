@@ -77,9 +77,9 @@ export type UseUploadthingProps<
   headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   /**
    * An AbortSignal to cancel the upload
-   * Calling `signal.abort()` will cause the upload to throw
-   * an `UploadAbortedError`. In a future version the function
-   * will not throw in favor of an `onUploadAborted` callback.
+   * Calling `abort()` on the parent AbortController will cause the
+   * upload to throw an `UploadAbortedError`. In a future version
+   * the function will not throw in favor of an `onUploadAborted` callback.
    */
   signal?: AbortSignal | undefined;
 };
