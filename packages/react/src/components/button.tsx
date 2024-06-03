@@ -127,7 +127,7 @@ export function UploadButton<
       },
       onUploadProgress: (p) => {
         setUploadProgress(p);
-        $props.onUploadProgress?.(p);
+        $props.onUploadProgress?.(p, undefined);
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
@@ -178,7 +178,7 @@ export function UploadButton<
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
 
-    let filesToUpload = pastedFiles;
+    let filesToUpload = pastedFiles as File[];
     setFiles((prev) => {
       filesToUpload = [...prev, ...pastedFiles];
       return filesToUpload;

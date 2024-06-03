@@ -21,9 +21,9 @@ import type {
 } from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
+import { useEvent } from "./hooks/use-event";
+import useFetch from "./hooks/use-fetch";
 import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
-import { useEvent } from "./utils/useEvent";
-import useFetch from "./utils/useFetch";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
@@ -82,7 +82,7 @@ export const INTERNAL_uploadthingHookGen = <
       const input = args[1];
 
       setUploading(true);
-      opts?.onUploadProgress?.(0);
+      opts?.onUploadProgress?.(0, undefined);
       try {
         const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
           headers: opts?.headers,
@@ -98,7 +98,7 @@ export const INTERNAL_uploadthingHookGen = <
             const averageProgress =
               Math.floor(sum / fileProgress.current.size / 10) * 10;
             if (averageProgress !== uploadProgress.current) {
-              opts?.onUploadProgress?.(averageProgress);
+              opts?.onUploadProgress?.(averageProgress, progress);
               uploadProgress.current = averageProgress;
             }
           },

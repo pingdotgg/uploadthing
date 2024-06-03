@@ -16,6 +16,7 @@ import {
 import type {
   ContentField,
   ErrorMessage,
+  FileWithState,
   StyleField,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
@@ -139,7 +140,7 @@ export function UploadDropzone<
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    (acceptedFiles: FileWithState[]) => {
       $props.onDrop?.(acceptedFiles);
 
       setFiles(acceptedFiles);
