@@ -5,6 +5,11 @@ on:
     types: [labeled]
     branches:
       - main
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
   release:
     if: contains(github.event.pull_request.labels.*.name, 'release canary')
@@ -22,59 +27,11 @@ jobs:
       - name: Check packages for common errors
         run: pnpm turbo --filter "./packages/*" build
 
-      - name: Bump version to canary
-        run: node .github/canary-version.js
-
-      - name: Authenticate to npm and publish
+      - name: Authenticate to npm
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          for dir in packages/*; do
-            if [ -f "$dir/package.json" ]; then
-              private=$(jq -r '.private' "$dir/package.json")
-        
-              if [ "$private" != "true" ]; then
-                npm publish "$dir" --access public --tag canary
-              fi
-            fi
-          done
 
-      - name: Create a new comment notifying of the new canary version
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            // Get package version
-            const fs = require("fs");
-            let text = 'A new canary is available for testing. You can install this latest build in your project with:\n\n```sh\n'
-
-            const pkgJsonPaths = fs
-            .readdirSync("packages")
-            .filter((dir) => {
-              if (!fs.existsSync(`packages/${dir}/package.json`)) return false;
-              const pkg = JSON.parse(fs.readFileSync(`packages/${dir}/package.json`, "utf-8"));
-              return pkg.private !== true;
-            })
-            .map((dir) => `packages/${dir}/package.json`);
-
-            for (const pkgJsonPath of pkgJsonPaths) {
-              const packageJson = JSON.parse(fs.readFileSync(pkgJsonPath));
-              const version = packageJson.version;
-              text += `pnpm add ${packageJson.name}@${version}\n`
-            }
-            text += '```\n\n'
-
-            // Create a comment on the PR with the new canary version
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: text,
-            })
-
-            // Remove the label
-            github.rest.issues.removeLabel({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              name: 'release canary',
-            });
+      - name: Publish canary releases
+        run: node .github/release-canary.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
