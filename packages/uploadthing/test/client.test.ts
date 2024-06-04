@@ -10,7 +10,6 @@ import { generateUploadThingURL } from "@uploadthing/shared";
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
 import {
-  genPort,
   it,
   middlewareMock,
   onErrorMock,
