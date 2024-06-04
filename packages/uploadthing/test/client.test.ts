@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 
+import type { AddressInfo } from "node:net";
 import express from "express";
 import type { Test } from "vitest";
 import { describe, expect, vi } from "vitest";
@@ -20,7 +21,7 @@ import {
   useHalfBadS3,
 } from "./__test-helpers";
 
-export const setupUTServer = (task: Test) => {
+export const setupUTServer = async () => {
   const f = createUploadthing({
     errorFormatter(err) {
       return { message: err.message };
@@ -48,20 +49,24 @@ export const setupUTServer = (task: Test) => {
     }),
   );
 
-  const port = genPort(task);
-  const server = app.listen(port);
+  const server = app.listen(0);
+  const port = (server.address() as AddressInfo).port;
+  await new Promise((res) => server.once("listening", res));
 
   const uploadFiles = genUploader<typeof router>({
     package: "vitest",
     url: `http://localhost:${port}`,
   });
 
-  return { uploadFiles, close: () => server.close() };
+  return {
+    uploadFiles,
+    close: () => new Promise((res) => server.close(res)),
+  };
 };
 
 describe("uploadFiles", () => {
-  it("uploads with presigned post", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("uploads with presigned post", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
@@ -96,11 +101,11 @@ describe("uploadFiles", () => {
       timeout: 5000,
     });
 
-    close();
+    await close();
   });
 
-  it("uploads with multipart upload", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("uploads with multipart upload", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
       type: "text/plain",
     });
@@ -137,11 +142,11 @@ describe("uploadFiles", () => {
       timeout: 5000,
     });
 
-    close();
+    await close();
   });
 
-  it("sends custom headers if set (static object)", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("sends custom headers if set (static object)", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -170,11 +175,11 @@ describe("uploadFiles", () => {
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
 
-    close();
+    await close();
   });
 
-  it("sends custom headers if set (async function)", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("sends custom headers if set (async function)", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
@@ -203,7 +208,7 @@ describe("uploadFiles", () => {
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
 
-    close();
+    await close();
   });
 
   // We don't retry PSPs, maybe we should?
@@ -236,45 +241,41 @@ describe("uploadFiles", () => {
   //   close();
   // });
 
-  it(
-    "succeeds after retries (MPU)",
-    { timeout: 15e3 },
-    async ({ db, task }) => {
-      const { uploadFiles, close } = setupUTServer(task);
-      useHalfBadS3();
+  it("succeeds after retries (MPU)", { timeout: 15e3 }, async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
+    useHalfBadS3();
 
-      const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
+    const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
+      type: "text/plain",
+    });
+
+    await expect(
+      uploadFiles("foo", {
+        files: [bigFile],
+        skipPolling: true,
+      }),
+    ).resolves.toEqual([
+      {
+        name: "foo.txt",
+        size: 10485760,
         type: "text/plain",
-      });
+        customId: null,
+        serverData: null,
+        key: "abc-123.txt",
+        url: "https://utfs.io/f/abc-123.txt",
+      },
+    ]);
 
-      await expect(
-        uploadFiles("foo", {
-          files: [bigFile],
-          skipPolling: true,
-        }),
-      ).resolves.toEqual([
-        {
-          name: "foo.txt",
-          size: 10485760,
-          type: "text/plain",
-          customId: null,
-          serverData: null,
-          key: "abc-123.txt",
-          url: "https://utfs.io/f/abc-123.txt",
-        },
-      ]);
+    expect(onErrorMock).not.toHaveBeenCalled();
+    await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
+      timeout: 5000,
+    });
 
-      expect(onErrorMock).not.toHaveBeenCalled();
-      await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
-        timeout: 5000,
-      });
+    await close();
+  });
 
-      close();
-    },
-  );
-
-  it("reports of failed post upload", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("reports of failed post upload", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
     useBadS3();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -305,11 +306,11 @@ describe("uploadFiles", () => {
       },
     );
 
-    close();
+    await close();
   });
 
-  it("reports of failed multipart upload", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("reports of failed multipart upload", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
     useBadS3();
 
     const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
@@ -342,11 +343,11 @@ describe("uploadFiles", () => {
       },
     );
 
-    close();
+    await close();
   });
 
-  it("handles too big file size errors", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("handles too big file size errors", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
 
     const tooBigFile = new File(
       [new ArrayBuffer(20 * 1024 * 1024)],
@@ -364,10 +365,12 @@ describe("uploadFiles", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: FileSizeMismatch]`,
     );
+
+    await close();
   });
 
-  it("handles invalid file type errors", async ({ db, task }) => {
-    const { uploadFiles, close } = setupUTServer(task);
+  it("handles invalid file type errors", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
 
     const file = new File(["foo"], "foo.png", { type: "image/png" });
 
@@ -379,5 +382,7 @@ describe("uploadFiles", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: InvalidFileType]`,
     );
+
+    await close();
   });
 });

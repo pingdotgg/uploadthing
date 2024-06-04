@@ -211,10 +211,11 @@ export const it = itBase.extend({
 
           // Simulate polling - at least once
           yield HttpResponse.json({ status: "still waiting" });
-          if (!file) {
+          while (!file) {
             file = db.getFileByKey(params.key);
             yield HttpResponse.json({ status: "still waiting" });
           }
+        
 
           return HttpResponse.json({
             status: "done",
