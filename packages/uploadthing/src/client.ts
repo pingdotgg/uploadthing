@@ -260,7 +260,9 @@ const uploadFile = <
         Micro.filterOrFail(isPollingDone, () => new RetryError()),
         Micro.map(({ callbackData }) => callbackData),
         Micro.retry({
-          while: (res) => res instanceof RetryError,
+          while: (res) => {
+            return res instanceof RetryError;
+          },
           delay: exponentialDelay,
         }),
         Micro.when(() => !opts.skipPolling),

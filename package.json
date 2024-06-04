@@ -59,7 +59,7 @@
       "@mswjs/interceptors@0.26.15": "patches/@mswjs__interceptors@0.26.15.patch"
     },
     "overrides": {
-      "effect": "file:effect-3.2.7.tgz"
+      "effect": "0.0.0-snapshot-981d1fc733b034a10bf77fb06b1e8c764ba879a9"
     }
   }
 }

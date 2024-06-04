@@ -1,8 +1,6 @@
 import * as Context from "effect/Context";
-import * as Duration from "effect/Duration";
 import { pipe } from "effect/Function";
 import * as Micro from "effect/Micro";
-import * as Schedule from "effect/Schedule";
 
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
