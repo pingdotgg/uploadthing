@@ -8,6 +8,23 @@ const withNextra = nextra({
   flexsearch: {
     codeblock: false,
   },
+  async headers() {
+    if (process.env.VERCEL_ENV === "production") {
+      return []
+    } else {
+      return [
+        {
+          source: "/:path*",
+          headers: [
+            {
+              key: "x-robots-tag",
+              value: "noindex"
+            }
+          ]
+        }
+      ]
+    }
+  },
   async redirects() {
     return [
       {
