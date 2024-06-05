@@ -85,25 +85,29 @@ export class PSPResponse extends PresignedBase.extend<PSPResponse>(
   fields: S.Record(S.String, S.String),
 }) {}
 
-export const PresignedURLResponse = S.Array(S.Union(PSPResponse, MPUResponse));
+export const PrepareUploadResponse = S.Struct({
+  data: S.Array(S.Union(PSPResponse, MPUResponse)),
+});
 
 export class PollUploadResponse extends S.Class<PollUploadResponse>(
   "PollUploadResponse",
 )({
   status: S.String,
-  fileData: S.optional(
+  file: S.optional(
     S.Struct({
-      fileKey: S.NullOr(S.String),
+      fileKey: S.String,
       fileName: S.String,
       fileSize: S.Number,
       fileType: S.String,
-      metadata: S.NullOr(S.String),
+      fileUrl: S.String,
       customId: S.NullOr(S.String),
 
       callbackUrl: S.optional(S.String),
       callbackSlug: S.optional(S.String),
     }),
   ),
+  metadata: S.optional(S.Unknown),
+  callbackData: S.optional(S.Unknown),
 }) {}
 
 export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(

@@ -4,7 +4,6 @@ import * as Effect from "effect/Effect";
 import {
   exponentialBackoff,
   fetchEff,
-  generateUploadThingURL,
   parseResponseJson,
   RetryError,
   signPayload,
@@ -12,6 +11,7 @@ import {
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
+import type { MPUResponse, PSPResponse } from "./shared-schemas";
 import { PollUploadResponse, UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
@@ -22,16 +22,19 @@ const isValidResponse = (response: ResponseEsque) => {
   return true;
 };
 
-export const conditionalDevServer = (fileKey: string, apiKey: string) => {
+export const conditionalDevServer = (
+  presigned: MPUResponse | PSPResponse,
+  apiKey: string,
+) => {
   return Effect.gen(function* () {
-    const file = yield* fetchEff(
-      generateUploadThingURL(`/api/pollUpload/${fileKey}`),
-    ).pipe(
+    const { file, metadata } = yield* fetchEff(presigned.pollingUrl, {
+      headers: { Authorization: presigned.pollingJwt },
+    }).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(PollUploadResponse)),
       Effect.andThen((res) =>
         res.status === "done"
-          ? Effect.succeed(res.fileData)
+          ? Effect.succeed(res)
           : Effect.fail(new RetryError()),
       ),
       Effect.retry({
@@ -42,7 +45,9 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     );
 
     if (file === undefined) {
-      yield* Effect.logError(`Failed to simulate callback for file ${fileKey}`);
+      yield* Effect.logError(
+        `Failed to simulate callback for file ${presigned.key}`,
+      );
       return yield* new UploadThingError({
         code: "UPLOAD_FAILED",
         message: "File took too long to upload",
@@ -59,10 +64,10 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
 
     const payload = JSON.stringify({
       status: "uploaded",
-      metadata: JSON.parse(file.metadata ?? "{}") as unknown,
+      metadata,
       file: new UploadedFileData({
-        url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
-        key: fileKey,
+        url: file.fileUrl,
+        key: file.fileKey,
         name: file.fileName,
         size: file.fileSize,
         customId: file.customId,
@@ -97,7 +102,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     if (isValidResponse(callbackResponse)) {
       yield* Effect.logInfo(
         "Successfully simulated callback for file",
-        fileKey,
+        presigned.key,
       );
     } else {
       yield* Effect.logError(

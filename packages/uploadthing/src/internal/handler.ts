@@ -6,6 +6,7 @@ import {
   fetchEff,
   fillInputRouteConfig,
   generateUploadThingURL,
+  getTypeFromFileName,
   objectKeys,
   parseRequestJson,
   parseResponseJson,
@@ -25,7 +26,7 @@ import { resolveCallbackUrl } from "./resolve-url";
 import {
   FailureActionPayload,
   MultipartCompleteActionPayload,
-  PresignedURLResponse,
+  PrepareUploadResponse,
   ServerCallbackPostResponse,
   UploadActionPayload,
   UploadedFileData,
@@ -205,7 +206,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEff(generateUploadThingURL("/api/serverCallback"), {
+  yield* fetchEff(generateUploadThingURL("/v6/serverCallback"), {
     method: "POST",
     body: JSON.stringify(payload),
     headers: { "Content-Type": "application/json" },
@@ -261,6 +262,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
         return {
           name: theirs?.name ?? file.name,
           size: file.size,
+          type: file.type,
           customId: theirs?.customId,
         };
       }),
@@ -355,13 +357,32 @@ const handleUploadAction = Effect.gen(function* () {
     callbackUrl.href,
   );
 
-  const presignedUrls = yield* fetchEff(
-    generateUploadThingURL("/api/prepareUpload"),
+  const fileUploadRequests = yield* Effect.forEach(filesWithCustomIds, (file) =>
+    Effect.map(
+      getTypeFromFileName(file.name, objectKeys(parsedConfig)),
+      (type) => ({
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        customId: file.customId,
+        contentDisposition: parsedConfig[type]?.contentDisposition ?? "inline",
+        acl: parsedConfig[type]?.acl,
+      }),
+    ),
+  ).pipe(
+    Effect.catchTags({
+      /** Shouldn't happen since config is validated above so just dying is fine I think */
+      InvalidFileType: (e) => Effect.die(e),
+      UnknownFileType: (e) => Effect.die(e),
+    }),
+  );
+
+  const { data: presignedUrls } = yield* fetchEff(
+    generateUploadThingURL("/v7/prepareUpload"),
     {
       method: "POST",
       body: JSON.stringify({
-        files: filesWithCustomIds,
-        routeConfig: parsedConfig,
+        files: fileUploadRequests,
         metadata,
         callbackUrl: callbackUrl.origin + callbackUrl.pathname,
         callbackSlug: opts.slug,
@@ -370,7 +391,7 @@ const handleUploadAction = Effect.gen(function* () {
     },
   ).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(PresignedURLResponse)),
+    Effect.andThen(S.decodeUnknown(PrepareUploadResponse)),
   );
 
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
@@ -381,7 +402,7 @@ const handleUploadAction = Effect.gen(function* () {
     const fetchContext = yield* FetchContext;
     promise = Effect.forEach(
       presignedUrls,
-      (file) => conditionalDevServer(file.key, opts.apiKey),
+      (presigned) => conditionalDevServer(presigned, opts.apiKey),
       { concurrency: 10 },
     ).pipe(
       Effect.provide(ConsolaLogger),

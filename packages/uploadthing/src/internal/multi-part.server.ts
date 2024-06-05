@@ -107,7 +107,7 @@ export const completeMultipartUpload = (
   presigned: { key: string; uploadId: string },
   etags: readonly { tag: string; partNumber: number }[],
 ) =>
-  fetchEff(generateUploadThingURL("/api/completeMultipart"), {
+  fetchEff(generateUploadThingURL("/v6/completeMultipart"), {
     method: "POST",
     body: JSON.stringify({
       fileKey: presigned.key,
@@ -132,7 +132,7 @@ export const abortMultipartUpload = (presigned: {
   uploadId: string | null;
 }) =>
   fetchEff(
-    generateUploadThingURL("/api/failureCallback"),
+    generateUploadThingURL("/v6/failureCallback"),
 
     {
       method: "POST",
