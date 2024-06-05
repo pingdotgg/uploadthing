@@ -11,7 +11,7 @@ const withNextra = nextra({
   async headers() {
     if (
       process.env.VERCEL_ENV === "production" &&
-      !process.env.VERCEL_URL.includes("vercel.app")
+      process.env.VERCEL_URL !== process.env.VERCEL_PROJECT_PRODUCTION_URL
     ) {
       return []
     } else {
