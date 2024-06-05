@@ -5,12 +5,11 @@
 
   type TRouter = FileRouter;
   type TEndpoint = keyof TRouter;
-  type TSkipPolling = boolean;
 </script>
 
 <script
   lang="ts"
-  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
+  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter"
 >
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
@@ -49,11 +48,7 @@
     button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
 
-  export let uploader: UploadthingComponentProps<
-    TRouter,
-    TEndpoint,
-    TSkipPolling
-  >;
+  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
   export let appearance: UploadDropzoneAppearance = {};
   /**
    * Callback called when files are dropped or pasted.
@@ -86,9 +81,6 @@
   const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
     uploader.endpoint,
     {
-      skipPolling: !uploader?.onClientUploadComplete
-        ? true
-        : uploader?.skipPolling,
       onClientUploadComplete: (res) => {
         files = [];
         uploader.onClientUploadComplete?.(res);

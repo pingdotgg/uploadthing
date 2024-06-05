@@ -94,6 +94,7 @@ const handleRequest = RequestInput.pipe(
         return handleMultipartFailureAction;
     }
   }),
+  Effect.tap((a) => Effect.logInfo("asHandlerOutput", a)),
   Effect.map((output): RequestHandlerSuccess => ({ success: true, ...output })),
 );
 
@@ -411,8 +412,16 @@ const handleUploadAction = Effect.gen(function* () {
     );
   }
 
+  yield* Effect.logInfo("Sending presigned URLs to client", {
+    presigneds: presignedUrls,
+    routeOptions: opts.uploadable._def.routeOptions,
+  });
+
   return {
-    body: presignedUrls satisfies UTEvents["upload"]["out"],
+    body: {
+      presigneds: presignedUrls,
+      routeOptions: opts.uploadable._def.routeOptions,
+    } satisfies UTEvents["upload"]["out"],
     cleanup: promise,
   };
 });

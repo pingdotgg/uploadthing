@@ -9,6 +9,7 @@ import type {
   FileRouterInputConfig,
   Json,
   MaybePromise,
+  RouteOptions,
   Simplify,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -70,6 +71,7 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
 };
 
 export interface AnyParams {
+  _routeOptions: any;
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _middlewareArgs: MiddlewareFnArgs<any, any, any>;
@@ -104,6 +106,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? TParser
       : ErrorMessage<"input is already set">,
   ) => UploadBuilder<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParser["_output"];
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -116,6 +119,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
       : ErrorMessage<"middleware is already set">,
   ) => UploadBuilder<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TOutput;
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -126,6 +130,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
   onUploadComplete: <TOutput extends Json | void>(
     fn: ResolverFn<TOutput, TParams>,
   ) => Uploader<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -138,6 +143,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? UploadErrorFn
       : ErrorMessage<"onUploadError is already set">,
   ) => UploadBuilder<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -149,6 +155,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
+  routeOptions: RouteOptions;
   inputParser: JsonParser;
   // eslint-disable-next-line @typescript-eslint/ban-types
   middleware: MiddlewareFn<TParams["_input"], {}, TParams["_middlewareArgs"]>;
@@ -217,7 +224,9 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
 export type inferEndpointOutput<TUploader extends AnyUploader> =
   TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
     ? null
-    : TUploader["_def"]["_output"];
+    : TUploader["_def"]["_routeOptions"]["awaitServerData"] extends true
+      ? TUploader["_def"]["_output"]
+      : null;
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
@@ -251,7 +260,10 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
 export type UTEvents = {
   upload: {
     in: S.Schema.Type<typeof UploadActionPayload>;
-    out: ReadonlyArray<MPUResponse | PSPResponse>;
+    out: {
+      presigneds: ReadonlyArray<MPUResponse | PSPResponse>;
+      routeOptions: RouteOptions;
+    };
   };
   failure: {
     in: S.Schema.Type<typeof FailureActionPayload>;

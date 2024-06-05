@@ -157,6 +157,25 @@ type RouteConfig<TAdditionalProperties extends Record<string, unknown>> = {
   additionalProperties?: AdditionalProperties<TAdditionalProperties>;
 };
 
+/**
+ * Shared config options for an entire route not bound to any specific file type
+ * @example
+ * ```ts
+ * f(
+ *   { image: {} },
+ *   { awaitServerData: true },
+ * )
+ * ```
+ */
+export type RouteOptions = {
+  /**
+   * Set this to `true` to wait for the server onUploadComplete data
+   * on the client before running `onClientUploadComplete`.
+   * @default false
+   */
+  awaitServerData?: boolean;
+};
+
 export type FileRouterInputKey = AllowedFileType | MimeType;
 
 export type ExpandedRouteConfig = {

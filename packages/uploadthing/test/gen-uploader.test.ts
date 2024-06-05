@@ -4,10 +4,7 @@ import { z } from "zod";
 import { genUploader } from "../src/client";
 import { createBuilder } from "../src/internal/upload-builder";
 import type { ClientUploadedFileData, FileRouter } from "../src/types";
-
-const doNotExecute = (_fn: (...args: any[]) => any) => {
-  // noop
-};
+import { doNotExecute } from "./__test-helpers";
 
 describe("genuploader", () => {
   const f = createBuilder();
@@ -16,7 +13,7 @@ describe("genuploader", () => {
     uploadable1: f(["image", "video"]).onUploadComplete(() => {
       return { foo: "bar" as const };
     }),
-    uploadable2: f(["image"])
+    uploadable2: f(["image"], { awaitServerData: true })
       .input(z.object({ foo: z.number() }))
       .onUploadComplete(() => {
         return { baz: "qux" as const };
@@ -44,7 +41,7 @@ describe("genuploader", () => {
 
   it("types serverData as null if polling is skipped", () => {
     doNotExecute(async () => {
-      const res = await uploader("uploadable1", { files, skipPolling: true });
+      const res = await uploader("uploadable1", { files });
       expectTypeOf<ClientUploadedFileData<null>[]>(res);
     });
   });

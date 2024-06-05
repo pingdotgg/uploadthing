@@ -1,4 +1,8 @@
-import type { ExtendObjectIf, MaybePromise } from "@uploadthing/shared";
+import type {
+  ErrorMessage,
+  ExtendObjectIf,
+  MaybePromise,
+} from "@uploadthing/shared";
 
 import type { FileRouter, inferEndpointInput } from "./internal/types";
 
@@ -26,7 +30,6 @@ export type {
 export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 > = {
   /**
    * The files to upload
@@ -43,12 +46,20 @@ export type UploadFilesOptions<
     | ((opts: { file: string; progress: number }) => void)
     | undefined;
   /**
-   * Skip polling for server data after upload is complete
-   * Useful if you want faster response times and don't need
-   * any data returned from the server `onUploadComplete` callback
-   * @default false
+   * This option has been moved to your serverside route config.
+   * Please opt-in by setting `awaitServerData: true` in your route
+   * config instead.
+   * ### Example
+   * ```ts
+   * f(
+   *   { image: { maxFileSize: "1MB" } },
+   *   { awaitServerData: false }
+   * ).middleware(...)
+   * ```
+   * @deprecated
+   * @see https://docs.uploadthing.com/api-reference/server#route-options
    */
-  skipPolling?: TSkipPolling | undefined;
+  skipPolling?: ErrorMessage<"This option has been moved to your serverside route config. Please use `awaitServerData` in your route config instead.">;
   /**
    * URL to the UploadThing API endpoint
    * @example URL { http://localhost:3000/api/uploadthing }

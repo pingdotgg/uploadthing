@@ -18,20 +18,12 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 ) => {
   const url = resolveMaybeUrlArg(opts?.url);
 
-  const TypedButton = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const TypedButton = <TEndpoint extends keyof TRouter>(
     props: Omit<
-      UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
+      UploadButtonProps<TRouter, TEndpoint>,
       keyof GenerateTypedHelpersOptions
     >,
-  ) => (
-    <UploadButton<TRouter, TEndpoint, TSkipPolling>
-      {...(props as any)}
-      url={url}
-    />
-  );
+  ) => <UploadButton<TRouter, TEndpoint> {...(props as any)} url={url} />;
   return TypedButton;
 };
 
@@ -40,20 +32,12 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 ) => {
   const url = resolveMaybeUrlArg(opts?.url);
 
-  const TypedDropzone = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const TypedDropzone = <TEndpoint extends keyof TRouter>(
     props: Omit<
-      UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
+      UploadDropzoneProps<TRouter, TEndpoint>,
       keyof GenerateTypedHelpersOptions
     >,
-  ) => (
-    <UploadDropzone<TRouter, TEndpoint, TSkipPolling>
-      {...(props as any)}
-      url={url}
-    />
-  );
+  ) => <UploadDropzone<TRouter, TEndpoint> {...(props as any)} url={url} />;
   return TypedDropzone;
 };
 
@@ -62,17 +46,12 @@ export const generateUploader = <TRouter extends FileRouter>(
 ) => {
   const url = resolveMaybeUrlArg(opts?.url);
 
-  const TypedUploader = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const TypedUploader = <TEndpoint extends keyof TRouter>(
     props: Omit<
-      UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
+      UploadthingComponentProps<TRouter, TEndpoint>,
       keyof GenerateTypedHelpersOptions
     >,
-  ) => (
-    <Uploader<TRouter, TEndpoint, TSkipPolling> {...(props as any)} url={url} />
-  );
+  ) => <Uploader<TRouter, TEndpoint> {...(props as any)} url={url} />;
   return TypedUploader;
 };
 

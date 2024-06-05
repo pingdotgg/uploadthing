@@ -10,6 +10,7 @@ import type {
   ExpandedRouteConfig,
   FetchError,
   InvalidJsonError,
+  RouteOptions,
 } from "@uploadthing/shared";
 import {
   exponentialBackoff,
@@ -86,13 +87,10 @@ export const isValidFileSize = (
 const uploadFilesInternal = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-  TServerOutput = false extends TSkipPolling
-    ? inferEndpointOutput<TRouter[TEndpoint]>
-    : null,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
   endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
 ): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
@@ -116,33 +114,33 @@ const uploadFilesInternal = <
         type: f.type,
       })),
     }),
-    Effect.forEach(
-      (presigned) =>
-        uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(
-          String(endpoint),
-          { ...opts, reportEventToUT },
-          presigned,
-        ),
-      { concurrency: 6 },
-    ),
+    ({ presigneds, routeOptions }) =>
+      Effect.forEach(
+        presigneds,
+        (presigned) =>
+          uploadFile<TRouter, TEndpoint, TServerOutput>(
+            String(endpoint),
+            { ...opts, reportEventToUT, routeOptions },
+            presigned,
+          ),
+        { concurrency: 6 },
+      ),
   );
 };
 
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
 ) => {
-  return <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  return <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts: Omit<
-      UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
+      UploadFilesOptions<TRouter, TEndpoint>,
       keyof GenerateUploaderOptions
     >,
   ) =>
-    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+    uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
       ...opts,
+      skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
       url: resolveMaybeUrlArg(initOpts?.url),
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -183,14 +181,12 @@ const isPollingDone = (input: PollingResponse): input is Done => {
 const uploadFile = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-  TServerOutput = false extends TSkipPolling
-    ? inferEndpointOutput<TRouter[TEndpoint]>
-    : null,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
   slug: string,
-  opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling> & {
+  opts: UploadFilesOptions<TRouter, TEndpoint> & {
     reportEventToUT: UTReporter;
+    routeOptions: RouteOptions;
   },
   presigned: MPUResponse | PSPResponse,
 ) =>
@@ -236,7 +232,7 @@ const uploadFile = <
           while: (res) => res instanceof RetryError,
           schedule: exponentialBackoff(),
         }),
-        Effect.when(() => !opts.skipPolling),
+        Effect.when(() => !!opts.routeOptions.awaitServerData),
         Effect.map(Option.getOrNull),
         Effect.map(unsafeCoerce<unknown, TServerOutput>),
       ),

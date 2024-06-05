@@ -50,12 +50,9 @@ export const INTERNAL_uploadthingHookGen = <
     package: "@uploadthing/vue",
   });
 
-  const useUploadThing = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = ref(false);
     const uploadProgress = ref(0);
@@ -81,7 +78,6 @@ export const INTERNAL_uploadthingHookGen = <
         const res = await uploadFiles(endpoint, {
           headers: opts?.headers,
           files,
-          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.value.set(progress.file, progress.progress);

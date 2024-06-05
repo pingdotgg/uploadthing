@@ -2,14 +2,15 @@
 
 import type { AddressInfo } from "node:net";
 import express from "express";
-import type { Test } from "vitest";
-import { describe, expect, vi } from "vitest";
+import { describe, expect, expectTypeOf, it as rawIt, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
+import type { ClientUploadedFileData } from "../src/types";
 import {
+  doNotExecute,
   it,
   middlewareMock,
   onErrorMock,
@@ -34,6 +35,34 @@ export const setupUTServer = async () => {
       })
       .onUploadError(onErrorMock)
       .onUploadComplete(uploadCompleteMock),
+    withServerData: f(
+      { text: { maxFileSize: "4MB" } },
+      { awaitServerData: true },
+    )
+      .middleware((opts) => {
+        middlewareMock(opts);
+        return {};
+      })
+      .onUploadError(onErrorMock)
+      .onUploadComplete((opts) => {
+        uploadCompleteMock(opts);
+
+        return { foo: "bar" as const };
+      }),
+    noServerData: f(
+      { text: { maxFileSize: "4MB" } },
+      { awaitServerData: false },
+    )
+      .middleware((opts) => {
+        middlewareMock(opts);
+        return {};
+      })
+      .onUploadError(onErrorMock)
+      .onUploadComplete((opts) => {
+        uploadCompleteMock(opts);
+
+        return { foo: "bar" as const };
+      }),
   };
 
   const app = express();
@@ -63,17 +92,30 @@ export const setupUTServer = async () => {
   };
 };
 
+rawIt(
+  "propagates awaitServerData config on server to the client `serverData` property",
+  async () => {
+    const { uploadFiles, close } = await setupUTServer();
+    const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+
+    doNotExecute(async () => {
+      const res1 = await uploadFiles("withServerData", { files: [file] });
+      expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[]>(res1);
+
+      const res2 = await uploadFiles("noServerData", { files: [file] });
+      expectTypeOf<ClientUploadedFileData<null>[]>(res2);
+    });
+
+    await close();
+  },
+);
+
 describe("uploadFiles", () => {
   it("uploads with presigned post", async ({ db }) => {
     const { uploadFiles, close } = await setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
-    await expect(
-      uploadFiles("foo", {
-        files: [file],
-        skipPolling: true,
-      }),
-    ).resolves.toEqual([
+    await expect(uploadFiles("foo", { files: [file] })).resolves.toEqual([
       {
         name: "foo.txt",
         size: 3,
@@ -109,12 +151,7 @@ describe("uploadFiles", () => {
       type: "text/plain",
     });
 
-    await expect(
-      uploadFiles("foo", {
-        files: [bigFile],
-        skipPolling: true,
-      }),
-    ).resolves.toEqual([
+    await expect(uploadFiles("foo", { files: [bigFile] })).resolves.toEqual([
       {
         name: "foo.txt",
         size: 10485760,
@@ -151,7 +188,6 @@ describe("uploadFiles", () => {
     await expect(
       uploadFiles("foo", {
         files: [file],
-        skipPolling: true,
         headers: {
           authorization: "Bearer my-auth-token",
         },
@@ -184,7 +220,6 @@ describe("uploadFiles", () => {
     await expect(
       uploadFiles("foo", {
         files: [file],
-        skipPolling: true,
         headers: async () => ({
           authorization: "Bearer my-auth-token",
         }),
@@ -218,10 +253,7 @@ describe("uploadFiles", () => {
   //   const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
   //   await expect(
-  //     uploadFiles("foo", {
-  //       files: [file],
-  //       skipPolling: true,
-  //     }),
+  //     uploadFiles("foo", { files: [file] }),
   //   ).resolves.toEqual([
   //     {
   //       name: "foo.txt",
@@ -248,12 +280,7 @@ describe("uploadFiles", () => {
       type: "text/plain",
     });
 
-    await expect(
-      uploadFiles("foo", {
-        files: [bigFile],
-        skipPolling: true,
-      }),
-    ).resolves.toEqual([
+    await expect(uploadFiles("foo", { files: [bigFile] })).resolves.toEqual([
       {
         name: "foo.txt",
         size: 10485760,
@@ -264,7 +291,6 @@ describe("uploadFiles", () => {
         url: "https://utfs.io/f/abc-123.txt",
       },
     ]);
-
     expect(onErrorMock).not.toHaveBeenCalled();
     await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
       timeout: 5000,
@@ -280,10 +306,7 @@ describe("uploadFiles", () => {
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
-      uploadFiles("foo", {
-        files: [file],
-        skipPolling: true,
-      }),
+      uploadFiles("foo", { files: [file] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
@@ -317,10 +340,7 @@ describe("uploadFiles", () => {
     });
 
     await expect(
-      uploadFiles("foo", {
-        files: [bigFile],
-        skipPolling: true,
-      }),
+      uploadFiles("foo", { files: [bigFile] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Failed to upload file foo.txt to S3]`,
     );
@@ -357,10 +377,7 @@ describe("uploadFiles", () => {
     );
 
     await expect(
-      uploadFiles("foo", {
-        files: [tooBigFile],
-        skipPolling: true,
-      }),
+      uploadFiles("foo", { files: [tooBigFile] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: FileSizeMismatch]`,
     );
@@ -374,10 +391,7 @@ describe("uploadFiles", () => {
     const file = new File(["foo"], "foo.png", { type: "image/png" });
 
     await expect(
-      uploadFiles("foo", {
-        files: [file],
-        skipPolling: true,
-      }),
+      uploadFiles("foo", { files: [file] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: InvalidFileType]`,
     );

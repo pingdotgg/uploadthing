@@ -1,6 +1,7 @@
 import type {
   FileRouterInputConfig,
   Json,
+  RouteOptions,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -16,10 +17,12 @@ import type {
 
 function internalCreateBuilder<
   TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
+  TRouteOptions extends RouteOptions,
   TErrorShape extends Json = { message: string },
 >(
   initDef: Partial<UploadBuilderDef<any>> = {},
 ): UploadBuilder<{
+  _routeOptions: TRouteOptions;
   _input: UnsetMarker;
   _metadata: UnsetMarker;
   _middlewareArgs: TMiddlewareArgs;
@@ -33,6 +36,9 @@ function internalCreateBuilder<
       image: {
         maxFileSize: "4MB",
       },
+    },
+    routeOptions: {
+      awaitServerData: false,
     },
 
     inputParser: {
@@ -78,18 +84,6 @@ function internalCreateBuilder<
   };
 }
 
-type InOut<
-  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
-  TErrorShape extends Json = { message: string },
-> = (input: FileRouterInputConfig) => UploadBuilder<{
-  _input: UnsetMarker;
-  _metadata: UnsetMarker;
-  _middlewareArgs: TMiddlewareArgs;
-  _errorShape: TErrorShape;
-  _errorFn: UnsetMarker;
-  _output: UnsetMarker;
-}>;
-
 export type CreateBuilderOptions<TErrorShape extends Json> = {
   errorFormatter: (err: UploadThingError) => TErrorShape;
 };
@@ -97,12 +91,22 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
 export function createBuilder<
   TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
->(
-  opts?: CreateBuilderOptions<TErrorShape>,
-): InOut<TMiddlewareArgs, TErrorShape> {
-  return (input: FileRouterInputConfig) => {
-    return internalCreateBuilder<TMiddlewareArgs, TErrorShape>({
+>(opts?: CreateBuilderOptions<TErrorShape>) {
+  return <TRouteOptions extends RouteOptions>(
+    input: FileRouterInputConfig,
+    config?: TRouteOptions,
+  ): UploadBuilder<{
+    _routeOptions: TRouteOptions;
+    _input: UnsetMarker;
+    _metadata: UnsetMarker;
+    _middlewareArgs: TMiddlewareArgs;
+    _errorShape: TErrorShape;
+    _errorFn: UnsetMarker;
+    _output: UnsetMarker;
+  }> => {
+    return internalCreateBuilder<TMiddlewareArgs, TRouteOptions, TErrorShape>({
       routerConfig: input,
+      routeOptions: config ?? {},
       ...opts,
     });
   };

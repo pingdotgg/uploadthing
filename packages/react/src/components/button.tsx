@@ -49,8 +49,7 @@ type ButtonContent = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -85,19 +84,14 @@ type UploadThingInternalProps = {
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<
-    TRouter,
-    TEndpoint,
-    TSkipPolling
-  > &
+  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> &
     UploadThingInternalProps;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
@@ -117,7 +111,6 @@ export function UploadButton<
     $props.endpoint,
     {
       headers: $props.headers,
-      skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";

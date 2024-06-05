@@ -160,7 +160,6 @@ const alert = (msg: string) => {
     <UploadButton
       :config="{
         endpoint: 'imageUploader',
-        skipPolling: true,
         onClientUploadComplete: (file) => {
           console.log('uploaded', file);
           alert('Upload complete');
@@ -174,7 +173,6 @@ const alert = (msg: string) => {
     <UploadDropzone
       :config="{
         endpoint: 'imageUploader',
-        skipPolling: true,
         onClientUploadComplete: (file) => {
           console.log('uploaded', file);
           alert('Upload complete');
