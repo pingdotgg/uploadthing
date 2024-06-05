@@ -63,6 +63,7 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
+  disabled?: boolean;
 };
 
 /** These are some internal stuff we use to test the component and for forcing a state in docs */
@@ -122,7 +123,7 @@ export function UploadButton<
           fileInputRef.current.value = "";
         }
         setFiles([]);
-        $props.onClientUploadComplete?.(res);
+        void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
       onUploadProgress: (p) => {
@@ -162,6 +163,7 @@ export function UploadButton<
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
+  if ($props.disabled) inputProps.disabled = true;
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;

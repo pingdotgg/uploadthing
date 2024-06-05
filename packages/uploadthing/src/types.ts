@@ -11,7 +11,10 @@ export type {
 
 export * from "./sdk/types";
 
-export type { EndpointMetadata } from "@uploadthing/shared";
+export type {
+  EndpointMetadata,
+  ExpandedRouteConfig,
+} from "@uploadthing/shared";
 
 export type {
   FileUploadData,
