@@ -29,7 +29,6 @@ export const setupUploader = (el: HTMLFormElement) => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const files = Array.from(input.files || []);
-    console.log("files", files);
     button.disabled = true;
     abortButton.disabled = false;
     const res = await uploadFiles("videoAndImage", {
