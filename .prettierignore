@@ -4,7 +4,8 @@ node_modules
 coverage
 
 .changeset
-.github
+.github/**/*.yaml
+.github/**/*.yml
 
 .next/
 **/next-env.d.ts
