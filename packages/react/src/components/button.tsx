@@ -119,7 +119,7 @@ export function UploadButton<
   const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
-      signal: $props.signal ?? acRef.current.signal,
+      signal: acRef.current.signal,
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
