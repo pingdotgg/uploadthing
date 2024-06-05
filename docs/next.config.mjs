@@ -9,7 +9,10 @@ const withNextra = nextra({
     codeblock: false,
   },
   async headers() {
-    if (process.env.VERCEL_ENV === "production") {
+    if (
+      process.env.VERCEL_ENV === "production" &&
+      !process.env.VERCEL_URL.includes("vercel.app")
+    ) {
       return []
     } else {
       return [
