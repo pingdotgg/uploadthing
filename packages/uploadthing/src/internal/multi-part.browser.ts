@@ -81,10 +81,8 @@ interface UploadPartOptions {
 }
 
 const uploadPart = (opts: UploadPartOptions) =>
-  Effect.async<string, UploadThingError | RetryError>((resume, abortSignal) => {
+  Effect.async<string, UploadThingError | RetryError>((resume) => {
     const xhr = new XMLHttpRequest();
-
-    abortSignal.addEventListener("abort", () => xhr.abort());
 
     xhr.open("PUT", opts.url, true);
     xhr.setRequestHeader("Content-Type", opts.fileType);
@@ -110,4 +108,7 @@ const uploadPart = (opts: UploadPartOptions) =>
     });
 
     xhr.send(opts.chunk);
+
+    // Cleanup function that runs on interruption
+    return Effect.sync(() => xhr.abort());
   });
