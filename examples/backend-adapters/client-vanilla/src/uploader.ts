@@ -18,6 +18,7 @@ export const setupUploader = (el: HTMLFormElement) => {
   const form = el;
   const input = form.querySelector<HTMLInputElement>("input[type=file]")!;
   const button = form.querySelector<HTMLButtonElement>("button")!;
+  const progressBar = document.querySelector<HTMLProgressElement>("progress")!;
 
   // Hook up form submission
   form.addEventListener("submit", async (e) => {
@@ -27,11 +28,15 @@ export const setupUploader = (el: HTMLFormElement) => {
     const res = await uploadFiles("videoAndImage", {
       files,
       onUploadBegin: (opts) => console.log("Uploading", opts.file),
-      onUploadProgress: (opts) => console.log("Upload progress", opts),
+      onUploadProgress: (opts) => {
+        console.log("Uploading", opts);
+        progressBar.value = opts.progress;
+      },
     });
     form.reset();
     alert(`Upload complete! ${res.length} files uploaded`);
     button.disabled = false;
+    progressBar.value = 0;
   });
 
   // Sync accept and multiple attributes with the server state

@@ -9,6 +9,8 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
       <form id="upload-form">
         <input type="file" />
         <button>Upload</button>
+      </form>
+      <progress id="upload-progress" value="0" max="100" style="width:70%;"></progress>
     </div>
   </div>
 `;

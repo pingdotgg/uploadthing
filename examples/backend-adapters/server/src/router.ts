@@ -29,7 +29,7 @@ export const uploadRouter = {
       },
       blob: { maxFileSize: "8GB", maxFileCount: 10 },
     },
-    { awaitServerData: true },
+    { awaitServerData: false },
   )
     .middleware(({ files }) => {
       return {
