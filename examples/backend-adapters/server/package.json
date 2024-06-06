@@ -8,7 +8,7 @@
     "dev:express": "NODE_ENV=development tsx watch src/express.ts",
     "dev:fastify": "NODE_ENV=development tsx watch src/fastify.ts",
     "dev:hono": "NODE_ENV=development tsx watch src/hono.ts",
-    "dev:h3": "NODE_ENV=development listhen -w src/h3.ts"
+    "dev:h3": "NODE_ENV=development listhen -w src/h3.ts --port 3003"
   },
   "dependencies": {
     "@elysiajs/cors": "^0.8.0",

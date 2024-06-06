@@ -120,7 +120,16 @@ export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
 export class ServerCallbackPostResponse extends S.Class<ServerCallbackPostResponse>(
   "ServerCallbackPostResponse",
 )({
-  status: S.String,
+  ok: S.Boolean,
+}) {}
+
+export class NewPresignedUrl extends S.Class<NewPresignedUrl>(
+  "NewPresignedUrl",
+)({
+  url: S.String,
+  key: S.String,
+  customId: S.NullOr(S.String),
+  name: S.String,
 }) {}
 
 /**

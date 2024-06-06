@@ -7,7 +7,7 @@ import { EndpointMetadata } from "uploadthing/types";
 
 import type { OurFileRouter } from "../../server/src/router";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://localhost:3003";
 
 export const uploadFiles = genUploader<OurFileRouter>({
   url: BASE_URL,
@@ -24,7 +24,11 @@ export const setupUploader = (el: HTMLFormElement) => {
     e.preventDefault();
     const files = Array.from(input.files || []);
     button.disabled = true;
-    const res = await uploadFiles("videoAndImage", { files });
+    const res = await uploadFiles("videoAndImage", {
+      files,
+      onUploadBegin: (opts) => console.log("Uploading", opts.file),
+      onUploadProgress: (opts) => console.log("Upload progress", opts),
+    });
     form.reset();
     alert(`Upload complete! ${res.length} files uploaded`);
     button.disabled = false;

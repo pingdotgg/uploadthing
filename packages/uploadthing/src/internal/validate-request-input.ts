@@ -23,7 +23,7 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
-import { getApiKey } from "./get-api-key";
+import { getApiKey, getAppId } from "./get-api-key";
 import type { UploadActionPayload } from "./shared-schemas";
 import type {
   ActionType,
@@ -142,6 +142,7 @@ type RequestInputBase = {
   config: RouteHandlerConfig;
   middlewareArgs: MiddlewareFnArgs<any, any, any>;
   isDev: boolean;
+  appId: string;
   apiKey: string;
   slug: string;
   uploadable: Uploader<AnyParams>;
@@ -178,6 +179,7 @@ export const parseAndValidateRequest = (
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
     const clientVersion = headers.get("x-uploadthing-version");
     const apiKey = getApiKey(opts.config?.uploadthingSecret);
+    const appId = getAppId(opts.config?.uploadthingId);
 
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       yield* Effect.logError(
@@ -204,6 +206,16 @@ export const parseAndValidateRequest = (
       return yield* new UploadThingError({
         code: "BAD_REQUEST",
         message: "`slug` must be a string",
+        cause: msg,
+      });
+    }
+
+    if (!appId) {
+      const msg = `No appId provided, please set UPLOADTHING_APP_ID in your env file or in the config`;
+      yield* Effect.logError(msg);
+      return yield* new UploadThingError({
+        code: "MISSING_ENV",
+        message: `No appId provided`,
         cause: msg,
       });
     }
@@ -300,6 +312,7 @@ export const parseAndValidateRequest = (
       config: opts.config ?? {},
       middlewareArgs: input.middlewareArgs,
       isDev,
+      appId,
       apiKey,
       slug,
       uploadable,

@@ -5,11 +5,14 @@ import {
   FetchContext,
   fetchEff,
   fillInputRouteConfig,
+  generateKey,
+  generateSignedURL,
   generateUploadThingURL,
   getTypeFromFileName,
   objectKeys,
   parseRequestJson,
   parseResponseJson,
+  signPayload,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
@@ -26,7 +29,6 @@ import { resolveCallbackUrl } from "./resolve-url";
 import {
   FailureActionPayload,
   MultipartCompleteActionPayload,
-  PrepareUploadResponse,
   ServerCallbackPostResponse,
   UploadActionPayload,
   UploadedFileData,
@@ -207,7 +209,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEff(generateUploadThingURL("/v6/serverCallback"), {
+  yield* fetchEff("http://localhost:3001/collect-serverdata", {
     method: "POST",
     body: JSON.stringify(payload),
     headers: { "Content-Type": "application/json" },
@@ -378,51 +380,108 @@ const handleUploadAction = Effect.gen(function* () {
     }),
   );
 
-  const { data: presignedUrls } = yield* fetchEff(
-    generateUploadThingURL("/v7/prepareUpload"),
-    {
-      method: "POST",
-      body: JSON.stringify({
-        files: fileUploadRequests,
-        metadata,
-        callbackUrl: callbackUrl.origin + callbackUrl.pathname,
-        callbackSlug: opts.slug,
-      }),
-      headers: { "Content-Type": "application/json" },
-    },
-  ).pipe(
-    Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(PrepareUploadResponse)),
+  const presignedUrls = yield* Effect.forEach(fileUploadRequests, (file) =>
+    Effect.promise(() =>
+      generateKey(file).then(async (key) => ({
+        key,
+        url: await generateSignedURL(
+          `http://localhost:3001/${key}`,
+          opts.apiKey,
+          {
+            ttlInSeconds: 60 * 60,
+            data: {
+              "x-ut-identifier": opts.appId,
+              "x-ut-file-name": file.name,
+              "x-ut-file-size": file.size,
+              "x-ut-file-type": file.type,
+              "x-ut-slug": opts.slug,
+              "x-ut-custom-id": file.customId,
+              "x-ut-content-disposition": file.contentDisposition,
+              "x-ut-acl": file.acl,
+            },
+          },
+        ),
+      })),
+    ),
   );
+
+  // const { data: presignedUrls } = yield* fetchEff(
+  //   generateUploadThingURL("/v7/prepareUpload"),
+  //   {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       files: fileUploadRequests,
+  //       metadata,
+  //       callbackUrl: callbackUrl.origin + callbackUrl.pathname,
+  //       callbackSlug: opts.slug,
+  //     }),
+  //     headers: { "Content-Type": "application/json" },
+  //   },
+  // ).pipe(
+  //   Effect.andThen(parseResponseJson),
+  //   Effect.andThen(S.decodeUnknown(PrepareUploadResponse)),
+  // );
 
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
   yield* Effect.logDebug("Sending presigned URLs to client");
 
-  let promise: Promise<unknown> | undefined = undefined;
-  if (opts.isDev) {
-    const fetchContext = yield* FetchContext;
-    promise = Effect.forEach(
-      presignedUrls,
-      (presigned) => conditionalDevServer(presigned, opts.apiKey),
-      { concurrency: 10 },
-    ).pipe(
-      Effect.provide(ConsolaLogger),
-      Effect.provideService(FetchContext, fetchContext),
-      Effect.runPromise,
-    );
-  }
+  // TODO: Do we still need dev hook or should we
+  // establish some SSE sort of thing?
+
+  const promises: Array<Promise<unknown>> = [];
+  const fetchContext = yield* FetchContext;
+  // if (opts.isDev) {
+  //   const fetchContext = yield* FetchContext;
+  //   promise = Effect.forEach(
+  //     presignedUrls,
+  //     (presigned) => conditionalDevServer(presigned, opts.apiKey),
+  //     { concurrency: 10 },
+  //   ).pipe(
+  //     Effect.provide(ConsolaLogger),
+  //     Effect.provideService(FetchContext, fetchContext),
+  //     Effect.runPromise,
+  //   );
+  // }
+
+  // Send metadata to UT server (non blocking)
+  promises.push(
+    Effect.runPromise(
+      fetchEff("http://localhost:3001/collect-metadata", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileKeys: presignedUrls.map(({ key }) => key),
+          metadata: metadata,
+          callbackUrl: callbackUrl.origin + callbackUrl.pathname,
+          callbackSlug: opts.slug,
+          awaitServerData:
+            opts.uploadable._def.routeOptions.awaitServerData ?? false,
+        }),
+      }).pipe(
+        Effect.provide(ConsolaLogger),
+        Effect.provideService(FetchContext, fetchContext),
+      ),
+    ),
+  );
+
+  const presigneds = presignedUrls.map((p, i) => ({
+    url: p.url,
+    key: p.key,
+    name: fileUploadRequests[i].name,
+    customId: fileUploadRequests[i].customId ?? null,
+  }));
 
   yield* Effect.logInfo("Sending presigned URLs to client", {
-    presigneds: presignedUrls,
+    presigneds,
     routeOptions: opts.uploadable._def.routeOptions,
   });
 
   return {
     body: {
-      presigneds: presignedUrls,
+      presigneds,
       routeOptions: opts.uploadable._def.routeOptions,
     } satisfies UTEvents["upload"]["out"],
-    cleanup: promise,
+    cleanup: Promise.all(promises),
   };
 });
 

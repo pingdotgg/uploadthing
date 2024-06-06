@@ -25,6 +25,7 @@ export type {
   FileUploadDataWithCustomId,
   UploadedFileData,
   ClientUploadedFileData,
+  NewPresignedUrl,
 } from "./internal/shared-schemas";
 
 export type UploadFilesOptions<

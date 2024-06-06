@@ -14,15 +14,15 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { FileUploadDataWithCustomId, UploadedFileData } from "../types";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
   FailureActionPayload,
-  MPUResponse,
+  FileUploadDataWithCustomId,
   MultipartCompleteActionPayload,
-  PSPResponse,
+  NewPresignedUrl,
   UploadActionPayload,
+  UploadedFileData,
 } from "./shared-schemas";
 
 /**
@@ -261,7 +261,7 @@ export type UTEvents = {
   upload: {
     in: S.Schema.Type<typeof UploadActionPayload>;
     out: {
-      presigneds: ReadonlyArray<MPUResponse | PSPResponse>;
+      presigneds: Array<NewPresignedUrl>;
       routeOptions: RouteOptions;
     };
   };

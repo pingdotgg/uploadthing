@@ -8,6 +8,12 @@ export const getApiKey = (apiKey?: string) => {
   return undefined;
 };
 
+export const getAppId = (appId?: string) => {
+  if (appId) return appId;
+  if (process.env.UPLOADTHING_APP_ID) return process.env.UPLOADTHING_APP_ID;
+  return undefined;
+};
+
 export const getApiKeyOrThrow = (apiKey?: string) => {
   const key = getApiKey(apiKey);
   if (!key?.startsWith("sk_")) {
