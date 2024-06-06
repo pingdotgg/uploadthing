@@ -11,7 +11,6 @@ import {
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
-import type { MPUResponse, PSPResponse } from "./shared-schemas";
 import { PollUploadResponse, UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
@@ -23,7 +22,11 @@ const isValidResponse = (response: ResponseEsque) => {
 };
 
 export const conditionalDevServer = (
-  presigned: MPUResponse | PSPResponse,
+  presigned: {
+    pollingUrl: string;
+    pollingJwt: string;
+    key: string;
+  },
   apiKey: string,
 ) => {
   return Effect.gen(function* () {

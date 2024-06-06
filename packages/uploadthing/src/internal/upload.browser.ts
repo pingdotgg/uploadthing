@@ -1,19 +1,15 @@
 import * as Effect from "effect/Effect";
 
 import type { FetchContext, UploadThingError } from "@uploadthing/shared";
-import { NewPresignedUrl } from "uploadthing/types";
 
-import type { UTReporter } from "./ut-reporter";
+import type { NewPresignedUrl } from "../types";
 
-export const uploadPresignedPostWithProgress = (
+export const uploadWithProgress = (
   file: File,
   presigned: NewPresignedUrl,
-  opts: {
-    reportEventToUT: UTReporter;
-    onUploadProgress?:
-      | ((opts: { file: string; progress: number }) => void)
-      | undefined;
-  },
+  onUploadProgress?:
+    | ((opts: { file: string; progress: number }) => void)
+    | undefined,
 ) =>
   Effect.async<unknown, UploadThingError, FetchContext>((resume) => {
     const xhr = new XMLHttpRequest();
@@ -22,7 +18,7 @@ export const uploadPresignedPostWithProgress = (
     xhr.setRequestHeader("Range", `bytes=0-`);
 
     xhr.upload.addEventListener("progress", ({ loaded, total }) => {
-      opts.onUploadProgress?.({
+      onUploadProgress?.({
         file: file.name,
         progress: (loaded / total) * 100,
       });
@@ -34,15 +30,17 @@ export const uploadPresignedPostWithProgress = (
           : Effect.die(`XHR failed ${xhr.status} ${xhr.statusText}`),
       );
     });
-    xhr.addEventListener("error", () => {
-      resume(
-        opts.reportEventToUT("failure", {
-          fileKey: presigned.key,
-          uploadId: null,
-          fileName: file.name,
-        }),
-      );
-    });
+    // Is there a case when the client would throw and
+    // ingest server not knowing about it? idts?
+    // xhr.addEventListener("error", () => {
+    //   resume(
+    //     opts.reportEventToUT("failure", {
+    //       fileKey: presigned.key,
+    //       uploadId: null,
+    //       fileName: file.name,
+    //     }),
+    //   );
+    // });
 
     const formData = new FormData();
     formData.append("file", file);

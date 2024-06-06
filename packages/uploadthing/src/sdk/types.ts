@@ -28,6 +28,11 @@ export interface UTApiOptions {
    */
   apiKey?: string;
   /**
+   * Provide a custom UploadThing app ID.
+   * @default process.env.UPLOADTHING_APP_ID
+   */
+  appId?: string;
+  /**
    * @default "info"
    */
   logLevel?: LogLevel;
@@ -52,7 +57,6 @@ export type FileEsque = BlobEsque & {
 };
 
 export interface UploadFilesOptions {
-  metadata?: Json;
   contentDisposition?: ContentDisposition;
   acl?: ACL;
 }

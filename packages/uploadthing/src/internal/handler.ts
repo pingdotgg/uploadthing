@@ -20,16 +20,10 @@ import {
 import { UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
-import {
-  abortMultipartUpload,
-  completeMultipartUpload,
-} from "./multi-part.server";
 import { getParseFn } from "./parser";
 import { resolveCallbackUrl } from "./resolve-url";
 import {
-  FailureActionPayload,
-  MultipartCompleteActionPayload,
-  ServerCallbackPostResponse,
+  IngestCollectResponse,
   UploadActionPayload,
   UploadedFileData,
 } from "./shared-schemas";
@@ -90,10 +84,6 @@ const handleRequest = RequestInput.pipe(
     switch (action) {
       case "upload":
         return handleUploadAction;
-      case "multipart-complete":
-        return handleMultipartCompleteAction;
-      case "failure":
-        return handleMultipartFailureAction;
     }
   }),
   Effect.tap((a) => Effect.logInfo("asHandlerOutput", a)),
@@ -215,7 +205,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     headers: { "Content-Type": "application/json" },
   }).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(ServerCallbackPostResponse)),
+    Effect.andThen(S.decodeUnknown(IngestCollectResponse)),
   );
   return { body: null };
 });
@@ -458,6 +448,8 @@ const handleUploadAction = Effect.gen(function* () {
             opts.uploadable._def.routeOptions.awaitServerData ?? false,
         }),
       }).pipe(
+        Effect.andThen(parseResponseJson),
+        Effect.andThen(S.decodeUnknown(IngestCollectResponse)),
         Effect.provide(ConsolaLogger),
         Effect.provideService(FetchContext, fetchContext),
       ),
@@ -482,83 +474,6 @@ const handleUploadAction = Effect.gen(function* () {
       routeOptions: opts.uploadable._def.routeOptions,
     } satisfies UTEvents["upload"]["out"],
     cleanup: Promise.all(promises),
-  };
-});
-
-const handleMultipartCompleteAction = Effect.gen(function* () {
-  const opts = yield* RequestInput;
-  const requestInput = yield* Effect.flatMap(
-    parseRequestJson(opts.req),
-    S.decodeUnknown(MultipartCompleteActionPayload),
-  );
-  yield* Effect.logDebug(
-    "Handling multipart-complete request with input:",
-    requestInput,
-  );
-  yield* Effect.logDebug(
-    "Notifying UploadThing that multipart upload is complete",
-  );
-
-  const completionResponse = yield* completeMultipartUpload(
-    {
-      key: requestInput.fileKey,
-      uploadId: requestInput.uploadId,
-    },
-    requestInput.etags,
-  );
-  yield* Effect.logDebug("UploadThing responded with:", completionResponse);
-
-  return {
-    body: null satisfies UTEvents["multipart-complete"]["out"],
-  };
-});
-
-const handleMultipartFailureAction = Effect.gen(function* () {
-  const { req, uploadable } = yield* RequestInput;
-  const { fileKey, uploadId } = yield* Effect.flatMap(
-    parseRequestJson(req),
-    S.decodeUnknown(FailureActionPayload),
-  );
-  yield* Effect.logDebug("Handling failure request with input:", {
-    fileKey,
-    uploadId,
-  });
-  yield* Effect.logDebug("Notifying UploadThing that upload failed");
-
-  const failureResponse = yield* abortMultipartUpload({
-    key: fileKey,
-    uploadId,
-  });
-  yield* Effect.logDebug("UploadThing responded with:", failureResponse);
-  yield* Effect.logDebug("Running 'onUploadError' callback");
-
-  yield* Effect.try({
-    try: () => {
-      uploadable._def.onUploadError({
-        error: new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: `Upload failed for ${fileKey}`,
-        }),
-        fileKey,
-      });
-    },
-    catch: (error) =>
-      new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to run onUploadError",
-        cause: error,
-      }),
-  }).pipe(
-    Effect.tapError((error) =>
-      Effect.logError(
-        "Failed to run onUploadError. You probably shouldn't be throwing errors here.",
-        error,
-      ),
-    ),
-  );
-
-  return {
-    body: null satisfies UTEvents["failure"]["out"],
   };
 });
 

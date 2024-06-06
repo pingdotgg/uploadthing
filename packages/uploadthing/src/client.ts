@@ -3,41 +3,22 @@ import * as Cause from "effect/Cause";
 import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
-import * as Option from "effect/Option";
 import * as Runtime from "effect/Runtime";
 
-import type {
-  ExpandedRouteConfig,
-  FetchError,
-  InvalidJsonError,
-  RetryError,
-  RouteOptions,
-} from "@uploadthing/shared";
+import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
-  exponentialBackoff,
   FetchContext,
-  fetchEff,
   fileSizeToBytes,
-  getErrorTypeFromStatusCode,
   getTypeFromFileName,
-  isObject,
   objectKeys,
-  parseResponseJson,
   resolveMaybeUrlArg,
   UploadThingError,
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
 import { UPLOADTHING_VERSION } from "./internal/constants";
-import { uploadMultipartWithProgress } from "./internal/multi-part.browser";
-import { uploadPresignedPostWithProgress } from "./internal/presigned-post.browser";
-import type { MPUResponse, PSPResponse } from "./internal/shared-schemas";
-import type {
-  FileRouter,
-  inferEndpointOutput,
-  UTEvents,
-} from "./internal/types";
-import type { UTReporter } from "./internal/ut-reporter";
+import type { FileRouter, inferEndpointOutput } from "./internal/types";
+import { uploadWithProgress } from "./internal/upload.browser";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
@@ -143,8 +124,7 @@ const uploadFilesInternal = <
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
-  // TODO: Handle these errors instead of letting them bubble
-  UploadThingError | RetryError | FetchError | InvalidJsonError,
+  UploadThingError,
   FetchContext
 > => {
   // classic service right here
@@ -168,11 +148,7 @@ const uploadFilesInternal = <
       Effect.forEach(
         presigneds,
         (presigned) =>
-          uploadFile<TRouter, TEndpoint, TServerOutput>(
-            String(endpoint),
-            { ...opts, reportEventToUT, routeOptions },
-            presigned,
-          ),
+          uploadFile<TRouter, TEndpoint, TServerOutput>(opts, presigned),
         { concurrency: 6 },
       ),
   );
@@ -183,11 +159,7 @@ const uploadFile = <
   TEndpoint extends keyof TRouter,
   TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
-  slug: string,
-  opts: UploadFilesOptions<TRouter, TEndpoint> & {
-    reportEventToUT: UTReporter;
-    routeOptions: RouteOptions;
-  },
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
   presigned: NewPresignedUrl,
 ) =>
   Arr.findFirst(opts.files, (file) => file.name === presigned.name).pipe(
@@ -204,7 +176,7 @@ const uploadFile = <
     ),
     Effect.tap((file) => opts.onUploadBegin?.({ file: file.name })),
     Effect.andThen((file) =>
-      uploadPresignedPostWithProgress(file, presigned, opts).pipe(
+      uploadWithProgress(file, presigned, opts.onUploadProgress).pipe(
         Effect.map(unsafeCoerce<unknown, TServerOutput>),
         Effect.flatMap((serverData) =>
           Effect.succeed({

@@ -24,3 +24,14 @@ export const getApiKeyOrThrow = (apiKey?: string) => {
   }
   return key;
 };
+
+export const getAppIdOrThrow = (appId?: string) => {
+  const id = getAppId(appId);
+  if (!id) {
+    throw new UploadThingError({
+      code: "MISSING_ENV",
+      message: "Missing or invalid app ID. App IDs must be a string.",
+    });
+  }
+  return id;
+};

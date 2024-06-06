@@ -101,25 +101,5 @@ export const createUTReporter =
         }),
       );
 
-      switch (type) {
-        case "failure": {
-          // why isn't this narrowed automatically?
-          const p = payload as UTEvents["failure"]["in"];
-          const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
-          if (parsed?.message) {
-            return yield* new UploadThingError({
-              code: parsed.code,
-              message: parsed.message,
-            });
-          } else {
-            return yield* new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Failed to upload file ${p.fileName} to S3`,
-              cause: p.storageProviderError,
-            });
-          }
-        }
-      }
-
       return response;
     });

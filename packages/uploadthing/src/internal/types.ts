@@ -17,9 +17,7 @@ import type {
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
-  FailureActionPayload,
   FileUploadDataWithCustomId,
-  MultipartCompleteActionPayload,
   NewPresignedUrl,
   UploadActionPayload,
   UploadedFileData,
@@ -203,7 +201,7 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
   };
 export type RequestHandlerSuccess = {
   success: true;
-  body: UTEvents[keyof UTEvents]["out"];
+  body: UTEvents[keyof UTEvents]["out"] | null;
   cleanup?: Promise<unknown> | undefined;
 };
 export type RequestHandlerError = {
@@ -234,11 +232,7 @@ export type inferErrorShape<TRouter extends FileRouter> =
 /**
  * Valid options for the `?actionType` query param
  */
-export const VALID_ACTION_TYPES = [
-  "upload",
-  "failure",
-  "multipart-complete",
-] as const;
+export const VALID_ACTION_TYPES = ["upload"] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
 export const isActionType = (input: unknown): input is ActionType =>
   typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
@@ -264,13 +258,5 @@ export type UTEvents = {
       presigneds: Array<NewPresignedUrl>;
       routeOptions: RouteOptions;
     };
-  };
-  failure: {
-    in: S.Schema.Type<typeof FailureActionPayload>;
-    out: null;
-  };
-  "multipart-complete": {
-    in: S.Schema.Type<typeof MultipartCompleteActionPayload>;
-    out: null;
   };
 };
