@@ -14,8 +14,7 @@ export const uploadFiles = genUploader<OurFileRouter>({
   package: "vanilla",
 });
 
-export const setupUploader = (el: HTMLFormElement) => {
-  const form = el;
+export const setupUploader = (form: HTMLFormElement) => {
   const input = form.querySelector<HTMLInputElement>("input[type=file]")!;
   const button = form.querySelector<HTMLButtonElement>("button")!;
   const progressBar = document.querySelector<HTMLProgressElement>("progress")!;
