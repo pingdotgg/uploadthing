@@ -66,7 +66,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       return formatError(response.error, opts.router);
     }
 
-    return response.body ?? "OK";
+    return response.body ?? { ok: true };
   });
 };
 

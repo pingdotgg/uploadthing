@@ -55,6 +55,10 @@ export interface UploadFilesOptions {
   metadata?: Json;
   contentDisposition?: ContentDisposition;
   acl?: ACL;
+  /**
+   * AbortSignal that can be used to cancel the upload
+   */
+  signal?: AbortSignal;
 }
 export type UploadFileResult = Either<
   UploadedFileData,
