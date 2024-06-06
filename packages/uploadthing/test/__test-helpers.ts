@@ -89,7 +89,6 @@ const callRequestSpy = async (request: StrictRequest<any>) =>
 const msw = setupServer();
 beforeAll(() => {
   msw.listen({ onUnhandledRequest: "bypass" });
-  console.log("Started MSW server");
 });
 afterAll(() => msw.close());
 

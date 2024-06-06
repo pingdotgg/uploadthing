@@ -308,9 +308,11 @@ describe("uploadFiles", () => {
     await close();
   });
 
-  it("reports of failed multipart upload", async ({ db }) => {
-    const { uploadFiles, close } = await setupUTServer();
-    useBadS3();
+  it(
+    "reports of failed multipart upload",
+    async ({ db }) => {
+      const { uploadFiles, close } = await setupUTServer();
+      useBadS3();
 
       const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
         type: "text/plain",
