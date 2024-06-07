@@ -5,7 +5,10 @@ import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
 import * as Runtime from "effect/Runtime";
 
-import type { ExpandedRouteConfig } from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  FetchContextService,
+} from "@uploadthing/shared";
 import {
   FetchContext,
   fileSizeToBytes,
@@ -80,6 +83,16 @@ export const isValidFileSize = (
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
 ) => {
+  const fetchService: FetchContextService = {
+    fetch: globalThis.fetch.bind(globalThis),
+    baseHeaders: {
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+      "x-uploadthing-api-key": undefined,
+      "x-uploadthing-fe-package": initOpts.package,
+      "x-uploadthing-be-adapter": undefined,
+    },
+  };
+
   return <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts: Omit<
@@ -96,21 +109,19 @@ export const genUploader = <TRouter extends FileRouter>(
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })
       .pipe(
-        Effect.provideService(FetchContext, {
-          fetch: globalThis.fetch.bind(globalThis),
-          baseHeaders: {
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-            "x-uploadthing-api-key": undefined,
-            "x-uploadthing-fe-package": initOpts.package,
-            "x-uploadthing-be-adapter": undefined,
-          },
-        }),
+        Effect.provideService(FetchContext, fetchService),
         Effect.runPromise,
       )
       .catch((error) => {
+        /**
+         * Rethrow the underlying error from FiberFailures
+         */
         if (!Runtime.isFiberFailure(error)) throw error;
         const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
         if (Cause.isInterruptedException(ogError)) {
+          /**
+           * Rethrow an UploadAbortedError instead of an InterruptedException
+           */
           throw new UploadAbortedError();
         }
         throw ogError;
