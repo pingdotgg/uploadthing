@@ -469,10 +469,7 @@ const handleUploadAction = Effect.gen(function* () {
   });
 
   return {
-    body: {
-      presigneds,
-      routeOptions: opts.uploadable._def.routeOptions,
-    } satisfies UTEvents["upload"]["out"],
+    body: presigneds satisfies UTEvents["upload"]["out"],
     cleanup: Promise.all(promises),
   };
 });

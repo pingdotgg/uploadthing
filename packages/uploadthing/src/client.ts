@@ -1,6 +1,4 @@
-import * as Arr from "effect/Array";
 import * as Cause from "effect/Cause";
-import * as Console from "effect/Console";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
 import * as Runtime from "effect/Runtime";
@@ -8,15 +6,18 @@ import * as Runtime from "effect/Runtime";
 import type {
   ExpandedRouteConfig,
   FetchContextService,
+  FetchError,
+  UploadThingError,
 } from "@uploadthing/shared";
 import {
+  asArray,
   FetchContext,
+  fetchEff,
   fileSizeToBytes,
   getTypeFromFileName,
   objectKeys,
   resolveMaybeUrlArg,
   UploadAbortedError,
-  UploadThingError,
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
@@ -26,6 +27,7 @@ import { uploadWithProgress } from "./internal/upload.browser";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
+  CreateUploadOptions,
   GenerateUploaderOptions,
   inferEndpointInput,
   NewPresignedUrl,
@@ -76,6 +78,23 @@ export const isValidFileSize = (
     ),
   );
 
+type Deferred<T> = {
+  resolve: (value: T) => void;
+  reject: (reason?: any) => void;
+  ac: AbortController;
+  promise: Promise<T>;
+};
+const createDeferred = <T>(): Deferred<T> => {
+  let resolve!: (value: T) => void;
+  let reject!: (reason?: any) => void;
+  const ac = new AbortController();
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  return { promise, ac, resolve, reject };
+};
+
 /**
  * Generate a typed uploader for a given FileRouter
  * @public
@@ -93,7 +112,150 @@ export const genUploader = <TRouter extends FileRouter>(
     },
   };
 
-  return <TEndpoint extends keyof TRouter>(
+  const controllableUpload = async <
+    TEndpoint extends keyof TRouter,
+    TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
+  >(
+    slug: TEndpoint,
+    opts: Omit<
+      CreateUploadOptions<TRouter, TEndpoint>,
+      keyof GenerateUploaderOptions
+    >,
+  ) => {
+    const uploads = new Map<
+      File,
+      {
+        presigned: NewPresignedUrl;
+        deferred: Deferred<ClientUploadedFileData<TServerOutput>>;
+      }
+    >();
+
+    const utReporter = createUTReporter({
+      endpoint: String(slug),
+      package: initOpts.package,
+      url: resolveMaybeUrlArg(initOpts?.url),
+      headers: opts.headers,
+    });
+
+    const presigneds = await Effect.runPromise(
+      utReporter("upload", {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        input: "input" in opts ? (opts.input as any) : null,
+        files: opts.files.map((f) => ({
+          name: f.name,
+          size: f.size,
+          type: f.type,
+        })),
+      }).pipe(Effect.provideService(FetchContext, fetchService)),
+    );
+
+    const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
+    let totalLoaded = 0;
+
+    const uploadEffect = (file: File, presigned: NewPresignedUrl) =>
+      uploadFile(file, presigned, {
+        onUploadProgress: (progressEvent) => {
+          totalLoaded += progressEvent.delta;
+          opts.onUploadProgress?.({
+            ...progressEvent,
+            file,
+            progress: Math.round((progressEvent.loaded / file.size) * 100),
+            totalLoaded,
+            totalProgress: Math.round((totalLoaded / totalSize) * 100),
+          });
+        },
+      }).pipe(Effect.provideService(FetchContext, fetchService));
+
+    for (const [i, p] of presigneds.entries()) {
+      const file = opts.files[i];
+
+      const deferred = createDeferred<ClientUploadedFileData<TServerOutput>>();
+      uploads.set(file, { deferred, presigned: p });
+
+      void Effect.runPromise(uploadEffect(file, p), {
+        signal: deferred.ac.signal,
+      })
+        .then(deferred.resolve, rethrowOriginalErrors)
+        .catch((err) => {
+          if (err instanceof UploadAbortedError) return;
+          deferred.reject(err);
+        });
+    }
+
+    /**
+     * Pause an ongoing upload
+     * @param file The file upload you want to pause. Can be omitted to pause all files
+     */
+    const pauseUpload = (file?: File) => {
+      const files = asArray(file ?? opts.files);
+      for (const file of files) {
+        const upload = uploads.get(file);
+        if (!upload) return;
+
+        if (upload.deferred.ac.signal.aborted) {
+          // Cancel the upload if it's already been paused
+          throw new UploadCancelledError();
+        }
+
+        upload.deferred.ac.abort();
+      }
+    };
+
+    /**
+     * Resume a paused upload
+     * @param file The file upload you want to resume. Can be omitted to resume all files
+     */
+    const resumeUpload = (file?: File) => {
+      const files = asArray(file ?? opts.files);
+      for (const file of files) {
+        const upload = uploads.get(file);
+        if (!upload) throw "No upload found";
+
+        upload.deferred.ac = new AbortController();
+        void Effect.runPromise(uploadEffect(file, upload.presigned), {
+          signal: upload.deferred.ac.signal,
+        })
+          .then(upload.deferred.resolve, rethrowOriginalErrors)
+          .catch((err) => {
+            if (err instanceof UploadAbortedError) return;
+            upload.deferred.reject(err);
+          });
+      }
+    };
+
+    /**
+     * Wait for an upload to complete
+     * @param file The file upload you want to wait for. Can be omitted to wait for all files
+     */
+    const done = async <T extends File | void = void>(
+      file?: T,
+    ): Promise<
+      T extends File
+        ? ClientUploadedFileData<TServerOutput>
+        : ClientUploadedFileData<TServerOutput>[]
+    > => {
+      const promises = [];
+
+      const files = asArray(file ?? opts.files);
+      for (const file of files) {
+        const upload = uploads.get(file);
+        if (!upload) throw "No upload found";
+
+        promises.push(upload.deferred.promise);
+      }
+
+      const results = await Promise.all(promises);
+      return (file ? results[0] : results) as never;
+    };
+
+    return { pauseUpload, resumeUpload, done };
+  };
+
+  /**
+   * One step upload function that both requests presigned URLs
+   * and then uploads the files to UploadThing
+   */
+  const typedUploadFiles = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint>,
@@ -110,28 +272,35 @@ export const genUploader = <TRouter extends FileRouter>(
     })
       .pipe(
         Effect.provideService(FetchContext, fetchService),
-        Effect.runPromise,
+        //
+        (e) => Effect.runPromise(e, opts.signal ? { signal: opts.signal } : {}),
       )
-      .catch((error) => {
-        /**
-         * Rethrow the underlying error from FiberFailures
-         */
-        if (!Runtime.isFiberFailure(error)) throw error;
-        const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
-        if (Cause.isInterruptedException(ogError)) {
-          /**
-           * Rethrow an UploadAbortedError instead of an InterruptedException
-           */
-          throw new UploadAbortedError();
-        }
-        throw ogError;
-      });
+      .catch(rethrowOriginalErrors);
+
+  return { uploadFiles: typedUploadFiles, createUpload: controllableUpload };
 };
 
 /***
  * INTERNALS
  *   VVV
  */
+
+export class UploadCancelledError extends Error {}
+
+const rethrowOriginalErrors = (err: unknown) => {
+  /**
+   * Rethrow the underlying error from FiberFailures
+   */
+  if (!Runtime.isFiberFailure(err)) throw err;
+  const ogError = Cause.squash(err[Runtime.FiberFailureCauseId]);
+  if (Cause.isInterruptedException(ogError)) {
+    /**
+     * Rethrow an UploadAbortedError instead of an InterruptedException
+     */
+    throw new UploadAbortedError();
+  }
+  throw ogError;
+};
 
 const uploadFilesInternal = <
   TRouter extends FileRouter,
@@ -142,16 +311,19 @@ const uploadFilesInternal = <
   opts: UploadFilesOptions<TRouter, TEndpoint>,
 ): Effect.Effect<
   ClientUploadedFileData<TServerOutput>[],
-  UploadThingError,
+  UploadThingError | FetchError,
   FetchContext
 > => {
   // classic service right here
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     package: opts.package,
-    url: resolveMaybeUrlArg(opts.url),
+    url: opts.url,
     headers: opts.headers,
   });
+
+  const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
+  let totalLoaded = 0;
 
   return Effect.flatMap(
     reportEventToUT("upload", {
@@ -162,13 +334,27 @@ const uploadFilesInternal = <
         type: f.type,
       })),
     }),
-    ({ presigneds }) =>
-      Effect.forEach(
-        presigneds,
-        (presigned) =>
-          uploadFile<TRouter, TEndpoint, TServerOutput>(opts, presigned),
-        { concurrency: 6 },
-      ),
+    Effect.forEach(
+      (presigned, i) =>
+        uploadFile<TRouter, TEndpoint, TServerOutput>(
+          opts.files[i],
+          presigned,
+          {
+            onUploadProgress: (ev) => {
+              totalLoaded += ev.delta;
+              opts.onUploadProgress?.({
+                file: opts.files[i],
+                progress: Math.round((ev.loaded / opts.files[i].size) * 100),
+                loaded: ev.loaded,
+                delta: ev.delta,
+                totalLoaded,
+                totalProgress: Math.round((totalLoaded / totalSize) * 100),
+              });
+            },
+          },
+        ),
+      { concurrency: 6 },
+    ),
   );
 };
 
@@ -177,36 +363,35 @@ const uploadFile = <
   TEndpoint extends keyof TRouter,
   TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
+  file: File,
   presigned: NewPresignedUrl,
+  opts: {
+    onUploadProgress?: (progressEvent: {
+      loaded: number;
+      delta: number;
+    }) => void;
+  },
 ) =>
-  Arr.findFirst(opts.files, (file) => file.name === presigned.name).pipe(
-    Effect.tapError(() =>
-      Console.error("No file found for presigned URL", presigned),
+  fetchEff(presigned.url, { method: "HEAD" }).pipe(
+    Effect.map(({ headers }) =>
+      parseInt(headers.get("x-ut-range-start") ?? "0", 10),
     ),
-    Effect.mapError(
-      () =>
-        new UploadThingError({
-          code: "NOT_FOUND",
-          message: "No file found for presigned URL",
-          cause: `No file matching '${presigned.name}' found in ${opts.files.map((f) => f.name).join(",")}`,
+    Effect.flatMap((start) =>
+      uploadWithProgress(file, start, presigned, (progressEvent) =>
+        opts.onUploadProgress?.({
+          delta: progressEvent.delta,
+          loaded: progressEvent.loaded + start,
         }),
-    ),
-    Effect.tap((file) => opts.onUploadBegin?.({ file: file.name })),
-    Effect.andThen((file) =>
-      uploadWithProgress(file, presigned, opts.onUploadProgress).pipe(
-        Effect.map(unsafeCoerce<unknown, TServerOutput>),
-        Effect.flatMap((serverData) =>
-          Effect.succeed({
-            name: file.name,
-            size: file.size,
-            key: presigned.key,
-            serverData,
-            url: "https://utfs.io/f/" + presigned.key,
-            customId: presigned.customId,
-            type: file.type,
-          }),
-        ),
       ),
     ),
+    Effect.map(unsafeCoerce<unknown, TServerOutput>),
+    Effect.map((serverData) => ({
+      name: file.name,
+      size: file.size,
+      key: presigned.key,
+      serverData,
+      url: "https://utfs.io/f/" + presigned.key,
+      customId: presigned.customId,
+      type: file.type,
+    })),
   );

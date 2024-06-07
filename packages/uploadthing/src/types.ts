@@ -50,7 +50,20 @@ export type UploadFilesOptions<
    * Called continuously as the file is uploaded to the storage provider
    */
   onUploadProgress?:
-    | ((opts: { file: string; progress: number }) => void)
+    | ((opts: {
+        /** The file that triggered the progress event */
+        file: File;
+        /** Percentage of the file that has been uploaded */
+        progress: number;
+        /** Total bytes of the file that has been uploaded */
+        loaded: number;
+        /** How many bytes have been uploaded since the last progress event for this file */
+        delta: number;
+        /** Total bytes uploaded for all files in this upload */
+        totalLoaded: number;
+        /** Percentage of the total loaded bytes for the upload */
+        totalProgress: number;
+      }) => void)
     | undefined;
   /**
    * This option has been moved to your serverside route config.
@@ -85,6 +98,43 @@ export type UploadFilesOptions<
    * @remarks This option is not required when `uploadFiles` has been generated with `genUploader`
    */
   package: string;
+} & ExtendObjectIf<
+  inferEndpointInput<TRouter[TEndpoint]>,
+  { input: inferEndpointInput<TRouter[TEndpoint]> }
+>;
+
+export type CreateUploadOptions<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = {
+  /**
+   * The files to upload
+   */
+  files: File[];
+  /**
+   * Called continuously as the file is uploaded to the storage provider
+   */
+  onUploadProgress?:
+    | ((opts: {
+        /** The file that triggered the progress event */
+        file: File;
+        /** Percentage of the file that has been uploaded */
+        progress: number;
+        /** Total bytes of the file that has been uploaded */
+        loaded: number;
+        /** How many bytes have been uploaded since the last progress event for this file */
+        delta: number;
+        /** Total bytes uploaded for all files in this upload */
+        totalLoaded: number;
+        /** Percentage of the total loaded bytes for the upload */
+        totalProgress: number;
+      }) => void)
+    | undefined;
+  /**
+   * Set custom headers that'll get sent with requests
+   * to your server
+   */
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
 } & ExtendObjectIf<
   inferEndpointInput<TRouter[TEndpoint]>,
   { input: inferEndpointInput<TRouter[TEndpoint]> }
