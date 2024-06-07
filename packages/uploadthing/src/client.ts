@@ -24,6 +24,7 @@ import {
   parseResponseJson,
   resolveMaybeUrlArg,
   RetryError,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -51,6 +52,8 @@ export {
   generateMimeTypes,
   /** @public */
   generatePermittedFileTypes,
+  /** @public */
+  UploadAbortedError,
 } from "@uploadthing/shared";
 
 /**
@@ -83,6 +86,50 @@ export const isValidFileSize = (
       Effect.catchAll(() => Effect.succeed(false)),
     ),
   );
+
+/**
+ * Generate a typed uploader for a given FileRouter
+ * @public
+ */
+export const genUploader = <TRouter extends FileRouter>(
+  initOpts: GenerateUploaderOptions,
+) => {
+  return <TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts: Omit<
+      UploadFilesOptions<TRouter, TEndpoint>,
+      keyof GenerateUploaderOptions
+    >,
+  ) =>
+    uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
+      ...opts,
+      skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
+      url: resolveMaybeUrlArg(initOpts?.url),
+      package: initOpts.package,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
+    })
+      .pipe(
+        Effect.provideService(FetchContext, {
+          fetch: globalThis.fetch.bind(globalThis),
+          baseHeaders: {
+            "x-uploadthing-version": UPLOADTHING_VERSION,
+            "x-uploadthing-api-key": undefined,
+            "x-uploadthing-fe-package": initOpts.package,
+            "x-uploadthing-be-adapter": undefined,
+          },
+        }),
+        (e) => Effect.runPromise(e, opts.signal ? { signal: opts.signal } : {}),
+      )
+      .catch((error) => {
+        if (!Runtime.isFiberFailure(error)) throw error;
+        const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
+        if (Cause.isInterruptedException(ogError)) {
+          throw new UploadAbortedError();
+        }
+        throw ogError;
+      });
+};
 
 const uploadFilesInternal = <
   TRouter extends FileRouter,
@@ -122,50 +169,22 @@ const uploadFilesInternal = <
             String(endpoint),
             { ...opts, reportEventToUT, routeOptions },
             presigned,
+          ).pipe(
+            Effect.onInterrupt(() => {
+              return reportEventToUT("failure", {
+                fileKey: presigned.key,
+                uploadId: "uploadId" in presigned ? presigned.uploadId : null,
+                fileName: presigned.fileName,
+              }).pipe(Effect.orDie);
+            }),
           ),
         { concurrency: 6 },
       ),
   );
 };
 
-export const genUploader = <TRouter extends FileRouter>(
-  initOpts: GenerateUploaderOptions,
-) => {
-  return <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
-    opts: Omit<
-      UploadFilesOptions<TRouter, TEndpoint>,
-      keyof GenerateUploaderOptions
-    >,
-  ) =>
-    uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
-      ...opts,
-      skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
-      url: resolveMaybeUrlArg(initOpts?.url),
-      package: initOpts.package,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
-    })
-      .pipe(
-        Effect.provideService(FetchContext, {
-          fetch: globalThis.fetch.bind(globalThis),
-          baseHeaders: {
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-            "x-uploadthing-api-key": undefined,
-            "x-uploadthing-fe-package": initOpts.package,
-            "x-uploadthing-be-adapter": undefined,
-          },
-        }),
-        Effect.runPromise,
-      )
-      .catch((error) => {
-        if (!Runtime.isFiberFailure(error)) throw error;
-        throw Cause.squash(error[Runtime.FiberFailureCauseId]);
-      });
-};
-
-type Done = { status: "done"; file: unknown; callbackData: unknown };
-type StillWaiting = { status: "not done" };
+type Done = { status: "done"; callbackData: unknown };
+type StillWaiting = { status: "still waiting" };
 type PollingResponse = Done | StillWaiting;
 
 const isPollingResponse = (input: unknown): input is PollingResponse => {

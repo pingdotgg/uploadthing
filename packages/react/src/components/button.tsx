@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -12,6 +12,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -23,7 +24,7 @@ import type { FileRouter } from "uploadthing/types";
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { usePaste } from "../utils/usePaste";
-import { progressWidths, Spinner } from "./shared";
+import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -93,8 +94,10 @@ export function UploadButton<
   // since the ErrorMessage messes it up otherwise
   const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> &
     UploadThingInternalProps;
+  const fileRouteInput = "input" in $props ? $props.input : undefined;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+  const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -110,6 +113,7 @@ export function UploadButton<
   const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
+      signal: acRef.current.signal,
       headers: $props.headers,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
@@ -129,9 +133,21 @@ export function UploadButton<
     },
   );
 
+  const uploadFiles = useCallback(
+    (files: File[]) => {
+      void startUpload(files, fileRouteInput).catch((e) => {
+        if (e instanceof UploadAbortedError) {
+          void $props.onUploadAborted?.();
+        } else {
+          throw e;
+        }
+      });
+    },
+    [$props, startUpload, fileRouteInput],
+  );
+
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
   const inputProps = useMemo(
     () => ({
       type: "file",
@@ -147,12 +163,12 @@ export function UploadButton<
           return;
         }
 
-        void startUpload(selectedFiles, fileRouteInput);
+        uploadFiles(selectedFiles);
       },
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
     }),
-    [fileRouteInput, fileTypes, mode, multiple, startUpload],
+    [fileTypes, mode, multiple, uploadFiles],
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
@@ -178,10 +194,7 @@ export function UploadButton<
       return filesToUpload;
     });
 
-    if (mode === "auto") {
-      const input = "input" in $props ? $props.input : undefined;
-      void startUpload(files, input);
-    }
+    if (mode === "auto") uploadFiles(files);
   });
 
   const styleFieldArg = {
@@ -209,7 +222,12 @@ export function UploadButton<
 
     if (uploadProgress === 100) return <Spinner />;
 
-    return <span className="z-50">{uploadProgress}%</span>;
+    return (
+      <span className="z-50">
+        <span className="block group-hover:hidden">{uploadProgress}%</span>
+        <Cancel className="hidden size-4 group-hover:block" />
+      </span>
+    );
   };
 
   const renderClearButton = () => (
@@ -264,7 +282,7 @@ export function UploadButton<
     >
       <label
         className={twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
@@ -276,11 +294,17 @@ export function UploadButton<
         data-ut-element="button"
         ref={labelRef}
         onClick={(e) => {
+          if (state === "uploading") {
+            e.preventDefault();
+            e.stopPropagation();
+            acRef.current.abort();
+            acRef.current = new AbortController();
+            return;
+          }
           if (mode === "manual" && files.length > 0) {
             e.preventDefault();
             e.stopPropagation();
-            const input = "input" in $props ? $props.input : undefined;
-            void startUpload(files, input);
+            uploadFiles(files);
           }
         }}
       >
