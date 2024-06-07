@@ -11,6 +11,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         <button>Upload</button>
       </form>
       <progress id="upload-progress" value="0" max="100" style="width:70%;"></progress>
+      <button id="abort" disabled="true">Abort</button>
     </div>
   </div>
 `;

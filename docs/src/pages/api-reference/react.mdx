@@ -135,6 +135,7 @@ export const OurUploadButton = () => (
 | headers                | `HeadersInit \| (() => MaybePromise\<HeadersInit\>)` | No                      | Added in `v6.4` | Send custom headers with the API requests to your server. Primarily for authentication when using a separate backend.       |
 | onClientUploadComplete | (res: UploadedFileResponse[]) => void                | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
 | onUploadError          | function                                             | No                      |                 | callback function when upload fails                                                                                         |
+| onUploadAborted        | function                                             | No                      | Added in `v6.7` | callback function when upload is aborted                                                                                    |
 | onUploadProgress       | function                                             | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
 | onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
@@ -227,6 +228,7 @@ export const OurUploadDropzone = () => (
 | headers                | `HeadersInit \| (() => MaybePromise\<HeadersInit\>)` | No                      | Added in `v6.4` | Send custom headers with the API requests to your server. Primarily for authentication when using a separate backend.       |
 | onClientUploadComplete | (res: UploadedFileResponse[]) => void                | No                      |                 | callback function that runs **after** the serverside [`onUploadComplete`](/api-reference/server#onuploadcomplete) callback. |
 | onUploadError          | function                                             | No                      |                 | callback function when upload fails                                                                                         |
+| onUploadAborted        | function                                             | No                      | Added in `v6.7` | callback function when upload is aborted                                                                                    |
 | onUploadProgress       | function                                             | No                      | Added in `v5.1` | callback function for upload progress                                                                                       |
 | onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No                      | Added in `v6.0` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
@@ -388,6 +390,7 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
   opts: {
     onClientUploadComplete: ({fileKey: string, fileUrl: string}[]) => void
     onUploadError: (error: Error) => void
+    onUploadAborted: () => void
     onUploadProgress: (progress: number) => void
     onUploadBegin: (fileName: string) => void
   },
@@ -404,6 +407,7 @@ const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
 | onUploadProgress       | function                                             | No       | Added in `v5.1` | callback function for upload progress                                                                                       |
 | onBeforeUploadBegin    | `(files: File[]) => File[]`                          | No       | Added in `v5.8` | callback function called before uploading starts. The files returned are the files that will be uploaded                    |
 | onUploadBegin          | function                                             | No       | Added in `v5.4` | callback function for upload begin                                                                                          |
+| signal                 | `AbortSignal`                                        | No       | Added in `v6.7` | Abort signal to abort the upload                                                                                            |
 
 ### Returns
 

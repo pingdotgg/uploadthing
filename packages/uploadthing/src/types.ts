@@ -37,6 +37,12 @@ export type UploadFilesOptions<
    */
   files: File[];
   /**
+   * An AbortSignal to cancel the upload
+   * Calling `abort()` on the parent AbortController will
+   * cause this function to throw an `UploadAbortedError`
+   */
+  signal?: AbortSignal | undefined;
+  /**
    * Called when presigned URLs have been retrieved and the file upload is about to begin
    */
   onUploadBegin?: ((opts: { file: string }) => void) | undefined;

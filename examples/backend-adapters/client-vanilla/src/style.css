@@ -35,6 +35,8 @@ h1 {
 
 .card {
   padding: 2em;
+  display: flex;
+  gap: 0.5em;
 }
 
 button {

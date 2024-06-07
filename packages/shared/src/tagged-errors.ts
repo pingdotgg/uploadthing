@@ -107,3 +107,8 @@ export class BadRequestError<T = unknown> extends Data.Error<{
     return this.message;
   }
 }
+
+export class UploadAbortedError extends Data.Error {
+  readonly _tag = "UploadAborted";
+  readonly name = "UploadAbortedError";
+}

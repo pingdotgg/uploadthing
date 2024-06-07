@@ -47,7 +47,7 @@ export const fetchEff = (
     };
 
     return Effect.tryPromise({
-      try: () => fetch(input, { ...init, headers }),
+      try: (signal) => fetch(input, { ...init, headers, signal }),
       catch: (error) =>
         new FetchError({
           error:

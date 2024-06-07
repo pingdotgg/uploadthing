@@ -7,7 +7,6 @@ import type {
   ContentDisposition,
   Either,
   FetchEsque,
-  Json,
   MaybeUrl,
   SerializedUploadThingError,
   Time,
@@ -59,6 +58,10 @@ export type FileEsque = BlobEsque & {
 export interface UploadFilesOptions {
   contentDisposition?: ContentDisposition;
   acl?: ACL;
+  /**
+   * AbortSignal that can be used to cancel the upload
+   */
+  signal?: AbortSignal;
 }
 export type UploadFileResult = Either<
   UploadedFileData,

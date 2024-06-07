@@ -12,6 +12,7 @@ import {
   getTypeFromFileName,
   objectKeys,
   resolveMaybeUrlArg,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -37,6 +38,8 @@ export {
   generateMimeTypes,
   /** @public */
   generatePermittedFileTypes,
+  /** @public */
+  UploadAbortedError,
 } from "@uploadthing/shared";
 
 /**
@@ -71,7 +74,7 @@ export const isValidFileSize = (
   );
 
 /**
- * Generate a typed `uploadFiles` function for your FileRouter
+ * Generate a typed uploader for a given FileRouter
  * @public
  */
 export const genUploader = <TRouter extends FileRouter>(
@@ -106,7 +109,11 @@ export const genUploader = <TRouter extends FileRouter>(
       )
       .catch((error) => {
         if (!Runtime.isFiberFailure(error)) throw error;
-        throw Cause.squash(error[Runtime.FiberFailureCauseId]);
+        const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
+        if (Cause.isInterruptedException(ogError)) {
+          throw new UploadAbortedError();
+        }
+        throw ogError;
       });
 };
 
@@ -144,7 +151,7 @@ const uploadFilesInternal = <
         type: f.type,
       })),
     }),
-    ({ presigneds, routeOptions }) =>
+    ({ presigneds }) =>
       Effect.forEach(
         presigneds,
         (presigned) =>
@@ -171,7 +178,7 @@ const uploadFile = <
         new UploadThingError({
           code: "NOT_FOUND",
           message: "No file found for presigned URL",
-          cause: `No file matching '${presigned}' found in ${opts.files.map((f) => f.name).join(",")}`,
+          cause: `No file matching '${presigned.name}' found in ${opts.files.map((f) => f.name).join(",")}`,
         }),
     ),
     Effect.tap((file) => opts.onUploadBegin?.({ file: file.name })),

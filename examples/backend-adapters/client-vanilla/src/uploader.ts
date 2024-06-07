@@ -2,6 +2,7 @@ import {
   generateMimeTypes,
   generatePermittedFileTypes,
   genUploader,
+  UploadAbortedError,
 } from "uploadthing/client";
 import { EndpointMetadata } from "uploadthing/types";
 
@@ -18,24 +19,35 @@ export const setupUploader = (form: HTMLFormElement) => {
   const input = form.querySelector<HTMLInputElement>("input[type=file]")!;
   const button = form.querySelector<HTMLButtonElement>("button")!;
   const progressBar = document.querySelector<HTMLProgressElement>("progress")!;
+  const abortButton = document.querySelector<HTMLButtonElement>("#abort")!;
+  const ac = new AbortController();
+
+  // Hook up abort button
+  abortButton.addEventListener("click", () => ac.abort());
 
   // Hook up form submission
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const files = Array.from(input.files || []);
     button.disabled = true;
+    abortButton.disabled = false;
     const res = await uploadFiles("videoAndImage", {
       files,
-      onUploadBegin: (opts) => console.log("Uploading", opts.file),
-      onUploadProgress: (opts) => {
-        console.log("Uploading", opts);
-        progressBar.value = opts.progress;
+      signal: ac.signal,
+      onUploadProgress: ({ progress }) => {
+        progressBar.value = progress;
       },
+    }).catch((error) => {
+      if (error instanceof UploadAbortedError) {
+        alert("Upload aborted");
+      }
+      throw error;
     });
     form.reset();
     alert(`Upload complete! ${res.length} files uploaded`);
     button.disabled = false;
     progressBar.value = 0;
+    abortButton.disabled = true;
   });
 
   // Sync accept and multiple attributes with the server state
