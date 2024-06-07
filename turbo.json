@@ -21,7 +21,6 @@
     },
     "build": {
       "dependsOn": ["^build"],
-
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", ".svelte-kit/**"]
     },
     "lint": {
