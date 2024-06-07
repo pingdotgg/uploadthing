@@ -2,12 +2,26 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "globalDependencies": ["**/.env.*local"],
+  "globalEnv": [
+    "CUSTOM_INFRA_URL",
+    "UPLOADTHING_URL",
+    "UPLOADTHING_SECRET",
+    "UPLOADTHING_TEST_SECRET"
+  ],
+  "globalPassThroughEnv": [
+    "VERCEL_URL",
+    "VERCEL_ENV",
+    "NODE",
+    "NODE_ENV",
+    "CI"
+  ],
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]
     },
     "build": {
       "dependsOn": ["^build"],
+
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", ".svelte-kit/**"]
     },
     "lint": {
