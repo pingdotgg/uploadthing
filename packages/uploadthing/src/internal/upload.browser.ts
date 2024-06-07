@@ -45,4 +45,6 @@ export const uploadWithProgress = (
     const formData = new FormData();
     formData.append("file", file);
     xhr.send(formData);
+
+    return Effect.sync(() => xhr.abort());
   });
