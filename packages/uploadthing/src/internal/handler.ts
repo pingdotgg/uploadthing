@@ -129,7 +129,7 @@ export const buildRequestHandler =
           Effect.fail(
             new UploadThingError({
               code: "INTERNAL_SERVER_ERROR",
-              message: typeof e.error === "string" ? e.error : String(e),
+              message: typeof e.error === "string" ? e.error : e.message,
               cause: e,
               data: e.error as never,
             }),
@@ -355,7 +355,7 @@ const handleUploadAction = Effect.gen(function* () {
       Effect.fail(
         new UploadThingError({
           code: "INTERNAL_SERVER_ERROR",
-          message: String(err),
+          message: err.message,
         }),
       ),
     ),
