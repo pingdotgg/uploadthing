@@ -108,7 +108,4 @@ export class BadRequestError<T = unknown> extends Micro.Error<{
   }
 }
 
-export class UploadAbortedError extends Data.Error {
-  readonly _tag = "UploadAborted";
-  readonly name = "UploadAbortedError";
-}
+export class UploadAbortedError extends Micro.TaggedError("UploadAborted") {}

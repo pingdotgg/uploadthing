@@ -59,7 +59,7 @@
       "@mswjs/interceptors@0.26.15": "patches/@mswjs__interceptors@0.26.15.patch"
     },
     "overrides": {
-      "effect": "0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99"
+      "effect": "0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851"
     }
   }
 }

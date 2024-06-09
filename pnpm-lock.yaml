@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+  effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
 
 patchedDependencies:
   '@mswjs/interceptors@0.26.15':
@@ -212,10 +212,10 @@ importers:
     dependencies:
       '@effect/platform':
         specifier: ^0.57.1
-        version: 0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)
+        version: 0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)
       '@effect/platform-bun':
         specifier: ^0.36.10
-        version: 0.36.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)
+        version: 0.36.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)
       '@elysiajs/cors':
         specifier: ^0.8.0
         version: 0.8.0(elysia@0.8.17)
@@ -232,8 +232,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
-        version: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+        specifier: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
+        version: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       elysia:
         specifier: ^0.8.17
         version: 0.8.17(typescript@5.4.5)
@@ -1293,8 +1293,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
-        version: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+        specifier: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
+        version: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       std-env:
         specifier: ^3.7.0
         version: 3.7.0
@@ -1426,7 +1426,7 @@ importers:
     dependencies:
       '@effect/schema':
         specifier: ^0.66.12
-        version: 0.66.12(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)(fast-check@3.18.0)
+        version: 0.66.12(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)(fast-check@3.18.0)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1437,8 +1437,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       effect:
-        specifier: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
-        version: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+        specifier: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
+        version: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       fast-check:
         specifier: ^3.18.0
         version: 3.18.0
@@ -3759,58 +3759,58 @@ packages:
     engines: {node: '>=10.0.0'}
     dev: true
 
-  /@effect/platform-bun@0.36.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99):
+  /@effect/platform-bun@0.36.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851):
     resolution: {integrity: sha512-7MDdtdLUMgB0d/QlGF0zlS9DYyDb7jl4ypf9XArwWGqL392y4MiMOQxjpN0QgFYPs1SG/cieFvUJqyjBIlAAOg==}
     peerDependencies:
       '@effect/platform': ^0.57.8
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
     dependencies:
-      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)
-      '@effect/platform-node-shared': 0.6.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)
+      '@effect/platform-node-shared': 0.6.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
     dev: false
 
-  /@effect/platform-node-shared@0.6.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99):
+  /@effect/platform-node-shared@0.6.17(@effect/platform@0.57.8)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851):
     resolution: {integrity: sha512-24iAKaLSuU4v7mEAvepfMOLrdzNxNjAiQ0C1vuD9ci4NAJ46ueiUQxQJJCQe7F1H4vtAwWWDFeHPKmqDk5JF4w==}
     peerDependencies:
       '@effect/platform': ^0.57.8
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
     dependencies:
-      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)
+      '@effect/platform': 0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)
       '@parcel/watcher': 2.4.1
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       multipasta: 0.2.2
     dev: false
 
-  /@effect/platform@0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99):
+  /@effect/platform@0.57.8(@effect/schema@0.68.4)(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851):
     resolution: {integrity: sha512-MC/Ny9hd1xCdhIvYyKnheUtKacYXD3hYD1DEpPfU9JrqQuHxXUBrN3/BdetTOn0UOivJx4k2WOhGRAvaZA5krg==}
     peerDependencies:
       '@effect/schema': ^0.68.3
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
     dependencies:
-      '@effect/schema': 0.68.4(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      '@effect/schema': 0.68.4(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       find-my-way-ts: 0.1.4
       multipasta: 0.2.2
       path-browserify: 1.0.1
     dev: false
 
-  /@effect/schema@0.66.12(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99)(fast-check@3.18.0):
+  /@effect/schema@0.66.12(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851)(fast-check@3.18.0):
     resolution: {integrity: sha512-14X3D2FxTFDtll41MWw5OkLQCWqcs6pLYhs38oRK1o7rQ9gM2fdL4sw/gJu4dayAqv122GMgoIEOrzO5PyBuYA==}
     peerDependencies:
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       fast-check: ^3.13.2
     dependencies:
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       fast-check: 3.18.0
     dev: false
 
-  /@effect/schema@0.68.4(effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99):
+  /@effect/schema@0.68.4(effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851):
     resolution: {integrity: sha512-MLYK3gAW0QYdX+hVsH9dG8AZFoCH4oS0bfOsRTy+D5hN7EsbIomsUhzqYlhOy30oOuodTV9sdS1SQPLr74RL4g==}
     peerDependencies:
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
     dependencies:
-      effect: 0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99
+      effect: 0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851
       fast-check: 3.18.0
     dev: false
 
@@ -14712,8 +14712,8 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@0.0.0-snapshot-d173a21c87b057e0151a0df4c89e7b7420ff7a99:
-    resolution: {integrity: sha512-8uKc1PWh3IVewHxZ1dpfp5C6yIDcof4AFfiiy3eb7o222ug8UnFyygdIel+iPjdCNbga9YRMf1wbmsIb4LhqrA==}
+  /effect@0.0.0-snapshot-b4e2d6446fdc267f3c789d6c141284b2dac08851:
+    resolution: {integrity: sha512-qkGED3lc4GqXSz0jFa1uDtDlKEBgRANL0/cDFRt/OyF8MWqLD2WheMIbxXsFAvhcVne5a7i1wEow2Y9+gt1vAw==}
     dev: false
 
   /electron-to-chromium@1.4.746:
