@@ -17,11 +17,12 @@
   ],
   "scripts": {
     "build:all": "turbo run build",
-    "build": "turbo run build --filter \"./packages/*\"",
+    "build": "turbo run build --filter \"./packages/*\" --concurrency=15",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev:all": "turbo watch dev",
     "dev": "turbo watch dev --filter \"./packages/*\"",
     "dev:vanilla": "turbo watch dev --filter uploadthing...",
+    "dev:expo": "turbo watch dev --filter @uploadthing/expo...",
     "dev:react": "turbo watch dev --filter @uploadthing/react...",
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",

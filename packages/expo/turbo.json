@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", "hooks/**", "native/**", "next-ssr-plugin/**"]
+      "outputs": ["dist/**"]
     }
   }
 }
