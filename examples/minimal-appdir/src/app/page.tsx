@@ -37,6 +37,9 @@ export default function Home() {
          * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
          */
         endpoint="videoAndImage"
+        onUploadAborted={() => {
+          alert("Upload Aborted");
+        }}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");

@@ -108,4 +108,7 @@ const uploadPart = (opts: UploadPartOptions) =>
     });
 
     xhr.send(opts.chunk);
+
+    // Cleanup function that runs on interruption
+    return Effect.sync(() => xhr.abort());
   });

@@ -30,7 +30,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(PollUploadResponse)),
       Effect.andThen((res) =>
-        res.status === "done"
+        res.status === "done" && res.fileData
           ? Effect.succeed(res.fileData)
           : Effect.fail(new RetryError()),
       ),
@@ -38,16 +38,15 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
         while: (err) => err instanceof RetryError,
         schedule: exponentialBackoff(),
       }),
-      Effect.catchTag("RetryError", (e) => Effect.die(e)),
+      Effect.catchTag("RetryError", () =>
+        Effect.fail(
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: "File took too long to upload",
+          }),
+        ),
+      ),
     );
-
-    if (file === undefined) {
-      yield* Effect.logError(`Failed to simulate callback for file ${fileKey}`);
-      return yield* new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "File took too long to upload",
-      });
-    }
 
     let callbackUrl = file.callbackUrl + `?slug=${file.callbackSlug}`;
     if (!callbackUrl.startsWith("http")) callbackUrl = "http://" + callbackUrl;

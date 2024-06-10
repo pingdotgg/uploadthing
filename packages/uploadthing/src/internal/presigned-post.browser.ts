@@ -17,10 +17,12 @@ export const uploadPresignedPostWithProgress = (
   },
 ) =>
   Effect.async<UTEvents[keyof UTEvents]["out"], UploadThingError, FetchContext>(
-    (resume) => {
+    (resume, signal) => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", presigned.url);
       xhr.setRequestHeader("Accept", "application/xml");
+
+      signal.addEventListener("abort", () => xhr.abort());
 
       xhr.upload.addEventListener("progress", ({ loaded, total }) => {
         opts.onUploadProgress?.({

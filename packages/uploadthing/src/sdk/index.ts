@@ -108,7 +108,10 @@ export class UTApi {
     );
   };
 
-  private executeAsync = <A, E>(program: Effect.Effect<A, E, FetchContext>) =>
+  private executeAsync = <A, E>(
+    program: Effect.Effect<A, E, FetchContext>,
+    signal?: AbortSignal,
+  ) =>
     program.pipe(
       withMinimalLogLevel(this.logLevel),
       Effect.provide(ConsolaLogger),
@@ -116,7 +119,7 @@ export class UTApi {
         fetch: this.fetch,
         baseHeaders: this.defaultHeaders,
       }),
-      Effect.runPromise,
+      (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );
 
   /**
@@ -155,6 +158,7 @@ export class UTApi {
         }),
         (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
       ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
+      opts?.signal,
     );
     return uploads;
   }
@@ -200,6 +204,7 @@ export class UTApi {
           }),
         ),
       ),
+      opts?.signal,
     );
 
     /** Put it all back together, preserve the order of files */
