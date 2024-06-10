@@ -355,7 +355,7 @@ importers:
         specifier: next
         version: 11.0.0-rc.401
       '@uploadthing/expo':
-        specifier: 6.5.0
+        specifier: 6.6.0
         version: link:../../packages/expo
       expo:
         specifier: ~51.0.8
