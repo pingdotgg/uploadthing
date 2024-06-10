@@ -13,7 +13,7 @@ export const getApiKeyOrThrow = (apiKey?: string) => {
   if (!key?.startsWith("sk_")) {
     throw new UploadThingError({
       code: "MISSING_ENV",
-      message: `Missing or invalid API key. API keys must start with 'sk_'. Got '${key}'`,
+      message: "Missing or invalid API key. API keys must start with `sk_`.",
     });
   }
   return key;
