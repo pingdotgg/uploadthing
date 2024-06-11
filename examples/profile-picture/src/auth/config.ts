@@ -17,29 +17,30 @@ export const authConfig = {
   pages: { signIn: "/" },
   callbacks: {
     jwt: async ({ token, user, session, trigger }) => {
+      // fetch the profile image whenever our profile-pic-uploader called `useSession().update`
       if (trigger === "update") {
-        if ((session as Session)?.user?.image)
-          token.picture = (session as Session).user.image;
-        if ((session as Session)?.user?.name)
-          token.name = (session as Session).user.name;
-      }
-      if (user) {
-        token.sub = user.id;
+        const { image, name } = await db
+            .select({ image: User.image })
+            .from(User)
+            .where(eq(User.id, token.sub))
+            .then(([user]) => ({ image: user?.image, name: user?.name }));
+          token.picture = image;
+          }
+          if (user) {
+            token.sub = user.id;
+            token.name = user.name;
       }
       return token;
     },
     session: async ({ session, token }) => {
       if (token?.sub) {
-        const image =
-          token.picture ??
-          (await db
-            .select({ image: User.image })
-            .from(User)
-            .where(eq(User.id, token.sub))
-            .then(([user]) => user?.image));
-
         session.user.id = token.sub;
-        session.user.image = image;
+      }
+      if (token?.picture) {
+        session.user.image = token.picture
+      }
+      if (token?.name) {
+        session.user.image = token.picture
       }
 
       return session;

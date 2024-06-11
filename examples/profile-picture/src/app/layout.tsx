@@ -7,6 +7,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/ui/sheet";
 import { GeistSans } from "geist/font/sans";
 import { Menu, Package2, Search } from "lucide-react";
 import { Toaster } from "sonner";
+import { SessionProvider } from "next-auth/react"
+
 
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
@@ -22,11 +24,12 @@ export const metadata: Metadata = {
   description: "A User Profile Settings example",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
   return (
     <html lang="en">
       <body className={GeistSans.variable}>
@@ -39,27 +42,29 @@ export default function RootLayout({
            */
           routerConfig={extractRouterConfig(uploadRouter)}
         />
-        <div className="flex min-h-screen w-full flex-col">
-          <header className="bg-background sticky top-0 flex h-16 items-center gap-4 border-b px-4 md:px-6">
-            <Nav />
-            <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-              <form className="ml-auto flex-1 sm:flex-initial">
-                <div className="relative">
-                  <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
-                  <Input
-                    type="search"
-                    placeholder="Search products..."
-                    className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
-                  />
-                </div>
-              </form>
-              <Suspense>
-                <UserMenu user={auth().then((sesh) => sesh?.user ?? null)} />
-              </Suspense>
-            </div>
-          </header>
-          {children}
-        </div>
+        <SessionProvider session={session}>
+          <div className="flex min-h-screen w-full flex-col">
+            <header className="bg-background sticky top-0 flex h-16 items-center gap-4 border-b px-4 md:px-6">
+              <Nav />
+              <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
+                <form className="ml-auto flex-1 sm:flex-initial">
+                  <div className="relative">
+                    <Search className="text-muted-foreground absolute left-2.5 top-2.5 h-4 w-4" />
+                    <Input
+                      type="search"
+                      placeholder="Search products..."
+                      className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+                    />
+                  </div>
+                </form>
+                <Suspense>
+                  <UserMenu user={auth().then((sesh) => sesh?.user ?? null)} />
+                </Suspense>
+              </div>
+            </header>
+            {children}
+          </div>
+        </SessionProvider>
       </body>
       <Toaster />
     </html>
