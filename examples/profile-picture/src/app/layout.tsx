@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   description: "A User Profile Settings example",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
