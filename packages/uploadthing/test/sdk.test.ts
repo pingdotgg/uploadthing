@@ -513,6 +513,11 @@ describe.runIf(shouldRun)(
   "smoke test with live api",
   { timeout: 15_000 },
   () => {
+    console.log(
+      "RUNNING SMOKE TEST",
+      typeof process.env.UPLOADTHING_TEST_SECRET,
+      process.env.UPLOADTHING_TEST_SECRET,
+    );
     const utapi = new UTApi({
       apiKey: shouldRun ? process.env.UPLOADTHING_TEST_SECRET! : "sk_foo",
     });
