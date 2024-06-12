@@ -1,7 +1,7 @@
 import { db } from "@/db/client";
 import { User } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import type { DefaultSession, NextAuthConfig } from "next-auth";
+import type { DefaultSession, NextAuthConfig, Session } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
@@ -19,8 +19,8 @@ export const authConfig = {
     jwt: async ({ token, user, trigger, session }) => {
       if (trigger === "update") {
         // Try to update the user's picture or name from the update request
-        token.picture = session?.user?.image ?? token.picture;
-        token.name = session?.user?.name ?? token.name;
+        token.picture = (session as Session)?.user?.image ?? token.picture;
+        token.name = (session as Session)?.user?.name ?? token.name;
       }
 
       if (user) {
