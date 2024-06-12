@@ -330,7 +330,7 @@ describe("uploadFilesFromUrl", () => {
 describe("constructor throws if no apiKey or secret is set", () => {
   it("no secret or apikey", () => {
     expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      `[UploadThingError: Missing or invalid API key. API keys must start with 'sk_'. Got 'undefined']`,
+      `[UploadThingError: Missing or invalid API key. API keys must start with \`sk_\`.]`,
     );
   });
   it("env is set", () => {
