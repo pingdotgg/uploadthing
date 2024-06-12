@@ -15,7 +15,6 @@ import { useUploadThing } from "@/uploadthing/client";
 import { invariant } from "@/utils";
 import { ImageIcon, Loader2, XIcon } from "lucide-react";
 import type { User } from "next-auth";
-import { useSession } from "next-auth/react";
 import type { Area, Point } from "react-easy-crop";
 import Cropper from "react-easy-crop";
 import { toast } from "sonner";
@@ -34,7 +33,6 @@ export function ProfilePictureCard(props: { user: User }) {
   const [zoom, setZoom] = React.useState(1);
   const [croppedArea, setCroppedArea] = React.useState<Area | null>(null);
   const [newImageLoading, setNewImageLoading] = React.useState(false);
-  const session = useSession();
 
   const router = useRouter();
   const { isUploading, startUpload, routeConfig } = useUploadThing(
@@ -54,8 +52,6 @@ export function ProfilePictureCard(props: { user: User }) {
 
         if (output) URL.revokeObjectURL(output.preview);
         setOutput(null);
-        // so that we trigger the `jwt` callback with `{ trigger: "update" }` and update our session object
-        session.update()
         router.refresh();
       },
       onUploadError: () => {
