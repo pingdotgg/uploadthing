@@ -15,7 +15,6 @@ export const uploadWithProgress = (
   Effect.async<unknown, UploadThingError, FetchContext>((resume, signal) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", presigned.url, true);
-    xhr.setRequestHeader("Accept", "application/xml");
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
     xhr.responseType = "json";
 

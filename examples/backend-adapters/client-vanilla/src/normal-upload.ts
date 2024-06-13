@@ -36,28 +36,34 @@ export const setupUploader = (el: HTMLDivElement) => {
     progressBar.style.display = "block";
 
     // 👇👇👇 THIS IS THE ACTUAL UPLOAD  👇👇👇
-    const res = await uploadFiles("videoAndImage", {
-      files,
-      signal: ac.signal,
-      onUploadProgress: ({ totalProgress }) => {
-        progressBar.value = totalProgress;
-      },
-    }).catch((error) => {
+    try {
+      const res = await uploadFiles("videoAndImage", {
+        files,
+        signal: ac.signal,
+        onUploadProgress: ({ totalProgress }) => {
+          progressBar.value = totalProgress;
+        },
+      });
+      console.log("Upload complete:", res);
+      setTimeout(() => alert(`Upload complete! ${res.length} files uploaded`));
+    } catch (error) {
       if (error instanceof UploadAbortedError) {
         setTimeout(() => alert("Upload aborted"));
+      } else {
+        setTimeout(() =>
+          alert("Upload failed. Check your console for details"),
+        );
+        throw error;
       }
-      throw error;
-    });
+    } finally {
+      // Reset the form and acknowledge the upload is completed
+      form.reset();
 
-    console.log("Upload complete:", res);
-
-    // Reset the form and acknowledge the upload is completed
-    form.reset();
-    setTimeout(() => alert(`Upload complete! ${res.length} files uploaded`));
-    submitButton.disabled = false;
-    progressBar.value = 0;
-    progressBar.style.display = "none";
-    abortButton.disabled = true;
+      submitButton.disabled = false;
+      progressBar.value = 0;
+      progressBar.style.display = "none";
+      abortButton.disabled = true;
+    }
   });
 
   // Sync accept and multiple attributes with the server state
