@@ -384,13 +384,15 @@ const uploadFile = <
         }),
       ),
     ),
-    Effect.map(unsafeCoerce<unknown, TServerOutput>),
-    Effect.map((serverData) => ({
+    Effect.map(
+      unsafeCoerce<unknown, { url: string; serverData: TServerOutput }>,
+    ),
+    Effect.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
       key: presigned.key,
-      serverData,
-      url: "https://utfs.io/f/" + presigned.key,
+      serverData: uploadResponse.serverData,
+      url: uploadResponse.url,
       customId: presigned.customId,
       type: file.type,
     })),

@@ -17,6 +17,7 @@ export const uploadWithProgress = (
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Accept", "application/xml");
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
+    xhr.responseType = "json";
 
     signal.addEventListener("abort", () => {
       xhr.abort();
@@ -31,7 +32,7 @@ export const uploadWithProgress = (
     xhr.addEventListener("load", () => {
       resume(
         xhr.status >= 200 && xhr.status < 300
-          ? Effect.succeed(null)
+          ? Effect.succeed(xhr.response)
           : Effect.die(`XHR failed ${xhr.status} ${xhr.statusText}`),
       );
     });

@@ -49,6 +49,8 @@ export const setupUploader = (el: HTMLDivElement) => {
       throw error;
     });
 
+    console.log("Upload complete:", res);
+
     // Reset the form and acknowledge the upload is completed
     form.reset();
     setTimeout(() => alert(`Upload complete! ${res.length} files uploaded`));
