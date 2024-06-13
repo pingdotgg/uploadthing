@@ -16,6 +16,7 @@ import type {
   TimeShort,
 } from "@uploadthing/shared";
 
+import { INGEST_URL } from "../internal/constants";
 import { uploadWithoutProgress } from "../internal/upload.server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
@@ -133,22 +134,18 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       Effect.promise(() =>
         generateKey(file).then(async (key) => ({
           key,
-          url: await generateSignedURL(
-            `http://localhost:3001/${key}`,
-            input.apiKey,
-            {
-              ttlInSeconds: 60 * 60,
-              data: {
-                "x-ut-identifier": input.appId,
-                "x-ut-file-name": file.name,
-                "x-ut-file-size": file.size,
-                "x-ut-file-type": file.type,
-                "x-ut-custom-id": file.customId,
-                "x-ut-content-disposition": contentDisposition,
-                "x-ut-acl": acl,
-              },
+          url: await generateSignedURL(`${INGEST_URL}/${key}`, input.apiKey, {
+            ttlInSeconds: 60 * 60,
+            data: {
+              "x-ut-identifier": input.appId,
+              "x-ut-file-name": file.name,
+              "x-ut-file-size": file.size,
+              "x-ut-file-type": file.type,
+              "x-ut-custom-id": file.customId,
+              "x-ut-content-disposition": contentDisposition,
+              "x-ut-acl": acl,
             },
-          ),
+          }),
         })),
       ),
     );

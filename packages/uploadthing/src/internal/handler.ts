@@ -17,7 +17,7 @@ import {
   verifySignature,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { INGEST_URL, UPLOADTHING_VERSION } from "./constants";
 import { conditionalDevServer } from "./dev-hook";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
@@ -199,7 +199,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEff("http://localhost:3001/collect-serverdata", {
+  yield* fetchEff(`${INGEST_URL}/collect-serverdata`, {
     method: "POST",
     body: JSON.stringify(payload),
     headers: { "Content-Type": "application/json" },
@@ -374,23 +374,19 @@ const handleUploadAction = Effect.gen(function* () {
     Effect.promise(() =>
       generateKey(file).then(async (key) => ({
         key,
-        url: await generateSignedURL(
-          `http://localhost:3001/${key}`,
-          opts.apiKey,
-          {
-            ttlInSeconds: 60 * 60,
-            data: {
-              "x-ut-identifier": opts.appId,
-              "x-ut-file-name": file.name,
-              "x-ut-file-size": file.size,
-              "x-ut-file-type": file.type,
-              "x-ut-slug": opts.slug,
-              "x-ut-custom-id": file.customId,
-              "x-ut-content-disposition": file.contentDisposition,
-              "x-ut-acl": file.acl,
-            },
+        url: await generateSignedURL(`${INGEST_URL}/${key}`, opts.apiKey, {
+          ttlInSeconds: 60 * 60,
+          data: {
+            "x-ut-identifier": opts.appId,
+            "x-ut-file-name": file.name,
+            "x-ut-file-size": file.size,
+            "x-ut-file-type": file.type,
+            "x-ut-slug": opts.slug,
+            "x-ut-custom-id": file.customId,
+            "x-ut-content-disposition": file.contentDisposition,
+            "x-ut-acl": file.acl,
           },
-        ),
+        }),
       })),
     ),
   );
@@ -436,7 +432,7 @@ const handleUploadAction = Effect.gen(function* () {
   // Send metadata to UT server (non blocking)
   promises.push(
     Effect.runPromise(
-      fetchEff("http://localhost:3001/collect-metadata", {
+      fetchEff(`${INGEST_URL}/collect-metadata`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
