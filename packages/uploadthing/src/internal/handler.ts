@@ -12,7 +12,6 @@ import {
   fillInputRouteConfig,
   generateKey,
   generateSignedURL,
-  generateUploadThingURL,
   getTypeFromFileName,
   objectKeys,
   parseRequestJson,
