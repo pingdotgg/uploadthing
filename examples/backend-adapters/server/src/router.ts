@@ -48,8 +48,8 @@ export const uploadRouter = {
     })
     .onUploadComplete(async (data) => {
       console.log("upload completed", data);
-      await new Promise((r) => setTimeout(r, 4000));
-      return { foo: "bar", baz: "qux" };
+      // await new Promise((r) => setTimeout(r, 4000));
+      // return { foo: "bar", baz: "qux" };
     }),
 } satisfies FileRouter;
 

@@ -1,5 +1,7 @@
 import * as S from "@effect/schema/Schema";
+import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
+import * as Stream from "effect/Stream";
 
 import {
   FetchContext,
@@ -12,18 +14,17 @@ import {
   objectKeys,
   parseRequestJson,
   parseResponseJson,
-  signPayload,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
 
 import { INGEST_URL, UPLOADTHING_VERSION } from "./constants";
-import { conditionalDevServer } from "./dev-hook";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { resolveCallbackUrl } from "./resolve-url";
 import {
   IngestCollectResponse,
+  MetadataFetchResponse,
   UploadActionPayload,
   UploadedFileData,
 } from "./shared-schemas";
@@ -199,7 +200,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEff(`${INGEST_URL}/collect-serverdata`, {
+  yield* fetchEff(`${INGEST_URL}/callback-result`, {
     method: "POST",
     body: JSON.stringify(payload),
     headers: { "Content-Type": "application/json" },
@@ -391,66 +392,63 @@ const handleUploadAction = Effect.gen(function* () {
     ),
   );
 
-  // const { data: presignedUrls } = yield* fetchEff(
-  //   generateUploadThingURL("/v7/prepareUpload"),
-  //   {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       files: fileUploadRequests,
-  //       metadata,
-  //       callbackUrl: callbackUrl.origin + callbackUrl.pathname,
-  //       callbackSlug: opts.slug,
-  //     }),
-  //     headers: { "Content-Type": "application/json" },
-  //   },
-  // ).pipe(
-  //   Effect.andThen(parseResponseJson),
-  //   Effect.andThen(S.decodeUnknown(PrepareUploadResponse)),
-  // );
-
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
   yield* Effect.logDebug("Sending presigned URLs to client");
 
-  // TODO: Do we still need dev hook or should we
-  // establish some SSE sort of thing?
-
-  const promises: Array<Promise<unknown>> = [];
-  const fetchContext = yield* FetchContext;
-  // if (opts.isDev) {
-  //   const fetchContext = yield* FetchContext;
-  //   promise = Effect.forEach(
-  //     presignedUrls,
-  //     (presigned) => conditionalDevServer(presigned, opts.apiKey).pipe(Effect.either),
-  //     { concurrency: 10 },
-  //   ).pipe(
-  //     Effect.provide(ConsolaLogger),
-  //     Effect.provideService(FetchContext, fetchContext),
-  //     Effect.runPromise,
-  //   );
-  // }
+  const metadataFetch = fetchEff(`${INGEST_URL}/route-metadata`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fileKeys: presignedUrls.map(({ key }) => key),
+      metadata: metadata,
+      callbackUrl: callbackUrl.origin + callbackUrl.pathname,
+      callbackSlug: opts.slug,
+      awaitServerData:
+        opts.uploadable._def.routeOptions.awaitServerData ?? false,
+      isDev: opts.isDev,
+    }),
+  });
 
   // Send metadata to UT server (non blocking)
-  promises.push(
-    Effect.runPromise(
-      fetchEff(`${INGEST_URL}/collect-metadata`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileKeys: presignedUrls.map(({ key }) => key),
-          metadata: metadata,
-          callbackUrl: callbackUrl.origin + callbackUrl.pathname,
-          callbackSlug: opts.slug,
-          awaitServerData:
-            opts.uploadable._def.routeOptions.awaitServerData ?? false,
-        }),
-      }).pipe(
+  // In dev, keep the stream open and simulate the callback requests as
+  // files complete uploading
+  const fiber = yield* Effect.if(opts.isDev, {
+    onTrue: () =>
+      metadataFetch.pipe(
+        Effect.filterOrDie(
+          (response) => response.body instanceof ReadableStream,
+          () => "No stream. Did we mess up?",
+        ),
+        Stream.flatMap((response) =>
+          Stream.fromReadableStream(
+            () => response.body as ReadableStream<Uint8Array>,
+            (e) => new Cause.UnknownException({ cause: e }),
+          ),
+        ),
+        Stream.decodeText(),
+        Stream.mapEffect(S.decode(S.parseJson(MetadataFetchResponse))),
+        Stream.mapEffect((_) =>
+          fetchEff(
+            `${callbackUrl.origin}${callbackUrl.pathname}?slug=${opts.slug}`,
+            {
+              method: "POST",
+              body: _.payload,
+              headers: {
+                "Content-Type": "application/json",
+                "uploadthing-hook": "callback",
+                "x-uploadthing-signature": _.signature,
+              },
+            },
+          ).pipe(Effect.tap(Effect.log("Yipee"))),
+        ),
+        Stream.runDrain,
+      ),
+    onFalse: () =>
+      metadataFetch.pipe(
         Effect.andThen(parseResponseJson),
         Effect.andThen(S.decodeUnknown(IngestCollectResponse)),
-        Effect.provide(ConsolaLogger),
-        Effect.provideService(FetchContext, fetchContext),
       ),
-    ),
-  );
+  }).pipe(Effect.forkDaemon);
 
   const presigneds = presignedUrls.map((p, i) => ({
     url: p.url,
@@ -466,7 +464,7 @@ const handleUploadAction = Effect.gen(function* () {
 
   return {
     body: presigneds satisfies UTEvents["upload"]["out"],
-    cleanup: Promise.all(promises),
+    clegnup: () => Effect.runPromise(Effect.ignoreLogged(fiber.await)),
   };
 });
 

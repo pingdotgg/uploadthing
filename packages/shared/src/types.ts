@@ -64,6 +64,7 @@ export interface ResponseEsque {
   json: <T = unknown>() => Promise<T>;
   text: () => Promise<string>;
   blob: () => Promise<Blob>;
+  body: ReadableStream | null;
 
   headers: Headers;
 

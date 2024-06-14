@@ -32,7 +32,9 @@ export const uploadWithProgress = (
       resume(
         xhr.status >= 200 && xhr.status < 300
           ? Effect.succeed(xhr.response)
-          : Effect.die(`XHR failed ${xhr.status} ${xhr.statusText}`),
+          : Effect.die(
+              `XHR failed ${xhr.status} ${xhr.statusText} - ${JSON.stringify(xhr.response)}`,
+            ),
       );
     });
     // Is there a case when the client would throw and

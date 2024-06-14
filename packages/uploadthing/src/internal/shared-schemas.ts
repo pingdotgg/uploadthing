@@ -99,6 +99,13 @@ export class IngestCollectResponse extends S.Class<IngestCollectResponse>(
   ok: S.Boolean,
 }) {}
 
+export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(
+  "MetadataFetchResponse",
+)({
+  payload: S.String,
+  signature: S.String,
+}) {}
+
 export class IngestUploadResponse extends S.Class<IngestUploadResponse>(
   "IngestUploadResponse",
 )({
