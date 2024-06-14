@@ -1,5 +1,4 @@
 import * as Body from "@effect/platform/Http/Body";
-import * as HttpClient from "@effect/platform/Http/Client";
 import * as ClientRequest from "@effect/platform/Http/ClientRequest";
 import * as ClientResponse from "@effect/platform/Http/ClientResponse";
 import * as S from "@effect/schema/Schema";
@@ -270,10 +269,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
   });
 
 const handleUploadAction = Effect.gen(function* () {
-  const client = yield* UploadThingClient;
-  const ingestClient = client.pipe(
-    HttpClient.mapRequest(ClientRequest.prependUrl(INGEST_URL)),
-  );
+  const httpClient = yield* UploadThingClient;
   const opts = yield* RequestInput;
   const { files, input } = yield* Effect.flatMap(
     parseRequestJson(opts.req),
@@ -341,24 +337,6 @@ const handleUploadAction = Effect.gen(function* () {
     ),
   );
 
-  const callbackUrl = yield* resolveCallbackUrl.pipe(
-    Effect.tapError((error) =>
-      Effect.logError("Failed to resolve callback URL", error),
-    ),
-    Effect.catchTag(
-      "InvalidURL",
-      (err) =>
-        new UploadThingError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        }),
-    ),
-  );
-  yield* Effect.logDebug(
-    "Retrieving presigned URLs from UploadThing. Callback URL is:",
-    callbackUrl.href,
-  );
-
   const fileUploadRequests = yield* Effect.forEach(filesWithCustomIds, (file) =>
     Effect.map(
       getTypeFromFileName(file.name, objectKeys(parsedConfig)),
@@ -403,16 +381,22 @@ const handleUploadAction = Effect.gen(function* () {
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
   yield* Effect.logDebug("Sending presigned URLs to client");
 
-  const metadataPost = ClientRequest.post("/route-metadata").pipe(
-    ClientRequest.jsonBody({
-      fileKeys: presignedUrls.map(({ key }) => key),
-      metadata: metadata,
-      callbackUrl: callbackUrl.origin + callbackUrl.pathname,
-      callbackSlug: opts.slug,
-      awaitServerData:
-        opts.uploadable._def.routeOptions.awaitServerData ?? false,
-      isDev: opts.isDev,
-    }),
+  const callbackUrl = yield* resolveCallbackUrl.pipe(
+    Effect.tapError((error) =>
+      Effect.logError("Failed to resolve callback URL", error),
+    ),
+    Effect.catchTag(
+      "InvalidURL",
+      (err) =>
+        new UploadThingError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        }),
+    ),
+  );
+  yield* Effect.logDebug(
+    "Retrieving presigned URLs from UploadThing. Callback URL is:",
+    callbackUrl.href,
   );
 
   const callback = ClientRequest.post(callbackUrl.pathname).pipe(
@@ -421,13 +405,26 @@ const handleUploadAction = Effect.gen(function* () {
     ClientRequest.setHeader("uploadthing-hook", "callback"),
   );
 
+  const metadataPost = ClientRequest.post("/route-metadata").pipe(
+    ClientRequest.prependUrl(INGEST_URL),
+    ClientRequest.jsonBody({
+      fileKeys: presignedUrls.map(({ key }) => key),
+      metadata: metadata,
+      callbackUrl: callback.url,
+      callbackSlug: opts.slug,
+      awaitServerData:
+        opts.uploadable._def.routeOptions.awaitServerData ?? false,
+      isDev: opts.isDev,
+    }),
+  );
+
   // Send metadata to UT server (non blocking)
   // In dev, keep the stream open and simulate the callback requests as
   // files complete uploading
   const fiber = yield* Effect.if(opts.isDev, {
     onTrue: () =>
       metadataPost.pipe(
-        Effect.flatMap(ingestClient),
+        Effect.flatMap(httpClient),
         ClientResponse.stream,
         Stream.decodeText(),
         Stream.mapEffect(S.decode(S.parseJson(MetadataFetchResponse))),
@@ -435,7 +432,7 @@ const handleUploadAction = Effect.gen(function* () {
           callback.pipe(
             ClientRequest.setHeader("x-uploadthing-signature", signature),
             ClientRequest.setBody(Body.text(payload, "application/json")),
-            client,
+            httpClient,
             ClientResponse.arrayBuffer,
             Effect.asVoid,
             Effect.tap(Effect.log("Yipee")),
@@ -446,7 +443,7 @@ const handleUploadAction = Effect.gen(function* () {
       ),
     onFalse: () =>
       metadataPost.pipe(
-        Effect.flatMap(ingestClient),
+        Effect.flatMap(httpClient),
         ClientResponse.schemaBodyJsonScoped(IngestCollectResponse),
       ),
   }).pipe(Effect.forkDaemon);
