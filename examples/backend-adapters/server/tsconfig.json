@@ -4,7 +4,7 @@
     "target": "esnext",
     "esModuleInterop": true,
     "strict": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "node",
     "skipLibCheck": true,
     "outDir": "dist"
   },
