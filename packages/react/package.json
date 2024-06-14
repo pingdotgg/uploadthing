@@ -94,7 +94,7 @@
     "@types/react-dom": "18.3.0",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.1.2",
+    "bunchee": "^5.2.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "next": "14.2.3",
