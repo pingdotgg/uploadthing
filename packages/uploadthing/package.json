@@ -128,7 +128,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.67.23",
+    "@effect/schema": "^0.66.12",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",

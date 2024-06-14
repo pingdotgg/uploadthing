@@ -1422,8 +1422,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/schema':
-        specifier: ^0.67.23
-        version: 0.67.23(effect@3.3.2)
+        specifier: ^0.66.12
+        version: 0.66.12(effect@3.3.2)(fast-check@3.18.0)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -3767,6 +3767,16 @@ packages:
       find-my-way-ts: 0.1.2
       multipasta: 0.2.1
       path-browserify: 1.0.1
+    dev: false
+
+  /@effect/schema@0.66.12(effect@3.3.2)(fast-check@3.18.0):
+    resolution: {integrity: sha512-14X3D2FxTFDtll41MWw5OkLQCWqcs6pLYhs38oRK1o7rQ9gM2fdL4sw/gJu4dayAqv122GMgoIEOrzO5PyBuYA==}
+    peerDependencies:
+      effect: ^3.1.0
+      fast-check: ^3.13.2
+    dependencies:
+      effect: 3.3.2
+      fast-check: 3.18.0
     dev: false
 
   /@effect/schema@0.67.23(effect@3.3.2):
