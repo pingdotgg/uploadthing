@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { HttpServer } from "@effect/platform";
 import { BunHttpServer, BunRuntime } from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
@@ -17,8 +15,6 @@ const serverResponseFromWeb = (_: Response) =>
     headers: HttpServer.headers.fromInput(Object.entries(_.headers)),
     status: _.status,
   });
-
-const ServerLive = BunHttpServer.server.layer({ port: 3003 });
 
 const router = HttpServer.router.empty.pipe(
   HttpServer.router.get("/api", HttpServer.response.text("Hello from Effect")),
@@ -42,6 +38,9 @@ const router = HttpServer.router.empty.pipe(
   ),
 );
 
-const serve = router.pipe(HttpServer.server.serve());
-
-serve.pipe(Layer.provide(ServerLive), Layer.launch, BunRuntime.runMain);
+router.pipe(
+  HttpServer.server.serve(),
+  Layer.provide(BunHttpServer.server.layer({ port: 3000 })),
+  Layer.launch,
+  BunRuntime.runMain,
+);

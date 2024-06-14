@@ -134,7 +134,7 @@
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
     "effect": "^3.3.2",
-    "fast-check": "^3.19.0",
+    "fast-check": "^3.18.0",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
