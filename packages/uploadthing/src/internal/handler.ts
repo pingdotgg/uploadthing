@@ -25,8 +25,9 @@ import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { resolveCallbackUrl } from "./resolve-url";
 import {
-  IngestCollectResponse,
+  CallbackResultResponse,
   MetadataFetchResponse,
+  MetadataFetchStreamPart,
   UploadActionPayload,
   UploadedFileData,
 } from "./shared-schemas";
@@ -209,7 +210,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     headers: { "Content-Type": "application/json" },
   }).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(IngestCollectResponse)),
+    Effect.andThen(S.decodeUnknown(CallbackResultResponse)),
   );
   return { body: null };
 });
@@ -416,6 +417,7 @@ const handleUploadAction = Effect.gen(function* () {
         opts.uploadable._def.routeOptions.awaitServerData ?? false,
       isDev: opts.isDev,
     }),
+    Effect.flatMap(httpClient),
   );
 
   // Send metadata to UT server (non blocking)
@@ -424,10 +426,9 @@ const handleUploadAction = Effect.gen(function* () {
   const fiber = yield* Effect.if(opts.isDev, {
     onTrue: () =>
       metadataPost.pipe(
-        Effect.flatMap(httpClient),
         ClientResponse.stream,
         Stream.decodeText(),
-        Stream.mapEffect(S.decode(S.parseJson(MetadataFetchResponse))),
+        Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
         Stream.mapEffect(({ payload, signature }) =>
           callback.pipe(
             ClientRequest.setHeader("x-uploadthing-signature", signature),
@@ -435,7 +436,7 @@ const handleUploadAction = Effect.gen(function* () {
             httpClient,
             ClientResponse.arrayBuffer,
             Effect.asVoid,
-            Effect.tap(Effect.log("Yipee")),
+            Effect.tap(Effect.log("Successfully simulated callback")),
             Effect.ignoreLogged,
           ),
         ),
@@ -443,8 +444,7 @@ const handleUploadAction = Effect.gen(function* () {
       ),
     onFalse: () =>
       metadataPost.pipe(
-        Effect.flatMap(httpClient),
-        ClientResponse.schemaBodyJsonScoped(IngestCollectResponse),
+        ClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
       ),
   }).pipe(Effect.forkDaemon);
 
