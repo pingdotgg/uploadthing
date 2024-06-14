@@ -1,8 +1,14 @@
 import path from "path";
-import { expect, test } from "@playwright/test";
+import { test as $test, expect } from "@playwright/test";
 
 const dirname = new URL(".", import.meta.url).pathname;
 const testFile = (name: string) => path.join(dirname, "test-files", name);
+
+// Skip tests if no secret is provided (e.g. forks)
+const test =
+  process.env.UPLOADTHING_SECRET && process.env.UPLOADTHING_SECRET.length > 0
+    ? $test
+    : $test.skip;
 
 test("uploads a single image", async ({ page }) => {
   await page.goto("/");
