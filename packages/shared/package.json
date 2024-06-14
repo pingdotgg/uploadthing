@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "^3.1.0",
+    "effect": "^3.3.1",
     "std-env": "^3.7.0"
   },
   "devDependencies": {

@@ -14,6 +14,7 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { UploadThingClient } from "./http-client";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
@@ -212,7 +213,11 @@ export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
 
 export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
   input: RequestHandlerInput<TArgs>,
-) => Effect.Effect<RequestHandlerSuccess, UploadThingError, FetchContext>;
+) => Effect.Effect<
+  RequestHandlerSuccess,
+  UploadThingError,
+  FetchContext | UploadThingClient
+>;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
