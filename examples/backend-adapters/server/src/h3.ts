@@ -23,10 +23,7 @@ router.get(
   eventHandler(() => "Hello from H3!"),
 );
 router.options("/api/uploadthing", () => null);
-router.use(
-  "/api/uploadthing",
-  createRouteHandler({ router: uploadRouter, config: { logLevel: "debug" } }),
-);
+router.use("/api/uploadthing", createRouteHandler({ router: uploadRouter }));
 
 app.use(router.handler);
 
