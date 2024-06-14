@@ -36,14 +36,14 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "^3.3.1",
+    "effect": "^3.3.2",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
     "@types/react": "18.3.3",
     "@uploadthing/eslint-config": "workspace:",
     "@uploadthing/tsconfig": "workspace:",
-    "bunchee": "^5.1.2",
+    "bunchee": "^5.2.1",
     "eslint": "^8.57.0",
     "react": "18.3.1",
     "solid-js": "^1.8.15",

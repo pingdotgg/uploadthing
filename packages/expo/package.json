@@ -40,7 +40,7 @@
     "@types/react": "18.3.3",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.1.2",
+    "bunchee": "^5.2.1",
     "eslint": "^8.57.0",
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^12.0.1",
