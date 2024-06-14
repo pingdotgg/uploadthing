@@ -1,5 +1,7 @@
+import * as Body from "@effect/platform/Http/Body";
+import * as ClientRequest from "@effect/platform/Http/ClientRequest";
+import * as ClientResponse from "@effect/platform/Http/ClientResponse";
 import * as S from "@effect/schema/Schema";
-import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import * as Stream from "effect/Stream";
 
@@ -9,7 +11,6 @@ import {
   fillInputRouteConfig,
   generateKey,
   generateSignedURL,
-  generateUploadThingURL,
   getTypeFromFileName,
   objectKeys,
   parseRequestJson,
@@ -19,12 +20,14 @@ import {
 } from "@uploadthing/shared";
 
 import { INGEST_URL, UPLOADTHING_VERSION } from "./constants";
+import { httpClientLayer, UploadThingClient } from "./http-client";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { resolveCallbackUrl } from "./resolve-url";
 import {
-  IngestCollectResponse,
+  CallbackResultResponse,
   MetadataFetchResponse,
+  MetadataFetchStreamPart,
   UploadActionPayload,
   UploadedFileData,
 } from "./shared-schemas";
@@ -58,6 +61,7 @@ export const runRequestHandlerAsync = <
   config?: RouteHandlerConfig | undefined,
 ) =>
   handler(args).pipe(
+    Effect.provide(httpClientLayer),
     withMinimalLogLevel(config?.logLevel),
     Effect.provide(ConsolaLogger),
     Effect.provideService(FetchContext, {
@@ -206,7 +210,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     headers: { "Content-Type": "application/json" },
   }).pipe(
     Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(IngestCollectResponse)),
+    Effect.andThen(S.decodeUnknown(CallbackResultResponse)),
   );
   return { body: null };
 });
@@ -266,6 +270,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
   });
 
 const handleUploadAction = Effect.gen(function* () {
+  const httpClient = yield* UploadThingClient;
   const opts = yield* RequestInput;
   const { files, input } = yield* Effect.flatMap(
     parseRequestJson(opts.req),
@@ -333,24 +338,6 @@ const handleUploadAction = Effect.gen(function* () {
     ),
   );
 
-  const callbackUrl = yield* resolveCallbackUrl.pipe(
-    Effect.tapError((error) =>
-      Effect.logError("Failed to resolve callback URL", error),
-    ),
-    Effect.catchTag(
-      "InvalidURL",
-      (err) =>
-        new UploadThingError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: err.message,
-        }),
-    ),
-  );
-  yield* Effect.logDebug(
-    "Retrieving presigned URLs from UploadThing. Callback URL is:",
-    callbackUrl.href,
-  );
-
   const fileUploadRequests = yield* Effect.forEach(filesWithCustomIds, (file) =>
     Effect.map(
       getTypeFromFileName(file.name, objectKeys(parsedConfig)),
@@ -395,58 +382,69 @@ const handleUploadAction = Effect.gen(function* () {
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
   yield* Effect.logDebug("Sending presigned URLs to client");
 
-  const metadataFetch = fetchEff(`${INGEST_URL}/route-metadata`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  const callbackUrl = yield* resolveCallbackUrl.pipe(
+    Effect.tapError((error) =>
+      Effect.logError("Failed to resolve callback URL", error),
+    ),
+    Effect.catchTag(
+      "InvalidURL",
+      (err) =>
+        new UploadThingError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: err.message,
+        }),
+    ),
+  );
+  yield* Effect.logDebug(
+    "Retrieving presigned URLs from UploadThing. Callback URL is:",
+    callbackUrl.href,
+  );
+
+  const callback = ClientRequest.post(callbackUrl.pathname).pipe(
+    ClientRequest.prependUrl(callbackUrl.origin),
+    ClientRequest.appendUrlParam("slug", opts.slug),
+    ClientRequest.setHeader("uploadthing-hook", "callback"),
+  );
+
+  const metadataPost = ClientRequest.post("/route-metadata").pipe(
+    ClientRequest.prependUrl(INGEST_URL),
+    ClientRequest.jsonBody({
       fileKeys: presignedUrls.map(({ key }) => key),
       metadata: metadata,
-      callbackUrl: callbackUrl.origin + callbackUrl.pathname,
+      callbackUrl: callback.url,
       callbackSlug: opts.slug,
       awaitServerData:
         opts.uploadable._def.routeOptions.awaitServerData ?? false,
       isDev: opts.isDev,
     }),
-  });
+    Effect.flatMap(httpClient),
+  );
 
   // Send metadata to UT server (non blocking)
   // In dev, keep the stream open and simulate the callback requests as
   // files complete uploading
   const fiber = yield* Effect.if(opts.isDev, {
     onTrue: () =>
-      metadataFetch.pipe(
-        Effect.filterOrDie(
-          (response) => response.body instanceof ReadableStream,
-          () => "No stream. Did we mess up?",
-        ),
-        Stream.flatMap((response) =>
-          Stream.fromReadableStream(
-            () => response.body as ReadableStream<Uint8Array>,
-            (e) => new Cause.UnknownException({ cause: e }),
-          ),
-        ),
+      metadataPost.pipe(
+        ClientResponse.stream,
         Stream.decodeText(),
-        Stream.mapEffect(S.decode(S.parseJson(MetadataFetchResponse))),
-        Stream.mapEffect((_) =>
-          fetchEff(
-            `${callbackUrl.origin}${callbackUrl.pathname}?slug=${opts.slug}`,
-            {
-              method: "POST",
-              body: _.payload,
-              headers: {
-                "Content-Type": "application/json",
-                "uploadthing-hook": "callback",
-                "x-uploadthing-signature": _.signature,
-              },
-            },
-          ).pipe(Effect.tap(Effect.log("Yipee"))),
+        Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
+        Stream.mapEffect(({ payload, signature }) =>
+          callback.pipe(
+            ClientRequest.setHeader("x-uploadthing-signature", signature),
+            ClientRequest.setBody(Body.text(payload, "application/json")),
+            httpClient,
+            ClientResponse.arrayBuffer,
+            Effect.asVoid,
+            Effect.tap(Effect.log("Successfully simulated callback")),
+            Effect.ignoreLogged,
+          ),
         ),
         Stream.runDrain,
       ),
     onFalse: () =>
-      metadataFetch.pipe(
-        Effect.andThen(parseResponseJson),
-        Effect.andThen(S.decodeUnknown(IngestCollectResponse)),
+      metadataPost.pipe(
+        ClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
       ),
   }).pipe(Effect.forkDaemon);
 

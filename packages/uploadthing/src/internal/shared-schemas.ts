@@ -93,17 +93,23 @@ export class NewPresignedUrl extends S.Class<NewPresignedUrl>(
   name: S.String,
 }) {}
 
-export class IngestCollectResponse extends S.Class<IngestCollectResponse>(
+export class MetadataFetchStreamPart extends S.Class<MetadataFetchStreamPart>(
+  "MetadataFetchResponse",
+)({
+  payload: S.String,
+  signature: S.String,
+}) {}
+
+export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(
   "IngestCollectResponse",
 )({
   ok: S.Boolean,
 }) {}
 
-export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(
-  "MetadataFetchResponse",
+export class CallbackResultResponse extends S.Class<CallbackResultResponse>(
+  "CallbackResultResponse",
 )({
-  payload: S.String,
-  signature: S.String,
+  ok: S.Boolean,
 }) {}
 
 export class IngestUploadResponse extends S.Class<IngestUploadResponse>(
