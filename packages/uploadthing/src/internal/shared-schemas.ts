@@ -94,14 +94,14 @@ export class NewPresignedUrl extends S.Class<NewPresignedUrl>(
 }) {}
 
 export class MetadataFetchStreamPart extends S.Class<MetadataFetchStreamPart>(
-  "MetadataFetchResponse",
+  "MetadataFetchStreamPart",
 )({
   payload: S.String,
   signature: S.String,
 }) {}
 
 export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(
-  "IngestCollectResponse",
+  "MetadataFetchResponse",
 )({
   ok: S.Boolean,
 }) {}
