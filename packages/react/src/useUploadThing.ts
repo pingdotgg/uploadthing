@@ -83,6 +83,7 @@ export const INTERNAL_uploadthingHookGen = <
       const input = args[1];
 
       setUploading(true);
+      files.forEach((f) => fileProgress.current.set(f.name, 0));
       opts?.onUploadProgress?.(0);
       try {
         const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
@@ -91,6 +92,7 @@ export const INTERNAL_uploadthingHookGen = <
           files,
           skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
+            console.log("[ut]: got progress event", progress);
             if (!opts?.onUploadProgress) return;
             fileProgress.current.set(progress.file, progress.progress);
             let sum = 0;
@@ -100,6 +102,11 @@ export const INTERNAL_uploadthingHookGen = <
             const averageProgress =
               Math.floor(sum / fileProgress.current.size / 10) * 10;
             if (averageProgress !== uploadProgress.current) {
+              console.log(
+                "[ut]: running user callback",
+                fileProgress.current,
+                averageProgress,
+              );
               opts?.onUploadProgress?.(averageProgress);
               uploadProgress.current = averageProgress;
             }
