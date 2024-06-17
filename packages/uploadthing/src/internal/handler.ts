@@ -7,14 +7,12 @@ import * as Stream from "effect/Stream";
 
 import {
   FetchContext,
-  fetchEff,
   fillInputRouteConfig,
   generateKey,
   generateSignedURL,
   getTypeFromFileName,
   objectKeys,
   parseRequestJson,
-  parseResponseJson,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
@@ -91,7 +89,6 @@ const handleRequest = RequestInput.pipe(
         return handleUploadAction;
     }
   }),
-  Effect.tap((a) => Effect.logInfo("asHandlerOutput", a)),
   Effect.map((output): RequestHandlerSuccess => ({ success: true, ...output })),
 );
 
@@ -107,27 +104,29 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
-        InvalidJsonError: (e) =>
+        BodyError: (e) =>
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing request body",
+            cause: e,
+          }),
+        RequestError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An error occured while parsing input/output",
             cause: e,
           }),
-        BadRequestError: (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: e.getMessage(),
-              cause: e,
-              data: e.json as never,
-            }),
-          ),
-        FetchError: (e) =>
+        ResponseError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
-            message: typeof e.error === "string" ? e.error : e.message,
+            message: e.message,
             cause: e,
-            data: e.error as never,
+          }),
+        InvalidJsonError: (e) =>
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing input/output",
+            cause: e,
           }),
         ParseError: (e) =>
           new UploadThingError({
@@ -204,14 +203,14 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEff(`${INGEST_URL}/callback-result`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: { "Content-Type": "application/json" },
-  }).pipe(
-    Effect.andThen(parseResponseJson),
-    Effect.andThen(S.decodeUnknown(CallbackResultResponse)),
+  const httpClient = yield* UploadThingClient;
+  yield* ClientRequest.post(`/callback-result`).pipe(
+    ClientRequest.prependUrl(INGEST_URL),
+    ClientRequest.jsonBody(payload),
+    Effect.flatMap(httpClient),
+    ClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
   );
+
   return { body: null };
 });
 
@@ -420,7 +419,7 @@ const handleUploadAction = Effect.gen(function* () {
     Effect.flatMap(httpClient),
   );
 
-  // Send metadata to UT server (non blocking)
+  // Send metadata to UT server (non blocking as a daemon)
   // In dev, keep the stream open and simulate the callback requests as
   // files complete uploading
   const fiber = yield* Effect.if(opts.isDev, {
@@ -462,7 +461,7 @@ const handleUploadAction = Effect.gen(function* () {
 
   return {
     body: presigneds satisfies UTEvents["upload"]["out"],
-    clegnup: () => Effect.runPromise(Effect.ignoreLogged(fiber.await)),
+    cleanup: () => Effect.runPromise(Effect.ignoreLogged(fiber.await)),
   };
 });
 

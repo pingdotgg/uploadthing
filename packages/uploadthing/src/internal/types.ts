@@ -203,7 +203,7 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
 export type RequestHandlerSuccess = {
   success: true;
   body: UTEvents[keyof UTEvents]["out"] | null;
-  cleanup?: Promise<unknown> | undefined;
+  cleanup?: () => Promise<unknown>;
 };
 export type RequestHandlerError = {
   success: false;

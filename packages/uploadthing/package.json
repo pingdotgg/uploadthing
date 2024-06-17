@@ -128,13 +128,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "^0.57.1",
-    "@effect/schema": "^0.66.12",
+    "@effect/platform": "^0.57.2",
+    "@effect/schema": "^0.67.24",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
-    "effect": "^3.3.2",
-    "fast-check": "^3.18.0",
+    "effect": "^3.3.3",
     "std-env": "^3.7.0"
   },
   "devDependencies": {

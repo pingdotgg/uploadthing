@@ -17,6 +17,8 @@
   ],
   "scripts": {
     "build:all": "turbo run build",
+    "build:vanilla": "turbo run build --filter uploadthing...",
+    "build:react": "turbo run build --filter @uploadthing/react...",
     "build": "turbo run build --filter \"./packages/*\" --concurrency=15",
     "clean": "turbo run clean && git clean -xdf node_modules",
     "dev:all": "turbo watch dev",
