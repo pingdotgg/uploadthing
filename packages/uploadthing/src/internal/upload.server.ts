@@ -1,5 +1,6 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
 
 import {
   fetchEff,
@@ -9,10 +10,7 @@ import {
 } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import {
-  FailureCallbackResponse,
-  IngestUploadResponse,
-} from "./shared-schemas";
+import { FailureCallbackResponse } from "./shared-schemas";
 
 export const uploadWithoutProgress = (
   file: FileEsque,
@@ -58,7 +56,7 @@ export const uploadWithoutProgress = (
     }
 
     const json = yield* parseResponseJson(res).pipe(
-      Effect.andThen(S.decodeUnknown(IngestUploadResponse)),
+      Effect.andThen(unsafeCoerce<unknown, { url: string }>),
     );
     yield* Effect.logDebug("File", file.name, "uploaded successfully:", json);
     return json;

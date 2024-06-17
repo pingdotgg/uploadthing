@@ -56,27 +56,6 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-export class PollUploadResponse extends S.Class<PollUploadResponse>(
-  "PollUploadResponse",
-)({
-  status: S.String,
-  file: S.optional(
-    S.Struct({
-      fileKey: S.String,
-      fileName: S.String,
-      fileSize: S.Number,
-      fileType: S.String,
-      fileUrl: S.String,
-      customId: S.NullOr(S.String),
-
-      callbackUrl: S.optional(S.String),
-      callbackSlug: S.optional(S.String),
-    }),
-  ),
-  metadata: S.optional(S.Unknown),
-  callbackData: S.optional(S.Unknown),
-}) {}
-
 export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
   "FailureCallbackResponse",
 )({
@@ -110,13 +89,6 @@ export class CallbackResultResponse extends S.Class<CallbackResultResponse>(
   "CallbackResultResponse",
 )({
   ok: S.Boolean,
-}) {}
-
-export class IngestUploadResponse extends S.Class<IngestUploadResponse>(
-  "IngestUploadResponse",
-)({
-  url: S.String,
-  serverData: S.Unknown,
 }) {}
 
 /**
