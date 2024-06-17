@@ -63,6 +63,7 @@ export const INTERNAL_createUploadThingGen = <
       const input = args[1];
       isUploading.set(true);
       opts?.onUploadProgress?.(0);
+      files.forEach((f) => fileProgress.set(f.name, 0));
       try {
         const res = await uploadFiles(endpoint, {
           files,
