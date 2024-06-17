@@ -6,7 +6,7 @@ The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
 FROM THE RIGHT PLACE. The export name ensures your file routes' `middleware`
 functions are typed correctly.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect HTTP","Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing/next";
@@ -48,6 +48,22 @@ functions are typed correctly.
     f({ ... })
       .middleware(({ req }) => {
         //           ^? req: Request
+      })
+    ```
+
+  </Tab>
+
+    <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/effect-http";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req }) => {
+        //           ^? req: HttpServer.request.ServerRequest
       })
     ```
 
@@ -305,7 +321,7 @@ function, although there are some extra configuration options available.
 
 > The names of the exported `createRouteHandler` is different prior to `v6.3`.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect HTTP", "Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createRouteHandler } from "uploadthing/next";
@@ -339,6 +355,29 @@ function, although there are some extra configuration options available.
       router: uploadRouter,
       config: { ... },
     });
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import * as Http from "@effect/platform/HttpServer";
+    import { createRouteHandler } from "uploadthing/effect-http";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    const router = Http.router.empty.pipe(
+      /** Your other routes */
+      Http.router.mount("/api/uploadthing", createRouteHandler({
+        router: uploadRouter,
+        config: { ... },
+      })),
+    );
+
+    const app = router.pipe(
+      Http.server.serve(Http.middleware.logger),
+      Http.server.withLogAddress,
+    );
+
+    // ...
     ```
 
   </Tab>
