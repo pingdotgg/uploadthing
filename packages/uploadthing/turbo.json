@@ -11,6 +11,7 @@
         "internal/**",
         "next/**",
         "next-legacy/**",
+        "node-http/**",
         "server/**",
         "tw/**",
         "types/**"

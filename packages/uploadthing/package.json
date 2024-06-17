@@ -49,6 +49,26 @@
         "default": "./next-legacy/index.cjs"
       }
     },
+    "./effect-http": {
+      "import": {
+        "types": "./effect-http/index.d.ts",
+        "default": "./effect-http/index.js"
+      },
+      "require": {
+        "types": "./effect-http/index.d.cts",
+        "default": "./effect-http/index.cjs"
+      }
+    },
+    "./node-http": {
+      "import": {
+        "types": "./node-http/index.d.ts",
+        "default": "./node-http/index.js"
+      },
+      "require": {
+        "types": "./node-http/index.d.cts",
+        "default": "./node-http/index.cjs"
+      }
+    },
     "./tw": {
       "import": {
         "types": "./tw/index.d.ts",
@@ -106,10 +126,12 @@
   },
   "files": [
     "client",
+    "effect-http",
     "express",
     "fastify",
     "h3",
     "internal",
+    "node-http",
     "next",
     "next-legacy",
     "server",
@@ -137,6 +159,7 @@
     "std-env": "^3.7.0"
   },
   "devDependencies": {
+    "@effect/platform": "^0.57.2",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
@@ -161,6 +184,7 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
+    "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",
@@ -168,6 +192,9 @@
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
+    "@effect/platform": {
+      "optional": true
+    },
     "next": {
       "optional": true
     },
