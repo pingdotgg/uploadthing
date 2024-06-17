@@ -104,24 +104,6 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
-        BodyError: (e) =>
-          new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "An error occured while parsing request body",
-            cause: e,
-          }),
-        RequestError: (e) =>
-          new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "An error occured while parsing input/output",
-            cause: e,
-          }),
-        ResponseError: (e) =>
-          new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: e.message,
-            cause: e,
-          }),
         InvalidJsonError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
@@ -174,44 +156,53 @@ const handleCallbackRequest = Effect.gen(function* () {
   );
   yield* Effect.logDebug("Handling callback request with input:", requestInput);
 
-  const serverData = yield* Effect.tryPromise({
-    try: async () =>
-      uploadable.resolver({
-        file: requestInput.file,
-        metadata: requestInput.metadata,
-      }) as Promise<unknown>,
-    catch: (error) =>
-      new UploadThingError({
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Failed to run onUploadComplete",
-        cause: error,
-      }),
-  }).pipe(
-    Effect.tapError((error) =>
-      Effect.logError(
-        "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
-        error,
+  /**
+   * Run `.onUploadComplete` as a daemon to prevent the
+   * request from UT to potentially timeout.
+   */
+  const fiber = yield* Effect.gen(function* () {
+    const serverData = yield* Effect.tryPromise({
+      try: async () =>
+        uploadable.resolver({
+          file: requestInput.file,
+          metadata: requestInput.metadata,
+        }) as Promise<unknown>,
+      catch: (error) =>
+        new UploadThingError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to run onUploadComplete",
+          cause: error,
+        }),
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.logError(
+          "Failed to run onUploadComplete. You probably shouldn't be throwing errors here.",
+          error,
+        ),
       ),
-    ),
-  );
-  const payload = {
-    fileKey: requestInput.file.key,
-    callbackData: serverData ?? null,
+    );
+    const payload = {
+      fileKey: requestInput.file.key,
+      callbackData: serverData ?? null,
+    };
+    yield* Effect.logDebug(
+      "'onUploadComplete' callback finished. Sending response to UploadThing:",
+      payload,
+    );
+
+    const httpClient = yield* UploadThingClient;
+    yield* ClientRequest.post(`/callback-result`).pipe(
+      ClientRequest.prependUrl(INGEST_URL),
+      ClientRequest.jsonBody(payload),
+      Effect.flatMap(httpClient),
+      ClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
+    );
+  }).pipe(Effect.forkDaemon);
+
+  return {
+    body: null,
+    cleanup: () => Effect.runPromise(fiber.await),
   };
-  yield* Effect.logDebug(
-    "'onUploadComplete' callback finished. Sending response to UploadThing:",
-    payload,
-  );
-
-  const httpClient = yield* UploadThingClient;
-  yield* ClientRequest.post(`/callback-result`).pipe(
-    ClientRequest.prependUrl(INGEST_URL),
-    ClientRequest.jsonBody(payload),
-    Effect.flatMap(httpClient),
-    ClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
-  );
-
-  return { body: null };
 });
 
 const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
