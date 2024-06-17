@@ -5,6 +5,7 @@
     "build": {
       "outputs": [
         "client/**",
+        "effect-http/**",
         "express/**",
         "fastify/**",
         "h3/**",
