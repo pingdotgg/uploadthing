@@ -11,6 +11,8 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import type { IncomingMessageLike } from "./internal/to-web-request";
+import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -52,7 +54,15 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       "/",
       Effect.flatMap(Http.request.ServerRequest, (req) =>
         requestHandler({
-          req: req.source as Request, // TODO: think this is unsafe
+          req:
+            /**
+             * TODO: Redo this to be more cross-platform
+             * This should handle WinterCG and Node.js runtimes,
+             * unsure about others...
+             */
+            req.source instanceof Request
+              ? req.source
+              : toWebRequest(req.source as IncomingMessageLike),
           middlewareArgs: { req, res: undefined, event: undefined },
         }).pipe(
           Effect.provideService(FetchContext, {

@@ -4,7 +4,7 @@ import { process } from "std-env";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-type IncomingMessageLike = {
+export type IncomingMessageLike = {
   method?: string | undefined;
   url?: string | undefined;
   headers?: Record<string, string | string[] | undefined>;
