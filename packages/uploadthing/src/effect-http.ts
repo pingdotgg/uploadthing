@@ -2,7 +2,11 @@ import * as Http from "@effect/platform/HttpServer";
 import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
-import { FetchContext, getStatusCodeFromError } from "@uploadthing/shared";
+import {
+  FetchContext,
+  getStatusCodeFromError,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -11,7 +15,6 @@ import {
   buildRequestHandler,
 } from "./internal/handler";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import type { IncomingMessageLike } from "./internal/to-web-request";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -54,15 +57,29 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       "/",
       Effect.flatMap(Http.request.ServerRequest, (req) =>
         requestHandler({
-          req:
-            /**
-             * TODO: Redo this to be more cross-platform
-             * This should handle WinterCG and Node.js runtimes,
-             * unsure about others...
-             */
-            req.source instanceof Request
-              ? req.source
-              : toWebRequest(req.source as IncomingMessageLike),
+          /**
+           * TODO: Redo this to be more cross-platform
+           * This should handle WinterCG and Node.js runtimes,
+           * unsure about others...
+           * Perhaps we can use `Http.request.ServerRequest` internally?
+           */
+          req: Effect.if(req.source instanceof Request, {
+            onTrue: () => Effect.succeed(req.source as Request),
+            onFalse: () =>
+              req.json.pipe(
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                Effect.flatMap((body) => toWebRequest(req.source as any, body)),
+                Effect.catchTag(
+                  "RequestError",
+                  (error) =>
+                    new UploadThingError({
+                      code: "BAD_REQUEST",
+                      message: "INVALID_JSON",
+                      cause: error,
+                    }),
+                ),
+              ),
+          }),
           middlewareArgs: { req, res: undefined, event: undefined },
         }).pipe(
           Effect.provideService(FetchContext, {

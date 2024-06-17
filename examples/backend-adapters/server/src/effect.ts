@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { createServer } from "node:http";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import * as Http from "@effect/platform/HttpServer";
@@ -20,8 +22,6 @@ const cors = Http.middleware.make((app) =>
   Effect.gen(function* () {
     const req = yield* Http.request.ServerRequest;
 
-    console.log("CORS REQUEST");
-
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "*",
@@ -29,33 +29,15 @@ const cors = Http.middleware.make((app) =>
     };
 
     if (req.method === "OPTIONS") {
-      console.log("OPTIONS REQUEST");
       return Http.response.empty({
         status: 204,
         headers: Http.headers.fromInput(corsHeaders),
       });
     }
 
-    console.log("REQUEST");
     const response = yield* app;
 
     return response.pipe(Http.response.setHeaders(corsHeaders));
-  }),
-);
-
-const logging = Http.middleware.make((app) =>
-  Effect.gen(function* () {
-    const req = yield* Http.request.ServerRequest;
-    const start = Date.now();
-
-    const response = yield* app;
-
-    const end = Date.now();
-    console.log(
-      `${req.method} ${req.url} ${response.status} - ${end - start}ms`,
-    );
-
-    return response;
   }),
 );
 
@@ -65,14 +47,13 @@ const router = Http.router.empty.pipe(
 );
 
 const app = router.pipe(
-  Http.router.use(cors),
-  Http.router.use(logging),
-  Http.server.serve(),
+  cors,
+  Http.server.serve(Http.middleware.logger),
   Http.server.withLogAddress,
 );
 
-const ServerLive = NodeHttpServer.server.layer(() => createServer(), {
-  port: 3000,
-});
+const port = +(process.env.PORT || "3000");
+
+const ServerLive = NodeHttpServer.server.layer(() => createServer(), { port });
 
 NodeRuntime.runMain(Layer.launch(Layer.provide(app, ServerLive)));
