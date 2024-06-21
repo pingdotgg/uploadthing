@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "^3.3.2",
+    "effect": "3.4.0",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "eslint": "^8.57.0",
     "react": "18.3.1",
     "solid-js": "^1.8.15",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0"
   },

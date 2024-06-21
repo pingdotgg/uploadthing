@@ -1,5 +1,15 @@
-import { HttpServer } from "@effect/platform";
-import { BunHttpServer, BunRuntime } from "@effect/platform-bun";
+import {
+  Headers,
+  HttpRouter,
+  HttpServer,
+  HttpServerRequest,
+  HttpServerResponse,
+} from "@effect/platform";
+import {
+  BunHttpServer,
+  BunHttpServerRequest,
+  BunRuntime,
+} from "@effect/platform-bun";
 import { Effect, Layer } from "effect";
 
 import { createRouteHandler } from "uploadthing/server";
@@ -11,27 +21,27 @@ const { GET, POST } = createRouteHandler({
 });
 
 const serverResponseFromWeb = (_: Response) =>
-  HttpServer.response.raw(_.body, {
-    headers: HttpServer.headers.fromInput(Object.entries(_.headers)),
+  HttpServerResponse.raw(_.body, {
+    headers: Headers.fromInput(Object.entries(_.headers)),
     status: _.status,
   });
 
-const router = HttpServer.router.empty.pipe(
-  HttpServer.router.get("/api", HttpServer.response.text("Hello from Effect")),
+const router = HttpRouter.empty.pipe(
+  HttpRouter.get("/api", HttpServerResponse.text("Hello from Effect")),
 
-  HttpServer.router.get(
+  HttpRouter.get(
     "/api/uploadthing",
-    HttpServer.request.ServerRequest.pipe(
-      Effect.map(BunHttpServer.request.toRequest),
+    HttpServerRequest.HttpServerRequest.pipe(
+      Effect.map(BunHttpServerRequest.toRequest),
       Effect.map(GET),
       Effect.flatMap(serverResponseFromWeb),
     ),
   ),
 
-  HttpServer.router.post(
+  HttpRouter.post(
     "/api/uploadthing",
-    HttpServer.request.ServerRequest.pipe(
-      Effect.map(BunHttpServer.request.toRequest),
+    HttpServerRequest.HttpServerRequest.pipe(
+      Effect.map(BunHttpServerRequest.toRequest),
       Effect.andThen(POST),
       Effect.flatMap(serverResponseFromWeb),
     ),
@@ -39,8 +49,8 @@ const router = HttpServer.router.empty.pipe(
 );
 
 router.pipe(
-  HttpServer.server.serve(),
-  Layer.provide(BunHttpServer.server.layer({ port: 3000 })),
+  HttpServer.serve(),
+  Layer.provide(BunHttpServer.layer({ port: 3000 })),
   Layer.launch,
   BunRuntime.runMain,
 );

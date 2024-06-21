@@ -2,7 +2,6 @@
 
 import type { AddressInfo } from "node:net";
 import express from "express";
-import type { Test } from "vitest";
 import { describe, expect, vi } from "vitest";
 
 import { generateUploadThingURL } from "@uploadthing/shared";

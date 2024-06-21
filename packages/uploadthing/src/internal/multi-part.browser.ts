@@ -52,7 +52,7 @@ export const uploadMultipartWithProgress = (
       },
       { concurrency: "inherit" },
     ).pipe(
-      Micro.tapError((error) =>
+      Micro.tapExpected((error) =>
         opts.reportEventToUT("failure", {
           fileKey: presigned.key,
           uploadId: presigned.uploadId,

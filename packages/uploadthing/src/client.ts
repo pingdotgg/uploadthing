@@ -175,7 +175,7 @@ const uploadFilesInternal = <
             { ...opts, reportEventToUT },
             presigned,
           ).pipe(
-            Micro.onInterrupt(
+            Micro.onAbort(
               reportEventToUT("failure", {
                 fileKey: presigned.key,
                 uploadId: "uploadId" in presigned ? presigned.uploadId : null,
@@ -218,7 +218,7 @@ const uploadFile = <
 ) =>
   Arr.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
     Micro.fromOption,
-    Micro.tapError(() =>
+    Micro.tapExpected(() =>
       Micro.sync(() =>
         // eslint-disable-next-line no-console
         console.error("No file found for presigned URL", presigned),
