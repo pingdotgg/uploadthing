@@ -108,7 +108,7 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
-        InvalidJsonError: (e) =>
+        InvalidJson: (e) =>
           Effect.fail(
             new UploadThingError({
               code: "INTERNAL_SERVER_ERROR",
@@ -126,14 +126,12 @@ export const buildRequestHandler =
             }),
           ),
         FetchError: (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: typeof e.error === "string" ? e.error : e.message,
-              cause: e,
-              data: e.error as never,
-            }),
-          ),
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: typeof e.error === "string" ? e.error : e.message,
+            cause: e,
+            data: e.error as never,
+          }),
         ParseError: (e) =>
           Effect.fail(
             new UploadThingError({

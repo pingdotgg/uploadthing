@@ -97,7 +97,7 @@ export const createUTReporter =
             }),
           ),
         ),
-        Micro.catchTag("InvalidJsonError", (e) =>
+        Micro.catchTag("InvalidJson", (e) =>
           Micro.fail(
             new UploadThingError({
               code: "INTERNAL_CLIENT_ERROR",

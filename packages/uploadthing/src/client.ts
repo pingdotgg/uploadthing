@@ -157,16 +157,15 @@ const uploadFilesInternal = <
     headers: opts.headers,
   });
 
-  return Micro.flatMap(
-    reportEventToUT("upload", {
-      input: "input" in opts ? opts.input : null,
-      files: opts.files.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
-    }),
-    (responses) =>
+  return reportEventToUT("upload", {
+    input: "input" in opts ? opts.input : null,
+    files: opts.files.map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    })),
+  }).pipe(
+    Micro.flatMap((responses) =>
       Micro.forEach(
         responses,
         (presigned) =>
@@ -185,6 +184,7 @@ const uploadFilesInternal = <
           ),
         { concurrency: 6 },
       ),
+    ),
   );
 };
 
@@ -218,20 +218,15 @@ const uploadFile = <
 ) =>
   Arr.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
     Micro.fromOption,
-    Micro.tapExpected(() =>
-      Micro.sync(() =>
-        // eslint-disable-next-line no-console
-        console.error("No file found for presigned URL", presigned),
-      ),
-    ),
-    Micro.mapError(
-      () =>
-        new UploadThingError({
-          code: "NOT_FOUND",
-          message: "No file found for presigned URL",
-          cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
-        }),
-    ),
+    Micro.mapError(() => {
+      // eslint-disable-next-line no-console
+      console.error("No file found for presigned URL", presigned);
+      return new UploadThingError({
+        code: "NOT_FOUND",
+        message: "No file found for presigned URL",
+        cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
+      });
+    }),
     Micro.tap((file) => opts.onUploadBegin?.({ file: file.name })),
     Micro.tap((file) =>
       "urls" in presigned
