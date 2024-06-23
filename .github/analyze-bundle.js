@@ -46,7 +46,7 @@ async function getTotalBundleSize(filepath) {
 
 (async () => {
   if (!process.env.GITHUB_TOKEN) {
-    throw new Error("UPLOADTHING_TOKEN is not set");
+    throw new Error("GITHUB_TOKEN is not set");
   }
   const github = getOctokit(process.env.GITHUB_TOKEN);
 
