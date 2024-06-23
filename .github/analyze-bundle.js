@@ -52,6 +52,8 @@ async function getTotalBundleSize(filepath) {
 
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
+  const diff = mainGzip - prGzip;
+  const fmtDiff = (diff > 0 ? `↗ ` : `↘ `) + diff;
 
   console.log(`Main bundle size: ${mainGzip}`);
   console.log(`PR bundle size: ${prGzip}`);
@@ -62,12 +64,11 @@ async function getTotalBundleSize(filepath) {
   const commentBody = `
 ## ${STICKY_COMMENT_TITLE}
 
-| Bundle | Size (gzip)          |
-| ------ | -------------------- |
-| Main   | ${mainGzip}          |
-| PR     | ${prGzip}            |
-| ------ | -------------------- |
-| Diff   | ${mainGzip - prGzip} |
+| Bundle   | Size (gzip)          |
+| -------- | -------------------- |
+| Main     | ${mainGzip}          |
+| PR       | ${prGzip}            |
+| **Diff** | **${fmtDiff}**       |
 `;
 
   // Write a comment with the diff
