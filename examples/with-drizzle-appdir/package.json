@@ -30,7 +30,7 @@
     "drizzle-kit": "^0.20.18",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.1"
