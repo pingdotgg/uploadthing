@@ -49,14 +49,14 @@
         "default": "./next-legacy/index.cjs"
       }
     },
-    "./effect-http": {
+    "./effect-platform": {
       "import": {
-        "types": "./effect-http/index.d.ts",
-        "default": "./effect-http/index.js"
+        "types": "./effect-platform/index.d.ts",
+        "default": "./effect-platform/index.js"
       },
       "require": {
-        "types": "./effect-http/index.d.cts",
-        "default": "./effect-http/index.cjs"
+        "types": "./effect-platform/index.d.cts",
+        "default": "./effect-platform/index.cjs"
       }
     },
     "./tw": {

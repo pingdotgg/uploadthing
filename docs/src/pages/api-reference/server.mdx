@@ -6,7 +6,7 @@ The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
 FROM THE RIGHT PLACE. The export name ensures your file routes' `middleware`
 functions are typed correctly.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect HTTP","Express", "Fastify", "H3"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect Platform","Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing/next";
@@ -55,7 +55,7 @@ functions are typed correctly.
 
     <Tab>
     ```ts
-    import { createUploadthing, type FileRouter } from "uploadthing/effect-http";
+    import { createUploadthing, type FileRouter } from "uploadthing/effect-platform";
 
     const f = createUploadthing();
     export const uploadRouter = { ... };
@@ -321,7 +321,7 @@ function, although there are some extra configuration options available.
 
 > The names of the exported `createRouteHandler` is different prior to `v6.3`.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect HTTP", "Express", "Fastify", "H3"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect Platform", "Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createRouteHandler } from "uploadthing/next";
@@ -361,7 +361,7 @@ function, although there are some extra configuration options available.
   <Tab>
     ```ts
     import * as Http from "@effect/platform/HttpServer";
-    import { createRouteHandler } from "uploadthing/effect-http";
+    import { createRouteHandler } from "uploadthing/effect-platform";
     import { uploadRouter } from "~/server/uploadthing.ts";
 
     const router = Http.router.empty.pipe(

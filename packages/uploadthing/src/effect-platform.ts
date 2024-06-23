@@ -40,19 +40,18 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
     opts,
-    "effect-http",
+    "effect-platform",
   );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  return Http.router.empty.pipe(
-    Http.router.get(
-      "/",
-      Http.response.json(getBuildPerms(), {
-        headers: Http.headers.fromInput({
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-        }),
-      }),
+  const appendUploadThingResponseHeaders = Http.middleware.make(
+    Effect.map(
+      Http.response.setHeader("x-uploadthing-version", UPLOADTHING_VERSION),
     ),
+  );
+
+  return Http.router.empty.pipe(
+    Http.router.get("/", Http.response.json(getBuildPerms())),
     Http.router.post(
       "/",
       Effect.flatMap(Http.request.ServerRequest, (req) =>
@@ -92,13 +91,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
               "x-uploadthing-fe-package": undefined,
             },
           }),
-          Effect.andThen((response) =>
-            Http.response.json(response.body, {
-              headers: Http.headers.fromInput({
-                "x-uploadthing-version": UPLOADTHING_VERSION,
-              }),
-            }),
-          ),
+          Effect.andThen((response) => Http.response.json(response.body)),
           Effect.catchTag("UploadThingError", (error) =>
             Http.response.json(formatError(error, opts.router), {
               status: getStatusCodeFromError(error),
@@ -110,5 +103,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
         ),
       ),
     ),
+    Http.router.use(appendUploadThingResponseHeaders),
   );
 };

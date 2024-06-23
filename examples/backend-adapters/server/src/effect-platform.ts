@@ -3,14 +3,13 @@ import "dotenv/config";
 import { createServer } from "node:http";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
 import * as Http from "@effect/platform/HttpServer";
-import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
+import { Config, Effect, Layer } from "effect";
 
-import { createRouteHandler } from "uploadthing/effect-http";
+import { createRouteHandler } from "uploadthing/effect-platform";
 
 import { uploadRouter } from "./router";
 
-const UploadThingRouter = createRouteHandler({
+const uploadthingRouter = createRouteHandler({
   router: uploadRouter,
 });
 
@@ -43,7 +42,7 @@ const cors = Http.middleware.make((app) =>
 
 const router = Http.router.empty.pipe(
   Http.router.get("/api", Http.response.text("Hello from Effect")),
-  Http.router.mount("/api/uploadthing", UploadThingRouter),
+  Http.router.mount("/api/uploadthing", uploadthingRouter),
 );
 
 const app = router.pipe(
@@ -52,8 +51,11 @@ const app = router.pipe(
   Http.server.withLogAddress,
 );
 
-const port = +(process.env.PORT || "3000");
-
-const ServerLive = NodeHttpServer.server.layer(() => createServer(), { port });
+const Port = Config.integer("PORT").pipe(Config.withDefault(3000));
+const ServerLive = Layer.unwrapEffect(
+  Effect.map(Port, (port) =>
+    NodeHttpServer.server.layer(() => createServer(), { port }),
+  ),
+);
 
 NodeRuntime.runMain(Layer.launch(Layer.provide(app, ServerLive)));
