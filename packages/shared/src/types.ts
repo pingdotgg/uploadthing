@@ -175,6 +175,11 @@ export type RouteOptions = {
    * @default false
    */
   awaitServerData?: boolean;
+  /**
+   * TTL for the presigned URLs generated for the upload
+   * @default `1h`
+   */
+  presignedURLTTL?: Time;
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;

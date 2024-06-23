@@ -12,8 +12,6 @@ import type {
   ContentDisposition,
   MaybeUrl,
   SerializedUploadThingError,
-  Time,
-  TimeShort,
 } from "@uploadthing/shared";
 
 import { INGEST_URL } from "../internal/constants";
@@ -175,18 +173,3 @@ const uploadFile = (
       customId: "customId" in file ? file.customId ?? null : null,
     };
   });
-
-export function parseTimeToSeconds(time: Time) {
-  const match = time.toString().split(/(\d+)/).filter(Boolean);
-  const num = Number(match[0]);
-  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
-
-  const multiplier = {
-    s: 1,
-    m: 60,
-    h: 3600,
-    d: 86400,
-  }[unit];
-
-  return num * multiplier;
-}

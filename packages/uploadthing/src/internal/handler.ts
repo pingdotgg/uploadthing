@@ -13,11 +13,16 @@ import {
   getTypeFromFileName,
   objectKeys,
   parseRequestJson,
+  parseTimeToSeconds,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
 
-import { INGEST_URL, UPLOADTHING_VERSION } from "./constants";
+import {
+  DEFAULT_PRESIGNED_URL_TTL,
+  INGEST_URL,
+  UPLOADTHING_VERSION,
+} from "./constants";
 import { httpClientLayer, UploadThingClient } from "./http-client";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
@@ -348,12 +353,16 @@ const handleUploadAction = Effect.gen(function* () {
     }),
   );
 
+  const routeOptions = opts.uploadable._def.routeOptions;
+
   const presignedUrls = yield* Effect.forEach(fileUploadRequests, (file) =>
     Effect.promise(() =>
       generateKey(file).then(async (key) => ({
         key,
         url: await generateSignedURL(`${INGEST_URL}/${key}`, opts.apiKey, {
-          ttlInSeconds: 60 * 60,
+          ttlInSeconds: routeOptions.presignedURLTTL
+            ? parseTimeToSeconds(routeOptions.presignedURLTTL)
+            : DEFAULT_PRESIGNED_URL_TTL,
           data: {
             "x-ut-identifier": opts.appId,
             "x-ut-file-name": file.name,
@@ -403,8 +412,7 @@ const handleUploadAction = Effect.gen(function* () {
       metadata: metadata,
       callbackUrl: callback.url,
       callbackSlug: opts.slug,
-      awaitServerData:
-        opts.uploadable._def.routeOptions.awaitServerData ?? false,
+      awaitServerData: routeOptions.awaitServerData ?? false,
       isDev: opts.isDev,
     }),
     Effect.flatMap(httpClient),

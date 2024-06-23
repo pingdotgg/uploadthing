@@ -25,7 +25,7 @@ router.get(
 router.options("/api/uploadthing", () => null);
 router.use(
   "/api/uploadthing",
-  createRouteHandler({ router: uploadRouter, config: { isDev: false } }),
+  createRouteHandler({ router: uploadRouter, config: { isDev: true } }),
 );
 
 app.use(router.handler);

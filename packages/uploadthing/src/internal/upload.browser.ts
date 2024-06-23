@@ -1,6 +1,7 @@
 import * as Effect from "effect/Effect";
 
-import type { FetchContext, UploadThingError } from "@uploadthing/shared";
+import type { FetchContext } from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 
 import type { NewPresignedUrl } from "../types";
 
@@ -24,11 +25,13 @@ export const uploadWithProgress = (
 
     let previousLoaded = 0;
     xhr.upload.addEventListener("progress", ({ loaded }) => {
+      console.log("XHR upload progress", loaded);
       const delta = loaded - previousLoaded;
       onUploadProgress?.({ loaded, delta });
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
+      console.log("XHR load", xhr.status, xhr.statusText);
       resume(
         xhr.status >= 200 && xhr.status < 300
           ? Effect.succeed(xhr.response)
@@ -37,17 +40,24 @@ export const uploadWithProgress = (
             ),
       );
     });
+
+    xhr.upload.addEventListener("error", (e) => {
+      console.log("XHR upload error", e);
+    });
+    xhr.upload.addEventListener("abort", (e) => {
+      console.log("XHR abort error", e);
+    });
+
     // Is there a case when the client would throw and
     // ingest server not knowing about it? idts?
-    // xhr.addEventListener("error", () => {
-    //   resume(
-    //     opts.reportEventToUT("failure", {
-    //       fileKey: presigned.key,
-    //       uploadId: null,
-    //       fileName: file.name,
-    //     }),
-    //   );
-    // });
+    xhr.addEventListener("error", () => {
+      console.log("XHR error", xhr.status, xhr.statusText);
+      resume(
+        new UploadThingError({
+          code: "UPLOAD_FAILED",
+        }),
+      );
+    });
 
     const formData = new FormData();
     formData.append("file", file.slice(rangeStart));

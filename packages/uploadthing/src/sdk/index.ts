@@ -14,6 +14,7 @@ import {
   fetchEff,
   generateUploadThingURL,
   parseResponseJson,
+  parseTimeToSeconds,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -36,12 +37,7 @@ import type {
   UTApiOptions,
 } from "./types";
 import { UTFile } from "./ut-file";
-import {
-  downloadFiles,
-  guardServerOnly,
-  parseTimeToSeconds,
-  uploadFilesInternal,
-} from "./utils";
+import { downloadFiles, guardServerOnly, uploadFilesInternal } from "./utils";
 
 export { UTFile };
 
