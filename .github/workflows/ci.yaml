@@ -102,14 +102,14 @@ jobs:
       - name: Compare client bundle
         run: |
           cd examples/backend-adapters/client-vanilla
-          pnpm dlx vite-bundle-visualizer -t raw-data -o bundle/out.json
-          pnpm dlx vite-bundle-visualizer -t treemap -o bundle/out.html
+          pnpm dlx vite-bundle-visualizer -t raw-data -o ./bundle/out.json
+          pnpm dlx vite-bundle-visualizer -t treemap -o ./bundle/out.html
       
       - name: Upload bundle result
         uses: actions/upload-artifact@v4
         with:
           name: bundle-${{ matrix.branch }}
-          path: ./bundle
+          path: examples/backend-adapters/client-vanilla/bundle
 
   bundle-analyze-result:
     if: github.event_name == 'pull_request'
