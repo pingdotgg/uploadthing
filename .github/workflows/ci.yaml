@@ -124,6 +124,9 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
+      - name: Build UT (required to upload HTML files)
+        run: pnpm turbo build -F uploadthing...
+
       - uses: actions/download-artifact@v4
         with:
           name: bundle-current-pr
