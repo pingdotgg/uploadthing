@@ -1,13 +1,18 @@
 // @ts-check
 
 import * as fs from "node:fs/promises";
-import * as path from "node:path";
 import { context, getOctokit } from "@actions/github";
+
+import { UTApi } from "uploadthing/server";
 
 const pr = context.payload.pull_request;
 if (!pr) {
   throw new Error("This action should be run on a pull request");
 }
+if (!process.env.GITHUB_TOKEN) {
+  throw new Error("GITHUB_TOKEN is not set");
+}
+const github = getOctokit(process.env.GITHUB_TOKEN);
 
 /**
  * @typedef {{
@@ -52,29 +57,38 @@ function formatDiff(diff) {
   const units = ["B", "KB", "MB"];
   const i = Math.floor(Math.log(diff) / Math.log(1000));
   const size = (diff / Math.pow(1000, i)).toFixed(2);
-  return `${sign} ${size}${units[i]} 📦`;
+  return `${sign}${size}${units[i]} 📦`;
 }
 
 (async () => {
-  if (!process.env.GITHUB_TOKEN) {
-    throw new Error("GITHUB_TOKEN is not set");
-  }
-  const github = getOctokit(process.env.GITHUB_TOKEN);
-
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
 
   // Upload HTML files for easy inspection
-  // TODO: upload to UT
+  const utapi = new UTApi();
+  const files = await utapi.uploadFiles([
+    new File(
+      [await fs.readFile("bundle-main/out.html", "utf-8")],
+      `${context.sha}-bundle-main.html`,
+    ),
+    new File(
+      [await fs.readFile("bundle-current-pr/out.html", "utf-8")],
+      `${context.sha}-bundle-pr-${pr.number}.html`,
+    ),
+  ]);
+
+  if (!files[0].data || !files[1].data) {
+    throw new Error("Failed to upload files");
+  }
 
   const commentBody = `
 ## ${STICKY_COMMENT_TITLE}
 
-| Bundle   | Size (gzip)          |
-| -------- | -------------------- |
-| Main     | ${mainGzip}          |
-| PR (${context.sha})       | ${prGzip}            |
-| **Diff** | **${formatDiff(mainGzip - prGzip)}**       |
+| Bundle              | Size (gzip)                          | Visualization              |
+| ------------------- | ------------------------------------ | -------------------------- |
+| Main                | ${mainGzip}                          | [📊](${files[0].data.url}) |
+| PR (${context.sha}) | ${prGzip}                            | [📊](${files[1].data.url}) |
+| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                            |
 `;
 
   // Write a comment with the diff
