@@ -98,9 +98,9 @@ jobs:
       
       - name: Compare client bundle
         run: |
-          cd examples/backend-adapters/client-vanilla &&
-          pnpm dlx vite-bundle-visualizer -t raw-data -o bundle/out.json &&
-          pnpm dlx vite-bundle-visualizer -t treemap -o bundle/out.html &&
+          cd examples/backend-adapters/client-vanilla
+          pnpm dlx vite-bundle-visualizer -t raw-data -o bundle/out.json
+          pnpm dlx vite-bundle-visualizer -t treemap -o bundle/out.html
       
       - name: Upload bundle result
         uses: actions/upload-artifact@v4
