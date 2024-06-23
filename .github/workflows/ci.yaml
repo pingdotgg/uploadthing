@@ -95,6 +95,9 @@ jobs:
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
+
+      - name: Build UT
+        run: pnpm turbo build -F uploadthing...
       
       - name: Compare client bundle
         run: |
