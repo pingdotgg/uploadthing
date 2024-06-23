@@ -68,15 +68,14 @@ export const createRouteHandler = <TRouter extends FileRouter>(
               req.json.pipe(
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 Effect.flatMap((body) => toWebRequest(req.source as any, body)),
-                Effect.catchTag(
-                  "RequestError",
-                  (error) =>
+                Effect.catchTags({
+                  RequestError: (error) =>
                     new UploadThingError({
                       code: "BAD_REQUEST",
                       message: "INVALID_JSON",
                       cause: error,
                     }),
-                ),
+                }),
               ),
           }),
           middlewareArgs: { req, res: undefined, event: undefined },
@@ -95,9 +94,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
           Effect.catchTag("UploadThingError", (error) =>
             Http.response.json(formatError(error, opts.router), {
               status: getStatusCodeFromError(error),
-              headers: Http.headers.fromInput({
-                "x-uploadthing-version": UPLOADTHING_VERSION,
-              }),
             }),
           ),
         ),
