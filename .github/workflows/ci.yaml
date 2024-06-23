@@ -124,11 +124,11 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: bundle-current-pr
           path: ./bundle-current-pr
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: bundle-main
           path: ./bundle-main
