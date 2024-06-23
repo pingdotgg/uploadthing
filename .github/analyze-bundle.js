@@ -44,6 +44,12 @@ async function getTotalBundleSize(filepath) {
   return totalGzipLength;
 }
 
+/** @param {number} diff */
+function formatDiff(diff) {
+  const sign = diff === 0 ? "=" : diff > 0 ? "↑" : "↓";
+  return `${sign} ${diff}B gzip 📦`;
+}
+
 (async () => {
   if (!process.env.GITHUB_TOKEN) {
     throw new Error("GITHUB_TOKEN is not set");
@@ -52,8 +58,6 @@ async function getTotalBundleSize(filepath) {
 
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
-  const diff = mainGzip - prGzip;
-  const fmtDiff = (diff > 0 ? `↗ ` : `↘ `) + diff + "B gzip 📦";
 
   console.log(`Main bundle size: ${mainGzip}`);
   console.log(`PR bundle size: ${prGzip}`);
@@ -67,8 +71,8 @@ async function getTotalBundleSize(filepath) {
 | Bundle   | Size (gzip)          |
 | -------- | -------------------- |
 | Main     | ${mainGzip}          |
-| PR (${context.sha})       | ${prGzip}            |
-| **Diff** | **${fmtDiff}**       |
+| PR (${context.ref})       | ${prGzip}            |
+| **Diff** | **${formatDiff(mainGzip - prGzip)}**       |
 `;
 
   // Write a comment with the diff
