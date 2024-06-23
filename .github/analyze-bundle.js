@@ -46,8 +46,13 @@ async function getTotalBundleSize(filepath) {
 
 /** @param {number} diff */
 function formatDiff(diff) {
-  const sign = diff === 0 ? "=" : diff > 0 ? "↑" : "↓";
-  return `${sign} ${diff}B gzip 📦`;
+  if (diff === 0) return "0B 📦";
+  const sign = diff > 0 ? "↑" : "↓";
+
+  const units = ["B", "KB", "MB"];
+  const i = Math.floor(Math.log(diff) / Math.log(1000));
+  const size = (diff / Math.pow(1000, i)).toFixed(2);
+  return `${sign} ${size}${units[i]} 📦`;
 }
 
 (async () => {
@@ -59,9 +64,6 @@ function formatDiff(diff) {
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
 
-  console.log(`Main bundle size: ${mainGzip}`);
-  console.log(`PR bundle size: ${prGzip}`);
-
   // Upload HTML files for easy inspection
   // TODO: upload to UT
 
@@ -71,7 +73,7 @@ function formatDiff(diff) {
 | Bundle   | Size (gzip)          |
 | -------- | -------------------- |
 | Main     | ${mainGzip}          |
-| PR (${context.ref})       | ${prGzip}            |
+| PR (${context.sha})       | ${prGzip}            |
 | **Diff** | **${formatDiff(mainGzip - prGzip)}**       |
 `;
 

@@ -133,9 +133,6 @@ jobs:
           name: bundle-main
           path: ./bundle-main
 
-      - run: ls -la ./bundle-current-pr
-      - run: cat ./bundle-current-pr/out.json
-
       - name: Compare client bundle
         run: node .github/analyze-bundle.js
         env:
