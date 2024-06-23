@@ -77,3 +77,63 @@ jobs:
       - name: Typecheck
         run: pnpm run typecheck
 
+  analyze-bundle:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        branch: ['current-pr', 'main']
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ matrix.branch }}
+
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+      
+      - name: Compare client bundle
+        run: |
+          cd examples/backend-adapters/client-vanilla &&
+          pnpm dlx vite-bundle-visualizer -t raw-data -o bundle/out.json &&
+          pnpm dlx vite-bundle-visualizer -t treemap -o bundle/out.html &&
+      
+      - name: Upload bundle result
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-${{ matrix.branch }}
+          path: ./bundle
+
+  bundle-analyze-result:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [analyze-bundle]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: bundle-current-pr
+          path: ./bundle-current-pr
+      - uses: actions/download-artifact@v3
+        with:
+          name: bundle-main
+          path: ./bundle-main
+
+      - run: ls -la ./bundle-current-pr
+      - run: cat ./bundle-current-pr/out.json
+
+      - name: Compare client bundle
+        run: node .github/analyze-bundle.js
+        env:
+          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
