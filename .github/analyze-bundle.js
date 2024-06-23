@@ -84,11 +84,11 @@ function formatDiff(diff) {
   const commentBody = `
 ## ${STICKY_COMMENT_TITLE}
 
-| Bundle              | Size (gzip)                          | Visualization              |
-| ------------------- | ------------------------------------ | -------------------------- |
-| Main                | ${mainGzip}                          | [📊](${files[0].data.url}) |
-| PR (${context.sha}) | ${prGzip}                            | [📊](${files[1].data.url}) |
-| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                            |
+| Bundle              | Size (gzip)                          | Visualization                          |
+| ------------------- | ------------------------------------ | -------------------------------------- |
+| Main                | ${mainGzip}                          | [See Treemap 📊](${files[0].data.url}) |
+| PR (${context.sha}) | ${prGzip}                            | [See Treemap 📊](${files[1].data.url}) |
+| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                        |
 `;
 
   // Write a comment with the diff
