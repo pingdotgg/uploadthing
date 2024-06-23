@@ -53,7 +53,7 @@ async function getTotalBundleSize(filepath) {
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
   const diff = mainGzip - prGzip;
-  const fmtDiff = (diff > 0 ? `↗ ` : `↘ `) + diff;
+  const fmtDiff = (diff > 0 ? `↗ ` : `↘ `) + diff + "B gzip 📦";
 
   console.log(`Main bundle size: ${mainGzip}`);
   console.log(`PR bundle size: ${prGzip}`);
@@ -67,7 +67,7 @@ async function getTotalBundleSize(filepath) {
 | Bundle   | Size (gzip)          |
 | -------- | -------------------- |
 | Main     | ${mainGzip}          |
-| PR       | ${prGzip}            |
+| PR (${context.sha})       | ${prGzip}            |
 | **Diff** | **${fmtDiff}**       |
 `;
 
