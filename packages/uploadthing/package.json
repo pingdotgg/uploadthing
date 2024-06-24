@@ -49,6 +49,16 @@
         "default": "./next-legacy/index.cjs"
       }
     },
+    "./effect-platform": {
+      "import": {
+        "types": "./effect-platform/index.d.ts",
+        "default": "./effect-platform/index.js"
+      },
+      "require": {
+        "types": "./effect-platform/index.d.cts",
+        "default": "./effect-platform/index.cjs"
+      }
+    },
     "./tw": {
       "import": {
         "types": "./tw/index.d.ts",
@@ -106,6 +116,7 @@
   },
   "files": [
     "client",
+    "effect-platform",
     "express",
     "fastify",
     "h3",
@@ -137,6 +148,7 @@
     "std-env": "^3.7.0"
   },
   "devDependencies": {
+    "@effect/platform": "^0.57.2",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
@@ -161,6 +173,7 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
+    "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",
@@ -168,6 +181,9 @@
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
+    "@effect/platform": {
+      "optional": true
+    },
     "next": {
       "optional": true
     },
