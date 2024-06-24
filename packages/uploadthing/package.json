@@ -49,6 +49,16 @@
         "default": "./next-legacy/index.cjs"
       }
     },
+    "./effect-platform": {
+      "import": {
+        "types": "./effect-platform/index.d.ts",
+        "default": "./effect-platform/index.js"
+      },
+      "require": {
+        "types": "./effect-platform/index.d.cts",
+        "default": "./effect-platform/index.cjs"
+      }
+    },
     "./tw": {
       "import": {
         "types": "./tw/index.d.ts",
@@ -106,6 +116,7 @@
   },
   "files": [
     "client",
+    "effect-platform",
     "express",
     "fastify",
     "h3",
@@ -128,7 +139,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "^0.57.2",
+    "@effect/platform": "0.57.2",
     "@effect/schema": "^0.67.24",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
@@ -154,13 +165,14 @@
     "solid-js": "^1.8.15",
     "tailwindcss": "^3.4.1",
     "type-fest": "^4.10.3",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "undici": "^6.6.2",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0",
     "zod": "^3.23.8"
   },
   "peerDependencies": {
+    "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",
@@ -168,6 +180,9 @@
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
+    "@effect/platform": {
+      "optional": true
+    },
     "next": {
       "optional": true
     },
