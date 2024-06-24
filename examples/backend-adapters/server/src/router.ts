@@ -39,7 +39,15 @@ export const uploadRouter = {
       },
       blob: { maxFileSize: "8GB", maxFileCount: 10 },
     },
-    { awaitServerData: false, presignedURLTTL: 5 },
+    {
+      awaitServerData: true,
+      presignedURLTTL: 10,
+      // Each file will get a unique key (default)
+      getFileHashParts: (file) => [file.name, Date.now()],
+
+      // Uploading the same file will yield the same key
+      // getFileHashParts: (file) => [file.name],
+    },
   )
     .middleware(({ files }) => {
       return {
@@ -48,7 +56,7 @@ export const uploadRouter = {
     })
     .onUploadComplete(async (data) => {
       console.log("upload completed", data);
-      await new Promise((r) => setTimeout(r, 15000));
+      // await new Promise((r) => setTimeout(r, 15000));
       return { foo: "bar", baz: "qux" };
     }),
 } satisfies FileRouter;

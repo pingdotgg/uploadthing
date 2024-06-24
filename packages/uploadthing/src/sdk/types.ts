@@ -52,6 +52,7 @@ export type UrlWithOverrides = {
 type BlobEsque = NodeBlob | Blob;
 export type FileEsque = BlobEsque & {
   name: string;
+  lastModified?: number;
   customId?: string | null | undefined;
 };
 

@@ -145,6 +145,7 @@ export const genUploader = <TRouter extends FileRouter>(
           name: f.name,
           size: f.size,
           type: f.type,
+          lastModified: f.lastModified,
         })),
       }).pipe(Effect.provideService(FetchContext, fetchService)),
     );
@@ -332,6 +333,7 @@ const uploadFilesInternal = <
         name: f.name,
         size: f.size,
         type: f.type,
+        lastModified: f.lastModified,
       })),
     }),
     Effect.forEach(
@@ -376,6 +378,12 @@ const uploadFile = <
     Effect.map(({ headers }) =>
       parseInt(headers.get("x-ut-range-start") ?? "0", 10),
     ),
+    Effect.tap((start) =>
+      opts.onUploadProgress?.({
+        delta: start,
+        loaded: start,
+      }),
+    ),
     Effect.flatMap((start) =>
       uploadWithProgress(file, start, presigned, (progressEvent) =>
         opts.onUploadProgress?.({
@@ -391,6 +399,7 @@ const uploadFile = <
       name: file.name,
       size: file.size,
       key: presigned.key,
+      lastModified: file.lastModified,
       serverData: uploadResponse.serverData,
       url: uploadResponse.url,
       customId: presigned.customId,

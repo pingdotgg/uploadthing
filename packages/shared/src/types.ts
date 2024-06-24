@@ -26,6 +26,17 @@ export type DeepPartial<T> = T extends object
     }
   : T;
 
+export interface FileProperties {
+  name: string;
+  size: number;
+  type: string;
+  lastModified?: number;
+}
+
+export type ExtractHashPartsFn = (
+  file: FileProperties,
+) => Array<string | number | undefined | null | boolean>;
+
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
  * @see RequestInit from lib.dom.d.ts
@@ -180,6 +191,15 @@ export type RouteOptions = {
    * @default `1h`
    */
   presignedURLTTL?: Time;
+  /**
+   * Function that pulls out the properties of the uploaded file
+   * that you want to be included as part of the presigned URL generation.
+   * By default, we include all properties as well as a timestamp to make
+   * each URL unique. You can for example override this to always return
+   * the same hash for the same file, no matter when it was uploaded.
+   * @default (file) => [file.name, file.size, file.type, file.lastModified,  Date.now()]
+   */
+  getFileHashParts?: ExtractHashPartsFn;
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;

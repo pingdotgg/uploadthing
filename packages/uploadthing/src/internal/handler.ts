@@ -257,6 +257,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
           size: file.size,
           type: file.type,
           customId: theirs?.customId,
+          lastModified: theirs?.lastModified ?? Date.now(),
         };
       }),
     );
@@ -340,6 +341,7 @@ const handleUploadAction = Effect.gen(function* () {
         name: file.name,
         size: file.size,
         type: file.type,
+        lastModified: file.lastModified,
         customId: file.customId,
         contentDisposition: parsedConfig[type]?.contentDisposition ?? "inline",
         acl: parsedConfig[type]?.acl,
@@ -357,7 +359,7 @@ const handleUploadAction = Effect.gen(function* () {
 
   const presignedUrls = yield* Effect.forEach(fileUploadRequests, (file) =>
     Effect.promise(() =>
-      generateKey(file).then(async (key) => ({
+      generateKey(file, routeOptions.getFileHashParts).then(async (key) => ({
         key,
         url: await generateSignedURL(`${INGEST_URL}/${key}`, opts.apiKey, {
           ttlInSeconds: routeOptions.presignedURLTTL

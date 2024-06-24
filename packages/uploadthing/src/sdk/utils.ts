@@ -116,7 +116,13 @@ export const downloadFiles = (
         }
 
         return yield* Effect.promise(() => response.blob()).pipe(
-          Effect.andThen((blob) => new UTFile([blob], name, { customId })),
+          Effect.andThen(
+            (blob) =>
+              new UTFile([blob], name, {
+                customId,
+                lastModified: Date.now(),
+              }),
+          ),
         );
       }),
     { concurrency: 10 },
@@ -167,9 +173,10 @@ const uploadFile = (
     return {
       key: presigned.key,
       url: url,
+      lastModified: file.lastModified ?? Date.now(),
       name: file.name,
       size: file.size,
       type: file.type,
-      customId: "customId" in file ? file.customId ?? null : null,
+      customId: file.customId ?? null,
     };
   });
