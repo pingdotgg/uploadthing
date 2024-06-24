@@ -53,10 +53,11 @@ async function getTotalBundleSize(filepath) {
 function formatDiff(diff) {
   if (diff === 0) return "0B 📦";
   const sign = diff > 0 ? "↑" : "↓";
+  const abs = Math.abs(diff);
 
   const units = ["B", "KB", "MB"];
-  const i = Math.floor(Math.log(diff) / Math.log(1000));
-  const size = (diff / Math.pow(1000, i)).toFixed(2);
+  const i = Math.floor(Math.log(abs) / Math.log(1000));
+  const size = (abs / Math.pow(1000, i)).toFixed(2);
   return `${sign}${size}${units[i]} 📦`;
 }
 
