@@ -66,7 +66,7 @@ function formatDiff(diff) {
 
   console.log(`mainGzip: ${mainGzip}`);
   console.log(`prGzip: ${prGzip}`);
-  console.log(`diff: ${formatDiff(mainGzip - prGzip)}`);
+  console.log(`diff: ${formatDiff(prGzip - mainGzip)}`);
 
   // Upload HTML files for easy inspection (not on forks)
   let files = [];
@@ -97,7 +97,7 @@ function formatDiff(diff) {
     | ------------------- | ------------------------------------ | -------------------------------------- |
     | Main                | ${mainGzip}                          | [See Treemap 📊](${files[0].data.url}) |
     | PR (${context.sha}) | ${prGzip}                            | [See Treemap 📊](${files[1].data.url}) |
-    | **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                        |
+    | **Diff**            | **${formatDiff(prGzip - mainGzip)}** |                                        |
     `;
 
     // Write a comment with the diff
