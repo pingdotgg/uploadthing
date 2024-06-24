@@ -109,11 +109,10 @@ By default, Vercel projects are configured to require authentication to access
 preview deployments. This means that our external server cannot access your
 application to trigger the callbacks you have set up in your file router.
 
-To fix, this you can either disable this setting in your Vercel project, or—if
-you are paying for Advanced Deployment Protection—set a
-[custom header](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
-in the uploadthing dashboard that will allow uploadthing callbacks to bypass the
-authentication.
+To fix, this you can either disable this setting in your Vercel project, or you
+can use the
+[`x-vercel-protection-bypass`](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
+header, which will allow uploadthing callbacks to bypass the authentication.
 
 #### Configuring a custom header in the uploadthing dashboard
 

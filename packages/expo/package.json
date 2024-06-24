@@ -1,0 +1,84 @@
+{
+  "name": "@uploadthing/expo",
+  "version": "6.6.0",
+  "type": "module",
+  "license": "MIT",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "lint": "eslint src --max-warnings 0",
+    "build": "bunchee --tsconfig tsconfig.build.json",
+    "clean": "git clean -xdf dist node_modules",
+    "dev": "wait-on ../react/native/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@uploadthing/react": "workspace:*",
+    "@uploadthing/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.3",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
+    "bunchee": "^5.2.1",
+    "eslint": "^8.57.0",
+    "expo-constants": "^15.4.5",
+    "expo-document-picker": "^12.0.1",
+    "expo-image-picker": "^15.0.4",
+    "react": "18.3.1",
+    "react-native": "^0.74.1",
+    "typescript": "^5.5.2",
+    "uploadthing": "workspace:*",
+    "wait-on": "^7.2.0"
+  },
+  "peerDependencies": {
+    "expo-constants": "^15.4.5",
+    "expo-document-picker": "^11.0.0 || ^12.0.0",
+    "expo-image-picker": "^14.0.0 || ^15.0.0",
+    "react": "^17.0.2 || ^18.0.0",
+    "react-native": "*",
+    "uploadthing": "^6.12.0"
+  },
+  "peerDependenciesMeta": {
+    "@uploadthing/mime-types": {
+      "optional": true
+    }
+  },
+  "eslintConfig": {
+    "root": true,
+    "rules": {
+      "no-restricted-imports": [
+        "error",
+        {
+          "patterns": [
+            "@uploadthing/expo",
+            "@uploadthing/expo/*"
+          ]
+        }
+      ]
+    },
+    "extends": [
+      "@uploadthing/eslint-config/base"
+    ]
+  }
+}

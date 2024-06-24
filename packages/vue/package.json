@@ -49,10 +49,10 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.1.2",
+    "bunchee": "^5.2.1",
     "concurrently": "^8.2.2",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0"

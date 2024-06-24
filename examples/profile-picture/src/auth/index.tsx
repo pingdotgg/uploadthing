@@ -51,8 +51,6 @@ const {
   adapter: DrizzleAdapter(db, {
     usersTable: User,
     accountsTable: Account,
-    sessionsTable: {} as any,
-    verificationTokensTable: {} as any,
   }),
   providers: [
     Github,

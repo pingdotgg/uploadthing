@@ -16,31 +16,33 @@ export const authConfig = {
   providers: [],
   pages: { signIn: "/" },
   callbacks: {
-    jwt: async ({ token, user, session, trigger }) => {
+    jwt: async ({ token, user, trigger, session }) => {
       if (trigger === "update") {
-        if ((session as Session)?.user?.image)
-          token.picture = (session as Session).user.image;
-        if ((session as Session)?.user?.name)
-          token.name = (session as Session).user.name;
+        // Try to update the user's picture or name from the update request
+        token.picture = (session as Session)?.user?.image ?? token.picture;
+        token.name = (session as Session)?.user?.name ?? token.name;
       }
+
       if (user) {
         token.sub = user.id;
+        token.name = user.name;
       }
+
+      if (token.sub && !token.picture) {
+        // fetch iamge if not set
+        const [{ image }] = await db
+          .select({ image: User.image, name: User.name })
+          .from(User)
+          .where(eq(User.id, token.sub));
+        token.picture = image;
+      }
+
       return token;
     },
     session: async ({ session, token }) => {
-      if (token?.sub) {
-        const image =
-          token.picture ??
-          (await db
-            .select({ image: User.image })
-            .from(User)
-            .where(eq(User.id, token.sub))
-            .then(([user]) => user?.image));
-
-        session.user.id = token.sub;
-        session.user.image = image;
-      }
+      if (token?.sub) session.user.id = token.sub;
+      if (token?.picture) session.user.image = token.picture;
+      if (token?.name) session.user.name = token.name;
 
       return session;
     },

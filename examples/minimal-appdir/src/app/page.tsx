@@ -11,8 +11,19 @@ export default function Home() {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
-    onClientUploadComplete: () => {
-      alert("Upload Completed");
+    skipPolling: true,
+    onBeforeUploadBegin: (files) => {
+      console.log("Uploading", files.length, "files");
+      return files;
+    },
+    onUploadBegin: (name) => {
+      console.log("Beginning upload of", name);
+    },
+    onClientUploadComplete: (res) => {
+      console.log("Upload Completed.", res.length, "files uploaded");
+    },
+    onUploadProgress(p) {
+      console.log("onUploadProgress", p);
     },
   });
 
@@ -37,6 +48,9 @@ export default function Home() {
          * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
          */
         endpoint="videoAndImage"
+        onUploadAborted={() => {
+          alert("Upload Aborted");
+        }}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
@@ -47,14 +61,14 @@ export default function Home() {
       />
       <input
         type="file"
+        multiple
         onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
+          const files = Array.from(e.target.files ?? []);
 
           // Do something with files
 
           // Then start the upload
-          await startUpload([file]);
+          await startUpload(files);
         }}
       />
     </main>

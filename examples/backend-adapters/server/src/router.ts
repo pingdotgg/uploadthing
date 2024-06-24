@@ -1,3 +1,13 @@
+/**
+ * @remarks Note that this router uses the `/server` entrypoint
+ * but we re-use it even for adapters like Express, Fastify and H3.
+ * The middleware options will therefore not be accurate, but
+ * for this example we don't care and don't want to duplicate
+ * the router for every adapter.
+ *
+ * In your app, import using the correct entrypoint for your adapter.
+ * @see https://docs.uploadthing.com/api-reference/server#createuploadthing
+ */
 import { createUploadthing, type FileRouter } from "uploadthing/server";
 
 const f = createUploadthing({

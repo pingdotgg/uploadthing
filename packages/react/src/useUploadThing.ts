@@ -8,6 +8,7 @@ import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
   semverLite,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import {
@@ -82,9 +83,13 @@ export const INTERNAL_uploadthingHookGen = <
       const input = args[1];
 
       setUploading(true);
-      opts?.onUploadProgress?.(0, undefined);
+
+      files.forEach((f) => fileProgress.current.set(f.name, 0));
+      opts?.onUploadProgress?.(0);
+      
       try {
         const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
+          signal: opts?.signal,
           headers: opts?.headers,
           files,
           skipPolling: opts?.skipPolling,
@@ -114,6 +119,12 @@ export const INTERNAL_uploadthingHookGen = <
         await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        /**
+         * This is the only way to introduce this as a non-breaking change
+         * TODO: Consider refactoring API in the next major version
+         */
+        if (e instanceof UploadAbortedError) throw e;
+
         let error: UploadThingError<inferErrorShape<TRouter>>;
         if (e instanceof UploadThingError) {
           error = e as UploadThingError<inferErrorShape<TRouter>>;

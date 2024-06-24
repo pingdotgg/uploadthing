@@ -23,6 +23,7 @@ import {
   parseResponseJson,
   resolveMaybeUrlArg,
   RetryError,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 
@@ -55,6 +56,8 @@ export {
   generatePermittedFileTypes,
   /** @public */
   bytesToFileSize,
+  /** @public */
+  UploadAbortedError,
 } from "@uploadthing/shared";
 
 /**
@@ -87,6 +90,52 @@ export const isValidFileSize = (
       Effect.catchAll(() => Effect.succeed(false)),
     ),
   );
+
+/**
+ * Generate a typed uploader for a given FileRouter
+ * @public
+ */
+export const genUploader = <TRouter extends FileRouter>(
+  initOpts: GenerateUploaderOptions,
+) => {
+  return <
+    TEndpoint extends keyof TRouter,
+    TSkipPolling extends boolean = false,
+  >(
+    endpoint: TEndpoint,
+    opts: Omit<
+      UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
+      keyof GenerateUploaderOptions
+    >,
+  ) =>
+    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
+      ...opts,
+      url: resolveMaybeUrlArg(initOpts?.url),
+      package: initOpts.package,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
+    })
+      .pipe(
+        Effect.provideService(FetchContext, {
+          fetch: globalThis.fetch.bind(globalThis),
+          baseHeaders: {
+            "x-uploadthing-version": UPLOADTHING_VERSION,
+            "x-uploadthing-api-key": undefined,
+            "x-uploadthing-fe-package": initOpts.package,
+            "x-uploadthing-be-adapter": undefined,
+          },
+        }),
+        (e) => Effect.runPromise(e, opts.signal ? { signal: opts.signal } : {}),
+      )
+      .catch((error) => {
+        if (!Runtime.isFiberFailure(error)) throw error;
+        const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
+        if (Cause.isInterruptedException(ogError)) {
+          throw new UploadAbortedError();
+        }
+        throw ogError;
+      });
+};
 
 const uploadFilesInternal = <
   TRouter extends FileRouter,
@@ -127,48 +176,18 @@ const uploadFilesInternal = <
           String(endpoint),
           { ...opts, reportEventToUT },
           presigned,
+        ).pipe(
+          Effect.onInterrupt(() => {
+            return reportEventToUT("failure", {
+              fileKey: presigned.key,
+              uploadId: "uploadId" in presigned ? presigned.uploadId : null,
+              fileName: presigned.fileName,
+            }).pipe(Effect.orDie);
+          }),
         ),
       { concurrency: 6 },
     ),
   );
-};
-
-export const genUploader = <TRouter extends FileRouter>(
-  initOpts: GenerateUploaderOptions,
-) => {
-  return <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
-    endpoint: TEndpoint,
-    opts: Omit<
-      UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-      keyof GenerateUploaderOptions
-    >,
-  ) =>
-    uploadFilesInternal<TRouter, TEndpoint, TSkipPolling>(endpoint, {
-      ...opts,
-      url: resolveMaybeUrlArg(initOpts?.url),
-      package: initOpts.package,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
-    })
-      .pipe(
-        Effect.provideService(FetchContext, {
-          fetch: globalThis.fetch.bind(globalThis),
-          baseHeaders: {
-            "x-uploadthing-version": UPLOADTHING_VERSION,
-            "x-uploadthing-api-key": undefined,
-            "x-uploadthing-fe-package": initOpts.package,
-            "x-uploadthing-be-adapter": undefined,
-          },
-        }),
-        Effect.runPromise,
-      )
-      .catch((error) => {
-        if (!Runtime.isFiberFailure(error)) throw error;
-        throw Cause.squash(error[Runtime.FiberFailureCauseId]);
-      });
 };
 
 type Done = { status: "done"; callbackData: unknown };

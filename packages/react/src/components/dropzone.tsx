@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/dropzone/react";
@@ -12,6 +12,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -24,7 +25,8 @@ import type { FileRouter } from "uploadthing/types";
 import { usePaste } from "../hooks/use-paste";
 import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { progressWidths, Spinner } from "./shared";
+import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { Cancel, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -76,6 +78,21 @@ export type UploadDropzoneProps<
   disabled?: boolean;
 };
 
+/** These are some internal stuff we use to test the component and for forcing a state in docs */
+type UploadThingInternalProps = {
+  __internal_state?: "readying" | "ready" | "uploading";
+  // Allow to set upload progress for testing
+  __internal_upload_progress?: number;
+  // Allow to set ready explicitly and independently of internal state
+  __internal_ready?: boolean;
+  // Allow to show the button even if no files were added
+  __internal_show_button?: boolean;
+  // Allow to disable the button
+  __internal_button_disabled?: boolean;
+  // Allow to disable the dropzone
+  __internal_dropzone_disabled?: boolean;
+};
+
 export function UploadDropzone<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
@@ -91,22 +108,12 @@ export function UploadDropzone<
     TRouter,
     TEndpoint,
     TSkipPolling
-  > & {
-    // props not exposed on public type
-    // Allow to set internal state for testing
-    __internal_state?: "readying" | "ready" | "uploading";
-    // Allow to set upload progress for testing
-    __internal_upload_progress?: number;
-    // Allow to set ready explicitly and independently of internal state
-    __internal_ready?: boolean;
-    // Allow to show the button even if no files were added
-    __internal_show_button?: boolean;
-    // Allow to disable the button
-    __internal_button_disabled?: boolean;
-    // Allow to disable the dropzone
-    __internal_dropzone_disabled?: boolean;
-  };
+  > &
+    UploadThingInternalProps;
+  const fileRouteInput = "input" in $props ? $props.input : undefined;
+
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
+  const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -117,10 +124,12 @@ export function UploadDropzone<
   );
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
+
   const { files, setFiles, startUpload, isUploading, routeConfig } =
     useUploadThing($props.endpoint, {
       files: $props.files,
       onFilesChange: $props.onFilesChange,
+      signal: acRef.current.signal,
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
@@ -139,6 +148,19 @@ export function UploadDropzone<
 
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
+    const uploadFiles = useCallback(
+    (files: File[]) => {
+      void startUpload(files, fileRouteInput).catch((e) => {
+        if (e instanceof UploadAbortedError) {
+          void $props.onUploadAborted?.();
+        } else {
+          throw e;
+        }
+      });
+    },
+    [$props, startUpload, fileRouteInput],
+  );
+
   const onDrop = useCallback(
     (acceptedFiles: FileWithState[]) => {
       $props.onDrop?.(acceptedFiles);
@@ -146,11 +168,7 @@ export function UploadDropzone<
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if (mode === "auto") {
-        const input = "input" in $props ? $props.input : undefined;
-        void startUpload(acceptedFiles, input);
-        return;
-      }
+      if (mode === "auto") uploadFiles(acceptedFiles);
     },
     [$props, mode, startUpload, setFiles],
   );
@@ -175,12 +193,20 @@ export function UploadDropzone<
   const onUploadClick = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!files) return;
+    if (state === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const input = "input" in $props ? $props.input : undefined;
-    void startUpload(files, input);
+      acRef.current.abort();
+      acRef.current = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      uploadFiles(files);
+    }
   };
 
   usePaste((event) => {
@@ -216,7 +242,13 @@ export function UploadDropzone<
     if (uploadProgress === 100) {
       return <Spinner />;
     }
-    return <span className="z-50">{uploadProgress}%</span>;
+
+    return (
+      <span className="z-50">
+        <span className="block group-hover:hidden">{uploadProgress}%</span>
+        <Cancel className="hidden size-4 group-hover:block" />
+      </span>
+    );
   };
 
   const styleFieldArg = {
@@ -305,7 +337,7 @@ export function UploadDropzone<
 
       <button
         className={twMerge(
-          "relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
@@ -318,10 +350,7 @@ export function UploadDropzone<
         data-ut-element="button"
         data-state={state}
         type="button"
-        disabled={
-          $props.__internal_button_disabled ??
-          (!files.length || state === "uploading")
-        }
+        disabled={$props.__internal_button_disabled ?? !files.length}
       >
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
           getUploadButtonContents(fileTypes)}

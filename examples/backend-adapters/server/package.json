@@ -8,14 +8,18 @@
     "dev:express": "NODE_ENV=development tsx watch src/express.ts",
     "dev:fastify": "NODE_ENV=development tsx watch src/fastify.ts",
     "dev:hono": "NODE_ENV=development tsx watch src/hono.ts",
-    "dev:h3": "NODE_ENV=development listhen -w src/h3.ts"
+    "dev:h3": "NODE_ENV=development listhen -w src/h3.ts",
+    "dev:effect": "NODE_ENV=development tsx watch src/effect-platform.ts"
   },
   "dependencies": {
+    "@effect/platform": "^0.57.2",
+    "@effect/platform-node": "^0.51.11",
     "@elysiajs/cors": "^0.8.0",
     "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
+    "effect": "^3.3.2",
     "elysia": "^0.8.17",
     "express": "^4.18.2",
     "fastify": "^4.26.1",
@@ -29,7 +33,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "tsx": "^4.7.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "wrangler": "^3.30.0"
   }
 }
