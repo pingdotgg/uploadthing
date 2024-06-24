@@ -65,30 +65,36 @@ function formatDiff(diff) {
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
 
   // Upload HTML files for easy inspection
-  const utapi = new UTApi();
-  const files = await utapi.uploadFiles([
-    new File(
-      [await fs.readFile("bundle-main/out.html", "utf-8")],
-      `${context.sha}-bundle-main.html`,
-    ),
-    new File(
-      [await fs.readFile("bundle-current-pr/out.html", "utf-8")],
-      `${context.sha}-bundle-pr-${pr.number}.html`,
-    ),
-  ]);
+  let files = [];
+  if (
+    typeof process.env.UPLOADTHING_SECRET === "string" &&
+    process.env.UPLOADTHING_SECRET.length > 0
+  ) {
+    const utapi = new UTApi();
+    files = await utapi.uploadFiles([
+      new File(
+        [await fs.readFile("bundle-main/out.html", "utf-8")],
+        `${context.sha}-bundle-main.html`,
+      ),
+      new File(
+        [await fs.readFile("bundle-current-pr/out.html", "utf-8")],
+        `${context.sha}-bundle-pr-${pr.number}.html`,
+      ),
+    ]);
 
-  if (!files[0].data || !files[1].data) {
-    throw new Error("Failed to upload files");
+    if (!files[0].data || !files[1].data) {
+      throw new Error("Failed to upload files");
+    }
   }
 
   const commentBody = `
 ## ${STICKY_COMMENT_TITLE}
 
-| Bundle              | Size (gzip)                          | Visualization                          |
-| ------------------- | ------------------------------------ | -------------------------------------- |
-| Main                | ${mainGzip}                          | [See Treemap 📊](${files[0].data.url}) |
-| PR (${context.sha}) | ${prGzip}                            | [See Treemap 📊](${files[1].data.url}) |
-| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                        |
+| Bundle              | Size (gzip)                          | Visualization                                                                                             |
+| ------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Main                | ${mainGzip}                          | ${files[0].data.url ? "[See Treemap 📊](" + files[0].data.url + ")" : "_Treemap not available on forks_"} |
+| PR (${context.sha}) | ${prGzip}                            | ${files[1].data.url ? "[See Treemap 📊](" + files[1].data.url + ")" : "_Treemap not available on forks_"} |
+| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                                                                                           |
 `;
 
   // Write a comment with the diff

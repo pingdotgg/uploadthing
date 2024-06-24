@@ -140,4 +140,4 @@ jobs:
         run: node .github/analyze-bundle.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
+          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}

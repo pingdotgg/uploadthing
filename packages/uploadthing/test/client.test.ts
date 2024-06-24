@@ -309,6 +309,7 @@ describe("uploadFiles", () => {
 
   it(
     "reports of failed multipart upload",
+    { timeout: 10000 },
     async ({ db }) => {
       const { uploadFiles, close } = await setupUTServer();
       useBadS3();
@@ -345,7 +346,6 @@ describe("uploadFiles", () => {
 
       await close();
     },
-    { timeout: 10000 },
   );
 
   it("handles too big file size errors", async ({ db }) => {
