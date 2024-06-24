@@ -67,6 +67,9 @@ importers:
       typescript:
         specifier: ^5.5.2
         version: 5.5.2
+      uploadthing:
+        specifier: workspace:*
+        version: link:packages/uploadthing
       vite-tsconfig-paths:
         specifier: ^4.3.1
         version: 4.3.2(typescript@5.5.2)
