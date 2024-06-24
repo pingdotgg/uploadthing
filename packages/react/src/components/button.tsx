@@ -23,7 +23,6 @@ import type { FileRouter } from "uploadthing/types";
 
 import { usePaste } from "../hooks/use-paste";
 import type { UploadthingComponentProps } from "../types";
-import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {

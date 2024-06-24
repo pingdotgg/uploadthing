@@ -25,7 +25,6 @@ import type { FileRouter } from "uploadthing/types";
 import { usePaste } from "../hooks/use-paste";
 import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
@@ -148,7 +147,7 @@ export function UploadDropzone<
 
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
-    const uploadFiles = useCallback(
+  const uploadFiles = useCallback(
     (files: File[]) => {
       void startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
