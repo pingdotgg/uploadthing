@@ -86,7 +86,7 @@ export const INTERNAL_uploadthingHookGen = <
 
       files.forEach((f) => fileProgress.current.set(f.name, 0));
       opts?.onUploadProgress?.(0);
-      
+
       try {
         const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
           signal: opts?.signal,
