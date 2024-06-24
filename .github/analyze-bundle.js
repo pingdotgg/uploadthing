@@ -64,7 +64,11 @@ function formatDiff(diff) {
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
 
-  // Upload HTML files for easy inspection
+  console.log(`mainGzip: ${mainGzip}`);
+  console.log(`prGzip: ${prGzip}`);
+  console.log(`diff: ${formatDiff(mainGzip - prGzip)}`);
+
+  // Upload HTML files for easy inspection (not on forks)
   let files = [];
   if (
     typeof process.env.UPLOADTHING_SECRET === "string" &&
@@ -85,42 +89,42 @@ function formatDiff(diff) {
     if (!files[0].data || !files[1].data) {
       throw new Error("Failed to upload files");
     }
-  }
 
-  const commentBody = `
-## ${STICKY_COMMENT_TITLE}
+    const commentBody = `
+    ## ${STICKY_COMMENT_TITLE}
+    
+    | Bundle              | Size (gzip)                          | Visualization                          |
+    | ------------------- | ------------------------------------ | -------------------------------------- |
+    | Main                | ${mainGzip}                          | [See Treemap 📊](${files[0].data.url}) |
+    | PR (${context.sha}) | ${prGzip}                            | [See Treemap 📊](${files[1].data.url}) |
+    | **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                        |
+    `;
 
-| Bundle              | Size (gzip)                          | Visualization                                                                                               |
-| ------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| Main                | ${mainGzip}                          | ${files[0]?.data?.url ? "[See Treemap 📊](" + files[0].data.url + ")" : "_Treemap not available on forks_"} |
-| PR (${context.sha}) | ${prGzip}                            | ${files[1]?.data?.url ? "[See Treemap 📊](" + files[1].data.url + ")" : "_Treemap not available on forks_"} |
-| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                                                                                             |
-`;
-
-  // Write a comment with the diff
-  const comment = await github.rest.issues
-    .listComments({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: pr.number,
-    })
-    .then((cmts) =>
-      cmts.data.find((cmt) => cmt.body?.includes(STICKY_COMMENT_TITLE)),
-    );
-  if (comment) {
-    await github.rest.issues.updateComment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      comment_id: comment.id,
-      body: commentBody,
-    });
-  } else {
-    await github.rest.issues.createComment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: pr.number,
-      body: commentBody,
-    });
+    // Write a comment with the diff
+    const comment = await github.rest.issues
+      .listComments({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: pr.number,
+      })
+      .then((cmts) =>
+        cmts.data.find((cmt) => cmt.body?.includes(STICKY_COMMENT_TITLE)),
+      );
+    if (comment) {
+      await github.rest.issues.updateComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        comment_id: comment.id,
+        body: commentBody,
+      });
+    } else {
+      await github.rest.issues.createComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: pr.number,
+        body: commentBody,
+      });
+    }
   }
 })().catch((error) => {
   console.error(error);
