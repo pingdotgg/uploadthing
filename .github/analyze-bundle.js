@@ -90,11 +90,11 @@ function formatDiff(diff) {
   const commentBody = `
 ## ${STICKY_COMMENT_TITLE}
 
-| Bundle              | Size (gzip)                          | Visualization                                                                                             |
-| ------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| Main                | ${mainGzip}                          | ${files[0].data.url ? "[See Treemap 📊](" + files[0].data.url + ")" : "_Treemap not available on forks_"} |
-| PR (${context.sha}) | ${prGzip}                            | ${files[1].data.url ? "[See Treemap 📊](" + files[1].data.url + ")" : "_Treemap not available on forks_"} |
-| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                                                                                           |
+| Bundle              | Size (gzip)                          | Visualization                                                                                               |
+| ------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Main                | ${mainGzip}                          | ${files[0]?.data?.url ? "[See Treemap 📊](" + files[0].data.url + ")" : "_Treemap not available on forks_"} |
+| PR (${context.sha}) | ${prGzip}                            | ${files[1]?.data?.url ? "[See Treemap 📊](" + files[1].data.url + ")" : "_Treemap not available on forks_"} |
+| **Diff**            | **${formatDiff(mainGzip - prGzip)}** |                                                                                                             |
 `;
 
   // Write a comment with the diff
