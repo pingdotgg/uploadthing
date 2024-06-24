@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ matrix.branch == 'current-pr' && github.head_ref || matrix.branch }}
+          ref: ${{ matrix.branch == 'current-pr' && github.ref || matrix.branch }}
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
