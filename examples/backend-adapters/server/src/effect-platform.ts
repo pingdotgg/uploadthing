@@ -14,7 +14,7 @@ const uploadthingRouter = createRouteHandler({
 });
 
 /**
- * Simple CORS middleware that allows everything...
+ * Simple CORS middleware that allows everything
  * Adjust to your needs.
  */
 const cors = Http.middleware.make((app) =>
