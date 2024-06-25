@@ -1,8 +1,9 @@
 import * as S from "@effect/schema/Schema";
+import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as Schedule from "effect/Schedule";
 
 import {
-  exponentialBackoff,
   fetchEff,
   generateUploadThingURL,
   parseResponseJson,
@@ -36,15 +37,20 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       ),
       Effect.retry({
         while: (err) => err instanceof RetryError,
-        schedule: exponentialBackoff(),
+        schedule: Schedule.exponential(10, 4).pipe(
+          // 10ms, 40ms, 160ms, 640ms...
+          Schedule.union(Schedule.spaced(1000)),
+          Schedule.compose(Schedule.elapsed),
+          Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
+        ),
       }),
-      Effect.catchTag("RetryError", () =>
-        Effect.fail(
+      Effect.catchTag(
+        "RetryError",
+        () =>
           new UploadThingError({
             code: "UPLOAD_FAILED",
             message: "File took too long to upload",
           }),
-        ),
       ),
     );
 

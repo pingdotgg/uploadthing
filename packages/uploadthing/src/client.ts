@@ -1,10 +1,7 @@
 import * as Arr from "effect/Array";
-import * as Cause from "effect/Cause";
-import * as Console from "effect/Console";
-import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
+import * as Micro from "effect/Micro";
 import * as Option from "effect/Option";
-import * as Runtime from "effect/Runtime";
 
 import type {
   ExpandedRouteConfig,
@@ -12,7 +9,7 @@ import type {
   InvalidJsonError,
 } from "@uploadthing/shared";
 import {
-  exponentialBackoff,
+  exponentialDelay,
   FetchContext,
   fetchEff,
   fileSizeToBytes,
@@ -66,10 +63,10 @@ export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
-  Effect.runSync(
+  Micro.runSync(
     getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
-      Effect.flatMap((type) => Effect.succeed(file.type.includes(type))),
-      Effect.catchAll(() => Effect.succeed(false)),
+      Micro.map((type) => file.type.includes(type)),
+      Micro.orElseSucceed(() => false),
     ),
   );
 
@@ -81,11 +78,11 @@ export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
-  Effect.runSync(
+  Micro.runSync(
     getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
-      Effect.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
-      Effect.flatMap((maxFileSize) => Effect.succeed(file.size <= maxFileSize)),
-      Effect.catchAll(() => Effect.succeed(false)),
+      Micro.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
+      Micro.map((maxFileSize) => file.size <= maxFileSize),
+      Micro.orElseSucceed(() => false),
     ),
   );
 
@@ -114,7 +111,7 @@ export const genUploader = <TRouter extends FileRouter>(
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })
       .pipe(
-        Effect.provideService(FetchContext, {
+        Micro.provideService(FetchContext, {
           fetch: globalThis.fetch.bind(globalThis),
           baseHeaders: {
             "x-uploadthing-version": UPLOADTHING_VERSION,
@@ -123,15 +120,16 @@ export const genUploader = <TRouter extends FileRouter>(
             "x-uploadthing-be-adapter": undefined,
           },
         }),
-        (e) => Effect.runPromise(e, opts.signal ? { signal: opts.signal } : {}),
+        (e) =>
+          Micro.runPromiseResult(e, opts.signal ? { signal: opts.signal } : {}),
       )
-      .catch((error) => {
-        if (!Runtime.isFiberFailure(error)) throw error;
-        const ogError = Cause.squash(error[Runtime.FiberFailureCauseId]);
-        if (Cause.isInterruptedException(ogError)) {
+      .then((result) => {
+        if (result._tag === "Right") {
+          return result.right;
+        } else if (result.left._tag === "Aborted") {
           throw new UploadAbortedError();
         }
-        throw ogError;
+        throw Micro.failureSquash(result.left);
       });
 };
 
@@ -145,7 +143,7 @@ const uploadFilesInternal = <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint, TSkipPolling>,
-): Effect.Effect<
+): Micro.Micro<
   ClientUploadedFileData<TServerOutput>[],
   // TODO: Handle these errors instead of letting them bubble
   UploadThingError | RetryError | FetchError | InvalidJsonError,
@@ -159,31 +157,33 @@ const uploadFilesInternal = <
     headers: opts.headers,
   });
 
-  return Effect.flatMap(
-    reportEventToUT("upload", {
-      input: "input" in opts ? opts.input : null,
-      files: opts.files.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
-    }),
-    Effect.forEach(
-      (presigned) =>
-        uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(
-          String(endpoint),
-          { ...opts, reportEventToUT },
-          presigned,
-        ).pipe(
-          Effect.onInterrupt(() => {
-            return reportEventToUT("failure", {
-              fileKey: presigned.key,
-              uploadId: "uploadId" in presigned ? presigned.uploadId : null,
-              fileName: presigned.fileName,
-            }).pipe(Effect.orDie);
-          }),
-        ),
-      { concurrency: 6 },
+  return reportEventToUT("upload", {
+    input: "input" in opts ? opts.input : null,
+    files: opts.files.map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+    })),
+  }).pipe(
+    Micro.flatMap((responses) =>
+      Micro.forEach(
+        responses,
+        (presigned) =>
+          uploadFile<TRouter, TEndpoint, TSkipPolling, TServerOutput>(
+            String(endpoint),
+            { ...opts, reportEventToUT },
+            presigned,
+          ).pipe(
+            Micro.onAbort(
+              reportEventToUT("failure", {
+                fileKey: presigned.key,
+                uploadId: "uploadId" in presigned ? presigned.uploadId : null,
+                fileName: presigned.fileName,
+              }).pipe(Micro.ignore),
+            ),
+          ),
+        { concurrency: 6 },
+      ),
     ),
   );
 };
@@ -217,30 +217,29 @@ const uploadFile = <
   presigned: PresignedURLs[number],
 ) =>
   Arr.findFirst(opts.files, (file) => file.name === presigned.fileName).pipe(
-    Effect.tapError(() =>
-      Console.error("No file found for presigned URL", presigned),
-    ),
-    Effect.mapError(
-      () =>
-        new UploadThingError({
-          code: "NOT_FOUND",
-          message: "No file found for presigned URL",
-          cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
-        }),
-    ),
-    Effect.tap((file) => opts.onUploadBegin?.({ file: file.name })),
-    Effect.tap((file) =>
+    Micro.fromOption,
+    Micro.mapError(() => {
+      // eslint-disable-next-line no-console
+      console.error("No file found for presigned URL", presigned);
+      return new UploadThingError({
+        code: "NOT_FOUND",
+        message: "No file found for presigned URL",
+        cause: `Expected file with name ${presigned.fileName} but got '${opts.files.join(",")}'`,
+      });
+    }),
+    Micro.tap((file) => opts.onUploadBegin?.({ file: file.name })),
+    Micro.tap((file) =>
       "urls" in presigned
         ? uploadMultipartWithProgress(file, presigned, opts)
         : uploadPresignedPostWithProgress(file, presigned, opts),
     ),
-    Effect.zip(
+    Micro.zip(
       fetchEff(presigned.pollingUrl, {
         headers: { authorization: presigned.pollingJwt },
       }).pipe(
-        Effect.flatMap(parseResponseJson),
-        Effect.catchTag("BadRequestError", (e) =>
-          Effect.fail(
+        Micro.flatMap(parseResponseJson),
+        Micro.catchTag("BadRequestError", (e) =>
+          Micro.fail(
             new UploadThingError({
               code: getErrorTypeFromStatusCode(e.status),
               message: e.message,
@@ -248,22 +247,25 @@ const uploadFile = <
             }),
           ),
         ),
-        Effect.filterOrDieMessage(
-          isPollingResponse,
-          "received a non PollingResponse from the polling endpoint",
+        Micro.filterOrFailWith(isPollingResponse, (_) =>
+          Micro.FailureUnexpected(
+            "received a non PollingResponse from the polling endpoint",
+          ),
         ),
-        Effect.filterOrFail(isPollingDone, () => new RetryError()),
-        Effect.map(({ callbackData }) => callbackData),
-        Effect.retry({
-          while: (res) => res instanceof RetryError,
-          schedule: exponentialBackoff(),
+        Micro.filterOrFail(isPollingDone, () => new RetryError()),
+        Micro.map(({ callbackData }) => callbackData),
+        Micro.retry({
+          while: (res) => {
+            return res instanceof RetryError;
+          },
+          delay: exponentialDelay(),
         }),
-        Effect.when(() => !opts.skipPolling),
-        Effect.map(Option.getOrNull),
-        Effect.map(unsafeCoerce<unknown, TServerOutput>),
+        Micro.when(() => !opts.skipPolling),
+        Micro.map(Option.getOrNull),
+        Micro.map(unsafeCoerce<unknown, TServerOutput>),
       ),
     ),
-    Effect.map(([file, serverData]) => ({
+    Micro.map(([file, serverData]) => ({
       name: file.name,
       size: file.size,
       key: presigned.key,
