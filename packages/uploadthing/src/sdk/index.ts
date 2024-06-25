@@ -19,10 +19,10 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
-import { getApiKeyOrThrow, getAppIdOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { LogLevel } from "../internal/logger";
 import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
+import { getTokenOrThrow, parseToken } from "../internal/uploadthing-token";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -46,19 +46,17 @@ export class UTApi {
   private defaultHeaders: FetchContextService["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
   private logLevel: LogLevel | undefined;
-  private apiKey: string;
-  private appId: string;
+  private token: string;
 
   constructor(opts?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
     incompatibleNodeGuard();
-    this.apiKey = getApiKeyOrThrow(opts?.apiKey);
-    this.appId = getAppIdOrThrow(opts?.appId);
+    this.token = getTokenOrThrow(opts?.token);
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultHeaders = {
-      "x-uploadthing-api-key": this.apiKey,
+      "x-uploadthing-api-key": undefined,
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
       "x-uploadthing-fe-package": undefined,
@@ -71,42 +69,45 @@ export class UTApi {
     pathname: `/${string}`,
     body: Record<string, unknown>,
     responseSchema: S.Schema<T, any>,
-  ) => {
-    const url = generateUploadThingURL(pathname);
-    Effect.runSync(
-      Effect.logDebug("Requesting UploadThing:", {
+  ) =>
+    Effect.gen(function* (this: UTApi) {
+      const url = generateUploadThingURL(pathname);
+
+      const { apiKey } = yield* parseToken(this.token);
+
+      const headers = new Headers([["Content-Type", "application/json"]]);
+      for (const [key, value] of Object.entries(this.defaultHeaders)) {
+        if (typeof value === "string") headers.set(key, value);
+      }
+      headers.set("x-uploadthing-api-key", apiKey);
+
+      yield* Effect.logDebug("Requesting UploadThing:", {
         url,
         body,
-        headers: this.defaultHeaders,
-      }),
-    );
+        headers,
+      });
 
-    const headers = new Headers([["Content-Type", "application/json"]]);
-    for (const [key, value] of Object.entries(this.defaultHeaders)) {
-      if (typeof value === "string") headers.set(key, value);
-    }
-
-    return fetchEff(url, {
-      method: "POST",
-      cache: "no-store",
-      body: JSON.stringify(body),
-      headers,
-    }).pipe(
-      Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(responseSchema)),
-      Effect.catchTag("FetchError", (err) =>
-        Effect.logError("Request failed:", err).pipe(
-          Effect.andThen(() => Effect.die(err)),
+      return yield* fetchEff(url, {
+        method: "POST",
+        cache: "no-store",
+        body: JSON.stringify(body),
+        headers,
+      }).pipe(
+        Effect.andThen(parseResponseJson),
+        Effect.andThen(S.decodeUnknown(responseSchema)),
+        Effect.catchTag("FetchError", (err) =>
+          Effect.logError("Request failed:", err).pipe(
+            Effect.andThen(() => Effect.die(err)),
+          ),
         ),
-      ),
-      Effect.catchTag("ParseError", (err) =>
-        Effect.logError("Response parsing failed:", err).pipe(
-          Effect.andThen(() => Effect.die(err)),
+        Effect.catchTag("ParseError", (err) =>
+          Effect.logError("Response parsing failed:", err).pipe(
+            Effect.andThen(() => Effect.die(err)),
+          ),
         ),
-      ),
-      Effect.tap((res) => Effect.logDebug("UploadThing response:", res)),
-    );
-  };
+        Effect.tap((res) => Effect.logDebug("UploadThing response:", res)),
+      );
+    });
 
   private executeAsync = <A, E>(
     program: Effect.Effect<A, E, FetchContext>,
@@ -154,8 +155,7 @@ export class UTApi {
           files: asArray(files),
           contentDisposition: opts?.contentDisposition ?? "inline",
           acl: opts?.acl,
-          apiKey: this.apiKey,
-          appId: this.appId,
+          token: this.token,
         }),
         (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
       ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
@@ -201,8 +201,7 @@ export class UTApi {
             files,
             contentDisposition: opts?.contentDisposition ?? "inline",
             acl: opts?.acl,
-            apiKey: this.apiKey,
-            appId: this.appId,
+            token: this.token,
           }),
         ),
       ),

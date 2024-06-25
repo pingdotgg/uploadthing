@@ -22,6 +22,7 @@ import {
 } from "./internal/handler";
 import { httpClientLayer } from "./internal/http-client";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { ConsolaLogger, withMinimalLogLevel } from "./internal/logger";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -90,6 +91,8 @@ export const createRouteHandler = <TRouter extends FileRouter>(
           }),
           middlewareArgs: { req, res: undefined, event: undefined },
         }).pipe(
+          withMinimalLogLevel(opts.config?.logLevel),
+          Effect.provide(ConsolaLogger),
           Effect.provide(httpClientLayer),
           Effect.provideService(FetchContext, {
             fetch: opts.config?.fetch ?? globalThis.fetch,

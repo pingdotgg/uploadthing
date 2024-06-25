@@ -16,6 +16,7 @@ import type {
 
 import { INGEST_URL } from "../internal/constants";
 import { uploadWithoutProgress } from "../internal/upload.server";
+import { parseToken } from "../internal/uploadthing-token";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -33,8 +34,7 @@ type UploadFilesInternalOptions = {
   files: FileEsque[];
   contentDisposition: ContentDisposition;
   acl: ACL | undefined;
-  apiKey: string;
-  appId: string;
+  token: string;
 };
 
 export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
@@ -134,14 +134,16 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
 
     yield* Effect.logDebug("Generating presigned URLs for files", files);
 
+    const { apiKey, appId } = yield* parseToken(input.token);
+
     const presigneds = yield* Effect.forEach(files, (file) =>
       Effect.promise(() =>
         generateKey(file).then(async (key) => ({
           key,
-          url: await generateSignedURL(`${INGEST_URL}/${key}`, input.apiKey, {
+          url: await generateSignedURL(`${INGEST_URL}/${key}`, apiKey, {
             ttlInSeconds: 60 * 60,
             data: {
-              "x-ut-identifier": input.appId,
+              "x-ut-identifier": appId,
               "x-ut-file-name": file.name,
               "x-ut-file-size": file.size,
               "x-ut-file-type": file.type,

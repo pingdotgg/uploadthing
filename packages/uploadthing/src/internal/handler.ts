@@ -383,7 +383,6 @@ const handleUploadAction = Effect.gen(function* () {
   );
 
   yield* Effect.logDebug("UploadThing responded with:", presignedUrls);
-  yield* Effect.logDebug("Sending presigned URLs to client");
 
   const callbackUrl = yield* resolveCallbackUrl.pipe(
     Effect.tapError((error) =>
@@ -420,6 +419,7 @@ const handleUploadAction = Effect.gen(function* () {
       isDev: opts.isDev,
     }),
     Effect.flatMap(httpClient),
+    Effect.tap((res) => Effect.logDebug("Metadata response:", res.status)),
   );
 
   // Send metadata to UT server (non blocking as a daemon)

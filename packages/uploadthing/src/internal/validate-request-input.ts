@@ -23,7 +23,6 @@ import {
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./constants";
-import { getApiKey, getAppId } from "./get-api-key";
 import type { UploadActionPayload } from "./shared-schemas";
 import type {
   ActionType,
@@ -42,6 +41,7 @@ import {
   VALID_ACTION_TYPES,
   VALID_UT_HOOKS,
 } from "./types";
+import { getToken, parseToken } from "./uploadthing-token";
 
 class FileSizeMismatch extends Data.Error<{
   reason: string;
@@ -178,8 +178,7 @@ export const parseAndValidateRequest = (
     const hook = headers.get("uploadthing-hook");
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
     const clientVersion = headers.get("x-uploadthing-version");
-    const apiKey = getApiKey(opts.config?.uploadthingSecret);
-    const appId = getAppId(opts.config?.uploadthingId);
+    const token = getToken(opts.config?.uploadthingToken);
 
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       yield* Effect.logError(
@@ -210,32 +209,12 @@ export const parseAndValidateRequest = (
       });
     }
 
-    if (!appId) {
-      const msg = `No appId provided, please set UPLOADTHING_APP_ID in your env file or in the config`;
+    if (!token) {
+      const msg = `No secret provided, please set UPLOADTHING_TOKEN in your env file or in the config`;
       yield* Effect.logError(msg);
       return yield* new UploadThingError({
         code: "MISSING_ENV",
-        message: `No appId provided`,
-        cause: msg,
-      });
-    }
-
-    if (!apiKey) {
-      const msg = `No secret provided, please set UPLOADTHING_SECRET in your env file or in the config`;
-      yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "MISSING_ENV",
-        message: `No secret provided`,
-        cause: msg,
-      });
-    }
-
-    if (!apiKey.startsWith("sk_")) {
-      const msg = `Invalid secret provided, UPLOADTHING_SECRET must start with 'sk_'`;
-      yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "MISSING_ENV",
-        message: "Invalid API key. API keys must start with 'sk_'.",
+        message: `No token provided`,
         cause: msg,
       });
     }
@@ -296,11 +275,25 @@ export const parseAndValidateRequest = (
 
     yield* Effect.logDebug("✔︎ All request input is valid");
 
+    const { apiKey, appId, regions } = yield* parseToken(token).pipe(
+      Effect.catchTag(
+        "ParseError",
+        (e) =>
+          new UploadThingError({
+            code: "MISSING_ENV",
+            message: "Invalid token",
+            cause: e.message,
+          }),
+      ),
+    );
+
+    yield* Effect.log("Parsed token", { token, apiKey, appId, regions });
+
     // FIXME: This should probably provide the full context at once instead of
     // partially in the `runRequestHandlerAsync` and partially in here...
     // Ref: https://discord.com/channels/@me/1201977154577891369/1207441839972548669
     const contextValue = yield* FetchContext;
-    contextValue.baseHeaders["x-uploadthing-api-key"] = apiKey;
+    contextValue.baseHeaders["x-uploadthing-api-key"] = token;
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = adapter;
 

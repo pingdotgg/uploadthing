@@ -22,15 +22,10 @@ export interface UTApiOptions {
    */
   fetch?: FetchEsque;
   /**
-   * Provide a custom UploadThing API key.
-   * @default process.env.UPLOADTHING_SECRET
+   * Provide a custom UploadThing token
+   * @default process.env.UPLOADTHING_TOKEN
    */
-  apiKey?: string;
-  /**
-   * Provide a custom UploadThing app ID.
-   * @default process.env.UPLOADTHING_APP_ID
-   */
-  appId?: string;
+  token?: string;
   /**
    * @default "info"
    */
