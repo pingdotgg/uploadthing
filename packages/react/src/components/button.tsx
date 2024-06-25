@@ -262,7 +262,7 @@ export function UploadButton<
   const renderAllowedContent = () => (
     <div
       className={twMerge(
-        "h-[1.25rem]  text-xs leading-5 text-gray-600",
+        "h-[1.25rem] text-xs leading-5 text-gray-600",
         styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
       )}
       style={styleFieldToCssObject(

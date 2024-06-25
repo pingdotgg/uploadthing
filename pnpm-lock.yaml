@@ -1574,7 +1574,7 @@ importers:
         specifier: ^7.13.1
         version: 7.13.1(eslint@8.57.0)(typescript@5.5.2)
       '@uploadthing/eslint-plugin':
-        specifier: ^0.1.0
+        specifier: workspace:*
         version: link:../eslint-plugin
       eslint-config-prettier:
         specifier: ^9.1.0
