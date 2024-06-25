@@ -14,15 +14,14 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { FileUploadDataWithCustomId, UploadedFileData } from "../types";
+import type { UploadThingClient } from "./http-client";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
-  FailureActionPayload,
-  MPUResponse,
-  MultipartCompleteActionPayload,
-  PSPResponse,
+  FileUploadDataWithCustomId,
+  NewPresignedUrl,
   UploadActionPayload,
+  UploadedFileData,
 } from "./shared-schemas";
 
 /**
@@ -203,8 +202,8 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
   };
 export type RequestHandlerSuccess = {
   success: true;
-  body: UTEvents[keyof UTEvents]["out"];
-  cleanup?: Promise<unknown> | undefined;
+  body: UTEvents[keyof UTEvents]["out"] | null;
+  cleanup?: () => Promise<unknown>;
 };
 export type RequestHandlerError = {
   success: false;
@@ -214,7 +213,11 @@ export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
 
 export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
   input: RequestHandlerInput<TArgs>,
-) => Effect.Effect<RequestHandlerSuccess, UploadThingError, FetchContext>;
+) => Effect.Effect<
+  RequestHandlerSuccess,
+  UploadThingError,
+  FetchContext | UploadThingClient
+>;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
@@ -234,11 +237,7 @@ export type inferErrorShape<TRouter extends FileRouter> =
 /**
  * Valid options for the `?actionType` query param
  */
-export const VALID_ACTION_TYPES = [
-  "upload",
-  "failure",
-  "multipart-complete",
-] as const;
+export const VALID_ACTION_TYPES = ["upload"] as const;
 export type ActionType = (typeof VALID_ACTION_TYPES)[number];
 export const isActionType = (input: unknown): input is ActionType =>
   typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
@@ -260,17 +259,6 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
 export type UTEvents = {
   upload: {
     in: S.Schema.Type<typeof UploadActionPayload>;
-    out: {
-      presigneds: ReadonlyArray<MPUResponse | PSPResponse>;
-      routeOptions: RouteOptions;
-    };
-  };
-  failure: {
-    in: S.Schema.Type<typeof FailureActionPayload>;
-    out: null;
-  };
-  "multipart-complete": {
-    in: S.Schema.Type<typeof MultipartCompleteActionPayload>;
-    out: null;
+    out: ReadonlyArray<NewPresignedUrl>;
   };
 };

@@ -14,11 +14,12 @@ import {
   fetchEff,
   generateUploadThingURL,
   parseResponseJson,
+  parseTimeToSeconds,
   UploadThingError,
 } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../internal/constants";
-import { getApiKeyOrThrow } from "../internal/get-api-key";
+import { getApiKeyOrThrow, getAppIdOrThrow } from "../internal/get-api-key";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { LogLevel } from "../internal/logger";
 import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
@@ -36,12 +37,7 @@ import type {
   UTApiOptions,
 } from "./types";
 import { UTFile } from "./ut-file";
-import {
-  downloadFiles,
-  guardServerOnly,
-  parseTimeToSeconds,
-  uploadFilesInternal,
-} from "./utils";
+import { downloadFiles, guardServerOnly, uploadFilesInternal } from "./utils";
 
 export { UTFile };
 
@@ -50,15 +46,19 @@ export class UTApi {
   private defaultHeaders: FetchContextService["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
   private logLevel: LogLevel | undefined;
+  private apiKey: string;
+  private appId: string;
+
   constructor(opts?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
     incompatibleNodeGuard();
-    const apiKey = getApiKeyOrThrow(opts?.apiKey);
+    this.apiKey = getApiKeyOrThrow(opts?.apiKey);
+    this.appId = getAppIdOrThrow(opts?.appId);
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultHeaders = {
-      "x-uploadthing-api-key": apiKey,
+      "x-uploadthing-api-key": this.apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": "server-sdk",
       "x-uploadthing-fe-package": undefined,
@@ -153,8 +153,9 @@ export class UTApi {
         uploadFilesInternal({
           files: asArray(files),
           contentDisposition: opts?.contentDisposition ?? "inline",
-          metadata: opts?.metadata ?? {},
           acl: opts?.acl,
+          apiKey: this.apiKey,
+          appId: this.appId,
         }),
         (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
       ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
@@ -199,8 +200,9 @@ export class UTApi {
           uploadFilesInternal({
             files,
             contentDisposition: opts?.contentDisposition ?? "inline",
-            metadata: opts?.metadata ?? {},
             acl: opts?.acl,
+            apiKey: this.apiKey,
+            appId: this.appId,
           }),
         ),
       ),

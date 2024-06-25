@@ -18,6 +18,8 @@ import type {
   FileRouterInputKey,
   FileSize,
   ResponseEsque,
+  Time,
+  TimeShort,
 } from "./types";
 
 export function isRouteArray(
@@ -276,3 +278,20 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
     ? maybeUrl
     : Micro.runSync(getFullApiUrl(maybeUrl));
 };
+
+export function parseTimeToSeconds(time: Time) {
+  if (typeof time === "number") return time;
+
+  const match = time.split(/(\d+)/).filter(Boolean);
+  const num = Number(match[0]);
+  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
+
+  const multiplier = {
+    s: 1,
+    m: 60,
+    h: 3600,
+    d: 86400,
+  }[unit];
+
+  return num * multiplier;
+}

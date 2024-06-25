@@ -7,7 +7,6 @@ import type {
   ContentDisposition,
   Either,
   FetchEsque,
-  Json,
   MaybeUrl,
   SerializedUploadThingError,
   Time,
@@ -27,6 +26,11 @@ export interface UTApiOptions {
    * @default process.env.UPLOADTHING_SECRET
    */
   apiKey?: string;
+  /**
+   * Provide a custom UploadThing app ID.
+   * @default process.env.UPLOADTHING_APP_ID
+   */
+  appId?: string;
   /**
    * @default "info"
    */
@@ -48,11 +52,11 @@ export type UrlWithOverrides = {
 type BlobEsque = NodeBlob | Blob;
 export type FileEsque = BlobEsque & {
   name: string;
+  lastModified?: number;
   customId?: string | null | undefined;
 };
 
 export interface UploadFilesOptions {
-  metadata?: Json;
   contentDisposition?: ContentDisposition;
   acl?: ACL;
   /**

@@ -20,6 +20,7 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
+import { httpClientLayer } from "./internal/http-client";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
@@ -89,6 +90,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
           }),
           middlewareArgs: { req, res: undefined, event: undefined },
         }).pipe(
+          Effect.provide(httpClientLayer),
           Effect.provideService(FetchContext, {
             fetch: opts.config?.fetch ?? globalThis.fetch,
             baseHeaders: {

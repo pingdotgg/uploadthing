@@ -1,6 +1,6 @@
 import * as S from "@effect/schema/Schema";
 
-import type { FileRouterInputKey, Json } from "@uploadthing/shared";
+import type { Json } from "@uploadthing/shared";
 import { ValidACLs, ValidContentDispositions } from "@uploadthing/shared";
 
 export const ContentDispositionSchema = S.Literal(...ValidContentDispositions);
@@ -19,6 +19,7 @@ export class FileUploadData extends S.Class<FileUploadData>("FileUploadData")({
   name: S.String,
   size: S.Number,
   type: S.String,
+  lastModified: S.Number,
 }) {}
 
 /**
@@ -56,60 +57,6 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-export class PresignedBase extends S.Class<PresignedBase>(
-  "PresignedBaseSchema",
-)({
-  key: S.String,
-  fileName: S.String,
-  fileType: S.String as S.Schema<FileRouterInputKey>,
-  fileUrl: S.String,
-  pollingJwt: S.String,
-  pollingUrl: S.String,
-  contentDisposition: ContentDispositionSchema,
-  customId: S.NullOr(S.String),
-}) {}
-
-export class MPUResponse extends PresignedBase.extend<MPUResponse>(
-  "MPUResponseSchema",
-)({
-  urls: S.Array(S.String),
-  uploadId: S.String,
-  chunkSize: S.Number,
-  chunkCount: S.Number,
-}) {}
-
-export class PSPResponse extends PresignedBase.extend<PSPResponse>(
-  "PSPResponseSchema",
-)({
-  url: S.String,
-  fields: S.Record(S.String, S.String),
-}) {}
-
-export const PrepareUploadResponse = S.Struct({
-  data: S.Array(S.Union(PSPResponse, MPUResponse)),
-});
-
-export class PollUploadResponse extends S.Class<PollUploadResponse>(
-  "PollUploadResponse",
-)({
-  status: S.String,
-  file: S.optional(
-    S.Struct({
-      fileKey: S.String,
-      fileName: S.String,
-      fileSize: S.Number,
-      fileType: S.String,
-      fileUrl: S.String,
-      customId: S.NullOr(S.String),
-
-      callbackUrl: S.optional(S.String),
-      callbackSlug: S.optional(S.String),
-    }),
-  ),
-  metadata: S.optional(S.Unknown),
-  callbackData: S.optional(S.Unknown),
-}) {}
-
 export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
   "FailureCallbackResponse",
 )({
@@ -117,10 +64,32 @@ export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
   message: S.optional(S.String),
 }) {}
 
-export class ServerCallbackPostResponse extends S.Class<ServerCallbackPostResponse>(
-  "ServerCallbackPostResponse",
+export class NewPresignedUrl extends S.Class<NewPresignedUrl>(
+  "NewPresignedUrl",
 )({
-  status: S.String,
+  url: S.String,
+  key: S.String,
+  customId: S.NullOr(S.String),
+  name: S.String,
+}) {}
+
+export class MetadataFetchStreamPart extends S.Class<MetadataFetchStreamPart>(
+  "MetadataFetchStreamPart",
+)({
+  payload: S.String,
+  signature: S.String,
+}) {}
+
+export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(
+  "MetadataFetchResponse",
+)({
+  ok: S.Boolean,
+}) {}
+
+export class CallbackResultResponse extends S.Class<CallbackResultResponse>(
+  "CallbackResultResponse",
+)({
+  ok: S.Boolean,
 }) {}
 
 /**
@@ -134,26 +103,4 @@ export class UploadActionPayload extends S.Class<UploadActionPayload>(
 )({
   files: S.Array(FileUploadData),
   input: S.Unknown as S.Schema<Json>,
-}) {}
-
-export class FailureActionPayload extends S.Class<FailureActionPayload>(
-  "FailureActionPayload",
-)({
-  fileKey: S.String,
-  uploadId: S.NullOr(S.String),
-  storageProviderError: S.optional(S.String),
-  fileName: S.String,
-}) {}
-
-export class MultipartCompleteActionPayload extends S.Class<MultipartCompleteActionPayload>(
-  "MultipartCompleteActionPayload",
-)({
-  fileKey: S.String,
-  uploadId: S.String,
-  etags: S.Array(
-    S.Struct({
-      tag: S.String,
-      partNumber: S.Number,
-    }),
-  ),
 }) {}

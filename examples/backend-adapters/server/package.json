@@ -9,11 +9,11 @@
     "dev:fastify": "NODE_ENV=development tsx watch src/fastify.ts",
     "dev:hono": "NODE_ENV=development tsx watch src/hono.ts",
     "dev:h3": "NODE_ENV=development listhen -w src/h3.ts",
-    "dev:effect": "NODE_ENV=development tsx watch src/effect-platform.ts"
+    "dev:effect": "NODE_ENV=development PORT=3003 tsx watch src/effect-platform.ts"
   },
   "dependencies": {
     "@effect/platform": "^0.58.9",
-    "@effect/platform-node": "^0.53.8",
+    "@effect/platform-node": "0.53.8",
     "@elysiajs/cors": "^0.8.0",
     "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",

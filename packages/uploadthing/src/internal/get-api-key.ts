@@ -8,6 +8,12 @@ export const getApiKey = (apiKey?: string) => {
   return undefined;
 };
 
+export const getAppId = (appId?: string) => {
+  if (appId) return appId;
+  if (process.env.UPLOADTHING_APP_ID) return process.env.UPLOADTHING_APP_ID;
+  return undefined;
+};
+
 export const getApiKeyOrThrow = (apiKey?: string) => {
   const key = getApiKey(apiKey);
   if (!key?.startsWith("sk_")) {
@@ -17,4 +23,15 @@ export const getApiKeyOrThrow = (apiKey?: string) => {
     });
   }
   return key;
+};
+
+export const getAppIdOrThrow = (appId?: string) => {
+  const id = getAppId(appId);
+  if (!id) {
+    throw new UploadThingError({
+      code: "MISSING_ENV",
+      message: "Missing or invalid app ID. App IDs must be a string.",
+    });
+  }
+  return id;
 };

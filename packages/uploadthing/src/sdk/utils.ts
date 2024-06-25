@@ -1,32 +1,21 @@
-import * as S from "@effect/schema/Schema";
-import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
-import * as Schedule from "effect/Schedule";
 
 import {
   fetchEff,
-  generateUploadThingURL,
+  generateKey,
+  generateSignedURL,
   isObject,
-  parseResponseJson,
-  RetryError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
   ACL,
   ContentDisposition,
-  Json,
   MaybeUrl,
   SerializedUploadThingError,
-  Time,
-  TimeShort,
 } from "@uploadthing/shared";
 
-import { uploadMultipart } from "../internal/multi-part.server";
-import { uploadPresignedPost } from "../internal/presigned-post.server";
-import {
-  PollUploadResponse,
-  PrepareUploadResponse,
-} from "../internal/shared-schemas";
+import { INGEST_URL } from "../internal/constants";
+import { uploadWithoutProgress } from "../internal/upload.server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -42,9 +31,10 @@ export function guardServerOnly() {
 
 type UploadFilesInternalOptions = {
   files: FileEsque[];
-  metadata: Json;
   contentDisposition: ContentDisposition;
   acl: ACL | undefined;
+  apiKey: string;
+  appId: string;
 };
 
 export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
@@ -126,7 +116,13 @@ export const downloadFiles = (
         }
 
         return yield* Effect.promise(() => response.blob()).pipe(
-          Effect.andThen((blob) => new UTFile([blob], name, { customId })),
+          Effect.andThen(
+            (blob) =>
+              new UTFile([blob], name, {
+                customId,
+                lastModified: Date.now(),
+              }),
+          ),
         );
       }),
     { concurrency: 10 },
@@ -134,39 +130,31 @@ export const downloadFiles = (
 
 const getPresignedUrls = (input: UploadFilesInternalOptions) =>
   Effect.gen(function* () {
-    const { files, metadata, contentDisposition, acl } = input;
+    const { files, contentDisposition, acl } = input;
 
-    const fileUploadRequests = files.map((file) => ({
-      name: file.name ?? "unnamed-blob",
-      type: file.type,
-      size: file.size,
-      customId: file.customId ?? null,
-      contentDisposition,
-      acl,
-    }));
-    yield* Effect.logDebug(
-      "Getting presigned URLs for files",
-      fileUploadRequests,
+    yield* Effect.logDebug("Generating presigned URLs for files", files);
+
+    const presigneds = yield* Effect.forEach(files, (file) =>
+      Effect.promise(() =>
+        generateKey(file).then(async (key) => ({
+          key,
+          url: await generateSignedURL(`${INGEST_URL}/${key}`, input.apiKey, {
+            ttlInSeconds: 60 * 60,
+            data: {
+              "x-ut-identifier": input.appId,
+              "x-ut-file-name": file.name,
+              "x-ut-file-size": file.size,
+              "x-ut-file-type": file.type,
+              "x-ut-custom-id": file.customId,
+              "x-ut-content-disposition": contentDisposition,
+              "x-ut-acl": acl,
+            },
+          }),
+        })),
+      ),
     );
 
-    const { data: presigneds } = yield* fetchEff(
-      generateUploadThingURL("/v7/prepareUpload"),
-      {
-        method: "POST",
-        cache: "no-store",
-        body: JSON.stringify({
-          files: fileUploadRequests,
-          metadata,
-        }),
-        headers: { "Content-Type": "application/json" },
-      },
-    ).pipe(
-      Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(PrepareUploadResponse)),
-      Effect.catchTag("ParseError", (e) => Effect.die(e)),
-      Effect.catchTag("FetchError", (e) => Effect.die(e)),
-    );
-    yield* Effect.logDebug("Got presigned URLs:", presigneds);
+    yield* Effect.logDebug("Generated presigned URLs", presigneds);
 
     return files.map((file, i) => ({
       file,
@@ -180,56 +168,15 @@ const uploadFile = (
   Effect.gen(function* () {
     const { file, presigned } = input;
 
-    if ("urls" in presigned) {
-      yield* uploadMultipart(file, presigned);
-    } else {
-      yield* uploadPresignedPost(file, presigned);
-    }
-
-    yield* fetchEff(presigned.pollingUrl, {
-      headers: { Authorization: presigned.pollingJwt },
-    }).pipe(
-      Effect.andThen(parseResponseJson),
-      Effect.andThen(S.decodeUnknown(PollUploadResponse)),
-      Effect.tap(Effect.logDebug("Polled upload", presigned.key)),
-      Effect.andThen((res) =>
-        res.status === "done"
-          ? Effect.succeed(undefined)
-          : Effect.fail(new RetryError()),
-      ),
-      Effect.retry({
-        while: (err) => err instanceof RetryError,
-        schedule: Schedule.exponential(Duration.millis(10), 4).pipe(
-          // 10ms, 40ms, 160ms, 640ms...
-          Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
-          Schedule.compose(Schedule.elapsed),
-          Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
-        ),
-      }),
-      Effect.catchTag("RetryError", (e) => Effect.die(e)),
-    );
+    const { url } = yield* uploadWithoutProgress(file, presigned);
 
     return {
       key: presigned.key,
-      url: presigned.fileUrl,
+      url: url,
+      lastModified: file.lastModified ?? Date.now(),
       name: file.name,
       size: file.size,
       type: file.type,
-      customId: "customId" in file ? file.customId ?? null : null,
+      customId: file.customId ?? null,
     };
   });
-
-export function parseTimeToSeconds(time: Time) {
-  const match = time.toString().split(/(\d+)/).filter(Boolean);
-  const num = Number(match[0]);
-  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
-
-  const multiplier = {
-    s: 1,
-    m: 60,
-    h: 3600,
-    d: 86400,
-  }[unit];
-
-  return num * multiplier;
-}

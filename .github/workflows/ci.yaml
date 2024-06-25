@@ -5,7 +5,6 @@ name: CI
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-  UPLOADTHING_TEST_SECRET: ${{ secrets.UPLOADTHING_TEST_SECRET }}
   
 on:
   push:
@@ -34,6 +33,9 @@ jobs:
         run: pnpm turbo build --filter "./packages/*"
       - name: Test
         run: pnpm run test
+        env:
+          UPLOADTHING_TEST_SECRET: ${{ secrets.UPLOADTHING_TEST_SECRET }}
+          UPLOADTHING_APP_ID: 'fr0hfwpst1'
 
   lint:
     runs-on: ubuntu-latest
@@ -141,3 +143,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
+          UPLOADTHING_APP_ID: '7uxf2gu9lm'

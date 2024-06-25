@@ -7,11 +7,7 @@ import { lookup } from "@uploadthing/mime-types";
 import { generateUploadThingURL } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "../src/internal/constants";
-import type {
-  MPUResponse,
-  PresignedBase,
-  PSPResponse,
-} from "../src/internal/shared-schemas";
+import type { NewPresignedUrl } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/types";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
@@ -42,39 +38,13 @@ const mockPresigned = (file: {
   name: string;
   size: number;
   customId: string | null;
-}): PSPResponse | MPUResponse => {
+}): NewPresignedUrl => {
   const key = "abc-123.txt";
-  const base: PresignedBase = {
-    contentDisposition: "inline",
-    customId: file.customId ?? null,
-    fileName: file.name,
-    fileType: lookup(file.name) as any,
-    fileUrl: `https://utfs.io/f/${key}`,
-    key,
-    /**
-     * This isn't the actual format of the polling JWT, but we use it in
-     * tests just to easily be able to pull out the key from it in the
-     * mocked `/v7/pollUpload` handler (See L198)
-     */
-    pollingJwt: `random-jwt:${key}`,
-    pollingUrl: generateUploadThingURL("/v7/pollUpload"),
-  };
-  if (file.size > 5 * 1024 * 1024) {
-    return {
-      ...base,
-      chunkCount: 2,
-      chunkSize: file.size / 2,
-      uploadId: "random-upload-id",
-      urls: [
-        "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=1&uploadId=random-upload-id",
-        "https://bucket.s3.amazonaws.com/abc-123.txt?partNumber=2&uploadId=random-upload-id",
-      ],
-    };
-  }
   return {
-    ...base,
-    url: "https://bucket.s3.amazonaws.com",
-    fields: { key },
+    customId: file.customId ?? null,
+    name: file.name,
+    key,
+    url: `https://ingest.uploadthing.com/${key}?bunch-of-query-params=FILL_IN_LATER`,
   };
 };
 
@@ -157,10 +127,11 @@ export const it = itBase.extend({
 
           const presigneds = body.files.map((file) => {
             const presigned = mockPresigned(file);
+            const params = new URLSearchParams(presigned.url.split("?")[1]);
             db.insertFile({
               ...file,
               customId: file.customId ?? null,
-              type: presigned.fileType,
+              type: params.get("x-ut-file-type"),
               key: presigned.key,
               callbackUrl: body.callbackUrl,
               callbackSlug: body.callbackSlug,

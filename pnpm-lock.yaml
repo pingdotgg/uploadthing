@@ -214,7 +214,7 @@ importers:
         specifier: ^0.58.9
         version: 0.58.9(@effect/schema@0.68.9)(effect@3.4.2)
       '@effect/platform-node':
-        specifier: ^0.53.8
+        specifier: 0.53.8
         version: 0.53.8(@effect/platform@0.58.9)(effect@3.4.2)
       '@elysiajs/cors':
         specifier: ^0.8.0
@@ -1424,6 +1424,9 @@ importers:
 
   packages/uploadthing:
     dependencies:
+      '@effect/platform':
+        specifier: ^0.58.9
+        version: 0.58.9(@effect/schema@0.68.9)(effect@3.4.2)
       '@effect/schema':
         specifier: ^0.68.9
         version: 0.68.9(effect@3.4.2)
@@ -1443,9 +1446,6 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0
     devDependencies:
-      '@effect/platform':
-        specifier: ^0.58.9
-        version: 0.58.9(@effect/schema@0.68.9)(effect@3.4.2)
       '@types/body-parser':
         specifier: ^1.19.5
         version: 1.19.5
@@ -3776,6 +3776,7 @@ packages:
       find-my-way-ts: 0.1.4
       multipasta: 0.2.2
       path-browserify: 1.0.1
+    dev: false
 
   /@effect/schema@0.68.9(effect@3.4.2):
     resolution: {integrity: sha512-5LgCBjGHEphteGxh0Eid7dJUlSs89yvZfJFSSKNDrBhC7c0YCrrzzKYlvmqyUJzvxx+q4yBakZNUQWcjOTGsKA==}
@@ -3784,6 +3785,7 @@ packages:
     dependencies:
       effect: 3.4.2
       fast-check: 3.18.0
+    dev: false
 
   /@egjs/agent@2.4.3:
     resolution: {integrity: sha512-XvksSENe8wPeFlEVouvrOhKdx8HMniJ3by7sro2uPF3M6QqWwjzVcmvwoPtdjiX8O1lfRoLhQMp1a7NGlVTdIA==}
@@ -14812,6 +14814,7 @@ packages:
 
   /effect@3.4.2:
     resolution: {integrity: sha512-y20gL/fMqm4mUL71Tcuu3pYQ7Phm8RMX/hUt6vVfkg4Iac/RvMjP5DrJxT6RI0j0VNRLhTgb6pyL3oXeqxTeRg==}
+    dev: false
 
   /electron-to-chromium@1.4.746:
     resolution: {integrity: sha512-jeWaIta2rIG2FzHaYIhSuVWqC6KJYo7oSBX4Jv7g+aVujKztfvdpf+n6MGwZdC5hQXbax4nntykLH2juIQrfPg==}
@@ -16171,6 +16174,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       pure-rand: 6.1.0
+    dev: false
 
   /fast-content-type-parse@1.1.0:
     resolution: {integrity: sha512-fBHHqSTFLVnR61C+gltJuE5GkVQMV0S2nqUO8TJ+5Z3qAKG8vAx4FKai1s5jq/inV1+sREynIWSuQ6HgoSXpDQ==}
@@ -16370,6 +16374,7 @@ packages:
     resolution: {integrity: sha512-naNl2YZ8m9LlYtPZathQBjXQQ8069uYBFq8We6w9AEGddJErVh0JZw8jd/C/2W9Ib3BjTnu+YN0/rR+ytWxNdw==}
     dependencies:
       fast-querystring: 1.1.2
+    dev: false
 
   /find-my-way@8.1.0:
     resolution: {integrity: sha512-41QwjCGcVTODUmLLqTMeoHeiozbMXYMAE1CKFiDyi9zVZ2Vjh0yz3MF0WQZoIb+cmzP/XlbFjlF2NtJmvZHznA==}
@@ -20775,6 +20780,7 @@ packages:
 
   /multipasta@0.2.2:
     resolution: {integrity: sha512-KKGdmXIJUmt9BV45LsbUdMnju8eCNSyF9KpbyqK2E3wQXjpPQOg52/Hc+nsmBacmEkNxLVT5h1y3ZgEXB4prXg==}
+    dev: false
 
   /mustache@4.2.0:
     resolution: {integrity: sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==}
@@ -23366,6 +23372,7 @@ packages:
 
   /pure-rand@6.1.0:
     resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
+    dev: false
 
   /pvtsutils@1.3.5:
     resolution: {integrity: sha512-ARvb14YB9Nm2Xi6nBq1ZX6dAM0FsJnuk+31aUp4TrcZEdKUlSqOqsxJHUPJDNE3qiIp+iUPEIeR6Je/tgV7zsA==}

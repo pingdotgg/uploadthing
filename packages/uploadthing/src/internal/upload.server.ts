@@ -1,5 +1,6 @@
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
+import { unsafeCoerce } from "effect/Function";
 
 import {
   fetchEff,
@@ -9,23 +10,22 @@ import {
 } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import type { PSPResponse } from "./shared-schemas";
 import { FailureCallbackResponse } from "./shared-schemas";
 
-export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
+export const uploadWithoutProgress = (
+  file: FileEsque,
+  presigned: { key: string; url: string },
+) =>
   Effect.gen(function* () {
-    yield* Effect.logDebug(
-      `Uploading file ${file.name} using presigned POST URL`,
-    );
     const formData = new FormData();
-    Object.entries(presigned.fields).forEach(([k, v]) => formData.append(k, v));
     formData.append("file", file as Blob); // File data **MUST GO LAST**
 
     const res = yield* fetchEff(presigned.url, {
-      method: "POST",
+      method: "PUT",
       body: formData,
       headers: new Headers({
         Accept: "application/xml",
+        Range: `bytes=0-`,
       }),
     }).pipe(
       Effect.tapErrorCause(() =>
@@ -55,5 +55,9 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
       });
     }
 
-    yield* Effect.logDebug("File", file.name, "uploaded successfully");
+    const json = yield* parseResponseJson(res).pipe(
+      Effect.andThen(unsafeCoerce<unknown, { url: string }>),
+    );
+    yield* Effect.logDebug("File", file.name, "uploaded successfully:", json);
+    return json;
   });

@@ -5,6 +5,7 @@
   "globalEnv": [
     "CUSTOM_INFRA_URL",
     "UPLOADTHING_URL",
+    "UPLOADTHING_APP_ID",
     "UPLOADTHING_SECRET",
     "UPLOADTHING_TEST_SECRET",
     "EXPO_PUBLIC_SERVER_ORIGIN"
@@ -30,7 +31,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "interactive": true
     },
     "clean": {
       "cache": false
