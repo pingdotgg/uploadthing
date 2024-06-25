@@ -1,6 +1,6 @@
 ---
-"@uploadthing/shared": minor
-"uploadthing": minor
+"@uploadthing/shared": major
+"uploadthing": major
 ---
 
 chore: update paths to new api domain
