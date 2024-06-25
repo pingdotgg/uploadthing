@@ -103,8 +103,8 @@ function formatDiff(diff) {
   
   | Bundle              | Size (gzip)                          | Visualization  |
   | ------------------- | ------------------------------------ | -------------- |
-  | Main                | ${mainGzip}                          | ${treemapMain} |
-  | PR (${context.sha}) | ${prGzip}                            | ${treemapPr}   |
+  | Main                | ${formatBytes(mainGzip)}             | ${treemapMain} |
+  | PR (${context.sha}) | ${formatBytes(prGzip)}               | ${treemapPr}   |
   | **Diff**            | **${formatDiff(prGzip - mainGzip)}** |                |
   `;
 
