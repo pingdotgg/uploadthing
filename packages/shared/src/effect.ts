@@ -14,10 +14,11 @@ export type FetchContextService = {
     "x-uploadthing-be-adapter": string | undefined;
   };
 };
-export class FetchContext extends Context.Tag("uploadthing/FetchContext")<
-  FetchContext,
-  FetchContextService
->() {}
+export class FetchContext
+  extends /** #__PURE__ */ Context.Tag("uploadthing/FetchContext")<
+    FetchContext,
+    FetchContextService
+  >() {}
 
 interface ResponseWithURL extends ResponseEsque {
   requestUrl: string;
@@ -97,8 +98,9 @@ export const parseRequestJson = (req: Request) =>
  * Schedule that retries with exponential backoff, up to 1 minute.
  * 10ms * 4^n, where n is the number of retries.
  */
-export const exponentialDelay = pipe(
-  Micro.delayExponential(10, 4),
-  Micro.delayWithMax(1000),
-  Micro.delayWithMaxElapsed(60_000),
-);
+export const exponentialDelay = () =>
+  pipe(
+    Micro.delayExponential(10, 4),
+    Micro.delayWithMax(1000),
+    Micro.delayWithMaxElapsed(60_000),
+  );

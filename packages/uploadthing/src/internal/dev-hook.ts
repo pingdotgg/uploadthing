@@ -44,13 +44,13 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
           Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
         ),
       }),
-      Effect.catchTag("RetryError", () =>
-        Effect.fail(
+      Effect.catchTag(
+        "RetryError",
+        () =>
           new UploadThingError({
             code: "UPLOAD_FAILED",
             message: "File took too long to upload",
           }),
-        ),
       ),
     );
 

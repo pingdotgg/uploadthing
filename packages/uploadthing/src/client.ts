@@ -258,7 +258,7 @@ const uploadFile = <
           while: (res) => {
             return res instanceof RetryError;
           },
-          delay: exponentialDelay,
+          delay: exponentialDelay(),
         }),
         Micro.when(() => !opts.skipPolling),
         Micro.map(Option.getOrNull),

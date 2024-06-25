@@ -48,13 +48,11 @@ export const uploadPresignedPost = (file: FileEsque, presigned: PSPResponse) =>
       yield* Effect.logError(
         `Failed to upload file ${file.name} to presigned POST URL. Response: ${text}`,
       );
-      return yield* Effect.fail(
-        new UploadThingError({
-          code: "UPLOAD_FAILED",
-          message: "Failed to upload file",
-          cause: text,
-        }),
-      );
+      return yield* new UploadThingError({
+        code: "UPLOAD_FAILED",
+        message: "Failed to upload file",
+        cause: text,
+      });
     }
 
     yield* Effect.logDebug("File", file.name, "uploaded successfully");

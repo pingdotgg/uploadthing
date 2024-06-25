@@ -46,7 +46,7 @@ export const uploadMultipartWithProgress = (
           Micro.retry({
             while: (error) => error instanceof RetryError,
             times: isTest ? 3 : 10, // less retries in tests just to make it faster
-            delay: exponentialDelay,
+            delay: exponentialDelay(),
           }),
         );
       },

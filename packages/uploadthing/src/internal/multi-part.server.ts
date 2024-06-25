@@ -97,13 +97,11 @@ const uploadPart = (opts: {
       // Max retries exceeded, tell UT server that upload failed
       abortMultipartUpload({ key: opts.key, uploadId: opts.uploadId }).pipe(
         Effect.andThen((res) => {
-          Effect.fail(
-            new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Failed to upload file ${opts.fileName} to S3`,
-              cause: res,
-            }),
-          );
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: `Failed to upload file ${opts.fileName} to S3`,
+            cause: res,
+          });
         }),
       ),
     ),

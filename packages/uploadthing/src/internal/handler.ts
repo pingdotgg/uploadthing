@@ -109,22 +109,18 @@ export const buildRequestHandler =
       ),
       Effect.catchTags({
         InvalidJson: (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "An error occured while parsing input/output",
-              cause: e,
-            }),
-          ),
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing input/output",
+            cause: e,
+          }),
         BadRequestError: (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: e.getMessage(),
-              cause: e,
-              data: e.json as never,
-            }),
-          ),
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: e.getMessage(),
+            cause: e,
+            data: e.json as never,
+          }),
         FetchError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
@@ -133,13 +129,11 @@ export const buildRequestHandler =
             data: e.error as never,
           }),
         ParseError: (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "An error occured while parsing input/output",
-              cause: e,
-            }),
-          ),
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "An error occured while parsing input/output",
+            cause: e,
+          }),
       }),
       Effect.tapError((e) => Effect.logError(e.message)),
     );
@@ -162,12 +156,10 @@ const handleCallbackRequest = Effect.gen(function* () {
   yield* Effect.logDebug("Signature verified:", verified);
   if (!verified) {
     yield* Effect.logError("Invalid signature");
-    return yield* Effect.fail(
-      new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "Invalid signature",
-      }),
-    );
+    return yield* new UploadThingError({
+      code: "BAD_REQUEST",
+      message: "Invalid signature",
+    });
   }
 
   const requestInput = yield* Effect.flatMap(
@@ -248,13 +240,11 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
     if (metadata[UTFiles] && metadata[UTFiles].length !== files.length) {
       const msg = `Expected files override to have the same length as original files, got ${metadata[UTFiles].length} but expected ${files.length}`;
       yield* Effect.logError(msg);
-      return yield* Effect.fail(
-        new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "Files override must have the same length as files",
-          cause: msg,
-        }),
-      );
+      return yield* new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Files override must have the same length as files",
+        cause: msg,
+      });
     }
 
     // Attach customIds from middleware to the files
@@ -318,14 +308,14 @@ const handleUploadAction = Effect.gen(function* () {
   const parsedConfig = yield* fillInputRouteConfig(
     opts.uploadable._def.routerConfig,
   ).pipe(
-    Effect.catchTag("InvalidRouteConfig", (err) =>
-      Effect.fail(
+    Effect.catchTag(
+      "InvalidRouteConfig",
+      (err) =>
         new UploadThingError({
           code: "BAD_REQUEST",
           message: "Invalid config",
           cause: err,
         }),
-      ),
     ),
   );
   yield* Effect.logDebug("Route config parsed successfully", parsedConfig);
@@ -349,13 +339,13 @@ const handleUploadAction = Effect.gen(function* () {
     Effect.tapError((error) =>
       Effect.logError("Failed to resolve callback URL", error),
     ),
-    Effect.catchTag("InvalidURL", (err) =>
-      Effect.fail(
+    Effect.catchTag(
+      "InvalidURL",
+      (err) =>
         new UploadThingError({
           code: "INTERNAL_SERVER_ERROR",
           message: err.message,
         }),
-      ),
     ),
   );
   yield* Effect.logDebug(
