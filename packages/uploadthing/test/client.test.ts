@@ -307,46 +307,42 @@ describe("uploadFiles", () => {
     await close();
   });
 
-  it(
-    "reports of failed multipart upload",
-    { timeout: 10000 },
-    async ({ db }) => {
-      const { uploadFiles, close } = await setupUTServer();
-      useBadS3();
+  it("reports of failed multipart upload", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
+    useBadS3();
 
-      const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
-        type: "text/plain",
-      });
+    const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
+      type: "text/plain",
+    });
 
-      await expect(
-        uploadFiles("foo", {
-          files: [bigFile],
-          skipPolling: true,
-        }),
-      ).rejects.toThrowErrorMatchingInlineSnapshot(
-        `[UploadThingError: Failed to upload file foo.txt to S3]`,
-      );
+    await expect(
+      uploadFiles("foo", {
+        files: [bigFile],
+        skipPolling: true,
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: Failed to upload file foo.txt to S3]`,
+    );
 
-      expect(requestsToDomain("amazonaws.com")).toHaveLength(7);
-      expect(onErrorMock).toHaveBeenCalledOnce();
-      expect(requestSpy).toHaveBeenCalledWith(
-        generateUploadThingURL("/api/failureCallback"),
-        {
-          body: { fileKey: "abc-123.txt", uploadId: "random-upload-id" },
-          headers: {
-            "Content-Type": "application/json",
-            "x-uploadthing-api-key": "sk_test_123",
-            "x-uploadthing-be-adapter": "express",
-            "x-uploadthing-fe-package": "vitest",
-            "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-          },
-          method: "POST",
+    expect(requestsToDomain("amazonaws.com")).toHaveLength(7);
+    expect(onErrorMock).toHaveBeenCalledOnce();
+    expect(requestSpy).toHaveBeenCalledWith(
+      generateUploadThingURL("/api/failureCallback"),
+      {
+        body: { fileKey: "abc-123.txt", uploadId: "random-upload-id" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-uploadthing-api-key": "sk_test_123",
+          "x-uploadthing-be-adapter": "express",
+          "x-uploadthing-fe-package": "vitest",
+          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
         },
-      );
+        method: "POST",
+      },
+    );
 
-      await close();
-    },
-  );
+    await close();
+  });
 
   it("handles too big file size errors", async ({ db }) => {
     const { uploadFiles, close } = await setupUTServer();
