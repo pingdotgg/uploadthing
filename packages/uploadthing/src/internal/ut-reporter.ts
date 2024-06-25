@@ -114,20 +114,16 @@ export const createUTReporter =
           const p = payload as UTEvents["failure"]["in"];
           const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
           if (parsed?.message) {
-            return yield* Micro.fail(
-              new UploadThingError({
-                code: parsed.code,
-                message: parsed.message,
-              }),
-            );
+            return yield* new UploadThingError({
+              code: parsed.code,
+              message: parsed.message,
+            });
           } else {
-            return yield* Micro.fail(
-              new UploadThingError({
-                code: "UPLOAD_FAILED",
-                message: `Failed to upload file ${p.fileName} to S3`,
-                cause: p.storageProviderError,
-              }),
-            );
+            return yield* new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: `Failed to upload file ${p.fileName} to S3`,
+              cause: p.storageProviderError,
+            });
           }
         }
       }
