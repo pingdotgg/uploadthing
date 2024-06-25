@@ -1,6 +1,8 @@
-import * as Body from "@effect/platform/Http/Body";
-import * as ClientRequest from "@effect/platform/Http/ClientRequest";
-import * as ClientResponse from "@effect/platform/Http/ClientResponse";
+import {
+  HttpBody,
+  HttpClientRequest,
+  HttpClientResponse,
+} from "@effect/platform";
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
 import * as Stream from "effect/Stream";
@@ -109,7 +111,7 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
-        InvalidJsonError: (e) =>
+        InvalidJson: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An error occured while parsing input/output",
@@ -196,11 +198,11 @@ const handleCallbackRequest = Effect.gen(function* () {
     );
 
     const httpClient = yield* UploadThingClient;
-    yield* ClientRequest.post(`/callback-result`).pipe(
-      ClientRequest.prependUrl(INGEST_URL),
-      ClientRequest.jsonBody(payload),
+    yield* HttpClientRequest.post(`/callback-result`).pipe(
+      HttpClientRequest.prependUrl(INGEST_URL),
+      HttpClientRequest.jsonBody(payload),
       Effect.flatMap(httpClient),
-      ClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
+      HttpClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
     );
   }).pipe(Effect.forkDaemon);
 
@@ -324,7 +326,7 @@ const handleUploadAction = Effect.gen(function* () {
     files,
   );
   yield* assertFilesMeetConfig(files, parsedConfig).pipe(
-    Effect.catchAll(
+    Effect.mapError(
       (e) =>
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -401,15 +403,15 @@ const handleUploadAction = Effect.gen(function* () {
     callbackUrl.href,
   );
 
-  const callback = ClientRequest.post(callbackUrl.pathname).pipe(
-    ClientRequest.prependUrl(callbackUrl.origin),
-    ClientRequest.appendUrlParam("slug", opts.slug),
-    ClientRequest.setHeader("uploadthing-hook", "callback"),
+  const callback = HttpClientRequest.post(callbackUrl.pathname).pipe(
+    HttpClientRequest.prependUrl(callbackUrl.origin),
+    HttpClientRequest.appendUrlParam("slug", opts.slug),
+    HttpClientRequest.setHeader("uploadthing-hook", "callback"),
   );
 
-  const metadataPost = ClientRequest.post("/route-metadata").pipe(
-    ClientRequest.prependUrl(INGEST_URL),
-    ClientRequest.jsonBody({
+  const metadataPost = HttpClientRequest.post("/route-metadata").pipe(
+    HttpClientRequest.prependUrl(INGEST_URL),
+    HttpClientRequest.jsonBody({
       fileKeys: presignedUrls.map(({ key }) => key),
       metadata: metadata,
       callbackUrl: callback.url,
@@ -426,15 +428,17 @@ const handleUploadAction = Effect.gen(function* () {
   const fiber = yield* Effect.if(opts.isDev, {
     onTrue: () =>
       metadataPost.pipe(
-        ClientResponse.stream,
+        HttpClientResponse.stream,
         Stream.decodeText(),
         Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
         Stream.mapEffect(({ payload, signature }) =>
           callback.pipe(
-            ClientRequest.setHeader("x-uploadthing-signature", signature),
-            ClientRequest.setBody(Body.text(payload, "application/json")),
+            HttpClientRequest.setHeader("x-uploadthing-signature", signature),
+            HttpClientRequest.setBody(
+              HttpBody.text(payload, "application/json"),
+            ),
             httpClient,
-            ClientResponse.arrayBuffer,
+            HttpClientResponse.arrayBuffer,
             Effect.asVoid,
             Effect.tap(Effect.log("Successfully simulated callback")),
             Effect.ignoreLogged,
@@ -444,7 +448,7 @@ const handleUploadAction = Effect.gen(function* () {
       ),
     onFalse: () =>
       metadataPost.pipe(
-        ClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
+        HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
       ),
   }).pipe(Effect.forkDaemon);
 

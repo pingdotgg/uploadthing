@@ -139,12 +139,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.57.2",
-    "@effect/schema": "^0.67.24",
+    "@effect/platform": "^0.58.9",
+    "@effect/schema": "^0.68.9",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
-    "effect": "^3.3.3",
+    "effect": "3.4.2",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
@@ -172,7 +172,6 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",

@@ -1,8 +1,15 @@
 import "dotenv/config";
 
 import { createServer } from "node:http";
+import {
+  Headers,
+  HttpMiddleware,
+  HttpRouter,
+  HttpServer,
+  HttpServerRequest,
+  HttpServerResponse,
+} from "@effect/platform";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
-import * as Http from "@effect/platform/HttpServer";
 import { Config, Effect, Layer } from "effect";
 
 import { createRouteHandler } from "uploadthing/effect-platform";
@@ -17,9 +24,9 @@ const uploadthingRouter = createRouteHandler({
  * Simple CORS middleware that allows everything
  * Adjust to your needs.
  */
-const cors = Http.middleware.make((app) =>
+const cors = HttpMiddleware.make((app) =>
   Effect.gen(function* () {
-    const req = yield* Http.request.ServerRequest;
+    const req = yield* HttpServerRequest.HttpServerRequest;
 
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
@@ -28,33 +35,33 @@ const cors = Http.middleware.make((app) =>
     };
 
     if (req.method === "OPTIONS") {
-      return Http.response.empty({
+      return HttpServerResponse.empty({
         status: 204,
-        headers: Http.headers.fromInput(corsHeaders),
+        headers: Headers.fromInput(corsHeaders),
       });
     }
 
     const response = yield* app;
 
-    return response.pipe(Http.response.setHeaders(corsHeaders));
+    return response.pipe(HttpServerResponse.setHeaders(corsHeaders));
   }),
 );
 
-const router = Http.router.empty.pipe(
-  Http.router.get("/api", Http.response.text("Hello from Effect")),
-  Http.router.mount("/api/uploadthing", uploadthingRouter),
+const router = HttpRouter.empty.pipe(
+  HttpRouter.get("/api", HttpServerResponse.text("Hello from Effect")),
+  HttpRouter.mount("/api/uploadthing", uploadthingRouter),
 );
 
 const app = router.pipe(
   cors,
-  Http.server.serve(Http.middleware.logger),
-  Http.server.withLogAddress,
+  HttpServer.serve(HttpMiddleware.logger),
+  HttpServer.withLogAddress,
 );
 
 const Port = Config.integer("PORT").pipe(Config.withDefault(3000));
 const ServerLive = Layer.unwrapEffect(
   Effect.map(Port, (port) =>
-    NodeHttpServer.server.layer(() => createServer(), { port }),
+    NodeHttpServer.layer(() => createServer(), { port }),
   ),
 );
 

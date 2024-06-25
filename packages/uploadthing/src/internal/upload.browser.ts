@@ -1,4 +1,4 @@
-import * as Effect from "effect/Effect";
+import * as Micro from "effect/Micro";
 
 import type { FetchContext } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
@@ -13,15 +13,11 @@ export const uploadWithProgress = (
     | ((opts: { loaded: number; delta: number }) => void)
     | undefined,
 ) =>
-  Effect.async<unknown, UploadThingError, FetchContext>((resume, signal) => {
+  Micro.async<unknown, UploadThingError, FetchContext>((resume) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
     xhr.responseType = "json";
-
-    signal.addEventListener("abort", () => {
-      xhr.abort();
-    });
 
     let previousLoaded = 0;
     xhr.upload.addEventListener("progress", ({ loaded }) => {
@@ -34,18 +30,11 @@ export const uploadWithProgress = (
       console.log("XHR load", xhr.status, xhr.statusText);
       resume(
         xhr.status >= 200 && xhr.status < 300
-          ? Effect.succeed(xhr.response)
-          : Effect.die(
+          ? Micro.succeed(xhr.response)
+          : Micro.die(
               `XHR failed ${xhr.status} ${xhr.statusText} - ${JSON.stringify(xhr.response)}`,
             ),
       );
-    });
-
-    xhr.upload.addEventListener("error", (e) => {
-      console.log("XHR upload error", e);
-    });
-    xhr.upload.addEventListener("abort", (e) => {
-      console.log("XHR abort error", e);
     });
 
     // Is there a case when the client would throw and
@@ -62,4 +51,6 @@ export const uploadWithProgress = (
     const formData = new FormData();
     formData.append("file", file.slice(rangeStart));
     xhr.send(formData);
+
+    return Micro.sync(() => xhr.abort());
   });

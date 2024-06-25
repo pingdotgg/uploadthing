@@ -1,5 +1,4 @@
-import * as HttpClient from "@effect/platform/Http/Client";
-import * as ClientRequest from "@effect/platform/Http/ClientRequest";
+import { HttpClient, HttpClientRequest } from "@effect/platform";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -9,16 +8,16 @@ import { FetchContext } from "@uploadthing/shared";
 export class UploadThingClient
   extends /** #__PURE__ */ Context.Tag("uploadthing/UploadThingClient")<
     UploadThingClient,
-    HttpClient.Client.Default
+    HttpClient.HttpClient.Default
   >() {}
 
 const mkClient = Effect.gen(function* () {
-  const client = yield* HttpClient.Client;
+  const client = yield* HttpClient.HttpClient;
   HttpClient.fetch;
   const { baseHeaders } = yield* FetchContext;
 
   return client.pipe(
-    HttpClient.mapRequest(ClientRequest.setHeaders(baseHeaders)),
+    HttpClient.mapRequest(HttpClientRequest.setHeaders(baseHeaders)),
   );
 });
 

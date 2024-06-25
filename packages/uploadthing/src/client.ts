@@ -1,7 +1,7 @@
-import * as Cause from "effect/Cause";
-import * as Effect from "effect/Effect";
+import * as Arr from "effect/Array";
 import { unsafeCoerce } from "effect/Function";
-import * as Runtime from "effect/Runtime";
+import * as Micro from "effect/Micro";
+import * as Option from "effect/Option";
 
 import type {
   ExpandedRouteConfig,
@@ -11,6 +11,7 @@ import type {
 } from "@uploadthing/shared";
 import {
   asArray,
+  exponentialDelay,
   FetchContext,
   fetchEff,
   fileSizeToBytes,
@@ -55,10 +56,10 @@ export const isValidFileType = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
-  Effect.runSync(
+  Micro.runSync(
     getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
-      Effect.flatMap((type) => Effect.succeed(file.type.includes(type))),
-      Effect.catchAll(() => Effect.succeed(false)),
+      Micro.map((type) => file.type.includes(type)),
+      Micro.orElseSucceed(() => false),
     ),
   );
 
@@ -70,11 +71,11 @@ export const isValidFileSize = (
   file: File,
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
-  Effect.runSync(
+  Micro.runSync(
     getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
-      Effect.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
-      Effect.flatMap((maxFileSize) => Effect.succeed(file.size <= maxFileSize)),
-      Effect.catchAll(() => Effect.succeed(false)),
+      Micro.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
+      Micro.map((maxFileSize) => file.size <= maxFileSize),
+      Micro.orElseSucceed(() => false),
     ),
   );
 
@@ -137,7 +138,7 @@ export const genUploader = <TRouter extends FileRouter>(
       headers: opts.headers,
     });
 
-    const presigneds = await Effect.runPromise(
+    const presigneds = await Micro.runPromise(
       utReporter("upload", {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         input: "input" in opts ? (opts.input as any) : null,
@@ -147,7 +148,7 @@ export const genUploader = <TRouter extends FileRouter>(
           type: f.type,
           lastModified: f.lastModified,
         })),
-      }).pipe(Effect.provideService(FetchContext, fetchService)),
+      }).pipe(Micro.provideService(FetchContext, fetchService)),
     );
 
     const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
@@ -165,7 +166,7 @@ export const genUploader = <TRouter extends FileRouter>(
             totalProgress: Math.round((totalLoaded / totalSize) * 100),
           });
         },
-      }).pipe(Effect.provideService(FetchContext, fetchService));
+      }).pipe(Micro.provideService(FetchContext, fetchService));
 
     for (const [i, p] of presigneds.entries()) {
       const file = opts.files[i];
@@ -173,10 +174,17 @@ export const genUploader = <TRouter extends FileRouter>(
       const deferred = createDeferred<ClientUploadedFileData<TServerOutput>>();
       uploads.set(file, { deferred, presigned: p });
 
-      void Effect.runPromise(uploadEffect(file, p), {
+      void Micro.runPromiseResult(uploadEffect(file, p), {
         signal: deferred.ac.signal,
       })
-        .then(deferred.resolve, rethrowOriginalErrors)
+        .then((result) => {
+          if (result._tag === "Right") {
+            return deferred.resolve(result.right);
+          } else if (result.left._tag === "Aborted") {
+            throw new UploadAbortedError();
+          }
+          throw Micro.failureSquash(result.left);
+        })
         .catch((err) => {
           if (err instanceof UploadAbortedError) return;
           deferred.reject(err);
@@ -213,10 +221,17 @@ export const genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         upload.deferred.ac = new AbortController();
-        void Effect.runPromise(uploadEffect(file, upload.presigned), {
+        void Micro.runPromiseResult(uploadEffect(file, upload.presigned), {
           signal: upload.deferred.ac.signal,
         })
-          .then(upload.deferred.resolve, rethrowOriginalErrors)
+          .then((result) => {
+            if (result._tag === "Right") {
+              return upload.deferred.resolve(result.right);
+            } else if (result.left._tag === "Aborted") {
+              throw new UploadAbortedError();
+            }
+            throw Micro.failureSquash(result.left);
+          })
           .catch((err) => {
             if (err instanceof UploadAbortedError) return;
             upload.deferred.reject(err);
@@ -272,11 +287,19 @@ export const genUploader = <TRouter extends FileRouter>(
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })
       .pipe(
-        Effect.provideService(FetchContext, fetchService),
+        Micro.provideService(FetchContext, fetchService),
         //
-        (e) => Effect.runPromise(e, opts.signal ? { signal: opts.signal } : {}),
+        (e) =>
+          Micro.runPromiseResult(e, opts.signal ? { signal: opts.signal } : {}),
       )
-      .catch(rethrowOriginalErrors);
+      .then((result) => {
+        if (result._tag === "Right") {
+          return result.right;
+        } else if (result.left._tag === "Aborted") {
+          throw new UploadAbortedError();
+        }
+        throw Micro.failureSquash(result.left);
+      });
 
   return { uploadFiles: typedUploadFiles, createUpload: controllableUpload };
 };
@@ -288,21 +311,6 @@ export const genUploader = <TRouter extends FileRouter>(
 
 export class UploadCancelledError extends Error {}
 
-const rethrowOriginalErrors = (err: unknown) => {
-  /**
-   * Rethrow the underlying error from FiberFailures
-   */
-  if (!Runtime.isFiberFailure(err)) throw err;
-  const ogError = Cause.squash(err[Runtime.FiberFailureCauseId]);
-  if (Cause.isInterruptedException(ogError)) {
-    /**
-     * Rethrow an UploadAbortedError instead of an InterruptedException
-     */
-    throw new UploadAbortedError();
-  }
-  throw ogError;
-};
-
 const uploadFilesInternal = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
@@ -310,7 +318,7 @@ const uploadFilesInternal = <
 >(
   endpoint: TEndpoint,
   opts: UploadFilesOptions<TRouter, TEndpoint>,
-): Effect.Effect<
+): Micro.Micro<
   ClientUploadedFileData<TServerOutput>[],
   UploadThingError | FetchError,
   FetchContext
@@ -326,36 +334,38 @@ const uploadFilesInternal = <
   const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
   let totalLoaded = 0;
 
-  return Effect.flatMap(
-    reportEventToUT("upload", {
-      input: "input" in opts ? opts.input : null,
-      files: opts.files.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-        lastModified: f.lastModified,
-      })),
-    }),
-    Effect.forEach(
-      (presigned, i) =>
-        uploadFile<TRouter, TEndpoint, TServerOutput>(
-          opts.files[i],
-          presigned,
-          {
-            onUploadProgress: (ev) => {
-              totalLoaded += ev.delta;
-              opts.onUploadProgress?.({
-                file: opts.files[i],
-                progress: Math.round((ev.loaded / opts.files[i].size) * 100),
-                loaded: ev.loaded,
-                delta: ev.delta,
-                totalLoaded,
-                totalProgress: Math.round((totalLoaded / totalSize) * 100),
-              });
+  return reportEventToUT("upload", {
+    input: "input" in opts ? opts.input : null,
+    files: opts.files.map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+      lastModified: f.lastModified,
+    })),
+  }).pipe(
+    Micro.flatMap((presigneds) =>
+      Micro.forEach(
+        presigneds,
+        (presigned, i) =>
+          uploadFile<TRouter, TEndpoint, TServerOutput>(
+            opts.files[i],
+            presigned,
+            {
+              onUploadProgress: (ev) => {
+                totalLoaded += ev.delta;
+                opts.onUploadProgress?.({
+                  file: opts.files[i],
+                  progress: Math.round((ev.loaded / opts.files[i].size) * 100),
+                  loaded: ev.loaded,
+                  delta: ev.delta,
+                  totalLoaded,
+                  totalProgress: Math.round((totalLoaded / totalSize) * 100),
+                });
+              },
             },
-          },
-        ),
-      { concurrency: 6 },
+          ),
+        { concurrency: 6 },
+      ),
     ),
   );
 };
@@ -375,16 +385,16 @@ const uploadFile = <
   },
 ) =>
   fetchEff(presigned.url, { method: "HEAD" }).pipe(
-    Effect.map(({ headers }) =>
+    Micro.map(({ headers }) =>
       parseInt(headers.get("x-ut-range-start") ?? "0", 10),
     ),
-    Effect.tap((start) =>
+    Micro.tap((start) =>
       opts.onUploadProgress?.({
         delta: start,
         loaded: start,
       }),
     ),
-    Effect.flatMap((start) =>
+    Micro.flatMap((start) =>
       uploadWithProgress(file, start, presigned, (progressEvent) =>
         opts.onUploadProgress?.({
           delta: progressEvent.delta,
@@ -392,10 +402,10 @@ const uploadFile = <
         }),
       ),
     ),
-    Effect.map(
+    Micro.map(
       unsafeCoerce<unknown, { url: string; serverData: TServerOutput }>,
     ),
-    Effect.map((uploadResponse) => ({
+    Micro.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
       key: presigned.key,

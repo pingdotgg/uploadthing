@@ -1,8 +1,6 @@
 import * as Context from "effect/Context";
-import * as Duration from "effect/Duration";
-import * as Effect from "effect/Effect";
 import { pipe } from "effect/Function";
-import * as Schedule from "effect/Schedule";
+import * as Micro from "effect/Micro";
 
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
@@ -32,8 +30,8 @@ interface ResponseWithURL extends ResponseEsque {
 export const fetchEff = (
   input: string | URL,
   init?: RequestInit,
-): Effect.Effect<ResponseWithURL, FetchError, FetchContext> =>
-  Effect.flatMap(FetchContext, ({ fetch, baseHeaders }) => {
+): Micro.Micro<ResponseWithURL, FetchError, FetchContext> =>
+  Micro.flatMap(Micro.service(FetchContext), ({ fetch, baseHeaders }) => {
     const headers = new Headers(init?.headers ?? []);
     for (const [key, value] of Object.entries(baseHeaders)) {
       if (typeof value === "string") headers.set(key, value);
@@ -46,7 +44,7 @@ export const fetchEff = (
       headers: Object.fromEntries(headers),
     };
 
-    return Effect.tryPromise({
+    return Micro.tryPromise({
       try: (signal) => fetch(input, { ...init, headers, signal }),
       catch: (error) =>
         new FetchError({
@@ -62,22 +60,22 @@ export const fetchEff = (
           input: reqInfo,
         }),
     }).pipe(
-      Effect.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
-      Effect.withSpan("fetch", { attributes: { reqInfo } }),
+      Micro.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
+      Micro.withTrace("fetch"),
     );
   });
 
 export const parseResponseJson = (
   res: ResponseWithURL,
-): Effect.Effect<unknown, InvalidJsonError | BadRequestError, never> =>
-  Effect.tryPromise({
+): Micro.Micro<unknown, InvalidJsonError | BadRequestError> =>
+  Micro.tryPromise({
     try: async () => {
       const json = await res.json();
       return { json, ok: res.ok, status: res.status };
     },
     catch: (error) => new InvalidJsonError({ error, input: res.requestUrl }),
   }).pipe(
-    Effect.filterOrFail(
+    Micro.filterOrFail(
       ({ ok }) => ok,
       ({ json, status }) =>
         new BadRequestError({
@@ -86,24 +84,23 @@ export const parseResponseJson = (
           json,
         }),
     ),
-    Effect.map(({ json }) => json),
-    Effect.withSpan("parseJson"),
+    Micro.map(({ json }) => json),
+    Micro.withTrace("parseJson"),
   );
 
 export const parseRequestJson = (req: Request) =>
-  Effect.tryPromise({
+  Micro.tryPromise({
     try: () => req.json() as Promise<unknown>,
     catch: (error) => new InvalidJsonError({ error, input: req.url }),
-  }).pipe(Effect.withSpan("parseRequestJson"));
+  }).pipe(Micro.withTrace("parseRequestJson"));
 
 /**
  * Schedule that retries with exponential backoff, up to 1 minute.
  * 10ms * 4^n, where n is the number of retries.
  */
-export const exponentialBackoff = () =>
+export const exponentialDelay = () =>
   pipe(
-    Schedule.exponential(Duration.millis(10), 4), // 10ms, 40ms, 160ms, 640ms...
-    Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
-    Schedule.compose(Schedule.elapsed),
-    Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
+    Micro.delayExponential(10, 4),
+    Micro.delayWithMax(1000),
+    Micro.delayWithMaxElapsed(60_000),
   );
