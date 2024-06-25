@@ -1,4 +1,10 @@
-import * as Http from "@effect/platform/HttpServer";
+import type { HttpBody } from "@effect/platform";
+import {
+  HttpMiddleware,
+  HttpRouter,
+  HttpServerRequest,
+  HttpServerResponse,
+} from "@effect/platform";
 import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
@@ -24,7 +30,7 @@ export { UTFiles } from "./internal/types";
 export type { FileRouter };
 
 type MiddlewareArgs = {
-  req: Http.request.ServerRequest;
+  req: HttpServerRequest.HttpServerRequest;
   res: undefined;
   event: undefined;
 };
@@ -35,7 +41,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
-): Http.router.Router<Http.body.BodyError, never> => {
+): HttpRouter.HttpRouter<HttpBody.HttpBodyError, never> => {
   incompatibleNodeGuard();
 
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
@@ -44,17 +50,20 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const appendUploadThingResponseHeaders = Http.middleware.make(
+  const appendUploadThingResponseHeaders = HttpMiddleware.make(
     Effect.map(
-      Http.response.setHeader("x-uploadthing-version", UPLOADTHING_VERSION),
+      HttpServerResponse.setHeader(
+        "x-uploadthing-version",
+        UPLOADTHING_VERSION,
+      ),
     ),
   );
 
-  return Http.router.empty.pipe(
-    Http.router.get("/", Http.response.json(getBuildPerms())),
-    Http.router.post(
+  return HttpRouter.empty.pipe(
+    HttpRouter.get("/", HttpServerResponse.json(getBuildPerms())),
+    HttpRouter.post(
       "/",
-      Effect.flatMap(Http.request.ServerRequest, (req) =>
+      Effect.flatMap(HttpServerRequest.HttpServerRequest, (req) =>
         requestHandler({
           /**
            * TODO: Redo this to be more cross-platform
@@ -90,15 +99,15 @@ export const createRouteHandler = <TRouter extends FileRouter>(
               "x-uploadthing-fe-package": undefined,
             },
           }),
-          Effect.andThen((response) => Http.response.json(response.body)),
+          Effect.andThen((response) => HttpServerResponse.json(response.body)),
           Effect.catchTag("UploadThingError", (error) =>
-            Http.response.json(formatError(error, opts.router), {
+            HttpServerResponse.json(formatError(error, opts.router), {
               status: getStatusCodeFromError(error),
             }),
           ),
         ),
       ),
     ),
-    Http.router.use(appendUploadThingResponseHeaders),
+    HttpRouter.use(appendUploadThingResponseHeaders),
   );
 };

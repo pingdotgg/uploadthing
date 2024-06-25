@@ -247,7 +247,7 @@ describe("uploadFiles", () => {
 
   // We don't retry PSPs, maybe we should?
   // it("succeeds after retries (PSP)", async ({ db }) => {
-  //   const { uploadFiles, close } = setupUTServer();
+  //   const { uploadFiles, close } = await setupUTServer();
   //   useHalfBadS3();
 
   //   const file = new File(["foo"], "foo.txt", { type: "text/plain" });

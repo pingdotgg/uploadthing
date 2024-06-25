@@ -97,7 +97,9 @@ const callRequestSpy = async (request: StrictRequest<any>) =>
   });
 
 const msw = setupServer();
-beforeAll(() => msw.listen({ onUnhandledRequest: "bypass" }));
+beforeAll(() => {
+  msw.listen({ onUnhandledRequest: "bypass" });
+});
 afterAll(() => msw.close());
 
 export const resetMocks = () => msw.close();
@@ -195,6 +197,7 @@ export const it = itBase.extend({
           yield HttpResponse.json({ status: "still waiting" });
           while (!file) {
             file = db.getFileByKey(fileKey);
+            if (file) break;
             yield HttpResponse.json({ status: "still waiting" });
           }
 

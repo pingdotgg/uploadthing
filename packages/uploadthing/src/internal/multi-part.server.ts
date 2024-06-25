@@ -1,9 +1,10 @@
 import * as S from "@effect/schema/Schema";
+import * as Duration from "effect/Duration";
 import * as Effect from "effect/Effect";
+import * as Schedule from "effect/Schedule";
 
 import {
   contentDisposition,
-  exponentialBackoff,
   fetchEff,
   generateUploadThingURL,
   parseResponseJson,
@@ -84,20 +85,23 @@ const uploadPart = (opts: {
     ),
     Effect.retry({
       while: (res) => res instanceof RetryError,
-      schedule: exponentialBackoff(),
+      schedule: Schedule.exponential(Duration.millis(10), 4).pipe(
+        // 10ms, 40ms, 160ms, 640ms...
+        Schedule.andThenEither(Schedule.spaced(Duration.seconds(1))),
+        Schedule.compose(Schedule.elapsed),
+        Schedule.whileOutput(Duration.lessThanOrEqualTo(Duration.minutes(1))),
+      ),
       times: opts.maxRetries,
     }),
     Effect.tapErrorTag("RetryError", () =>
       // Max retries exceeded, tell UT server that upload failed
       abortMultipartUpload({ key: opts.key, uploadId: opts.uploadId }).pipe(
         Effect.andThen((res) => {
-          Effect.fail(
-            new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Failed to upload file ${opts.fileName} to S3`,
-              cause: res,
-            }),
-          );
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: `Failed to upload file ${opts.fileName} to S3`,
+            cause: res,
+          });
         }),
       ),
     ),

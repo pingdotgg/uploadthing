@@ -66,12 +66,10 @@ export const getPostBody = <TBody = unknown>(opts: {
           Effect.logError("Expected JSON content type, got:", contentType),
         );
         return resume(
-          Effect.fail(
-            new UploadThingError({
-              code: "BAD_REQUEST",
-              message: "INVALID_CONTENT_TYPE",
-            }),
-          ),
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "INVALID_CONTENT_TYPE",
+          }),
         );
       }
 
@@ -83,12 +81,10 @@ export const getPostBody = <TBody = unknown>(opts: {
           ),
         );
         return resume(
-          Effect.fail(
-            new UploadThingError({
-              code: "BAD_REQUEST",
-              message: "INVALID_BODY",
-            }),
-          ),
+          new UploadThingError({
+            code: "BAD_REQUEST",
+            message: "INVALID_BODY",
+          }),
         );
       }
 

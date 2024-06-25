@@ -12,14 +12,14 @@
     "dev:effect": "NODE_ENV=development tsx watch src/effect-platform.ts"
   },
   "dependencies": {
-    "@effect/platform": "^0.57.2",
-    "@effect/platform-node": "^0.51.11",
+    "@effect/platform": "^0.58.9",
+    "@effect/platform-node": "^0.53.8",
     "@elysiajs/cors": "^0.8.0",
     "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "effect": "^3.3.2",
+    "effect": "3.4.2",
     "elysia": "^0.8.17",
     "express": "^4.18.2",
     "fastify": "^4.26.1",
