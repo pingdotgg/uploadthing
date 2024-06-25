@@ -49,24 +49,28 @@ async function getTotalBundleSize(filepath) {
   return totalGzipLength;
 }
 
-/** @param {number} diff */
-function formatDiff(diff) {
-  if (diff === 0) return "0B 📦";
-  const sign = diff > 0 ? "↑" : "↓";
-  const abs = Math.abs(diff);
-
+function formatBytes(bytes) {
+  if (bytes === 0) return "0B";
+  const abs = Math.abs(bytes);
   const units = ["B", "KB", "MB"];
   const i = Math.floor(Math.log(abs) / Math.log(1000));
   const size = (abs / Math.pow(1000, i)).toFixed(2);
-  return `${sign}${size}${units[i]} 📦`;
+  return `${size}${units[i]}`;
+}
+
+/** @param {number} diff */
+function formatDiff(diff) {
+  if (diff === 0) return "No change";
+  const sign = diff > 0 ? "↑" : "↓";
+  return `${sign}${formatBytes(diff)}`;
 }
 
 (async () => {
   const mainGzip = await getTotalBundleSize(`bundle-main/out.json`);
   const prGzip = await getTotalBundleSize(`bundle-current-pr/out.json`);
 
-  console.log(`mainGzip: ${mainGzip}`);
-  console.log(`prGzip: ${prGzip}`);
+  console.log(`mainGzip: ${formatBytes(mainGzip)}`);
+  console.log(`prGzip: ${formatBytes(prGzip)}`);
   console.log(`diff: ${formatDiff(prGzip - mainGzip)}`);
 
   // Upload HTML files for easy inspection (not on forks)
