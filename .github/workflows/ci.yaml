@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          ref: ${{ matrix.branch == 'current-pr' && github.head_ref || matrix.branch }}
+          ref: ${{ matrix.branch == 'current-pr' && github.ref || matrix.branch }}
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -139,5 +139,5 @@ jobs:
       - name: Compare client bundle
         run: node .github/analyze-bundle.js
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
+          GITHUB_TOKEN: ${{ github.token }}
+          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}

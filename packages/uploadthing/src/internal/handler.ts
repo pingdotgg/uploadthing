@@ -108,21 +108,19 @@ export const buildRequestHandler =
         parseAndValidateRequest(input, opts, adapter),
       ),
       Effect.catchTags({
-        InvalidJsonError: (e) =>
+        InvalidJson: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
             message: "An error occured while parsing input/output",
             cause: e,
           }),
         BadRequestError: (e) =>
-          Effect.fail(
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: e.getMessage(),
-              cause: e,
-              data: e.json as never,
-            }),
-          ),
+          new UploadThingError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: e.getMessage(),
+            cause: e,
+            data: e.json as never,
+          }),
         FetchError: (e) =>
           new UploadThingError({
             code: "INTERNAL_SERVER_ERROR",
@@ -327,7 +325,7 @@ const handleUploadAction = Effect.gen(function* () {
     files,
   );
   yield* assertFilesMeetConfig(files, parsedConfig).pipe(
-    Effect.catchAll(
+    Effect.mapError(
       (e) =>
         new UploadThingError({
           code: "BAD_REQUEST",

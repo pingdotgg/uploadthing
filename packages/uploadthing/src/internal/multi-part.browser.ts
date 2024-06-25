@@ -1,10 +1,9 @@
-import * as Cause from "effect/Cause";
-import * as Effect from "effect/Effect";
+import * as Micro from "effect/Micro";
 import { isTest } from "std-env";
 
 import {
   contentDisposition,
-  exponentialBackoff,
+  exponentialDelay,
   RetryError,
 } from "@uploadthing/shared";
 import type { ContentDisposition, UploadThingError } from "@uploadthing/shared";
@@ -22,9 +21,9 @@ export const uploadMultipartWithProgress = (
       | undefined;
   },
 ) =>
-  Effect.gen(function* () {
+  Micro.gen(function* () {
     let uploadedBytes = 0;
-    const etags = yield* Effect.forEach(
+    const etags = yield* Micro.forEach(
       presigned.urls,
       (url, index) => {
         const offset = presigned.chunkSize * index;
@@ -43,22 +42,22 @@ export const uploadMultipartWithProgress = (
             opts.onUploadProgress?.({ file: file.name, progress: percent });
           },
         }).pipe(
-          Effect.andThen((tag) => ({ tag, partNumber: index + 1 })),
-          Effect.retry({
+          Micro.andThen((tag) => ({ tag, partNumber: index + 1 })),
+          Micro.retry({
             while: (error) => error instanceof RetryError,
             times: isTest ? 3 : 10, // less retries in tests just to make it faster
-            schedule: exponentialBackoff(),
+            delay: exponentialDelay(),
           }),
         );
       },
       { concurrency: "inherit" },
     ).pipe(
-      Effect.tapErrorCause((error) =>
+      Micro.tapExpected((error) =>
         opts.reportEventToUT("failure", {
           fileKey: presigned.key,
           uploadId: presigned.uploadId,
           fileName: file.name,
-          storageProviderError: Cause.pretty(error).toString(),
+          storageProviderError: String(error),
         }),
       ),
     );
@@ -81,7 +80,7 @@ interface UploadPartOptions {
 }
 
 const uploadPart = (opts: UploadPartOptions) =>
-  Effect.async<string, UploadThingError | RetryError>((resume) => {
+  Micro.async<string, UploadThingError | RetryError>((resume) => {
     const xhr = new XMLHttpRequest();
 
     xhr.open("PUT", opts.url, true);
@@ -94,11 +93,11 @@ const uploadPart = (opts: UploadPartOptions) =>
     xhr.addEventListener("load", () => {
       const etag = xhr.getResponseHeader("Etag");
       if (xhr.status >= 200 && xhr.status <= 299 && etag) {
-        return resume(Effect.succeed(etag));
+        return resume(Micro.succeed(etag));
       }
-      return resume(Effect.fail(new RetryError()));
+      return resume(Micro.fail(new RetryError()));
     });
-    xhr.addEventListener("error", () => resume(Effect.fail(new RetryError())));
+    xhr.addEventListener("error", () => resume(Micro.fail(new RetryError())));
 
     let lastProgress = 0;
     xhr.upload.addEventListener("progress", (e) => {
@@ -110,5 +109,5 @@ const uploadPart = (opts: UploadPartOptions) =>
     xhr.send(opts.chunk);
 
     // Cleanup function that runs on interruption
-    return Effect.sync(() => xhr.abort());
+    return Micro.sync(() => xhr.abort());
   });
