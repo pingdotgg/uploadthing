@@ -1576,9 +1576,6 @@ importers:
       '@uploadthing/eslint-plugin':
         specifier: workspace:*
         version: link:../eslint-plugin
-      eslint-config-prettier:
-        specifier: ^9.1.0
-        version: 9.1.0(eslint@8.57.0)
       eslint-config-turbo:
         specifier: ^2.0.2
         version: 2.0.2(eslint@8.57.0)
@@ -8599,12 +8596,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  eslint-config-prettier@9.1.0:
-    resolution: {integrity: sha512-NSWl5BFQWEPi1j4TjVNItzYV7dZXZ+wP6I6ZhrBGpChQhZRUaElihE9uRRkcbRnNb76UMKDF3r+WTmNcGPKsqw==}
-    hasBin: true
-    peerDependencies:
-      eslint: '>=7.0.0'
 
   eslint-config-turbo@2.0.2:
     resolution: {integrity: sha512-b5GDRodV0dRD5rhbNl8MZoKU5RCIhkWjcZWwyf7qMKeK2RzrKmgKrvtDURKaW2QOvOgCfKqwgeD4NKQPbQKg/w==}
@@ -24512,10 +24503,6 @@ snapshots:
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
       - supports-color
-
-  eslint-config-prettier@9.1.0(eslint@8.57.0):
-    dependencies:
-      eslint: 8.57.0
 
   eslint-config-turbo@2.0.2(eslint@8.57.0):
     dependencies:
