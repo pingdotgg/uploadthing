@@ -1,5 +1,6 @@
 import {
   HttpBody,
+  HttpClient,
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
@@ -201,10 +202,16 @@ const handleCallbackRequest = Effect.gen(function* () {
     yield* HttpClientRequest.post(`/callback-result`).pipe(
       HttpClientRequest.prependUrl(INGEST_URL),
       HttpClientRequest.jsonBody(payload),
-      Effect.flatMap(httpClient),
+      Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
+      Effect.tapErrorTag("ResponseError", ({ response: res }) =>
+        Effect.flatMap(res.json, (json) =>
+          Effect.logError(`Failed to register metadata (${res.status})`, json),
+        ),
+      ),
       HttpClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
+      Effect.tap(Effect.log("Sent callback result to UploadThing")),
     );
-  }).pipe(Effect.forkDaemon);
+  }).pipe(Effect.ignoreLogged, Effect.forkDaemon);
 
   return {
     body: null,
@@ -418,16 +425,11 @@ const handleUploadAction = Effect.gen(function* () {
       awaitServerData: routeOptions.awaitServerData ?? false,
       isDev: opts.isDev,
     }),
-    Effect.flatMap(httpClient),
-    Effect.tap((res) =>
-      Effect.gen(function* () {
-        if (res.status === 200) {
-          yield* Effect.logDebug("Metadata registered successfully");
-          return;
-        }
-        const json = yield* res.json;
-        yield* Effect.logError("Failed to register metadata", res.status, json);
-      }),
+    Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
+    Effect.tapErrorTag("ResponseError", ({ response: res }) =>
+      Effect.flatMap(res.json, (json) =>
+        Effect.logError(`Failed to register metadata (${res.status})`, json),
+      ),
     ),
   );
 

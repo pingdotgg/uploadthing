@@ -1,5 +1,4 @@
 import * as Context from "effect/Context";
-import { pipe } from "effect/Function";
 import * as Micro from "effect/Micro";
 
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
@@ -93,14 +92,3 @@ export const parseRequestJson = (req: Request) =>
     try: () => req.json() as Promise<unknown>,
     catch: (error) => new InvalidJsonError({ error, input: req.url }),
   }).pipe(Micro.withTrace("parseRequestJson"));
-
-/**
- * Schedule that retries with exponential backoff, up to 1 minute.
- * 10ms * 4^n, where n is the number of retries.
- */
-export const exponentialDelay = () =>
-  pipe(
-    Micro.delayExponential(10, 4),
-    Micro.delayWithMax(1000),
-    Micro.delayWithMaxElapsed(60_000),
-  );

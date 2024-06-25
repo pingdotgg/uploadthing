@@ -19,7 +19,7 @@ export class FileUploadData extends S.Class<FileUploadData>("FileUploadData")({
   name: S.String,
   size: S.Number,
   type: S.String,
-  lastModified: S.Number,
+  lastModified: S.optional(S.Number),
 }) {}
 
 /**

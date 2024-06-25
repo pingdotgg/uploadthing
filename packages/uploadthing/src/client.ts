@@ -1,7 +1,5 @@
-import * as Arr from "effect/Array";
 import { unsafeCoerce } from "effect/Function";
 import * as Micro from "effect/Micro";
-import * as Option from "effect/Option";
 
 import type {
   ExpandedRouteConfig,
@@ -11,7 +9,6 @@ import type {
 } from "@uploadthing/shared";
 import {
   asArray,
-  exponentialDelay,
   FetchContext,
   fetchEff,
   fileSizeToBytes,

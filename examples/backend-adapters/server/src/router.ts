@@ -41,9 +41,9 @@ export const uploadRouter = {
     },
     {
       awaitServerData: true,
-      presignedURLTTL: 10,
-      // Each file will get a unique key (default)
-      getFileHashParts: (file) => [file.name, Date.now()],
+      // presignedURLTTL: 10,
+      // // Each file will get a unique key (default)
+      // getFileHashParts: (file) => [file.name, Date.now()],
 
       // Uploading the same file will yield the same key
       // getFileHashParts: (file) => [file.name],
