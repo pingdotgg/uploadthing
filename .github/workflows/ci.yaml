@@ -139,5 +139,5 @@ jobs:
       - name: Compare client bundle
         run: node .github/analyze-bundle.js
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}

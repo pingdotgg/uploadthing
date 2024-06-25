@@ -109,29 +109,33 @@ function formatDiff(diff) {
   `;
 
   // Write a comment with the diff
-  const comment = await github.rest.issues
-    .listComments({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: pr.number,
-    })
-    .then((cmts) =>
-      cmts.data.find((cmt) => cmt.body?.includes(STICKY_COMMENT_TITLE)),
-    );
-  if (comment) {
-    await github.rest.issues.updateComment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      comment_id: comment.id,
-      body: commentBody,
-    });
-  } else {
-    await github.rest.issues.createComment({
-      owner: context.repo.owner,
-      repo: context.repo.repo,
-      issue_number: pr.number,
-      body: commentBody,
-    });
+  try {
+    const comment = await github.rest.issues
+      .listComments({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: pr.number,
+      })
+      .then((cmts) =>
+        cmts.data.find((cmt) => cmt.body?.includes(STICKY_COMMENT_TITLE)),
+      );
+    if (comment) {
+      await github.rest.issues.updateComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        comment_id: comment.id,
+        body: commentBody,
+      });
+    } else {
+      await github.rest.issues.createComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: pr.number,
+        body: commentBody,
+      });
+    }
+  } catch (error) {
+    console.error(error);
   }
 })().catch((error) => {
   console.error(error);
