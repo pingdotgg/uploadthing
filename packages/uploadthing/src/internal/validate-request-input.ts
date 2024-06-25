@@ -287,13 +287,13 @@ export const parseAndValidateRequest = (
       ),
     );
 
-    yield* Effect.log("Parsed token", { token, apiKey, appId, regions });
+    yield* Effect.logDebug("Parsed token", { token, apiKey, appId, regions });
 
     // FIXME: This should probably provide the full context at once instead of
     // partially in the `runRequestHandlerAsync` and partially in here...
     // Ref: https://discord.com/channels/@me/1201977154577891369/1207441839972548669
     const contextValue = yield* FetchContext;
-    contextValue.baseHeaders["x-uploadthing-api-key"] = token;
+    contextValue.baseHeaders["x-uploadthing-api-key"] = apiKey;
     contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
     contextValue.baseHeaders["x-uploadthing-be-adapter"] = adapter;
 

@@ -419,7 +419,16 @@ const handleUploadAction = Effect.gen(function* () {
       isDev: opts.isDev,
     }),
     Effect.flatMap(httpClient),
-    Effect.tap((res) => Effect.logDebug("Metadata response:", res.status)),
+    Effect.tap((res) =>
+      Effect.gen(function* () {
+        if (res.status === 200) {
+          yield* Effect.logDebug("Metadata registered successfully");
+          return;
+        }
+        const json = yield* res.json;
+        yield* Effect.logError("Failed to register metadata", res.status, json);
+      }),
+    ),
   );
 
   // Send metadata to UT server (non blocking as a daemon)
@@ -450,7 +459,7 @@ const handleUploadAction = Effect.gen(function* () {
       metadataPost.pipe(
         HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
       ),
-  }).pipe(Effect.forkDaemon);
+  }).pipe(Effect.ignoreLogged, Effect.forkDaemon);
 
   const presigneds = presignedUrls.map((p, i) => ({
     url: p.url,
@@ -466,7 +475,7 @@ const handleUploadAction = Effect.gen(function* () {
 
   return {
     body: presigneds satisfies UTEvents["upload"]["out"],
-    cleanup: () => Effect.runPromise(Effect.ignoreLogged(fiber.await)),
+    cleanup: () => Effect.runPromise(fiber.await),
   };
 });
 
