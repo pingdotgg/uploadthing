@@ -70,13 +70,14 @@ function formatDiff(diff) {
   console.log(`diff: ${formatDiff(prGzip - mainGzip)}`);
 
   // Upload HTML files for easy inspection (not on forks)
-  let files = [];
+  let treemapMain = "_No treemap on forks_";
+  let treemapPr = "_No treemap on forks_";
   if (
     typeof process.env.UPLOADTHING_SECRET === "string" &&
     process.env.UPLOADTHING_SECRET.length > 0
   ) {
     const utapi = new UTApi();
-    files = await utapi.uploadFiles([
+    const files = await utapi.uploadFiles([
       new File(
         [await fs.readFile("bundle-main/out.html", "utf-8")],
         `${context.sha}-bundle-main.html`,
@@ -87,45 +88,46 @@ function formatDiff(diff) {
       ),
     ]);
 
-    if (!files[0].data || !files[1].data) {
-      throw new Error("Failed to upload files");
+    if (files[0].data && files[1].data) {
+      treemapMain = `[See Treemap 📊](${files[0].data.url})`;
+      treemapPr = `[See Treemap 📊](${files[1].data.url})`;
     }
+  }
 
-    const commentBody = `
-    ## ${STICKY_COMMENT_TITLE}
-    
-    | Bundle              | Size (gzip)                          | Visualization                          |
-    | ------------------- | ------------------------------------ | -------------------------------------- |
-    | Main                | ${mainGzip}                          | [See Treemap 📊](${files[0].data.url}) |
-    | PR (${context.sha}) | ${prGzip}                            | [See Treemap 📊](${files[1].data.url}) |
-    | **Diff**            | **${formatDiff(prGzip - mainGzip)}** |                                        |
-    `;
+  const commentBody = `
+  ## ${STICKY_COMMENT_TITLE}
+  
+  | Bundle              | Size (gzip)                          | Visualization  |
+  | ------------------- | ------------------------------------ | -------------- |
+  | Main                | ${mainGzip}                          | ${treemapMain} |
+  | PR (${context.sha}) | ${prGzip}                            | ${treemapPr}   |
+  | **Diff**            | **${formatDiff(prGzip - mainGzip)}** |                |
+  `;
 
-    // Write a comment with the diff
-    const comment = await github.rest.issues
-      .listComments({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        issue_number: pr.number,
-      })
-      .then((cmts) =>
-        cmts.data.find((cmt) => cmt.body?.includes(STICKY_COMMENT_TITLE)),
-      );
-    if (comment) {
-      await github.rest.issues.updateComment({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        comment_id: comment.id,
-        body: commentBody,
-      });
-    } else {
-      await github.rest.issues.createComment({
-        owner: context.repo.owner,
-        repo: context.repo.repo,
-        issue_number: pr.number,
-        body: commentBody,
-      });
-    }
+  // Write a comment with the diff
+  const comment = await github.rest.issues
+    .listComments({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: pr.number,
+    })
+    .then((cmts) =>
+      cmts.data.find((cmt) => cmt.body?.includes(STICKY_COMMENT_TITLE)),
+    );
+  if (comment) {
+    await github.rest.issues.updateComment({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      comment_id: comment.id,
+      body: commentBody,
+    });
+  } else {
+    await github.rest.issues.createComment({
+      owner: context.repo.owner,
+      repo: context.repo.repo,
+      issue_number: pr.number,
+      body: commentBody,
+    });
   }
 })().catch((error) => {
   console.error(error);
