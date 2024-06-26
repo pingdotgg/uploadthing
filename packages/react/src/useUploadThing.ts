@@ -57,7 +57,7 @@ export const INTERNAL_uploadthingHookGen = <
       `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
     );
   }
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/react",
   });
@@ -68,7 +68,7 @@ export const INTERNAL_uploadthingHookGen = <
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
-    const fileProgress = useRef<Map<string, number>>(new Map());
+    const fileProgress = useRef<Map<File, number>>(new Map());
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -80,7 +80,7 @@ export const INTERNAL_uploadthingHookGen = <
       const input = args[1];
 
       setUploading(true);
-      files.forEach((f) => fileProgress.current.set(f.name, 0));
+      files.forEach((f) => fileProgress.current.set(f, 0));
       opts?.onUploadProgress?.(0);
       try {
         const res = await uploadFiles<TEndpoint>(endpoint, {
@@ -143,13 +143,6 @@ export const INTERNAL_uploadthingHookGen = <
       startUpload,
       isUploading,
       routeConfig,
-
-      /**
-       * @deprecated Use `routeConfig` instead
-       */
-      permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: routeConfig }
-        : undefined,
     } as const;
   };
 

@@ -118,7 +118,7 @@ export function UploadDropzone<
   );
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
       signal: acRef.current.signal,
@@ -151,9 +151,7 @@ export function UploadDropzone<
     [$props, startUpload, fileRouteInput],
   );
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
-  );
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -331,7 +329,7 @@ export function UploadDropzone<
         data-state={state}
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+          allowedContentTextLabelGenerator(routeConfig)}
       </div>
 
       <button
