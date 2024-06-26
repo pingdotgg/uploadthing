@@ -6,12 +6,14 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
+import { INGEST_URL } from "../src/internal/constants";
 import {
   baseHeaders,
   createApiUrl,
   it,
   middlewareMock,
   requestSpy,
+  requestsToDomain,
   testToken,
   uploadCompleteMock,
 } from "./__test-helpers";
@@ -65,34 +67,37 @@ describe("adapters:h3", async () => {
       }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              size: 48,
-              contentDisposition: "inline",
-              type: "text/plain",
-            },
-          ],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "h3",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length === 1);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "h3",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -139,34 +144,37 @@ describe("adapters:server", async () => {
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              size: 48,
-              contentDisposition: "inline",
-              type: "text/plain",
-            },
-          ],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "server",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length === 1);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -210,34 +218,38 @@ describe("adapters:next", async () => {
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              size: 48,
-              contentDisposition: "inline",
-              type: "text/plain",
-            },
-          ],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "nextjs-app",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length === 1);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "nextjs-app",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -313,7 +325,7 @@ describe("adapters:next-legacy", async () => {
       method: "POST",
       headers: baseHeaders,
     });
-    const { res, status } = mockRes();
+    const { res, status, json } = mockRes();
 
     await handler(req, res);
     expect(status).not.toHaveBeenCalled(); // implicit 200
@@ -323,34 +335,37 @@ describe("adapters:next-legacy", async () => {
       expect.objectContaining({ event: undefined, req, res }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const resJson = (json.mock.calls[0] as any[])[0];
+    expect(resJson).toEqual([
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              size: 48,
-              contentDisposition: "inline",
-              type: "text/plain",
-            },
-          ],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "nextjs-pages",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length === 1);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [resJson[0]?.key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "nextjs-pages",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -420,34 +435,37 @@ describe("adapters:express", async () => {
       }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              size: 48,
-              contentDisposition: "inline",
-              type: "text/plain",
-            },
-          ],
-          metadata: {},
-          callbackUrl: url,
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "express",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length === 1);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: url,
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "express",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
 
     server.close();
   });
@@ -557,34 +575,37 @@ describe("adapters:fastify", async () => {
       }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              size: 48,
-              contentDisposition: "inline",
-              type: "text/plain",
-            },
-          ],
-          metadata: {},
-          callbackUrl: url,
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "fastify",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length === 1);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: url,
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "fastify",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
 
     await server.close();
   });

@@ -417,6 +417,12 @@ const handleUploadAction = Effect.gen(function* () {
 
   const metadataPost = HttpClientRequest.post("/route-metadata").pipe(
     HttpClientRequest.prependUrl(INGEST_URL),
+    HttpClientRequest.setHeaders({
+      "x-uploadthing-api-key": opts.apiKey,
+      "x-uploadthing-version": UPLOADTHING_VERSION,
+      "x-uploadthing-be-adapter": opts.adapter,
+      "x-uploadthing-fe-package": opts.fePackage,
+    }),
     HttpClientRequest.jsonBody({
       fileKeys: presignedUrls.map(({ key }) => key),
       metadata: metadata,
@@ -470,10 +476,7 @@ const handleUploadAction = Effect.gen(function* () {
     customId: fileUploadRequests[i].customId ?? null,
   }));
 
-  yield* Effect.logInfo("Sending presigned URLs to client", {
-    presigneds,
-    routeOptions: opts.uploadable._def.routeOptions,
-  });
+  yield* Effect.logInfo("Sending presigned URLs to client", presigneds);
 
   return {
     body: presigneds satisfies UTEvents["upload"]["out"],

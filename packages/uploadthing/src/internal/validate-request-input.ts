@@ -145,6 +145,7 @@ type RequestInputBase = {
   apiKey: string;
   slug: string;
   adapter: string;
+  fePackage: string;
   uploadable: Uploader<AnyParams>;
 };
 
@@ -283,6 +284,7 @@ export const parseAndValidateRequest = (
       slug,
       uploadable,
       adapter,
+      fePackage: utFrontendPackage,
       hook: null,
       action: null,
     };
