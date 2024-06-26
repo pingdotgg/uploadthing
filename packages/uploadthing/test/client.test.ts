@@ -16,6 +16,7 @@ import {
   onErrorMock,
   requestSpy,
   requestsToDomain,
+  testToken,
   uploadCompleteMock,
   useBadS3,
   useHalfBadS3,
@@ -71,7 +72,7 @@ export const setupUTServer = async () => {
     createRouteHandler({
       router,
       config: {
-        uploadthingSecret: "sk_test_123",
+        uploadthingToken: testToken.encoded,
         isDev: true,
       },
     }),
@@ -81,7 +82,7 @@ export const setupUTServer = async () => {
   const port = (server.address() as AddressInfo).port;
   await new Promise((res) => server.once("listening", res));
 
-  const uploadFiles = genUploader<typeof router>({
+  const { uploadFiles } = genUploader<typeof router>({
     package: "vitest",
     url: `http://localhost:${port}`,
   });

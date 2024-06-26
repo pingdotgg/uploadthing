@@ -22,7 +22,8 @@ import { UPLOADTHING_VERSION } from "../internal/constants";
 import { incompatibleNodeGuard } from "../internal/incompat-node-guard";
 import type { LogLevel } from "../internal/logger";
 import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
-import { getTokenOrThrow, parseToken } from "../internal/uploadthing-token";
+import type { UTToken } from "../internal/uploadthing-token";
+import { getToken } from "../internal/uploadthing-token";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -46,13 +47,13 @@ export class UTApi {
   private defaultHeaders: FetchContextService["baseHeaders"];
   private defaultKeyType: "fileKey" | "customId";
   private logLevel: LogLevel | undefined;
-  private token: string;
+  private token: typeof UTToken.Type;
 
   constructor(opts?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
     incompatibleNodeGuard();
-    this.token = getTokenOrThrow(opts?.token);
+    this.token = Effect.runSync(getToken(opts?.token));
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultHeaders = {
@@ -70,16 +71,14 @@ export class UTApi {
     body: Record<string, unknown>,
     responseSchema: S.Schema<T, any>,
   ) =>
-    Effect.gen(function* (this: UTApi) {
+    Effect.gen(this, function* () {
       const url = generateUploadThingURL(pathname);
-
-      const { apiKey } = yield* parseToken(this.token);
 
       const headers = new Headers([["Content-Type", "application/json"]]);
       for (const [key, value] of Object.entries(this.defaultHeaders)) {
         if (typeof value === "string") headers.set(key, value);
       }
-      headers.set("x-uploadthing-api-key", apiKey);
+      headers.set("x-uploadthing-api-key", this.token.apiKey);
 
       yield* Effect.logDebug("Requesting UploadThing:", {
         url,

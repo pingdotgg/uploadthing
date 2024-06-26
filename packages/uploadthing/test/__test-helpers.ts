@@ -1,14 +1,13 @@
+import * as S from "@effect/schema/Schema";
 import type { StrictRequest } from "msw";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
-import { lookup } from "@uploadthing/mime-types";
-import { generateUploadThingURL } from "@uploadthing/shared";
-
-import { UPLOADTHING_VERSION } from "../src/internal/constants";
+import { INGEST_URL, UPLOADTHING_VERSION } from "../src/internal/constants";
 import type { NewPresignedUrl } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/types";
+import { UTToken } from "../src/internal/uploadthing-token";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
 export const requestsToDomain = (domain: string) =>
@@ -17,6 +16,12 @@ export const requestsToDomain = (domain: string) =>
 export const middlewareMock = vi.fn();
 export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
+
+const tokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
+export const testToken = {
+  encoded: S.encodeSync(UTToken)(tokenData),
+  decoded: tokenData,
+};
 
 export const createApiUrl = (slug: string, action?: ActionType) => {
   const url = new URL("http://localhost:3000");
@@ -117,73 +122,19 @@ export const it = itBase.extend({
         return HttpResponse.text("Lorem ipsum doler sit amet");
       }),
       /**
+       * UploadThing Ingest
+       */
+      http.all(`${INGEST_URL}/:key`, async ({ request }) => {
+        return HttpResponse.json({});
+      }),
+      /**
        * UploadThing API
        */
-      http.post<never, { files: any[] } & Record<string, string>>(
-        "https://api.uploadthing.com/v7/prepareUpload",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          const body = await request.json();
-
-          const presigneds = body.files.map((file) => {
-            const presigned = mockPresigned(file);
-            const params = new URLSearchParams(presigned.url.split("?")[1]);
-            db.insertFile({
-              ...file,
-              customId: file.customId ?? null,
-              type: params.get("x-ut-file-type"),
-              key: presigned.key,
-              callbackUrl: body.callbackUrl,
-              callbackSlug: body.callbackSlug,
-              metadata: JSON.stringify(body.metadata ?? "{}"),
-            });
-            return presigned;
-          });
-          return HttpResponse.json({ data: presigneds });
-        },
-      ),
-      http.post(
-        "https://api.uploadthing.com/v6/completeMultipart",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
-        },
-      ),
       http.post(
         "https://api.uploadthing.com/v6/failureCallback",
         async ({ request }) => {
           await callRequestSpy(request);
           return HttpResponse.json({ success: true });
-        },
-      ),
-      http.get(
-        "https://api.uploadthing.com/v7/pollUpload",
-        // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-        async function* ({ request }) {
-          await callRequestSpy(request);
-          let file = null;
-          const fileKey = request.headers.get("Authorization")!.split(":")[1];
-
-          // Simulate polling - at least once
-          yield HttpResponse.json({ status: "still waiting" });
-          while (!file) {
-            file = db.getFileByKey(fileKey);
-            if (file) break;
-            yield HttpResponse.json({ status: "still waiting" });
-          }
-
-          return HttpResponse.json({
-            status: "done",
-            file: {
-              ...file,
-              fileName: file.name,
-              fileSize: file.size,
-              fileType: file.type,
-              fileKey: file.key,
-              fileUrl: `https://utfs.io/f/${file.key}`,
-            },
-            metadata: JSON.parse(file.metadata ?? "{}") as unknown,
-          });
         },
       ),
       http.post(
@@ -193,13 +144,6 @@ export const it = itBase.extend({
           return HttpResponse.json({
             url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
           });
-        },
-      ),
-      http.post(
-        "https://api.uploadthing.com/v6/serverCallback",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          return HttpResponse.json({ status: "ok" });
         },
       ),
       http.post(

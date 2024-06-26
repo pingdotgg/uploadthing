@@ -41,7 +41,7 @@ import {
   VALID_ACTION_TYPES,
   VALID_UT_HOOKS,
 } from "./types";
-import { getToken, parseToken } from "./uploadthing-token";
+import { getToken } from "./uploadthing-token";
 
 class FileSizeMismatch extends Data.Error<{
   reason: string;
@@ -178,7 +178,6 @@ export const parseAndValidateRequest = (
     const hook = headers.get("uploadthing-hook");
     const utFrontendPackage = headers.get("x-uploadthing-package") ?? "unknown";
     const clientVersion = headers.get("x-uploadthing-version");
-    const token = getToken(opts.config?.uploadthingToken);
 
     if (clientVersion != null && clientVersion !== UPLOADTHING_VERSION) {
       yield* Effect.logError(
@@ -205,16 +204,6 @@ export const parseAndValidateRequest = (
       return yield* new UploadThingError({
         code: "BAD_REQUEST",
         message: "`slug` must be a string",
-        cause: msg,
-      });
-    }
-
-    if (!token) {
-      const msg = `No secret provided, please set UPLOADTHING_TOKEN in your env file or in the config`;
-      yield* Effect.logError(msg);
-      return yield* new UploadThingError({
-        code: "MISSING_ENV",
-        message: `No token provided`,
         cause: msg,
       });
     }
@@ -275,19 +264,11 @@ export const parseAndValidateRequest = (
 
     yield* Effect.logDebug("✔︎ All request input is valid");
 
-    const { apiKey, appId, regions } = yield* parseToken(token).pipe(
-      Effect.catchTag(
-        "ParseError",
-        (e) =>
-          new UploadThingError({
-            code: "MISSING_ENV",
-            message: "Invalid token",
-            cause: e.message,
-          }),
-      ),
+    const { apiKey, appId, regions } = yield* getToken(
+      opts.config?.uploadthingToken,
     );
 
-    yield* Effect.logDebug("Parsed token", { token, apiKey, appId, regions });
+    yield* Effect.logDebug("Parsed token", { apiKey, appId, regions });
 
     // FIXME: This should probably provide the full context at once instead of
     // partially in the `runRequestHandlerAsync` and partially in here...

@@ -11,6 +11,7 @@ import {
   it,
   middlewareMock,
   requestSpy,
+  testToken,
   uploadCompleteMock,
   useBadUTApi,
 } from "./__test-helpers";
@@ -70,7 +71,7 @@ const router = {
 const handlers = createRouteHandler({
   router,
   config: {
-    uploadthingSecret: "sk_live_test123",
+    uploadthingToken: testToken.encoded,
     // @ts-expect-error - annoying to see error logs
     logLevel: "silent",
   },
@@ -111,8 +112,7 @@ describe("errors for invalid request input", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause: "Error: Invalid action type invalid",
-      message:
-        'Expected "upload", "failure" or "multipart-complete" but got "invalid"',
+      message: 'Expected "upload" but got "invalid"',
     });
   });
 });
@@ -339,7 +339,7 @@ describe(".onUploadComplete()", () => {
         customId: null,
       }),
     });
-    const signature = await signPayload(payload, "sk_live_test123");
+    const signature = await signPayload(payload, testToken.decoded.apiKey);
 
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {
@@ -451,10 +451,10 @@ describe("bad request handling", () => {
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({
       message:
-        "Request to https://api.uploadthing.com/v7/prepareUpload failed with status 404",
+        "Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
       data: { error: "Not found" },
       cause:
-        "BadRequestError: Request to https://api.uploadthing.com/v7/prepareUpload failed with status 404",
+        "BadRequestError: Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
     });
   });
 });

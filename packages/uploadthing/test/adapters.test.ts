@@ -12,6 +12,7 @@ import {
   it,
   middlewareMock,
   requestSpy,
+  testToken,
   uploadCompleteMock,
 } from "./__test-helpers";
 
@@ -37,7 +38,7 @@ describe("adapters:h3", async () => {
     const eventHandler = createRouteHandler({
       router,
       config: {
-        uploadthingSecret: "sk_live_test",
+        uploadthingToken: testToken.encoded,
       },
     });
 
@@ -67,7 +68,7 @@ describe("adapters:h3", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v7/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [
@@ -119,7 +120,7 @@ describe("adapters:server", async () => {
     const handlers = createRouteHandler({
       router,
       config: {
-        uploadthingSecret: "sk_live_test",
+        uploadthingToken: testToken.encoded,
       },
     });
 
@@ -141,7 +142,7 @@ describe("adapters:server", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v7/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [
@@ -191,7 +192,7 @@ describe("adapters:next", async () => {
     const handlers = createRouteHandler({
       router,
       config: {
-        uploadthingSecret: "sk_live_test",
+        uploadthingToken: testToken.encoded,
       },
     });
 
@@ -212,7 +213,7 @@ describe("adapters:next", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v7/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [
@@ -300,7 +301,7 @@ describe("adapters:next-legacy", async () => {
     const handler = createRouteHandler({
       router,
       config: {
-        uploadthingSecret: "sk_live_test",
+        uploadthingToken: testToken.encoded,
       },
     });
 
@@ -325,7 +326,7 @@ describe("adapters:next-legacy", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v7/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [
@@ -381,7 +382,7 @@ describe("adapters:express", async () => {
       createRouteHandler({
         router,
         config: {
-          uploadthingSecret: "sk_live_test",
+          uploadthingToken: testToken.encoded,
         },
       }),
     );
@@ -422,7 +423,7 @@ describe("adapters:express", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v7/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [
@@ -518,7 +519,7 @@ describe("adapters:fastify", async () => {
     await app.register(createRouteHandler, {
       router,
       config: {
-        uploadthingSecret: "sk_live_test",
+        uploadthingToken: testToken.encoded,
       },
     });
 
@@ -559,7 +560,7 @@ describe("adapters:fastify", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v7/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [

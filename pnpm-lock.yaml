@@ -25,6 +25,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.1
         version: 2.27.1
+      '@effect/vitest':
+        specifier: ^0.5.20
+        version: 0.5.20(effect@3.4.2)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(@vue/compiler-sfc@3.4.25)(prettier@3.3.2)
@@ -2702,6 +2705,12 @@ packages:
     resolution: {integrity: sha512-5LgCBjGHEphteGxh0Eid7dJUlSs89yvZfJFSSKNDrBhC7c0YCrrzzKYlvmqyUJzvxx+q4yBakZNUQWcjOTGsKA==}
     peerDependencies:
       effect: ^3.4.2
+
+  '@effect/vitest@0.5.20':
+    resolution: {integrity: sha512-T1voJyI7qd3u9+3V3uBFmXc1OxppGVt8KJZ/+FQIU0O4fF22gWL/AHVsvQRjqqAAvLTPCE8+AqB7bMgljB7/Rg==}
+    peerDependencies:
+      effect: ^3.4.4
+      vitest: ^1.4.0
 
   '@egjs/agent@2.4.3':
     resolution: {integrity: sha512-XvksSENe8wPeFlEVouvrOhKdx8HMniJ3by7sro2uPF3M6QqWwjzVcmvwoPtdjiX8O1lfRoLhQMp1a7NGlVTdIA==}
@@ -16905,6 +16914,11 @@ snapshots:
     dependencies:
       effect: 3.4.2
       fast-check: 3.18.0
+
+  '@effect/vitest@0.5.20(effect@3.4.2)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))':
+    dependencies:
+      effect: 3.4.2
+      vitest: 1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)
 
   '@egjs/agent@2.4.3': {}
 

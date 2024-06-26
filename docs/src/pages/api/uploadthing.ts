@@ -12,5 +12,8 @@ const router = {
 
 export default createRouteHandler({
   router,
-  config: { uploadthingSecret: "sk_foo" },
+  config: {
+    uploadthingToken:
+      "eyJhcHBJZCI6ImFwcC0xIiwiYXBpS2V5Ijoic2tfZm9vIiwicmVnaW9ucyI6WyJmcmExIl19",
+  },
 });
