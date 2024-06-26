@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/dropzone/react";
@@ -169,7 +169,7 @@ export function UploadDropzone<
       // If mode is auto, start upload immediately
       if (mode === "auto") uploadFiles(acceptedFiles);
     },
-    [$props, mode, startUpload, setFiles],
+    [$props, mode, setFiles, uploadFiles],
   );
 
   const isDisabled = (() => {

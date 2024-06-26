@@ -32,8 +32,8 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.2.1",
     "eslint": "^8.57.0",
     "typescript": "^5.5.2"

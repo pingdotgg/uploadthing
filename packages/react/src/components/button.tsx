@@ -22,6 +22,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import { usePaste } from "../hooks/use-paste";
+import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -260,7 +261,7 @@ export function UploadButton<
   const renderAllowedContent = () => (
     <div
       className={twMerge(
-        "h-[1.25rem]  text-xs leading-5 text-gray-600",
+        "h-[1.25rem] text-xs leading-5 text-gray-600",
         styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
       )}
       style={styleFieldToCssObject(

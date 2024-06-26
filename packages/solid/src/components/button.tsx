@@ -175,7 +175,7 @@ export function UploadButton<
       </label>
       <div
         class={twMerge(
-          "h-[1.25rem]  text-xs leading-5 text-gray-600",
+          "h-[1.25rem] text-xs leading-5 text-gray-600",
           styleFieldToClassName(
             $props.appearance?.allowedContent,
             styleFieldArg,
