@@ -225,7 +225,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const renderAllowedContent = () => (
         <div
           class={twMerge(
-            "h-[1.25rem]  text-xs leading-5 text-gray-600",
+            "h-[1.25rem] text-xs leading-5 text-gray-600",
             styleFieldToClassName(
               $props.appearance?.allowedContent,
               styleFieldArg.value,

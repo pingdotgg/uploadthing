@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^8.56.4",
-    "@uploadthing/tsconfig": "0.1.0",
+    "@uploadthing/tsconfig": "workspace:*",
     "tsup": "8.0.2",
     "typescript": "^5.5.2"
   }

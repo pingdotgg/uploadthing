@@ -51,7 +51,7 @@
     "tslib": "^2.6.2",
     "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
-    "vite": "^5.1.4"
+    "vite": "^5.3.1"
   },
   "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",
