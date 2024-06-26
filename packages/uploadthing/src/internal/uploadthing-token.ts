@@ -28,22 +28,18 @@ export const getToken = (manual?: string) =>
   }).pipe(
     Effect.catchTags({
       ConfigError: (e) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "MISSING_ENV",
-            message:
-              "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
-            cause: e,
-          }),
-        ),
+        new UploadThingError({
+          code: "MISSING_ENV",
+          message:
+            "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
+          cause: e,
+        }),
       ParseError: (e) =>
-        Effect.fail(
-          new UploadThingError({
-            code: "MISSING_ENV",
-            message:
-              "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }",
-            cause: e,
-          }),
-        ),
+        new UploadThingError({
+          code: "MISSING_ENV",
+          message:
+            "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }",
+          cause: e,
+        }),
     }),
   );
