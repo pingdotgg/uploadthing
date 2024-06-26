@@ -69,7 +69,7 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="flex items-center border-b px-4" cmdk-input-wrapper="">
-    <Magic className="mr-2 h-4 w-4 shrink-0 text-purple-500 " />
+    <Magic className="mr-2 h-4 w-4 shrink-0 text-purple-500" />
     <CommandPrimitive.Input
       ref={ref}
       className={twMerge(
