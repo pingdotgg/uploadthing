@@ -34,7 +34,7 @@ export const INTERNAL_createUploadThingGen = <
    */
   url: URL;
 }) => {
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/svelte",
   });
@@ -48,7 +48,7 @@ export const INTERNAL_createUploadThingGen = <
       endpoint as string,
     );
     let uploadProgress = 0;
-    let fileProgress = new Map();
+    let fileProgress = new Map<File, number>();
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -60,7 +60,7 @@ export const INTERNAL_createUploadThingGen = <
       const input = args[1];
       isUploading.set(true);
       opts?.onUploadProgress?.(0);
-      files.forEach((f) => fileProgress.set(f.name, 0));
+      files.forEach((f) => fileProgress.set(f, 0));
       try {
         const res = await uploadFiles(endpoint, {
           files,
@@ -129,10 +129,10 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
 
   return {
     createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    createUploader: generateUploader<TRouter>(),
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/svelte",
     }),
-    createUploader: generateUploader<TRouter>(),
   } as const;
 };

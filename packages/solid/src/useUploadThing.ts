@@ -31,7 +31,7 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/solid",
   });
@@ -46,7 +46,7 @@ export const INTERNAL_uploadthingHookGen = <
       endpoint as string,
     );
     let uploadProgress = 0;
-    let fileProgress = new Map();
+    let fileProgress = new Map<File, number>();
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -59,7 +59,7 @@ export const INTERNAL_uploadthingHookGen = <
 
       setUploading(true);
       opts?.onUploadProgress?.(0);
-      files.forEach((f) => fileProgress.set(f.name, 0));
+      files.forEach((f) => fileProgress.set(f, 0));
       try {
         const res = await uploadFiles<TEndpoint>(endpoint, {
           headers: opts?.headers,
@@ -126,7 +126,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/solid",
     }),

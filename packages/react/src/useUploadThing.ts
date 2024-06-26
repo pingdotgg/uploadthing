@@ -167,7 +167,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/react",
     }),

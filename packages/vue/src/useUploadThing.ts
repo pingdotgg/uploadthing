@@ -45,7 +45,7 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/vue",
   });
@@ -56,7 +56,7 @@ export const INTERNAL_uploadthingHookGen = <
   ) => {
     const isUploading = ref(false);
     const uploadProgress = ref(0);
-    const fileProgress = ref(new Map<string, number>());
+    const fileProgress = ref(new Map<File, number>());
 
     const permittedFileInfo = useEndpointMetadata(
       initOpts.url,
@@ -74,7 +74,7 @@ export const INTERNAL_uploadthingHookGen = <
 
       isUploading.value = true;
       opts?.onUploadProgress?.(0);
-      files.forEach((f) => fileProgress.value.set(f.name, 0));
+      files.forEach((f) => fileProgress.value.set(f, 0));
       try {
         const res = await uploadFiles(endpoint, {
           headers: opts?.headers,
@@ -118,7 +118,7 @@ export const INTERNAL_uploadthingHookGen = <
         opts?.onUploadError?.(error);
       } finally {
         isUploading.value = false;
-        fileProgress.value = new Map<string, number>();
+        fileProgress.value = new Map();
         uploadProgress.value = 0;
       }
     });
@@ -140,7 +140,7 @@ export const generateVueHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/vue",
     }),
