@@ -1,10 +1,10 @@
+import type { HttpClient } from "@effect/platform";
 import type { Schema } from "@effect/schema/Schema";
 import type * as S from "@effect/schema/Schema";
 import type * as Effect from "effect/Effect";
 
 import type {
   ErrorMessage,
-  FetchContext,
   FetchEsque,
   FileRouterInputConfig,
   Json,
@@ -14,7 +14,6 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { UploadThingClient } from "./http-client";
 import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
@@ -215,7 +214,7 @@ export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
 ) => Effect.Effect<
   RequestHandlerSuccess,
   UploadThingError,
-  FetchContext | UploadThingClient
+  HttpClient.HttpClient.Default
 >;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =

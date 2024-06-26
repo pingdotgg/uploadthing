@@ -4,19 +4,10 @@ import * as Micro from "effect/Micro";
 import { BadRequestError, FetchError, InvalidJsonError } from "./tagged-errors";
 import type { FetchEsque, ResponseEsque } from "./types";
 
-export type FetchContextService = {
-  fetch: FetchEsque;
-  baseHeaders: Record<string, string | undefined> & {
-    "x-uploadthing-version": string;
-    "x-uploadthing-api-key": string | undefined;
-    "x-uploadthing-fe-package": string | undefined;
-    "x-uploadthing-be-adapter": string | undefined;
-  };
-};
 export class FetchContext
-  extends /** #__PURE__ */ Context.Tag("uploadthing/FetchContext")<
+  extends /** #__PURE__ */ Context.Tag("uploadthing/Fetch")<
     FetchContext,
-    FetchContextService
+    FetchEsque
   >() {}
 
 interface ResponseWithURL extends ResponseEsque {
@@ -24,17 +15,14 @@ interface ResponseWithURL extends ResponseEsque {
 }
 
 // Temporary Effect wrappers below.
-// TODO should be refactored with much love
-// TODO handle error properly
+// Only for use in the browser.
+// On the server, use `@effect/platform.HttpClient` instead.
 export const fetchEff = (
   input: string | URL,
   init?: RequestInit,
 ): Micro.Micro<ResponseWithURL, FetchError, FetchContext> =>
-  Micro.flatMap(Micro.service(FetchContext), ({ fetch, baseHeaders }) => {
+  Micro.flatMap(Micro.service(FetchContext), (fetch) => {
     const headers = new Headers(init?.headers ?? []);
-    for (const [key, value] of Object.entries(baseHeaders)) {
-      if (typeof value === "string") headers.set(key, value);
-    }
 
     const reqInfo = {
       url: input.toString(),

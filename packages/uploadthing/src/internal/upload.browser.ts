@@ -21,13 +21,11 @@ export const uploadWithProgress = (
 
     let previousLoaded = 0;
     xhr.upload.addEventListener("progress", ({ loaded }) => {
-      console.log("XHR upload progress", loaded);
       const delta = loaded - previousLoaded;
       onUploadProgress?.({ loaded, delta });
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
-      console.log("XHR load", xhr.status, xhr.statusText);
       resume(
         xhr.status >= 200 && xhr.status < 300
           ? Micro.succeed(xhr.response)
@@ -40,7 +38,6 @@ export const uploadWithProgress = (
     // Is there a case when the client would throw and
     // ingest server not knowing about it? idts?
     xhr.addEventListener("error", () => {
-      console.log("XHR error", xhr.status, xhr.statusText);
       resume(
         new UploadThingError({
           code: "UPLOAD_FAILED",

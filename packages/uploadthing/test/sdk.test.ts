@@ -8,6 +8,7 @@ import {
   it as rawIt,
 } from "vitest";
 
+import { INGEST_URL } from "../src/internal/constants";
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import { it, requestSpy, resetMocks, testToken } from "./__test-helpers";
@@ -19,61 +20,26 @@ describe("uploadFiles", () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFiles(fooFile);
 
-    expect(requestSpy).toHaveBeenCalledTimes(3);
-    expect(requestSpy).toHaveBeenNthCalledWith(
-      1,
-      "https://api.uploadthing.com/v6/prepareUpload",
-      {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              type: "text/plain",
-              size: 3,
-              customId: null,
-              contentDisposition: "inline",
-            },
-          ],
-          metadata: {},
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
-      },
-    );
-    expect(requestSpy).toHaveBeenNthCalledWith(
-      2,
-      "https://bucket.s3.amazonaws.com/",
+    expect(requestSpy).toHaveBeenCalledTimes(1);
+    expect(requestSpy).toHaveBeenCalledWith(
+      expect.stringContaining(INGEST_URL),
       expect.objectContaining({
+        method: "PUT",
         body: expect.any(FormData),
-        method: "POST",
+        headers: expect.objectContaining({
+          range: "bytes=0-",
+        }),
       }),
     );
-    expect(requestSpy).toHaveBeenNthCalledWith(
-      3,
-      "https://api.uploadthing.com/v6/pollUpload",
-      {
-        body: null,
-        headers: {
-          authorization: "random-jwt:abc-123.txt",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "GET",
-      },
-    );
 
+    const key = result.data?.key;
     expect(result).toEqual({
       data: {
-        key: "abc-123.txt",
+        key: expect.stringMatching(/.+/),
         name: "foo.txt",
         size: 3,
-        url: "https://utfs.io/f/abc-123.txt",
+        lastModified: fooFile.lastModified,
+        url: `https://utfs.io/f/${key}`,
         customId: null,
         type: "text/plain",
       },
@@ -102,8 +68,8 @@ describe("uploadFiles", () => {
     expect(file.type).toBe("text/plain");
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
-      expect.objectContaining({}),
+      expect.stringContaining(`x-ut-file-name=foo.txt`),
+      expect.objectContaining({ method: "PUT" }),
     );
   });
 
@@ -121,79 +87,40 @@ describe("uploadFiles", () => {
     expect(fileWithId.customId).toBe("foo");
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
-      {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              type: "text/plain",
-              size: 3,
-              customId: "foo",
-              contentDisposition: "inline",
-            },
-          ],
-          metadata: {},
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
-      },
+      expect.stringContaining(`x-ut-custom-id=foo`),
+      expect.objectContaining({ method: "PUT" }),
     );
   });
 });
 
-describe.skip("uploadFilesFromUrl", () => {
+describe("uploadFilesFromUrl", () => {
   it("downloads, then uploads successfully", async ({ db }) => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
     );
 
-    expect(requestSpy).toHaveBeenCalledTimes(4); // download, request url, upload, poll
+    expect(requestSpy).toHaveBeenCalledTimes(2); // download, upload
     expect(requestSpy).toHaveBeenNthCalledWith(
       2,
-      "https://api.uploadthing.com/v6/prepareUpload",
+      expect.stringContaining(`x-ut-file-name=foo.txt`),
       {
-        body: {
-          files: [{ name: "foo.txt", type: "text/plain", size: 26 }],
-          metadata: {},
-          contentDisposition: "inline",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        method: "PUT",
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          range: "bytes=0-",
+        }),
       },
     );
-    expect(requestSpy).toHaveBeenNthCalledWith(
-      3,
-      "https://bucket.s3.amazonaws.com/",
-      expect.objectContaining({
-        method: "POST",
-      }),
-    );
-    expect(requestSpy).toHaveBeenNthCalledWith(
-      4,
-      "https://api.uploadthing.com/v6/pollUpload",
-      expect.objectContaining({
-        headers: { authorization: "random-jwt:abc-123.txt" },
-      }),
-    );
 
+    const key = result.data?.key;
     expect(result).toEqual({
       data: {
-        key: "abc-123.txt",
+        key: expect.stringMatching(/.+/),
         name: "foo.txt",
         size: 26,
-        url: "https://utfs.io/f/abc-123.txt",
+        lastModified: expect.any(Number),
+        url: `https://utfs.io/f/${key}`,
         customId: null,
         type: "text/plain",
       },
@@ -228,20 +155,13 @@ describe.skip("uploadFilesFromUrl", () => {
     });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+      expect.stringContaining(`x-ut-file-name=bar.txt`),
       {
-        body: {
-          files: [{ name: "bar.txt", type: "text/plain", size: 26 }],
-          metadata: {},
-          contentDisposition: "inline",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        method: "PUT",
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          range: "bytes=0-",
+        }),
       },
     );
   });
@@ -254,27 +174,13 @@ describe.skip("uploadFilesFromUrl", () => {
     });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/uploadFiles",
+      expect.stringContaining(`x-ut-custom-id=my-custom-id`),
       {
-        body: {
-          files: [
-            {
-              name: "foo.txt",
-              type: "text/plain",
-              size: 26,
-              customId: "my-custom-id",
-            },
-          ],
-          metadata: {},
-          contentDisposition: "inline",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        method: "PUT",
+        body: expect.any(FormData),
+        headers: expect.objectContaining({
+          range: "bytes=0-",
+        }),
       },
     );
   });
@@ -285,16 +191,15 @@ describe.skip("uploadFilesFromUrl", () => {
     const result = await utapi.uploadFilesFromUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
     );
-    expect(result).toMatchInlineSnapshot(`
-      {
-        "data": null,
-        "error": {
-          "code": "BAD_REQUEST",
-          "data": undefined,
-          "message": "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
-        },
-      }
-    `);
+    expect(result).toStrictEqual({
+      data: null,
+      error: {
+        code: "BAD_REQUEST",
+        data: undefined,
+        message:
+          "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+      },
+    });
   });
 
   it("preserves order if some download fails", async ({ db }) => {
@@ -304,40 +209,43 @@ describe.skip("uploadFilesFromUrl", () => {
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       "https://cdn.foo.com/bar.txt",
     ]);
-    expect(result).toMatchInlineSnapshot(`
-      [
-        {
-          "data": {
-            "customId": null,
-            "key": "abc-123.txt",
-            "name": "foo.txt",
-            "size": 26,
-            "type": "text/plain",
-            "url": "https://utfs.io/f/abc-123.txt",
-          },
-          "error": null,
+    const key1 = result[0].data?.key;
+    const key2 = result[2].data?.key;
+    expect(result).toStrictEqual([
+      {
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          lastModified: expect.any(Number),
+          name: "foo.txt",
+          size: 26,
+          type: "text/plain",
+          url: `https://utfs.io/f/${key1}`,
         },
-        {
-          "data": null,
-          "error": {
-            "code": "BAD_REQUEST",
-            "data": undefined,
-            "message": "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
-          },
+        error: null,
+      },
+      {
+        data: null,
+        error: {
+          code: "BAD_REQUEST",
+          data: undefined,
+          message:
+            "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
         },
-        {
-          "data": {
-            "customId": null,
-            "key": "abc-123.txt",
-            "name": "bar.txt",
-            "size": 26,
-            "type": "text/plain",
-            "url": "https://utfs.io/f/abc-123.txt",
-          },
-          "error": null,
+      },
+      {
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          lastModified: expect.any(Number),
+          name: "bar.txt",
+          size: 26,
+          type: "text/plain",
+          url: `https://utfs.io/f/${key2}`,
         },
-      ]
-    `);
+        error: null,
+      },
+    ]);
   });
 });
 
@@ -366,12 +274,12 @@ describe("getSignedURL", () => {
       "https://api.uploadthing.com/v6/requestFileAccess",
       {
         body: { fileKey: "foo" },
-        headers: {
+        headers: expect.objectContaining({
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
+        }),
         method: "POST",
       },
     );
@@ -386,12 +294,12 @@ describe("getSignedURL", () => {
       "https://api.uploadthing.com/v6/requestFileAccess",
       {
         body: { fileKey: "foo", expiresIn: 86400 },
-        headers: {
+        headers: expect.objectContaining({
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
+        }),
         method: "POST",
       },
     );
@@ -406,12 +314,12 @@ describe("getSignedURL", () => {
       "https://api.uploadthing.com/v6/requestFileAccess",
       {
         body: { fileKey: "foo", expiresIn: 180 },
-        headers: {
+        headers: expect.objectContaining({
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
+        }),
         method: "POST",
       },
     );
@@ -451,12 +359,12 @@ describe("updateACL", () => {
       "https://api.uploadthing.com/v6/updateACL",
       {
         body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
-        headers: {
+        headers: expect.objectContaining({
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
+        }),
         method: "POST",
       },
     );
@@ -478,12 +386,12 @@ describe("updateACL", () => {
             { fileKey: "ut-key2", acl: "public-read" },
           ],
         },
-        headers: {
+        headers: expect.objectContaining({
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
+        }),
         method: "POST",
       },
     );
@@ -507,12 +415,12 @@ describe("updateACL", () => {
             { customId: "my-custom-id2", acl: "public-read" },
           ],
         },
-        headers: {
+        headers: expect.objectContaining({
           "content-type": "application/json",
           "x-uploadthing-api-key": "sk_foo",
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
+        }),
         method: "POST",
       },
     );
@@ -528,7 +436,9 @@ describe.runIf(shouldRun)(
   { timeout: 15_000 },
   () => {
     const utapi = new UTApi({
-      token: shouldRun ? process.env.UPLOADTHING_TEST_TOKEN! : testToken.encoded,
+      token: shouldRun
+        ? process.env.UPLOADTHING_TEST_TOKEN!
+        : testToken.encoded,
     });
 
     const localInfo = { totalBytes: 0, filesUploaded: 0 };

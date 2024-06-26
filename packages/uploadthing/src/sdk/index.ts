@@ -1,19 +1,21 @@
+import {
+  HttpClient,
+  HttpClientRequest,
+  HttpClientResponse,
+} from "@effect/platform";
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 
 import type {
   ACL,
-  FetchContextService,
   FetchEsque,
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 import {
   asArray,
-  FetchContext,
-  fetchEff,
   generateUploadThingURL,
-  parseResponseJson,
   parseTimeToSeconds,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -44,7 +46,7 @@ export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
-  private defaultHeaders: FetchContextService["baseHeaders"];
+  private defaultHeaders: Record<string, string | undefined>;
   private defaultKeyType: "fileKey" | "customId";
   private logLevel: LogLevel | undefined;
   private token: typeof UTToken.Type;
@@ -79,6 +81,7 @@ export class UTApi {
         if (typeof value === "string") headers.set(key, value);
       }
       headers.set("x-uploadthing-api-key", this.token.apiKey);
+      headers.set("cache", "no-store");
 
       yield* Effect.logDebug("Requesting UploadThing:", {
         url,
@@ -86,39 +89,30 @@ export class UTApi {
         headers,
       });
 
-      return yield* fetchEff(url, {
-        method: "POST",
-        cache: "no-store",
-        body: JSON.stringify(body),
-        headers,
-      }).pipe(
-        Effect.andThen(parseResponseJson),
-        Effect.andThen(S.decodeUnknown(responseSchema)),
-        Effect.catchTag("FetchError", (err) =>
-          Effect.logError("Request failed:", err).pipe(
-            Effect.andThen(() => Effect.die(err)),
-          ),
-        ),
-        Effect.catchTag("ParseError", (err) =>
-          Effect.logError("Response parsing failed:", err).pipe(
-            Effect.andThen(() => Effect.die(err)),
-          ),
-        ),
+      const httpClient = yield* HttpClient.HttpClient;
+      return yield* HttpClientRequest.post(url).pipe(
+        HttpClientRequest.unsafeJsonBody(body),
+        HttpClientRequest.setHeaders(headers),
+        HttpClient.filterStatusOk(httpClient),
         Effect.tap((res) => Effect.logDebug("UploadThing response:", res)),
+        HttpClientResponse.schemaBodyJsonScoped(responseSchema),
       );
     });
 
   private executeAsync = <A, E>(
-    program: Effect.Effect<A, E, FetchContext>,
+    program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
     signal?: AbortSignal,
   ) =>
     program.pipe(
       withMinimalLogLevel(this.logLevel),
       Effect.provide(ConsolaLogger),
-      Effect.provideService(FetchContext, {
-        fetch: this.fetch,
-        baseHeaders: this.defaultHeaders,
-      }),
+      Effect.provide(HttpClient.layer),
+      Effect.provide(
+        Layer.effect(
+          HttpClient.Fetch,
+          Effect.succeed(this.fetch as typeof globalThis.fetch),
+        ),
+      ),
       (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );
 

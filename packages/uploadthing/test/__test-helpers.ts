@@ -39,20 +39,6 @@ export const baseHeaders = {
   "x-uploadthing-package": "vitest",
 };
 
-const mockPresigned = (file: {
-  name: string;
-  size: number;
-  customId: string | null;
-}): NewPresignedUrl => {
-  const key = "abc-123.txt";
-  return {
-    customId: file.customId ?? null,
-    name: file.name,
-    key,
-    url: `https://ingest.uploadthing.com/${key}?bunch-of-query-params=FILL_IN_LATER`,
-  };
-};
-
 /**
  * Call this in each MSW handler to spy on the request
  * and provide an easy way to assert on the request
@@ -124,9 +110,13 @@ export const it = itBase.extend({
       /**
        * UploadThing Ingest
        */
-      http.all(`${INGEST_URL}/:key`, async ({ request }) => {
-        return HttpResponse.json({});
-      }),
+      http.all<{ key: string }>(
+        `${INGEST_URL}/:key`,
+        async ({ request, params }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ url: `https://utfs.io/f/${params.key}` });
+        },
+      ),
       /**
        * UploadThing API
        */

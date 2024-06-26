@@ -1,7 +1,11 @@
+import {
+  HttpClient,
+  HttpClientRequest,
+  HttpClientResponse,
+} from "@effect/platform";
 import * as Effect from "effect/Effect";
 
 import {
-  fetchEff,
   generateKey,
   generateSignedURL,
   isObject,
@@ -103,27 +107,26 @@ export const downloadFiles = (
           customId = undefined,
         } = isObject(_url) ? _url : {};
 
-        const response = yield* fetchEff(url);
-        if (!response.ok) {
-          downloadErrors[idx] = UploadThingError.toObject(
-            new UploadThingError({
-              code: "BAD_REQUEST",
-              message: "Failed to download requested file.",
-              cause: response,
-            }),
-          );
-          return undefined;
-        }
-
-        return yield* Effect.promise(() => response.blob()).pipe(
-          Effect.andThen(
-            (blob) =>
-              new UTFile([blob], name, {
-                customId,
-                lastModified: Date.now(),
+        const arrayBuffer = yield* HttpClientRequest.get(url).pipe(
+          HttpClientRequest.modify({ headers: {} }),
+          HttpClient.filterStatusOk(yield* HttpClient.HttpClient),
+          HttpClientResponse.arrayBuffer,
+          Effect.mapError((error) => {
+            downloadErrors[idx] = UploadThingError.toObject(
+              new UploadThingError({
+                code: "BAD_REQUEST",
+                message: "Failed to download requested file.",
+                cause: error,
               }),
-          ),
+            );
+            return Effect.succeed(undefined);
+          }),
         );
+
+        return new UTFile([arrayBuffer], name, {
+          customId,
+          lastModified: Date.now(),
+        });
       }),
     { concurrency: 10 },
   );

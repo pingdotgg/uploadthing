@@ -6,10 +6,10 @@ import {
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 import * as Stream from "effect/Stream";
 
 import {
-  FetchContext,
   fillInputRouteConfig,
   generateKey,
   generateSignedURL,
@@ -26,7 +26,6 @@ import {
   INGEST_URL,
   UPLOADTHING_VERSION,
 } from "./constants";
-import { httpClientLayer, UploadThingClient } from "./http-client";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { resolveCallbackUrl } from "./resolve-url";
@@ -67,19 +66,16 @@ export const runRequestHandlerAsync = <
   config?: RouteHandlerConfig | undefined,
 ) =>
   handler(args).pipe(
-    Effect.provide(httpClientLayer),
+    Effect.provide(ConsolaLogger),
+    Effect.provide(HttpClient.layer),
+    Effect.provide(
+      Layer.effect(
+        HttpClient.Fetch,
+        Effect.succeed(config?.fetch as typeof globalThis.fetch),
+      ),
+    ),
     withMinimalLogLevel(config?.logLevel),
     Effect.provide(ConsolaLogger),
-    Effect.provideService(FetchContext, {
-      fetch: config?.fetch ?? globalThis.fetch,
-      baseHeaders: {
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-        // These are filled in later in `parseAndValidateRequest`
-        "x-uploadthing-api-key": undefined,
-        "x-uploadthing-be-adapter": undefined,
-        "x-uploadthing-fe-package": undefined,
-      },
-    }),
     asHandlerOutput,
     Effect.runPromise,
   );
@@ -198,9 +194,13 @@ const handleCallbackRequest = Effect.gen(function* () {
       payload,
     );
 
-    const httpClient = yield* UploadThingClient;
+    const httpClient = yield* HttpClient.HttpClient;
     yield* HttpClientRequest.post(`/callback-result`).pipe(
       HttpClientRequest.prependUrl(INGEST_URL),
+      HttpClientRequest.setHeaders({
+        "x-uploadthing-api-key": apiKey,
+        "x-uploadthing-version": UPLOADTHING_VERSION,
+      }),
       HttpClientRequest.jsonBody(payload),
       Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
       Effect.tapErrorTag("ResponseError", ({ response: res }) =>
@@ -275,7 +275,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
   });
 
 const handleUploadAction = Effect.gen(function* () {
-  const httpClient = yield* UploadThingClient;
+  const httpClient = yield* HttpClient.HttpClient;
   const opts = yield* RequestInput;
   const { files, input } = yield* Effect.flatMap(
     parseRequestJson(opts.req),

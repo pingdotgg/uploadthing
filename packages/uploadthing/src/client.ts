@@ -3,7 +3,6 @@ import * as Micro from "effect/Micro";
 
 import type {
   ExpandedRouteConfig,
-  FetchContextService,
   FetchError,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -19,7 +18,6 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
-import { UPLOADTHING_VERSION } from "./internal/constants";
 import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import { uploadWithProgress } from "./internal/upload.browser";
 import { createUTReporter } from "./internal/ut-reporter";
@@ -100,16 +98,6 @@ const createDeferred = <T>(): Deferred<T> => {
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
 ) => {
-  const fetchService: FetchContextService = {
-    fetch: globalThis.fetch.bind(globalThis),
-    baseHeaders: {
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-api-key": undefined,
-      "x-uploadthing-fe-package": initOpts.package,
-      "x-uploadthing-be-adapter": undefined,
-    },
-  };
-
   const controllableUpload = async <
     TEndpoint extends keyof TRouter,
     TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
@@ -145,7 +133,7 @@ export const genUploader = <TRouter extends FileRouter>(
           type: f.type,
           lastModified: f.lastModified,
         })),
-      }).pipe(Micro.provideService(FetchContext, fetchService)),
+      }).pipe(Micro.provideService(FetchContext, window.fetch)),
     );
 
     const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
@@ -163,7 +151,7 @@ export const genUploader = <TRouter extends FileRouter>(
             totalProgress: Math.round((totalLoaded / totalSize) * 100),
           });
         },
-      }).pipe(Micro.provideService(FetchContext, fetchService));
+      }).pipe(Micro.provideService(FetchContext, window.fetch));
 
     for (const [i, p] of presigneds.entries()) {
       const file = opts.files[i];
@@ -284,7 +272,7 @@ export const genUploader = <TRouter extends FileRouter>(
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })
       .pipe(
-        Micro.provideService(FetchContext, fetchService),
+        Micro.provideService(FetchContext, window.fetch),
         //
         (e) =>
           Micro.runPromiseResult(e, opts.signal ? { signal: opts.signal } : {}),

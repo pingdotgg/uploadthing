@@ -1,16 +1,14 @@
-import * as S from "@effect/schema/Schema";
+import {
+  HttpClient,
+  HttpClientRequest,
+  HttpClientResponse,
+} from "@effect/platform";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
 
-import {
-  fetchEff,
-  generateUploadThingURL,
-  parseResponseJson,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { UploadThingError } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
-import { FailureCallbackResponse } from "./shared-schemas";
 
 export const uploadWithoutProgress = (
   file: FileEsque,
@@ -20,44 +18,24 @@ export const uploadWithoutProgress = (
     const formData = new FormData();
     formData.append("file", file as Blob); // File data **MUST GO LAST**
 
-    const res = yield* fetchEff(presigned.url, {
-      method: "PUT",
-      body: formData,
-      headers: new Headers({
-        Accept: "application/xml",
-        Range: `bytes=0-`,
-      }),
-    }).pipe(
-      Effect.tapErrorCause(() =>
-        fetchEff(generateUploadThingURL("/v6/failureCallback"), {
-          method: "POST",
-          body: JSON.stringify({
-            fileKey: presigned.key,
-            uploadId: null,
+    const httpClient = yield* HttpClient.HttpClient;
+    const json = yield* HttpClientRequest.put(presigned.url).pipe(
+      HttpClientRequest.formDataBody(formData),
+      HttpClientRequest.setHeader("Range", "bytes=0-"),
+      HttpClient.filterStatusOk(httpClient),
+      Effect.mapError(
+        (e) =>
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: "Failed to upload file",
+            cause: e,
           }),
-          headers: { "Content-Type": "application/json" },
-        }).pipe(
-          Effect.andThen(parseResponseJson),
-          Effect.andThen(S.decodeUnknown(FailureCallbackResponse)),
-        ),
       ),
-    );
+      HttpClientResponse.json,
 
-    if (!res.ok) {
-      const text = yield* Effect.promise(res.text);
-      yield* Effect.logError(
-        `Failed to upload file ${file.name} to presigned POST URL. Response: ${text}`,
-      );
-      return yield* new UploadThingError({
-        code: "UPLOAD_FAILED",
-        message: "Failed to upload file",
-        cause: text,
-      });
-    }
-
-    const json = yield* parseResponseJson(res).pipe(
       Effect.andThen(unsafeCoerce<unknown, { url: string }>),
     );
+
     yield* Effect.logDebug("File", file.name, "uploaded successfully:", json);
     return json;
   });

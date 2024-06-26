@@ -14,7 +14,6 @@ import type {
 } from "@uploadthing/shared";
 import {
   bytesToFileSize,
-  FetchContext,
   fileSizeToBytes,
   getTypeFromFileName,
   InvalidRouteConfigError,
@@ -145,6 +144,7 @@ type RequestInputBase = {
   appId: string;
   apiKey: string;
   slug: string;
+  adapter: string;
   uploadable: Uploader<AnyParams>;
 };
 
@@ -164,7 +164,7 @@ export const parseAndValidateRequest = (
   input: RequestHandlerInput<MiddlewareFnArgs<any, any, any>>,
   opts: RouteHandlerOptions<FileRouter>,
   adapter: string,
-): Effect.Effect<RequestInputService, UploadThingError, FetchContext> =>
+): Effect.Effect<RequestInputService, UploadThingError> =>
   Effect.gen(function* () {
     const req = yield* Effect.isEffect(input.req)
       ? input.req
@@ -270,14 +270,6 @@ export const parseAndValidateRequest = (
 
     yield* Effect.logDebug("Parsed token", { apiKey, appId, regions });
 
-    // FIXME: This should probably provide the full context at once instead of
-    // partially in the `runRequestHandlerAsync` and partially in here...
-    // Ref: https://discord.com/channels/@me/1201977154577891369/1207441839972548669
-    const contextValue = yield* FetchContext;
-    contextValue.baseHeaders["x-uploadthing-api-key"] = apiKey;
-    contextValue.baseHeaders["x-uploadthing-fe-package"] = utFrontendPackage;
-    contextValue.baseHeaders["x-uploadthing-be-adapter"] = adapter;
-
     const { isDev = isDevelopment } = opts.config ?? {};
     if (isDev) yield* Effect.logInfo("UploadThing dev server is now running!");
 
@@ -290,6 +282,7 @@ export const parseAndValidateRequest = (
       apiKey,
       slug,
       uploadable,
+      adapter,
       hook: null,
       action: null,
     };

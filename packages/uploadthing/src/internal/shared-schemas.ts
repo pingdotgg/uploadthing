@@ -57,13 +57,6 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
-  "FailureCallbackResponse",
-)({
-  success: S.Boolean,
-  message: S.optional(S.String),
-}) {}
-
 export class NewPresignedUrl extends S.Class<NewPresignedUrl>(
   "NewPresignedUrl",
 )({

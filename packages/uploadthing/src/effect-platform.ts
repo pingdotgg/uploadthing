@@ -1,18 +1,16 @@
 import type { HttpBody } from "@effect/platform";
 import {
+  HttpClient,
   HttpMiddleware,
   HttpRouter,
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 
 import type { Json } from "@uploadthing/shared";
-import {
-  FetchContext,
-  getStatusCodeFromError,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -20,7 +18,6 @@ import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import { httpClientLayer } from "./internal/http-client";
 import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { ConsolaLogger, withMinimalLogLevel } from "./internal/logger";
 import { toWebRequest } from "./internal/to-web-request";
@@ -93,17 +90,13 @@ export const createRouteHandler = <TRouter extends FileRouter>(
         }).pipe(
           withMinimalLogLevel(opts.config?.logLevel),
           Effect.provide(ConsolaLogger),
-          Effect.provide(httpClientLayer),
-          Effect.provideService(FetchContext, {
-            fetch: opts.config?.fetch ?? globalThis.fetch,
-            baseHeaders: {
-              "x-uploadthing-version": UPLOADTHING_VERSION,
-              // These are filled in later in `parseAndValidateRequest`
-              "x-uploadthing-api-key": undefined,
-              "x-uploadthing-be-adapter": undefined,
-              "x-uploadthing-fe-package": undefined,
-            },
-          }),
+          Effect.provide(HttpClient.layer),
+          Effect.provide(
+            Layer.effect(
+              HttpClient.Fetch,
+              Effect.succeed(opts.config?.fetch as typeof globalThis.fetch),
+            ),
+          ),
           Effect.andThen((response) => HttpServerResponse.json(response.body)),
           Effect.catchTag("UploadThingError", (error) =>
             HttpServerResponse.json(formatError(error, opts.router), {
