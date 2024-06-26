@@ -55,13 +55,11 @@ export const generateKey = async (
     file.lastModified,
     Date.now(),
   ];
-  const jsonString = JSON.stringify(hashParts);
-  const buffer = new TextEncoder().encode(jsonString);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
-  const hex = Array.from(new Uint8Array(hashBuffer))
+  const buffer = new TextEncoder().encode(JSON.stringify(hashParts));
+  const hash = await crypto.subtle.digest("SHA-256", buffer);
+  return Array.from(new Uint8Array(hash))
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
-  return hex;
 };
 
 export const generateSignedURL = async (
