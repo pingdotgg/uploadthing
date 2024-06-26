@@ -1,5 +1,14 @@
 # @uploadthing/solid
 
+## 6.5.1
+
+### Patch Changes
+
+- [#860](https://github.com/pingdotgg/uploadthing/pull/860) [`3377f1b`](https://github.com/pingdotgg/uploadthing/commit/3377f1b9f8d1ae87f7202bf0aeb67bb6a6fa1487) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: `onUploadProgress` events out of order when uploading many files
+
+- Updated dependencies [[`f4f876c`](https://github.com/pingdotgg/uploadthing/commit/f4f876c1a0d4d0fe25302c84c0396fb737cd6458)]:
+  - @uploadthing/shared@6.7.6
+
 ## 6.5.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 6.7.6
+
+### Patch Changes
+
+- [#841](https://github.com/pingdotgg/uploadthing/pull/841) [`f4f876c`](https://github.com/pingdotgg/uploadthing/commit/f4f876c1a0d4d0fe25302c84c0396fb737cd6458) Thanks [@tim-smart](https://github.com/tim-smart)! - refactor: use `effect/Micro` for client bundle, reducing bundle size shipped to browser by 84kB (-67%)
+
 ## 6.7.5
 
 ### Patch Changes
