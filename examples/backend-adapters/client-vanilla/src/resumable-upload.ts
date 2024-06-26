@@ -1,4 +1,4 @@
-import { createUpload, getInputProps } from "./uploadthing";
+import { createUpload, setInputProps } from "./uploadthing";
 
 /**
  * A controlled uploader that lets
@@ -87,8 +87,5 @@ export const setupResumableUploader = (el: HTMLDivElement) => {
   });
 
   // Sync accept and multiple attributes with the server state
-  getInputProps("videoAndImage").then((props) => {
-    input.accept = props.accept;
-    input.multiple = props.multiple;
-  });
+  setInputProps("videoAndImage", input);
 };

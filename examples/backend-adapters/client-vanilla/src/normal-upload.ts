@@ -1,6 +1,6 @@
 import { UploadAbortedError } from "uploadthing/client";
 
-import { getInputProps, uploadFiles } from "./uploadthing";
+import { setInputProps, uploadFiles } from "./uploadthing";
 
 /**
  * This sets up a simple uplaoder that you call once
@@ -67,8 +67,5 @@ export const setupUploader = (el: HTMLDivElement) => {
   });
 
   // Sync accept and multiple attributes with the server state
-  getInputProps("videoAndImage").then((props) => {
-    input.accept = props.accept;
-    input.multiple = props.multiple;
-  });
+  setInputProps("videoAndImage", input);
 };
