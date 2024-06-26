@@ -114,7 +114,10 @@ export const it = itBase.extend({
         `${INGEST_URL}/:key`,
         async ({ request, params }) => {
           await callRequestSpy(request);
-          return HttpResponse.json({ url: `https://utfs.io/f/${params.key}` });
+          return HttpResponse.json({
+            url: `https://utfs.io/f/${params.key}`,
+            serverData: null,
+          });
         },
       ),
       /**
@@ -150,17 +153,14 @@ export const it = itBase.extend({
 });
 
 /**
- * Call this in your test to make the S3 requests fail
+ * Call this in your test to make the ingest request fail
  */
-export const useBadS3 = () =>
+export const useBadIngestServer = () =>
   msw.use(
-    http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
+    http.put(`${INGEST_URL}/:key`, async ({ request, params }) => {
       await callRequestSpy(request);
+
       return new HttpResponse(null, { status: 403 });
-    }),
-    http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
-      await callRequestSpy(request);
-      return new HttpResponse(null, { status: 204 });
     }),
   );
 
@@ -169,32 +169,4 @@ export const useBadUTApi = () =>
     http.post("https://api.uploadthing.com/*", async () => {
       return HttpResponse.json({ error: "Not found" }, { status: 404 });
     }),
-  );
-
-/**
- * Call this in your test to make the S3 requests fail a couple times before succeeding
- */
-export const useHalfBadS3 = () =>
-  msw.use(
-    http.post(
-      "https://bucket.s3.amazonaws.com",
-      // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-      async function* ({ request }) {
-        await callRequestSpy(request);
-        yield new HttpResponse(null, { status: 403 });
-        return new HttpResponse();
-      },
-    ),
-    http.put(
-      "https://bucket.s3.amazonaws.com/:key",
-      // @ts-expect-error - https://github.com/mswjs/msw/pull/2108
-      async function* ({ request }) {
-        await callRequestSpy(request);
-        yield new HttpResponse(null, { status: 403 });
-        return new HttpResponse(null, {
-          status: 204,
-          headers: { ETag: "abc123" },
-        });
-      },
-    ),
   );

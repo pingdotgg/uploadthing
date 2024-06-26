@@ -13,6 +13,7 @@ import {
   requestSpy,
   testToken,
   uploadCompleteMock,
+  useBadIngestServer,
   useBadUTApi,
 } from "./__test-helpers";
 
@@ -430,31 +431,5 @@ describe(".onUploadComplete()", () => {
       message: "Invalid signature",
     });
     expect(uploadCompleteMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("bad request handling", () => {
-  it("throws a more descriptive error instead of ParseError for bad request", async ({
-    db,
-  }) => {
-    useBadUTApi();
-
-    const res = await handlers.POST(
-      new Request(createApiUrl("imageUploader", "upload"), {
-        method: "POST",
-        headers: baseHeaders,
-        body: JSON.stringify({
-          files: [{ name: "foo.png", size: 48, type: "image/png" }],
-        }),
-      }),
-    );
-    expect(res.status).toBe(500);
-    await expect(res.json()).resolves.toEqual({
-      message:
-        "Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
-      data: { error: "Not found" },
-      cause:
-        "BadRequestError: Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
-    });
   });
 });
