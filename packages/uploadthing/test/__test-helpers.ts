@@ -4,10 +4,9 @@ import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
-import { INGEST_URL, UPLOADTHING_VERSION } from "../src/internal/constants";
-import type { NewPresignedUrl } from "../src/internal/shared-schemas";
+import { UPLOADTHING_VERSION } from "../src/internal/config";
+import { UTToken } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/types";
-import { UTToken } from "../src/internal/uploadthing-token";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
 export const requestsToDomain = (domain: string) =>
@@ -111,7 +110,7 @@ export const it = itBase.extend({
        * UploadThing Ingest
        */
       http.all<{ key: string }>(
-        `${INGEST_URL}/:key`,
+        `https://fra1.ingest.uploadthing.com/:key`,
         async ({ request, params }) => {
           await callRequestSpy(request);
           return HttpResponse.json({
@@ -150,11 +149,14 @@ export const it = itBase.extend({
  */
 export const useBadIngestServer = () =>
   msw.use(
-    http.put(`${INGEST_URL}/:key`, async ({ request, params }) => {
-      await callRequestSpy(request);
+    http.put(
+      `https://fra1.ingest.uploadthing.com/:key`,
+      async ({ request, params }) => {
+        await callRequestSpy(request);
 
-      return new HttpResponse(null, { status: 403 });
-    }),
+        return new HttpResponse(null, { status: 403 });
+      },
+    ),
   );
 
 export const useBadUTApi = () =>

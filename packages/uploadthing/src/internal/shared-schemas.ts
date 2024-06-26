@@ -8,6 +8,29 @@ export const ACLSchema = S.Literal(...ValidACLs);
 
 /**
  * =============================================================================
+ * =========================== Configuration ===================================
+ * =============================================================================
+ */
+const DecodeString = S.transform(S.Uint8ArrayFromSelf, S.String, {
+  decode: (data) => new TextDecoder().decode(data),
+  encode: (data) => new TextEncoder().encode(data),
+});
+
+export const UTToken = S.Base64.pipe(
+  S.compose(DecodeString),
+  S.compose(
+    S.parseJson(
+      S.Struct({
+        apiKey: S.String.pipe(S.startsWith("sk_")),
+        appId: S.String,
+        regions: S.Array(S.String),
+      }),
+    ),
+  ),
+);
+
+/**
+ * =============================================================================
  * ======================== File Type Hierarchy ===============================
  * =============================================================================
  */

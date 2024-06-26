@@ -8,7 +8,6 @@ import {
   it as rawIt,
 } from "vitest";
 
-import { INGEST_URL } from "../src/internal/constants";
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import { it, requestSpy, resetMocks, testToken } from "./__test-helpers";
@@ -22,7 +21,7 @@ describe("uploadFiles", () => {
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toHaveBeenCalledWith(
-      expect.stringContaining(INGEST_URL),
+      expect.stringContaining("ingest.uploadthing.com"),
       expect.objectContaining({
         method: "PUT",
         body: expect.any(FormData),
@@ -246,21 +245,6 @@ describe("uploadFilesFromUrl", () => {
         error: null,
       },
     ]);
-  });
-});
-
-describe("constructor throws if no token is set", () => {
-  it("no secret or apikey", () => {
-    expect(() => new UTApi()).toThrowErrorMatchingInlineSnapshot(
-      "[(FiberFailure) UploadThingError: Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.]",
-    );
-  });
-  it("env is set", () => {
-    process.env.UPLOADTHING_TOKEN = testToken.encoded;
-    expect(() => new UTApi()).not.toThrow();
-  });
-  it("apikey option is passed", () => {
-    expect(() => new UTApi({ token: testToken.encoded })).not.toThrow();
   });
 });
 

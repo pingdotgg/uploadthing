@@ -1,92 +1,105 @@
-import type { ExtractHashPartsFn, FileProperties } from "./types";
+import * as Micro from "effect/Micro";
+
+import type { ExtractHashPartsFn, FileProperties, Time } from "./types";
+import { parseTimeToSeconds } from "./utils";
 
 const signaturePrefix = "hmac-sha256=";
 const algorithm = { name: "HMAC", hash: "SHA-256" };
 
-export const signPayload = async (payload: string, secret: string) => {
-  const encoder = new TextEncoder();
-  const signingKey = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    algorithm,
-    false,
-    ["sign"],
-  );
+export const signPayload = (payload: string, secret: string) =>
+  Micro.gen(function* () {
+    const encoder = new TextEncoder();
 
-  const signature = await crypto.subtle
-    .sign(algorithm, signingKey, encoder.encode(payload))
-    .then((sig) => Buffer.from(sig).toString("hex"));
+    const signingKey = yield* Micro.promise(() =>
+      crypto.subtle.importKey("raw", encoder.encode(secret), algorithm, false, [
+        "sign",
+      ]),
+    );
+    const signature = yield* Micro.promise(() =>
+      crypto.subtle
+        .sign(algorithm, signingKey, encoder.encode(payload))
+        .then((sig) => Buffer.from(sig).toString("hex")),
+    );
 
-  return `${signaturePrefix}${signature}`;
-};
+    return `${signaturePrefix}${signature}`;
+  });
 
-export const verifySignature = async (
+export const verifySignature = (
   payload: string,
   signature: string | null,
   secret: string,
-) => {
-  const sig = signature?.slice(signaturePrefix.length);
-  if (!sig) return false;
+) =>
+  Micro.gen(function* () {
+    const sig = signature?.slice(signaturePrefix.length);
+    if (!sig) return false;
 
-  const encoder = new TextEncoder();
-  const signingKey = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    algorithm,
-    false,
-    ["verify"],
-  );
-  return await crypto.subtle.verify(
-    algorithm,
-    signingKey,
-    Uint8Array.from(Buffer.from(sig, "hex")),
-    encoder.encode(payload),
-  );
-};
+    const encoder = new TextEncoder();
+    const signingKey = yield* Micro.promise(() =>
+      crypto.subtle.importKey("raw", encoder.encode(secret), algorithm, false, [
+        "verify",
+      ]),
+    );
+    return yield* Micro.promise(() =>
+      crypto.subtle.verify(
+        algorithm,
+        signingKey,
+        Uint8Array.from(Buffer.from(sig, "hex")),
+        encoder.encode(payload),
+      ),
+    );
+  });
 
-export const generateKey = async (
+export const generateKey = (
   file: FileProperties,
   getHashParts?: ExtractHashPartsFn,
-) => {
-  const hashParts = getHashParts?.(file) ?? [
-    file.name,
-    file.size,
-    file.type,
-    file.lastModified,
-    Date.now(),
-  ];
-  const buffer = new TextEncoder().encode(JSON.stringify(hashParts));
-  const hash = await crypto.subtle.digest("SHA-256", buffer);
-  return Array.from(new Uint8Array(hash))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-};
+) =>
+  Micro.gen(function* () {
+    const hashParts = getHashParts?.(file) ?? [
+      file.name,
+      file.size,
+      file.type,
+      file.lastModified,
+      Date.now(),
+    ];
+    const buffer = new TextEncoder().encode(JSON.stringify(hashParts));
+    const hash = yield* Micro.promise(() =>
+      crypto.subtle.digest("SHA-256", buffer),
+    );
+    return Array.from(new Uint8Array(hash))
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("");
+  });
 
-export const generateSignedURL = async (
+export const generateSignedURL = (
   url: string | URL,
   secretKey: string,
   opts: {
-    ttlInSeconds: number;
+    ttlInSeconds?: Time | undefined;
     data?: Record<string, string | number | boolean | null | undefined>;
   },
-) => {
-  const parsedURL = new URL(url);
+) =>
+  Micro.gen(function* () {
+    const parsedURL = new URL(url);
 
-  const expirationTime = Date.now() + opts.ttlInSeconds * 1000;
-  parsedURL.searchParams.append("expires", expirationTime.toString());
+    const ttl = opts.ttlInSeconds
+      ? parseTimeToSeconds(opts.ttlInSeconds)
+      : 60 * 60;
 
-  if (opts.data) {
-    Object.entries(opts.data).forEach(([key, value]) => {
-      if (value == null) return;
-      const encoded = encodeURIComponent(value);
-      parsedURL.searchParams.append(key, encoded);
-    });
-  }
+    const expirationTime = Date.now() + ttl * 1000;
+    parsedURL.searchParams.append("expires", expirationTime.toString());
 
-  parsedURL.searchParams.append(
-    "signature",
-    await signPayload(parsedURL.toString(), secretKey),
-  );
+    if (opts.data) {
+      Object.entries(opts.data).forEach(([key, value]) => {
+        if (value == null) return;
+        const encoded = encodeURIComponent(value);
+        parsedURL.searchParams.append(key, encoded);
+      });
+    }
 
-  return parsedURL.href;
-};
+    parsedURL.searchParams.append(
+      "signature",
+      yield* signPayload(parsedURL.toString(), secretKey),
+    );
+
+    return parsedURL.href;
+  });

@@ -18,9 +18,8 @@ import type {
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 
-import { INGEST_URL } from "../internal/constants";
+import { getToken, ingestUrl } from "../internal/config";
 import { uploadWithoutProgress } from "../internal/upload.server";
-import type { UTToken } from "../internal/uploadthing-token";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -38,7 +37,6 @@ type UploadFilesInternalOptions = {
   files: FileEsque[];
   contentDisposition: ContentDisposition;
   acl: ACL | undefined;
-  token: typeof UTToken.Type;
 };
 
 export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
@@ -137,14 +135,17 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
 
     yield* Effect.logDebug("Generating presigned URLs for files", files);
 
-    const { apiKey, appId } = input.token;
+    const { apiKey, appId } = yield* getToken;
 
     const presigneds = yield* Effect.forEach(files, (file) =>
-      Effect.promise(() =>
-        generateKey(file).then(async (key) => ({
-          key,
-          url: await generateSignedURL(`${INGEST_URL}/${key}`, apiKey, {
-            ttlInSeconds: 60 * 60,
+      Effect.gen(function* () {
+        const key = yield* generateKey(file);
+
+        const url = yield* generateSignedURL(
+          `${yield* ingestUrl}/${key}`,
+          apiKey,
+          {
+            // ttlInSeconds: routeOptions.presignedURLTTL,
             data: {
               "x-ut-identifier": appId,
               "x-ut-file-name": file.name,
@@ -154,9 +155,10 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
               "x-ut-content-disposition": contentDisposition,
               "x-ut-acl": acl,
             },
-          }),
-        })),
-      ),
+          },
+        );
+        return { url, key };
+      }),
     );
 
     yield* Effect.logDebug("Generated presigned URLs", presigneds);

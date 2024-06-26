@@ -2,7 +2,6 @@ import type * as S from "@effect/schema/Schema";
 import * as Context from "effect/Context";
 import * as Data from "effect/Data";
 import * as Effect from "effect/Effect";
-import { isDevelopment } from "std-env";
 
 import type {
   ExpandedRouteConfig,
@@ -21,7 +20,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { getToken, UPLOADTHING_VERSION } from "./config";
 import type { UploadActionPayload } from "./shared-schemas";
 import type {
   ActionType,
@@ -40,7 +39,6 @@ import {
   VALID_ACTION_TYPES,
   VALID_UT_HOOKS,
 } from "./types";
-import { getToken } from "./uploadthing-token";
 
 class FileSizeMismatch extends Data.Error<{
   reason: string;
@@ -140,7 +138,6 @@ type RequestInputBase = {
   req: Request;
   config: RouteHandlerConfig;
   middlewareArgs: MiddlewareFnArgs<any, any, any>;
-  isDev: boolean;
   appId: string;
   apiKey: string;
   slug: string;
@@ -265,20 +262,14 @@ export const parseAndValidateRequest = (
 
     yield* Effect.logDebug("✔︎ All request input is valid");
 
-    const { apiKey, appId, regions } = yield* getToken(
-      opts.config?.uploadthingToken,
-    );
+    const { apiKey, appId, regions } = yield* getToken;
 
     yield* Effect.logDebug("Parsed token", { apiKey, appId, regions });
-
-    const { isDev = isDevelopment } = opts.config ?? {};
-    if (isDev) yield* Effect.logInfo("UploadThing dev server is now running!");
 
     const base = {
       req,
       config: opts.config ?? {},
       middlewareArgs: input.middlewareArgs,
-      isDev,
       appId,
       apiKey,
       slug,

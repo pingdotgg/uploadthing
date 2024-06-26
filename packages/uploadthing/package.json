@@ -144,8 +144,7 @@
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
-    "effect": "3.4.2",
-    "std-env": "^3.7.0"
+    "effect": "3.4.2"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
@@ -210,10 +209,6 @@
         {
           "name": "fetch",
           "message": "fetch should be passed as parameter to support overriding default behaviors"
-        },
-        {
-          "name": "process",
-          "message": "Use `import { process } from 'std-env` instead"
         }
       ],
       "no-restricted-imports": [

@@ -175,7 +175,7 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
 export type RouteHandlerConfig = {
   logLevel?: LogLevel;
   callbackUrl?: string;
-  uploadthingToken?: string;
+  token?: string;
   /**
    * Used to determine whether to run dev hook or not
    * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`

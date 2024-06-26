@@ -12,13 +12,12 @@ import * as Layer from "effect/Layer";
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/constants";
+import { UPLOADTHING_VERSION } from "./internal/config";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
 } from "./internal/handler";
-import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { ConsolaLogger, withMinimalLogLevel } from "./internal/logger";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
@@ -41,8 +40,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): HttpRouter.HttpRouter<HttpBody.HttpBodyError, never> => {
-  incompatibleNodeGuard();
-
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
     opts,
     "effect-platform",
@@ -88,7 +85,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
           }),
           middlewareArgs: { req, res: undefined, event: undefined },
         }).pipe(
-          withMinimalLogLevel(opts.config?.logLevel),
+          // withMinimalLogLevel,
           Effect.provide(ConsolaLogger),
           Effect.provide(HttpClient.layer),
           Effect.provide(

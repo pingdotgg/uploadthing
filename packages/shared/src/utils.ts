@@ -1,5 +1,4 @@
 import * as Micro from "effect/Micro";
-import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
 
@@ -125,14 +124,6 @@ export const getTypeFromFileName = (
   return Micro.succeed(type);
 };
 
-export function generateUploadThingURL(path: `/${string}`) {
-  let host = "https://api.uploadthing.com";
-  if (process.env.CUSTOM_INFRA_URL) {
-    host = process.env.CUSTOM_INFRA_URL;
-  }
-  return `${host}${path}`;
-}
-
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = (
@@ -245,6 +236,19 @@ export function semverLite(required: string, toCheck: string) {
   // Exact match
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
 }
+
+export const getRequestUrl = (req: Request) =>
+  Micro.gen(function* () {
+    const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+    const proto = req.headers.get("x-forwarded-proto") ?? "https";
+    const protocol = proto.endsWith(":") ? proto : `${proto}:`;
+    const url = yield* Micro.try({
+      try: () => new URL(req.url, `${protocol}//${host}`),
+      catch: () => new InvalidURLError(req.url),
+    });
+    url.search = "";
+    return url;
+  });
 
 export const getFullApiUrl = (
   maybeUrl?: string,

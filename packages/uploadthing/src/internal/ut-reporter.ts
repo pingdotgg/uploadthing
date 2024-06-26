@@ -9,7 +9,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
+import { UPLOADTHING_VERSION } from "./config";
 import type { ActionType, UTEvents } from "./types";
 
 const createAPIRequestUrl = (config: {
@@ -56,10 +56,8 @@ export const createUTReporter =
         actionType: type,
       });
       const headers = new Headers(
-        yield* Micro.promise(() =>
-          Promise.resolve(
-            typeof cfg.headers === "function" ? cfg.headers() : cfg.headers,
-          ),
+        yield* Micro.promise(async () =>
+          typeof cfg.headers === "function" ? await cfg.headers() : cfg.headers,
         ),
       );
       headers.set("x-uploadthing-package", cfg.package);

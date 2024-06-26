@@ -1297,9 +1297,6 @@ importers:
       effect:
         specifier: 3.4.2
         version: 3.4.2
-      std-env:
-        specifier: ^3.7.0
-        version: 3.7.0
     devDependencies:
       '@types/react':
         specifier: 18.3.3
@@ -1444,9 +1441,6 @@ importers:
       effect:
         specifier: 3.4.2
         version: 3.4.2
-      std-env:
-        specifier: ^3.7.0
-        version: 3.7.0
     devDependencies:
       '@types/body-parser':
         specifier: ^1.19.5

@@ -8,14 +8,13 @@ import { Router as ExpressRouter } from "express";
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/constants";
+import { UPLOADTHING_VERSION } from "./internal/config";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
   runRequestHandlerAsync,
 } from "./internal/handler";
-import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
 import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -37,8 +36,6 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  incompatibleNodeGuard();
-
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
     opts,
     "express",

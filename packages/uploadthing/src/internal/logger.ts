@@ -1,8 +1,9 @@
 import type { LogObject, LogType } from "consola/core";
 import { createConsola, LogLevels } from "consola/core";
+import * as Config from "effect/Config";
+import * as Effect from "effect/Effect";
 import * as Logger from "effect/Logger";
 import * as EffectLogLevel from "effect/LogLevel";
-import { process } from "std-env";
 
 import { isObject } from "@uploadthing/shared";
 
@@ -47,7 +48,7 @@ const icons: { [t in LogType]?: string } = {
 
 function formatStack(stack: string) {
   const cwd =
-    "cwd" in process && typeof process.cwd === "function"
+    typeof process !== "undefined" && typeof process.cwd === "function"
       ? process.cwd()
       : "__UnknownCWD__";
   return (
@@ -121,21 +122,27 @@ const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
     None: "silent",
   };
 
-export const withMinimalLogLevel = (level: LogLevel = "info") => {
-  logger.level = LogLevels[level];
-
-  return Logger.withMinimumLogLevel(
-    {
-      silent: EffectLogLevel.None,
-      error: EffectLogLevel.Error,
-      warn: EffectLogLevel.Warning,
-      info: EffectLogLevel.Info,
-      debug: EffectLogLevel.Debug,
-      trace: EffectLogLevel.Trace,
-      verbose: EffectLogLevel.All,
-    }[level],
-  );
-};
+export const withMinimalLogLevel = Config.string("logLevel").pipe(
+  Config.validate({
+    validation: (s) => s in LogLevels,
+    message: "Invalid log level",
+  }),
+  Config.withDefault("info"),
+  Effect.andThen((level) => {
+    logger.level = LogLevels[level as LogLevel];
+    return Logger.withMinimumLogLevel(
+      {
+        silent: EffectLogLevel.None,
+        error: EffectLogLevel.Error,
+        warn: EffectLogLevel.Warning,
+        info: EffectLogLevel.Info,
+        debug: EffectLogLevel.Debug,
+        trace: EffectLogLevel.Trace,
+        verbose: EffectLogLevel.All,
+      }[level as LogLevel],
+    );
+  }),
+);
 
 export const ConsolaLogger = Logger.replace(
   Logger.defaultLogger,

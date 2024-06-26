@@ -1,4 +1,3 @@
-import { process } from "std-env";
 import { describe, expect, it } from "vitest";
 
 import { resolveMaybeUrlArg } from "../src/utils";

@@ -1,6 +1,6 @@
+import * as Config from "effect/Config";
 import * as Data from "effect/Data";
 import * as Effect from "effect/Effect";
-import { process } from "std-env";
 
 import { UploadThingError } from "@uploadthing/shared";
 
@@ -38,17 +38,20 @@ const parseURL = (req: IncomingMessageLike): Effect.Effect<URL, InvalidURL> => {
   const proto = headers?.["x-forwarded-proto"] ?? "http";
   const host = headers?.["x-forwarded-host"] ?? headers?.host;
 
-  if (typeof proto !== "string" || typeof host !== "string") {
-    return Effect.try({
-      try: () => new URL(relativeUrl, process.env.UPLOADTHING_URL),
-      catch: () => new InvalidURL(relativeUrl, process.env.UPLOADTHING_URL),
-    });
-  }
+  const baseUrl = Config.string("url").pipe(
+    Config.withDefault(`${proto.toString()}://${host?.toString()}`),
+  );
 
-  return Effect.try({
-    try: () => new URL(`${proto}://${host}${relativeUrl}`),
-    catch: () => new InvalidURL(`${proto}://${host}${relativeUrl}`),
-  });
+  return Effect.flatMap(baseUrl, (baseUrl) =>
+    Effect.try({
+      try: () => new URL(relativeUrl, baseUrl),
+      catch: () => new InvalidURL(relativeUrl, baseUrl),
+    }),
+  ).pipe(
+    Effect.catchTag("ConfigError", () =>
+      Effect.fail(new InvalidURL(relativeUrl)),
+    ),
+  );
 };
 
 export const getPostBody = <TBody = unknown>(opts: {
