@@ -124,13 +124,6 @@ export const it = itBase.extend({
        * UploadThing API
        */
       http.post(
-        "https://api.uploadthing.com/v6/failureCallback",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
-        },
-      ),
-      http.post(
         "https://api.uploadthing.com/v6/requestFileAccess",
         async ({ request }) => {
           await callRequestSpy(request);
