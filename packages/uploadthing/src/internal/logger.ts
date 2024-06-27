@@ -157,10 +157,20 @@ export const withMinimalLogLevel = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
     ),
   );
 
+/**
+ * @todo: Consider removing Consola in favor of just Effect logger?
+ */
 export const ConsolaLogger = Logger.replace(
   Logger.defaultLogger,
   Logger.make(({ logLevel, message }) => {
-    // FIXME: Probably log other stuff than just message?
-    logger[effectLoggerLevelToConsolaLevel[logLevel._tag]](message);
+    // FIXME: Probably log other stuff than just message? Trace?
+    if (Array.isArray(message)) {
+      logger[effectLoggerLevelToConsolaLevel[logLevel._tag]](
+        // @ts-expect-error - huh?
+        ...(message as unknown[]),
+      );
+    } else {
+      logger[effectLoggerLevelToConsolaLevel[logLevel._tag]](message);
+    }
   }),
 );

@@ -46,7 +46,6 @@ export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
-  private defaultHeaders: Record<string, string | undefined>;
   private defaultKeyType: "fileKey" | "customId";
 
   constructor(private opts?: UTApiOptions) {
@@ -54,12 +53,6 @@ export class UTApi {
     guardServerOnly();
 
     this.fetch = opts?.fetch ?? globalThis.fetch;
-    this.defaultHeaders = {
-      "x-uploadthing-api-key": undefined,
-      "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-be-adapter": "server-sdk",
-      "x-uploadthing-fe-package": undefined,
-    };
     this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
   }
 
@@ -69,29 +62,23 @@ export class UTApi {
     responseSchema: S.Schema<T, any>,
   ) =>
     Effect.gen(this, function* () {
-      const headers = new Headers([["Content-Type", "application/json"]]);
-      for (const [key, value] of Object.entries(this.defaultHeaders)) {
-        if (typeof value === "string") headers.set(key, value);
-      }
       const { apiKey } = yield* utToken;
-      headers.set("x-uploadthing-api-key", apiKey);
-      headers.set("cache", "no-store");
-
-      yield* Effect.logDebug("Requesting UploadThing:", {
-        pathname,
-        body,
-        headers,
-      });
-
       const baseUrl = yield* apiUrl;
       const httpClient = yield* HttpClient.HttpClient;
 
       return yield* HttpClientRequest.post(pathname).pipe(
         HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.unsafeJsonBody(body),
-        HttpClientRequest.setHeaders(headers),
+        HttpClientRequest.setHeaders({
+          "x-uploadthing-version": UPLOADTHING_VERSION,
+          "x-uploadthing-be-adapter": "server-sdk",
+          "x-uploadthing-api-key": apiKey,
+        }),
         HttpClient.filterStatusOk(httpClient),
-        Effect.tap((res) => Effect.logDebug("UploadThing response:", res)),
+        Effect.tapBoth({
+          onSuccess: (res) => Effect.logDebug("UploadThing response:", res),
+          onFailure: (err) => Effect.logError("UploadThing error:", err),
+        }),
         HttpClientResponse.schemaBodyJsonScoped(responseSchema),
       );
     });
