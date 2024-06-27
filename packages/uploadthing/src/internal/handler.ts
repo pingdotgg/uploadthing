@@ -368,23 +368,20 @@ const handleUploadAction = Effect.gen(function* () {
     Effect.gen(function* () {
       const key = yield* generateKey(file, routeOptions.getFileHashParts);
 
-      const url = yield* generateSignedURL(
-        `${yield* ingestUrl}/${key}`,
-        apiKey,
-        {
-          ttlInSeconds: routeOptions.presignedURLTTL,
-          data: {
-            "x-ut-identifier": appId,
-            "x-ut-file-name": file.name,
-            "x-ut-file-size": file.size,
-            "x-ut-file-type": file.type,
-            "x-ut-slug": opts.slug,
-            "x-ut-custom-id": file.customId,
-            "x-ut-content-disposition": file.contentDisposition,
-            "x-ut-acl": file.acl,
-          },
+      const baseUrl = yield* ingestUrl;
+      const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
+        ttlInSeconds: routeOptions.presignedURLTTL,
+        data: {
+          "x-ut-identifier": appId,
+          "x-ut-file-name": file.name,
+          "x-ut-file-size": file.size,
+          "x-ut-file-type": file.type,
+          "x-ut-slug": opts.slug,
+          "x-ut-custom-id": file.customId,
+          "x-ut-content-disposition": file.contentDisposition,
+          "x-ut-acl": file.acl,
         },
-      );
+      });
       return { url, key };
     }),
   );
