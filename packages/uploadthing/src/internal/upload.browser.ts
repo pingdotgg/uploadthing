@@ -1,11 +1,19 @@
+import { unsafeCoerce } from "effect/Function";
 import * as Micro from "effect/Micro";
 
-import type { FetchContext } from "@uploadthing/shared";
-import { UploadThingError } from "@uploadthing/shared";
+import type { FetchError } from "@uploadthing/shared";
+import { FetchContext, fetchEff, UploadThingError } from "@uploadthing/shared";
 
-import type { NewPresignedUrl } from "../types";
+import type {
+  ClientUploadedFileData,
+  FileRouter,
+  inferEndpointOutput,
+  NewPresignedUrl,
+  UploadFilesOptions,
+} from "../types";
+import { createUTReporter } from "./ut-reporter";
 
-export const uploadWithProgress = (
+const uploadWithProgress = (
   file: File,
   rangeStart: number,
   presigned: NewPresignedUrl,
@@ -51,3 +59,109 @@ export const uploadWithProgress = (
 
     return Micro.sync(() => xhr.abort());
   });
+
+export const uploadFile = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
+>(
+  file: File,
+  presigned: NewPresignedUrl,
+  opts: {
+    onUploadProgress?: (progressEvent: {
+      loaded: number;
+      delta: number;
+    }) => void;
+  },
+) =>
+  fetchEff(presigned.url, { method: "HEAD" }).pipe(
+    Micro.map(({ headers }) =>
+      parseInt(headers.get("x-ut-range-start") ?? "0", 10),
+    ),
+    Micro.tap((start) =>
+      opts.onUploadProgress?.({
+        delta: start,
+        loaded: start,
+      }),
+    ),
+    Micro.flatMap((start) =>
+      uploadWithProgress(file, start, presigned, (progressEvent) =>
+        opts.onUploadProgress?.({
+          delta: progressEvent.delta,
+          loaded: progressEvent.loaded + start,
+        }),
+      ),
+    ),
+    Micro.map(
+      unsafeCoerce<unknown, { url: string; serverData: TServerOutput }>,
+    ),
+    Micro.map((uploadResponse) => ({
+      name: file.name,
+      size: file.size,
+      key: presigned.key,
+      lastModified: file.lastModified,
+      serverData: uploadResponse.serverData,
+      url: uploadResponse.url,
+      customId: presigned.customId,
+      type: file.type,
+    })),
+  );
+
+export const uploadFilesInternal = <
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
+>(
+  endpoint: TEndpoint,
+  opts: UploadFilesOptions<TRouter, TEndpoint>,
+): Micro.Micro<
+  ClientUploadedFileData<TServerOutput>[],
+  UploadThingError | FetchError
+> => {
+  // classic service right here
+  const reportEventToUT = createUTReporter({
+    endpoint: String(endpoint),
+    package: opts.package,
+    url: opts.url,
+    headers: opts.headers,
+  });
+
+  const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
+  let totalLoaded = 0;
+
+  return reportEventToUT("upload", {
+    input: "input" in opts ? opts.input : null,
+    files: opts.files.map((f) => ({
+      name: f.name,
+      size: f.size,
+      type: f.type,
+      lastModified: f.lastModified,
+    })),
+  }).pipe(
+    Micro.flatMap((presigneds) =>
+      Micro.forEach(
+        presigneds,
+        (presigned, i) =>
+          uploadFile<TRouter, TEndpoint, TServerOutput>(
+            opts.files[i],
+            presigned,
+            {
+              onUploadProgress: (ev) => {
+                totalLoaded += ev.delta;
+                opts.onUploadProgress?.({
+                  file: opts.files[i],
+                  progress: Math.round((ev.loaded / opts.files[i].size) * 100),
+                  loaded: ev.loaded,
+                  delta: ev.delta,
+                  totalLoaded,
+                  totalProgress: Math.round((totalLoaded / totalSize) * 100),
+                });
+              },
+            },
+          ),
+        { concurrency: 6 },
+      ),
+    ),
+    Micro.provideService(FetchContext, window.fetch),
+  );
+};

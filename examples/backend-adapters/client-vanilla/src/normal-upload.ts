@@ -3,7 +3,7 @@ import { UploadAbortedError } from "uploadthing/client";
 import { setInputProps, uploadFiles } from "./uploadthing";
 
 /**
- * This sets up a simple uplaoder that you call once
+ * This sets up a simple uploader that you call once
  * (uploadFiles) and be done with it.
  * You may abort the upload, but you cannot pause or resume it.
  * If you need more control, checkout the resumable example instead

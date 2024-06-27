@@ -43,7 +43,7 @@ import type {
   MiddlewareFnArgs,
   RequestHandler,
   RequestHandlerInput,
-  RequestHandlerSuccess,
+  RequestHandlerOutput,
   RouteHandlerConfig,
   RouteHandlerOptions,
   UTEvents,
@@ -65,7 +65,7 @@ export const runRequestHandlerAsync = <
   handler: RequestHandler<TArgs>,
   args: RequestHandlerInput<TArgs>,
   config?: RouteHandlerConfig | undefined,
-) => {
+): Promise<RequestHandlerOutput> => {
   return handler(args).pipe(
     withMinimalLogLevel,
     Effect.provide(ConsolaLogger),
@@ -77,7 +77,7 @@ export const runRequestHandlerAsync = <
       ),
     ),
     Effect.provide(Layer.setConfigProvider(configProvider(config))),
-    Effect.catchAll((err) => Effect.succeed({ success: false, error: err })),
+    Effect.mapError((err) => ({ success: false as const, error: err })),
     Effect.runPromise,
   );
 };
@@ -88,7 +88,7 @@ const handleRequest = RequestInput.pipe(
     if (action === "upload") return handleUploadAction;
     return Effect.die("Unreachable");
   }),
-  Effect.map((output): RequestHandlerSuccess => ({ success: true, ...output })),
+  Effect.map((output) => ({ success: true as const, ...output })),
 );
 
 export const buildRequestHandler =
