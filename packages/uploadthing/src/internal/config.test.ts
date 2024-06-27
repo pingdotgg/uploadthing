@@ -13,7 +13,7 @@ import { UTToken } from "./shared-schemas";
 const app1TokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
 const app2TokenData = { apiKey: "sk_bar", appId: "app-2", regions: ["dub1"] };
 
-describe("configProvider", () => {
+describe("utToken", () => {
   it.effect("fails if no token is provided as env", () =>
     Effect.gen(function* () {
       const token = yield* utToken.pipe(
