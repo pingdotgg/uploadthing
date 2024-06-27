@@ -43,7 +43,6 @@ import type {
   MiddlewareFnArgs,
   RequestHandler,
   RequestHandlerInput,
-  RequestHandlerOutput,
   RequestHandlerSuccess,
   RouteHandlerConfig,
   RouteHandlerOptions,
@@ -77,16 +76,11 @@ export const runRequestHandlerAsync = <
         Effect.succeed(config?.fetch as typeof globalThis.fetch),
       ),
     ),
-    asHandlerOutput,
     Effect.provide(Layer.setConfigProvider(configProvider(config))),
+    Effect.catchAll((err) => Effect.succeed({ success: false, error: err })),
     Effect.runPromise,
   );
 };
-
-const asHandlerOutput = <R>(
-  effect: Effect.Effect<RequestHandlerSuccess, UploadThingError, R>,
-): Effect.Effect<RequestHandlerOutput, never, R> =>
-  Effect.catchAll(effect, (error) => Effect.succeed({ success: false, error }));
 
 const handleRequest = RequestInput.pipe(
   Effect.andThen(({ action, hook }) => {
@@ -140,7 +134,7 @@ export const buildRequestHandler =
     );
 
 const handleCallbackRequest = Effect.gen(function* () {
-  const { req, uploadable } = yield* RequestInput;
+  const { req, uploadable, fePackage, adapter } = yield* RequestInput;
   const { apiKey } = yield* utToken;
   const verified = yield* verifySignature(
     req.clone().text(),
@@ -196,12 +190,15 @@ const handleCallbackRequest = Effect.gen(function* () {
       payload,
     );
 
+    const baseUrl = yield* ingestUrl;
     const httpClient = yield* HttpClient.HttpClient;
     yield* HttpClientRequest.post(`/callback-result`).pipe(
-      HttpClientRequest.prependUrl(yield* ingestUrl),
+      HttpClientRequest.prependUrl(baseUrl),
       HttpClientRequest.setHeaders({
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": UPLOADTHING_VERSION,
+        "x-uploadthing-be-adapter": adapter,
+        "x-uploadthing-fe-package": fePackage,
       }),
       HttpClientRequest.jsonBody(payload),
       Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
@@ -278,9 +275,9 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
 
 const handleUploadAction = Effect.gen(function* () {
   const httpClient = yield* HttpClient.HttpClient;
-  const opts = yield* RequestInput;
+  const { req, uploadable, fePackage, adapter, slug } = yield* RequestInput;
   const { files, input } = yield* Effect.flatMap(
-    parseRequestJson(opts.req),
+    parseRequestJson(req),
     S.decodeUnknown(UploadActionPayload),
   );
   yield* Effect.logDebug("Handling upload request with input:", {
@@ -290,7 +287,7 @@ const handleUploadAction = Effect.gen(function* () {
 
   // validate the input
   yield* Effect.logDebug("Parsing user input");
-  const inputParser = opts.uploadable._def.inputParser;
+  const inputParser = uploadable._def.inputParser;
   const parsedInput = yield* Effect.tryPromise({
     try: async () => getParseFn(inputParser)(input),
     catch: (error) =>
@@ -307,12 +304,9 @@ const handleUploadAction = Effect.gen(function* () {
     files,
   });
 
-  yield* Effect.logDebug(
-    "Parsing route config",
-    opts.uploadable._def.routerConfig,
-  );
+  yield* Effect.logDebug("Parsing route config", uploadable._def.routerConfig);
   const parsedConfig = yield* fillInputRouteConfig(
-    opts.uploadable._def.routerConfig,
+    uploadable._def.routerConfig,
   ).pipe(
     Effect.catchTag(
       "InvalidRouteConfig",
@@ -362,37 +356,40 @@ const handleUploadAction = Effect.gen(function* () {
     }),
   );
 
-  const routeOptions = opts.uploadable._def.routeOptions;
+  const routeOptions = uploadable._def.routeOptions;
   const { apiKey, appId } = yield* utToken;
 
-  const presignedUrls = yield* Effect.forEach(fileUploadRequests, (file) =>
-    Effect.gen(function* () {
-      const key = yield* generateKey(file, routeOptions.getFileHashParts);
+  const presignedUrls = yield* Effect.forEach(
+    fileUploadRequests,
+    (file) =>
+      Effect.gen(function* () {
+        const key = yield* generateKey(file, routeOptions.getFileHashParts);
 
-      const baseUrl = yield* ingestUrl;
-      const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
-        ttlInSeconds: routeOptions.presignedURLTTL,
-        data: {
-          "x-ut-identifier": appId,
-          "x-ut-file-name": file.name,
-          "x-ut-file-size": file.size,
-          "x-ut-file-type": file.type,
-          "x-ut-slug": opts.slug,
-          "x-ut-custom-id": file.customId,
-          "x-ut-content-disposition": file.contentDisposition,
-          "x-ut-acl": file.acl,
-        },
-      });
-      return { url, key };
-    }),
+        const baseUrl = yield* ingestUrl;
+        const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
+          ttlInSeconds: routeOptions.presignedURLTTL,
+          data: {
+            "x-ut-identifier": appId,
+            "x-ut-file-name": file.name,
+            "x-ut-file-size": file.size,
+            "x-ut-file-type": file.type,
+            "x-ut-slug": slug,
+            "x-ut-custom-id": file.customId,
+            "x-ut-content-disposition": file.contentDisposition,
+            "x-ut-acl": file.acl,
+          },
+        });
+        return { url, key };
+      }),
+    { concurrency: "unbounded" },
   );
 
-  const requestUrl = yield* getRequestUrl(opts.req);
+  const requestUrl = yield* getRequestUrl(req);
   const callbackUrl = yield* Config.string("callbackUrl").pipe(
     Config.withDefault(requestUrl),
   );
   const callbackRequest = HttpClientRequest.post(callbackUrl).pipe(
-    HttpClientRequest.appendUrlParam("slug", opts.slug),
+    HttpClientRequest.appendUrlParam("slug", slug),
     HttpClientRequest.setHeader("uploadthing-hook", "callback"),
   );
 
@@ -403,16 +400,16 @@ const handleUploadAction = Effect.gen(function* () {
     HttpClientRequest.setHeaders({
       "x-uploadthing-api-key": apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
-      "x-uploadthing-be-adapter": opts.adapter,
-      "x-uploadthing-fe-package": opts.fePackage,
+      "x-uploadthing-be-adapter": adapter,
+      "x-uploadthing-fe-package": fePackage,
     }),
     HttpClientRequest.jsonBody({
       fileKeys: presignedUrls.map(({ key }) => key),
       metadata: metadata,
       isDev,
       callbackUrl: callbackRequest.url,
-      callbackSlug: opts.slug,
-      awaitServerData: routeOptions.awaitServerData ?? false,
+      callbackSlug: slug,
+      awaitServerData: routeOptions.awaitServerData,
     }),
     Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
     Effect.tapErrorTag("ResponseError", ({ response: res }) =>
