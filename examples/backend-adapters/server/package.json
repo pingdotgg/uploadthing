@@ -12,8 +12,8 @@
     "dev:effect": "NODE_ENV=development tsx watch src/effect-platform.ts"
   },
   "dependencies": {
-    "@effect/platform": "0.58.13",
-    "@effect/platform-node": "0.53.12",
+    "@effect/platform": "0.58.9",
+    "@effect/platform-node": "0.53.8",
     "@elysiajs/cors": "^0.8.0",
     "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",

@@ -210,11 +210,11 @@ importers:
   examples/backend-adapters/server:
     dependencies:
       '@effect/platform':
-        specifier: 0.58.13
-        version: 0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+        specifier: 0.58.9
+        version: 0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
       '@effect/platform-node':
-        specifier: 0.53.12
-        version: 0.53.12(@effect/platform@0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)
+        specifier: 0.53.8
+        version: 0.53.8(@effect/platform@0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)
       '@elysiajs/cors':
         specifier: ^0.8.0
         version: 0.8.0(elysia@0.8.17(openapi-types@12.1.3)(typescript@5.5.2))
@@ -1443,8 +1443,8 @@ importers:
         version: 3.7.0
     devDependencies:
       '@effect/platform':
-        specifier: 0.58.13
-        version: 0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+        specifier: 0.58.9
+        version: 0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
       '@types/body-parser':
         specifier: ^1.19.5
         version: 1.19.5
@@ -2689,17 +2689,17 @@ packages:
       '@effect/platform': ^0.58.13
       effect: ^3.4.5
 
-  '@effect/platform-node@0.53.12':
-    resolution: {integrity: sha512-VJhU/YS0NFqW3N/Xybfuj0Ur4Y92yEHnoigvDq5KzDacyqxSkhbVxD9DMinGfH76N5koBztC3yn0ZEG5aKiRhQ==}
+  '@effect/platform-node@0.53.8':
+    resolution: {integrity: sha512-Jrb3kX3nqcnXh/4/IVYVduLmzEILcWC2xt601VY/3fPpULBkQ2hfhsuNL3MlOS967vXkGK2EW8TmWFH7+Arypg==}
     peerDependencies:
-      '@effect/platform': ^0.58.13
-      effect: ^3.4.5
+      '@effect/platform': ^0.58.9
+      effect: ^3.4.2
 
-  '@effect/platform@0.58.13':
-    resolution: {integrity: sha512-NafhSYFTeXbY7mS5gvfEIfGaBrtV3IKLtsQx3d4VYHbOOS4ZE3WEJi8ZRrLKftSVL+C8OOiIHwQvfL+fTGaF7A==}
+  '@effect/platform@0.58.9':
+    resolution: {integrity: sha512-BAw4SEeZ/ycDfaQO5jSiMW2ePjn5OgPWmipXk37ZcUrrC0h69K8r2PWUO5vGRMkr1ixxX+IaKLnMCGR81RqZdA==}
     peerDependencies:
-      '@effect/schema': ^0.68.12
-      effect: ^3.4.5
+      '@effect/schema': ^0.68.9
+      effect: ^3.4.2
 
   '@effect/schema@0.68.12':
     resolution: {integrity: sha512-UWJsFXzeYTBQYnftwI1KR2uaxIZ8fk+kffDS7BnJwnGjPPgODq3/AzeoBDSu1MAlnwBKOz+QRdMuSMxrT/pHig==}
@@ -16884,17 +16884,17 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect/platform-node-shared@0.8.12(@effect/platform@0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)':
+  '@effect/platform-node-shared@0.8.12(@effect/platform@0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)':
     dependencies:
-      '@effect/platform': 0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+      '@effect/platform': 0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
       '@parcel/watcher': 2.4.1
       effect: 3.4.5
       multipasta: 0.2.2
 
-  '@effect/platform-node@0.53.12(@effect/platform@0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)':
+  '@effect/platform-node@0.53.8(@effect/platform@0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)':
     dependencies:
-      '@effect/platform': 0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
-      '@effect/platform-node-shared': 0.8.12(@effect/platform@0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)
+      '@effect/platform': 0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+      '@effect/platform-node-shared': 0.8.12(@effect/platform@0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)
       effect: 3.4.5
       mime: 3.0.0
       undici: 6.19.2
@@ -16903,7 +16903,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.58.13(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)':
+  '@effect/platform@0.58.9(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)':
     dependencies:
       '@effect/schema': 0.68.12(effect@3.4.5)
       effect: 3.4.5
@@ -17812,7 +17812,7 @@ snapshots:
   '@iconify/utils@2.1.23':
     dependencies:
       '@antfu/install-pkg': 0.1.1
-      '@antfu/utils': 0.7.8
+      '@antfu/utils': 0.7.10
       '@iconify/types': 2.0.0
       debug: 4.3.5
       kolorist: 1.8.0
@@ -32144,7 +32144,7 @@ snapshots:
 
   unconfig@0.3.13:
     dependencies:
-      '@antfu/utils': 0.7.8
+      '@antfu/utils': 0.7.10
       defu: 6.1.4
       jiti: 1.21.6
 
