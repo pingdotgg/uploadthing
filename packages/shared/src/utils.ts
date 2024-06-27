@@ -100,8 +100,8 @@ export const getTypeFromFileName = (
 
   // If the user has specified a specific mime type, use that
   if (allowedTypes.some((type) => type.includes("/"))) {
-    if (allowedTypes.includes(mimeType)) {
-      return Micro.succeed(mimeType);
+    if (allowedTypes.includes(mimeType as FileRouterInputKey)) {
+      return Micro.succeed(mimeType as FileRouterInputKey);
     }
   }
 
