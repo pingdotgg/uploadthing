@@ -22,6 +22,7 @@ export const envProvider = ConfigProvider.fromEnv().pipe(
       },
     ),
   ),
+  ConfigProvider.nested("uploadthing"),
   ConfigProvider.constantCase,
 );
 
@@ -37,7 +38,9 @@ export const getToken = S.Config("token", UTToken).pipe(
       new UploadThingError({
         code: "MISSING_ENV",
         message:
-          "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
+          e._op === "InvalidData"
+            ? "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }."
+            : "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
         cause: e,
       }),
   }),
