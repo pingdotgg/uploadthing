@@ -27,6 +27,9 @@ export const generateMimeTypes = (
     if (type === "pdf") return "application/pdf";
     if (type.includes("/")) return type;
 
+    // Add wildcard to support all subtypes, e.g. image => "image/*"
+    // But some browsers/OSes don't support it, so we'll also dump all the mime types
+    // we know that starts with the type, e.g. image => "image/png, image/jpeg, ..."
     if (type === "audio") return ["audio/*", ...objectKeys(audio)].join(", ");
     if (type === "image") return ["image/*", ...objectKeys(image)].join(", ");
     if (type === "text") return ["text/*", ...objectKeys(text)].join(", ");
