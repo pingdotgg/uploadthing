@@ -1,3 +1,4 @@
+import * as Effect from "effect/Effect";
 import { describe, expect } from "vitest";
 import { z } from "zod";
 
@@ -72,7 +73,7 @@ const router = {
 const handlers = createRouteHandler({
   router,
   config: {
-    uploadthingToken: testToken.encoded,
+    token: testToken.encoded,
     // @ts-expect-error - annoying to see error logs
     logLevel: "silent",
   },
@@ -340,7 +341,9 @@ describe(".onUploadComplete()", () => {
         customId: null,
       }),
     });
-    const signature = await signPayload(payload, testToken.decoded.apiKey);
+    const signature = await Effect.runPromise(
+      signPayload(payload, testToken.decoded.apiKey),
+    );
 
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {
@@ -413,7 +416,9 @@ describe(".onUploadComplete()", () => {
         customId: null,
       }),
     });
-    const signature = await signPayload(payload, "sk_live_badkey");
+    const signature = await Effect.runPromise(
+      signPayload(payload, "sk_live_badkey"),
+    );
 
     const res = await handlers.POST(
       new Request(createApiUrl("imageUploader"), {

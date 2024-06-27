@@ -12,7 +12,7 @@ import * as Layer from "effect/Layer";
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/config";
+import { configProvider, UPLOADTHING_VERSION } from "./internal/config";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
@@ -85,7 +85,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
           }),
           middlewareArgs: { req, res: undefined, event: undefined },
         }).pipe(
-          // withMinimalLogLevel,
+          withMinimalLogLevel,
           Effect.provide(ConsolaLogger),
           Effect.provide(HttpClient.layer),
           Effect.provide(
@@ -94,6 +94,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
               Effect.succeed(opts.config?.fetch as typeof globalThis.fetch),
             ),
           ),
+          Effect.provide(Layer.setConfigProvider(configProvider(opts.config))),
           Effect.andThen((response) => HttpServerResponse.json(response.body)),
           Effect.catchTag("UploadThingError", (error) =>
             HttpServerResponse.json(formatError(error, opts.router), {

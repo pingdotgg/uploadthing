@@ -13,7 +13,7 @@ const router = {
 export default createRouteHandler({
   router,
   config: {
-    uploadthingToken:
+    token:
       "eyJhcHBJZCI6ImFwcC0xIiwiYXBpS2V5Ijoic2tfZm9vIiwicmVnaW9ucyI6WyJmcmExIl19",
   },
 });

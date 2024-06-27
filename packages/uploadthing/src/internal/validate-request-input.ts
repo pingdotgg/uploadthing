@@ -20,7 +20,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { getToken, UPLOADTHING_VERSION } from "./config";
+import { UPLOADTHING_VERSION, utToken } from "./config";
 import type { UploadActionPayload } from "./shared-schemas";
 import type {
   ActionType,
@@ -138,8 +138,6 @@ type RequestInputBase = {
   req: Request;
   config: RouteHandlerConfig;
   middlewareArgs: MiddlewareFnArgs<any, any, any>;
-  appId: string;
-  apiKey: string;
   slug: string;
   adapter: string;
   fePackage: string;
@@ -262,16 +260,10 @@ export const parseAndValidateRequest = (
 
     yield* Effect.logDebug("✔︎ All request input is valid");
 
-    const { apiKey, appId, regions } = yield* getToken;
-
-    yield* Effect.logDebug("Parsed token", { apiKey, appId, regions });
-
     const base = {
       req,
       config: opts.config ?? {},
       middlewareArgs: input.middlewareArgs,
-      appId,
-      apiKey,
       slug,
       uploadable,
       adapter,

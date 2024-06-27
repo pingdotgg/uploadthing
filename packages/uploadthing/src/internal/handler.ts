@@ -6,7 +6,6 @@ import {
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
 import * as Config from "effect/Config";
-import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Stream from "effect/Stream";
@@ -24,10 +23,11 @@ import {
 } from "@uploadthing/shared";
 
 import {
-  envProvider,
+  configProvider,
   ingestUrl,
   isDevelopment,
   UPLOADTHING_VERSION,
+  utToken,
 } from "./config";
 import { ConsolaLogger, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
@@ -67,12 +67,9 @@ export const runRequestHandlerAsync = <
   args: RequestHandlerInput<TArgs>,
   config?: RouteHandlerConfig | undefined,
 ) => {
-  const configProvider = ConfigProvider.fromJson(config ?? {}).pipe(
-    ConfigProvider.orElse(() => envProvider),
-    ConfigProvider.nested("uploadthing"),
-  );
   return handler(args).pipe(
-    Effect.provide(Layer.setConfigProvider(configProvider)),
+    withMinimalLogLevel,
+    Effect.provide(ConsolaLogger),
     Effect.provide(HttpClient.layer),
     Effect.provide(
       Layer.effect(
@@ -80,9 +77,8 @@ export const runRequestHandlerAsync = <
         Effect.succeed(config?.fetch as typeof globalThis.fetch),
       ),
     ),
-    // withMinimalLogLevel,
-    Effect.provide(ConsolaLogger),
     asHandlerOutput,
+    Effect.provide(Layer.setConfigProvider(configProvider(config))),
     Effect.runPromise,
   );
 };
@@ -143,20 +139,13 @@ export const buildRequestHandler =
     );
 
 const handleCallbackRequest = Effect.gen(function* () {
-  const { req, uploadable, apiKey } = yield* RequestInput;
-  const verified = yield* Effect.tryPromise({
-    try: async () =>
-      verifySignature(
-        await req.clone().text(),
-        req.headers.get("x-uploadthing-signature"),
-        apiKey,
-      ),
-    catch: () =>
-      new UploadThingError({
-        code: "BAD_REQUEST",
-        message: "Invalid signature",
-      }),
-  });
+  const { req, uploadable } = yield* RequestInput;
+  const { apiKey } = yield* utToken;
+  const verified = yield* verifySignature(
+    req.clone().text(),
+    req.headers.get("x-uploadthing-signature"),
+    apiKey,
+  );
   yield* Effect.logDebug("Signature verified:", verified);
   if (!verified) {
     yield* Effect.logError("Invalid signature");
@@ -184,7 +173,7 @@ const handleCallbackRequest = Effect.gen(function* () {
    */
   const fiber = yield* Effect.gen(function* () {
     const serverData = yield* Effect.tryPromise({
-      try: () =>
+      try: async () =>
         uploadable.resolver({
           file: requestInput.file,
           metadata: requestInput.metadata,
@@ -238,7 +227,7 @@ const runRouteMiddleware = (opts: S.Schema.Type<typeof UploadActionPayload>) =>
 
     yield* Effect.logDebug("Running middleware");
     const metadata = yield* Effect.tryPromise({
-      try: () =>
+      try: async () =>
         uploadable._def.middleware({
           ...middlewareArgs,
           input,
@@ -373,6 +362,7 @@ const handleUploadAction = Effect.gen(function* () {
   );
 
   const routeOptions = opts.uploadable._def.routeOptions;
+  const { apiKey, appId } = yield* utToken;
 
   const presignedUrls = yield* Effect.forEach(fileUploadRequests, (file) =>
     Effect.gen(function* () {
@@ -380,11 +370,11 @@ const handleUploadAction = Effect.gen(function* () {
 
       const url = yield* generateSignedURL(
         `${yield* ingestUrl}/${key}`,
-        opts.apiKey,
+        apiKey,
         {
           ttlInSeconds: routeOptions.presignedURLTTL,
           data: {
-            "x-ut-identifier": opts.appId,
+            "x-ut-identifier": appId,
             "x-ut-file-name": file.name,
             "x-ut-file-size": file.size,
             "x-ut-file-type": file.type,
@@ -403,15 +393,17 @@ const handleUploadAction = Effect.gen(function* () {
   const callbackUrl = yield* Config.string("callbackUrl").pipe(
     Config.withDefault(requestUrl),
   );
-  const callback = HttpClientRequest.post(callbackUrl).pipe(
+  const callbackRequest = HttpClientRequest.post(callbackUrl).pipe(
     HttpClientRequest.appendUrlParam("slug", opts.slug),
     HttpClientRequest.setHeader("uploadthing-hook", "callback"),
   );
 
-  const metadataPost = HttpClientRequest.post("/route-metadata").pipe(
+  const isDev = yield* isDevelopment;
+
+  const metadataRequest = HttpClientRequest.post("/route-metadata").pipe(
     HttpClientRequest.prependUrl(yield* ingestUrl),
     HttpClientRequest.setHeaders({
-      "x-uploadthing-api-key": opts.apiKey,
+      "x-uploadthing-api-key": apiKey,
       "x-uploadthing-version": UPLOADTHING_VERSION,
       "x-uploadthing-be-adapter": opts.adapter,
       "x-uploadthing-fe-package": opts.fePackage,
@@ -419,7 +411,8 @@ const handleUploadAction = Effect.gen(function* () {
     HttpClientRequest.jsonBody({
       fileKeys: presignedUrls.map(({ key }) => key),
       metadata: metadata,
-      callbackUrl: callback.url,
+      isDev,
+      callbackUrl: callbackRequest.url,
       callbackSlug: opts.slug,
       awaitServerData: routeOptions.awaitServerData ?? false,
     }),
@@ -434,14 +427,14 @@ const handleUploadAction = Effect.gen(function* () {
   // Send metadata to UT server (non blocking as a daemon)
   // In dev, keep the stream open and simulate the callback requests as
   // files complete uploading
-  const fiber = yield* Effect.if(yield* isDevelopment, {
+  const fiber = yield* Effect.if(isDev, {
     onTrue: () =>
-      metadataPost.pipe(
+      metadataRequest.pipe(
         HttpClientResponse.stream,
         Stream.decodeText(),
         Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
         Stream.mapEffect(({ payload, signature }) =>
-          callback.pipe(
+          callbackRequest.pipe(
             HttpClientRequest.setHeader("x-uploadthing-signature", signature),
             HttpClientRequest.setBody(
               HttpBody.text(payload, "application/json"),
@@ -456,7 +449,7 @@ const handleUploadAction = Effect.gen(function* () {
         Stream.runDrain,
       ),
     onFalse: () =>
-      metadataPost.pipe(
+      metadataRequest.pipe(
         HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
       ),
   }).pipe(Effect.ignoreLogged, Effect.forkDaemon);

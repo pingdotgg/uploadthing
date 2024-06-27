@@ -1,5 +1,6 @@
 import * as Micro from "effect/Micro";
 
+import { UploadThingError } from "./error";
 import type { ExtractHashPartsFn, FileProperties, Time } from "./types";
 import { parseTimeToSeconds } from "./utils";
 
@@ -10,22 +11,35 @@ export const signPayload = (payload: string, secret: string) =>
   Micro.gen(function* () {
     const encoder = new TextEncoder();
 
-    const signingKey = yield* Micro.promise(() =>
-      crypto.subtle.importKey("raw", encoder.encode(secret), algorithm, false, [
-        "sign",
-      ]),
-    );
-    const signature = yield* Micro.promise(() =>
-      crypto.subtle
-        .sign(algorithm, signingKey, encoder.encode(payload))
-        .then((sig) => Buffer.from(sig).toString("hex")),
-    );
+    const signingKey = yield* Micro.tryPromise({
+      try: () =>
+        crypto.subtle.importKey(
+          "raw",
+          encoder.encode(secret),
+          algorithm,
+          false,
+          ["sign"],
+        ),
+      catch: (e) =>
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid signing secret",
+          cause: e,
+        }),
+    });
+    const signature = yield* Micro.tryPromise({
+      try: () =>
+        crypto.subtle
+          .sign(algorithm, signingKey, encoder.encode(payload))
+          .then((sig) => Buffer.from(sig).toString("hex")),
+      catch: (e) => new UploadThingError({ code: "BAD_REQUEST", cause: e }),
+    });
 
     return `${signaturePrefix}${signature}`;
   });
 
 export const verifySignature = (
-  payload: string,
+  payload: string | Promise<string>,
   signature: string | null,
   secret: string,
 ) =>
@@ -34,18 +48,31 @@ export const verifySignature = (
     if (!sig) return false;
 
     const encoder = new TextEncoder();
-    const signingKey = yield* Micro.promise(() =>
-      crypto.subtle.importKey("raw", encoder.encode(secret), algorithm, false, [
-        "verify",
-      ]),
-    );
-    return yield* Micro.promise(() =>
-      crypto.subtle.verify(
-        algorithm,
-        signingKey,
-        Uint8Array.from(Buffer.from(sig, "hex")),
-        encoder.encode(payload),
-      ),
+    const signingKey = yield* Micro.tryPromise({
+      try: () =>
+        crypto.subtle.importKey(
+          "raw",
+          encoder.encode(secret),
+          algorithm,
+          false,
+          ["verify"],
+        ),
+      catch: (e) =>
+        new UploadThingError({
+          code: "BAD_REQUEST",
+          message: "Invalid verification secret",
+          cause: e,
+        }),
+    });
+    return yield* Micro.promise(async () =>
+      crypto.subtle
+        .verify(
+          algorithm,
+          signingKey,
+          Uint8Array.from(Buffer.from(sig, "hex")),
+          encoder.encode(await payload),
+        )
+        .catch(() => false),
     );
   });
 
@@ -96,10 +123,8 @@ export const generateSignedURL = (
       });
     }
 
-    parsedURL.searchParams.append(
-      "signature",
-      yield* signPayload(parsedURL.toString(), secretKey),
-    );
+    const signature = yield* signPayload(parsedURL.toString(), secretKey);
+    parsedURL.searchParams.append("signature", signature);
 
     return parsedURL.href;
   });

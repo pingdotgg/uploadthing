@@ -192,6 +192,14 @@ export function asArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
+export function filterDefinedObjectValues<T>(
+  obj: Record<string, T | null | undefined>,
+): Record<string, T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter((pair): pair is [string, T] => pair[1] != null),
+  );
+}
+
 /** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,

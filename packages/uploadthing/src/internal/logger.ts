@@ -5,7 +5,7 @@ import * as Effect from "effect/Effect";
 import * as Logger from "effect/Logger";
 import * as EffectLogLevel from "effect/LogLevel";
 
-import { isObject } from "@uploadthing/shared";
+import { isObject, UploadThingError } from "@uploadthing/shared";
 
 /**
  * All the public log levels users can set.
@@ -122,27 +122,40 @@ const effectLoggerLevelToConsolaLevel: Record<EffectLogLevel.Literal, LogType> =
     None: "silent",
   };
 
-export const withMinimalLogLevel = Config.string("logLevel").pipe(
-  Config.validate({
-    validation: (s) => s in LogLevels,
-    message: "Invalid log level",
-  }),
-  Config.withDefault("info"),
-  Effect.andThen((level) => {
-    logger.level = LogLevels[level as LogLevel];
-    return Logger.withMinimumLogLevel(
-      {
-        silent: EffectLogLevel.None,
-        error: EffectLogLevel.Error,
-        warn: EffectLogLevel.Warning,
-        info: EffectLogLevel.Info,
-        debug: EffectLogLevel.Debug,
-        trace: EffectLogLevel.Trace,
-        verbose: EffectLogLevel.All,
-      }[level as LogLevel],
-    );
-  }),
-);
+export const withMinimalLogLevel = <A, E, R>(effect: Effect.Effect<A, E, R>) =>
+  Config.string("logLevel").pipe(
+    Config.validate({
+      validation: (s) => s in LogLevels,
+      message: "Invalid log level",
+    }),
+    Config.withDefault("info"),
+    Effect.catchTag(
+      "ConfigError",
+      (e) =>
+        new UploadThingError({
+          code: "INVALID_SERVER_CONFIG",
+          message: "Invalid server configuration",
+          cause: e,
+        }),
+    ),
+    Effect.tap((level) =>
+      Effect.sync(() => (logger.level = LogLevels[level as LogLevel])),
+    ),
+    Effect.flatMap((level) =>
+      Logger.withMinimumLogLevel(
+        effect,
+        {
+          silent: EffectLogLevel.None,
+          error: EffectLogLevel.Error,
+          warn: EffectLogLevel.Warning,
+          info: EffectLogLevel.Info,
+          debug: EffectLogLevel.Debug,
+          trace: EffectLogLevel.Trace,
+          verbose: EffectLogLevel.All,
+        }[level as LogLevel],
+      ),
+    ),
+  );
 
 export const ConsolaLogger = Logger.replace(
   Logger.defaultLogger,

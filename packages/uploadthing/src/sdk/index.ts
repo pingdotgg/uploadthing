@@ -4,8 +4,6 @@ import {
   HttpClientResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import * as Config from "effect/Config";
-import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
@@ -21,7 +19,12 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { envProvider, getToken, UPLOADTHING_VERSION } from "../internal/config";
+import {
+  apiUrl,
+  configProvider,
+  UPLOADTHING_VERSION,
+  utToken,
+} from "../internal/config";
 import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
 import type {
   ACLUpdateOptions,
@@ -70,7 +73,7 @@ export class UTApi {
       for (const [key, value] of Object.entries(this.defaultHeaders)) {
         if (typeof value === "string") headers.set(key, value);
       }
-      const { apiKey } = yield* getToken;
+      const { apiKey } = yield* utToken;
       headers.set("x-uploadthing-api-key", apiKey);
       headers.set("cache", "no-store");
 
@@ -80,11 +83,9 @@ export class UTApi {
         headers,
       });
 
-      const baseUrl = yield* Config.string("apiUrl").pipe(
-        Config.withDefault("https://api.uploadthing.com"),
-      );
-
+      const baseUrl = yield* apiUrl;
       const httpClient = yield* HttpClient.HttpClient;
+
       return yield* HttpClientRequest.post(pathname).pipe(
         HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.unsafeJsonBody(body),
@@ -99,14 +100,8 @@ export class UTApi {
     program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
     signal?: AbortSignal,
   ) => {
-    const configProvider = ConfigProvider.fromJson(this.opts ?? {}).pipe(
-      ConfigProvider.orElse(() => envProvider),
-      ConfigProvider.nested("uploadthing"),
-    );
-
     return program.pipe(
-      // withMinimalLogLevel,
-      Effect.provide(Layer.setConfigProvider(configProvider)),
+      withMinimalLogLevel,
       Effect.provide(ConsolaLogger),
       Effect.provide(HttpClient.layer),
       Effect.provide(
@@ -115,6 +110,7 @@ export class UTApi {
           Effect.succeed(this.fetch as typeof globalThis.fetch),
         ),
       ),
+      Effect.provide(Layer.setConfigProvider(configProvider(this.opts))),
       (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );
   };

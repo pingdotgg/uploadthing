@@ -67,7 +67,7 @@ export const setupUTServer = async () => {
     createRouteHandler({
       router,
       config: {
-        uploadthingToken: testToken.encoded,
+        token: testToken.encoded,
         isDev: true,
       },
     }),
