@@ -9,7 +9,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./config";
+import * as pkgJson from "../../package.json";
 import type { ActionType, UTEvents } from "./types";
 
 const createAPIRequestUrl = (config: {
@@ -61,7 +61,7 @@ export const createUTReporter =
         ),
       );
       headers.set("x-uploadthing-package", cfg.package);
-      headers.set("x-uploadthing-version", UPLOADTHING_VERSION);
+      headers.set("x-uploadthing-version", pkgJson.version);
       headers.set("Content-Type", "application/json");
 
       const response = yield* fetchEff(url, {

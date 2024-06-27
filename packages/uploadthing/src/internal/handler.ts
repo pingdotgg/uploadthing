@@ -111,21 +111,22 @@ export const buildRequestHandler =
       Effect.catchTags({
         ConfigError: (e) =>
           new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Invalid server configuration",
+            code: "INVALID_SERVER_CONFIG",
+            message:
+              "Invalid server configuration. Please check the error cause for details.",
             cause: e,
           }),
         InvalidURL: (e) =>
           new UploadThingError({
             code: "BAD_REQUEST",
             message:
-              "Invalid URL. UploadThing failed to parse the URL. Please provide a URL manually",
+              "Invalid URL. UploadThing failed to parse the URL. Please provide a URL manually.",
             cause: e,
           }),
         InvalidJson: (e) =>
           new UploadThingError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "An error occured while parsing input/output",
+            code: "BAD_REQUEST",
+            message: "Failed to parse JSON.",
             cause: e,
           }),
         ParseError: (e) =>

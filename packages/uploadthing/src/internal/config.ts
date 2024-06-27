@@ -54,7 +54,7 @@ export const utToken = S.Config("token", UTToken).pipe(
   Effect.catchTags({
     ConfigError: (e) =>
       new UploadThingError({
-        code: e._op === "InvalidData" ? "INVALID_ENV" : "MISSING_ENV",
+        code: e._op === "InvalidData" ? "INVALID_SERVER_CONFIG" : "MISSING_ENV",
         message:
           e._op === "InvalidData"
             ? "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }."

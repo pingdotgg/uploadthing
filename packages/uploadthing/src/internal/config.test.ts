@@ -45,7 +45,7 @@ describe("utToken", () => {
       expect(token).toEqual(
         Exit.fail(
           new UploadThingError({
-            code: "INVALID_ENV",
+            code: "INVALID_SERVER_CONFIG",
             message:
               "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }.",
           }),
@@ -127,7 +127,7 @@ describe("utToken", () => {
       expect(token).toEqual(
         Exit.fail(
           new UploadThingError({
-            code: "INVALID_ENV",
+            code: "INVALID_SERVER_CONFIG",
             message:
               "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }.",
           }),
