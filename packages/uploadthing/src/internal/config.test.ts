@@ -7,7 +7,7 @@ import { describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-import { configProvider, utToken } from "./config";
+import { configProvider, ingestUrl, utToken } from "./config";
 import { UTToken } from "./shared-schemas";
 
 const app1TokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
@@ -165,6 +165,40 @@ describe("configProvider", () => {
       );
 
       expect(token).toEqual(Exit.succeed(app2TokenData));
+
+      delete process.env.UPLOADTHING_TOKEN;
+    }),
+  );
+});
+
+describe("ingest url infers correctly", () => {
+  it.effect("takes from env if provided", () =>
+    Effect.gen(function* () {
+      process.env.UPLOADTHING_TOKEN = yield* S.encode(UTToken)(app1TokenData);
+      process.env.UPLOADTHING_INGEST_URL = "http://localhost:1234";
+
+      const url = yield* ingestUrl.pipe(
+        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.exit,
+      );
+
+      expect(url).toEqual(Exit.succeed("http://localhost:1234"));
+
+      delete process.env.UPLOADTHING_TOKEN;
+      delete process.env.UPLOADTHING_INGEST_URL;
+    }),
+  );
+
+  it.effect("infers from token region if no env is provided", () =>
+    Effect.gen(function* () {
+      process.env.UPLOADTHING_TOKEN = yield* S.encode(UTToken)(app1TokenData);
+
+      const url = yield* ingestUrl.pipe(
+        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.exit,
+      );
+
+      expect(url).toEqual(Exit.succeed("https://fra1.ingest.uploadthing.com"));
 
       delete process.env.UPLOADTHING_TOKEN;
     }),
