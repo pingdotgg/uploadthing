@@ -13,9 +13,6 @@ export const setupResumableUploader = (el: HTMLDivElement) => {
     "button[type=submit]",
   )!;
 
-  // Hook up abort button
-  // abortButton.addEventListener("click", () => ac.abort());
-
   // Hook up form submission
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
