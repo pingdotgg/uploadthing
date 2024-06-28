@@ -1,5 +1,16 @@
 # uploadthing
 
+## 6.13.2
+
+### Patch Changes
+
+- [#875](https://github.com/pingdotgg/uploadthing/pull/875) [`df6334d`](https://github.com/pingdotgg/uploadthing/commit/df6334d368970ec9791b85f97c58eb7958421e78) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump effect versions to fix cloudflare workers support
+
+  See upstream issue: https://github.com/Effect-TS/effect/issues/3057
+
+- Updated dependencies [[`df6334d`](https://github.com/pingdotgg/uploadthing/commit/df6334d368970ec9791b85f97c58eb7958421e78)]:
+  - @uploadthing/shared@6.7.8
+
 ## 6.13.1
 
 ### Patch Changes
