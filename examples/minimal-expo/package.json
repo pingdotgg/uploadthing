@@ -1,0 +1,52 @@
+{
+  "name": "@example/minimal-expo",
+  "private": true,
+  "version": "1.0.0",
+  "main": "./index.ts",
+  "scripts": {
+    "dev": "expo start",
+    "clean": "git clean -xdf .next node_modules",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "@bacons/text-decoder": "^0.0.0",
+    "@expo/vector-icons": "^14.0.1",
+    "@gorhom/bottom-sheet": "^4.6.1",
+    "@shopify/flash-list": "1.6.4",
+    "@tanstack/react-query": "^5.29.2",
+    "@trpc/client": "next",
+    "@trpc/react-query": "next",
+    "@trpc/server": "next",
+    "@uploadthing/expo": "6.7.2",
+    "expo": "~51.0.8",
+    "expo-dev-client": "~4.0.10",
+    "expo-document-picker": "^12.0.1",
+    "expo-haptics": "~13.0.1",
+    "expo-image": "^1.10.6",
+    "expo-image-picker": "^15.0.4",
+    "expo-linking": "~6.3.1",
+    "expo-router": "~3.5.9",
+    "expo-splash-screen": "~0.27.4",
+    "expo-status-bar": "~1.12.1",
+    "expo-web-browser": "^13.0.3",
+    "nativewind": "^4.0.36",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-native": "^0.74.1",
+    "react-native-gesture-handler": "~2.16.2",
+    "react-native-reanimated": "~3.10.0",
+    "react-native-safe-area-context": "4.10.1",
+    "react-native-screens": "~3.31.1",
+    "react-native-web": "~0.19.12",
+    "uploadthing": "6.13.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/runtime": "^7.24.4",
+    "@types/react": "18.3.3",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.5.2"
+  }
+}

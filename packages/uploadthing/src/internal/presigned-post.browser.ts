@@ -1,4 +1,4 @@
-import * as Effect from "effect/Effect";
+import * as Micro from "effect/Micro";
 
 import type { FetchContext, UploadThingError } from "@uploadthing/shared";
 
@@ -16,7 +16,7 @@ export const uploadPresignedPostWithProgress = (
       | undefined;
   },
 ) =>
-  Effect.async<UTEvents[keyof UTEvents]["out"], UploadThingError, FetchContext>(
+  Micro.async<UTEvents[keyof UTEvents]["out"], UploadThingError, FetchContext>(
     (resume) => {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", presigned.url);
@@ -31,7 +31,7 @@ export const uploadPresignedPostWithProgress = (
       xhr.addEventListener("load", () =>
         resume(
           xhr.status >= 200 && xhr.status < 300
-            ? Effect.succeed(null)
+            ? Micro.succeed(null)
             : opts.reportEventToUT("failure", {
                 fileKey: presigned.key,
                 uploadId: null,
@@ -56,5 +56,9 @@ export const uploadPresignedPostWithProgress = (
       );
       formData.append("file", file); // File data **MUST GO LAST**
       xhr.send(formData);
+
+      return Micro.sync(() => {
+        xhr.abort();
+      });
     },
   );

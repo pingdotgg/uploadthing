@@ -1,9 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "extends": ["//"],
-  "pipeline": {
+  "tasks": {
     "build": {
-      "outputs": ["dist/**", "hooks/**", "next-ssr-plugin/**"]
+      "outputs": ["dist/**", "hooks/**", "native/**", "next-ssr-plugin/**"]
     }
   }
 }

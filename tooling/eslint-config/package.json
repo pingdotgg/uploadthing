@@ -3,13 +3,12 @@
   "version": "0.2.0",
   "license": "MIT",
   "dependencies": {
-    "@next/eslint-plugin-next": "^14.2.1",
+    "@next/eslint-plugin-next": "^14.2.3",
     "@types/eslint": "^8.56.4",
-    "@typescript-eslint/eslint-plugin": "^7.6.0",
-    "@typescript-eslint/parser": "^7.6.0",
-    "@uploadthing/eslint-plugin": "^0.1.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-config-turbo": "^1.13.2",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "@uploadthing/eslint-plugin": "workspace:*",
+    "eslint-config-turbo": "2.0.6-canary.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -17,6 +16,6 @@
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   }
 }

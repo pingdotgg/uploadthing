@@ -79,15 +79,15 @@
     "file-selector": "^0.6.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.78",
-    "@uploadthing/eslint-config": "0.2.0",
-    "@uploadthing/tsconfig": "0.1.0",
-    "bunchee": "^5.1.2",
+    "@types/react": "18.3.3",
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
+    "bunchee": "^5.2.1",
     "eslint": "^8.57.0",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "solid-js": "^1.8.15",
     "svelte": "^4.2.12",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "vue": "^3.4.21"
   },
   "peerDependencies": {

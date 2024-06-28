@@ -43,7 +43,7 @@ export function Menu() {
             }}
           >
             <div className="flex items-center space-x-2">
-              <div className="rounded-sm border  p-1">{icon}</div>
+              <div className="rounded-sm border p-1">{icon}</div>
               <span>{theme}</span>
             </div>
             {currentTheme === theme.toLowerCase() && (

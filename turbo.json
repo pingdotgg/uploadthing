@@ -1,8 +1,22 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "experimentalUI": false,
+  "ui": "tui",
   "globalDependencies": ["**/.env.*local"],
-  "pipeline": {
+  "globalEnv": [
+    "CUSTOM_INFRA_URL",
+    "UPLOADTHING_URL",
+    "UPLOADTHING_SECRET",
+    "UPLOADTHING_TEST_SECRET",
+    "EXPO_PUBLIC_SERVER_ORIGIN"
+  ],
+  "globalPassThroughEnv": [
+    "VERCEL_URL",
+    "VERCEL_ENV",
+    "NODE",
+    "NODE_ENV",
+    "CI"
+  ],
+  "tasks": {
     "topo": {
       "dependsOn": ["^topo"]
     },

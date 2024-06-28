@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.6.0",
+  "version": "6.7.2",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -30,6 +30,16 @@
         "default": "./hooks/index.cjs"
       }
     },
+    "./native": {
+      "import": {
+        "types": "./native/index.d.ts",
+        "default": "./native/index.js"
+      },
+      "require": {
+        "types": "./native/index.d.cts",
+        "default": "./native/index.cjs"
+      }
+    },
     "./next-ssr-plugin": {
       "import": {
         "types": "./next-ssr-plugin/index.d.ts",
@@ -44,6 +54,7 @@
   "files": [
     "dist",
     "hooks",
+    "native",
     "next-ssr-plugin"
   ],
   "publishConfig": {
@@ -78,21 +89,21 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^20.11.21",
-    "@types/react": "18.2.78",
-    "@types/react-dom": "18.2.25",
+    "@types/node": "^20.14.0",
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.1.2",
+    "bunchee": "^5.2.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "next": "14.2.1",
-    "react": "18.2.0",
+    "next": "14.2.3",
+    "react": "18.3.1",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
     "wait-on": "^7.2.0",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "eslintConfig": {
     "root": true,

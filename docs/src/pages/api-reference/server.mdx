@@ -6,7 +6,7 @@ The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
 FROM THE RIGHT PLACE. The export name ensures your file routes' `middleware`
 functions are typed correctly.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect Platform","Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createUploadthing, type FileRouter } from "uploadthing/next";
@@ -48,6 +48,22 @@ functions are typed correctly.
     f({ ... })
       .middleware(({ req }) => {
         //           ^? req: Request
+      })
+    ```
+
+  </Tab>
+
+    <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/effect-platform";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req }) => {
+        //           ^? req: HttpServer.request.ServerRequest
       })
     ```
 
@@ -104,7 +120,7 @@ functions are typed correctly.
 
 ## File Routes
 
-File Routes are the routes you create with the helped instantiated by
+File Routes are the routes you create with the helper instantiated by
 `createUploadthing`. Think of them as the "endpoints" for what your users can
 upload. The keys in the object are the names of your endpoints.
 
@@ -305,7 +321,7 @@ function, although there are some extra configuration options available.
 
 > The names of the exported `createRouteHandler` is different prior to `v6.3`.
 
-<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+<Tabs items={["Next App Router", "Next Pages Dir", "SolidJS", "Effect Platform", "Express", "Fastify", "H3"]}>
   <Tab>
     ```ts
     import { createRouteHandler } from "uploadthing/next";
@@ -339,6 +355,29 @@ function, although there are some extra configuration options available.
       router: uploadRouter,
       config: { ... },
     });
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import * as Http from "@effect/platform/HttpServer";
+    import { createRouteHandler } from "uploadthing/effect-platform";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    const router = Http.router.empty.pipe(
+      /** Your other routes */
+      Http.router.mount("/api/uploadthing", createRouteHandler({
+        router: uploadRouter,
+        config: { ... },
+      })),
+    );
+
+    const app = router.pipe(
+      Http.server.serve(Http.middleware.logger),
+      Http.server.withLogAddress,
+    );
+
+    // ...
     ```
 
   </Tab>

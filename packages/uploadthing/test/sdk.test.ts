@@ -505,12 +505,16 @@ describe("updateACL", () => {
   });
 });
 
-describe.runIf(process.env.UPLOADTHING_TEST_SECRET)(
+const shouldRun =
+  typeof process.env.UPLOADTHING_TEST_SECRET === "string" &&
+  process.env.UPLOADTHING_TEST_SECRET.length > 0;
+
+describe.runIf(shouldRun)(
   "smoke test with live api",
   { timeout: 15_000 },
   () => {
     const utapi = new UTApi({
-      apiKey: process.env.UPLOADTHING_TEST_SECRET ?? "sk_foo",
+      apiKey: shouldRun ? process.env.UPLOADTHING_TEST_SECRET! : "sk_foo",
     });
 
     const localInfo = { totalBytes: 0, filesUploaded: 0 };

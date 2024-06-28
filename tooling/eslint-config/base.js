@@ -8,7 +8,6 @@ const config = {
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended-type-checked",
     "plugin:@typescript-eslint/stylistic-type-checked",
-    "prettier",
     "plugin:@uploadthing/recommended",
   ],
   env: {
@@ -24,7 +23,6 @@ const config = {
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/method-signature-style": ["error", "property"],
-    "turbo/no-undeclared-env-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },

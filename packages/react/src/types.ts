@@ -75,13 +75,34 @@ export type UseUploadthingProps<
    * to your server
    */
   headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+  /**
+   * An AbortSignal to cancel the upload
+   * Calling `abort()` on the parent AbortController will cause the
+   * upload to throw an `UploadAbortedError`. In a future version
+   * the function will not throw in favor of an `onUploadAborted` callback.
+   */
+  signal?: AbortSignal | undefined;
 };
 
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
-> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
+> = Omit<
+  UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+  /**
+   * Signal is omitted, component has its own AbortController
+   * If you need to control the interruption with more granularity,
+   * create your own component and pass your own signal to
+   * `useUploadThing`
+   * @see https://github.com/pingdotgg/uploadthing/pull/838#discussion_r1624189818
+   */
+  "signal"
+> & {
+  /**
+   * Called when the upload is aborted
+   */
+  onUploadAborted?: (() => MaybePromise<void>) | undefined;
   /**
    * The endpoint from your FileRouter to use for the upload
    */
