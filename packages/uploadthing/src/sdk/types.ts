@@ -36,6 +36,10 @@ export interface UTApiOptions {
    * @default "fileKey"
    */
   defaultKeyType?: "fileKey" | "customId";
+  /**
+   * URL override for the API server
+   */
+  apiUrl?: string;
 }
 
 export type UrlWithOverrides = {

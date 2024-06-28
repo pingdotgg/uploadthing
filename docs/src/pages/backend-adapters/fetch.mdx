@@ -142,12 +142,17 @@ export default app;
 ### Cloudflare Workers
 
 ```ts filename="src/worker.ts"
+import { Buffer } from "node:buffer";
+
 import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    // UploadThing internally uses Buffer from global scope
+    globalThis.Buffer = Buffer;
+
     const handlers = createRouteHandler({
       router: uploadRouter,
       config: {
@@ -165,6 +170,11 @@ export default {
           if (init && "cache" in init) delete init.cache;
           return fetch(url, init);
         },
+        /**
+         * UploadThing dev server leaves some promises hanging around that we
+         * need to wait for to prevent the worker from exiting prematurely.
+         */
+        handleDaemonPromise: (promise) => ctx.waitUntil(promise),
       },
     });
 
@@ -175,15 +185,7 @@ export default {
           return new Response("Method not allowed", { status: 405 });
         }
 
-        const response = await handlers[request.method](request);
-        if ("cleanup" in response && response.cleanup) {
-          /**
-           * UploadThing dev server leaves some promises hanging around that we
-           * need to wait for to prevent the worker from exiting prematurely.
-           */
-          ctx.waitUntil(response.cleanup);
-        }
-        return response;
+        return await handlers[request.method](request);
       }
       default: {
         return new Response("Not found", { status: 404 });

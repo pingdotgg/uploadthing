@@ -26,7 +26,8 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
        * secret and isDev flag manually.
        */
       token: env.UPLOADTHING_TOKEN,
-      isDev: env.ENVIRONMENT === "development",
+      isDev: env.ENVIRONMENT !== "development",
+      logLevel: "debug",
       /*
        * Cloudflare Workers doesn't support the cache option
        * so we need to remove it from the request init.
@@ -35,6 +36,8 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
         if (init && "cache" in init) delete init.cache;
         return fetch(url, init);
       },
+      handleDaemonPromise: (promise) => ctx.waitUntil(promise),
+      ingestUrl: "http://localhost:3001",
     },
   });
 
@@ -49,13 +52,6 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
       }
 
       const response = await handlers[request.method](request);
-      if ("cleanup" in response && response.cleanup) {
-        /**
-         * UploadThing dev server leaves some promises hanging around that we
-         * need to wait for to prevent the worker from exiting prematurely.
-         */
-        ctx.waitUntil(response.cleanup);
-      }
       return cors(response);
     }
     default: {

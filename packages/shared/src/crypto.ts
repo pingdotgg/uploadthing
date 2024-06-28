@@ -1,3 +1,4 @@
+import * as Encoding from "effect/Encoding";
 import * as Micro from "effect/Micro";
 
 import { UploadThingError } from "./error";
@@ -31,7 +32,9 @@ export const signPayload = (payload: string, secret: string) =>
       try: () =>
         crypto.subtle
           .sign(algorithm, signingKey, encoder.encode(payload))
-          .then((sig) => Buffer.from(sig).toString("hex")),
+          .then((arrayBuffer) =>
+            Encoding.encodeHex(new Uint8Array(arrayBuffer)),
+          ),
       catch: (e) => new UploadThingError({ code: "BAD_REQUEST", cause: e }),
     });
 
@@ -48,33 +51,20 @@ export const verifySignature = (
     if (!sig) return false;
 
     const encoder = new TextEncoder();
-    const signingKey = yield* Micro.tryPromise({
-      try: () =>
-        crypto.subtle.importKey(
-          "raw",
-          encoder.encode(secret),
-          algorithm,
-          false,
-          ["verify"],
-        ),
-      catch: (e) =>
-        new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "Invalid verification secret",
-          cause: e,
-        }),
-    });
-    return yield* Micro.promise(async () =>
-      crypto.subtle
-        .verify(
-          algorithm,
-          signingKey,
-          Uint8Array.from(Buffer.from(sig, "hex")),
-          encoder.encode(await payload),
-        )
-        .catch(() => false),
+
+    const secretBytes = encoder.encode(secret);
+    const signingKey = yield* Micro.promise(() =>
+      crypto.subtle.importKey("raw", secretBytes, algorithm, false, ["verify"]),
     );
-  });
+
+    const sigBytes = yield* Micro.fromEither(Encoding.decodeHex(sig));
+    const payloadBytes = encoder.encode(
+      yield* Micro.promise(() => Promise.resolve(payload)),
+    );
+    return yield* Micro.promise(async () =>
+      crypto.subtle.verify(algorithm, signingKey, sigBytes, payloadBytes),
+    );
+  }).pipe(Micro.orElseSucceed(() => false));
 
 export const generateKey = (
   file: FileProperties,

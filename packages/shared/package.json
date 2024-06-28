@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.4.2"
+    "effect": "3.4.5"
   },
   "devDependencies": {
     "@types/react": "18.3.3",

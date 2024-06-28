@@ -201,6 +201,11 @@ export type RouteHandlerConfig = {
     | "void"
     | "await"
     | ((promise: Promise<unknown>) => void);
+  /**
+   * URL override for the ingest server
+   * @internal
+   */
+  ingestUrl?: string;
 };
 
 export type RouteHandlerOptions<TRouter extends FileRouter> = {
