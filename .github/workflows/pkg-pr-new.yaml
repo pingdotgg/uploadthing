@@ -23,4 +23,4 @@ jobs:
 
       - name: Release
         if: steps.changed-packages.outputs.changed_packages != ''
-        run: pnpx pkg-pr-new publish ${{ steps.changed-packages.outputs.changed_packages }}
+        run: pnpx pkg-pr-new --compact publish ${{ steps.changed-packages.outputs.changed_packages }}
