@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 6.7.7
+
+### Patch Changes
+
+- [#871](https://github.com/pingdotgg/uploadthing/pull/871) [`47cece6`](https://github.com/pingdotgg/uploadthing/commit/47cece61d2a76fcdf498f15678528708c47e39b7) Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore: pin effect versions
+
 ## 6.7.6
 
 ### Patch Changes

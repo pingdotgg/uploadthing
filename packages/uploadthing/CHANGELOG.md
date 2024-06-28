@@ -1,5 +1,14 @@
 # uploadthing
 
+## 6.13.1
+
+### Patch Changes
+
+- [#871](https://github.com/pingdotgg/uploadthing/pull/871) [`47cece6`](https://github.com/pingdotgg/uploadthing/commit/47cece61d2a76fcdf498f15678528708c47e39b7) Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore: pin effect versions
+
+- Updated dependencies [[`47cece6`](https://github.com/pingdotgg/uploadthing/commit/47cece61d2a76fcdf498f15678528708c47e39b7)]:
+  - @uploadthing/shared@6.7.7
+
 ## 6.13.0
 
 ### Minor Changes
