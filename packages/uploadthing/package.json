@@ -139,7 +139,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "^0.68.9",
+    "@effect/schema": "0.68.9",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
@@ -147,7 +147,7 @@
     "std-env": "^3.7.0"
   },
   "devDependencies": {
-    "@effect/platform": "^0.58.9",
+    "@effect/platform": "0.58.9",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
