@@ -6,6 +6,6 @@ export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
   config: {
     logLevel: "debug",
-    handleDaemonPromise: "await",
+    // handleDaemonPromise: "await",
   },
 });
