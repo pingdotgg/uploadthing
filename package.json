@@ -38,7 +38,7 @@
     "@actions/github": "^6.0.0",
     "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.27.1",
-    "@effect/vitest": "^0.5.20",
+    "@effect/vitest": "0.5.18",
     "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
     "@manypkg/cli": "^0.21.3",
     "@playwright/test": "1.45.0",

@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.12.0",
+  "version": "6.13.1",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -139,8 +139,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "^0.58.9",
-    "@effect/schema": "^0.68.9",
+    "@effect/platform": "0.58.9",
+    "@effect/schema": "0.68.9",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
@@ -178,9 +178,6 @@
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
-    "@effect/platform": {
-      "optional": true
-    },
     "next": {
       "optional": true
     },

@@ -12,8 +12,9 @@
     "dev:effect": "NODE_ENV=development PORT=3003 tsx watch src/effect-platform.ts"
   },
   "dependencies": {
-    "@effect/platform": "^0.58.9",
-    "@effect/platform-node": "^0.53.8",
+    "@effect/platform": "0.58.9",
+    "@effect/platform-node": "0.53.8",
+    "@effect/schema": "0.68.9",
     "@elysiajs/cors": "^0.8.0",
     "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",
@@ -26,7 +27,7 @@
     "h3": "^1.11.1",
     "hono": "^4.0.8",
     "listhen": "^1.7.2",
-    "uploadthing": "6.12.0"
+    "uploadthing": "6.13.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240222.0",
