@@ -13,7 +13,7 @@
     "@radix-ui/react-popover": "^1.0.6",
     "@radix-ui/react-slot": "^1.0.2",
     "@tailwindcss/typography": "^0.5.10",
-    "@uploadthing/react": "^6.7.0",
+    "@uploadthing/react": "^6.7.1",
     "class-variance-authority": "^0.7.0",
     "cmdk": "^0.2.1",
     "lucide-react": "^0.368.0",
@@ -24,7 +24,7 @@
     "react-dom": "18.3.1",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.2.1",
-    "uploadthing": "6.13.0",
+    "uploadthing": "6.13.1",
     "use-debounce": "^9.0.3"
   },
   "devDependencies": {
