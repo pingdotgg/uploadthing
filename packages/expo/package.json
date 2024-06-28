@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/expo",
-  "version": "6.7.1",
+  "version": "6.7.2",
   "type": "module",
   "license": "MIT",
   "main": "dist/index.cjs",
