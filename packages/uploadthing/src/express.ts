@@ -76,8 +76,3 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
   return router;
 };
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const createUploadthingExpressHandler = createRouteHandler;

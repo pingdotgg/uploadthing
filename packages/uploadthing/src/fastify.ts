@@ -80,8 +80,3 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
   done();
 };
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const fastifyUploadthingPlugin = createRouteHandler;

@@ -31,8 +31,3 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     GET: (req: NextRequest) => handlers.GET(req),
   };
 };
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const createNextRouteHandler = createRouteHandler;

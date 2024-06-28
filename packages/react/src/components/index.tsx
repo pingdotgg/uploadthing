@@ -54,16 +54,3 @@ export const generateUploader = <TRouter extends FileRouter>(
   ) => <Uploader<TRouter, TEndpoint> {...(props as any)} url={url} />;
   return TypedUploader;
 };
-
-/**
- * @deprecated - use {@link generateUploadButton}, {@link generateUploadDropzone}, and {@link generateUploader} instead
- */
-export function generateComponents<TRouter extends FileRouter>(
-  initOpts?: GenerateTypedHelpersOptions,
-) {
-  return {
-    UploadButton: generateUploadButton<TRouter>(initOpts),
-    UploadDropzone: generateUploadDropzone<TRouter>(initOpts),
-    Uploader: generateUploader<TRouter>(initOpts),
-  };
-}

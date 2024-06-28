@@ -67,8 +67,3 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     return res.json(response.body);
   };
 };
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const createNextPageApiHandler = createRouteHandler;

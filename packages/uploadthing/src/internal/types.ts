@@ -186,6 +186,21 @@ export type RouteHandlerConfig = {
    * @default `globalThis.fetch`
    */
   fetch?: FetchEsque;
+  /**
+   * Set how UploadThing should handle the daemon promise before returning a response to the client.
+   * You can also provide a synchronous function that will be called before returning a response to
+   * the client. This can be useful for things like:
+   * -  [`@vercel/functions.waitUntil`](https://vercel.com/docs/functions/functions-api-reference#waituntil)
+   * - [`next/after`](https://nextjs.org/blog/next-15-rc#executing-code-after-a-response-with-nextafter-experimental)
+   * - or equivalent function from your serverless infrastructure provider that allows asynchronous streaming
+   * If deployed on a stateful server, you most likely want "void" to run the daemon in the background.
+   * @remarks - `"await"` is not allowed in development environments
+   * @default isDev === true ? "void" : "await"
+   */
+  handleDaemonPromise?:
+    | "void"
+    | "await"
+    | ((promise: Promise<unknown>) => void);
 };
 
 export type RouteHandlerOptions<TRouter extends FileRouter> = {
@@ -201,7 +216,7 @@ export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
 export type RequestHandlerSuccess = {
   success: true;
   body: UTEvents[keyof UTEvents]["out"] | null;
-  cleanup?: () => Promise<unknown>;
+  cleanup: () => Promise<unknown>;
 };
 export type RequestHandlerError = {
   success: false;
@@ -216,6 +231,13 @@ export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
   UploadThingError,
   HttpClient.HttpClient.Default
 >;
+
+export interface ResponseWithCleanup extends Response {
+  /**
+   * @deprecated Use {@link RouteHandlerConfig.handleDaemonPromise} instead
+   */
+  cleanup?: never;
+}
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker

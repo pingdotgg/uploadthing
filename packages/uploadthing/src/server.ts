@@ -1,14 +1,20 @@
+import * as Effect from "effect/Effect";
+
 import type { Json } from "@uploadthing/shared";
 import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/config";
+import { isDevelopment, UPLOADTHING_VERSION } from "./internal/config";
 import { formatError } from "./internal/error-formatter";
 import {
   buildPermissionsInfoHandler,
   buildRequestHandler,
   runRequestHandlerAsync,
 } from "./internal/handler";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
+import type {
+  FileRouter,
+  ResponseWithCleanup,
+  RouteHandlerOptions,
+} from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -23,11 +29,6 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
-export interface ResponseWithCleanup extends Response {
-  /** custom property where a Promise may be put that you can await in for example Cloudflare Workers */
-  cleanup?: Promise<unknown>;
-}
-
 /** @internal */
 export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   TRouter extends FileRouter,
@@ -40,6 +41,16 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     adapter,
   );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
+
+  const isDev = Effect.runSync(isDevelopment);
+  const handleDaemonPromise =
+    opts.config?.handleDaemonPromise ?? (isDev ? "void" : "await");
+  if (isDev && handleDaemonPromise === "await") {
+    throw new UploadThingError({
+      code: "INVALID_SERVER_CONFIG",
+      message: 'handleDaemonPromise: "await" is forbidden in development.',
+    });
+  }
 
   const POST = async (
     request: Request | { request: Request },
@@ -64,8 +75,15 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
     const res = Response.json(response.body, {
       headers: { "x-uploadthing-version": UPLOADTHING_VERSION },
     });
-    // @ts-expect-error - this is a custom property
-    res.cleanup = response.cleanup;
+
+    if (handleDaemonPromise === "void") {
+      // noop or `void response.cleanup()`?
+    } else if (handleDaemonPromise === "await") {
+      await response.cleanup();
+    } else if (typeof handleDaemonPromise === "function") {
+      handleDaemonPromise(response.cleanup());
+    }
+
     return res as ResponseWithCleanup;
   };
 
@@ -86,8 +104,3 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
 export const extractRouterConfig = (router: FileRouter) =>
   buildPermissionsInfoHandler({ router })();
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const createServerHandler = createRouteHandler;

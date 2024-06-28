@@ -5,7 +5,7 @@ import { createRouteHandler } from "uploadthing/server";
 import { uploadRouter } from "./router";
 
 export interface Env {
-  UPLOADTHING_SECRET: string;
+  UPLOADTHING_TOKEN: string;
   ENVIRONMENT?: string;
 }
 
@@ -25,7 +25,7 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
        * Since workers doesn't have envs on `process`. We need to pass
        * secret and isDev flag manually.
        */
-      uploadthingSecret: env.UPLOADTHING_SECRET,
+      token: env.UPLOADTHING_TOKEN,
       isDev: env.ENVIRONMENT === "development",
       /*
        * Cloudflare Workers doesn't support the cache option

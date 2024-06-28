@@ -20,16 +20,6 @@
         "default": "./dist/index.cjs"
       }
     },
-    "./hooks": {
-      "import": {
-        "types": "./hooks/index.d.ts",
-        "default": "./hooks/index.js"
-      },
-      "require": {
-        "types": "./hooks/index.d.cts",
-        "default": "./hooks/index.cjs"
-      }
-    },
     "./native": {
       "import": {
         "types": "./native/index.d.ts",
@@ -53,7 +43,6 @@
   },
   "files": [
     "dist",
-    "hooks",
     "native",
     "next-ssr-plugin"
   ],

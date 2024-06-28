@@ -66,8 +66,3 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     return response.body ?? { ok: true };
   });
 };
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const createH3EventHandler = createRouteHandler;
