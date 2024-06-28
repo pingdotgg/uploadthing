@@ -4,7 +4,7 @@
     "target": "esnext",
     "esModuleInterop": true,
     "strict": true,
-    "moduleResolution": "node",
+    "module": "Preserve",
     "skipLibCheck": true,
     "outDir": "dist"
   },
