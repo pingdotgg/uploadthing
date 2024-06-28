@@ -3,4 +3,4 @@
 "uploadthing": patch
 ---
 
-chore: bump effect versions
+chore: pin effect versions
