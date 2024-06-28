@@ -21,5 +21,6 @@ jobs:
       - name: Build
         run: pnpm turbo build --filter "./packages/*"
 
-      #TODO: would be nice to filter on acutually changed packages
-      - run: pnpx pkg-pr-new publish ${{ steps.changed-packages.outputs.changed_packages }}
+      - name: Release
+        if: steps.changed-packages.outputs.changed_packages != ''
+        run: pnpx pkg-pr-new publish ${{ steps.changed-packages.outputs.changed_packages }}
