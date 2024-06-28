@@ -26,7 +26,7 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
        * secret and isDev flag manually.
        */
       token: env.UPLOADTHING_TOKEN,
-      isDev: env.ENVIRONMENT !== "development",
+      isDev: env.ENVIRONMENT === "development",
       logLevel: "debug",
       /*
        * Cloudflare Workers doesn't support the cache option
@@ -37,7 +37,6 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
         return fetch(url, init);
       },
       handleDaemonPromise: (promise) => ctx.waitUntil(promise),
-      ingestUrl: "http://localhost:3001",
     },
   });
 

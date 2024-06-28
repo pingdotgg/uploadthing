@@ -73,6 +73,10 @@ export const ingestUrl = Effect.gen(function* () {
   const region = regions[0]; // Currently only support 1 region per app
 
   return yield* Config.string("ingestUrl").pipe(
-    Config.withDefault(`https://${region}.ingest.uploadthing.com`),
+    Config.withDefault(
+      region.includes("-dev")
+        ? `https://${region.replace("-dev", "")}.ingest-dev.uploadthing.com`
+        : `https://${region}.ingest.uploadthing.com`,
+    ),
   );
 });

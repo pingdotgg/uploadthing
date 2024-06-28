@@ -412,11 +412,18 @@ const handleUploadAction = Effect.gen(function* () {
       awaitServerData: routeOptions.awaitServerData,
     }),
     Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
-    Effect.tapErrorTag("ResponseError", ({ response: res }) =>
-      Effect.flatMap(res.json, (json) =>
-        Effect.logError(`Failed to register metadata (${res.status})`, json),
-      ),
-    ),
+    Effect.tapBoth({
+      onSuccess: (res) => Effect.logDebug("Registerred metadata", res),
+      onFailure: (err) =>
+        err._tag === "ResponseError"
+          ? Effect.flatMap(err.response.json, (json) =>
+              Effect.logError(
+                `Failed to register metadata (${err.response.status})`,
+                json,
+              ),
+            )
+          : Effect.logError("Failed to register metadata", err),
+    }),
   );
 
   // Send metadata to UT server (non blocking as a daemon)
