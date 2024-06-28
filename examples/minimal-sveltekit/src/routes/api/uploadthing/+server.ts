@@ -7,9 +7,7 @@ import { createRouteHandler } from "uploadthing/server";
 const { GET, POST } = createRouteHandler({
   router: uploadRouter,
   config: {
-    // callbackUrl: `http://localhost:${env.PORT ?? 5173}/api/uploadthing`,
-    uploadthingId: env.UPLOADTHING_APP_ID,
-    uploadthingSecret: env.UPLOADTHING_SECRET,
+    token: env.UPLOADTHING_TOKEN,
   },
 });
 

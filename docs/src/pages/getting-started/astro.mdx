@@ -85,7 +85,7 @@ import { ourFileRouter } from "~/server/uploadthing";
 export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
   config: {
-    uploadthingSecret: import.meta.env.UPLOADTHING_SECRET,
+    token: import.meta.env.UPLOADTHING_TOKEN,
   },
 });
 ```

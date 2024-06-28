@@ -17,8 +17,8 @@ npm install uploadthing @uploadthing/svelte
 
 ### Add env variables
 
-```bash
-UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+```bash copy
+UPLOADTHING_TOKEN=... # A token for interacting with the SDK
 ```
 
 <Callout type="warning">
@@ -102,7 +102,7 @@ import { createRouteHandler } from "uploadthing/server";
 const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
   config: {
-    uploadthingSecret: env.UPLOADTHING_SECRET,
+    token: env.UPLOADTHING_TOKEN,
   },
 });
 
