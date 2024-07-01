@@ -74,8 +74,7 @@ const handler = createRouteHandler({
   router,
   config: {
     token: testToken.encoded,
-    // @ts-expect-error - annoying to see error logs
-    logLevel: "silent",
+    logLevel: "None",
   },
 });
 

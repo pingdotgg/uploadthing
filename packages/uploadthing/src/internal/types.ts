@@ -1,7 +1,6 @@
-import type { HttpClient } from "@effect/platform";
 import type { Schema } from "@effect/schema/Schema";
 import * as S from "@effect/schema/Schema";
-import type * as Effect from "effect/Effect";
+import type * as LogLevel from "effect/LogLevel";
 
 import type {
   ErrorMessage,
@@ -14,7 +13,6 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
   FileUploadDataWithCustomId,
@@ -173,7 +171,7 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
 >;
 
 export type RouteHandlerConfig = {
-  logLevel?: LogLevel;
+  logLevel?: LogLevel.Literal;
   callbackUrl?: string;
   token?: string;
   /**
@@ -203,7 +201,6 @@ export type RouteHandlerConfig = {
     | ((promise: Promise<unknown>) => void);
   /**
    * URL override for the ingest server
-   * @internal
    */
   ingestUrl?: string;
 };
@@ -212,37 +209,6 @@ export type RouteHandlerOptions<TRouter extends FileRouter> = {
   router: TRouter;
   config?: RouteHandlerConfig;
 };
-
-export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
-  {
-    req: Request | Effect.Effect<Request, UploadThingError>;
-    middlewareArgs: TArgs;
-  };
-export type RequestHandlerSuccess = {
-  success: true;
-  body: UTEvents[keyof UTEvents]["out"] | null;
-  cleanup: () => Promise<unknown>;
-};
-export type RequestHandlerError = {
-  success: false;
-  error: UploadThingError;
-};
-export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
-
-export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
-  input: RequestHandlerInput<TArgs>,
-) => Effect.Effect<
-  RequestHandlerSuccess,
-  UploadThingError,
-  HttpClient.HttpClient.Default
->;
-
-export interface ResponseWithCleanup extends Response {
-  /**
-   * @deprecated Use {@link RouteHandlerConfig.handleDaemonPromise} instead
-   */
-  cleanup?: never;
-}
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker

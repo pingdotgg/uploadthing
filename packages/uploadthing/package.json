@@ -143,8 +143,8 @@
     "@effect/schema": "0.68.12",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "consola": "^3.2.3",
-    "effect": "3.4.5"
+    "effect": "3.4.5",
+    "effect-log": "^0.31.5"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",

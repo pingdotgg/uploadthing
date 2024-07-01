@@ -9,6 +9,7 @@ import {
   HttpServerResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
+import { PrettyLogger } from "effect-log";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -31,7 +32,7 @@ import {
 import * as pkgJson from "../../package.json";
 import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
-import { ConsolaLogger, withMinimalLogLevel } from "./logger";
+import { withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
 import {
@@ -55,6 +56,50 @@ import { ActionType, UploadThingHook, UTFiles } from "./types";
 export class MiddlewareArguments extends Context.Tag(
   "uploadthing/MiddlewareArguments",
 )<MiddlewareArguments, MiddlewareFnArgs<any, any, any>>() {}
+
+export const makeAdapterHandler = <Args extends any[]>(
+  makeMiddlewareArgs: (
+    ...args: Args
+  ) => Effect.Effect<MiddlewareFnArgs<any, any, any>>,
+  toRequest: (...args: Args) => Effect.Effect<Request>,
+  opts: RouteHandlerOptions<FileRouter>,
+  beAdapter: string,
+): ((...args: Args) => Promise<Response>) => {
+  const layer = Layer.mergeAll(
+    PrettyLogger.layer({ showFiberId: false }),
+    withMinimalLogLevel,
+    HttpClient.layer,
+    Layer.succeed(
+      HttpClient.Fetch,
+      opts.config?.fetch as typeof globalThis.fetch,
+    ),
+    Layer.setConfigProvider(configProvider(opts.config)),
+  );
+
+  const managed = ManagedRuntime.make(layer);
+
+  const handle = Effect.promise(() =>
+    managed.runtime().then(HttpApp.toWebHandlerRuntime),
+  );
+
+  const app = (...args: Args) =>
+    Effect.map(
+      Effect.promise(() =>
+        managed.runPromise(createRequestHandler(opts, beAdapter)),
+      ),
+      Effect.provideServiceEffect(
+        MiddlewareArguments,
+        makeMiddlewareArgs(...args),
+      ),
+    );
+
+  return async (...args: Args) =>
+    await handle.pipe(
+      Effect.ap(app(...args)),
+      Effect.ap(toRequest(...args)),
+      managed.runPromise,
+    );
+};
 
 export const createRequestHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
@@ -158,7 +203,14 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       Effect.catchTags({
         ParseError: (e) =>
           HttpServerResponse.json(
-            { message: "Invalid input", cause: e.message },
+            formatError(
+              new UploadThingError({
+                code: "BAD_REQUEST",
+                message: "Invalid input",
+                cause: e.message,
+              }),
+              opts.router,
+            ),
             { status: 400 },
           ),
         UploadThingError: (e) =>
@@ -175,49 +227,6 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       HttpRouter.use(appendResponseHeaders),
     );
   });
-
-export const makeAdapterHandler = <Args extends any[]>(
-  makeMiddlewareArgs: (
-    ...args: Args
-  ) => Effect.Effect<MiddlewareFnArgs<any, any, any>>,
-  toRequest: (...args: Args) => Effect.Effect<Request>,
-  opts: RouteHandlerOptions<FileRouter>,
-  beAdapter: string,
-): ((...args: Args) => Promise<Response>) => {
-  const layer = Layer.mergeAll(
-    // withMinimalLogLevel,
-    ConsolaLogger,
-    HttpClient.layer,
-    Layer.succeed(
-      HttpClient.Fetch,
-      opts.config?.fetch as typeof globalThis.fetch,
-    ),
-    Layer.setConfigProvider(configProvider(opts.config)),
-  );
-
-  const managed = ManagedRuntime.make(layer);
-
-  const _handle = managed.runtime().then(HttpApp.toWebHandlerRuntime);
-  const handle = Effect.promise(() => _handle);
-
-  const _app = createRequestHandler(opts, beAdapter).pipe(managed.runPromise);
-  const app = (...args: Args) =>
-    Effect.promise(() => _app).pipe(
-      Effect.map(
-        Effect.provideServiceEffect(
-          MiddlewareArguments,
-          makeMiddlewareArgs(...args),
-        ),
-      ),
-    );
-
-  return async (...args: Args) =>
-    await handle.pipe(
-      Effect.ap(app(...args)),
-      Effect.ap(toRequest(...args)),
-      managed.runPromise,
-    );
-};
 
 const handleCallbackRequest = (opts: {
   uploadable: Uploader<AnyParams>;
@@ -369,7 +378,7 @@ const runRouteMiddleware = (opts: {
     );
 
     return { metadata, filesWithCustomIds };
-  });
+  }).pipe(Effect.withSpan("runRouteMiddleware"));
 
 const handleUploadAction = (opts: {
   uploadable: Uploader<AnyParams>;

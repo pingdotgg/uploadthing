@@ -125,7 +125,7 @@ export const downloadFiles = (
           customId,
           lastModified: Date.now(),
         });
-      }),
+      }).pipe(Effect.withLogSpan("downloadFile")),
     { concurrency: 10 },
   );
 
@@ -164,7 +164,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       file,
       presigned: presigneds[i],
     }));
-  });
+  }).pipe(Effect.withLogSpan("getPresignedUrls"));
 
 const uploadFile = (
   input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
@@ -183,4 +183,4 @@ const uploadFile = (
       type: file.type,
       customId: file.customId ?? null,
     };
-  });
+  }).pipe(Effect.withLogSpan("uploadFile"));

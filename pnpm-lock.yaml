@@ -93,7 +93,7 @@ importers:
         version: link:../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nextra:
         specifier: ^2.13.2
         version: 2.13.4(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -287,7 +287,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -364,13 +364,13 @@ importers:
         version: 5.40.0(react@18.3.1)
       '@trpc/client':
         specifier: next
-        version: 11.0.0-rc.421(@trpc/server@11.0.0-rc.421)
+        version: 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
       '@trpc/react-query':
         specifier: next
-        version: 11.0.0-rc.421(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.421(@trpc/server@11.0.0-rc.421))(@trpc/server@11.0.0-rc.421)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 11.0.0-rc.433(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433))(@trpc/server@11.0.0-rc.433)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@trpc/server':
         specifier: next
-        version: 11.0.0-rc.421
+        version: 11.0.0-rc.433
       '@uploadthing/expo':
         specifier: 6.7.1
         version: link:../../packages/expo
@@ -482,7 +482,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -620,7 +620,7 @@ importers:
         version: 0.368.0(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-auth:
         specifier: 5.0.0-beta.19
         version: 5.0.0-beta.19(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
@@ -693,7 +693,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -748,7 +748,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -806,7 +806,7 @@ importers:
         version: 0.30.10(@cloudflare/workers-types@4.20240620.0)(@libsql/client@0.6.0)(@types/react@18.3.3)(bun-types@1.1.14)(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -867,7 +867,7 @@ importers:
         version: 0.30.10(@cloudflare/workers-types@4.20240620.0)(@libsql/client@0.6.0)(@types/react@18.3.3)(bun-types@1.1.14)(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -943,7 +943,7 @@ importers:
         version: 0.368.0(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -995,7 +995,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1026,7 +1026,7 @@ importers:
     dependencies:
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1057,7 +1057,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1272,7 +1272,7 @@ importers:
         version: 8.57.0
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1438,12 +1438,12 @@ importers:
       '@uploadthing/shared':
         specifier: workspace:*
         version: link:../shared
-      consola:
-        specifier: ^3.2.3
-        version: 3.2.3
       effect:
         specifier: 3.4.5
         version: 3.4.5
+      effect-log:
+        specifier: ^0.31.5
+        version: 0.31.5(effect@3.4.5)
     devDependencies:
       '@types/body-parser':
         specifier: ^1.19.5
@@ -1483,7 +1483,7 @@ importers:
         version: 1.11.1
       next:
         specifier: 14.2.3
-        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@parcel/watcher@2.4.1)(@types/node@20.14.0)(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(optionator@0.9.3)(rollup@4.18.0)(terser@5.19.2)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))(vue-tsc@2.0.14(typescript@5.5.2))
@@ -5652,22 +5652,22 @@ packages:
       '@tiptap/core': ^2.0.0
       '@tiptap/pm': ^2.0.0
 
-  '@trpc/client@11.0.0-rc.421':
-    resolution: {integrity: sha512-Ek9g3EEDtNeU35qgys1M7slyQPjwnAX2hHs8JN2AIXjDyfoT8n+ZdLJlJ8n9aoyGyO2LCFfbfyGhi3MeTMNHtg==}
+  '@trpc/client@11.0.0-rc.433':
+    resolution: {integrity: sha512-QEPk14HGP4GK/88v7ORChN2GYbaP+LlCJMQHPRFogaVzapSbiE6C6PN+vNTn8soD28SuPOu+lRzuJszLIuhIPA==}
     peerDependencies:
-      '@trpc/server': 11.0.0-rc.421+bce4f97e9
+      '@trpc/server': 11.0.0-rc.433+014d1c839
 
-  '@trpc/react-query@11.0.0-rc.421':
-    resolution: {integrity: sha512-xoArO8tqzDDch4e2aH48bZ0SVHMpstsuhk/S0qTB1WybMV1pjZDnT/9qDQY8WwEkaqdVk/7BXXf94Kg5REAIpA==}
+  '@trpc/react-query@11.0.0-rc.433':
+    resolution: {integrity: sha512-MXe9C7gq5eId6Uz30M24D11D1zc/As91WVhKZS8i3yb+VERxvRmhfWyGRn7BJvhCApZ/8eKlsKbWq48SrATlhg==}
     peerDependencies:
       '@tanstack/react-query': ^5.40.0
-      '@trpc/client': 11.0.0-rc.421+bce4f97e9
-      '@trpc/server': 11.0.0-rc.421+bce4f97e9
+      '@trpc/client': 11.0.0-rc.433+014d1c839
+      '@trpc/server': 11.0.0-rc.433+014d1c839
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
 
-  '@trpc/server@11.0.0-rc.421':
-    resolution: {integrity: sha512-4epaOaNiqvIDuyA7FfjthKcUvFMfFoKwBTUzhu/xLGeSClgLZ0v+1HWRPPWGFLMu1ZKLHMeeySXhnY4yLFlYjw==}
+  '@trpc/server@11.0.0-rc.433':
+    resolution: {integrity: sha512-Zfafmbcv9HS/MBhW4O1JSw0b5Dnvm5PkwPviy64hyG9vRoCDPOLYyxRQD7TBdcWecITvjcQjmcdIGjQyNBVNJw==}
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -7956,6 +7956,11 @@ packages:
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
+
+  effect-log@0.31.5:
+    resolution: {integrity: sha512-2nxwnpKNHiPbG/eVgGpKfxyoLfbdIyH6oeg4DJpOsl/1jhrFcn6fSAAW03SweFu68ikl4b5WbQscfAT0dcNHmA==}
+    peerDependencies:
+      effect: ^3.4.0
 
   effect@3.4.5:
     resolution: {integrity: sha512-aTonOH68tUttSdYwMkiuky3hjgn3pu7yInNaE8rU2EDKQ8zr9Me78WcvWBQKe4u1gvbBH77y9dAKqn98lNIfNQ==}
@@ -16122,7 +16127,7 @@ snapshots:
       '@clerk/clerk-sdk-node': 4.13.15(react@18.3.1)
       '@clerk/shared': 1.4.1(react@18.3.1)
       '@clerk/types': 3.64.0
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       path-to-regexp: 6.2.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -20080,19 +20085,19 @@ snapshots:
       '@tiptap/core': 2.3.2(@tiptap/pm@2.3.2)
       '@tiptap/pm': 2.3.2
 
-  '@trpc/client@11.0.0-rc.421(@trpc/server@11.0.0-rc.421)':
+  '@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433)':
     dependencies:
-      '@trpc/server': 11.0.0-rc.421
+      '@trpc/server': 11.0.0-rc.433
 
-  '@trpc/react-query@11.0.0-rc.421(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.421(@trpc/server@11.0.0-rc.421))(@trpc/server@11.0.0-rc.421)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@trpc/react-query@11.0.0-rc.433(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433))(@trpc/server@11.0.0-rc.433)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/react-query': 5.40.0(react@18.3.1)
-      '@trpc/client': 11.0.0-rc.421(@trpc/server@11.0.0-rc.421)
-      '@trpc/server': 11.0.0-rc.421
+      '@trpc/client': 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
+      '@trpc/server': 11.0.0-rc.433
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@trpc/server@11.0.0-rc.421': {}
+  '@trpc/server@11.0.0-rc.433': {}
 
   '@trysound/sax@0.2.0': {}
 
@@ -22800,6 +22805,10 @@ snapshots:
 
   ee-first@1.1.1: {}
 
+  effect-log@0.31.5(effect@3.4.5):
+    dependencies:
+      effect: 3.4.5
+
   effect@3.4.5: {}
 
   electron-to-chromium@1.4.746: {}
@@ -24098,7 +24107,7 @@ snapshots:
 
   geist@1.3.0(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   gensync@1.0.0-beta.2: {}
 
@@ -26961,7 +26970,7 @@ snapshots:
   next-auth@5.0.0-beta.19(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
     dependencies:
       '@auth/core': 0.32.0
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
 
   next-mdx-remote@4.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
@@ -26977,13 +26986,13 @@ snapshots:
 
   next-seo@6.1.0(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
   next-themes@0.2.1(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
@@ -26994,7 +27003,7 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 14.2.3
       '@swc/helpers': 0.5.5
@@ -27004,7 +27013,7 @@ snapshots:
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.1(react@18.3.1)
+      styled-jsx: 5.1.1(@babel/core@7.24.4)(react@18.3.1)
     optionalDependencies:
       '@next/swc-darwin-arm64': 14.2.3
       '@next/swc-darwin-x64': 14.2.3
@@ -27031,7 +27040,7 @@ snapshots:
       git-url-parse: 13.1.0
       intersection-observer: 0.12.2
       match-sorter: 6.3.1
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-seo: 6.1.0(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-themes: 0.2.1(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nextra: 2.13.4(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -27054,7 +27063,7 @@ snapshots:
       gray-matter: 4.0.3
       katex: 0.16.10
       lodash.get: 4.4.2
-      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-mdx-remote: 4.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       p-limit: 3.1.0
       react: 18.3.1
@@ -29922,10 +29931,12 @@ snapshots:
     dependencies:
       inline-style-parser: 0.1.1
 
-  styled-jsx@5.1.1(react@18.3.1):
+  styled-jsx@5.1.1(@babel/core@7.24.4)(react@18.3.1):
     dependencies:
       client-only: 0.0.1
       react: 18.3.1
+    optionalDependencies:
+      '@babel/core': 7.24.4
 
   stylehacks@6.1.1(postcss@8.4.38):
     dependencies:

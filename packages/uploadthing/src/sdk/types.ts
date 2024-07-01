@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 import type { Blob as NodeBlob } from "buffer";
+import type * as LogLevel from "effect/LogLevel";
 
 import type {
   ACL,
@@ -12,7 +13,6 @@ import type {
   Time,
 } from "@uploadthing/shared";
 
-import type { LogLevel } from "../internal/logger";
 import type { UploadedFileData } from "../types";
 
 export interface UTApiOptions {
@@ -29,7 +29,7 @@ export interface UTApiOptions {
   /**
    * @default "info"
    */
-  logLevel?: LogLevel;
+  logLevel?: LogLevel.Literal;
   /**
    * Set the default key type for file operations. Allows you to set your preferred filter
    * for file keys or custom identifiers without needing to specify it on every call.
@@ -40,6 +40,10 @@ export interface UTApiOptions {
    * URL override for the API server
    */
   apiUrl?: string;
+  /**
+   * URL override for the ingest server
+   */
+  ingestUrl?: string;
 }
 
 export type UrlWithOverrides = {

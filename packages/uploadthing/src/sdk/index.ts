@@ -4,6 +4,7 @@ import {
   HttpClientResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
+import { PrettyLogger } from "effect-log";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 
@@ -25,7 +26,7 @@ import {
   UPLOADTHING_VERSION,
   UTToken,
 } from "../internal/config";
-import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
+import { withMinimalLogLevel } from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -88,8 +89,8 @@ export class UTApi {
     signal?: AbortSignal,
   ) => {
     return program.pipe(
-      withMinimalLogLevel,
-      Effect.provide(ConsolaLogger),
+      Effect.provide(PrettyLogger.layer({ showFiberId: false })),
+      Effect.provide(withMinimalLogLevel),
       Effect.provide(HttpClient.layer),
       Effect.provide(
         Layer.effect(
