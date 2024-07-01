@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
 import { UPLOADTHING_VERSION } from "../src/internal/config";
-import { UTToken } from "../src/internal/shared-schemas";
+import { UploadThingToken } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/types";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
@@ -18,11 +18,11 @@ export const onErrorMock = vi.fn();
 
 const tokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
 export const testToken = {
-  encoded: S.encodeSync(UTToken)(tokenData),
+  encoded: S.encodeSync(UploadThingToken)(tokenData),
   decoded: tokenData,
 };
 
-export const createApiUrl = (slug: string, action?: ActionType) => {
+export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
   const url = new URL("http://localhost:3000");
   url.searchParams.set("slug", slug);
   if (action) url.searchParams.set("actionType", action);

@@ -1,20 +1,10 @@
-import type {
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-  RouteHandlerMethod,
-} from "fastify";
+import { HttpApp, HttpClient } from "@effect/platform";
+import * as Effect from "effect/Effect";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/config";
-import { formatError } from "./internal/error-formatter";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-  runRequestHandlerAsync,
-} from "./internal/handler";
+import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -38,45 +28,27 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
   done: (err?: Error) => void,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
-    opts,
-    "fastify",
+  const requestHandler = Effect.runSync(
+    createRequestHandler<TRouter>(opts, "fastify"),
   );
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const POST: RouteHandlerMethod = async (req, res) => {
-    const response = await runRequestHandlerAsync(
-      requestHandler,
-      {
-        req: toWebRequest(req),
-        middlewareArgs: { req, res, event: undefined },
-      },
-      opts.config,
-    );
-
-    if (response.success === false) {
-      void res
-        .status(getStatusCodeFromError(response.error))
-        .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
-        .send(formatError(response.error, opts.router));
-      return;
-    }
-
-    void res
-      .headers({ "x-uploadthing-version": UPLOADTHING_VERSION })
+  fastify.all("/api/uploadthing", async (req, res) => {
+    const request = await Effect.runPromise(toWebRequest(req));
+    const response = await HttpApp.toWebHandler(
+      requestHandler.pipe(
+        Effect.provideService(MiddlewareArguments, {
+          req: req,
+          res: res,
+          event: undefined,
+        } satisfies MiddlewareArgs),
+        Effect.provide(HttpClient.layer),
+      ),
+    )(request);
+    return res
+      .status(response.status)
+      .headers(Object.fromEntries(response.headers))
       .send(response.body);
-  };
-
-  const GET: RouteHandlerMethod = async (req, res) => {
-    void res
-      .status(200)
-      .headers({
-        "x-uploadthing-version": UPLOADTHING_VERSION,
-      })
-      .send(getBuildPerms());
-  };
-
-  fastify.post("/api/uploadthing", POST).get("/api/uploadthing", GET);
+  });
 
   done();
 };

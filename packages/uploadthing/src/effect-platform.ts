@@ -1,25 +1,9 @@
-import type { HttpBody } from "@effect/platform";
-import {
-  HttpClient,
-  HttpMiddleware,
-  HttpRouter,
-  HttpServerRequest,
-  HttpServerResponse,
-} from "@effect/platform";
+import { HttpRouter, HttpServerRequest } from "@effect/platform";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
 
-import { configProvider, UPLOADTHING_VERSION } from "./internal/config";
-import { formatError } from "./internal/error-formatter";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-} from "./internal/handler";
-import { ConsolaLogger, withMinimalLogLevel } from "./internal/logger";
-import { toWebRequest } from "./internal/to-web-request";
+import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -39,71 +23,18 @@ export const createUploadthing = <TErrorShape extends Json>(
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
-): HttpRouter.HttpRouter<HttpBody.HttpBodyError, never> => {
-  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
-    opts,
-    "effect-platform",
-  );
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
-
-  const appendUploadThingResponseHeaders = HttpMiddleware.make(
-    Effect.map(
-      HttpServerResponse.setHeader(
-        "x-uploadthing-version",
-        UPLOADTHING_VERSION,
-      ),
-    ),
+) => {
+  const requestHandler = Effect.runSync(
+    createRequestHandler<TRouter>(opts, "effect-platform"),
   );
 
-  return HttpRouter.empty.pipe(
-    HttpRouter.get("/", HttpServerResponse.json(getBuildPerms())),
-    HttpRouter.post(
-      "/",
-      Effect.flatMap(HttpServerRequest.HttpServerRequest, (req) =>
-        requestHandler({
-          /**
-           * TODO: Redo this to be more cross-platform
-           * This should handle WinterCG and Node.js runtimes,
-           * unsure about others...
-           * Perhaps we can use `Http.request.ServerRequest` internally?
-           */
-          req: Effect.if(req.source instanceof Request, {
-            onTrue: () => Effect.succeed(req.source as Request),
-            onFalse: () =>
-              req.json.pipe(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                Effect.flatMap((body) => toWebRequest(req.source as any, body)),
-                Effect.catchTags({
-                  RequestError: (error) =>
-                    new UploadThingError({
-                      code: "BAD_REQUEST",
-                      message: "INVALID_JSON",
-                      cause: error,
-                    }),
-                }),
-              ),
-          }),
-          middlewareArgs: { req, res: undefined, event: undefined },
-        }).pipe(
-          withMinimalLogLevel,
-          Effect.provide(ConsolaLogger),
-          Effect.provide(HttpClient.layer),
-          Effect.provide(
-            Layer.effect(
-              HttpClient.Fetch,
-              Effect.succeed(opts.config?.fetch as typeof globalThis.fetch),
-            ),
-          ),
-          Effect.provide(Layer.setConfigProvider(configProvider(opts.config))),
-          Effect.andThen((response) => HttpServerResponse.json(response.body)),
-          Effect.catchTag("UploadThingError", (error) =>
-            HttpServerResponse.json(formatError(error, opts.router), {
-              status: getStatusCodeFromError(error),
-            }),
-          ),
-        ),
-      ),
-    ),
-    HttpRouter.use(appendUploadThingResponseHeaders),
+  return HttpRouter.provideServiceEffect(
+    requestHandler,
+    MiddlewareArguments,
+    Effect.map(HttpServerRequest.HttpServerRequest, (serverRequest) => ({
+      req: serverRequest,
+      res: undefined,
+      event: undefined,
+    })),
   );
 };

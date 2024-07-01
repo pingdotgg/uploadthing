@@ -20,7 +20,7 @@ const createAPIRequestUrl = (config: {
    */
   url: URL;
   slug: string;
-  actionType: ActionType;
+  actionType: typeof ActionType.Type;
 }) => {
   const url = new URL(config.url);
 

@@ -8,7 +8,7 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UTToken } from "./shared-schemas";
+import { UploadThingToken } from "./shared-schemas";
 
 export { version as UPLOADTHING_VERSION } from "../../package.json";
 
@@ -44,13 +44,13 @@ export const configProvider = (options: unknown) =>
     ConfigProvider.orElse(() => envProvider),
   );
 
-export const isDevelopment = Config.boolean("isDev").pipe(
+export const IsDevelopment = Config.boolean("isDev").pipe(
   Config.withDefault(
     typeof process !== "undefined" && process.env.NODE_ENV === "development",
   ),
 );
 
-export const utToken = S.Config("token", UTToken).pipe(
+export const UTToken = S.Config("token", UploadThingToken).pipe(
   Effect.catchTags({
     ConfigError: (e) =>
       new UploadThingError({
@@ -64,12 +64,12 @@ export const utToken = S.Config("token", UTToken).pipe(
   }),
 );
 
-export const apiUrl = Config.string("apiUrl").pipe(
+export const ApiUrl = Config.string("apiUrl").pipe(
   Config.withDefault("https://api.uploadthing.com"),
 );
 
-export const ingestUrl = Effect.gen(function* () {
-  const { regions } = yield* utToken;
+export const IngestUrl = Effect.gen(function* () {
+  const { regions } = yield* UTToken;
   const region = regions[0]; // Currently only support 1 region per app
 
   return yield* Config.string("ingestUrl").pipe(

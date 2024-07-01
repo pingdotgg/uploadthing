@@ -18,7 +18,7 @@ import type {
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 
-import { ingestUrl, utToken } from "../internal/config";
+import { IngestUrl, UTToken } from "../internal/config";
 import { uploadWithoutProgress } from "../internal/upload.server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
@@ -135,8 +135,8 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
 
     yield* Effect.logDebug("Generating presigned URLs for files", files);
 
-    const { apiKey, appId } = yield* utToken;
-    const baseUrl = yield* ingestUrl;
+    const { apiKey, appId } = yield* UTToken;
+    const baseUrl = yield* IngestUrl;
 
     const presigneds = yield* Effect.forEach(files, (file) =>
       Effect.gen(function* () {

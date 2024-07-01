@@ -36,7 +36,7 @@ export const uploadRouter = {
   })
     .middleware(({ req, files }) => {
       // Check some condition based on the incoming requrest
-      req;
+      console.log("Request", req);
       //^?
       // if (!req.headers.get("x-some-header")) {
       //   throw new Error("x-some-header is required");

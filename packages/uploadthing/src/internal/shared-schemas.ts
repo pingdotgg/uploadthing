@@ -16,7 +16,7 @@ const DecodeString = S.transform(S.Uint8ArrayFromSelf, S.String, {
   encode: (data) => new TextEncoder().encode(data),
 });
 
-export const UTToken = S.Base64.pipe(
+export const UploadThingToken = S.Base64.pipe(
   S.compose(DecodeString),
   S.compose(
     S.parseJson(

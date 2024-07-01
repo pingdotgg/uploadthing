@@ -7,8 +7,8 @@ import { describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-import { configProvider, ingestUrl, utToken } from "./config";
-import { UTToken } from "./shared-schemas";
+import { configProvider, IngestUrl, UTToken } from "./config";
+import { UploadThingToken } from "./shared-schemas";
 
 const app1TokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
 const app2TokenData = { apiKey: "sk_bar", appId: "app-2", regions: ["dub1"] };
@@ -16,7 +16,7 @@ const app2TokenData = { apiKey: "sk_bar", appId: "app-2", regions: ["dub1"] };
 describe("utToken", () => {
   it.effect("fails if no token is provided as env", () =>
     Effect.gen(function* () {
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
@@ -37,7 +37,7 @@ describe("utToken", () => {
     Effect.gen(function* () {
       process.env.UPLOADTHING_TOKEN = "some-token-that-is-not-a-token";
 
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
@@ -58,9 +58,10 @@ describe("utToken", () => {
 
   it.effect("succeeds if token is provided as env", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UTToken)(app1TokenData);
+      process.env.UPLOADTHING_TOKEN =
+        yield* S.encode(UploadThingToken)(app1TokenData);
 
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
@@ -78,9 +79,9 @@ describe("utToken", () => {
       globalThis.process.env = {};
 
       import.meta.env.UPLOADTHING_TOKEN =
-        yield* S.encode(UTToken)(app1TokenData);
+        yield* S.encode(UploadThingToken)(app1TokenData);
 
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
@@ -94,7 +95,7 @@ describe("utToken", () => {
 
   it.effect("fails if no token is provided as option", () =>
     Effect.gen(function* () {
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(
           Layer.setConfigProvider(configProvider({ noToken: "here" })),
         ),
@@ -117,7 +118,7 @@ describe("utToken", () => {
     Effect.gen(function* () {
       const badToken = "some-token";
 
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(
           Layer.setConfigProvider(configProvider({ token: badToken })),
         ),
@@ -138,9 +139,9 @@ describe("utToken", () => {
 
   it.effect("succeeds if token is provided as option", () =>
     Effect.gen(function* () {
-      const testTokenStr = yield* S.encode(UTToken)(app1TokenData);
+      const testTokenStr = yield* S.encode(UploadThingToken)(app1TokenData);
 
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(
           Layer.setConfigProvider(configProvider({ token: testTokenStr })),
         ),
@@ -153,11 +154,12 @@ describe("utToken", () => {
 
   it.effect("options take precedence over env", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UTToken)(app1TokenData);
+      process.env.UPLOADTHING_TOKEN =
+        yield* S.encode(UploadThingToken)(app1TokenData);
 
-      const token2Str = yield* S.encode(UTToken)(app2TokenData);
+      const token2Str = yield* S.encode(UploadThingToken)(app2TokenData);
 
-      const token = yield* utToken.pipe(
+      const token = yield* UTToken.pipe(
         Effect.provide(
           Layer.setConfigProvider(configProvider({ token: token2Str })),
         ),
@@ -174,10 +176,11 @@ describe("utToken", () => {
 describe("ingest url infers correctly", () => {
   it.effect("takes from env if provided", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UTToken)(app1TokenData);
+      process.env.UPLOADTHING_TOKEN =
+        yield* S.encode(UploadThingToken)(app1TokenData);
       process.env.UPLOADTHING_INGEST_URL = "http://localhost:1234";
 
-      const url = yield* ingestUrl.pipe(
+      const url = yield* IngestUrl.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
@@ -191,9 +194,10 @@ describe("ingest url infers correctly", () => {
 
   it.effect("infers from token region if no env is provided", () =>
     Effect.gen(function* () {
-      process.env.UPLOADTHING_TOKEN = yield* S.encode(UTToken)(app1TokenData);
+      process.env.UPLOADTHING_TOKEN =
+        yield* S.encode(UploadThingToken)(app1TokenData);
 
-      const url = yield* ingestUrl.pipe(
+      const url = yield* IngestUrl.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );

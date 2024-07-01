@@ -74,9 +74,3 @@ export const parseResponseJson = (
     Micro.map(({ json }) => json),
     Micro.withTrace("parseJson"),
   );
-
-export const parseRequestJson = (req: Request) =>
-  Micro.tryPromise({
-    try: () => req.json() as Promise<unknown>,
-    catch: (error) => new InvalidJsonError({ error, input: req.url }),
-  }).pipe(Micro.withTrace("parseRequestJson"));

@@ -70,7 +70,7 @@ const router = {
     .onUploadComplete(uploadCompleteMock),
 };
 
-const handlers = createRouteHandler({
+const handler = createRouteHandler({
   router,
   config: {
     token: testToken.encoded,
@@ -81,7 +81,7 @@ const handlers = createRouteHandler({
 
 describe("errors for invalid request input", () => {
   it("404s for invalid slugs", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("i-dont-exist", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -99,7 +99,7 @@ describe("errors for invalid request input", () => {
   });
 
   it("400s for invalid action type", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       // @ts-expect-error - invalid is not a valid action type
       new Request(createApiUrl("imageUploader", "invalid"), {
         method: "POST",
@@ -121,7 +121,7 @@ describe("errors for invalid request input", () => {
 
 describe("file route config", () => {
   it("blocks unmatched file types", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -140,7 +140,7 @@ describe("file route config", () => {
   });
 
   it("blocks for too big files", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -162,7 +162,7 @@ describe("file route config", () => {
   });
 
   it("blocks for too many files", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -185,7 +185,7 @@ describe("file route config", () => {
   });
 
   it("blocks for too few files", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withMinInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -207,7 +207,7 @@ describe("file route config", () => {
 
 describe(".input()", () => {
   it("blocks when input is missing", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -230,7 +230,7 @@ describe(".input()", () => {
   });
 
   it("blocks when input doesn't match schema", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -256,7 +256,7 @@ describe(".input()", () => {
   });
 
   it("forwards input to middleware", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -278,7 +278,7 @@ describe(".input()", () => {
 
 describe(".middleware()", () => {
   it("forwards files to middleware", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -299,7 +299,7 @@ describe(".middleware()", () => {
   });
 
   it("early exits if middleware throws", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("middlewareThrows", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -345,7 +345,7 @@ describe(".onUploadComplete()", () => {
       signPayload(payload, testToken.decoded.apiKey),
     );
 
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
@@ -386,7 +386,7 @@ describe(".onUploadComplete()", () => {
       }),
     });
 
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
@@ -420,7 +420,7 @@ describe(".onUploadComplete()", () => {
       signPayload(payload, "sk_live_badkey"),
     );
 
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {

@@ -122,7 +122,7 @@ describe("adapters:server", async () => {
   };
 
   it("gets Request in middleware args", async ({ db }) => {
-    const handlers = createRouteHandler({
+    const handler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
     });
@@ -134,7 +134,7 @@ describe("adapters:server", async () => {
         files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
-    const res = await handlers.POST(req);
+    const res = await handler(req);
     expect(res.status).toBe(200);
 
     expect(middlewareMock).toHaveBeenCalledOnce();

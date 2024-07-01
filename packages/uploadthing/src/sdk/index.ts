@@ -20,10 +20,10 @@ import {
 } from "@uploadthing/shared";
 
 import {
-  apiUrl,
+  ApiUrl,
   configProvider,
   UPLOADTHING_VERSION,
-  utToken,
+  UTToken,
 } from "../internal/config";
 import { ConsolaLogger, withMinimalLogLevel } from "../internal/logger";
 import type {
@@ -62,8 +62,8 @@ export class UTApi {
     responseSchema: S.Schema<T, any>,
   ) =>
     Effect.gen(this, function* () {
-      const { apiKey } = yield* utToken;
-      const baseUrl = yield* apiUrl;
+      const { apiKey } = yield* UTToken;
+      const baseUrl = yield* ApiUrl;
       const httpClient = yield* HttpClient.HttpClient;
 
       return yield* HttpClientRequest.post(pathname).pipe(

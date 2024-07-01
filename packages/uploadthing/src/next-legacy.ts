@@ -1,17 +1,10 @@
-// This node import should be fine since it's available in both node and edge runtimes
-// https://vercel.com/docs/functions/edge-functions/edge-runtime#compatible-node.js-modules
 import type { NextApiRequest, NextApiResponse } from "next";
+import { HttpApp, HttpClient } from "@effect/platform";
+import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/config";
-import { formatError } from "./internal/error-formatter";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-  runRequestHandlerAsync,
-} from "./internal/handler";
+import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -33,37 +26,26 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
-    opts,
-    "nextjs-pages",
+  const requestHandler = Effect.runSync(
+    createRequestHandler<TRouter>(opts, "nextjs-app"),
   );
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    // Return valid endpoints
-    if (req.method === "GET") {
-      const perms = getBuildPerms();
-      res.status(200).json(perms);
-      return;
+    const request = await Effect.runPromise(toWebRequest(req));
+    const response = await HttpApp.toWebHandler(
+      requestHandler.pipe(
+        Effect.provideService(MiddlewareArguments, {
+          req: req,
+          res: res,
+          event: undefined,
+        } satisfies MiddlewareArgs),
+        Effect.provide(HttpClient.layer),
+      ),
+    )(request);
+    res.status(response.status);
+    for (const [name, value] of response.headers) {
+      res.setHeader(name, value);
     }
-
-    const response = await runRequestHandlerAsync(
-      requestHandler,
-      {
-        req: toWebRequest(req),
-        middlewareArgs: { req, res, event: undefined },
-      },
-      opts.config,
-    );
-
-    res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-
-    if (response.success === false) {
-      res.status(getStatusCodeFromError(response.error));
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      return res.json(formatError(response.error, opts.router));
-    }
-
     return res.json(response.body);
   };
 };

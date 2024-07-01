@@ -1,3 +1,4 @@
+import { HttpApp, HttpClient } from "@effect/platform";
 import * as Effect from "effect/Effect";
 import type {
   Request as ExpressRequest,
@@ -6,15 +7,8 @@ import type {
 import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/config";
-import { formatError } from "./internal/error-formatter";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-  runRequestHandlerAsync,
-} from "./internal/handler";
+import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
 import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -36,43 +30,29 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
-    opts,
-    "express",
+  const requestHandler = Effect.runSync(
+    createRequestHandler<TRouter>(opts, "express"),
   );
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
-  const router = ExpressRouter();
 
   // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  router.post("/", async (req, res) => {
-    const response = await runRequestHandlerAsync(
-      requestHandler,
-      {
-        req: getPostBody({ req }).pipe(
-          Effect.andThen((body) => toWebRequest(req, body)),
-        ),
-        middlewareArgs: { req, res, event: undefined },
-      },
-      opts.config,
+  return ExpressRouter().all("/", async (req, res) => {
+    const request = await Effect.runPromise(
+      Effect.flatMap(getPostBody({ req }), (body) => toWebRequest(req, body)),
     );
-
-    if (response.success === false) {
-      res.status(getStatusCodeFromError(response.error));
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(JSON.stringify(formatError(response.error, opts.router)));
-      return;
+    const response = await HttpApp.toWebHandler(
+      requestHandler.pipe(
+        Effect.provideService(MiddlewareArguments, {
+          req: req,
+          res: res,
+          event: undefined,
+        } satisfies MiddlewareArgs),
+        Effect.provide(HttpClient.layer),
+      ),
+    )(request);
+    res.status(response.status);
+    for (const [name, value] of response.headers) {
+      res.setHeader(name, value);
     }
-
-    res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-    res.send(JSON.stringify(response.body));
+    res.send(response.body);
   });
-
-  router.get("/", (_req, res) => {
-    res.status(200);
-    res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-
-    res.send(JSON.stringify(getBuildPerms()));
-  });
-
-  return router;
 };

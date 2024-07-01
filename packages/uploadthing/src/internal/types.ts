@@ -1,6 +1,6 @@
 import type { HttpClient } from "@effect/platform";
 import type { Schema } from "@effect/schema/Schema";
-import type * as S from "@effect/schema/Schema";
+import * as S from "@effect/schema/Schema";
 import type * as Effect from "effect/Effect";
 
 import type {
@@ -262,20 +262,13 @@ export type inferErrorShape<TRouter extends FileRouter> =
 /**
  * Valid options for the `?actionType` query param
  */
-export const VALID_ACTION_TYPES = ["upload"] as const;
-export type ActionType = (typeof VALID_ACTION_TYPES)[number];
-export const isActionType = (input: unknown): input is ActionType =>
-  typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
+export const ActionType = S.Literal("upload");
 
 /**
  * Valid options for the `uploadthing-hook` header
  * for requests coming from UT server
  */
-export const VALID_UT_HOOKS = ["callback"] as const;
-export type UploadThingHook = (typeof VALID_UT_HOOKS)[number];
-export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
-  typeof input === "string" &&
-  VALID_UT_HOOKS.includes(input as UploadThingHook);
+export const UploadThingHook = S.Literal("callback");
 
 /**
  * Map actionType to the required payload for that action
