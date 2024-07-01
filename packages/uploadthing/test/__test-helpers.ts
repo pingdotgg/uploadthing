@@ -16,7 +16,11 @@ export const middlewareMock = vi.fn();
 export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
 
-const tokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
+const tokenData = {
+  apiKey: "sk_foo",
+  appId: "app-1",
+  regions: ["fra1"] as const,
+};
 export const testToken = {
   encoded: S.encodeSync(UploadThingToken)(tokenData),
   decoded: tokenData,

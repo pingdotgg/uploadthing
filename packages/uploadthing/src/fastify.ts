@@ -1,10 +1,9 @@
-import { HttpApp, HttpClient } from "@effect/platform";
 import * as Effect from "effect/Effect";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import type { Json } from "@uploadthing/shared";
 
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { makeThing } from "./internal/handler";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -28,22 +27,15 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
   done: (err?: Error) => void,
 ) => {
-  const requestHandler = Effect.runSync(
-    createRequestHandler<TRouter>(opts, "fastify"),
+  const handler = makeThing<[FastifyRequest, FastifyReply]>(
+    (req, res) => Effect.succeed({ req, res, event: undefined }),
+    (req) => toWebRequest(req),
+    opts,
+    "fastify",
   );
 
   fastify.all("/api/uploadthing", async (req, res) => {
-    const request = await Effect.runPromise(toWebRequest(req));
-    const response = await HttpApp.toWebHandler(
-      requestHandler.pipe(
-        Effect.provideService(MiddlewareArguments, {
-          req: req,
-          res: res,
-          event: undefined,
-        } satisfies MiddlewareArgs),
-        Effect.provide(HttpClient.layer),
-      ),
-    )(request);
+    const response = await handler(req, res);
     return res
       .status(response.status)
       .headers(Object.fromEntries(response.headers))

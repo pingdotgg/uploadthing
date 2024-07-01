@@ -1,17 +1,31 @@
+import { after } from "node:test";
 import * as S from "@effect/schema/Schema";
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
-import { describe, expect } from "vitest";
+import { afterEach, beforeEach, describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
 import { configProvider, IngestUrl, UTToken } from "./config";
 import { UploadThingToken } from "./shared-schemas";
 
-const app1TokenData = { apiKey: "sk_foo", appId: "app-1", regions: ["fra1"] };
-const app2TokenData = { apiKey: "sk_bar", appId: "app-2", regions: ["dub1"] };
+const app1TokenData = {
+  apiKey: "sk_foo",
+  appId: "app-1",
+  regions: ["fra1"] as const,
+};
+const app2TokenData = {
+  apiKey: "sk_bar",
+  appId: "app-2",
+  regions: ["dub1"] as const,
+};
+
+beforeEach(() => {
+  process.env = {} as any;
+  // import.meta.env = {} as any;
+});
 
 describe("utToken", () => {
   it.effect("fails if no token is provided as env", () =>
@@ -51,8 +65,6 @@ describe("utToken", () => {
           }),
         ),
       );
-
-      delete process.env.UPLOADTHING_TOKEN;
     }),
   );
 
@@ -67,17 +79,11 @@ describe("utToken", () => {
       );
 
       expect(token).toEqual(Exit.succeed(app1TokenData));
-
-      delete process.env.UPLOADTHING_TOKEN;
     }),
   );
 
   it.effect("with import.meta.env", () =>
     Effect.gen(function* () {
-      const processCopy = { ...process.env };
-      // @ts-expect-error - fine...
-      globalThis.process.env = {};
-
       import.meta.env.UPLOADTHING_TOKEN =
         yield* S.encode(UploadThingToken)(app1TokenData);
 
@@ -89,7 +95,6 @@ describe("utToken", () => {
       expect(token).toEqual(Exit.succeed(app1TokenData));
 
       delete import.meta.env.UPLOADTHING_TOKEN;
-      process.env = processCopy;
     }),
   );
 
@@ -167,8 +172,6 @@ describe("utToken", () => {
       );
 
       expect(token).toEqual(Exit.succeed(app2TokenData));
-
-      delete process.env.UPLOADTHING_TOKEN;
     }),
   );
 });
@@ -185,10 +188,7 @@ describe("ingest url infers correctly", () => {
         Effect.exit,
       );
 
-      expect(url).toEqual(Exit.succeed("http://localhost:1234"));
-
-      delete process.env.UPLOADTHING_TOKEN;
-      delete process.env.UPLOADTHING_INGEST_URL;
+      expect(url).toEqual(Exit.succeed(new URL("http://localhost:1234")));
     }),
   );
 
@@ -202,9 +202,9 @@ describe("ingest url infers correctly", () => {
         Effect.exit,
       );
 
-      expect(url).toEqual(Exit.succeed("https://fra1.ingest.uploadthing.com"));
-
-      delete process.env.UPLOADTHING_TOKEN;
+      expect(url).toEqual(
+        Exit.succeed(new URL("https://fra1.ingest.uploadthing.com")),
+      );
     }),
   );
 });

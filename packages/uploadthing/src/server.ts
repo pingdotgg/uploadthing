@@ -1,10 +1,9 @@
-import { HttpApp, HttpClient } from "@effect/platform";
 import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { makeThing } from "./internal/handler";
 import { extractRouterConfig as extractEffect } from "./internal/route-config";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -24,23 +23,12 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const requestHandler = Effect.runSync(
-    createRequestHandler<TRouter>(opts, "server"),
+  return makeThing<[Request]>(
+    (req) => Effect.succeed({ req, res: undefined, event: undefined }),
+    (req) => Effect.succeed(req),
+    opts,
+    "server",
   );
-
-  return (req: Request | { request: Request }) => {
-    const request = req instanceof Request ? req : req.request;
-    return HttpApp.toWebHandler(
-      requestHandler.pipe(
-        Effect.provideService(MiddlewareArguments, {
-          req: request,
-          res: undefined,
-          event: undefined,
-        } satisfies MiddlewareArgs),
-        Effect.provide(HttpClient.layer),
-      ),
-    )(request);
-  };
 };
 
 export const extractRouterConfig = (router: FileRouter) =>

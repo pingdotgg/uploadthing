@@ -1,10 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { HttpApp, HttpClient } from "@effect/platform";
 import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
 
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { makeThing } from "./internal/handler";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -26,22 +25,15 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const requestHandler = Effect.runSync(
-    createRequestHandler<TRouter>(opts, "nextjs-app"),
+  const handler = makeThing<[NextApiRequest, NextApiResponse]>(
+    (req, res) => Effect.succeed({ req, res, event: undefined }),
+    (req) => toWebRequest(req),
+    opts,
+    "nextjs-pages",
   );
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const request = await Effect.runPromise(toWebRequest(req));
-    const response = await HttpApp.toWebHandler(
-      requestHandler.pipe(
-        Effect.provideService(MiddlewareArguments, {
-          req: req,
-          res: res,
-          event: undefined,
-        } satisfies MiddlewareArgs),
-        Effect.provide(HttpClient.layer),
-      ),
-    )(request);
+    const response = await handler(req, res);
     res.status(response.status);
     for (const [name, value] of response.headers) {
       res.setHeader(name, value);

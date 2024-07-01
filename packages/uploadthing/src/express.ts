@@ -1,4 +1,3 @@
-import { HttpApp, HttpClient } from "@effect/platform";
 import * as Effect from "effect/Effect";
 import type {
   Request as ExpressRequest,
@@ -8,7 +7,7 @@ import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
 
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { makeThing } from "./internal/handler";
 import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -30,29 +29,26 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  const requestHandler = Effect.runSync(
-    createRequestHandler<TRouter>(opts, "express"),
+  const thing = makeThing<[ExpressRequest, ExpressResponse]>(
+    (req, res) => Effect.succeed({ req, res, event: undefined }),
+    (req) =>
+      Effect.flatMap(getPostBody({ req }), (body) =>
+        toWebRequest(req, body),
+      ).pipe(Effect.orDie),
+    opts,
+    "express",
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  return ExpressRouter().all("/", async (req, res) => {
-    const request = await Effect.runPromise(
-      Effect.flatMap(getPostBody({ req }), (body) => toWebRequest(req, body)),
-    );
-    const response = await HttpApp.toWebHandler(
-      requestHandler.pipe(
-        Effect.provideService(MiddlewareArguments, {
-          req: req,
-          res: res,
-          event: undefined,
-        } satisfies MiddlewareArgs),
-        Effect.provide(HttpClient.layer),
-      ),
-    )(request);
-    res.status(response.status);
-    for (const [name, value] of response.headers) {
-      res.setHeader(name, value);
-    }
-    res.send(response.body);
-  });
+  return ExpressRouter().all(
+    "/",
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    async (req, res) => {
+      const response = await thing(req, res);
+      res.status(response.status);
+      for (const [name, value] of response.headers) {
+        res.setHeader(name, value);
+      }
+      res.send(response.body);
+    },
+  );
 };

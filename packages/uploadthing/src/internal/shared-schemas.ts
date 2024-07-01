@@ -23,7 +23,7 @@ export const UploadThingToken = S.Base64.pipe(
       S.Struct({
         apiKey: S.String.pipe(S.startsWith("sk_")),
         appId: S.String,
-        regions: S.Array(S.String),
+        regions: S.NonEmptyArray(S.String),
       }),
     ),
   ),

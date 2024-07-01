@@ -1,11 +1,10 @@
-import { HttpApp, HttpClient } from "@effect/platform";
 import * as Effect from "effect/Effect";
 import type { H3Event } from "h3";
 import { defineEventHandler, toWebRequest } from "h3";
 
 import type { Json } from "@uploadthing/shared";
 
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { makeThing } from "./internal/handler";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -22,21 +21,12 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const requestHandler = Effect.runSync(
-    createRequestHandler<TRouter>(opts, "h3"),
+  const handler = makeThing<[H3Event]>(
+    (event) => Effect.succeed({ req: undefined, res: undefined, event }),
+    (event) => Effect.succeed(toWebRequest(event)),
+    opts,
+    "h3",
   );
 
-  return defineEventHandler(async (event) => {
-    const request = toWebRequest(event);
-    return HttpApp.toWebHandler(
-      requestHandler.pipe(
-        Effect.provideService(MiddlewareArguments, {
-          req: undefined,
-          res: undefined,
-          event,
-        } satisfies MiddlewareArgs),
-        Effect.provide(HttpClient.layer),
-      ),
-    )(request);
-  });
+  return defineEventHandler(handler);
 };

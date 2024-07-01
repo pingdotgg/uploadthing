@@ -615,3 +615,9 @@ describe("adapters:fastify", async () => {
     await server.close();
   });
 });
+
+describe("adapters:effect-platform", () => {
+  /**
+   * @todo
+   */
+});

@@ -1,4 +1,5 @@
 import {
+  HttpApp,
   HttpBody,
   HttpClient,
   HttpClientRequest,
@@ -12,6 +13,7 @@ import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Match from "effect/Match";
 import * as Stream from "effect/Stream";
 
@@ -172,18 +174,50 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       HttpRouter.post("*", POST),
       HttpRouter.use(appendResponseHeaders),
     );
-  }).pipe(
-    withMinimalLogLevel,
-    Effect.provide(ConsolaLogger),
-    Effect.provide(HttpClient.layer),
-    Effect.provide(
-      Layer.effect(
-        HttpClient.Fetch,
-        Effect.succeed(opts.config?.fetch as typeof globalThis.fetch),
-      ),
+  });
+
+export const makeThing = <Args extends any[]>(
+  makeMiddlewareArgs: (
+    ...args: Args
+  ) => Effect.Effect<MiddlewareFnArgs<any, any, any>>,
+  toRequest: (...args: Args) => Effect.Effect<Request>,
+  opts: RouteHandlerOptions<FileRouter>,
+  beAdapter: string,
+): ((...args: Args) => Promise<Response>) => {
+  const layer = Layer.mergeAll(
+    // withMinimalLogLevel,
+    ConsolaLogger,
+    HttpClient.layer,
+    Layer.succeed(
+      HttpClient.Fetch,
+      opts.config?.fetch as typeof globalThis.fetch,
     ),
-    Effect.provide(Layer.setConfigProvider(configProvider(opts.config))),
+    Layer.setConfigProvider(configProvider(opts.config)),
   );
+
+  const managed = ManagedRuntime.make(layer);
+
+  const _handle = managed.runtime().then(HttpApp.toWebHandlerRuntime);
+  const handle = Effect.promise(() => _handle);
+
+  const _app = createRequestHandler(opts, beAdapter).pipe(managed.runPromise);
+  const app = (...args: Args) =>
+    Effect.promise(() => _app).pipe(
+      Effect.map(
+        Effect.provideServiceEffect(
+          MiddlewareArguments,
+          makeMiddlewareArgs(...args),
+        ),
+      ),
+    );
+
+  return async (...args: Args) =>
+    await handle.pipe(
+      Effect.ap(app(...args)),
+      Effect.ap(toRequest(...args)),
+      managed.runPromise,
+    );
+};
 
 const handleCallbackRequest = (opts: {
   uploadable: Uploader<AnyParams>;
@@ -251,7 +285,7 @@ const handleCallbackRequest = (opts: {
       const baseUrl = yield* IngestUrl;
       const httpClient = yield* HttpClient.HttpClient;
       yield* HttpClientRequest.post(`/callback-result`).pipe(
-        HttpClientRequest.prependUrl(baseUrl),
+        HttpClientRequest.prependUrl(baseUrl.href),
         HttpClientRequest.setHeaders({
           "x-uploadthing-api-key": apiKey,
           "x-uploadthing-version": pkgJson.version,
@@ -454,9 +488,11 @@ const handleUploadAction = (opts: {
       { concurrency: "unbounded" },
     );
 
-    const requestUrl = (yield* HttpServerRequest.HttpServerRequest).url; // getRequestUrl(req);
+    const requestUrl = new URL(
+      (yield* HttpServerRequest.HttpServerRequest).url,
+    ); // getRequestUrl(req);
     const callbackUrl = yield* Config.string("callbackUrl").pipe(
-      Config.withDefault(requestUrl),
+      Config.withDefault(requestUrl.origin + requestUrl.pathname),
     );
     const callbackRequest = HttpClientRequest.post(callbackUrl).pipe(
       HttpClientRequest.appendUrlParam("slug", slug),
@@ -464,9 +500,10 @@ const handleUploadAction = (opts: {
     );
 
     const isDev = yield* IsDevelopment;
+    const baseUrl = yield* IngestUrl;
 
     const metadataRequest = HttpClientRequest.post("/route-metadata").pipe(
-      HttpClientRequest.prependUrl(yield* IngestUrl),
+      HttpClientRequest.prependUrl(baseUrl.href),
       HttpClientRequest.setHeaders({
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": pkgJson.version,

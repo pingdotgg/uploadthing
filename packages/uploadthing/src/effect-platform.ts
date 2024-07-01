@@ -24,6 +24,13 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
+  // const handler = makeThing<[HttpServerRequest]>(
+  //   (_) => Effect.succeed({ req: _, res: undefined, event: undefined }),
+  //   (_) => _.source as Request,
+  //   opts,
+  //   "effect-platform",
+  // );
+
   const requestHandler = Effect.runSync(
     createRequestHandler<TRouter>(opts, "effect-platform"),
   );
