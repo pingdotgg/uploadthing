@@ -113,8 +113,8 @@ describe("errors for invalid request input", () => {
     expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      cause: "Error: Invalid action type invalid",
-      message: 'Expected "upload" but got "invalid"',
+      message: "Invalid input",
+      cause: expect.stringContaining('Expected "upload", actual "invalid"'),
     });
   });
 });

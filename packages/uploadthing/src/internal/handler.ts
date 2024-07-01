@@ -158,7 +158,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       Effect.catchTags({
         ParseError: (e) =>
           HttpServerResponse.json(
-            { error: "Invalid input", details: e.issue },
+            { message: "Invalid input", cause: e.message },
             { status: 400 },
           ),
         UploadThingError: (e) =>
@@ -285,7 +285,7 @@ const handleCallbackRequest = (opts: {
       const baseUrl = yield* IngestUrl;
       const httpClient = yield* HttpClient.HttpClient;
       yield* HttpClientRequest.post(`/callback-result`).pipe(
-        HttpClientRequest.prependUrl(baseUrl.href),
+        HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.setHeaders({
           "x-uploadthing-api-key": apiKey,
           "x-uploadthing-version": pkgJson.version,
@@ -503,7 +503,7 @@ const handleUploadAction = (opts: {
     const baseUrl = yield* IngestUrl;
 
     const metadataRequest = HttpClientRequest.post("/route-metadata").pipe(
-      HttpClientRequest.prependUrl(baseUrl.href),
+      HttpClientRequest.prependUrl(baseUrl),
       HttpClientRequest.setHeaders({
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": pkgJson.version,
@@ -516,7 +516,7 @@ const handleUploadAction = (opts: {
         isDev,
         callbackUrl: callbackRequest.url,
         callbackSlug: slug,
-        awaitServerData: routeOptions.awaitServerData,
+        awaitServerData: routeOptions.awaitServerData ?? false,
       }),
       Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
       Effect.tapBoth({

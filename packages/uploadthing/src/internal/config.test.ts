@@ -188,7 +188,7 @@ describe("ingest url infers correctly", () => {
         Effect.exit,
       );
 
-      expect(url).toEqual(Exit.succeed(new URL("http://localhost:1234")));
+      expect(url).toEqual(Exit.succeed("http://localhost:1234"));
     }),
   );
 
@@ -202,9 +202,7 @@ describe("ingest url infers correctly", () => {
         Effect.exit,
       );
 
-      expect(url).toEqual(
-        Exit.succeed(new URL("https://fra1.ingest.uploadthing.com")),
-      );
+      expect(url).toEqual(Exit.succeed("https://fra1.ingest.uploadthing.com"));
     }),
   );
 });

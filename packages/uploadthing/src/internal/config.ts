@@ -67,6 +67,7 @@ export const UTToken = S.Config("token", UploadThingToken).pipe(
 export const ApiUrl = Config.string("apiUrl").pipe(
   Config.withDefault("https://api.uploadthing.com"),
   Config.mapAttempt((_) => new URL(_)),
+  Config.map((url) => url.href.replace(/\/$/, "")),
 );
 
 export const IngestUrl = Effect.gen(function* () {
@@ -76,5 +77,6 @@ export const IngestUrl = Effect.gen(function* () {
   return yield* Config.string("ingestUrl").pipe(
     Config.withDefault(`https://${region}.ingest.uploadthing.com`),
     Config.mapAttempt((_) => new URL(_)),
+    Config.map((url) => url.href.replace(/\/$/, "")),
   );
 });

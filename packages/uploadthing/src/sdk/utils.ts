@@ -142,7 +142,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       Effect.gen(function* () {
         const key = yield* generateKey(file);
 
-        const url = yield* generateSignedURL(`${baseUrl.href}/${key}`, apiKey, {
+        const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
           // ttlInSeconds: routeOptions.presignedURLTTL,
           data: {
             "x-ut-identifier": appId,

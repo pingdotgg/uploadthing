@@ -67,7 +67,7 @@ export class UTApi {
       const httpClient = yield* HttpClient.HttpClient;
 
       return yield* HttpClientRequest.post(pathname).pipe(
-        HttpClientRequest.prependUrl(baseUrl.href),
+        HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.unsafeJsonBody(body),
         HttpClientRequest.setHeaders({
           "x-uploadthing-version": UPLOADTHING_VERSION,

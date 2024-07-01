@@ -1,3 +1,4 @@
+import { Readable } from "node:stream";
 import * as Effect from "effect/Effect";
 import type {
   Request as ExpressRequest,
@@ -29,7 +30,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  const thing = makeAdapterHandler<[ExpressRequest, ExpressResponse]>(
+  const handler = makeAdapterHandler<[ExpressRequest, ExpressResponse]>(
     (req, res) => Effect.succeed({ req, res, event: undefined }),
     (req) =>
       Effect.flatMap(getPostBody({ req }), (body) =>
@@ -43,12 +44,11 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     "/",
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     async (req, res) => {
-      const response = await thing(req, res);
-      res.status(response.status);
-      for (const [name, value] of response.headers) {
-        res.setHeader(name, value);
-      }
-      res.send(response.body);
+      const response = await handler(req, res);
+      res.writeHead(response.status, Object.fromEntries(response.headers));
+      if (!response.body) return res.end();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return Readable.fromWeb(response.body as any).pipe(res);
     },
   );
 };
