@@ -3,7 +3,7 @@ import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeThing } from "./internal/handler";
+import { makeAdapterHandler } from "./internal/handler";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -20,7 +20,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const handler = makeThing<[NextRequest]>(
+  const handler = makeAdapterHandler<[NextRequest]>(
     (req) => Effect.succeed({ req, res: undefined, event: undefined }),
     (req) => Effect.succeed(req),
     opts,

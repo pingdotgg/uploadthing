@@ -7,7 +7,7 @@ import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeThing } from "./internal/handler";
+import { makeAdapterHandler } from "./internal/handler";
 import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -29,7 +29,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  const thing = makeThing<[ExpressRequest, ExpressResponse]>(
+  const thing = makeAdapterHandler<[ExpressRequest, ExpressResponse]>(
     (req, res) => Effect.succeed({ req, res, event: undefined }),
     (req) =>
       Effect.flatMap(getPostBody({ req }), (body) =>

@@ -176,7 +176,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
     );
   });
 
-export const makeThing = <Args extends any[]>(
+export const makeAdapterHandler = <Args extends any[]>(
   makeMiddlewareArgs: (
     ...args: Args
   ) => Effect.Effect<MiddlewareFnArgs<any, any, any>>,

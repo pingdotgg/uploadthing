@@ -4,7 +4,7 @@ import { defineEventHandler, toWebRequest } from "h3";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeThing } from "./internal/handler";
+import { makeAdapterHandler } from "./internal/handler";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
@@ -21,7 +21,7 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const handler = makeThing<[H3Event]>(
+  const handler = makeAdapterHandler<[H3Event]>(
     (event) => Effect.succeed({ req: undefined, res: undefined, event }),
     (event) => Effect.succeed(toWebRequest(event)),
     opts,

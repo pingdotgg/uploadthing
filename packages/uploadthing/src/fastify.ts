@@ -3,7 +3,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeThing } from "./internal/handler";
+import { makeAdapterHandler } from "./internal/handler";
 import { toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -27,7 +27,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
   done: (err?: Error) => void,
 ) => {
-  const handler = makeThing<[FastifyRequest, FastifyReply]>(
+  const handler = makeAdapterHandler<[FastifyRequest, FastifyReply]>(
     (req, res) => Effect.succeed({ req, res, event: undefined }),
     (req) => toWebRequest(req),
     opts,
