@@ -18,7 +18,7 @@ import { uploadRouter } from "./router";
 
 const uploadthingRouter = createRouteHandler({
   router: uploadRouter,
-  config: { logLevel: "debug" },
+  config: { logLevel: "Debug" },
 });
 
 /**

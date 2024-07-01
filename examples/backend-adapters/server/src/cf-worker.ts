@@ -18,7 +18,7 @@ const cors = (res?: Response) => {
 };
 
 const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
-  const handlers = createRouteHandler({
+  const handler = createRouteHandler({
     router: uploadRouter,
     config: {
       /**
@@ -27,7 +27,7 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
        */
       token: env.UPLOADTHING_TOKEN,
       isDev: env.ENVIRONMENT === "development",
-      logLevel: "debug",
+      logLevel: "Debug",
       /*
        * Cloudflare Workers doesn't support the cache option
        * so we need to remove it from the request init.
@@ -50,7 +50,7 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
         return cors(new Response("Method not allowed", { status: 405 }));
       }
 
-      const response = await handlers[request.method](request);
+      const response = await handler(request);
       return cors(response);
     }
     default: {

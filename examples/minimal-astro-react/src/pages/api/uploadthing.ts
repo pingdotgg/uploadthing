@@ -2,9 +2,10 @@ import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
 
-export const { GET, POST } = createRouteHandler({
+const handler = createRouteHandler({
   router: uploadRouter,
   config: {
     token: import.meta.env.UPLOADTHING_TOKEN,
   },
 });
+export { handler as GET, handler as POST };
