@@ -343,7 +343,7 @@ export class UTApi {
 
     return await this.executeAsync(
       this.requestUploadThing(
-        "/api/renameFiles",
+        "/v6/renameFiles",
         { updates: asArray(updates) },
         RenameFileResponse,
       ),
