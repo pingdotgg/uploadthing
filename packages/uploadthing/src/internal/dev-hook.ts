@@ -26,7 +26,7 @@ const isValidResponse = (response: ResponseEsque) => {
 export const conditionalDevServer = (fileKey: string, apiKey: string) => {
   return Effect.gen(function* () {
     const file = yield* fetchEff(
-      generateUploadThingURL(`/api/pollUpload/${fileKey}`),
+      generateUploadThingURL(`/v6/pollUpload/${fileKey}`),
     ).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(PollUploadResponse)),
