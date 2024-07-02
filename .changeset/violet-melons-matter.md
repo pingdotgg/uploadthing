@@ -27,16 +27,23 @@
 + const { uploadFiles } = genUploader(opts)
 ```
 
-- Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteConfig option `awaitServerData`. This also means the default has been swapped to no longer await server data by default and instead resolve as soon as the file has been uploaded.
+- Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteOption `awaitServerData`. This also means the default has been swapped to no longer await server data by default and instead resolve as soon as the file has been uploaded.
 
 ```diff
   // Client option
-- uploadFiles({ ..., skipPolling: true })
+  uploadFiles({
+-   skipPolling: true 
+  })
   // Server option
-+ const router = {
-+   myRoute: f({ ... }, { awaitServerData: false })    
-+ }
+  const router = {
+    myRoute: f(
+      { ... }, 
++     { awaitServerData: false }
+    )    
+  }
 ```
+
+Read more about the new `RouteOptions` in the [📚 Server API Reference docs](https://docs.uploadthing.com/api-reference/server#route-options)
 
 ### Adapters
 
