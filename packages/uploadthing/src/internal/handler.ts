@@ -97,6 +97,7 @@ export const makeAdapterHandler = <Args extends any[]>(
     await handle.pipe(
       Effect.ap(app(...args)),
       Effect.ap(toRequest(...args)),
+      Effect.withLogSpan("requestHandler"),
       managed.runPromise,
     );
 };
@@ -242,7 +243,7 @@ const handleCallbackRequest = (opts: {
       request.headers["x-uploadthing-signature"],
       apiKey,
     );
-    yield* Effect.logDebug("Signature verified:", verified);
+    yield* Effect.logDebug(`Signature verified: ${verified}`);
     if (!verified) {
       yield* Effect.logError("Invalid signature");
       return yield* new UploadThingError({
@@ -258,9 +259,8 @@ const handleCallbackRequest = (opts: {
         metadata: S.Record(S.String, S.Unknown),
       }),
     );
-    yield* Effect.logDebug(
-      "Handling callback request with input:",
-      requestInput,
+    yield* Effect.logDebug("Handling callback request with input:").pipe(
+      Effect.annotateLogs("json", requestInput),
     );
 
     /**
@@ -288,8 +288,7 @@ const handleCallbackRequest = (opts: {
       };
       yield* Effect.logDebug(
         "'onUploadComplete' callback finished. Sending response to UploadThing:",
-        payload,
-      );
+      ).pipe(Effect.annotateLogs("callbackData", payload));
 
       const baseUrl = yield* IngestUrl;
       const httpClient = yield* HttpClient.HttpClient;
@@ -305,9 +304,8 @@ const handleCallbackRequest = (opts: {
         Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
         Effect.tapErrorTag("ResponseError", ({ response: res }) =>
           Effect.flatMap(res.json, (json) =>
-            Effect.logError(
-              `Failed to register metadata (${res.status})`,
-              json,
+            Effect.logError(`Failed to register metadata (${res.status})`).pipe(
+              Effect.annotateLogs("error", json),
             ),
           ),
         ),
@@ -317,7 +315,7 @@ const handleCallbackRequest = (opts: {
     }).pipe(Effect.ignoreLogged, Effect.forkDaemon);
 
     return { body: null, fiber };
-  });
+  }).pipe(Effect.withLogSpan("handleCallbackRequest"));
 
 const runRouteMiddleware = (opts: {
   json: typeof UploadActionPayload.Type;
@@ -378,7 +376,7 @@ const runRouteMiddleware = (opts: {
     );
 
     return { metadata, filesWithCustomIds };
-  }).pipe(Effect.withSpan("runRouteMiddleware"));
+  }).pipe(Effect.withLogSpan("runRouteMiddleware"));
 
 const handleUploadAction = (opts: {
   uploadable: Uploader<AnyParams>;
@@ -390,7 +388,9 @@ const handleUploadAction = (opts: {
     const httpClient = yield* HttpClient.HttpClient;
     const { uploadable, fePackage, beAdapter, slug } = opts;
     const json = yield* HttpServerRequest.schemaBodyJson(UploadActionPayload);
-    yield* Effect.logDebug("Handling upload request with input:", json);
+    yield* Effect.logDebug("Handling upload request").pipe(
+      Effect.annotateLogs("json", json),
+    );
 
     // validate the input
     yield* Effect.logDebug("Parsing user input");
@@ -404,16 +404,17 @@ const handleUploadAction = (opts: {
           cause: error,
         }),
     });
-    yield* Effect.logDebug("Input parsed successfully", parsedInput);
+    yield* Effect.logDebug("Input parsed successfully").pipe(
+      Effect.annotateLogs("input", parsedInput),
+    );
 
     const { metadata, filesWithCustomIds } = yield* runRouteMiddleware({
       json: { input: parsedInput, files: json.files },
       uploadable,
     });
 
-    yield* Effect.logDebug(
-      "Parsing route config",
-      uploadable._def.routerConfig,
+    yield* Effect.logDebug("Parsing route config").pipe(
+      Effect.annotateLogs("routerConfig", uploadable._def.routerConfig),
     );
     const parsedConfig = yield* fillInputRouteConfig(
       uploadable._def.routerConfig,
@@ -428,12 +429,13 @@ const handleUploadAction = (opts: {
           }),
       ),
     );
-    yield* Effect.logDebug("Route config parsed successfully", parsedConfig);
+    yield* Effect.logDebug("Route config parsed successfully").pipe(
+      Effect.annotateLogs("routeConfig", parsedConfig),
+    );
 
     yield* Effect.logDebug(
       "Validating files meet the config requirements",
-      json.files,
-    );
+    ).pipe(Effect.annotateLogs("files", json.files));
     yield* assertFilesMeetConfig(json.files, parsedConfig).pipe(
       Effect.mapError(
         (e) =>
@@ -529,16 +531,20 @@ const handleUploadAction = (opts: {
       }),
       Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
       Effect.tapBoth({
-        onSuccess: (res) => Effect.logDebug("Registerred metadata", res),
+        onSuccess: (res) =>
+          Effect.logDebug("Registerred metadata").pipe(
+            Effect.annotateLogs("metadata", res),
+          ),
         onFailure: (err) =>
           err._tag === "ResponseError"
             ? Effect.flatMap(err.response.json, (json) =>
                 Effect.logError(
                   `Failed to register metadata (${err.response.status})`,
-                  json,
-                ),
+                ).pipe(Effect.annotateLogs("error", json)),
               )
-            : Effect.logError("Failed to register metadata", err),
+            : Effect.logError("Failed to register metadata").pipe(
+                Effect.annotateLogs("error", err),
+              ),
       }),
     );
 
@@ -579,10 +585,12 @@ const handleUploadAction = (opts: {
       customId: fileUploadRequests[i].customId ?? null,
     }));
 
-    yield* Effect.logInfo("Sending presigned URLs to client", presigneds);
+    yield* Effect.logInfo("Sending presigned URLs to client").pipe(
+      Effect.annotateLogs("presignedUrls", presigneds),
+    );
 
     return {
       body: presigneds satisfies UTEvents["upload"]["out"],
       fiber,
     };
-  });
+  }).pipe(Effect.withLogSpan("handleUploadAction"));

@@ -47,7 +47,9 @@ export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
         (file) =>
           uploadFile(file).pipe(
             Effect.tapError((error) =>
-              Effect.logError("Upload failed:", error),
+              Effect.logError("Upload failed").pipe(
+                Effect.annotateLogs("error", error),
+              ),
             ),
             Effect.match({
               onFailure: (error) => ({
@@ -133,7 +135,9 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
   Effect.gen(function* () {
     const { files, contentDisposition, acl } = input;
 
-    yield* Effect.logDebug("Generating presigned URLs for files", files);
+    yield* Effect.logDebug("Generating presigned URLs for files").pipe(
+      Effect.annotateLogs("files", files),
+    );
 
     const { apiKey, appId } = yield* UTToken;
     const baseUrl = yield* IngestUrl;
@@ -158,7 +162,9 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
       }),
     );
 
-    yield* Effect.logDebug("Generated presigned URLs", presigneds);
+    yield* Effect.logDebug("Generated presigned URLs").pipe(
+      Effect.annotateLogs("presigneds", presigneds),
+    );
 
     return files.map((file, i) => ({
       file,

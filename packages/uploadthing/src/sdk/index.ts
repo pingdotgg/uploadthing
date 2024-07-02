@@ -5,8 +5,10 @@ import {
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
 import { PrettyLogger } from "effect-log";
+import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Predicate from "effect/Predicate";
 
 import type {
   ACL,
@@ -77,12 +79,18 @@ export class UTApi {
         }),
         HttpClient.filterStatusOk(httpClient),
         Effect.tapBoth({
-          onSuccess: (res) => Effect.logDebug("UploadThing response:", res),
-          onFailure: (err) => Effect.logError("UploadThing error:", err),
+          onSuccess: (res) =>
+            Effect.logDebug(`UT Response`).pipe(
+              Effect.annotateLogs("res", res),
+            ),
+          onFailure: (err) =>
+            Effect.logError("UploadThing error").pipe(
+              Effect.annotateLogs("error", err),
+            ),
         }),
         HttpClientResponse.schemaBodyJsonScoped(responseSchema),
       );
-    });
+    }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
 
   private executeAsync = <A, E>(
     program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
@@ -99,6 +107,7 @@ export class UTApi {
         ),
       ),
       Effect.provide(Layer.setConfigProvider(configProvider(this.opts))),
+      Effect.withLogSpan("utapi.#executeAsync"),
       (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );
   };
@@ -137,7 +146,14 @@ export class UTApi {
           acl: opts?.acl,
         }),
         (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
-      ).pipe(Effect.tap((res) => Effect.logDebug("Finished uploading:", res))),
+      ).pipe(
+        Effect.tap((res) =>
+          Effect.logDebug("Finished uploading").pipe(
+            Effect.annotateLogs("uploadResult", res),
+          ),
+        ),
+        Effect.withLogSpan("uploadFiles"),
+      ),
       opts?.signal,
     );
     return uploads;
@@ -171,34 +187,42 @@ export class UTApi {
     guardServerOnly();
 
     const downloadErrors: Record<number, SerializedUploadThingError> = {};
+    const arr = asArray(urls);
 
-    const uploads = await this.executeAsync(
-      downloadFiles(asArray(urls), downloadErrors).pipe(
-        Effect.andThen((files) => files.filter((f): f is UTFile => f != null)),
-        Effect.andThen((files) =>
-          uploadFilesInternal({
-            files,
-            contentDisposition: opts?.contentDisposition ?? "inline",
-            acl: opts?.acl,
-          }),
-        ),
-      ),
-      opts?.signal,
-    );
+    const program = Effect.gen(function* () {
+      const downloadedFiles = yield* downloadFiles(arr, downloadErrors).pipe(
+        Effect.map((files) => Arr.filter(files, Predicate.isNotNullable)),
+      );
 
-    /** Put it all back together, preserve the order of files */
-    const responses = asArray(urls).map((_, index) => {
-      if (downloadErrors[index]) {
-        return { data: null, error: downloadErrors[index] };
-      }
-      return uploads.shift()!;
-    });
+      yield* Effect.logDebug(
+        `Downloaded ${downloadedFiles.length}/${arr.length} files`,
+      ).pipe(Effect.annotateLogs("downloadedFiles", downloadedFiles));
 
-    /** Return single object or array based on input urls */
-    const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
+      const uploads = yield* uploadFilesInternal({
+        files: downloadedFiles,
+        contentDisposition: opts?.contentDisposition ?? "inline",
+        acl: opts?.acl,
+      });
 
-    Effect.runSync(Effect.logDebug("Finished uploading:", uploadFileResponse));
-    return uploadFileResponse;
+      /** Put it all back together, preserve the order of files */
+      const responses = arr.map((_, index) => {
+        if (downloadErrors[index]) {
+          return { data: null, error: downloadErrors[index] };
+        }
+        return uploads.shift()!;
+      });
+
+      /** Return single object or array based on input urls */
+      const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
+      yield* Effect.logDebug("Finished uploading").pipe(
+        Effect.annotateLogs("uploadResult", uploadFileResponse),
+        Effect.withLogSpan("utapi.uploadFilesFromUrl"),
+      );
+
+      return uploadFileResponse;
+    }).pipe(Effect.withLogSpan("uploadFilesFromUrl"));
+
+    return await this.executeAsync(program, opts?.signal);
   }
 
   /**
@@ -232,7 +256,7 @@ export class UTApi {
           ? { fileKeys: asArray(keys) }
           : { customIds: asArray(keys) },
         DeleteFileResponse,
-      ),
+      ).pipe(Effect.withLogSpan("deleteFiles")),
     );
   };
 
@@ -269,7 +293,7 @@ export class UTApi {
         "/v6/getFileUrl",
         keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
         GetFileUrlResponse,
-      ),
+      ).pipe(Effect.withLogSpan("getFileUrls")),
     );
   };
 
@@ -307,7 +331,11 @@ export class UTApi {
     }) {}
 
     return await this.executeAsync(
-      this.requestUploadThing("/v6/listFiles", { ...opts }, ListFileResponse),
+      this.requestUploadThing(
+        "/v6/listFiles",
+        { ...opts },
+        ListFileResponse,
+      ).pipe(Effect.withLogSpan("listFiles")),
     );
   };
 
@@ -325,7 +353,7 @@ export class UTApi {
         "/v6/renameFiles",
         { updates: asArray(updates) },
         RenameFileResponse,
-      ),
+      ).pipe(Effect.withLogSpan("renameFiles")),
     );
   };
 
@@ -342,7 +370,11 @@ export class UTApi {
     }) {}
 
     return await this.executeAsync(
-      this.requestUploadThing("/v6/getUsageInfo", {}, GetUsageInfoResponse),
+      this.requestUploadThing(
+        "/v6/getUsageInfo",
+        {},
+        GetUsageInfoResponse,
+      ).pipe(Effect.withLogSpan("getUsageInfo")),
     );
   };
 
@@ -382,7 +414,7 @@ export class UTApi {
           ? { fileKey: key, expiresIn }
           : { customId: key, expiresIn },
         GetSignedUrlResponse,
-      ),
+      ).pipe(Effect.withLogSpan("getSignedURL")),
     );
   };
 
@@ -421,7 +453,11 @@ export class UTApi {
     });
 
     return await this.executeAsync(
-      this.requestUploadThing("/v6/updateACL", { updates }, responseSchema),
+      this.requestUploadThing(
+        "/v6/updateACL",
+        { updates },
+        responseSchema,
+      ).pipe(Effect.withLogSpan("updateACL")),
     );
   };
 }

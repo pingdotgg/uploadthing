@@ -9,7 +9,9 @@ import { UploadThingError } from "@uploadthing/shared";
 export const withMinimalLogLevel = Config.logLevel("logLevel").pipe(
   Config.withDefault(LogLevel.Info),
   Effect.andThen((level) => Logger.minimumLogLevel(level)),
-  Effect.tapError((e) => Effect.logError("Invalid log level", e)),
+  Effect.tapError((e) =>
+    Effect.logError("Invalid log level").pipe(Effect.annotateLogs("error", e)),
+  ),
   Effect.catchTag(
     "ConfigError",
     (e) =>
