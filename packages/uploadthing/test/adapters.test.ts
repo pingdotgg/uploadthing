@@ -1,11 +1,20 @@
 /* eslint-disable no-restricted-globals */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
+import {
+  HttpClient,
+  HttpServerRequest,
+  HttpServerResponse,
+} from "@effect/platform";
+import * as ConfigProvider from "effect/ConfigProvider";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 import * as express from "express";
 import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
+import { configProvider } from "../src/internal/config";
 import {
   baseHeaders,
   createApiUrl,
@@ -627,8 +636,112 @@ describe("adapters:fastify", async () => {
   });
 });
 
-describe.todo("adapters:effect-platform", () => {
+describe("adapters:effect-platform", async () => {
+  const { it } = await import("@effect/vitest");
+
+  const { createUploadthing, createRouteHandler } = await import(
+    "../src/effect-platform"
+  );
+  const f = createUploadthing();
+
+  const router = {
+    middleware: f({ blob: {} })
+      .middleware((opts) => {
+        middlewareMock(opts);
+        expectTypeOf<{
+          event: undefined;
+          req: HttpServerRequest.HttpServerRequest;
+          res: undefined;
+        }>(opts);
+        return {};
+      })
+      .onUploadComplete(uploadCompleteMock),
+  };
+
+  it.effect("gets HttpServerRequest in middleware args", () =>
+    Effect.gen(function* () {
+      const handler = createRouteHandler({
+        router,
+        config: { token: testToken.encoded },
+      }).pipe(Effect.provide(HttpClient.layer));
+
+      const req = new Request(createApiUrl("middleware", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      });
+
+      const serverRequest = HttpServerRequest.fromWeb(req);
+      const response = yield* handler.pipe(
+        Effect.provideService(
+          HttpServerRequest.HttpServerRequest,
+          serverRequest,
+        ),
+      );
+
+      const json = yield* Effect.promise(() =>
+        HttpServerResponse.toWeb(response).json(),
+      );
+
+      expect(json).toEqual([
+        {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+          name: "foo.txt",
+        },
+      ]);
+      expect(response.status).toBe(200);
+
+      expect(middlewareMock).toHaveBeenCalledOnce();
+      expect(middlewareMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: undefined,
+          res: undefined,
+          req: serverRequest,
+        }),
+      );
+    }),
+  );
+
   /**
-   * @todo
+   * I'm not entirely sure how this is supposed to work, but Datner
+   * gave some thoughts on how Effect users having their own ConfigProvider
+   * might conflict with the one provided by UploadThing.
    */
+  it.effect.skip("still finds the token with a custom config provider", () =>
+    Effect.gen(function* () {
+      const handler = createRouteHandler({
+        router,
+      }).pipe(Effect.provide(HttpClient.layer));
+
+      const req = new Request(createApiUrl("middleware", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      });
+
+      const serverRequest = HttpServerRequest.fromWeb(req);
+      const response = yield* handler.pipe(
+        Effect.provideService(
+          HttpServerRequest.HttpServerRequest,
+          serverRequest,
+        ),
+      );
+
+      expect(response.status).toBe(200);
+    }).pipe(
+      Effect.provide(
+        Layer.setConfigProvider(
+          ConfigProvider.fromJson({
+            uploadthingToken: testToken.encoded,
+          }),
+        ),
+      ),
+    ),
+  );
 });

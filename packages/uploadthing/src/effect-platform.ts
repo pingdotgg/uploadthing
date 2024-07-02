@@ -1,8 +1,10 @@
 import { HttpRouter, HttpServerRequest } from "@effect/platform";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 
 import type { Json } from "@uploadthing/shared";
 
+import { configProvider } from "./internal/config";
 import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
 import type { FileRouter, RouteHandlerConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -44,24 +46,17 @@ export const createRouteHandler = <TRouter extends FileRouter>(opts: {
    */
   config?: Omit<RouteHandlerConfig, "fetch" | "logLevel">;
 }) => {
-  // const handler = makeThing<[HttpServerRequest]>(
-  //   (_) => Effect.succeed({ req: _, res: undefined, event: undefined }),
-  //   (_) => _.source as Request,
-  //   opts,
-  //   "effect-platform",
-  // );
-
-  const requestHandler = Effect.runSync(
+  const router = Effect.runSync(
     createRequestHandler<TRouter>(opts, "effect-platform"),
   );
 
   return HttpRouter.provideServiceEffect(
-    requestHandler,
+    router,
     MiddlewareArguments,
     Effect.map(HttpServerRequest.HttpServerRequest, (serverRequest) => ({
       req: serverRequest,
       res: undefined,
       event: undefined,
     })),
-  );
+  ).pipe(Effect.provide(Layer.setConfigProvider(configProvider(opts.config))));
 };

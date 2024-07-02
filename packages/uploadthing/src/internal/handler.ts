@@ -227,7 +227,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       HttpRouter.post("*", POST),
       HttpRouter.use(appendResponseHeaders),
     );
-  });
+  }).pipe(Effect.withLogSpan("createRequestHandler"));
 
 const handleCallbackRequest = (opts: {
   uploadable: Uploader<AnyParams>;
