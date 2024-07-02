@@ -203,7 +203,7 @@ const handleCallbackRequest = Effect.gen(function* () {
     payload,
   );
 
-  yield* fetchEff(generateUploadThingURL("/api/serverCallback"), {
+  yield* fetchEff(generateUploadThingURL("/v6/serverCallback"), {
     method: "POST",
     body: JSON.stringify(payload),
     headers: { "Content-Type": "application/json" },
@@ -354,7 +354,7 @@ const handleUploadAction = Effect.gen(function* () {
   );
 
   const presignedUrls = yield* fetchEff(
-    generateUploadThingURL("/api/prepareUpload"),
+    generateUploadThingURL("/v6/prepareUpload"),
     {
       method: "POST",
       body: JSON.stringify({

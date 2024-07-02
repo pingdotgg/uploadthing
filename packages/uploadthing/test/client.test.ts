@@ -43,6 +43,7 @@ export const setupUTServer = async () => {
       config: {
         uploadthingSecret: "sk_test_123",
         isDev: true,
+        logLevel: "debug",
       },
     }),
   );
@@ -290,7 +291,7 @@ describe("uploadFiles", () => {
     expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      generateUploadThingURL("/api/failureCallback"),
+      generateUploadThingURL("/v6/failureCallback"),
       {
         body: { fileKey: "abc-123.txt", uploadId: null },
         headers: {
@@ -327,7 +328,7 @@ describe("uploadFiles", () => {
     expect(requestsToDomain("amazonaws.com")).toHaveLength(7);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      generateUploadThingURL("/api/failureCallback"),
+      generateUploadThingURL("/v6/failureCallback"),
       {
         body: { fileKey: "abc-123.txt", uploadId: "random-upload-id" },
         headers: {

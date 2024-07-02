@@ -67,7 +67,7 @@ describe("adapters:h3", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [{ name: "foo.txt", size: 48 }],
@@ -142,7 +142,7 @@ describe("adapters:server", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [{ name: "foo.txt", size: 48 }],
@@ -214,7 +214,7 @@ describe("adapters:next", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [{ name: "foo.txt", size: 48 }],
@@ -328,7 +328,7 @@ describe("adapters:next-legacy", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [{ name: "foo.txt", size: 48 }],
@@ -426,7 +426,7 @@ describe("adapters:express", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [{ name: "foo.txt", size: 48 }],
@@ -564,7 +564,7 @@ describe("adapters:fastify", async () => {
     // Should proceed to have requested URLs
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/prepareUpload",
+      "https://api.uploadthing.com/v6/prepareUpload",
       {
         body: {
           files: [{ name: "foo.txt", size: 48 }],
