@@ -47,6 +47,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
       const response = await handler(req, res);
       res.writeHead(response.status, Object.fromEntries(response.headers));
       if (!response.body) return res.end();
+      // Slight type mismatch in `node:stream.ReadableStream` and Fetch's `ReadableStream`.
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return Readable.fromWeb(response.body as any).pipe(res);
     },
