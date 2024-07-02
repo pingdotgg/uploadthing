@@ -43,7 +43,6 @@ export const setupUTServer = async () => {
       config: {
         uploadthingSecret: "sk_test_123",
         isDev: true,
-        logLevel: "debug",
       },
     }),
   );
