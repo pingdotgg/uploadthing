@@ -27,6 +27,17 @@
 + const { uploadFiles } = genUploader(opts)
 ```
 
+- Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteConfig option `awaitServerData`. This also means the default has been swapped to no longer await server data by default and instead resolve as soon as the file has been uploaded.
+
+```diff
+  // Client option
+- uploadFiles({ ..., skipPolling: true })
+  // Server option
++ const router = {
++   myRoute: f({ ... }, { awaitServerData: false })    
++ }
+```
+
 ### Adapters
 
 - Change `config.logLevel` levels. Most are now capitalized to match our new logger. Auto-complete should make migrating trivial.
