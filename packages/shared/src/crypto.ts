@@ -66,6 +66,13 @@ export const verifySignature = (
     );
   }).pipe(Micro.orElseSucceed(() => false));
 
+/**
+ * @fixme Include some identifier for the app
+ * so that we can verify who create the key
+ * in order to prevent users from creating
+ * arbitrary keys and also for avoiding
+ * duplicate keys
+ */
 export const generateKey = (
   file: FileProperties,
   getHashParts?: ExtractHashPartsFn,
