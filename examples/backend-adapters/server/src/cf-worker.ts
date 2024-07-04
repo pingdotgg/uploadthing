@@ -37,6 +37,7 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
         return fetch(url, init);
       },
       handleDaemonPromise: (promise) => ctx.waitUntil(promise),
+      ingestUrl: "http://localhost:3001",
     },
   });
 
