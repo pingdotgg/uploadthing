@@ -47,12 +47,17 @@ export const uploadRouter = {
 
       // Uploading the same file will yield the same key
       // getFileHashParts: (file) => [file.name],
+      getFileHashParts: () => ["foo"],
     },
   )
     .middleware(({ files }) => {
       return {
         uploadedBy: "fake-user-id-213",
       };
+    })
+    .onUploadError(({ error, fileKey }) => {
+      console.log("upload error", { message: error.message, fileKey });
+      throw error;
     })
     .onUploadComplete(async (data) => {
       console.log("upload completed", data);

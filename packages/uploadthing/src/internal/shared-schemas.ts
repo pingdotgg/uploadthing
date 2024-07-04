@@ -7,6 +7,17 @@ export const ContentDispositionSchema = S.Literal(...ValidContentDispositions);
 export const ACLSchema = S.Literal(...ValidACLs);
 
 /**
+ * Valid options for the `?actionType` query param
+ */
+export const ActionType = S.Literal("upload");
+
+/**
+ * Valid options for the `uploadthing-hook` header
+ * for requests coming from UT server
+ */
+export const UploadThingHook = S.Literal("callback", "error");
+
+/**
  * =============================================================================
  * =========================== Configuration ===================================
  * =============================================================================
@@ -94,6 +105,7 @@ export class MetadataFetchStreamPart extends S.Class<MetadataFetchStreamPart>(
 )({
   payload: S.String,
   signature: S.String,
+  hook: UploadThingHook,
 }) {}
 
 export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(

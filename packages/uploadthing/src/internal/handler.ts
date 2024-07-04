@@ -36,12 +36,15 @@ import { withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
 import {
+  ActionType,
   CallbackResultResponse,
   MetadataFetchResponse,
   MetadataFetchStreamPart,
   UploadActionPayload,
   UploadedFileData,
+  UploadThingHook,
 } from "./shared-schemas";
+import { UTFiles } from "./types";
 import type {
   AnyParams,
   FileRouter,
@@ -51,7 +54,6 @@ import type {
   UTEvents,
   ValidMiddlewareObject,
 } from "./types";
-import { ActionType, UploadThingHook, UTFiles } from "./types";
 
 export class MiddlewareArguments extends Context.Tag(
   "uploadthing/MiddlewareArguments",
@@ -188,6 +190,9 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         Match.when({ actionType: undefined, uploadthingHook: "callback" }, () =>
           handleCallbackRequest({ uploadable, fePackage, beAdapter }),
         ),
+        Match.when({ actionType: undefined, uploadthingHook: "error" }, () =>
+          handleErrorRequest({ uploadable }),
+        ),
         Match.orElse(() => Effect.succeed({ body: null, fiber: null })),
       );
 
@@ -230,6 +235,66 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       HttpRouter.use(appendResponseHeaders),
     );
   }).pipe(Effect.withLogSpan("createRequestHandler"));
+
+const handleErrorRequest = (opts: { uploadable: Uploader<AnyParams> }) =>
+  Effect.gen(function* () {
+    const { uploadable } = opts;
+    const request = yield* HttpServerRequest.HttpServerRequest;
+    const { apiKey } = yield* UTToken;
+    const verified = yield* verifySignature(
+      yield* request.text,
+      request.headers["x-uploadthing-signature"],
+      apiKey,
+    );
+    yield* Effect.logDebug(`Signature verified: ${verified}`);
+    if (!verified) {
+      yield* Effect.logError("Invalid signature");
+      return yield* new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "Invalid signature",
+      });
+    }
+
+    const requestInput = yield* HttpServerRequest.schemaBodyJson(
+      S.Struct({
+        fileKey: S.String,
+        error: S.String,
+      }),
+    );
+    yield* Effect.logDebug("Handling error callback request with input:").pipe(
+      Effect.annotateLogs("json", requestInput),
+    );
+
+    const fiber = yield* Effect.tryPromise({
+      try: async () =>
+        uploadable._def.onUploadError({
+          error: new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: `Upload failed for ${requestInput.fileKey}: ${requestInput.error}`,
+          }),
+          fileKey: requestInput.fileKey,
+        }),
+      catch: (error) =>
+        new UploadThingError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to run onUploadError",
+          cause: error,
+        }),
+    })
+      .pipe(
+        Effect.tapError((error) =>
+          Effect.logError(
+            "Failed to run onUploadError. You probably shouldn't be throwing errors here.",
+          ).pipe(Effect.annotateLogs("error", error)),
+        ),
+      )
+      .pipe(Effect.ignoreLogged, Effect.forkDaemon);
+
+    return {
+      body: null,
+      fiber,
+    };
+  }).pipe(Effect.withLogSpan("handleErrorRequest"));
 
 const handleCallbackRequest = (opts: {
   uploadable: Uploader<AnyParams>;
@@ -502,14 +567,17 @@ const handleUploadAction = (opts: {
     );
 
     const requestUrl = new URL(
+      // FIXME: We should also try parsing from headers
       (yield* HttpServerRequest.HttpServerRequest).url,
-    ); // getRequestUrl(req);
-    const callbackUrl = yield* Config.string("callbackUrl").pipe(
-      Config.withDefault(requestUrl.origin + requestUrl.pathname),
     );
-    const callbackRequest = HttpClientRequest.post(callbackUrl).pipe(
-      HttpClientRequest.appendUrlParam("slug", slug),
-      HttpClientRequest.setHeader("uploadthing-hook", "callback"),
+
+    const devHookRequest = yield* Config.string("callbackUrl").pipe(
+      Config.withDefault(requestUrl.origin + requestUrl.pathname),
+      Effect.map((url) =>
+        HttpClientRequest.post(url).pipe(
+          HttpClientRequest.appendUrlParam("slug", slug),
+        ),
+      ),
     );
 
     const isDev = yield* IsDevelopment;
@@ -527,7 +595,7 @@ const handleUploadAction = (opts: {
         fileKeys: presignedUrls.map(({ key }) => key),
         metadata: metadata,
         isDev,
-        callbackUrl: callbackRequest.url,
+        callbackUrl: devHookRequest.url,
         callbackSlug: slug,
         awaitServerData: routeOptions.awaitServerData ?? false,
       }),
@@ -558,17 +626,22 @@ const handleUploadAction = (opts: {
         metadataRequest.pipe(
           HttpClientResponse.stream,
           Stream.decodeText(),
-          Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
-          Stream.mapEffect(({ payload, signature }) =>
-            callbackRequest.pipe(
-              HttpClientRequest.setHeader("x-uploadthing-signature", signature),
+          Stream.mapEffect(
+            S.decode(S.parseJson(S.Union(MetadataFetchStreamPart))),
+          ),
+          Stream.mapEffect(({ payload, signature, hook }) =>
+            devHookRequest.pipe(
+              HttpClientRequest.setHeaders({
+                "uploadthing-hook": hook,
+                "x-uploadthing-signature": signature,
+              }),
               HttpClientRequest.setBody(
                 HttpBody.text(payload, "application/json"),
               ),
               httpClient,
               HttpClientResponse.arrayBuffer,
               Effect.asVoid,
-              Effect.tap(Effect.log("Successfully simulated callback")),
+              Effect.tap(Effect.log(`Successfully simulated '${hook}' event`)),
               Effect.ignoreLogged,
             ),
           ),

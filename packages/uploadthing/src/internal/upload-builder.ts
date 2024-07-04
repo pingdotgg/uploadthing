@@ -48,7 +48,9 @@ function internalCreateBuilder<
     },
 
     middleware: () => ({}),
-    onUploadError: () => ({}),
+    onUploadError: () => {
+      // noop
+    },
 
     errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 

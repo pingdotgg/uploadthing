@@ -1,5 +1,4 @@
 import type { Schema } from "@effect/schema/Schema";
-import * as S from "@effect/schema/Schema";
 import type * as LogLevel from "effect/LogLevel";
 
 import type {
@@ -94,7 +93,7 @@ type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
 type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
-}) => void;
+}) => Promise<void> | void;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -226,23 +225,12 @@ export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
 
 /**
- * Valid options for the `?actionType` query param
- */
-export const ActionType = S.Literal("upload");
-
-/**
- * Valid options for the `uploadthing-hook` header
- * for requests coming from UT server
- */
-export const UploadThingHook = S.Literal("callback");
-
-/**
  * Map actionType to the required payload for that action
  * @todo Look into using @effect/rpc :thinking:
  */
 export type UTEvents = {
   upload: {
-    in: S.Schema.Type<typeof UploadActionPayload>;
+    in: typeof UploadActionPayload.Type;
     out: ReadonlyArray<NewPresignedUrl>;
   };
 };
