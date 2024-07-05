@@ -28,6 +28,7 @@ export const signPayload = (payload: string, secret: string) =>
           cause: e,
         }),
     });
+
     const signature = yield* Micro.tryPromise({
       try: () =>
         crypto.subtle

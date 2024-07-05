@@ -99,7 +99,6 @@ describe("key gen", () => {
         apiKey,
       );
 
-      console.log(key);
       expect(key).toBeTruthy();
     }),
   );
