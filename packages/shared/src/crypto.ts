@@ -12,7 +12,7 @@ const encoder = new TextEncoder();
 const sha256Hex = (data: string) =>
   Micro.map(
     Micro.promise(() => crypto.subtle.digest("SHA-256", encoder.encode(data))),
-    (buf) => Encoding.encodeHex(new Uint8Array(buf)),
+    (arrayBuffer) => Encoding.encodeHex(new Uint8Array(arrayBuffer)),
   );
 
 export const signPayload = (payload: string, secret: string) =>
@@ -34,15 +34,14 @@ export const signPayload = (payload: string, secret: string) =>
         }),
     });
 
-    const signature = yield* Micro.tryPromise({
-      try: () =>
-        crypto.subtle
-          .sign(algorithm, signingKey, encoder.encode(payload))
-          .then((arrayBuffer) =>
-            Encoding.encodeHex(new Uint8Array(arrayBuffer)),
-          ),
-      catch: (e) => new UploadThingError({ code: "BAD_REQUEST", cause: e }),
-    });
+    const signature = yield* Micro.map(
+      Micro.tryPromise({
+        try: () =>
+          crypto.subtle.sign(algorithm, signingKey, encoder.encode(payload)),
+        catch: (e) => new UploadThingError({ code: "BAD_REQUEST", cause: e }),
+      }),
+      (arrayBuffer) => Encoding.encodeHex(new Uint8Array(arrayBuffer)),
+    );
 
     return `${signaturePrefix}${signature}`;
   });
@@ -63,7 +62,7 @@ export const verifySignature = (
 
     const sigBytes = yield* Micro.fromEither(Encoding.decodeHex(sig));
     const payloadBytes = encoder.encode(payload);
-    return yield* Micro.promise(async () =>
+    return yield* Micro.promise(() =>
       crypto.subtle.verify(algorithm, signingKey, sigBytes, payloadBytes),
     );
   }).pipe(Micro.orElseSucceed(() => false));
@@ -108,7 +107,7 @@ export const verifyKey = (key: string, apiKey: string) =>
 
     // q: Does it need to be timing safe?
     return expected === given;
-  });
+  }).pipe(Micro.orElseSucceed(() => false));
 
 export const generateSignedURL = (
   url: string | URL,
