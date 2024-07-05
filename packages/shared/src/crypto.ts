@@ -9,6 +9,12 @@ const signaturePrefix = "hmac-sha256=";
 const algorithm = { name: "HMAC", hash: "SHA-256" };
 const encoder = new TextEncoder();
 
+const sha256Hex = (data: string) =>
+  Micro.map(
+    Micro.promise(() => crypto.subtle.digest("SHA-256", encoder.encode(data))),
+    (buf) => Encoding.encodeHex(new Uint8Array(buf)),
+  );
+
 export const signPayload = (payload: string, secret: string) =>
   Micro.gen(function* () {
     const signingKey = yield* Micro.tryPromise({
@@ -42,7 +48,7 @@ export const signPayload = (payload: string, secret: string) =>
   });
 
 export const verifySignature = (
-  payload: string | Promise<string>,
+  payload: string,
   signature: string | null,
   secret: string,
 ) =>
@@ -56,9 +62,7 @@ export const verifySignature = (
     );
 
     const sigBytes = yield* Micro.fromEither(Encoding.decodeHex(sig));
-    const payloadBytes = encoder.encode(
-      yield* Micro.promise(() => Promise.resolve(payload)),
-    );
+    const payloadBytes = encoder.encode(payload);
     return yield* Micro.promise(async () =>
       crypto.subtle.verify(algorithm, signingKey, sigBytes, payloadBytes),
     );
@@ -84,23 +88,11 @@ export const generateKey = (
       ],
     );
 
-    // Hash and Encode the parts as hex
-    const encodedFileSeed = yield* Micro.map(
-      Micro.promise(() =>
-        crypto.subtle.digest("SHA-256", encoder.encode(hashParts)),
-      ),
-      (buf) => Encoding.encodeHex(new Uint8Array(buf)),
-    );
+    // Hash and Encode the parts and apiKey as hex strings
+    const encodedFileSeed = yield* sha256Hex(hashParts);
+    const encodedApiKey = yield* sha256Hex(apiKey);
 
-    // Hash and Encode the apiKey as hex
-    const encodedApiKey = yield* Micro.map(
-      Micro.promise(() =>
-        crypto.subtle.digest("SHA-256", encoder.encode(apiKey)),
-      ),
-      (buf) => Encoding.encodeHex(new Uint8Array(buf)),
-    );
-
-    // Concatenate the parts and encode as base64
+    // Concatenate them and encode as base64
     return Encoding.encodeBase64([encodedApiKey, encodedFileSeed].join(":"));
   });
 
@@ -112,12 +104,7 @@ export const verifyKey = (key: string, apiKey: string) =>
       (text) => text.split(":")[0],
     );
 
-    const expected = yield* Micro.map(
-      Micro.promise(() =>
-        crypto.subtle.digest("SHA-256", encoder.encode(apiKey)),
-      ),
-      (buf) => Encoding.encodeHex(new Uint8Array(buf)),
-    );
+    const expected = yield* sha256Hex(apiKey);
 
     // q: Does it need to be timing safe?
     return expected === given;
