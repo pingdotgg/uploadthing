@@ -7,11 +7,10 @@ import { parseTimeToSeconds } from "./utils";
 
 const signaturePrefix = "hmac-sha256=";
 const algorithm = { name: "HMAC", hash: "SHA-256" };
+const encoder = new TextEncoder();
 
 export const signPayload = (payload: string, secret: string) =>
   Micro.gen(function* () {
-    const encoder = new TextEncoder();
-
     const signingKey = yield* Micro.tryPromise({
       try: () =>
         crypto.subtle.importKey(
@@ -51,8 +50,6 @@ export const verifySignature = (
     const sig = signature?.slice(signaturePrefix.length);
     if (!sig) return false;
 
-    const encoder = new TextEncoder();
-
     const secretBytes = encoder.encode(secret);
     const signingKey = yield* Micro.promise(() =>
       crypto.subtle.importKey("raw", secretBytes, algorithm, false, ["verify"]),
@@ -80,32 +77,34 @@ export const generateKey = (
   getHashParts?: ExtractHashPartsFn,
 ) =>
   Micro.gen(function* () {
-    const te = new TextEncoder();
-
     // Get the parts of which we should hash to constuct the key
     // This allows the user to customize the hashing algorithm
     // If they for example want to generate the same key for the
     // same file whenever it was uploaded
-    const hashParts = getHashParts?.(file) ?? [
-      file.name,
-      file.size,
-      file.type,
-      file.lastModified,
-      Date.now(),
-    ];
+    const hashParts = JSON.stringify(
+      getHashParts?.(file) ?? [
+        file.name,
+        file.size,
+        file.type,
+        file.lastModified,
+        Date.now(),
+      ],
+    );
 
     // Hash and Encode the parts as hex
-    const encodedFileSeed = yield* Micro.promise(() =>
-      crypto.subtle
-        .digest("SHA-256", te.encode(JSON.stringify(hashParts)))
-        .then((s) => Encoding.encodeHex(new Uint8Array(s))),
+    const encodedFileSeed = yield* Micro.map(
+      Micro.promise(() =>
+        crypto.subtle.digest("SHA-256", encoder.encode(hashParts)),
+      ),
+      (buf) => Encoding.encodeHex(new Uint8Array(buf)),
     );
 
     // Hash and Encode the apiKey as hex
-    const encodedApiKey = yield* Micro.promise(() =>
-      crypto.subtle
-        .digest("SHA-256", te.encode(apiKey))
-        .then((s) => Encoding.encodeHex(new Uint8Array(s))),
+    const encodedApiKey = yield* Micro.map(
+      Micro.promise(() =>
+        crypto.subtle.digest("SHA-256", encoder.encode(apiKey)),
+      ),
+      (buf) => Encoding.encodeHex(new Uint8Array(buf)),
     );
 
     // Concatenate the parts and encode as base64
@@ -115,14 +114,16 @@ export const generateKey = (
 // Verify that the key was generated with the same apiKey
 export const verifyKey = (key: string, apiKey: string) =>
   Micro.gen(function* () {
-    const te = new TextEncoder();
-    const plainText = yield* Micro.fromEither(Encoding.decodeBase64String(key));
-    const [given] = plainText.split(":");
+    const given = yield* Micro.map(
+      Micro.fromEither(Encoding.decodeBase64String(key)),
+      (text) => text.split(":")[0],
+    );
 
-    const expected = yield* Micro.promise(() =>
-      crypto.subtle
-        .digest("SHA-256", te.encode(apiKey))
-        .then((s) => Encoding.encodeHex(new Uint8Array(s))),
+    const expected = yield* Micro.map(
+      Micro.promise(() =>
+        crypto.subtle.digest("SHA-256", encoder.encode(apiKey)),
+      ),
+      (buf) => Encoding.encodeHex(new Uint8Array(buf)),
     );
 
     // q: Does it need to be timing safe?
