@@ -545,7 +545,11 @@ const handleUploadAction = (opts: {
       fileUploadRequests,
       (file) =>
         Effect.gen(function* () {
-          const key = yield* generateKey(file, routeOptions.getFileHashParts);
+          const key = yield* generateKey(
+            file,
+            apiKey,
+            routeOptions.getFileHashParts,
+          );
 
           const baseUrl = yield* IngestUrl;
           const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {

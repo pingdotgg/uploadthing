@@ -75,9 +75,16 @@ export const verifySignature = (
  */
 export const generateKey = (
   file: FileProperties,
+  apiKey: string,
   getHashParts?: ExtractHashPartsFn,
 ) =>
   Micro.gen(function* () {
+    const te = new TextEncoder();
+
+    // Get the parts of which we should hash to constuct the key
+    // This allows the user to customize the hashing algorithm
+    // If they for example want to generate the same key for the
+    // same file whenever it was uploaded
     const hashParts = getHashParts?.(file) ?? [
       file.name,
       file.size,
@@ -85,13 +92,40 @@ export const generateKey = (
       file.lastModified,
       Date.now(),
     ];
-    const buffer = new TextEncoder().encode(JSON.stringify(hashParts));
-    const hash = yield* Micro.promise(() =>
-      crypto.subtle.digest("SHA-256", buffer),
+
+    // Hash and Encode the parts as hex
+    const encodedFileSeed = yield* Micro.promise(() =>
+      crypto.subtle
+        .digest("SHA-256", te.encode(JSON.stringify(hashParts)))
+        .then((s) => Encoding.encodeHex(new Uint8Array(s))),
     );
-    return Array.from(new Uint8Array(hash))
-      .map((byte) => byte.toString(16).padStart(2, "0"))
-      .join("");
+
+    // Hash and Encode the apiKey as hex
+    const encodedApiKey = yield* Micro.promise(() =>
+      crypto.subtle
+        .digest("SHA-256", te.encode(apiKey))
+        .then((s) => Encoding.encodeHex(new Uint8Array(s))),
+    );
+
+    // Concatenate the parts and encode as base64
+    return Encoding.encodeBase64([encodedApiKey, encodedFileSeed].join(":"));
+  });
+
+// Verify that the key was generated with the same apiKey
+export const verifyKey = (key: string, apiKey: string) =>
+  Micro.gen(function* () {
+    const te = new TextEncoder();
+    const plainText = yield* Micro.fromEither(Encoding.decodeBase64String(key));
+    const [given] = plainText.split(":");
+
+    const expected = yield* Micro.promise(() =>
+      crypto.subtle
+        .digest("SHA-256", te.encode(apiKey))
+        .then((s) => Encoding.encodeHex(new Uint8Array(s))),
+    );
+
+    // q: Does it need to be timing safe?
+    return expected === given;
   });
 
 export const generateSignedURL = (

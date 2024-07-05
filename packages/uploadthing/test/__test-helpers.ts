@@ -6,7 +6,7 @@ import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
 import { UPLOADTHING_VERSION } from "../src/internal/config";
 import { UploadThingToken } from "../src/internal/shared-schemas";
-import type { ActionType } from "../src/internal/types";
+import type { ActionType } from "../src/internal/shared-schemas";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
 export const requestsToDomain = (domain: string) =>
