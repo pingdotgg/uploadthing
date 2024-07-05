@@ -44,7 +44,7 @@ export const signPayload = (payload: string, secret: string) =>
     );
 
     return `${signaturePrefix}${signature}`;
-  });
+  }).pipe(Micro.withTrace("signPayload"));
 
 export const verifySignature = (
   payload: string,
@@ -65,7 +65,10 @@ export const verifySignature = (
     return yield* Micro.promise(() =>
       crypto.subtle.verify(algorithm, signingKey, sigBytes, payloadBytes),
     );
-  }).pipe(Micro.orElseSucceed(() => false));
+  }).pipe(
+    Micro.withTrace("verifySignature"),
+    Micro.orElseSucceed(() => false),
+  );
 
 export const generateKey = (
   file: FileProperties,
@@ -93,7 +96,7 @@ export const generateKey = (
 
     // Concatenate them and encode as base64
     return Encoding.encodeBase64([encodedApiKey, encodedFileSeed].join(":"));
-  });
+  }).pipe(Micro.withTrace("generateKey"));
 
 // Verify that the key was generated with the same apiKey
 export const verifyKey = (key: string, apiKey: string) =>
@@ -107,7 +110,10 @@ export const verifyKey = (key: string, apiKey: string) =>
 
     // q: Does it need to be timing safe?
     return expected === given;
-  }).pipe(Micro.orElseSucceed(() => false));
+  }).pipe(
+    Micro.withTrace("verifyKey"),
+    Micro.orElseSucceed(() => false),
+  );
 
 export const generateSignedURL = (
   url: string | URL,
@@ -139,4 +145,4 @@ export const generateSignedURL = (
     parsedURL.searchParams.append("signature", signature);
 
     return parsedURL.href;
-  });
+  }).pipe(Micro.withTrace("generateSignedURL"));
