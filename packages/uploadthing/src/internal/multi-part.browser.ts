@@ -42,17 +42,17 @@ export const uploadMultipartWithProgress = (
             opts.onUploadProgress?.({ file: file.name, progress: percent });
           },
         }).pipe(
-          Micro.andThen((tag) => ({ tag, partNumber: index + 1 })),
+          Micro.map((tag) => ({ tag, partNumber: index + 1 })),
           Micro.retry({
             while: (error) => error instanceof RetryError,
             times: isTest ? 3 : 10, // less retries in tests just to make it faster
-            delay: exponentialDelay(),
+            schedule: exponentialDelay(),
           }),
         );
       },
       { concurrency: "inherit" },
     ).pipe(
-      Micro.tapExpected((error) =>
+      Micro.tapError((error) =>
         opts.reportEventToUT("failure", {
           fileKey: presigned.key,
           uploadId: presigned.uploadId,
