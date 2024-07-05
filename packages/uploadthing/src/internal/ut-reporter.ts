@@ -10,7 +10,8 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../../package.json";
-import type { ActionType, UTEvents } from "./types";
+import type {  UTEvents } from "./types";
+import type { ActionType } from "./shared-schemas";
 
 const createAPIRequestUrl = (config: {
   /**
