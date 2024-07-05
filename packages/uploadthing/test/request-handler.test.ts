@@ -74,7 +74,7 @@ const handler = createRouteHandler({
   router,
   config: {
     token: testToken.encoded,
-    logLevel: "None",
+    logLevel: "Fatal",
   },
 });
 
