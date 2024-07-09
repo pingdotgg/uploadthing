@@ -47,7 +47,7 @@ export const fetchEff = (
           input: reqInfo,
         }),
     }).pipe(
-      Micro.tapExpected((e) => Micro.sync(() => console.error(e.input))),
+      Micro.tapError((e) => Micro.sync(() => console.error(e.input))),
       Micro.map((res) => Object.assign(res, { requestUrl: reqInfo.url })),
       Micro.withTrace("fetch"),
     );

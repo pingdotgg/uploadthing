@@ -141,16 +141,16 @@ export const genUploader = <TRouter extends FileRouter>(
       const deferred = createDeferred<ClientUploadedFileData<TServerOutput>>();
       uploads.set(file, { deferred, presigned: p });
 
-      void Micro.runPromiseResult(uploadEffect(file, p), {
+      void Micro.runPromiseExit(uploadEffect(file, p), {
         signal: deferred.ac.signal,
       })
         .then((result) => {
           if (result._tag === "Right") {
             return deferred.resolve(result.right);
-          } else if (result.left._tag === "Aborted") {
+          } else if (result.left._tag === "Interrupt") {
             throw new UploadPausedError();
           }
-          throw Micro.failureSquash(result.left);
+          throw Micro.causeSquash(result.left);
         })
         .catch((err) => {
           if (err instanceof UploadPausedError) return;
@@ -188,16 +188,16 @@ export const genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         upload.deferred.ac = new AbortController();
-        void Micro.runPromiseResult(uploadEffect(file, upload.presigned), {
+        void Micro.runPromiseExit(uploadEffect(file, upload.presigned), {
           signal: upload.deferred.ac.signal,
         })
           .then((result) => {
             if (result._tag === "Right") {
               return upload.deferred.resolve(result.right);
-            } else if (result.left._tag === "Aborted") {
+            } else if (result.left._tag === "Interrupt") {
               throw new UploadPausedError();
             }
-            throw Micro.failureSquash(result.left);
+            throw Micro.causeSquash(result.left);
           })
           .catch((err) => {
             if (err instanceof UploadPausedError) return;
@@ -254,15 +254,15 @@ export const genUploader = <TRouter extends FileRouter>(
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })
       .pipe((effect) =>
-        Micro.runPromiseResult(effect, opts.signal && { signal: opts.signal }),
+        Micro.runPromiseExit(effect, opts.signal && { signal: opts.signal }),
       )
-      .then((result) => {
-        if (result._tag === "Right") {
-          return result.right;
-        } else if (result.left._tag === "Aborted") {
+      .then((exit) => {
+        if (exit._tag === "Right") {
+          return exit.right;
+        } else if (exit.left._tag === "Interrupt") {
           throw new UploadAbortedError();
         }
-        throw Micro.failureSquash(result.left);
+        throw Micro.causeSquash(exit.left);
       });
 
   return { uploadFiles: typedUploadFiles, createUpload: controllableUpload };

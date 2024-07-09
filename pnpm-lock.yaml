@@ -27,7 +27,7 @@ importers:
         version: 2.27.1
       '@effect/vitest':
         specifier: 0.5.18
-        version: 0.5.18(effect@3.4.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))
+        version: 0.5.18(effect@3.4.7)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(@vue/compiler-sfc@3.4.25)(prettier@3.3.2)
@@ -93,7 +93,7 @@ importers:
         version: link:../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nextra:
         specifier: ^2.13.2
         version: 2.13.4(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -213,14 +213,14 @@ importers:
   examples/backend-adapters/server:
     dependencies:
       '@effect/platform':
-        specifier: 0.58.14
-        version: 0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+        specifier: 0.58.20
+        version: 0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7)
       '@effect/platform-node':
-        specifier: 0.53.13
-        version: 0.53.13(@effect/platform@0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)
+        specifier: 0.53.19
+        version: 0.53.19(@effect/platform@0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7))(effect@3.4.7)
       '@effect/schema':
-        specifier: 0.68.12
-        version: 0.68.12(effect@3.4.5)
+        specifier: 0.68.17
+        version: 0.68.17(effect@3.4.7)
       '@elysiajs/cors':
         specifier: ^0.8.0
         version: 0.8.0(elysia@0.8.17(openapi-types@12.1.3)(typescript@5.5.2))
@@ -237,8 +237,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: 3.4.5
-        version: 3.4.5
+        specifier: 3.4.7
+        version: 3.4.7
       elysia:
         specifier: ^0.8.17
         version: 0.8.17(openapi-types@12.1.3)(typescript@5.5.2)
@@ -287,7 +287,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -364,13 +364,13 @@ importers:
         version: 5.40.0(react@18.3.1)
       '@trpc/client':
         specifier: next
-        version: 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
+        version: 11.0.0-rc.452(@trpc/server@11.0.0-rc.452)
       '@trpc/react-query':
         specifier: next
-        version: 11.0.0-rc.433(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433))(@trpc/server@11.0.0-rc.433)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 11.0.0-rc.452(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.452(@trpc/server@11.0.0-rc.452))(@trpc/server@11.0.0-rc.452)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@trpc/server':
         specifier: next
-        version: 11.0.0-rc.433
+        version: 11.0.0-rc.452
       '@uploadthing/expo':
         specifier: 6.7.2
         version: link:../../packages/expo
@@ -482,7 +482,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -620,7 +620,7 @@ importers:
         version: 0.368.0(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-auth:
         specifier: 5.0.0-beta.19
         version: 5.0.0-beta.19(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
@@ -693,7 +693,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -748,7 +748,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -806,7 +806,7 @@ importers:
         version: 0.30.10(@cloudflare/workers-types@4.20240620.0)(@libsql/client@0.6.0)(@types/react@18.3.3)(bun-types@1.1.14)(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -867,7 +867,7 @@ importers:
         version: 0.30.10(@cloudflare/workers-types@4.20240620.0)(@libsql/client@0.6.0)(@types/react@18.3.3)(bun-types@1.1.14)(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -943,7 +943,7 @@ importers:
         version: 0.368.0(react@18.3.1)
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -995,7 +995,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1026,7 +1026,7 @@ importers:
     dependencies:
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1057,7 +1057,7 @@ importers:
         version: link:../../packages/react
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1205,7 +1205,7 @@ importers:
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
-        version: 1.3.7(rollup@3.29.4)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+        version: 1.3.9(rollup@3.29.4)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
       '@nuxt/module-builder':
         specifier: ^0.5.5
         version: 0.5.5(@nuxt/kit@3.12.2(magicast@0.3.4)(rollup@3.29.4))(nuxi@3.11.1)(typescript@5.5.2)
@@ -1272,7 +1272,7 @@ importers:
         version: 8.57.0
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1298,8 +1298,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: 3.4.5
-        version: 3.4.5
+        specifier: 3.4.7
+        version: 3.4.7
     devDependencies:
       '@types/react':
         specifier: 18.3.3
@@ -1427,11 +1427,11 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/platform':
-        specifier: 0.58.14
-        version: 0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+        specifier: 0.58.20
+        version: 0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7)
       '@effect/schema':
-        specifier: 0.68.12
-        version: 0.68.12(effect@3.4.5)
+        specifier: 0.68.17
+        version: 0.68.17(effect@3.4.7)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1439,11 +1439,11 @@ importers:
         specifier: workspace:*
         version: link:../shared
       effect:
-        specifier: 3.4.5
-        version: 3.4.5
+        specifier: 3.4.7
+        version: 3.4.7
       effect-log:
         specifier: ^0.31.5
-        version: 0.31.5(effect@3.4.5)
+        version: 0.31.5(effect@3.4.7)
     devDependencies:
       '@types/body-parser':
         specifier: ^1.19.5
@@ -1483,7 +1483,7 @@ importers:
         version: 1.11.1
       next:
         specifier: 14.2.3
-        version: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nuxt:
         specifier: ^3.11.2
         version: 3.11.2(@parcel/watcher@2.4.1)(@types/node@20.14.0)(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(optionator@0.9.3)(rollup@4.18.0)(terser@5.19.2)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))(vue-tsc@2.0.14(typescript@5.5.2))
@@ -2681,28 +2681,28 @@ packages:
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
 
-  '@effect/platform-node-shared@0.8.13':
-    resolution: {integrity: sha512-hzsJrEMK7/wcYceMmkJrsWBqXcNM06WujCMYp2P/chqd22Ad6qZRX+cvdfQkIM8rywayiT18O5MPDR7vTxMugA==}
+  '@effect/platform-node-shared@0.8.20':
+    resolution: {integrity: sha512-0i3K23P4JDkfbAjaJ6sLfvq5PbSFDfU/jEn1f6POxacj86OwH1R3ypiUN48aXvLeCkVaZ9G2Wr4bBjk87g+uaA==}
     peerDependencies:
-      '@effect/platform': ^0.58.14
-      effect: ^3.4.5
+      '@effect/platform': ^0.58.21
+      effect: ^3.4.8
 
-  '@effect/platform-node@0.53.13':
-    resolution: {integrity: sha512-ctmBIwf3UGfYNGgG3JYQg8kJeYkLuEoVl78IFk1nLxBKFhcq47DcfSJjEhAX9Ccf+EB/LE/XDu/KaQNs6QElqA==}
+  '@effect/platform-node@0.53.19':
+    resolution: {integrity: sha512-pk5iQUinyS6JAQJ9kZ/ALLk5IzED7IOf+jpHP9jsxgi+T8wjPJZbE2e0XWFroeIKJjTb2SvWOlsjTlLSaIKevA==}
     peerDependencies:
-      '@effect/platform': ^0.58.14
-      effect: ^3.4.5
+      '@effect/platform': ^0.58.20
+      effect: ^3.4.7
 
-  '@effect/platform@0.58.14':
-    resolution: {integrity: sha512-Jvs8szsab/7BvxZd/6x59Wx4mwCAurhJc/icqjzf/UgVVEN8G119boUySzOnfH1XPiqA6zQCinq8FSHAZs3aSQ==}
+  '@effect/platform@0.58.20':
+    resolution: {integrity: sha512-IQRKDyveB4wFDV8Q/hw9+U5ixPxS4248hZfw/np+PviZfR1s5WEqrPxm4f+gj2+Le8BRxgwhD0waqhs23WwNYQ==}
     peerDependencies:
-      '@effect/schema': ^0.68.12
-      effect: ^3.4.5
+      '@effect/schema': ^0.68.17
+      effect: ^3.4.7
 
-  '@effect/schema@0.68.12':
-    resolution: {integrity: sha512-UWJsFXzeYTBQYnftwI1KR2uaxIZ8fk+kffDS7BnJwnGjPPgODq3/AzeoBDSu1MAlnwBKOz+QRdMuSMxrT/pHig==}
+  '@effect/schema@0.68.17':
+    resolution: {integrity: sha512-Zal7iaTjDT6/oo2F4xfhIKCyFxODRNnTGv/h/y0s+sDOCfpKU3QU7hZO1ZhRauiHJkIiNMNXUC63B2nTUOXtOQ==}
     peerDependencies:
-      effect: ^3.4.5
+      effect: ^3.4.7
 
   '@effect/vitest@0.5.18':
     resolution: {integrity: sha512-ovGZSjqfgPQWfgNydG4uvntfesQ6OqmMzQrzcVoXnSAAwdt/5qEYx5LoMzy41aHvOi4qc0l3V5K81miubjCbwA==}
@@ -4043,12 +4043,27 @@ packages:
     peerDependencies:
       vite: '*'
 
+  '@nuxt/devtools-kit@1.3.9':
+    resolution: {integrity: sha512-tgr/F+4BbI53/JxgaXl3cuV9dMuCXMsd4GEXN+JqtCdAkDbH3wL79GGWx0/6I9acGzRsB6UZ1H6U96nfgcIrAw==}
+    peerDependencies:
+      vite: '*'
+
   '@nuxt/devtools-wizard@1.3.7':
     resolution: {integrity: sha512-W0ncRMeWWrkbBhu3yhk/5PP6hXNgmeKA70Y4lpMe7aNe/Q8Zm5qwILD09DY026AMQoF9m0tswCI6uBvtur/Avg==}
     hasBin: true
 
+  '@nuxt/devtools-wizard@1.3.9':
+    resolution: {integrity: sha512-WMgwWWuyng+Y6k7sfBI95wYnec8TPFkuYbHHOlYQgqE9dAewPisSbEm3WkB7p/W9UqxpN8mvKN5qUg4sTmEpgQ==}
+    hasBin: true
+
   '@nuxt/devtools@1.3.7':
     resolution: {integrity: sha512-NcC2JMnBRy+C39F7fdN0bOj6HcRQSzS+L8+ZWsqP4RxFby3/R8S7bG6Ji5MeBbHBOo+4nkSfcOd3X+mxJTQ1vA==}
+    hasBin: true
+    peerDependencies:
+      vite: '*'
+
+  '@nuxt/devtools@1.3.9':
+    resolution: {integrity: sha512-tFKlbUPgSXw4tyD8xpztQtJeVn3egdKbFCV0xc92FbfGbclAyaa3XhKA2tMWXEGZQpykAWMRNrGWN24FtXFA6Q==}
     hasBin: true
     peerDependencies:
       vite: '*'
@@ -4074,6 +4089,10 @@ packages:
 
   '@nuxt/schema@3.12.2':
     resolution: {integrity: sha512-IRBuOEPOIe1CANKnO2OUiqZ1Hp/0htPkLaigK7WT6ef/SdIFZUd68Tqqejqy2AFrbgU9G80k3U7eg2XUdaiQlQ==}
+    engines: {node: ^14.18.0 || >=16.10.0}
+
+  '@nuxt/schema@3.12.3':
+    resolution: {integrity: sha512-Zw/2stN5CWVOHQ6pKyewk3tvYW5ROBloTGyIbie7/TprJT5mL+E9tTgAxOZtkoKSFaYEQXZgE1K2OzMelhLRzw==}
     engines: {node: ^14.18.0 || >=16.10.0}
 
   '@nuxt/telemetry@2.5.4':
@@ -5653,22 +5672,22 @@ packages:
       '@tiptap/core': ^2.0.0
       '@tiptap/pm': ^2.0.0
 
-  '@trpc/client@11.0.0-rc.433':
-    resolution: {integrity: sha512-QEPk14HGP4GK/88v7ORChN2GYbaP+LlCJMQHPRFogaVzapSbiE6C6PN+vNTn8soD28SuPOu+lRzuJszLIuhIPA==}
+  '@trpc/client@11.0.0-rc.452':
+    resolution: {integrity: sha512-QAabLHbaqVAc4FOkC5QbDMRy2mEZk+mYdVjAOdeqjIwQ4jUJ/m0Dx6gEM99I7ASnT1TAuPGy6WwIWJixma6QWg==}
     peerDependencies:
-      '@trpc/server': 11.0.0-rc.433+014d1c839
+      '@trpc/server': 11.0.0-rc.452+8f18c400c
 
-  '@trpc/react-query@11.0.0-rc.433':
-    resolution: {integrity: sha512-MXe9C7gq5eId6Uz30M24D11D1zc/As91WVhKZS8i3yb+VERxvRmhfWyGRn7BJvhCApZ/8eKlsKbWq48SrATlhg==}
+  '@trpc/react-query@11.0.0-rc.452':
+    resolution: {integrity: sha512-R8OhL9YNtMTbE8m7F+0Y+LsWsvXwIz0nuzyxrAiGSzrs8WdiUf4CEnAHoD1SAi+pS1TAc8p1hGWCcyyD0fXB/g==}
     peerDependencies:
-      '@tanstack/react-query': ^5.40.0
-      '@trpc/client': 11.0.0-rc.433+014d1c839
-      '@trpc/server': 11.0.0-rc.433+014d1c839
+      '@tanstack/react-query': ^5.49.2
+      '@trpc/client': 11.0.0-rc.452+8f18c400c
+      '@trpc/server': 11.0.0-rc.452+8f18c400c
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
 
-  '@trpc/server@11.0.0-rc.433':
-    resolution: {integrity: sha512-Zfafmbcv9HS/MBhW4O1JSw0b5Dnvm5PkwPviy64hyG9vRoCDPOLYyxRQD7TBdcWecITvjcQjmcdIGjQyNBVNJw==}
+  '@trpc/server@11.0.0-rc.452':
+    resolution: {integrity: sha512-sqZ2Nmh9hD/xuW5x/9tLoa7N1k/99B0eCDoVdbVtnMQZ0gH79vlLQXrbIPg6BZxu/h1i/jyHWXBmFMqN2JZ6xw==}
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -7963,8 +7982,8 @@ packages:
     peerDependencies:
       effect: ^3.4.0
 
-  effect@3.4.5:
-    resolution: {integrity: sha512-aTonOH68tUttSdYwMkiuky3hjgn3pu7yInNaE8rU2EDKQ8zr9Me78WcvWBQKe4u1gvbBH77y9dAKqn98lNIfNQ==}
+  effect@3.4.7:
+    resolution: {integrity: sha512-WnxvyX4fksdotDHBXcCfZpxFlY77wMaWP/GIRnr7aJZj9U+k+4QRWd1Ee/OU/jlswyC+MlO5YXilGfcz6WN8Lg==}
 
   electron-to-chromium@1.4.746:
     resolution: {integrity: sha512-jeWaIta2rIG2FzHaYIhSuVWqC6KJYo7oSBX4Jv7g+aVujKztfvdpf+n6MGwZdC5hQXbax4nntykLH2juIQrfPg==}
@@ -8575,6 +8594,9 @@ packages:
 
   fast-loops@1.1.3:
     resolution: {integrity: sha512-8EZzEP0eKkEEVX+drtd9mtuQ+/QrlfW/5MlwcwK5Nds6EkZ/tRzEexkzUY2mIssnAyVLT+TKHuRXmFNNXYUd6g==}
+
+  fast-npm-meta@0.1.1:
+    resolution: {integrity: sha512-uS9DjGncI/9XZ6HJFrci0WzSi++N8Jskbb2uB7+9SQlrgA3VaLhXhV9Gl5HwIGESHkayYYZFGnVNhJwRDKCWIA==}
 
   fast-querystring@1.1.2:
     resolution: {integrity: sha512-g6KuKWmFXc0fID8WWH0jit4g0AGBoJhCkJMb1RmbsSEUNvQ+ZC8D6CUZ+GtF8nMzSPXnhiePyyqqipzNNEnHjg==}
@@ -11297,6 +11319,11 @@ packages:
     engines: {node: ^14.16.0 || >=16.10.0}
     hasBin: true
 
+  nypm@0.3.9:
+    resolution: {integrity: sha512-BI2SdqqTHg2d4wJh8P9A1W+bslg33vOE9IZDY6eR2QC+Pu1iNBVZUqczrd43rJb+fMzHU7ltAYKsEFY/kHMFcw==}
+    engines: {node: ^14.16.0 || >=16.10.0}
+    hasBin: true
+
   oauth4webapi@2.10.4:
     resolution: {integrity: sha512-DSoj8QoChzOCQlJkRmYxAJCIpnXFW32R0Uq7avyghIeB6iJq0XAblOD7pcq3mx4WEBDwMuKr0Y1qveCBleG2Xw==}
 
@@ -11682,6 +11709,9 @@ packages:
 
   pkg-types@1.1.1:
     resolution: {integrity: sha512-ko14TjmDuQJ14zsotODv7dBlwxKhUKQEhuhmbqo1uCi9BB0Z2alo/wAXg6q1dTR5TyuqYyWhjtfe/Tsh+X28jQ==}
+
+  pkg-types@1.1.3:
+    resolution: {integrity: sha512-+JrgthZG6m3ckicaOB74TwQ+tBWsFl3qVQg7mN8ulwSOElJ7gBhKzj2VkCPnZ4NlF6kEquYU+RIYNVAvzd54UA==}
 
   playwright-core@1.45.0:
     resolution: {integrity: sha512-lZmHlFQ0VYSpAs43dRq1/nJ9G/6SiTI7VPqidld9TDefL9tX87bTKExWZZUF5PeRyqtXqd8fQi2qmfIedkwsNQ==}
@@ -16128,7 +16158,7 @@ snapshots:
       '@clerk/clerk-sdk-node': 4.13.15(react@18.3.1)
       '@clerk/shared': 1.4.1(react@18.3.1)
       '@clerk/types': 3.64.0
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       path-to-regexp: 6.2.1
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -16277,18 +16307,18 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect/platform-node-shared@0.8.13(@effect/platform@0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)':
+  '@effect/platform-node-shared@0.8.20(@effect/platform@0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7))(effect@3.4.7)':
     dependencies:
-      '@effect/platform': 0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
+      '@effect/platform': 0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7)
       '@parcel/watcher': 2.4.1
-      effect: 3.4.5
+      effect: 3.4.7
       multipasta: 0.2.2
 
-  '@effect/platform-node@0.53.13(@effect/platform@0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)':
+  '@effect/platform-node@0.53.19(@effect/platform@0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7))(effect@3.4.7)':
     dependencies:
-      '@effect/platform': 0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)
-      '@effect/platform-node-shared': 0.8.13(@effect/platform@0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5))(effect@3.4.5)
-      effect: 3.4.5
+      '@effect/platform': 0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7)
+      '@effect/platform-node-shared': 0.8.20(@effect/platform@0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7))(effect@3.4.7)
+      effect: 3.4.7
       mime: 3.0.0
       undici: 6.19.2
       ws: 8.17.1
@@ -16296,22 +16326,22 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.58.14(@effect/schema@0.68.12(effect@3.4.5))(effect@3.4.5)':
+  '@effect/platform@0.58.20(@effect/schema@0.68.17(effect@3.4.7))(effect@3.4.7)':
     dependencies:
-      '@effect/schema': 0.68.12(effect@3.4.5)
-      effect: 3.4.5
+      '@effect/schema': 0.68.17(effect@3.4.7)
+      effect: 3.4.7
       find-my-way-ts: 0.1.4
       multipasta: 0.2.2
       path-browserify: 1.0.1
 
-  '@effect/schema@0.68.12(effect@3.4.5)':
+  '@effect/schema@0.68.17(effect@3.4.7)':
     dependencies:
-      effect: 3.4.5
+      effect: 3.4.7
       fast-check: 3.19.0
 
-  '@effect/vitest@0.5.18(effect@3.4.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))':
+  '@effect/vitest@0.5.18(effect@3.4.7)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))':
     dependencies:
-      effect: 3.4.5
+      effect: 3.4.7
       vitest: 1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)
 
   '@egjs/agent@2.4.3': {}
@@ -17674,6 +17704,17 @@ snapshots:
       - rollup
       - supports-color
 
+  '@nuxt/devtools-kit@1.3.9(magicast@0.3.4)(rollup@3.29.4)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))':
+    dependencies:
+      '@nuxt/kit': 3.12.2(magicast@0.3.4)(rollup@3.29.4)
+      '@nuxt/schema': 3.12.3(rollup@3.29.4)
+      execa: 7.2.0
+      vite: 5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2)
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+
   '@nuxt/devtools-wizard@1.3.7':
     dependencies:
       consola: 3.2.3
@@ -17683,6 +17724,19 @@ snapshots:
       magicast: 0.3.4
       pathe: 1.1.2
       pkg-types: 1.1.1
+      prompts: 2.4.2
+      rc9: 2.1.2
+      semver: 7.6.2
+
+  '@nuxt/devtools-wizard@1.3.9':
+    dependencies:
+      consola: 3.2.3
+      diff: 5.2.0
+      execa: 7.2.0
+      global-directory: 4.0.1
+      magicast: 0.3.4
+      pathe: 1.1.2
+      pkg-types: 1.1.3
       prompts: 2.4.2
       rc9: 2.1.2
       semver: 7.6.2
@@ -17770,6 +17824,52 @@ snapshots:
       unimport: 3.7.2(rollup@4.18.0)
       vite: 5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2)
       vite-plugin-inspect: 0.8.4(@nuxt/kit@3.12.2(magicast@0.3.4)(rollup@4.18.0))(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+      vite-plugin-vue-inspector: 5.1.2(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+      which: 3.0.1
+      ws: 8.17.1
+    transitivePeerDependencies:
+      - bufferutil
+      - rollup
+      - supports-color
+      - utf-8-validate
+
+  '@nuxt/devtools@1.3.9(rollup@3.29.4)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))':
+    dependencies:
+      '@antfu/utils': 0.7.10
+      '@nuxt/devtools-kit': 1.3.9(magicast@0.3.4)(rollup@3.29.4)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+      '@nuxt/devtools-wizard': 1.3.9
+      '@nuxt/kit': 3.12.2(magicast@0.3.4)(rollup@3.29.4)
+      '@vue/devtools-core': 7.3.3(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+      '@vue/devtools-kit': 7.3.3
+      birpc: 0.2.17
+      consola: 3.2.3
+      cronstrue: 2.50.0
+      destr: 2.0.3
+      error-stack-parser-es: 0.1.4
+      execa: 7.2.0
+      fast-glob: 3.3.2
+      fast-npm-meta: 0.1.1
+      flatted: 3.3.1
+      get-port-please: 3.1.2
+      hookable: 5.5.3
+      image-meta: 0.2.0
+      is-installed-globally: 1.0.0
+      launch-editor: 2.8.0
+      local-pkg: 0.5.0
+      magicast: 0.3.4
+      nypm: 0.3.9
+      ohash: 1.1.3
+      pathe: 1.1.2
+      perfect-debounce: 1.0.0
+      pkg-types: 1.1.3
+      rc9: 2.1.2
+      scule: 1.3.0
+      semver: 7.6.2
+      simple-git: 3.25.0
+      sirv: 2.0.4
+      unimport: 3.7.2(rollup@3.29.4)
+      vite: 5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2)
+      vite-plugin-inspect: 0.8.4(@nuxt/kit@3.12.2(magicast@0.3.4)(rollup@3.29.4))(rollup@3.29.4)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
       vite-plugin-vue-inspector: 5.1.2(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
       which: 3.0.1
       ws: 8.17.1
@@ -17962,6 +18062,24 @@ snapshots:
       ufo: 1.5.3
       uncrypto: 0.1.3
       unimport: 3.7.2(rollup@4.18.0)
+      untyped: 1.4.2
+    transitivePeerDependencies:
+      - rollup
+      - supports-color
+
+  '@nuxt/schema@3.12.3(rollup@3.29.4)':
+    dependencies:
+      compatx: 0.1.8
+      consola: 3.2.3
+      defu: 6.1.4
+      hookable: 5.5.3
+      pathe: 1.1.2
+      pkg-types: 1.1.3
+      scule: 1.3.0
+      std-env: 3.7.0
+      ufo: 1.5.3
+      uncrypto: 0.1.3
+      unimport: 3.7.2(rollup@3.29.4)
       untyped: 1.4.2
     transitivePeerDependencies:
       - rollup
@@ -20086,19 +20204,19 @@ snapshots:
       '@tiptap/core': 2.3.2(@tiptap/pm@2.3.2)
       '@tiptap/pm': 2.3.2
 
-  '@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433)':
+  '@trpc/client@11.0.0-rc.452(@trpc/server@11.0.0-rc.452)':
     dependencies:
-      '@trpc/server': 11.0.0-rc.433
+      '@trpc/server': 11.0.0-rc.452
 
-  '@trpc/react-query@11.0.0-rc.433(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433))(@trpc/server@11.0.0-rc.433)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@trpc/react-query@11.0.0-rc.452(@tanstack/react-query@5.40.0(react@18.3.1))(@trpc/client@11.0.0-rc.452(@trpc/server@11.0.0-rc.452))(@trpc/server@11.0.0-rc.452)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/react-query': 5.40.0(react@18.3.1)
-      '@trpc/client': 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
-      '@trpc/server': 11.0.0-rc.433
+      '@trpc/client': 11.0.0-rc.452(@trpc/server@11.0.0-rc.452)
+      '@trpc/server': 11.0.0-rc.452
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  '@trpc/server@11.0.0-rc.433': {}
+  '@trpc/server@11.0.0-rc.452': {}
 
   '@trysound/sax@0.2.0': {}
 
@@ -22806,11 +22924,11 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect-log@0.31.5(effect@3.4.5):
+  effect-log@0.31.5(effect@3.4.7):
     dependencies:
-      effect: 3.4.5
+      effect: 3.4.7
 
-  effect@3.4.5: {}
+  effect@3.4.7: {}
 
   electron-to-chromium@1.4.746: {}
 
@@ -23818,6 +23936,8 @@ snapshots:
 
   fast-loops@1.1.3: {}
 
+  fast-npm-meta@0.1.1: {}
+
   fast-querystring@1.1.2:
     dependencies:
       fast-decode-uri-component: 1.0.1
@@ -24108,7 +24228,7 @@ snapshots:
 
   geist@1.3.0(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)):
     dependencies:
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
   gensync@1.0.0-beta.2: {}
 
@@ -25522,7 +25642,7 @@ snapshots:
   local-pkg@0.5.0:
     dependencies:
       mlly: 1.7.1
-      pkg-types: 1.1.1
+      pkg-types: 1.1.3
 
   locate-character@3.0.0: {}
 
@@ -26971,7 +27091,7 @@ snapshots:
   next-auth@5.0.0-beta.19(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
     dependencies:
       '@auth/core': 0.32.0
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
 
   next-mdx-remote@4.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
@@ -26987,13 +27107,13 @@ snapshots:
 
   next-seo@6.1.0(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
   next-themes@0.2.1(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
@@ -27004,7 +27124,7 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  next@14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 14.2.3
       '@swc/helpers': 0.5.5
@@ -27014,7 +27134,7 @@ snapshots:
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.1(@babel/core@7.24.4)(react@18.3.1)
+      styled-jsx: 5.1.1(react@18.3.1)
     optionalDependencies:
       '@next/swc-darwin-arm64': 14.2.3
       '@next/swc-darwin-x64': 14.2.3
@@ -27041,7 +27161,7 @@ snapshots:
       git-url-parse: 13.1.0
       intersection-observer: 0.12.2
       match-sorter: 6.3.1
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-seo: 6.1.0(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-themes: 0.2.1(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       nextra: 2.13.4(next@14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -27064,7 +27184,7 @@ snapshots:
       gray-matter: 4.0.3
       katex: 0.16.10
       lodash.get: 4.4.2
-      next: 14.2.3(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 14.2.3(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       next-mdx-remote: 4.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       p-limit: 3.1.0
       react: 18.3.1
@@ -27570,6 +27690,15 @@ snapshots:
       pathe: 1.1.2
       ufo: 1.5.3
 
+  nypm@0.3.9:
+    dependencies:
+      citty: 0.1.6
+      consola: 3.2.3
+      execa: 8.0.1
+      pathe: 1.1.2
+      pkg-types: 1.1.3
+      ufo: 1.5.3
+
   oauth4webapi@2.10.4: {}
 
   ob1@0.80.9: {}
@@ -27987,6 +28116,12 @@ snapshots:
       find-up: 4.1.0
 
   pkg-types@1.1.1:
+    dependencies:
+      confbox: 0.1.7
+      mlly: 1.7.1
+      pathe: 1.1.2
+
+  pkg-types@1.1.3:
     dependencies:
       confbox: 0.1.7
       mlly: 1.7.1
@@ -29932,12 +30067,10 @@ snapshots:
     dependencies:
       inline-style-parser: 0.1.1
 
-  styled-jsx@5.1.1(@babel/core@7.24.4)(react@18.3.1):
+  styled-jsx@5.1.1(react@18.3.1):
     dependencies:
       client-only: 0.0.1
       react: 18.3.1
-    optionalDependencies:
-      '@babel/core': 7.24.4
 
   stylehacks@6.1.1(postcss@8.4.38):
     dependencies:

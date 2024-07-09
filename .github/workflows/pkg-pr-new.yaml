@@ -1,0 +1,26 @@
+name: Publish Test Releases
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get changed packages
+        id: changed-packages
+        run: |
+          echo "::set-output name=changed_packages::$(git diff --name-only main ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')"
+
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+
+      - name: Build
+        run: pnpm turbo build --filter "./packages/*"
+
+      - name: Release
+        if: steps.changed-packages.outputs.changed_packages != ''
+        run: pnpx pkg-pr-new --compact publish ${{ steps.changed-packages.outputs.changed_packages }} --template ./examples/minimal*
