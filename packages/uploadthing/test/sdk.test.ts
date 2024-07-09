@@ -10,7 +10,13 @@ import {
 
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
-import { it, requestSpy, resetMocks, testToken } from "./__test-helpers";
+import {
+  API_URL,
+  it,
+  requestSpy,
+  resetMocks,
+  testToken,
+} from "./__test-helpers";
 
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -254,19 +260,16 @@ describe("getSignedURL", () => {
     await utapi.getSignedURL("foo");
 
     expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/requestFileAccess",
-      {
-        body: { fileKey: "foo" },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
-      },
-    );
+    expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/requestFileAccess`, {
+      body: { fileKey: "foo" },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 
   it("sends request with valid expiresIn (1)", async ({ db }) => {
@@ -274,19 +277,16 @@ describe("getSignedURL", () => {
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
     expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/requestFileAccess",
-      {
-        body: { fileKey: "foo", expiresIn: 86400 },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
-      },
-    );
+    expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/requestFileAccess`, {
+      body: { fileKey: "foo", expiresIn: 86400 },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 
   it("sends request with valid expiresIn (2)", async ({ db }) => {
@@ -294,19 +294,16 @@ describe("getSignedURL", () => {
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
 
     expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/requestFileAccess",
-      {
-        body: { fileKey: "foo", expiresIn: 180 },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
-      },
-    );
+    expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/requestFileAccess`, {
+      body: { fileKey: "foo", expiresIn: 180 },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 
   it("throws if expiresIn is invalid", async ({ db }) => {
@@ -339,19 +336,16 @@ describe("updateACL", () => {
       success: true,
     });
 
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/updateACL",
-      {
-        body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
-      },
-    );
+    expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/updateACL`, {
+      body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 
   it("many keys", async ({ db }) => {
@@ -361,24 +355,21 @@ describe("updateACL", () => {
       utapi.updateACL(["ut-key1", "ut-key2"], "public-read"),
     ).resolves.toEqual({ success: true });
 
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/updateACL",
-      {
-        body: {
-          updates: [
-            { fileKey: "ut-key1", acl: "public-read" },
-            { fileKey: "ut-key2", acl: "public-read" },
-          ],
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/updateACL`, {
+      body: {
+        updates: [
+          { fileKey: "ut-key1", acl: "public-read" },
+          { fileKey: "ut-key2", acl: "public-read" },
+        ],
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 
   it("many keys with keytype override", async ({ db }) => {
@@ -390,24 +381,21 @@ describe("updateACL", () => {
       }),
     ).resolves.toEqual({ success: true });
 
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/updateACL",
-      {
-        body: {
-          updates: [
-            { customId: "my-custom-id1", acl: "public-read" },
-            { customId: "my-custom-id2", acl: "public-read" },
-          ],
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/updateACL`, {
+      body: {
+        updates: [
+          { customId: "my-custom-id1", acl: "public-read" },
+          { customId: "my-custom-id2", acl: "public-read" },
+        ],
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server-sdk",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 

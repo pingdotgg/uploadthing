@@ -26,7 +26,7 @@ export const testToken = {
   decoded: tokenData,
 };
 
-const API_URL =
+export const API_URL =
   process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com";
 
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
@@ -162,7 +162,7 @@ export const useBadIngestServer = () =>
 
 export const useBadUTApi = () =>
   msw.use(
-    http.post("https://api.uploadthing.com/*", async () => {
+    http.post(`${API_URL}/*`, async () => {
       return HttpResponse.json({ error: "Not found" }, { status: 404 });
     }),
   );
