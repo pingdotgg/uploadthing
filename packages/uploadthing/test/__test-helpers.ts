@@ -26,6 +26,9 @@ export const testToken = {
   decoded: tokenData,
 };
 
+const API_URL =
+  process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com";
+
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
   const url = new URL("http://localhost:3000");
   url.searchParams.set("slug", slug);
@@ -126,22 +129,16 @@ export const it = itBase.extend({
       /**
        * UploadThing API
        */
-      http.post(
-        "https://api.uploadthing.com/v6/requestFileAccess",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          return HttpResponse.json({
-            url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
-          });
-        },
-      ),
-      http.post(
-        "https://api.uploadthing.com/v6/updateACL",
-        async ({ request }) => {
-          await callRequestSpy(request);
-          return HttpResponse.json({ success: true });
-        },
-      ),
+      http.post(`${API_URL}/v6/requestFileAccess`, async ({ request }) => {
+        await callRequestSpy(request);
+        return HttpResponse.json({
+          url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
+        });
+      }),
+      http.post(`${API_URL}/v6/updateACL`, async ({ request }) => {
+        await callRequestSpy(request);
+        return HttpResponse.json({ success: true });
+      }),
     );
     await use(db); // provide test context
     files.length = 0; // clear files after each test
