@@ -139,15 +139,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "0.68.17",
+    "@effect/schema": "0.68.18",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "consola": "^3.2.3",
-    "effect": "3.4.7",
+    "effect": "3.4.8",
     "std-env": "^3.7.0"
   },
   "devDependencies": {
-    "@effect/platform": "0.58.20",
+    "@effect/platform": "0.58.21",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
@@ -172,7 +172,7 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "@effect/platform": "*",
+    "@effect/platform": "0.58.21",
     "express": "*",
     "fastify": "*",
     "h3": "*",
