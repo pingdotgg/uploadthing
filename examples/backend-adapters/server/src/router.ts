@@ -51,6 +51,8 @@ export const uploadRouter = {
     },
   )
     .middleware(({ files }) => {
+      files;
+      // ^?
       return {
         uploadedBy: "fake-user-id-213",
       };

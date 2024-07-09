@@ -136,7 +136,6 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         "x-uploadthing-package": fePackage,
         "x-uploadthing-version": clientVersion,
       } = yield* HttpServerRequest.schemaHeaders(
-        // @ts-expect-error - it doesn't like optional headers for some reason...
         S.Struct({
           "uploadthing-hook": S.optional(UploadThingHook),
           "x-uploadthing-package": S.optional(S.String, {
