@@ -100,7 +100,7 @@ export const parseRequestJson = (req: Request) =>
  */
 export const exponentialDelay = () =>
   pipe(
-    Micro.delayExponential(10, 4),
-    Micro.delayWithMax(1000),
-    Micro.delayWithMaxElapsed(60_000),
+    Micro.scheduleExponential(10, 4),
+    Micro.scheduleWithMaxDelay(1000),
+    Micro.scheduleWithMaxElapsed(60_000),
   );

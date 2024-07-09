@@ -121,15 +121,15 @@ export const genUploader = <TRouter extends FileRouter>(
           },
         }),
         (e) =>
-          Micro.runPromiseResult(e, opts.signal ? { signal: opts.signal } : {}),
+          Micro.runPromiseExit(e, opts.signal ? { signal: opts.signal } : {}),
       )
-      .then((result) => {
-        if (result._tag === "Right") {
-          return result.right;
-        } else if (result.left._tag === "Aborted") {
+      .then((exit) => {
+        if (exit._tag === "Right") {
+          return exit.right;
+        } else if (exit.left._tag === "Interrupt") {
           throw new UploadAbortedError();
         }
-        throw Micro.failureSquash(result.left);
+        throw Micro.causeSquash(exit.left);
       });
 };
 
@@ -174,7 +174,7 @@ const uploadFilesInternal = <
             { ...opts, reportEventToUT },
             presigned,
           ).pipe(
-            Micro.onAbort(
+            Micro.onInterrupt(
               reportEventToUT("failure", {
                 fileKey: presigned.key,
                 uploadId: "uploadId" in presigned ? presigned.uploadId : null,
@@ -247,18 +247,16 @@ const uploadFile = <
             }),
           ),
         ),
-        Micro.filterOrFailWith(isPollingResponse, (_) =>
-          Micro.FailureUnexpected(
+        Micro.filterOrFailCause(isPollingResponse, (_) =>
+          Micro.causeDie(
             "received a non PollingResponse from the polling endpoint",
           ),
         ),
         Micro.filterOrFail(isPollingDone, () => new RetryError()),
         Micro.map(({ callbackData }) => callbackData),
         Micro.retry({
-          while: (res) => {
-            return res instanceof RetryError;
-          },
-          delay: exponentialDelay(),
+          while: (res) => res._tag === "RetryError",
+          schedule: exponentialDelay(),
         }),
         Micro.when(() => !opts.skipPolling),
         Micro.map(Option.getOrNull),
