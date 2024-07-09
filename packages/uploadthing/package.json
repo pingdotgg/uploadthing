@@ -139,11 +139,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.58.20",
-    "@effect/schema": "0.68.17",
+    "@effect/platform": "0.58.21",
+    "@effect/schema": "0.68.18",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.4.7",
+    "effect": "3.4.8",
     "effect-log": "^0.31.5"
   },
   "devDependencies": {
