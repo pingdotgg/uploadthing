@@ -357,16 +357,16 @@ importers:
         specifier: 1.6.4
         version: 1.6.4(@babel/runtime@7.24.4)(react-native@0.74.1(@babel/core@7.24.4)(@babel/preset-env@7.24.6(@babel/core@7.24.4))(@types/react@18.3.3)(encoding@0.1.13)(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
-        specifier: ^5.50.1
+        specifier: ^5.29.2
         version: 5.50.1(react@18.3.1)
       '@trpc/client':
-        specifier: next
+        specifier: 11.0.0-rc.452
         version: 11.0.0-rc.452(@trpc/server@11.0.0-rc.452)
       '@trpc/react-query':
-        specifier: next
+        specifier: 11.0.0-rc.452
         version: 11.0.0-rc.452(@tanstack/react-query@5.50.1(react@18.3.1))(@trpc/client@11.0.0-rc.452(@trpc/server@11.0.0-rc.452))(@trpc/server@11.0.0-rc.452)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@trpc/server':
-        specifier: next
+        specifier: 11.0.0-rc.452
         version: 11.0.0-rc.452
       '@uploadthing/expo':
         specifier: 6.7.2
