@@ -172,7 +172,7 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "@effect/platform": "0.58.21",
+    "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",
