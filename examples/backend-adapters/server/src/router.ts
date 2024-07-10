@@ -47,7 +47,7 @@ export const uploadRouter = {
 
       // Uploading the same file will yield the same key
       // getFileHashParts: (file) => [file.name],
-      getFileHashParts: () => ["foo"],
+      // getFileHashParts: () => ["foo"],
     },
   )
     .middleware(({ files }) => {
