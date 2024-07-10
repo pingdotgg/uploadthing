@@ -121,7 +121,7 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        utl: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
       },
     ]);
 
@@ -165,7 +165,7 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        utl: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
       },
     ]);
 
@@ -198,7 +198,7 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        utl: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
       },
     ]);
 
