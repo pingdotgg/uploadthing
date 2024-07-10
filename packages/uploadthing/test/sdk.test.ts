@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-globals */
+import { f } from "node_modules/msw/lib/core/HttpResponse-vQNlixkj";
 import {
   afterAll,
   beforeAll,
@@ -453,6 +454,7 @@ describe.runIf(shouldRun)(
         data: {
           customId: null,
           key: expect.stringMatching(/.+/),
+          lastModified: file.lastModified,
           name: "foo.txt",
           size: 3,
           type: "text/plain",
@@ -485,6 +487,7 @@ describe.runIf(shouldRun)(
         data: {
           customId: null,
           key: expect.stringMatching(/.+/),
+          lastModified: file.lastModified,
           name: "foo.txt",
           size: 3,
           type: "text/plain",
@@ -512,6 +515,7 @@ describe.runIf(shouldRun)(
         data: {
           customId: null,
           key: expect.stringMatching(/.+/),
+          lastModified: expect.any(Number),
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
@@ -533,6 +537,7 @@ describe.runIf(shouldRun)(
         data: {
           customId: customId,
           key: expect.stringMatching(/.+/),
+          lastModified: file.lastModified,
           name: "bar.txt",
           size: 3,
           type: "text/plain",
@@ -570,6 +575,7 @@ describe.runIf(shouldRun)(
         data: {
           customId: null,
           key: expect.stringMatching(/.+/),
+          lastModified: file.lastModified,
           name: "foo.txt",
           size: 3,
           type: "text/plain",
