@@ -154,17 +154,6 @@ export const ourFileRouter = {
   })
     .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => console.log("file", data)),
-
-  // Takes up to 4 2mb images, and the client will not resolve
-  // the upload until the `onUploadComplete` resolved.
-  withAwaitedServerData: f(
-    { image: { maxFileSize: "2MB", maxFileCount: 4 } },
-    { awaitServerData: true },
-  )
-    .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => {
-      return { foo: "bar" as const };
-    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
@@ -254,24 +243,6 @@ f(["image"])
     return {};
   })
   .onUploadComplete(async () => {});
-```
-
-### Route Options
-
-Route options are shared configurations for all file types in a route. These
-configurations are not bound to a specific type of file that is uploaded, but
-will apply to the entire route. You can pass route options as a second argument
-to the `f` function.
-
-```ts
-interface RouteOptions {
-  /**
-   * Set this to `true` to wait for the server onUploadComplete data
-   * on the client before running `onClientUploadComplete`.
-   * @default false
-   */
-  awaitServerData?: boolean;
-}
 ```
 
 ### `middleware`
@@ -474,10 +445,15 @@ type RouteHandlerConfig = {
    */
   callbackUrl?: string;
   /**
-   * Your UploadThing token. You can find this on the UploadThing dashboard.
-   * @default `env.UPLOADTHING_TOKEN`
+   * Your UploadThing app id. You can find this on the UploadThing dashboard.
+   * @default `env.UPLOADTHING_APP_ID`
    */
-  token?: string;
+  uploadthingId?: string;
+  /**
+   * Your UploadThing API key. You can find this on the UploadThing dashboard.
+   * @default `env.UPLOADTHING_KEY`
+   */
+  uploadthingSecret?: string;
   /**
    * Enable more verbose logging.
    * @default `info`

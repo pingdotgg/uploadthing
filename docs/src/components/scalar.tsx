@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { ApiReferenceReact } from "@scalar/api-reference-react";
 import { useTheme } from "nextra-theme-docs";
 

@@ -28,7 +28,8 @@ npm install uploadthing
 </Callout>
 
 ```bash copy
-UPLOADTHING_TOKEN=... # A token for interacting with the SDK
+UPLOADTHING_SECRET=... # A secret key for your app (starts with sk_live_)
+UPLOADTHING_APP_ID=... # Your app id
 ```
 
 ### Set Up A FileRouter
@@ -154,7 +155,7 @@ export default {
          * Since workers doesn't have envs on `process`. We need to pass
          * secret and isDev flag manually.
          */
-        token: env.UPLOADTHING_TOKEN,
+        uploadthingSecret: env.UPLOADTHING_SECRET,
         isDev: env.ENVIRONMENT === "development",
         /*
          * Cloudflare Workers doesn't support the cache option
@@ -164,11 +165,6 @@ export default {
           if (init && "cache" in init) delete init.cache;
           return fetch(url, init);
         },
-        /**
-         * UploadThing dev server leaves some promises hanging around that we
-         * need to wait for to prevent the worker from exiting prematurely.
-         */
-        handleDaemonPromise: (promise) => ctx.waitUntil(promise),
       },
     });
 
@@ -179,7 +175,15 @@ export default {
           return new Response("Method not allowed", { status: 405 });
         }
 
-        return await handlers[request.method](request);
+        const response = await handlers[request.method](request);
+        if ("cleanup" in response && response.cleanup) {
+          /**
+           * UploadThing dev server leaves some promises hanging around that we
+           * need to wait for to prevent the worker from exiting prematurely.
+           */
+          ctx.waitUntil(response.cleanup);
+        }
+        return response;
       }
       default: {
         return new Response("Not found", { status: 404 });
