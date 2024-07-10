@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.1.2",
-    "@scalar/api-reference-react": "0.0.4",
+    "@scalar/api-reference-react": "0.3.37",
     "@uploadthing/react": "workspace:*",
     "next": "14.2.3",
     "nextra": "^2.13.2",
