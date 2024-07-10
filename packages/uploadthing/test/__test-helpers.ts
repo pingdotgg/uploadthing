@@ -28,6 +28,9 @@ export const testToken = {
 
 export const API_URL =
   process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com";
+export const UTFS_IO_URL = process.env.UPLOADTHING_API_URL
+  ? "https://uploadthing-dev-fra1.s3.eu-central-1.amazonaws.com"
+  : "https://utfs.io/f";
 
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
   const url = new URL("http://localhost:3000");
@@ -109,7 +112,7 @@ export const it = itBase.extend({
         await callRequestSpy(request);
         return HttpResponse.text("Lorem ipsum doler sit amet");
       }),
-      http.get("https://utfs.io/f/:key", async ({ request }) => {
+      http.get(`${UTFS_IO_URL}/:key`, async ({ request }) => {
         await callRequestSpy(request);
         return HttpResponse.text("Lorem ipsum doler sit amet");
       }),
@@ -121,7 +124,7 @@ export const it = itBase.extend({
         async ({ request, params }) => {
           await callRequestSpy(request);
           return HttpResponse.json({
-            url: `https://utfs.io/f/${params.key}`,
+            url: `${UTFS_IO_URL}/${params.key}`,
             serverData: null,
           });
         },
@@ -132,7 +135,7 @@ export const it = itBase.extend({
       http.post(`${API_URL}/v6/requestFileAccess`, async ({ request }) => {
         await callRequestSpy(request);
         return HttpResponse.json({
-          url: "https://utfs.io/f/someFileKey?x-some-amz=query-param",
+          url: `${UTFS_IO_URL}/someFileKey?x-some-amz=query-param`,
         });
       }),
       http.post(`${API_URL}/v6/updateACL`, async ({ request }) => {

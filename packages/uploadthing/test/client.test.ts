@@ -15,6 +15,7 @@ import {
   requestSpy,
   testToken,
   uploadCompleteMock,
+  UTFS_IO_URL,
 } from "./__test-helpers";
 
 export const setupUTServer = async () => {
@@ -120,7 +121,7 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(/^https:\/\/utfs.io\/f\/.+$/),
+        utl: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
       },
     ]);
 
@@ -164,7 +165,7 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(/^https:\/\/utfs.io\/f\/.+$/),
+        utl: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
       },
     ]);
 
@@ -197,7 +198,7 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(/^https:\/\/utfs.io\/f\/.+$/),
+        utl: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
       },
     ]);
 

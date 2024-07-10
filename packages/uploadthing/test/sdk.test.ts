@@ -17,6 +17,7 @@ import {
   requestSpy,
   resetMocks,
   testToken,
+  UTFS_IO_URL,
 } from "./__test-helpers";
 
 describe("uploadFiles", () => {
@@ -45,7 +46,7 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         lastModified: fooFile.lastModified,
-        url: `https://utfs.io/f/${key}`,
+        url: `${UTFS_IO_URL}/${key}`,
         customId: null,
         type: "text/plain",
       },
@@ -126,7 +127,7 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         lastModified: expect.any(Number),
-        url: `https://utfs.io/f/${key}`,
+        url: `${UTFS_IO_URL}/${key}`,
         customId: null,
         type: "text/plain",
       },
@@ -226,7 +227,7 @@ describe("uploadFilesFromUrl", () => {
           name: "foo.txt",
           size: 26,
           type: "text/plain",
-          url: `https://utfs.io/f/${key1}`,
+          url: `${UTFS_IO_URL}/${key1}`,
         },
         error: null,
       },
@@ -247,7 +248,7 @@ describe("uploadFilesFromUrl", () => {
           name: "bar.txt",
           size: 26,
           type: "text/plain",
-          url: `https://utfs.io/f/${key2}`,
+          url: `${UTFS_IO_URL}/${key2}`,
         },
         error: null,
       },
@@ -458,7 +459,7 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
         },
         error: null,
       });
@@ -491,7 +492,7 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
         },
         error: null,
       });
@@ -519,7 +520,7 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
         },
         error: null,
       });
@@ -541,7 +542,7 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
         },
         error: null,
       });
@@ -579,7 +580,7 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
         },
         error: null,
       });
@@ -601,7 +602,7 @@ describe.runIf(shouldRun)(
       const { files } = await utapi.listFiles();
       const someFile = files[0];
 
-      const response = await fetch(`https://utfs.io/f/${someFile.key}`);
+      const response = await fetch(`${UTFS_IO_URL}/${someFile.key}`);
       const size = Number(response.headers.get("Content-Length"));
 
       const result = await utapi.deleteFiles(someFile.key);
