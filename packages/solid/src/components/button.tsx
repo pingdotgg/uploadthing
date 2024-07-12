@@ -59,6 +59,7 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
+  onSelect?: (files: File[]) => void;
 };
 
 /**
@@ -161,9 +162,12 @@ export function UploadButton<
           accept={generateMimeTypes(fileInfo().fileTypes).join(", ")}
           onChange={(e) => {
             if (!e.target.files) return;
+            const selectedFiles = Array.from(e.target.files);
+
+            if ($props.onSelect) $props.onSelect(selectedFiles);
+
             const input = "input" in $props ? $props.input : undefined;
-            const files = Array.from(e.target.files);
-            void uploadedThing.startUpload(files, input);
+            void uploadedThing.startUpload(selectedFiles, input);
           }}
         />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
