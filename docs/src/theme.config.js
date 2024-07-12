@@ -80,7 +80,7 @@ const Head = () => {
       />
       <meta
         name="twitter:image"
-        content="https://docs.uploadthing.com/og.jpg"
+        content="https://docs.uploadthing.com/og.jpg?v=3"
       />
     </>
   );
@@ -161,9 +161,7 @@ const config = {
       ],
       description: "Docs for the best file uploader to date",
       openGraph: {
-        images: [
-          { url: "https://docs.uploadthing.com/og.jpg?random=aaaaaaaaaaaaa" },
-        ],
+        images: [{ url: "https://docs.uploadthing.com/og.jpg?v=3" }],
       },
       canonical: `https://docs.uploadthing.com${currentUrl}`,
       noindex: process.env.NO_INDEX === "true",
