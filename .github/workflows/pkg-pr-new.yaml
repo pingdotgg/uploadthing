@@ -13,7 +13,7 @@ jobs:
       - name: Get changed packages
         id: changed-packages
         run: |
-          echo "::set-output name=changed_packages::$(git diff --name-only origin/main ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')"
+          echo "::set-output name=changed_packages::$(git diff --name-only origin/main origin/${GITHUB_HEAD_REF} ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')"
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
