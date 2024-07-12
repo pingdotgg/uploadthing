@@ -120,6 +120,10 @@ export const OurUploadButton = () => (
       // Do something once upload begins
       console.log("Uploading: ", name);
     }}
+    onSelect={(acceptedFiles) => {
+      // Do something with the accepted files
+      console.log("Accepted files: ", acceptedFiles);
+    }}
   />
 );
 ```
@@ -142,6 +146,7 @@ export const OurUploadButton = () => (
 | onUploadBegin          | function                                             | No                      | Added in `v5.4` | callback function for upload begin                                                                                          |
 | config                 | Config                                               | No                      | Added in `v5.7` | object to pass additional configuration for button                                                                          |
 | disabled               | boolean                                              | No                      | Added in `v6.7` | Disables the button.                                                                                                        |
+| onSelect               | `(files: File[]) => void`                            | No                      | Added in `v6.8` | Callback function that runs when files are selected.                                                                        |
 
 Config object
 

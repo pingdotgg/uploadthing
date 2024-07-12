@@ -64,6 +64,7 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
+  onSelect?: (files: File[]) => void;
   disabled?: boolean;
 };
 
@@ -164,6 +165,8 @@ export function UploadButton<
       onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         const selectedFiles = Array.from(e.target.files);
+
+        if ($props.onSelect) $props.onSelect(selectedFiles);
 
         if (mode === "manual") {
           setFiles(selectedFiles);
