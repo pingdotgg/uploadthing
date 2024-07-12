@@ -12,6 +12,7 @@
   lang="ts"
   generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
 >
+  import { on } from "events";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
 
@@ -26,8 +27,8 @@
     generatePermittedFileTypes,
   } from "uploadthing/client";
 
-  import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import type { UploadthingComponentProps } from "../types";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -61,6 +62,8 @@
   export let __internal_ready: boolean | undefined = undefined;
   // Allow to disable the button
   export let __internal_button_disabled: boolean | undefined = undefined;
+
+  export let onSelect: (files: File[]) => void;
 
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
@@ -198,12 +201,14 @@ Example:
       bind:this={fileInputRef}
       class="sr-only"
       type="file"
-      accept={generateMimeTypes(fileTypes ).join(", ")}
+      accept={generateMimeTypes(fileTypes).join(", ")}
       disabled={__internal_button_disabled ?? !ready}
       {multiple}
       on:change={(e) => {
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
+
+        if (onSelect) onSelect(selectedFiles);
 
         if (mode === "manual") {
           files = selectedFiles;
