@@ -63,7 +63,7 @@
   // Allow to disable the button
   export let __internal_button_disabled: boolean | undefined = undefined;
 
-  export let onSelect: (files: File[]) => void;
+  export let onSelect: ((files: File[]) => void) | undefined = undefined;
 
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
