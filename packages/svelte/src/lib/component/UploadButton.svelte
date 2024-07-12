@@ -12,7 +12,6 @@
   lang="ts"
   generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
 >
-  import { on } from "events";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
 
