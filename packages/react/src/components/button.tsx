@@ -178,7 +178,7 @@ export function UploadButton<
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
     }),
-    [fileTypes, mode, multiple, uploadFiles],
+    [$props, fileTypes, mode, multiple, uploadFiles],
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
