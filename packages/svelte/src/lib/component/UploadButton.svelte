@@ -62,7 +62,7 @@
   // Allow to disable the button
   export let __internal_button_disabled: boolean | undefined = undefined;
 
-  export let onSelect: ((files: File[]) => void) | undefined = undefined;
+  export let onChange: ((files: File[]) => void) | undefined = undefined;
 
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
@@ -132,6 +132,8 @@
     if (!pastedFiles) return;
 
     files = [...files, ...pastedFiles];
+
+    if (onChange) onChange(files);
 
     if (mode === "auto") {
       const input = "input" in uploader ? uploader.input : undefined;
@@ -207,7 +209,7 @@ Example:
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
 
-        if (onSelect) onSelect(selectedFiles);
+        if (onChange) onChange(selectedFiles);
 
         if (mode === "manual") {
           files = selectedFiles;
