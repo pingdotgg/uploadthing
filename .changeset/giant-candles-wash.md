@@ -5,4 +5,4 @@
 "@uploadthing/vue": minor
 ---
 
-feat: Add `onSelect` to <UploadButton/>
+feat: Add `onChange` to `<UploadButton/>` and `<UploadDropzone />`. Deprecate dropzone's `onDrop`
