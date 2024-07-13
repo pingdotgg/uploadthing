@@ -75,9 +75,9 @@ export type UploadDropzoneProps<
    */
   onDrop?: (acceptedFiles: File[]) => void;
   /**
-   * Callback called when files are dropped or pasted.
+   * Callback called when files are dropped, selected or pasted.
    *
-   * @param acceptedFiles - The files that were accepted.
+   * @param files - The files that were accepted.
    */
   onChange?: (files: File[]) => void;
   disabled?: boolean;
