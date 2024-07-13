@@ -6,6 +6,7 @@ import {
   contentFieldToContent,
   generateMimeTypes,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -19,7 +20,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner, usePaste } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -84,8 +85,12 @@ export function UploadButton<
     : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
+  const [files, setFiles] = createSignal<File[]>([]);
+
   let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
+
+  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -129,6 +134,23 @@ export function UploadButton<
     return "uploading";
   };
 
+  usePaste((e) => {
+    if (!appendOnPaste) return;
+    if (document.activeElement !== inputRef) return;
+
+    const pastedFiles = getFilesFromClipboardEvent(e);
+    if (!pastedFiles) return;
+
+    setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
+
+    if ($props.onChange) $props.onChange(files());
+
+    if (mode === "auto") {
+      const input = "input" in $props ? $props.input : undefined;
+      void uploadedThing.startUpload(files(), input);
+    }
+  });
+
   const getUploadButtonText = (fileTypes: string[]) => {
     if (fileTypes.length === 0) return "Loading...";
     return `Choose File${fileInfo().multiple ? `(s)` : ``}`;
@@ -170,6 +192,11 @@ export function UploadButton<
             const selectedFiles = Array.from(e.target.files);
 
             if ($props.onChange) $props.onChange(selectedFiles);
+
+            if (mode === "manual") {
+              setFiles(selectedFiles);
+              return;
+            }
 
             const input = "input" in $props ? $props.input : undefined;
             void uploadedThing.startUpload(selectedFiles, input);

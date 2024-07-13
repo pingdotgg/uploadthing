@@ -7,6 +7,7 @@ import {
   contentFieldToContent,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
@@ -20,7 +21,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner } from "./shared";
+import { progressWidths, Spinner, usePaste } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -93,7 +94,7 @@ export const UploadDropzone = <
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const $props = props as UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
 
-  const { mode = "manual" } = $props.config ?? {};
+  const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -132,15 +133,17 @@ export const UploadDropzone = <
   const fileInfo = () =>
     generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
 
-  const { getRootProps, getInputProps, isDragActive } = createDropzone({
-    onDrop,
-    multiple: fileInfo().multiple,
-    get accept() {
-      return fileInfo().fileTypes
-        ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
-        : undefined;
+  const { getRootProps, getInputProps, isDragActive, rootRef } = createDropzone(
+    {
+      onDrop,
+      multiple: fileInfo().multiple,
+      get accept() {
+        return fileInfo().fileTypes
+          ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
+          : undefined;
+      },
     },
-  });
+  );
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
@@ -158,6 +161,23 @@ export const UploadDropzone = <
 
     return "uploading";
   };
+
+  usePaste((e) => {
+    if (!appendOnPaste) return;
+    if (document.activeElement !== rootRef()) return;
+
+    const pastedFiles = getFilesFromClipboardEvent(e);
+    if (!pastedFiles) return;
+
+    setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
+
+    if ($props.onChange) $props.onChange(files());
+
+    if (mode === "auto") {
+      const input = "input" in $props ? $props.input : undefined;
+      void uploadThing.startUpload(files(), input);
+    }
+  });
 
   return (
     <div

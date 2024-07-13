@@ -96,6 +96,10 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  config?: {
+    mode?: "auto" | "manual";
+    appendOnPaste?: boolean;
+  };
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {
