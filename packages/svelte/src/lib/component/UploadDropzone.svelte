@@ -59,10 +59,14 @@
    * Callback called when files are dropped or pasted.
    *
    * @param acceptedFiles - The files that were accepted.
+   * @deprecated Use `onChange` instead
    */
   export let onDrop: (acceptedFiles: File[]) => void = () => {
     /** no-op */
   };
+
+  export let onChange: ((files: File[]) => void) | undefined = undefined;
+
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
     undefined;
@@ -114,7 +118,8 @@
   $: className = ($$props.class as string) ?? "";
 
   const onDropCallback = (acceptedFiles: File[]) => {
-    onDrop(acceptedFiles);
+    onDrop?.(acceptedFiles);
+    onChange?.(acceptedFiles);
 
     files = acceptedFiles;
 
@@ -149,6 +154,8 @@
     if (!pastedFiles) return;
 
     files = [...files, ...pastedFiles];
+
+    if (onChange) onChange(files);
 
     if (mode === "auto") {
       const input = "input" in uploader ? uploader.input : undefined;
