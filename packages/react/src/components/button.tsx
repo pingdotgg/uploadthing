@@ -64,7 +64,7 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
-  onSelect?: (files: File[]) => void;
+  onChange?: (files: File[]) => void;
   disabled?: boolean;
 };
 
@@ -166,7 +166,7 @@ export function UploadButton<
         if (!e.target.files) return;
         const selectedFiles = Array.from(e.target.files);
 
-        if ($props.onSelect) $props.onSelect(selectedFiles);
+        if ($props.onChange) $props.onChange(selectedFiles);
 
         if (mode === "manual") {
           setFiles(selectedFiles);
@@ -201,6 +201,9 @@ export function UploadButton<
     let filesToUpload = pastedFiles;
     setFiles((prev) => {
       filesToUpload = [...prev, ...pastedFiles];
+
+      if ($props.onChange) $props.onChange(filesToUpload);
+
       return filesToUpload;
     });
 

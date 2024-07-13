@@ -61,7 +61,7 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
-  onSelect?: (files: File[]) => void;
+  onChange?: (files: File[]) => void;
 };
 
 export const generateUploadButton = <TRouter extends FileRouter>(
@@ -136,7 +136,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           const { files: selectedFiles } = e.target as HTMLInputElement;
           if (!selectedFiles) return;
 
-          if ($props.onSelect) $props.onSelect(Array.from(selectedFiles));
+          if ($props.onChange) $props.onChange(Array.from(selectedFiles));
 
           if (mode === "manual") {
             files.value = Array.from(selectedFiles);
@@ -162,6 +162,8 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         if (!pastedFiles) return;
 
         files.value = [...files.value, ...pastedFiles];
+
+        if ($props.onChange) $props.onChange(files.value);
 
         if (mode === "auto") {
           const input = "input" in $props ? $props.input : undefined;

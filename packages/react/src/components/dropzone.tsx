@@ -71,8 +71,15 @@ export type UploadDropzoneProps<
    * Callback called when files are dropped or pasted.
    *
    * @param acceptedFiles - The files that were accepted.
+   * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
+  /**
+   * Callback called when files are dropped or pasted.
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
+  onChange?: (files: File[]) => void;
   disabled?: boolean;
 };
 
@@ -165,6 +172,7 @@ export function UploadDropzone<
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       $props.onDrop?.(acceptedFiles);
+      $props.onChange?.(acceptedFiles);
 
       setFiles(acceptedFiles);
 
@@ -222,8 +230,13 @@ export function UploadDropzone<
       let filesToUpload = pastedFiles;
       setFiles((prev) => {
         filesToUpload = [...prev, ...pastedFiles];
+
+        if ($props.onChange) $props.onChange(filesToUpload);
+
         return filesToUpload;
       });
+
+      if ($props.onChange) $props.onChange(filesToUpload);
 
       if (mode === "auto") uploadFiles(filesToUpload);
     };
