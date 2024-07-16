@@ -71,11 +71,11 @@ export const ApiUrl = Config.string("apiUrl").pipe(
 );
 
 export const IngestUrl = Effect.gen(function* () {
-  const { regions } = yield* UTToken;
+  const { regions, ingestHost } = yield* UTToken;
   const region = regions[0]; // Currently only support 1 region per app
 
   return yield* Config.string("ingestUrl").pipe(
-    Config.withDefault(`https://${region}.ingest.uploadthing.com`),
+    Config.withDefault(`https://${region}.${ingestHost}`),
     Config.mapAttempt((_) => new URL(_)),
     Config.map((url) => url.href.replace(/\/$/, "")),
   );

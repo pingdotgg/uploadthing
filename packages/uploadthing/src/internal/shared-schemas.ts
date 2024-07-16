@@ -27,17 +27,18 @@ const DecodeString = S.transform(S.Uint8ArrayFromSelf, S.String, {
   encode: (data) => new TextEncoder().encode(data),
 });
 
+export const ParsedToken = S.Struct({
+  apiKey: S.String.pipe(S.startsWith("sk_")),
+  appId: S.String,
+  regions: S.NonEmptyArray(S.String),
+  ingestHost: S.optional(S.String, {
+    default: () => "ingest.uploadthing.com",
+  }),
+});
+
 export const UploadThingToken = S.Base64.pipe(
   S.compose(DecodeString),
-  S.compose(
-    S.parseJson(
-      S.Struct({
-        apiKey: S.String.pipe(S.startsWith("sk_")),
-        appId: S.String,
-        regions: S.NonEmptyArray(S.String),
-      }),
-    ),
-  ),
+  S.compose(S.parseJson(ParsedToken)),
 );
 
 /**

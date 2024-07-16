@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 
 import { UPLOADTHING_VERSION } from "../src/internal/config";
-import { UploadThingToken } from "../src/internal/shared-schemas";
+import { ParsedToken, UploadThingToken } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/shared-schemas";
 
 export const requestSpy = vi.fn<[string, RequestInit]>();
@@ -22,7 +22,7 @@ const tokenData = {
   regions: ["fra1"] as const,
 };
 export const testToken = {
-  encoded: S.encodeSync(UploadThingToken)(tokenData),
+  encoded: S.encodeSync(UploadThingToken)(ParsedToken.make(tokenData)),
   decoded: tokenData,
 };
 
