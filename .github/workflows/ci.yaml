@@ -36,7 +36,7 @@ jobs:
         env:
           UPLOADTHING_TEST_TOKEN: ${{ secrets.UPLOADTHING_TEST_TOKEN }}
           UPLOADTHING_API_URL: https://api.ut-staging.com
-          UPLOADTHING_INGEST_URL: https://sea1.ingest.ut-staging.com
+          UPLOADTHING_INGEST_URL: https://fra1.ingest.ut-staging.com
 
   lint:
     runs-on: ubuntu-latest
@@ -145,4 +145,4 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_E2E_TEST_TOKEN }}
           UPLOADTHING_API_URL: https://api.ut-staging.com
-          UPLOADTHING_INGEST_URL: https://sea1.ingest.ut-staging.com
+          UPLOADTHING_INGEST_URL: https://fra1.ingest.ut-staging.com
