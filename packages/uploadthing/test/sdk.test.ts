@@ -414,7 +414,6 @@ describe.runIf(shouldRun)(
       token: shouldRun
         ? process.env.UPLOADTHING_TEST_TOKEN!
         : testToken.encoded,
-      logLevel: "Debug",
     });
 
     const localInfo = { totalBytes: 0, filesUploaded: 0 };
