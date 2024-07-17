@@ -18,6 +18,7 @@ import { configProvider } from "../src/internal/config";
 import {
   baseHeaders,
   createApiUrl,
+  INGEST_URL,
   it,
   middlewareMock,
   requestSpy,
@@ -87,28 +88,25 @@ describe("adapters:h3", async () => {
     ]);
 
     // Should (asynchronously) register metadata at UploadThing
-    await vi.waitUntil(() => requestsToDomain("ingest.uploadthing.com").length);
-    expect(requestSpy).toHaveBeenCalledWith(
-      `https://fra1.ingest.uploadthing.com/route-metadata`,
-      {
-        body: {
-          isDev: false,
-          awaitServerData: false,
-          fileKeys: [json[0].key],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "h3",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "h3",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -159,36 +157,31 @@ describe("adapters:server", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(
-          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
-        ),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
         name: "foo.txt",
       },
     ]);
 
     // Should (asynchronously) register metadata at UploadThing
-    await vi.waitUntil(() => requestsToDomain("ingest.uploadthing.com").length);
-    expect(requestSpy).toHaveBeenCalledWith(
-      `https://fra1.ingest.uploadthing.com/route-metadata`,
-      {
-        body: {
-          isDev: false,
-          awaitServerData: false,
-          fileKeys: [json[0].key],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "server",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -237,36 +230,31 @@ describe("adapters:next", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(
-          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
-        ),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
         name: "foo.txt",
       },
     ]);
 
     // Should (asynchronously) register metadata at UploadThing
-    await vi.waitUntil(() => requestsToDomain("ingest.uploadthing.com").length);
-    expect(requestSpy).toHaveBeenCalledWith(
-      `https://fra1.ingest.uploadthing.com/route-metadata`,
-      {
-        body: {
-          isDev: false,
-          awaitServerData: false,
-          fileKeys: [json[0].key],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "nextjs-app",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "nextjs-app",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -367,36 +355,31 @@ describe("adapters:next-legacy", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(
-          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
-        ),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
         name: "foo.txt",
       },
     ]);
 
     // Should (asynchronously) register metadata at UploadThing
-    await vi.waitUntil(() => requestsToDomain("ingest.uploadthing.com").length);
-    expect(requestSpy).toHaveBeenCalledWith(
-      `https://fra1.ingest.uploadthing.com/route-metadata`,
-      {
-        body: {
-          isDev: false,
-          awaitServerData: false,
-          fileKeys: [jsonData[0]?.key],
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "nextjs-pages",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [jsonData[0]?.key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "nextjs-pages",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -470,36 +453,31 @@ describe("adapters:express", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(
-          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
-        ),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
         name: "foo.txt",
       },
     ]);
 
     // Should (asynchronously) register metadata at UploadThing
-    await vi.waitUntil(() => requestsToDomain("ingest.uploadthing.com").length);
-    expect(requestSpy).toHaveBeenCalledWith(
-      `https://fra1.ingest.uploadthing.com/route-metadata`,
-      {
-        body: {
-          isDev: false,
-          awaitServerData: false,
-          fileKeys: [json[0].key],
-          metadata: {},
-          callbackUrl: url,
-          callbackSlug: "middleware",
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "express",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: url,
+        callbackSlug: "middleware",
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "express",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
 
     server.close();
   });
@@ -613,36 +591,31 @@ describe("adapters:fastify", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(
-          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
-        ),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
         name: "foo.txt",
       },
     ]);
 
     // Should (asynchronously) register metadata at UploadThing
-    await vi.waitUntil(() => requestsToDomain("ingest.uploadthing.com").length);
-    expect(requestSpy).toHaveBeenCalledWith(
-      `https://fra1.ingest.uploadthing.com/route-metadata`,
-      {
-        body: {
-          isDev: false,
-          awaitServerData: false,
-          fileKeys: [json[0].key],
-          metadata: {},
-          callbackUrl: url,
-          callbackSlug: "middleware",
-        },
-        headers: expect.objectContaining({
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_foo",
-          "x-uploadthing-be-adapter": "fastify",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        }),
-        method: "POST",
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: url,
+        callbackSlug: "middleware",
       },
-    );
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "fastify",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
 
     await server.close();
   });
@@ -701,9 +674,7 @@ describe("adapters:effect-platform", async () => {
         {
           customId: null,
           key: expect.stringMatching(/.+/),
-          url: expect.stringMatching(
-            `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
-          ),
+          url: expect.stringMatching(`${INGEST_URL}/.+`),
           name: "foo.txt",
         },
       ]);

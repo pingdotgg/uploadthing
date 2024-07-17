@@ -13,6 +13,7 @@ import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
+  INGEST_URL,
   it,
   requestSpy,
   resetMocks,
@@ -29,7 +30,7 @@ describe("uploadFiles", () => {
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toHaveBeenCalledWith(
-      expect.stringContaining("ingest.uploadthing.com"),
+      expect.stringContaining(INGEST_URL),
       expect.objectContaining({
         method: "PUT",
         body: expect.any(FormData),

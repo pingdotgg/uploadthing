@@ -31,6 +31,9 @@ export const API_URL =
 export const UTFS_IO_URL = process.env.UPLOADTHING_API_URL
   ? "https://staging.utfs.io/f"
   : "https://utfs.io/f";
+export const INGEST_URL = process.env.UPLOADTHING_API_URL
+  ? "https://fra1.ingest.ut-staging.com"
+  : "https://fra1.ingest.uploadthing.com";
 
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
   const url = new URL("http://localhost:3000");
@@ -92,20 +95,6 @@ export const it = itBase.extend({
     };
     msw.use(
       /**
-       * S3
-       */
-      http.post("https://bucket.s3.amazonaws.com", async ({ request }) => {
-        await callRequestSpy(request);
-        return new HttpResponse();
-      }),
-      http.put("https://bucket.s3.amazonaws.com/:key", async ({ request }) => {
-        await callRequestSpy(request);
-        return new HttpResponse(null, {
-          status: 204,
-          headers: { ETag: "abc123" },
-        });
-      }),
-      /**
        * Static Assets
        */
       http.get("https://cdn.foo.com/:fileKey", async ({ request }) => {
@@ -120,7 +109,7 @@ export const it = itBase.extend({
        * UploadThing Ingest
        */
       http.all<{ key: string }>(
-        `https://fra1.ingest.uploadthing.com/:key`,
+        `${INGEST_URL}/:key`,
         async ({ request, params }) => {
           await callRequestSpy(request);
           return HttpResponse.json({
@@ -153,14 +142,11 @@ export const it = itBase.extend({
  */
 export const useBadIngestServer = () =>
   msw.use(
-    http.put(
-      `https://fra1.ingest.uploadthing.com/:key`,
-      async ({ request, params }) => {
-        await callRequestSpy(request);
+    http.put(`${INGEST_URL}/:key`, async ({ request, params }) => {
+      await callRequestSpy(request);
 
-        return new HttpResponse(null, { status: 403 });
-      },
-    ),
+      return new HttpResponse(null, { status: 403 });
+    }),
   );
 
 export const useBadUTApi = () =>
