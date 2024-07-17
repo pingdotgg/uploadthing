@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-import { configProvider, IngestUrl, UTToken } from "./config";
+import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { ParsedToken, UploadThingToken } from "./shared-schemas";
 
 const app1TokenData = {
@@ -257,6 +257,60 @@ describe("ingest url infers correctly", () => {
       );
 
       expect(url).toEqual(Exit.succeed("https://fra1.ingest.uploadthing.com"));
+    }),
+  );
+});
+
+describe("IsDevelopment", () => {
+  it.effect("defaults to false", () =>
+    Effect.gen(function* () {
+      const isDev = yield* IsDevelopment.pipe(
+        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.exit,
+      );
+
+      expect(isDev).toEqual(Exit.succeed(false));
+    }),
+  );
+
+  it.effect("is true if NODE_ENV is development", () =>
+    Effect.gen(function* () {
+      // @ts-expect-error - it says it's readonly but we can mutate it
+      process.env.NODE_ENV = "development";
+
+      const isDev = yield* IsDevelopment.pipe(
+        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.exit,
+      );
+
+      expect(isDev).toEqual(Exit.succeed(true));
+    }),
+  );
+
+  it.effect("is true if UPLOADTHING_IS_DEV is true", () =>
+    Effect.gen(function* () {
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
+      process.env.UPLOADTHING_IS_DEV = "true";
+
+      const isDev = yield* IsDevelopment.pipe(
+        Effect.provide(Layer.setConfigProvider(configProvider(null))),
+        Effect.exit,
+      );
+
+      expect(isDev).toEqual(Exit.succeed(true));
+    }),
+  );
+
+  it.effect("is true if config set", () =>
+    Effect.gen(function* () {
+      const isDev = yield* IsDevelopment.pipe(
+        Effect.provide(
+          Layer.setConfigProvider(configProvider({ isDev: true })),
+        ),
+        Effect.exit,
+      );
+
+      expect(isDev).toEqual(Exit.succeed(true));
     }),
   );
 });

@@ -45,9 +45,12 @@ export const configProvider = (options: unknown) =>
   );
 
 export const IsDevelopment = Config.boolean("isDev").pipe(
-  Config.withDefault(
-    typeof process !== "undefined" && process.env.NODE_ENV === "development",
+  Config.orElse(() =>
+    Config.succeed(
+      typeof process !== "undefined" ? process.env.NODE_ENV : undefined,
+    ).pipe(Config.map((_) => _ === "development")),
   ),
+  Config.withDefault(false),
 );
 
 export const UTToken = S.Config("token", UploadThingToken).pipe(

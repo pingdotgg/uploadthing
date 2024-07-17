@@ -23,9 +23,9 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  return makeAdapterHandler<[Request]>(
+  return makeAdapterHandler<[Request | { request: Request }]>(
     (req) => Effect.succeed({ req, res: undefined, event: undefined }),
-    (req) => Effect.succeed(req),
+    (ev) => Effect.succeed("request" in ev ? ev.request : ev),
     opts,
     "server",
   );
