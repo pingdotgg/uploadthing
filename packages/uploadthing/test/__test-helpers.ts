@@ -27,9 +27,9 @@ export const testToken = {
 };
 
 export const API_URL =
-  process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com";
+  process.env.UPLOADTHING_API_URL ?? "https://api.ut-staging.com";
 export const UTFS_IO_URL = process.env.UPLOADTHING_API_URL
-  ? "https://uploadthing-dev-fra1.s3.eu-central-1.amazonaws.com"
+  ? "https://staging.utfs.io/f"
   : "https://utfs.io/f";
 
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
