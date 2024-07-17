@@ -27,7 +27,7 @@ export const testToken = {
 };
 
 export const API_URL =
-  process.env.UPLOADTHING_API_URL ?? "https://api.ut-staging.com";
+  process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com";
 export const UTFS_IO_URL = process.env.UPLOADTHING_API_URL
   ? "https://staging.utfs.io/f"
   : "https://utfs.io/f";
