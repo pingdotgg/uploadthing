@@ -79,7 +79,9 @@ describe("adapters:h3", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
         name: "foo.txt",
       },
     ]);
@@ -157,7 +159,9 @@ describe("adapters:server", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
         name: "foo.txt",
       },
     ]);
@@ -233,7 +237,9 @@ describe("adapters:next", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
         name: "foo.txt",
       },
     ]);
@@ -361,7 +367,9 @@ describe("adapters:next-legacy", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
         name: "foo.txt",
       },
     ]);
@@ -462,7 +470,9 @@ describe("adapters:express", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
         name: "foo.txt",
       },
     ]);
@@ -603,7 +613,9 @@ describe("adapters:fastify", async () => {
       {
         customId: null,
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
         name: "foo.txt",
       },
     ]);
@@ -689,7 +701,9 @@ describe("adapters:effect-platform", async () => {
         {
           customId: null,
           key: expect.stringMatching(/.+/),
-          url: expect.stringMatching(`https://fra1.ingest.uploadthing.com/.+`),
+          url: expect.stringMatching(
+            `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+          ),
           name: "foo.txt",
         },
       ]);
