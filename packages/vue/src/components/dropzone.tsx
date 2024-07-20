@@ -1,6 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import * as Vue from "vue";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref } from "vue";
 
 import type { DropzoneOptions } from "@uploadthing/dropzone/vue";
 import { useDropzone } from "@uploadthing/dropzone/vue";
@@ -8,7 +8,6 @@ import type { ContentField, StyleField } from "@uploadthing/shared";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
-  generateClientDropzoneAccept,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
@@ -118,16 +117,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         onUploadBegin: $props.onUploadBegin,
         onBeforeUploadBegin: $props.onBeforeUploadBegin,
       });
-      const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+      const { startUpload, isUploading, routeConfig } = useUploadThing(
         $props.endpoint,
         useUploadthingProps,
       );
 
       const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(permittedFileInfo.value?.config),
-      );
-      const acceptedFileTypes = computed(() =>
-        generateClientDropzoneAccept(permittedFileTypes.value.fileTypes),
+        generatePermittedFileTypes(routeConfig?.value),
       );
 
       const onDrop = (acceptedFiles: File[]) => {
@@ -145,23 +141,10 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
       const dropzoneOptions: DropzoneOptions = reactive({
         onDrop: onDrop,
-        accept: acceptedFileTypes.value,
-        multiple: permittedFileTypes.value.multiple,
+        routeConfig,
         disabled: permittedFileTypes.value.fileTypes.length === 0,
       });
-      watch(
-        () => acceptedFileTypes.value,
-        (newVal) => {
-          dropzoneOptions.accept = newVal;
-        },
-      );
-      watch(
-        () => permittedFileTypes.value,
-        (newVal) => {
-          dropzoneOptions.multiple = newVal.multiple;
-          dropzoneOptions.disabled = newVal.fileTypes.length === 0;
-        },
-      );
+
       const { getRootProps, getInputProps, isDragActive, rootRef } =
         useDropzone(dropzoneOptions);
 
@@ -254,8 +237,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         if (customContent) return customContent;
 
         return (
-          allowedContentTextLabelGenerator(permittedFileInfo.value?.config) ||
-          " " // ensure no empty string
+          allowedContentTextLabelGenerator(routeConfig?.value) || " " // ensure no empty string
         );
       };
 

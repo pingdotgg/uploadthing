@@ -18,18 +18,17 @@
   import { createDropzone } from "@uploadthing/dropzone/svelte";
   import {
     allowedContentTextLabelGenerator,
+    generateClientDropzoneAccept,
+    getFilesFromClipboardEvent,
     resolveMaybeUrlArg,
     styleFieldToClassName,
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
-  import {
-    generateClientDropzoneAccept,
-    generatePermittedFileTypes,
-  } from "uploadthing/client";
+  import { generatePermittedFileTypes } from "uploadthing/client";
 
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
-  import { getFilesFromClipboardEvent, progressWidths } from "./shared";
+  import { progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
   type DropzoneStyleFieldCallbackArgs = {
@@ -83,7 +82,7 @@
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,
     {
       skipPolling: !uploader?.onClientUploadComplete
@@ -106,9 +105,7 @@
 
   $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes(
-    $permittedFileInfo?.config,
-  ));
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
   $: ready =
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
@@ -246,7 +243,7 @@
     data-state={state}
   >
     <slot name="allowed-content" state={styleFieldArg}>
-      {allowedContentTextLabelGenerator($permittedFileInfo?.config)}
+      {allowedContentTextLabelGenerator($routeConfig)}
     </slot>
   </div>
   <button

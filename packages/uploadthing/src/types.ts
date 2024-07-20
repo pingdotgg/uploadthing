@@ -1,6 +1,11 @@
 import type { ExtendObjectIf, MaybePromise } from "@uploadthing/shared";
 
-import type { FileRouter, inferEndpointInput } from "./internal/types";
+import type {
+  FileRouter,
+  inferEndpointInput,
+  inferEndpointOutput,
+} from "./internal/types";
+import type { ClientUploadedFileData } from "./types";
 
 export type {
   inferEndpointInput,
@@ -14,6 +19,7 @@ export * from "./sdk/types";
 export type {
   EndpointMetadata,
   ExpandedRouteConfig,
+  FileWithState,
 } from "@uploadthing/shared";
 
 export type {
@@ -27,6 +33,9 @@ export type UploadFilesOptions<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
 > = {
   /**
    * The files to upload
@@ -55,6 +64,12 @@ export type UploadFilesOptions<
    * @default false
    */
   skipPolling?: TSkipPolling | undefined;
+  /**
+   * Called when the upload is complete
+   */
+  onUploadComplete?:
+    | ((res: ClientUploadedFileData<TServerOutput>) => void)
+    | undefined;
   /**
    * URL to the UploadThing API endpoint
    * @example URL { http://localhost:3000/api/uploadthing }

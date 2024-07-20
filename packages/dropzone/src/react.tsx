@@ -15,8 +15,9 @@ import type {
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { fromEvent } from "file-selector";
 
+import type { FileWithState } from "@uploadthing/shared";
+
 import {
-  acceptPropAsAcceptAttr,
   allFilesAccepted,
   initialState,
   isEnterOrSpace,
@@ -27,6 +28,7 @@ import {
   isValidSize,
   noop,
   reducer,
+  routeConfigToDropzoneProps,
 } from "./core";
 import type { DropzoneOptions } from "./types";
 
@@ -60,15 +62,15 @@ export type DropEvent =
  * ```
  */
 export function useDropzone({
-  accept,
+  routeConfig,
   disabled = false,
-  maxSize = Number.POSITIVE_INFINITY,
   minSize = 0,
-  multiple = true,
-  maxFiles = 0,
   onDrop,
 }: DropzoneOptions) {
-  const acceptAttr = useMemo(() => acceptPropAsAcceptAttr(accept), [accept]);
+  const { accept, multiple, maxFiles, maxSize } = useMemo(
+    () => routeConfigToDropzoneProps(routeConfig),
+    [routeConfig],
+  );
 
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -136,7 +138,7 @@ export function useDropzone({
               fileCount > 0 &&
               allFilesAccepted({
                 files: files as File[],
-                accept: acceptAttr!,
+                accept,
                 minSize,
                 maxSize,
                 multiple,
@@ -156,7 +158,7 @@ export function useDropzone({
           .catch(noop);
       }
     },
-    [acceptAttr, maxFiles, maxSize, minSize, multiple],
+    [accept, maxFiles, maxSize, minSize, multiple],
   );
 
   const onDragOver = useCallback((event: DragEvent<HTMLElement>) => {
@@ -203,14 +205,18 @@ export function useDropzone({
 
   const setFiles = useCallback(
     (files: File[]) => {
-      const acceptedFiles: File[] = [];
+      const acceptedFiles: FileWithState[] = [];
 
       files.forEach((file) => {
-        const accepted = isFileAccepted(file, acceptAttr!);
+        const accepted = isFileAccepted(file, accept);
         const sizeMatch = isValidSize(file, minSize, maxSize);
 
         if (accepted && sizeMatch) {
-          acceptedFiles.push(file);
+          const fileWithState: FileWithState = Object.assign(file, {
+            status: "pending" as const,
+            key: null,
+          });
+          acceptedFiles.push(fileWithState);
         }
       });
 
@@ -227,7 +233,7 @@ export function useDropzone({
 
       onDrop(acceptedFiles);
     },
-    [acceptAttr, maxFiles, maxSize, minSize, multiple, onDrop],
+    [accept, maxFiles, maxSize, minSize, multiple, onDrop],
   );
 
   const onDropCb = useCallback(
@@ -241,7 +247,16 @@ export function useDropzone({
         Promise.resolve(fromEvent(event))
           .then((files) => {
             if (event.isPropagationStopped()) return;
-            setFiles(files as File[]);
+
+            console.log("files in onDrop", files);
+
+            const filesWithState = (files as File[]).map((file) =>
+              Object.assign(file, {
+                status: "pending" as const,
+                key: null,
+              }),
+            );
+            setFiles(filesWithState);
           })
           .catch(noop);
       }
@@ -323,7 +338,7 @@ export function useDropzone({
       ref: inputRef,
       type: "file",
       style: { display: "none" },
-      accept: acceptAttr,
+      accept: accept,
       multiple,
       tabIndex: -1,
       ...(!disabled
@@ -334,7 +349,7 @@ export function useDropzone({
           }
         : {}),
     }),
-    [acceptAttr, multiple, onDropCb, onInputElementClick, disabled],
+    [accept, multiple, onDropCb, onInputElementClick, disabled],
   );
 
   return {

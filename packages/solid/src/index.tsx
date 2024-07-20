@@ -1,6 +1,8 @@
 import "./styles.css";
 
-export * from "./useUploadThing";
+export { generateSolidHelpers } from "./useUploadThing";
+export type * from "./useUploadThing";
+
 export {
   UploadButton,
   UploadDropzone,

@@ -33,14 +33,34 @@ export const generateClientDropzoneAccept = (fileTypes: string[]) => {
   return Object.fromEntries(mimeTypes.map((type) => [type, []]));
 };
 
+export type FileWithState = File &
+  (
+    | {
+        status: "pending";
+        key: null;
+      }
+    | {
+        status: "uploading" | "uploaded";
+        key: string;
+      }
+  );
+
 export function getFilesFromClipboardEvent(event: ClipboardEvent) {
   const dataTransferItems = event.clipboardData?.items;
   if (!dataTransferItems) return;
 
-  const files = Array.from(dataTransferItems).reduce<File[]>((acc, curr) => {
-    const f = curr.getAsFile();
-    return f ? [...acc, f] : acc;
-  }, []);
+  const files = Array.from(dataTransferItems).reduce<FileWithState[]>(
+    (acc, curr) => {
+      const f = curr.getAsFile();
+      if (!f) return acc;
+      const fileWithState = Object.assign(f, {
+        status: "pending" as const,
+        key: null,
+      });
+      return [...acc, fileWithState];
+    },
+    [],
+  );
 
   return files;
 }
@@ -49,7 +69,9 @@ export function getFilesFromClipboardEvent(event: ClipboardEvent) {
  * Shared helpers for our premade components that's reusable by multiple frameworks
  */
 
-export const generatePermittedFileTypes = (config?: ExpandedRouteConfig) => {
+export const generatePermittedFileTypes = (
+  config: ExpandedRouteConfig | undefined,
+) => {
   const fileTypes = config ? objectKeys(config) : [];
 
   const maxFileCount = config
@@ -63,7 +85,9 @@ export const capitalizeStart = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
+export const INTERNAL_doFormatting = (
+  config: ExpandedRouteConfig | undefined,
+): string => {
   if (!config) return "";
 
   const allowedTypes = objectKeys(config);
@@ -94,7 +118,7 @@ export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
 };
 
 export const allowedContentTextLabelGenerator = (
-  config?: ExpandedRouteConfig,
+  config: ExpandedRouteConfig | undefined,
 ): string => {
   return capitalizeStart(INTERNAL_doFormatting(config));
 };

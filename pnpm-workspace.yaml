@@ -5,3 +5,4 @@ packages:
   - "packages/*"
   - "!packages/raycast-extension"
   - "tooling/*"
+  - "playground"

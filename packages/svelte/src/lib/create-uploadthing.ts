@@ -17,10 +17,13 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const createEndpointMetadata = (url: URL, endpoint: string) => {
+export type { ExpandedRouteConfig } from "@uploadthing/shared";
+
+const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
-  return derived(dataGetter, ($data) =>
-    $data.data?.find((x) => x.slug === endpoint),
+  return derived(
+    dataGetter,
+    ($data) => $data.data?.find((x) => x.slug === endpoint)?.config,
   );
 };
 
@@ -46,10 +49,7 @@ export const INTERNAL_createUploadThingGen = <
     opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
   ) => {
     const isUploading = writable(false);
-    const permittedFileInfo = createEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+    const routeConfig = createRouteConfig(initOpts.url, endpoint as string);
     let uploadProgress = 0;
     let fileProgress = new Map();
 
@@ -113,7 +113,7 @@ export const INTERNAL_createUploadThingGen = <
     return {
       startUpload,
       isUploading: readonly(isUploading),
-      permittedFileInfo,
+      routeConfig,
     } as const;
   };
   return useUploadThing;

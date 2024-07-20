@@ -3,7 +3,7 @@ export {
    * @deprecated - import from `@uploadthing/react` instead
    */
   generateReactHelpers,
-} from "./useUploadThing";
+} from "./use-uploadthing";
 
 export {
   /**

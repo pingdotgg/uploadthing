@@ -1,5 +1,6 @@
 import type {
   ExtendObjectIf,
+  FileWithState,
   MaybePromise,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -33,6 +34,14 @@ export type UseUploadthingProps<
     : null,
 > = {
   /**
+   * Controllable state for the files to upload
+   */
+  files?: FileWithState[] | undefined;
+  /**
+   * Called when the files are changed
+   */
+  onFilesChange?: ((files: FileWithState[]) => void) | undefined;
+  /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
    * Can be used to modify the files before they are uploaded, e.g. renaming them
    */
@@ -46,7 +55,19 @@ export type UseUploadthingProps<
   /**
    * Called continuously as the file is uploaded to the storage provider
    */
-  onUploadProgress?: ((p: number) => void) | undefined;
+  onUploadProgress?:
+    | ((
+        /**
+         * The overall progress of the upload
+         */
+        p: number,
+        /**
+         * The event that triggered the progress update
+         * with the filename and that file's progress
+         */
+        e: { file: string; progress: number } | undefined,
+      ) => void)
+    | undefined;
   /**
    * Skip polling for server data after upload is complete
    * Useful if you want faster response times and don't need

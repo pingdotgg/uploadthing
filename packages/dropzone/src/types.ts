@@ -1,13 +1,12 @@
+import type { ExpandedRouteConfig, FileWithState } from "@uploadthing/shared";
+
 export type AcceptProp = Record<string, string[]>;
 
 export type DropzoneOptions = {
-  multiple?: boolean;
-  accept?: AcceptProp | undefined;
+  routeConfig: ExpandedRouteConfig | undefined;
   minSize?: number;
-  maxSize?: number;
-  maxFiles?: number;
   disabled?: boolean | undefined;
-  onDrop: <T extends File>(acceptedFiles: T[]) => void;
+  onDrop: (acceptedFiles: FileWithState[]) => void;
 };
 
 export type DropzoneState = {
@@ -16,5 +15,5 @@ export type DropzoneState = {
   isDragAccept: boolean;
   isDragReject: boolean;
   isFileDialogActive: boolean;
-  acceptedFiles: File[];
+  acceptedFiles: FileWithState[];
 };

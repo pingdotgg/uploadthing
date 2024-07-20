@@ -19,6 +19,7 @@
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    getFilesFromClipboardEvent,
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
   import {
@@ -28,7 +29,7 @@
 
   import type { UploadthingComponentProps } from "../types";
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
-  import { getFilesFromClipboardEvent, progressWidths } from "./shared";
+  import { progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
   type ButtonStyleFieldCallbackArgs = {
@@ -71,7 +72,7 @@
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,
     {
       skipPolling: !uploader?.onClientUploadComplete
@@ -99,7 +100,7 @@
   $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
   $: ({ fileTypes, multiple } = generatePermittedFileTypes(
-    $permittedFileInfo?.config,
+    $routeConfig,
   ));
   $: ready =
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
@@ -256,7 +257,7 @@ Example:
       data-ut-element="allowed-content"
     >
       <slot name="allowed-content" state={styleFieldArg}>
-        {allowedContentTextLabelGenerator($permittedFileInfo?.config)}
+        {allowedContentTextLabelGenerator($routeConfig)}
       </slot>
     </div>
   {/if}

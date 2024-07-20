@@ -21,9 +21,9 @@ import type {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
+import { usePaste } from "../hooks/use-paste";
+import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
@@ -92,8 +92,7 @@ export function UploadButton<
     ? ErrorMessage<"You forgot to pass the generic">
     : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
 ) {
-  // Cast back to UploadthingComponentProps<TRouter> to get the correct type
-  // since the ErrorMessage messes it up otherwise
+  // Cast back to UploadthingComponentProps<TRouter> to get the correct type. ErrorMessage is unreachable
   const $props = props as unknown as UploadButtonProps<
     TRouter,
     TEndpoint,
@@ -132,7 +131,7 @@ export function UploadButton<
       },
       onUploadProgress: (p) => {
         setUploadProgress(p);
-        $props.onUploadProgress?.(p);
+        $props.onUploadProgress?.(p, undefined);
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
@@ -195,7 +194,7 @@ export function UploadButton<
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
 
-    let filesToUpload = pastedFiles;
+    let filesToUpload = pastedFiles as File[];
     setFiles((prev) => {
       filesToUpload = [...prev, ...pastedFiles];
       return filesToUpload;

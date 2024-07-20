@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/dropzone/react";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
-  generateClientDropzoneAccept,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
@@ -18,12 +17,14 @@ import {
 import type {
   ContentField,
   ErrorMessage,
+  FileWithState,
   StyleField,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
+import { usePaste } from "../hooks/use-paste";
+import { INTERNAL_uploadthingHookGen } from "../hooks/use-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
@@ -117,16 +118,16 @@ export function UploadDropzone<
     url: resolveMaybeUrlArg($props.url),
   });
 
-  const [files, setFiles] = useState<File[]>([]);
-
   const [uploadProgressState, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
-  const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
-    $props.endpoint,
-    {
+
+  const { files, setFiles, startUpload, isUploading, routeConfig } =
+    useUploadThing($props.endpoint, {
+      files: $props.files,
+      onFilesChange: $props.onFilesChange,
       signal: acRef.current.signal,
       headers: $props.headers,
       skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
@@ -135,15 +136,16 @@ export function UploadDropzone<
         void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
-      onUploadProgress: (p) => {
+      onUploadProgress: (p, e) => {
         setUploadProgress(p);
-        $props.onUploadProgress?.(p);
+        $props.onUploadProgress?.(p, e);
       },
       onUploadError: $props.onUploadError,
       onUploadBegin: $props.onUploadBegin,
       onBeforeUploadBegin: $props.onBeforeUploadBegin,
-    },
-  );
+    });
+
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const uploadFiles = useCallback(
     (files: File[]) => {
@@ -158,12 +160,8 @@ export function UploadDropzone<
     [$props, startUpload, fileRouteInput],
   );
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(
-    permittedFileInfo?.config,
-  );
-
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    (acceptedFiles: FileWithState[]) => {
       $props.onDrop?.(acceptedFiles);
 
       setFiles(acceptedFiles);
@@ -171,7 +169,7 @@ export function UploadDropzone<
       // If mode is auto, start upload immediately
       if (mode === "auto") uploadFiles(acceptedFiles);
     },
-    [$props, mode, uploadFiles],
+    [$props, mode, setFiles, uploadFiles],
   );
 
   const isDisabled = (() => {
@@ -183,8 +181,7 @@ export function UploadDropzone<
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
-    multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    routeConfig,
     disabled: isDisabled,
   });
 
@@ -211,28 +208,24 @@ export function UploadDropzone<
     }
   };
 
-  useEffect(() => {
-    const handlePaste = (event: ClipboardEvent) => {
-      if (!appendOnPaste) return;
-      if (document.activeElement !== rootRef.current) return;
+  usePaste((event) => {
+    if (!appendOnPaste) return;
+    if (document.activeElement !== rootRef.current) return;
 
-      const pastedFiles = getFilesFromClipboardEvent(event);
-      if (!pastedFiles?.length) return;
+    const pastedFiles = getFilesFromClipboardEvent(event);
+    if (!pastedFiles?.length) return;
 
-      let filesToUpload = pastedFiles;
-      setFiles((prev) => {
-        filesToUpload = [...prev, ...pastedFiles];
-        return filesToUpload;
-      });
+    let filesToUpload = pastedFiles;
+    setFiles((prev) => {
+      filesToUpload = [...prev, ...pastedFiles];
+      return filesToUpload;
+    });
 
-      if (mode === "auto") uploadFiles(filesToUpload);
-    };
-
-    window.addEventListener("paste", handlePaste);
-    return () => {
-      window.removeEventListener("paste", handlePaste);
-    };
-  }, [uploadFiles, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
+    if (mode === "auto") {
+      const input = "input" in $props ? $props.input : undefined;
+      void startUpload(filesToUpload, input);
+    }
+  });
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (files.length > 0)
@@ -338,7 +331,7 @@ export function UploadDropzone<
         data-state={state}
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(permittedFileInfo?.config)}
+          allowedContentTextLabelGenerator(routeConfig)}
       </div>
 
       <button

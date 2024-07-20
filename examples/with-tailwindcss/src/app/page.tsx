@@ -5,6 +5,7 @@ import {
   UploadDropzone,
   useUploadThing,
 } from "~/utils/uploadthing";
+import { MyUploadButton } from "./my-upload-button";
 
 export default function Home() {
   const { startUpload } = useUploadThing("videoAndImage", {
@@ -15,6 +16,7 @@ export default function Home() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col items-center justify-center gap-4 py-24">
+      <MyUploadButton />
       <UploadButton
         endpoint="videoAndImage"
         onClientUploadComplete={(res) => {
@@ -23,6 +25,10 @@ export default function Home() {
         }}
         onUploadBegin={() => {
           console.log("upload begin");
+        }}
+        config={{
+          appendOnPaste: true,
+          mode: "manual",
         }}
       />
       <UploadDropzone
