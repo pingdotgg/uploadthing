@@ -188,7 +188,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
         files.value = [...files.value, ...pastedFiles];
 
-        if ($props.onChange) $props.onChange(files.value);
+        $props.onChange?.(files.value);
 
         if (mode === "auto") {
           const input = "input" in $props ? $props.input : undefined;

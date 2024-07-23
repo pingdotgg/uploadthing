@@ -231,12 +231,12 @@ export function UploadDropzone<
       setFiles((prev) => {
         filesToUpload = [...prev, ...pastedFiles];
 
-        if ($props.onChange) $props.onChange(filesToUpload);
+        $props.onChange?.(filesToUpload);
 
         return filesToUpload;
       });
 
-      if ($props.onChange) $props.onChange(filesToUpload);
+      $props.onChange?.(filesToUpload);
 
       if (mode === "auto") uploadFiles(filesToUpload);
     };

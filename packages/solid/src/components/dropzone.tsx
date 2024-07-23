@@ -171,7 +171,7 @@ export const UploadDropzone = <
 
     setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
 
-    if ($props.onChange) $props.onChange(files());
+    $props.onChange?.(files());
 
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;

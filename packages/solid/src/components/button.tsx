@@ -143,7 +143,7 @@ export function UploadButton<
 
     setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
 
-    if ($props.onChange) $props.onChange(files());
+    $props.onChange?.(files());
 
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
@@ -191,7 +191,7 @@ export function UploadButton<
             if (!e.target.files) return;
             const selectedFiles = Array.from(e.target.files);
 
-            if ($props.onChange) $props.onChange(selectedFiles);
+            $props.onChange?.(selectedFiles);
 
             if (mode === "manual") {
               setFiles(selectedFiles);

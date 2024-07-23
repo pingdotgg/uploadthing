@@ -136,7 +136,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           const { files: selectedFiles } = e.target as HTMLInputElement;
           if (!selectedFiles) return;
 
-          if ($props.onChange) $props.onChange(Array.from(selectedFiles));
+          $props.onChange?.(Array.from(selectedFiles));
 
           if (mode === "manual") {
             files.value = Array.from(selectedFiles);
@@ -163,7 +163,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         files.value = [...files.value, ...pastedFiles];
 
-        if ($props.onChange) $props.onChange(files.value);
+        $props.onChange?.(files.value);
 
         if (mode === "auto") {
           const input = "input" in $props ? $props.input : undefined;
