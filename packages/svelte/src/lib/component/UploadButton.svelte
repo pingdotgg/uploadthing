@@ -133,7 +133,7 @@
 
     files = [...files, ...pastedFiles];
 
-    if (onChange) onChange(files);
+    onChange?.(files);
 
     if (mode === "auto") {
       const input = "input" in uploader ? uploader.input : undefined;
@@ -209,7 +209,7 @@ Example:
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
 
-        if (onChange) onChange(selectedFiles);
+        onChange?.(selectedFiles);
 
         if (mode === "manual") {
           files = selectedFiles;
