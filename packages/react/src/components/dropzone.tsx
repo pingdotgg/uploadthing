@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { twMerge } from "tailwind-merge";
 
 import { useDropzone } from "@uploadthing/dropzone/react";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -104,7 +104,11 @@ export function UploadDropzone<
     UploadThingInternalProps;
   const fileRouteInput = "input" in $props ? $props.input : undefined;
 
-  const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
+  const {
+    mode = "manual",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
   const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
@@ -243,7 +247,7 @@ export function UploadDropzone<
     return (
       <span className="z-50">
         <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" />
+        <Cancel className="hidden size-4 group-hover:block" cn={cn} />
       </span>
     );
   };
@@ -266,7 +270,7 @@ export function UploadDropzone<
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
         isDragActive && "bg-blue-600/10",
         $props.className,
@@ -280,7 +284,7 @@ export function UploadDropzone<
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
-          className={twMerge(
+          className={cn(
             "mx-auto block h-12 w-12 align-middle text-gray-400",
             styleFieldToClassName($props.appearance?.uploadIcon, styleFieldArg),
           )}
@@ -300,7 +304,7 @@ export function UploadDropzone<
         </svg>
       )}
       <label
-        className={twMerge(
+        className={cn(
           "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
           ready ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg),
@@ -314,7 +318,7 @@ export function UploadDropzone<
           (ready ? `Choose files or drag and drop` : `Loading...`)}
       </label>
       <div
-        className={twMerge(
+        className={cn(
           "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
           styleFieldToClassName(
             $props.appearance?.allowedContent,
@@ -333,7 +337,7 @@ export function UploadDropzone<
       </div>
 
       <button
-        className={twMerge(
+        className={cn(
           "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&

@@ -12,14 +12,14 @@
   generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter"
 >
   import { onMount } from "svelte";
-  import { twMerge } from "tailwind-merge";
 
   import {
     allowedContentTextLabelGenerator,
+    defaultClassListMerger,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    type StyleField,
   } from "@uploadthing/shared";
-  import type { StyleField } from "@uploadthing/shared";
   import {
     generateMimeTypes,
     generatePermittedFileTypes,
@@ -88,7 +88,11 @@
     },
   );
 
-  $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
+  $: ({
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
   $: ({ fileTypes, multiple } = generatePermittedFileTypes(
     $permittedFileInfo?.config,
@@ -154,7 +158,7 @@ Example:
 ```
 -->
 <div
-  class={twMerge(
+  class={cn(
     "flex flex-col items-center justify-center gap-1",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
@@ -166,7 +170,7 @@ Example:
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <label
     bind:this={labelRef}
-    class={twMerge(
+    class={cn(
       "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
@@ -227,7 +231,7 @@ Example:
           fileInputRef.value = "";
         }
       }}
-      class={twMerge(
+      class={cn(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
         styleFieldToClassName(appearance?.clearBtn, styleFieldArg),
       )}
@@ -239,7 +243,7 @@ Example:
     </button>
   {:else}
     <div
-      class={twMerge(
+      class={cn(
         "h-[1.25rem]  text-xs leading-5 text-gray-600",
         styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
       )}

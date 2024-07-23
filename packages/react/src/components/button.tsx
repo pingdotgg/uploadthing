@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { twMerge } from "tailwind-merge";
 
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -96,7 +96,11 @@ export function UploadButton<
     UploadThingInternalProps;
   const fileRouteInput = "input" in $props ? $props.input : undefined;
 
-  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+  const {
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
   const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
@@ -225,7 +229,7 @@ export function UploadButton<
     return (
       <span className="z-50">
         <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" />
+        <Cancel className="hidden size-4 group-hover:block" cn={cn} />
       </span>
     );
   };
@@ -239,7 +243,7 @@ export function UploadButton<
           fileInputRef.current.value = "";
         }
       }}
-      className={twMerge(
+      className={cn(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
         styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
       )}
@@ -254,7 +258,7 @@ export function UploadButton<
 
   const renderAllowedContent = () => (
     <div
-      className={twMerge(
+      className={cn(
         "h-[1.25rem] text-xs leading-5 text-gray-600",
         styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
       )}
@@ -272,7 +276,7 @@ export function UploadButton<
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         "flex flex-col items-center justify-center gap-1",
         $props.className,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
@@ -281,7 +285,7 @@ export function UploadButton<
       data-state={state}
     >
       <label
-        className={twMerge(
+        className={cn(
           "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
