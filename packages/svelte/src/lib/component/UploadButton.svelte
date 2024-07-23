@@ -18,8 +18,8 @@
     defaultClassListMerger,
     resolveMaybeUrlArg,
     styleFieldToClassName,
-    type StyleField,
   } from "@uploadthing/shared";
+  import type { StyleField } from "@uploadthing/shared";
   import {
     generateMimeTypes,
     generatePermittedFileTypes,
