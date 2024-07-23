@@ -155,7 +155,7 @@
 
     files = [...files, ...pastedFiles];
 
-    if (onChange) onChange(files);
+    onChange?.(files);
 
     if (mode === "auto") {
       const input = "input" in uploader ? uploader.input : undefined;
