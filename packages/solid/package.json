@@ -112,7 +112,8 @@
   "dependencies": {
     "@uploadthing/dropzone": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "tailwind-merge": "^2.2.1"
+    "tailwind-merge": "^2.2.1",
+    "solidjs-use": "2.3.0"
   },
   "devDependencies": {
     "postcss": "8.4.38",

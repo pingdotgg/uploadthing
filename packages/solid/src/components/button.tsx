@@ -1,4 +1,5 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createSignal, onMount } from "solid-js";
+import { useEventListener } from "solidjs-use";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -151,13 +152,8 @@ export function UploadButton<
     }
   };
 
-  onMount(() => {
-    document.addEventListener("paste", pasteHandler);
-  });
-
-  onCleanup(() => {
-    document.removeEventListener("paste", pasteHandler);
-  });
+  // onMount will only be called client side, so it guarantees DOM APIs exist.
+  onMount(() => useEventListener(document, "paste", pasteHandler));
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (fileTypes.length === 0) return "Loading...";
