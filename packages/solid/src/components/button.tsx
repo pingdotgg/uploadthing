@@ -88,7 +88,7 @@ export function UploadButton<
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const [files, setFiles] = createSignal<File[]>([]);
 
-  let rootRef: HTMLElement;
+  let inputRef: HTMLElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
@@ -135,7 +135,7 @@ export function UploadButton<
 
   const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
-    if (document.activeElement !== rootRef) return;
+    if (document.activeElement !== inputRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(e);
     if (!pastedFiles) return;
@@ -167,7 +167,6 @@ export function UploadButton<
       )}
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state()}
-      ref={(el) => (rootRef = el)}
     >
       <label
         class={twMerge(
@@ -185,6 +184,7 @@ export function UploadButton<
         data-ut-element="button"
       >
         <input
+          ref={(el) => (inputRef = el)}
           class="sr-only"
           type="file"
           multiple={fileInfo().multiple}
