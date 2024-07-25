@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 import {
@@ -20,7 +20,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner, usePaste } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -96,7 +96,7 @@ export function UploadButton<
     url: resolveMaybeUrlArg($props.url),
   });
 
-  const uploadedThing = useUploadThing($props.endpoint, {
+  const uploadThing = useUploadThing($props.endpoint, {
     headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
@@ -116,25 +116,25 @@ export function UploadButton<
   });
 
   const fileInfo = () =>
-    generatePermittedFileTypes(uploadedThing.permittedFileInfo()?.config);
+    generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
   const styleFieldArg = {
     ready: ready,
-    isUploading: uploadedThing.isUploading,
+    isUploading: uploadThing.isUploading,
     uploadProgress: uploadProgress,
     fileTypes: () => fileInfo().fileTypes,
   } as ButtonStyleFieldCallbackArgs;
 
   const state = () => {
     if (!ready()) return "readying";
-    if (ready() && !uploadedThing.isUploading()) return "ready";
+    if (ready() && !uploadThing.isUploading()) return "ready";
 
     return "uploading";
   };
 
-  usePaste((e) => {
+  const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
     if (document.activeElement !== inputRef) return;
 
@@ -147,8 +147,16 @@ export function UploadButton<
 
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
-      void uploadedThing.startUpload(files(), input);
+      void uploadThing.startUpload(files(), input);
     }
+  };
+
+  onMount(() => {
+    document.addEventListener("paste", pasteHandler);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener("paste", pasteHandler);
   });
 
   const getUploadButtonText = (fileTypes: string[]) => {
@@ -199,7 +207,7 @@ export function UploadButton<
             }
 
             const input = "input" in $props ? $props.input : undefined;
-            void uploadedThing.startUpload(selectedFiles, input);
+            void uploadThing.startUpload(selectedFiles, input);
           }}
         />
         {contentFieldToContent($props.content?.button, styleFieldArg) ??
@@ -226,7 +234,7 @@ export function UploadButton<
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
           allowedContentTextLabelGenerator(
-            uploadedThing.permittedFileInfo()?.config,
+            uploadThing.permittedFileInfo()?.config,
           )}
       </div>
     </div>

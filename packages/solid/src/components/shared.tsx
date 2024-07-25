@@ -1,15 +1,3 @@
-import { onCleanup, onMount } from "solid-js";
-
-export const usePaste = (callback: (e: ClipboardEvent) => void) => {
-  onMount(() => {
-    document.addEventListener("paste", callback);
-  });
-
-  onCleanup(() => {
-    document.removeEventListener("paste", callback);
-  });
-};
-
 export function Spinner() {
   return (
     <svg

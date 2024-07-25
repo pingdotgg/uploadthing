@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 import { createDropzone } from "@uploadthing/dropzone/solid";
@@ -21,7 +21,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner, usePaste } from "./shared";
+import { progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -162,7 +162,7 @@ export const UploadDropzone = <
     return "uploading";
   };
 
-  usePaste((e) => {
+  const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
     if (document.activeElement !== rootRef()) return;
 
@@ -177,6 +177,14 @@ export const UploadDropzone = <
       const input = "input" in $props ? $props.input : undefined;
       void uploadThing.startUpload(files(), input);
     }
+  };
+
+  onMount(() => {
+    document.addEventListener("paste", pasteHandler);
+  });
+
+  onCleanup(() => {
+    document.removeEventListener("paste", pasteHandler);
   });
 
   return (
