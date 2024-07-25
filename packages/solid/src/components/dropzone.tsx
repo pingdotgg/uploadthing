@@ -97,6 +97,8 @@ export const UploadDropzone = <
 
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
+  let rootRef: HTMLElement;
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
@@ -134,17 +136,15 @@ export const UploadDropzone = <
   const fileInfo = () =>
     generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
 
-  const { getRootProps, getInputProps, isDragActive, rootRef } = createDropzone(
-    {
-      onDrop,
-      multiple: fileInfo().multiple,
-      get accept() {
-        return fileInfo().fileTypes
-          ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
-          : undefined;
-      },
+  const { getRootProps, getInputProps, isDragActive } = createDropzone({
+    onDrop,
+    multiple: fileInfo().multiple,
+    get accept() {
+      return fileInfo().fileTypes
+        ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
+        : undefined;
     },
-  );
+  });
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
@@ -165,7 +165,7 @@ export const UploadDropzone = <
 
   const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
-    if (document.activeElement !== rootRef()) return;
+    if (document.activeElement !== rootRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(e);
     if (!pastedFiles) return;
@@ -192,6 +192,7 @@ export const UploadDropzone = <
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
       {...getRootProps()}
+      ref={(el) => (rootRef = el)}
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state()}
     >

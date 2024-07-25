@@ -88,7 +88,7 @@ export function UploadButton<
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const [files, setFiles] = createSignal<File[]>([]);
 
-  let inputRef: HTMLInputElement;
+  let rootRef: HTMLElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
@@ -101,9 +101,7 @@ export function UploadButton<
     headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
-      if (inputRef) {
-        inputRef.value = "";
-      }
+      setFiles([]);
       $props.onClientUploadComplete?.(res);
       setUploadProgress(0);
     },
@@ -137,7 +135,7 @@ export function UploadButton<
 
   const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
-    if (document.activeElement !== inputRef) return;
+    if (document.activeElement !== rootRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(e);
     if (!pastedFiles) return;
@@ -169,10 +167,11 @@ export function UploadButton<
       )}
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state()}
+      ref={(el) => (rootRef = el)}
     >
       <label
         class={twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state() === "readying" && "cursor-not-allowed bg-blue-400",
           state() === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
@@ -186,8 +185,7 @@ export function UploadButton<
         data-ut-element="button"
       >
         <input
-          class="hidden"
-          ref={inputRef!}
+          class="sr-only"
           type="file"
           multiple={fileInfo().multiple}
           accept={generateMimeTypes(fileInfo().fileTypes).join(", ")}
