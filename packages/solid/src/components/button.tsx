@@ -89,6 +89,8 @@ export function UploadButton<
   const [files, setFiles] = createSignal<File[]>([]);
 
   let inputRef: HTMLInputElement;
+  let acRef = new AbortController();
+
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
@@ -98,6 +100,7 @@ export function UploadButton<
   });
 
   const uploadThing = useUploadThing($props.endpoint, {
+    signal: acRef.signal,
     headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
@@ -237,6 +240,21 @@ export function UploadButton<
 
             const input = "input" in $props ? $props.input : undefined;
             void uploadThing.startUpload(selectedFiles, input);
+          }}
+          onClick={(e) => {
+            if (state() === "uploading") {
+              e.preventDefault();
+              e.stopPropagation();
+              acRef.abort();
+              acRef = new AbortController();
+              return;
+            }
+            if (mode === "manual" && files.length > 0) {
+              e.preventDefault();
+              e.stopPropagation();
+              const input = "input" in $props ? $props.input : undefined;
+              void uploadThing.startUpload(files(), input);
+            }
           }}
         />
         {getButtonContent()}
