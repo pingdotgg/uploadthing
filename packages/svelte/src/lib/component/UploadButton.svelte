@@ -153,8 +153,10 @@
   };
 
   onMount(() => {
+    // eslint-disable-next-line no-undef
     document.addEventListener("paste", handlePaste);
     return () => {
+      // eslint-disable-next-line no-undef
       document.removeEventListener("paste", handlePaste);
     };
   });
