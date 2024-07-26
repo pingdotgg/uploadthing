@@ -88,7 +88,7 @@ export function UploadButton<
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const [files, setFiles] = createSignal<File[]>([]);
 
-  let inputRef: HTMLElement;
+  let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
@@ -102,6 +102,7 @@ export function UploadButton<
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);
+      inputRef.value = "";
       $props.onClientUploadComplete?.(res);
       setUploadProgress(0);
     },
@@ -211,26 +212,51 @@ export function UploadButton<
             getUploadButtonText(fileInfo().fileTypes)
           ))}
       </label>
-      <div
-        class={twMerge(
-          "h-[1.25rem] text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
+      {mode === "manual" && files().length > 0 ? (
+        <button
+          onClick={() => {
+            setFiles([]);
+            inputRef.value = "";
+          }}
+          class={twMerge(
+            "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
+            styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
+          )}
+          style={styleFieldToCssObject(
+            $props.appearance?.clearBtn,
+            styleFieldArg,
+          )}
+          data-state={state}
+          data-ut-element="clear-btn"
+        >
+          {contentFieldToContent($props.content?.clearBtn, styleFieldArg) ??
+            "Clear"}
+        </button>
+      ) : (
+        <div
+          class={twMerge(
+            "h-[1.25rem] text-xs leading-5 text-gray-600",
+            styleFieldToClassName(
+              $props.appearance?.allowedContent,
+              styleFieldArg,
+            ),
+          )}
+          style={styleFieldToCssObject(
             $props.appearance?.allowedContent,
             styleFieldArg,
-          ),
-        )}
-        style={styleFieldToCssObject(
-          $props.appearance?.allowedContent,
-          styleFieldArg,
-        )}
-        data-state={state()}
-        data-ut-element="allowed-content"
-      >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(
-            uploadThing.permittedFileInfo()?.config,
           )}
-      </div>
+          data-state={state()}
+          data-ut-element="allowed-content"
+        >
+          {contentFieldToContent(
+            $props.content?.allowedContent,
+            styleFieldArg,
+          ) ??
+            allowedContentTextLabelGenerator(
+              uploadThing.permittedFileInfo()?.config,
+            )}
+        </div>
+      )}
     </div>
   );
 }
