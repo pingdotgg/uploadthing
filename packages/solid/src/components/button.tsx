@@ -234,6 +234,21 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state()}
         data-ut-element="button"
+        onClick={(e) => {
+          if (state() === "uploading") {
+            e.preventDefault();
+            e.stopPropagation();
+            acRef.abort();
+            acRef = new AbortController();
+            return;
+          }
+          if (mode === "manual" && files.length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+            const input = "input" in $props ? $props.input : undefined;
+            void uploadFiles(files(), input);
+          }
+        }}
       >
         <input
           ref={(el) => (inputRef = el)}
@@ -254,21 +269,6 @@ export function UploadButton<
 
             const input = "input" in $props ? $props.input : undefined;
             void uploadFiles(selectedFiles, input);
-          }}
-          onClick={(e) => {
-            if (state() === "uploading") {
-              e.preventDefault();
-              e.stopPropagation();
-              acRef.abort();
-              acRef = new AbortController();
-              return;
-            }
-            if (mode === "manual" && files.length > 0) {
-              e.preventDefault();
-              e.stopPropagation();
-              const input = "input" in $props ? $props.input : undefined;
-              void uploadFiles(files(), input);
-            }
           }}
         />
         {getButtonContent()}
