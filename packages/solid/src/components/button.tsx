@@ -156,6 +156,9 @@ export function UploadButton<
 
   const getUploadButtonText = (fileTypes: string[]) => {
     if (fileTypes.length === 0) return "Loading...";
+    if (mode === "manual" && files.length > 0) {
+      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+    }
     return `Choose File${fileInfo().multiple ? `(s)` : ``}`;
   };
 
