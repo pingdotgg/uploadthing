@@ -56,6 +56,7 @@
     TSkipPolling
   >;
   export let appearance: UploadDropzoneAppearance = {};
+
   /**
    * Callback called when files are dropped or pasted.
    *

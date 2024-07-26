@@ -12,6 +12,7 @@
   lang="ts"
   generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
 >
+  import { file } from "bun";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
 
@@ -156,14 +157,6 @@
       document.removeEventListener("paste", handlePaste);
     };
   });
-
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (mode === "manual" && files.length > 0) {
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-    }
-    if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
 </script>
 
 <!--
@@ -236,7 +229,13 @@ Example:
     />
     <slot name="button-content" state={styleFieldArg}>
       {#if state !== "uploading"}
-        {getUploadButtonText(fileTypes)}
+        <span>`Choose File${multiple ? `(s)` : ``}`</span>
+      {:else if state !== "uploading" && mode === "manual" && files.length > 0}
+        <span>
+          `Upload ${files.length} file${files.length === 1 ? "" : "s"}`
+        </span>
+      {:else if state !== "uploading" && fileTypes.length === 0}
+        <span>Loading...</span>
       {:else if uploadProgress === 100}
         <Spinner />
       {:else}
