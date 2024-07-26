@@ -154,12 +154,43 @@ export function UploadButton<
   // onMount will only be called client side, so it guarantees DOM APIs exist.
   onMount(() => useEventListener(document, "paste", pasteHandler));
 
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (fileTypes.length === 0) return "Loading...";
-    if (mode === "manual" && files.length > 0) {
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+  const getButtonContent = () => {
+    const customContent = contentFieldToContent(
+      $props.content?.button,
+      styleFieldArg,
+    );
+
+    if (customContent) return customContent;
+
+    if (state() === "readying") return "Loading...";
+
+    if (state() !== "uploading") {
+      if (mode === "manual" && files.length > 0) {
+        return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+      }
+      return `Choose File${fileInfo().multiple ? `(s)` : ``}`;
     }
-    return `Choose File${fileInfo().multiple ? `(s)` : ``}`;
+
+    if (uploadProgress() === 100) return <Spinner />;
+
+    return (
+      <span class="z-50">
+        <span class="block group-hover:hidden">{uploadProgress()}%</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class={twMerge(
+            "fill-none stroke-current stroke-2",
+            "hidden size-4 group-hover:block",
+          )}
+        >
+          <circle cx="12" cy="12" r="10" />
+          <path d="m4.9 4.9 14.2 14.2" />
+        </svg>
+      </span>
+    );
   };
 
   return (
@@ -208,12 +239,7 @@ export function UploadButton<
             void uploadThing.startUpload(selectedFiles, input);
           }}
         />
-        {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          (state() === "uploading" ? (
-            <Spinner />
-          ) : (
-            getUploadButtonText(fileInfo().fileTypes)
-          ))}
+        {getButtonContent()}
       </label>
       {mode === "manual" && files().length > 0 ? (
         <button
