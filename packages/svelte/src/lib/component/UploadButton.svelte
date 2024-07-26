@@ -19,6 +19,7 @@
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    UploadAbortedError,
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
   import {
@@ -66,9 +67,9 @@
 
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
-  let labelRef: HTMLLabelElement;
   let isManualTriggerDisplayed = false;
   let files: File[] = [];
+  let acRef = new AbortController();
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
@@ -76,6 +77,7 @@
   const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
     uploader.endpoint,
     {
+      signal: acRef.signal,
       skipPolling: !uploader?.onClientUploadComplete
         ? true
         : uploader?.skipPolling,
@@ -123,10 +125,22 @@
     return "uploading";
   })();
 
+  const uploadFiles = (files: File[]) => {
+    const input = "input" in uploader ? uploader.input : undefined;
+
+    void startUpload(files, input).catch((e) => {
+      if (e instanceof UploadAbortedError) {
+        void uploader.onUploadAborted?.();
+      } else {
+        throw e;
+      }
+    });
+  };
+
   const handlePaste = (event: ClipboardEvent) => {
     if (!appendOnPaste) return;
     // eslint-disable-next-line no-undef
-    if (document.activeElement !== labelRef) return;
+    if (document.activeElement !== fileInputRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
@@ -135,10 +149,7 @@
 
     onChange?.(files);
 
-    if (mode === "auto") {
-      const input = "input" in uploader ? uploader.input : undefined;
-      void startUpload(files, input);
-    }
+    if (mode === "auto") uploadFiles(files);
   };
 
   onMount(() => {
@@ -177,7 +188,6 @@ Example:
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <label
-    bind:this={labelRef}
     class={twMerge(
       "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
       state === "readying" && "cursor-not-allowed bg-blue-400",
@@ -190,11 +200,18 @@ Example:
     data-state={state}
     data-ut-element="button"
     on:click={(e) => {
+      if (state === "uploading") {
+        e.preventDefault();
+        e.stopPropagation();
+
+        acRef.abort();
+        acRef = new AbortController();
+        return;
+      }
       if (isManualTriggerDisplayed) {
         e.preventDefault();
         e.stopPropagation();
-        const input = "input" in uploader ? uploader.input : undefined;
-        void startUpload(files, input);
+        uploadFiles(files);
       }
     }}
   >
@@ -217,8 +234,7 @@ Example:
           return;
         }
 
-        const input = "input" in uploader ? uploader.input : undefined;
-        void startUpload(selectedFiles, input);
+        uploadFiles(selectedFiles);
       }}
     />
     <slot name="button-content" state={styleFieldArg}>

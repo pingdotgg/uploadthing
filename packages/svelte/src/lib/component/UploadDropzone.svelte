@@ -20,6 +20,7 @@
     allowedContentTextLabelGenerator,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    UploadAbortedError,
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
   import {
@@ -83,6 +84,8 @@
 
   let files: File[] = [];
   let uploadProgress = __internal_upload_progress ?? 0;
+  let rootRef: HTMLElement;
+  let acRef = new AbortController();
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
@@ -90,6 +93,7 @@
   const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
     uploader.endpoint,
     {
+      signal: acRef.signal,
       skipPolling: !uploader?.onClientUploadComplete
         ? true
         : uploader?.skipPolling,
@@ -117,6 +121,18 @@
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
 
+  const uploadFiles = (files: File[]) => {
+    const input = "input" in uploader ? uploader.input : undefined;
+
+    void startUpload(files, input).catch((e) => {
+      if (e instanceof UploadAbortedError) {
+        void uploader.onUploadAborted?.();
+      } else {
+        throw e;
+      }
+    });
+  };
+
   const onDropCallback = (acceptedFiles: File[]) => {
     onDrop?.(acceptedFiles);
     onChange?.(acceptedFiles);
@@ -124,11 +140,7 @@
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") {
-      const input = "input" in uploader ? uploader.input : undefined;
-      void startUpload(files, input);
-      return;
-    }
+    if (mode === "auto") uploadFiles(files);
   };
 
   $: dropzoneOptions = {
@@ -140,7 +152,6 @@
 
   const {
     state: dropzoneState,
-    rootRef,
     dropzoneRoot,
     dropzoneInput,
   } = createDropzone(dropzoneOptions);
@@ -148,7 +159,7 @@
   const handlePaste = (event: ClipboardEvent) => {
     if (!appendOnPaste) return;
     // eslint-disable-next-line no-undef
-    if (document.activeElement !== $rootRef) return;
+    if (document.activeElement !== rootRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
@@ -157,10 +168,7 @@
 
     onChange?.(files);
 
-    if (mode === "auto") {
-      const input = "input" in uploader ? uploader.input : undefined;
-      void startUpload(files, input);
-    }
+    if (mode === "auto") uploadFiles(files);
   };
 
   onMount(() => {
@@ -207,6 +215,7 @@
   )}
   style={styleFieldToClassName(appearance?.container, styleFieldArg)}
   data-state={state}
+  bind:this={rootRef}
 >
   <slot name="upload-icon" state={styleFieldArg}>
     <svg
@@ -272,9 +281,13 @@
     disabled={__internal_button_disabled ??
       (!files.length || state === "uploading")}
     on:click|preventDefault|stopPropagation={() => {
+      if (state === "uploading") {
+        acRef.abort();
+        acRef = new AbortController();
+        return;
+      }
       if (!files) return;
-      const input = "input" in uploader ? uploader.input : undefined;
-      void startUpload(files, input);
+      uploadFiles(files);
     }}
   >
     <slot name="button-content" state={styleFieldArg}>
