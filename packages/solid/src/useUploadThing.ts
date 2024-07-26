@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { EndpointMetadata } from "@uploadthing/shared";
@@ -95,6 +96,12 @@ export const INTERNAL_uploadthingHookGen = <
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        /**
+         * This is the only way to introduce this as a non-breaking change
+         * TODO: Consider refactoring API in the next major version
+         */
+        if (e instanceof UploadAbortedError) throw e;
+
         let error: UploadThingError<inferErrorShape<TRouter>>;
         if (e instanceof UploadThingError) {
           error = e as UploadThingError<inferErrorShape<TRouter>>;

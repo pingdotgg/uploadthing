@@ -88,7 +88,21 @@ export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
   TSkipPolling extends boolean = false,
-> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
+> = Omit<
+  UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+  /**
+   * Signal is omitted, component has its own AbortController
+   * If you need to control the interruption with more granularity,
+   * create your own component and pass your own signal to
+   * `useUploadThing`
+   * @see https://github.com/pingdotgg/uploadthing/pull/838#discussion_r1624189818
+   */
+  "signal"
+> & {
+  /**
+   * Called when the upload is aborted
+   */
+  onUploadAborted?: (() => MaybePromise<void>) | undefined;
   /**
    * The endpoint from your FileRouter to use for the upload
    */

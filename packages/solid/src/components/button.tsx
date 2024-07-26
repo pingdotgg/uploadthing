@@ -11,13 +11,14 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
   ErrorMessage,
   StyleField,
 } from "@uploadthing/shared";
-import type { FileRouter } from "uploadthing/types";
+import type { FileRouter, inferEndpointInput } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
@@ -137,6 +138,19 @@ export function UploadButton<
     return "uploading";
   };
 
+  const uploadFiles = (
+    files: File[],
+    input?: inferEndpointInput<TRouter[TEndpoint]> | undefined,
+  ) => {
+    void uploadThing.startUpload(files, input).catch((e) => {
+      if (e instanceof UploadAbortedError) {
+        void $props.onUploadAborted?.();
+      } else {
+        throw e;
+      }
+    });
+  };
+
   const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
     if (document.activeElement !== inputRef) return;
@@ -150,7 +164,7 @@ export function UploadButton<
 
     if (mode === "auto") {
       const input = "input" in $props ? $props.input : undefined;
-      void uploadThing.startUpload(files(), input);
+      void uploadFiles(files(), input);
     }
   };
 
@@ -239,7 +253,7 @@ export function UploadButton<
             }
 
             const input = "input" in $props ? $props.input : undefined;
-            void uploadThing.startUpload(selectedFiles, input);
+            void uploadFiles(selectedFiles, input);
           }}
           onClick={(e) => {
             if (state() === "uploading") {
@@ -253,7 +267,7 @@ export function UploadButton<
               e.preventDefault();
               e.stopPropagation();
               const input = "input" in $props ? $props.input : undefined;
-              void uploadThing.startUpload(files(), input);
+              void uploadFiles(files(), input);
             }
           }}
         />
