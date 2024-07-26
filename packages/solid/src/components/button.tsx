@@ -94,6 +94,8 @@ export function UploadButton<
 
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
+  const fileRouteInput = "input" in $props ? $props.input : undefined;
+
   const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
@@ -138,11 +140,8 @@ export function UploadButton<
     return "uploading";
   };
 
-  const uploadFiles = (
-    files: File[],
-    input?: inferEndpointInput<TRouter[TEndpoint]> | undefined,
-  ) => {
-    void uploadThing.startUpload(files, input).catch((e) => {
+  const uploadFiles = (files: File[]) => {
+    void uploadThing.startUpload(files, fileRouteInput).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {
@@ -162,10 +161,7 @@ export function UploadButton<
 
     $props.onChange?.(files());
 
-    if (mode === "auto") {
-      const input = "input" in $props ? $props.input : undefined;
-      void uploadFiles(files(), input);
-    }
+    if (mode === "auto") uploadFiles(files());
   };
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
@@ -235,17 +231,19 @@ export function UploadButton<
         data-state={state()}
         data-ut-element="button"
         onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-
           if (state() === "uploading") {
+            e.preventDefault();
+            e.stopPropagation();
+
             acRef.abort();
             acRef = new AbortController();
             return;
           }
-          if (mode === "manual" && files.length > 0) {
-            const input = "input" in $props ? $props.input : undefined;
-            uploadFiles(files(), input);
+          if (mode === "manual" && files().length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            uploadFiles(files());
           }
         }}
       >
@@ -266,8 +264,7 @@ export function UploadButton<
               return;
             }
 
-            const input = "input" in $props ? $props.input : undefined;
-            void uploadFiles(selectedFiles, input);
+            uploadFiles(selectedFiles);
           }}
         />
         {getButtonContent()}

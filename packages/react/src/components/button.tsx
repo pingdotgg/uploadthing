@@ -307,15 +307,18 @@ export function UploadButton<
         data-ut-element="button"
         ref={labelRef}
         onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-
           if (state === "uploading") {
+            e.preventDefault();
+            e.stopPropagation();
+
             acRef.current.abort();
             acRef.current = new AbortController();
             return;
           }
           if (mode === "manual" && files.length > 0) {
+            e.preventDefault();
+            e.stopPropagation();
+
             uploadFiles(files);
           }
         }}
