@@ -235,18 +235,17 @@ export function UploadButton<
         data-state={state()}
         data-ut-element="button"
         onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+
           if (state() === "uploading") {
-            e.preventDefault();
-            e.stopPropagation();
             acRef.abort();
             acRef = new AbortController();
             return;
           }
           if (mode === "manual" && files.length > 0) {
-            e.preventDefault();
-            e.stopPropagation();
             const input = "input" in $props ? $props.input : undefined;
-            void uploadFiles(files(), input);
+            uploadFiles(files(), input);
           }
         }}
       >
