@@ -165,8 +165,8 @@ export function UploadButton<
     if (state() === "readying") return "Loading...";
 
     if (state() !== "uploading") {
-      if (mode === "manual" && files.length > 0) {
-        return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+      if (mode === "manual" && files().length > 0) {
+        return `Upload ${files().length} file${files().length === 1 ? "" : "s"}`;
       }
       return `Choose File${fileInfo().multiple ? `(s)` : ``}`;
     }
