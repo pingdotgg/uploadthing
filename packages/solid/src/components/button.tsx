@@ -18,7 +18,7 @@ import type {
   ErrorMessage,
   StyleField,
 } from "@uploadthing/shared";
-import type { FileRouter, inferEndpointInput } from "uploadthing/types";
+import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
