@@ -67,7 +67,6 @@
 
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
-  let isManualTriggerDisplayed = false;
   let files: File[] = [];
   let acRef = new AbortController();
 
@@ -82,10 +81,7 @@
         ? true
         : uploader?.skipPolling,
       onClientUploadComplete: (res) => {
-        if (fileInputRef) {
-          fileInputRef.value = "";
-        }
-        isManualTriggerDisplayed = false;
+        fileInputRef.value = "";
         files = [];
         uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
@@ -162,8 +158,9 @@
   });
 
   const getUploadButtonText = (fileTypes: string[]) => {
-    if (isManualTriggerDisplayed)
+    if (mode === "manual" && files.length > 0) {
       return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+    }
     if (fileTypes.length === 0) return "Loading...";
     return `Choose File${multiple ? `(s)` : ``}`;
   };
@@ -208,9 +205,10 @@ Example:
         acRef = new AbortController();
         return;
       }
-      if (isManualTriggerDisplayed) {
+      if (mode === "manual" && files.length > 0) {
         e.preventDefault();
         e.stopPropagation();
+
         uploadFiles(files);
       }
     }}
@@ -230,7 +228,6 @@ Example:
 
         if (mode === "manual") {
           files = selectedFiles;
-          isManualTriggerDisplayed = true;
           return;
         }
 
@@ -251,11 +248,7 @@ Example:
     <button
       on:click={() => {
         files = [];
-        isManualTriggerDisplayed = false;
-
-        if (fileInputRef) {
-          fileInputRef.value = "";
-        }
+        fileInputRef.value = "";
       }}
       class={twMerge(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
