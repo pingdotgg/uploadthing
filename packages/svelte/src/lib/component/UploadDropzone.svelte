@@ -293,11 +293,19 @@
   >
     <slot name="button-content" state={styleFieldArg}>
       {#if state !== "uploading"}
-        {getUploadButtonText(fileTypes)}
+        {#if fileTypes.length === 0}
+          <span>{`Loading...`}</span>
+        {:else if mode === "manual" && files.length > 0}
+          <span>
+            {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+          </span>
+        {:else}
+          <span>{`Choose File${multiple ? `(s)` : ``}`}</span>
+        {/if}
       {:else if uploadProgress === 100}
         <Spinner />
       {:else}
-        <span class="relative z-50">{uploadProgress}%</span>
+        <span class="z-50">{`${uploadProgress}%`}</span>
       {/if}
     </slot>
   </button>
