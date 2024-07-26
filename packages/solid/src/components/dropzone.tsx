@@ -12,6 +12,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -98,11 +99,13 @@ export const UploadDropzone = <
   const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
 
   let rootRef: HTMLElement;
+  let acRef = new AbortController();
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
   const uploadThing = useUploadThing($props.endpoint, {
+    signal: acRef.signal,
     headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
@@ -120,6 +123,19 @@ export const UploadDropzone = <
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
+
+  const uploadFiles = (files: File[]) => {
+    const input = "input" in $props ? $props.input : undefined;
+
+    void uploadThing.startUpload(files, input).catch((e) => {
+      if (e instanceof UploadAbortedError) {
+        void $props.onUploadAborted?.();
+      } else {
+        throw e;
+      }
+    });
+  };
+
   const onDrop = (acceptedFiles: File[]) => {
     $props.onDrop?.(acceptedFiles);
     $props.onChange?.(acceptedFiles);
@@ -127,11 +143,7 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") {
-      const input = "input" in $props ? $props.input : undefined;
-      void uploadThing.startUpload(acceptedFiles, input);
-      return;
-    }
+    if (mode === "auto") uploadFiles(acceptedFiles);
   };
   const fileInfo = () =>
     generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
@@ -174,10 +186,7 @@ export const UploadDropzone = <
 
     $props.onChange?.(files());
 
-    if (mode === "auto") {
-      const input = "input" in $props ? $props.input : undefined;
-      void uploadThing.startUpload(files(), input);
-    }
+    if (mode === "auto") uploadFiles(files());
   };
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
@@ -271,10 +280,14 @@ export const UploadDropzone = <
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!files()) return;
+            if (state() === "uploading") {
+              acRef.abort();
+              acRef = new AbortController();
 
-            const input = "input" in $props ? $props.input : undefined;
-            void uploadThing.startUpload(files(), input);
+              return;
+            }
+            if (!files()) return;
+            uploadFiles(files());
           }}
           data-ut-element="button"
           data-state={state()}
