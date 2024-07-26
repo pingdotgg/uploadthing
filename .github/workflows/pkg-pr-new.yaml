@@ -15,7 +15,13 @@ jobs:
       - name: Get changed packages
         id: changed-packages
         run: |
-          echo "::set-output name=changed_packages::$(git diff --name-only origin/main origin/${GITHUB_HEAD_REF} ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')"
+          changed_packages=$(git diff --name-only origin/main origin/${GITHUB_HEAD_REF} ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')
+          
+          if echo "$changed_packages" | grep -q "./packages/vue"; then
+            changed_packages="$changed_packages ./packages/nuxt"
+          fi
+
+          echo "::set-output name=changed_packages::$changed_packages"
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
