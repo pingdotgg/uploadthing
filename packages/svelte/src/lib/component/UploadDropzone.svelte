@@ -181,13 +181,6 @@
     };
   });
 
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (files.length > 0)
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-    if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
-
   $: styleFieldArg = {
     __runtime: "svelte",
     fileTypes,
