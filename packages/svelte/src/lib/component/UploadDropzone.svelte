@@ -172,11 +172,9 @@
   };
 
   onMount(() => {
-    // eslint-disable-next-line no-undef
-    window.addEventListener("paste", handlePaste);
+    document.addEventListener("paste", handlePaste);
     return () => {
-      // eslint-disable-next-line no-undef
-      window.removeEventListener("paste", handlePaste);
+      document.removeEventListener("paste", handlePaste);
     };
   });
 
