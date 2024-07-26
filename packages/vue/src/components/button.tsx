@@ -12,6 +12,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
@@ -61,7 +62,6 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
-  onChange?: (files: File[]) => void;
 };
 
 export const generateUploadButton = <TRouter extends FileRouter>(
@@ -83,6 +83,8 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
+      const acRef = ref(new AbortController());
+
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
@@ -91,6 +93,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         TEndpoint,
         TSkipPolling
       > = reactive({
+        signal: acRef.value.signal,
         headers: $props.headers,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         skipPolling: !$props?.onClientUploadComplete
@@ -122,6 +125,18 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         generatePermittedFileTypes(permittedFileInfo.value?.config),
       );
 
+      const uploadFiles = (files: File[]) => {
+        const input = "input" in $props ? $props.input : undefined;
+
+        void startUpload(files, input).catch((e) => {
+          if (e instanceof UploadAbortedError) {
+            void $props.onUploadAborted?.();
+          } else {
+            throw e;
+          }
+        });
+      };
+
       const inputProps = computed(() => ({
         type: "file",
         ref: fileInputRef,
@@ -143,8 +158,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             return;
           }
 
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(files.value, input);
+          uploadFiles(Array.from(selectedFiles));
         },
       }));
 
@@ -165,10 +179,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         $props.onChange?.(files.value);
 
-        if (mode === "auto") {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(files.value, input);
-        }
+        if (mode === "auto") uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -308,11 +319,15 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               data-state={state.value}
               data-ut-element="button"
               onClick={(e) => {
+                if (state.value === "uploading") {
+                  acRef.value.abort();
+                  acRef.value = new AbortController();
+                  return;
+                }
                 if (mode === "manual" && files.value.length > 0) {
                   e.preventDefault();
                   e.stopPropagation();
-                  const input = "input" in $props ? $props.input : undefined;
-                  void startUpload(files.value, input);
+                  uploadFiles(files.value);
                 }
               }}
             >

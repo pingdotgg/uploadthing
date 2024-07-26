@@ -14,6 +14,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
@@ -73,12 +74,6 @@ export type UploadDropzoneProps<
    * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
-  /**
-   * Callback called when files are dropped or pasted.
-   *
-   * @param acceptedFiles - The files that were accepted.
-   */
-  onChange?: (files: File[]) => void;
 };
 
 export const generateUploadDropzone = <TRouter extends FileRouter>(
@@ -99,6 +94,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
       const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
 
+      const acRef = ref(new AbortController());
       const files = ref<File[]>([]);
       const uploadProgress = ref(0);
 
@@ -144,11 +140,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         files.value = acceptedFiles;
 
         // If mode is auto, start upload immediately.
-        if (mode === "auto") {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(acceptedFiles, input);
-          return;
-        }
+        if (mode === "auto") uploadFiles(acceptedFiles);
       };
 
       const dropzoneOptions: DropzoneOptions = reactive({
@@ -179,6 +171,18 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         return "uploading";
       });
 
+      const uploadFiles = (files: File[]) => {
+        const input = "input" in $props ? $props.input : undefined;
+
+        void startUpload(files, input).catch((e) => {
+          if (e instanceof UploadAbortedError) {
+            void $props.onUploadAborted?.();
+          } else {
+            throw e;
+          }
+        });
+      };
+
       usePaste((event) => {
         if (!appendOnPaste) return;
         if (document.activeElement !== rootRef.value) return;
@@ -190,10 +194,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
         $props.onChange?.(files.value);
 
-        if (mode === "auto") {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(files.value, input);
-        }
+        if (mode === "auto") uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -385,9 +386,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
                 e.preventDefault();
                 e.stopPropagation();
                 if (!files.value) return;
+                if (state.value === "uploading") {
+                  acRef.value.abort();
+                  acRef.value = new AbortController();
+                  return;
+                }
 
-                const input = "input" in $props ? $props.input : undefined;
-                void startUpload(files.value, input);
+                uploadFiles(files.value);
               }}
               data-ut-element="button"
               data-state={state.value}
