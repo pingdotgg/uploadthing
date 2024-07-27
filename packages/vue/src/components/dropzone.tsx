@@ -134,6 +134,9 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
 
       const onDrop = (acceptedFiles: File[]) => {
+        // don't trigger onChange if no files are accepted
+        if (acceptedFiles.length === 0) return;
+
         $props.onDrop?.(acceptedFiles);
         $props.onChange?.(acceptedFiles);
 
