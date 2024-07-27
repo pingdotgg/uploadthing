@@ -16,12 +16,16 @@ jobs:
         id: changed-packages
         run: |
           changed_packages=$(git diff --name-only origin/main origin/${GITHUB_HEAD_REF} ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')
-          
-          if echo "$changed_packages" | grep -q "./packages/vue"; then
-            changed_packages="$changed_packages ./packages/nuxt"
-          fi
 
+          # add nuxt IFF it is not already in the list but vue is
+          if echo "$changed_packages" | grep -q "./packages/vue"; then
+            if ! echo "$changed_packages" | grep -q "./packages/nuxt"; then
+              changed_packages="$changed_packages ./packages/nuxt"
+            fi
+          fi
+      
           echo "::set-output name=changed_packages::$changed_packages"
+        
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
