@@ -173,7 +173,7 @@ export function UploadButton<
           return;
         }
 
-        uploadFiles(selectedFiles);
+        void uploadFiles(selectedFiles);
       },
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
@@ -207,7 +207,7 @@ export function UploadButton<
       return filesToUpload;
     });
 
-    if (mode === "auto") uploadFiles(files);
+    if (mode === "auto") void uploadFiles(files);
   });
 
   const styleFieldArg = {
@@ -306,7 +306,7 @@ export function UploadButton<
         data-state={state}
         data-ut-element="button"
         ref={labelRef}
-        onClick={(e) => {
+        onClick={async (e) => {
           if (state === "uploading") {
             e.preventDefault();
             e.stopPropagation();
@@ -319,7 +319,7 @@ export function UploadButton<
             e.preventDefault();
             e.stopPropagation();
 
-            uploadFiles(files);
+            await uploadFiles(files);
           }
         }}
       >

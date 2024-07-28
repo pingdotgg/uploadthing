@@ -158,7 +158,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             return;
           }
 
-          uploadFiles(Array.from(selectedFiles));
+          void uploadFiles(Array.from(selectedFiles));
         },
       }));
 
@@ -179,7 +179,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         $props.onChange?.(files.value);
 
-        if (mode === "auto") uploadFiles(files.value);
+        if (mode === "auto") void uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -318,7 +318,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
-              onClick={(e) => {
+              onClick={async (e) => {
                 if (state.value === "uploading") {
                   acRef.value.abort();
                   acRef.value = new AbortController();
@@ -327,7 +327,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
                 if (mode === "manual" && files.value.length > 0) {
                   e.preventDefault();
                   e.stopPropagation();
-                  uploadFiles(files.value);
+                  await uploadFiles(files.value);
                 }
               }}
             >

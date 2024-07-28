@@ -160,7 +160,7 @@ export function UploadButton<
 
     $props.onChange?.(files());
 
-    if (mode === "auto") uploadFiles(files());
+    if (mode === "auto") void uploadFiles(files());
   };
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
@@ -229,7 +229,7 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state()}
         data-ut-element="button"
-        onClick={(e) => {
+        onClick={async (e) => {
           if (state() === "uploading") {
             e.preventDefault();
             e.stopPropagation();
@@ -242,7 +242,7 @@ export function UploadButton<
             e.preventDefault();
             e.stopPropagation();
 
-            uploadFiles(files());
+            await uploadFiles(files());
           }
         }}
       >
@@ -252,7 +252,7 @@ export function UploadButton<
           type="file"
           multiple={fileInfo().multiple}
           accept={generateMimeTypes(fileInfo().fileTypes).join(", ")}
-          onChange={(e) => {
+          onChange={async (e) => {
             if (!e.target.files) return;
             const selectedFiles = Array.from(e.target.files);
 
@@ -263,7 +263,7 @@ export function UploadButton<
               return;
             }
 
-            uploadFiles(selectedFiles);
+            await uploadFiles(selectedFiles);
           }}
         />
         {getButtonContent()}
