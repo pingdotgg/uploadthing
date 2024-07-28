@@ -121,10 +121,10 @@
     return "uploading";
   })();
 
-  const uploadFiles = (files: File[]) => {
+  const uploadFiles = async (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
 
-    void startUpload(files, input).catch((e) => {
+    await startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {

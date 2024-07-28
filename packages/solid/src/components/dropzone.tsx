@@ -124,10 +124,10 @@ export const UploadDropzone = <
 
   const [files, setFiles] = createSignal<File[]>([]);
 
-  const uploadFiles = (files: File[]) => {
+  const uploadFiles = async (files: File[]) => {
     const input = "input" in $props ? $props.input : undefined;
 
-    void uploadThing.startUpload(files, input).catch((e) => {
+    await uploadThing.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {

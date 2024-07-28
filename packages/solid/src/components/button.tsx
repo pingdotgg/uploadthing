@@ -140,8 +140,8 @@ export function UploadButton<
     return "uploading";
   };
 
-  const uploadFiles = (files: File[]) => {
-    void uploadThing.startUpload(files, fileRouteInput).catch((e) => {
+  const uploadFiles = async (files: File[]) => {
+    await uploadThing.startUpload(files, fileRouteInput).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {

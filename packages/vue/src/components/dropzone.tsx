@@ -174,10 +174,10 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         return "uploading";
       });
 
-      const uploadFiles = (files: File[]) => {
+      const uploadFiles = async (files: File[]) => {
         const input = "input" in $props ? $props.input : undefined;
 
-        void startUpload(files, input).catch((e) => {
+        await startUpload(files, input).catch((e) => {
           if (e instanceof UploadAbortedError) {
             void $props.onUploadAborted?.();
           } else {

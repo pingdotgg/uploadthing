@@ -142,8 +142,8 @@ export function UploadButton<
   );
 
   const uploadFiles = useCallback(
-    (files: File[]) => {
-      void startUpload(files, fileRouteInput).catch((e) => {
+    async (files: File[]) => {
+      await startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
