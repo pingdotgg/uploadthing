@@ -247,27 +247,34 @@ export function UploadDropzone<
     };
   }, [uploadFiles, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (files.length > 0)
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-    if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
-
-  const getUploadButtonContents = (fileTypes: string[]) => {
-    if (state !== "uploading") {
-      return getUploadButtonText(fileTypes);
-    }
-    if (uploadProgress === 100) {
-      return <Spinner />;
-    }
-
-    return (
-      <span className="z-50">
-        <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" />
-      </span>
+  const getUploadButtonContents = () => {
+    const customContent = contentFieldToContent(
+      $props.content?.button,
+      styleFieldArg,
     );
+    if (customContent) return customContent;
+
+    if (state === "readying") {
+      return "Loading...";
+    } else if (state === "uploading") {
+      if (uploadProgress === 100) {
+        return <Spinner />;
+      } else {
+        return (
+          <span className="z-50">
+            <span className="block group-hover:hidden">{uploadProgress}%</span>
+            <Cancel className="hidden size-4 group-hover:block" />
+          </span>
+        );
+      }
+    } else {
+      // Default case: "ready" or "disabled" state
+      if (mode === "manual" && files.length > 0) {
+        return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+      } else {
+        return `Choose File${multiple ? `(s)` : ``}`;
+      }
+    }
   };
 
   const styleFieldArg = {
@@ -371,8 +378,7 @@ export function UploadDropzone<
         type="button"
         disabled={$props.__internal_button_disabled ?? !files.length}
       >
-        {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          getUploadButtonContents(fileTypes)}
+        {getUploadButtonContents()}
       </button>
     </div>
   );

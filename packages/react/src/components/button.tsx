@@ -186,7 +186,7 @@ export function UploadButton<
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
-    if (inputProps.disabled) return "readying";
+    if (inputProps.disabled) return "disabled";
     if (!inputProps.disabled && !isUploading) return "ready";
     return "uploading";
   })();
@@ -224,23 +224,27 @@ export function UploadButton<
     );
     if (customContent) return customContent;
 
-    if (state === "readying") return "Loading...";
-
-    if (state !== "uploading") {
+    if (state === "readying") {
+      return "Loading...";
+    } else if (state === "uploading") {
+      if (uploadProgress === 100) {
+        return <Spinner />;
+      } else {
+        return (
+          <span className="z-50">
+            <span className="block group-hover:hidden">{uploadProgress}%</span>
+            <Cancel className="hidden size-4 group-hover:block" />
+          </span>
+        );
+      }
+    } else {
+      // Default case: "ready" or "disabled" state
       if (mode === "manual" && files.length > 0) {
         return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+      } else {
+        return `Choose File${inputProps.multiple ? `(s)` : ``}`;
       }
-      return `Choose File${inputProps.multiple ? `(s)` : ``}`;
     }
-
-    if (uploadProgress === 100) return <Spinner />;
-
-    return (
-      <span className="z-50">
-        <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" />
-      </span>
-    );
   };
 
   const renderClearButton = () => (
