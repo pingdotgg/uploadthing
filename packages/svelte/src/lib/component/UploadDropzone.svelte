@@ -141,7 +141,7 @@
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") uploadFiles(files);
+    if (mode === "auto") void uploadFiles(files);
   };
 
   $: dropzoneOptions = {
@@ -169,7 +169,7 @@
 
     onChange?.(files);
 
-    if (mode === "auto") uploadFiles(files);
+    if (mode === "auto") void uploadFiles(files);
   };
 
   onMount(() => {
@@ -274,14 +274,14 @@
     data-state={state}
     disabled={__internal_button_disabled ??
       (!files.length || state === "uploading")}
-    on:click|preventDefault|stopPropagation={() => {
+    on:click|preventDefault|stopPropagation={async () => {
       if (state === "uploading") {
         acRef.abort();
         acRef = new AbortController();
         return;
       }
       if (!files) return;
-      uploadFiles(files);
+      await uploadFiles(files);
     }}
   >
     <slot name="button-content" state={styleFieldArg}>

@@ -145,7 +145,7 @@
 
     onChange?.(files);
 
-    if (mode === "auto") uploadFiles(files);
+    if (mode === "auto") void uploadFiles(files);
   };
 
   onMount(() => {
@@ -188,7 +188,7 @@ Example:
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-state={state}
     data-ut-element="button"
-    on:click={(e) => {
+    on:click={async (e) => {
       if (state === "uploading") {
         e.preventDefault();
         e.stopPropagation();
@@ -201,7 +201,7 @@ Example:
         e.preventDefault();
         e.stopPropagation();
 
-        uploadFiles(files);
+        await uploadFiles(files);
       }
     }}
   >
@@ -212,7 +212,7 @@ Example:
       accept={generateMimeTypes(fileTypes).join(", ")}
       disabled={__internal_button_disabled ?? !ready}
       {multiple}
-      on:change={(e) => {
+      on:change={async (e) => {
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
 
@@ -223,7 +223,7 @@ Example:
           return;
         }
 
-        uploadFiles(selectedFiles);
+        await uploadFiles(selectedFiles);
       }}
     />
     <slot name="button-content" state={styleFieldArg}>
