@@ -164,10 +164,12 @@ export function UploadButton<
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
   onMount(() => {
-    document?.addEventListener("paste", pasteHandler);
+    if (typeof document !== "undefined")
+      document.addEventListener("paste", pasteHandler);
   });
   onCleanup(() => {
-    document?.removeEventListener("paste", pasteHandler);
+    if (typeof document !== "undefined")
+      document.removeEventListener("paste", pasteHandler);
   });
 
   const getButtonContent = () => {
