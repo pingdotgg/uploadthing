@@ -189,10 +189,18 @@ export const UploadDropzone = <
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
   onMount(() => {
-    document?.addEventListener("paste", pasteHandler);
+    try {
+      document?.addEventListener("paste", pasteHandler);
+    } catch {
+      // noop - we're not in a browser
+    }
   });
   onCleanup(() => {
-    document?.removeEventListener("paste", pasteHandler);
+    try {
+      document?.removeEventListener("paste", pasteHandler);
+    } catch {
+      // noop - we're not in a browser
+    }
   });
   return (
     <div

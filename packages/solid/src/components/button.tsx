@@ -150,7 +150,7 @@ export function UploadButton<
 
   const pasteHandler = (e: ClipboardEvent) => {
     if (!appendOnPaste) return;
-    if (document.activeElement !== inputRef) return;
+    if (document?.activeElement !== inputRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(e);
     if (!pastedFiles) return;
@@ -164,12 +164,18 @@ export function UploadButton<
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
   onMount(() => {
-    if (typeof document !== "undefined")
-      document.addEventListener("paste", pasteHandler);
+    try {
+      document?.addEventListener("paste", pasteHandler);
+    } catch {
+      // noop - we're not in a browser
+    }
   });
   onCleanup(() => {
-    if (typeof document !== "undefined")
-      document.removeEventListener("paste", pasteHandler);
+    try {
+      document?.removeEventListener("paste", pasteHandler);
+    } catch {
+      // noop - we're not in a browser
+    }
   });
 
   const getButtonContent = () => {
