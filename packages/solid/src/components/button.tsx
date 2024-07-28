@@ -121,8 +121,7 @@ export function UploadButton<
     onBeforeUploadBegin: $props.onBeforeUploadBegin,
   });
 
-  const fileInfo = () =>
-    generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
+  const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
@@ -308,10 +307,7 @@ export function UploadButton<
           {contentFieldToContent(
             $props.content?.allowedContent,
             styleFieldArg,
-          ) ??
-            allowedContentTextLabelGenerator(
-              uploadThing.permittedFileInfo()?.config,
-            )}
+          ) ?? allowedContentTextLabelGenerator(uploadThing.routeConfig())}
         </div>
       )}
     </div>

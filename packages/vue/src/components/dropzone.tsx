@@ -143,7 +143,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         files.value = acceptedFiles;
 
         // If mode is auto, start upload immediately.
-        if (mode === "auto") uploadFiles(acceptedFiles);
+        if (mode === "auto") void uploadFiles(acceptedFiles);
       };
 
       const dropzoneOptions: DropzoneOptions = reactive({
@@ -197,7 +197,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
         $props.onChange?.(files.value);
 
-        if (mode === "auto") uploadFiles(files.value);
+        if (mode === "auto") void uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -385,7 +385,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             <button
               class={buttonClass.value}
               style={buttonStyle.value}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!files.value) return;
@@ -395,7 +395,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
                   return;
                 }
 
-                uploadFiles(files.value);
+                await uploadFiles(files.value);
               }}
               data-ut-element="button"
               data-state={state.value}

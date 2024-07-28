@@ -177,7 +177,7 @@ export function UploadDropzone<
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if (mode === "auto") uploadFiles(acceptedFiles);
+      if (mode === "auto") void uploadFiles(acceptedFiles);
     },
     [$props, mode, uploadFiles],
   );
@@ -200,7 +200,7 @@ export function UploadDropzone<
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
 
-  const onUploadClick = (
+  const onUploadClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     if (state === "uploading") {
@@ -215,7 +215,7 @@ export function UploadDropzone<
       e.preventDefault();
       e.stopPropagation();
 
-      uploadFiles(files);
+      await uploadFiles(files);
     }
   };
 
@@ -238,7 +238,7 @@ export function UploadDropzone<
 
       $props.onChange?.(filesToUpload);
 
-      if (mode === "auto") uploadFiles(filesToUpload);
+      if (mode === "auto") void uploadFiles(filesToUpload);
     };
 
     window.addEventListener("paste", handlePaste);

@@ -143,10 +143,9 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") uploadFiles(acceptedFiles);
+    if (mode === "auto") void uploadFiles(acceptedFiles);
   };
-  const fileInfo = () =>
-    generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
+  const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
@@ -186,7 +185,7 @@ export const UploadDropzone = <
 
     $props.onChange?.(files());
 
-    if (mode === "auto") uploadFiles(files());
+    if (mode === "auto") void uploadFiles(files());
   };
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
@@ -258,9 +257,7 @@ export const UploadDropzone = <
         data-state={state()}
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(
-            uploadThing.permittedFileInfo()?.config,
-          )}
+          allowedContentTextLabelGenerator(uploadThing.routeConfig())}
       </div>
       {files().length > 0 && (
         <button
@@ -277,7 +274,7 @@ export const UploadDropzone = <
             $props.appearance?.button,
             styleFieldArg,
           )}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
             if (state() === "uploading") {
@@ -287,7 +284,7 @@ export const UploadDropzone = <
               return;
             }
             if (!files()) return;
-            uploadFiles(files());
+            await uploadFiles(files());
           }}
           data-ut-element="button"
           data-state={state()}
