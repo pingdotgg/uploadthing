@@ -1,5 +1,4 @@
-import { createSignal, onMount } from "solid-js";
-import { useEventListener } from "solidjs-use";
+import { createSignal, onCleanup, onMount } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
 import { createDropzone } from "@uploadthing/dropzone/solid";
@@ -189,8 +188,12 @@ export const UploadDropzone = <
   };
 
   // onMount will only be called client side, so it guarantees DOM APIs exist.
-  onMount(() => useEventListener(document, "paste", pasteHandler));
-
+  onMount(() => {
+    document?.addEventListener("paste", pasteHandler);
+  });
+  onCleanup(() => {
+    document?.removeEventListener("paste", pasteHandler);
+  });
   return (
     <div
       class={twMerge(

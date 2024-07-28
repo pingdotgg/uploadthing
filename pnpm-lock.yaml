@@ -1340,9 +1340,6 @@ importers:
       '@uploadthing/shared':
         specifier: workspace:*
         version: link:../shared
-      solidjs-use:
-        specifier: 2.3.0
-        version: 2.3.0
       tailwind-merge:
         specifier: ^2.2.1
         version: 2.3.0
@@ -5238,12 +5235,6 @@ packages:
   '@sinonjs/fake-timers@10.3.0':
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
 
-  '@solidjs-use/shared@2.3.0':
-    resolution: {integrity: sha512-xuPNzZ9fwigkmYXTO+a8kaT45XQCPt6jVlyiDDYCD9NRZheRJOZWiUcVjYHzjececbWTctcY8NFdsXVyxARHKg==}
-
-  '@solidjs-use/solid-to-vue@2.3.0':
-    resolution: {integrity: sha512-I2onRwzdYl2eq20M3hcTkVIeYq4hNoBpHvRJB9yzoyXRDSyp7R2glIbvdBzpsXqnTvX7HJhB2KePfxYXFvyJxw==}
-
   '@solidjs/meta@0.29.3':
     resolution: {integrity: sha512-R2uirgjgyh3FPFh+rb840plF701N6GvM5w81/QeI61QwjXb4QzLkyI/uzXfC5UW8favpUn9KK9ILQeoTl6pX0A==}
     peerDependencies:
@@ -5988,9 +5979,6 @@ packages:
 
   '@types/unist@3.0.2':
     resolution: {integrity: sha512-dqId9J8K/vGi5Zr7oo212BGii5m3q5Hxlkwy3WpYuKPklmBEvsbMYYyLxAQpSffdLl/gdW0XUpKWFvYmyoWCoQ==}
-
-  '@types/web-bluetooth@0.0.16':
-    resolution: {integrity: sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ==}
 
   '@types/web-bluetooth@0.0.20':
     resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
@@ -13296,9 +13284,6 @@ packages:
     peerDependencies:
       solid-js: ^1.7
 
-  solidjs-use@2.3.0:
-    resolution: {integrity: sha512-ZyH2jiUSQU+5S5vd8zyvqz9X2ikhMjJhDeh/TjRzjLDJlZ1RuZaMxdM+jGsrJxo3X/xBW9kDpYNONXs6wYrQCQ==}
-
   sonic-boom@3.8.1:
     resolution: {integrity: sha512-y4Z8LCDBuum+PBP3lSV7RHrXscqksve/bi0as7mhwVnBW+/wUqKT/2Kb7um8yqcFy0duYbbPxzt89Zy2nOCaxg==}
 
@@ -20058,12 +20043,6 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
 
-  '@solidjs-use/shared@2.3.0':
-    dependencies:
-      '@solidjs-use/solid-to-vue': 2.3.0
-
-  '@solidjs-use/solid-to-vue@2.3.0': {}
-
   '@solidjs/meta@0.29.3(solid-js@1.8.16)':
     dependencies:
       solid-js: 1.8.16
@@ -20890,8 +20869,6 @@ snapshots:
   '@types/unist@2.0.7': {}
 
   '@types/unist@3.0.2': {}
-
-  '@types/web-bluetooth@0.0.16': {}
 
   '@types/web-bluetooth@0.0.20': {}
 
@@ -30391,11 +30368,6 @@ snapshots:
   solid-use@0.8.0(solid-js@1.8.16):
     dependencies:
       solid-js: 1.8.16
-
-  solidjs-use@2.3.0:
-    dependencies:
-      '@solidjs-use/shared': 2.3.0
-      '@types/web-bluetooth': 0.0.16
 
   sonic-boom@3.8.1:
     dependencies:
