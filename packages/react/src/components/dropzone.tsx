@@ -287,6 +287,7 @@ export function UploadDropzone<
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
+    if (isDisabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !isUploading) return "ready";
 
