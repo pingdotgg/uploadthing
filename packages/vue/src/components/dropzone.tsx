@@ -346,7 +346,6 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
           state.value === "ready" && "bg-blue-600",
-          "disabled:pointer-events-none",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
       );

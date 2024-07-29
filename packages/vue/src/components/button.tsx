@@ -290,12 +290,10 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       const labelClass = computed(() =>
         twMerge(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${
-              progressWidths[uploadProgress.value]
-            }`,
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
           state.value === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
