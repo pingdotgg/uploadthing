@@ -76,6 +76,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       TEndpoint extends keyof TRouter,
       TSkipPolling extends boolean = false,
     >(props: {
+      disabled?: boolean;
       config: UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
     }) => {
       const $props = props.config;
@@ -144,7 +145,8 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         accept: generateMimeTypes(permittedFileTypes.value.fileTypes).join(
           ", ",
         ),
-        disabled: permittedFileTypes.value.fileTypes.length === 0,
+        disabled:
+          props.disabled ?? permittedFileTypes.value.fileTypes.length === 0,
         tabindex: permittedFileTypes.value.fileTypes.length === 0 ? -1 : 0,
         onChange: (e: Event) => {
           if (!e.target) return;

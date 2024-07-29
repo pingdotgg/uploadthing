@@ -88,6 +88,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       TEndpoint extends keyof TRouter,
       TSkipPolling extends boolean = false,
     >(props: {
+      disabled?: boolean;
       config: UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
     }) => {
       const $props = props.config;
@@ -150,7 +151,8 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         onDrop: onDrop,
         accept: acceptedFileTypes.value,
         multiple: permittedFileTypes.value.multiple,
-        disabled: permittedFileTypes.value.fileTypes.length === 0,
+        disabled:
+          props.disabled ?? permittedFileTypes.value.fileTypes.length === 0,
       });
       watch(
         () => acceptedFileTypes.value,
@@ -169,7 +171,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         useDropzone(dropzoneOptions);
 
       const state = computed(() => {
-        if (dropzoneOptions.disabled) return "disabled";
+        if (props.disabled) return "disabled";
         if (!dropzoneOptions.disabled && !isUploading.value) return "ready";
         return "uploading";
       });
