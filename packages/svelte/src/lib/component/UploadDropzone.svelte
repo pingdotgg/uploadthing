@@ -148,7 +148,8 @@
     onDrop: onDropCallback,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: __internal_dropzone_disabled,
+    disabled:
+      __internal_dropzone_disabled ?? !ready ?? __internal_button_disabled,
   };
 
   const {
@@ -274,7 +275,7 @@
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-ut-element="button"
     data-state={state}
-    disabled={__internal_button_disabled ??
+    disabled={__internal_dropzone_disabled ??
       (!files.length || state === "uploading" || state === "disabled")}
     on:click|preventDefault|stopPropagation={async () => {
       if (state === "uploading") {
