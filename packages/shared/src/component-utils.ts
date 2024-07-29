@@ -194,3 +194,10 @@ export const contentFieldToContent = <T extends MinCallbackArg>(
     return result;
   }
 };
+
+export type ClassListMerger = (
+  ...classes: (string | null | undefined | false)[]
+) => string;
+export const defaultClassListMerger: ClassListMerger = (...classes) => {
+  return classes.filter(Boolean).join(" ");
+};

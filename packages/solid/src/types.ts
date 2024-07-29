@@ -1,4 +1,5 @@
 import type {
+  ClassListMerger,
   ErrorMessage,
   ExtendObjectIf,
   MaybePromise,
@@ -99,6 +100,17 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  config?: {
+    mode?: "manual" | "auto";
+    appendOnPaste?: never; // FIXME
+    /**
+     * Override the default class name merger, with e.g. tailwind-merge
+     * This may be required if you're customizing the component
+     * appearance with additional TailwindCSS classes to ensure
+     * classes are sorted and applied in the correct order
+     */
+    cn?: ClassListMerger;
+  };
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

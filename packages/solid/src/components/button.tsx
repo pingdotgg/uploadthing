@@ -1,9 +1,9 @@
 import { createSignal } from "solid-js";
-import { twMerge } from "tailwind-merge";
 
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   resolveMaybeUrlArg,
@@ -79,6 +79,8 @@ export function UploadButton<
   let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint>;
 
+  const { cn = defaultClassListMerger } = $props.config ?? {};
+
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
@@ -127,7 +129,7 @@ export function UploadButton<
 
   return (
     <div
-      class={twMerge(
+      class={cn(
         "flex flex-col items-center justify-center gap-1",
         $props.class,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
@@ -136,7 +138,7 @@ export function UploadButton<
       data-state={state()}
     >
       <label
-        class={twMerge(
+        class={cn(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
           state() === "readying" && "cursor-not-allowed bg-blue-400",
           state() === "uploading" &&
@@ -171,7 +173,7 @@ export function UploadButton<
           ))}
       </label>
       <div
-        class={twMerge(
+        class={cn(
           "h-[1.25rem] text-xs leading-5 text-gray-600",
           styleFieldToClassName(
             $props.appearance?.allowedContent,

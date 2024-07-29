@@ -1,11 +1,10 @@
-import { twMerge } from "tailwind-merge";
 import * as Vue from "vue";
 import { computed, reactive, ref } from "vue";
 
-import type { ContentField, StyleField } from "@uploadthing/shared";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -13,6 +12,7 @@ import {
   styleFieldToClassName,
   styleFieldToCssObject,
 } from "@uploadthing/shared";
+import type { ContentField, StyleField } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
 import type {
@@ -75,7 +75,11 @@ export const generateUploadButton = <TRouter extends FileRouter>(
     }) => {
       const $props = props.config;
 
-      const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+      const {
+        mode = "auto",
+        appendOnPaste = false,
+        cn = defaultClassListMerger,
+      } = $props.config ?? {};
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
       const uploadProgress = ref(0);
@@ -201,7 +205,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               fileInputRef.value.value = "";
             }
           }}
-          class={twMerge(
+          class={cn(
             "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
             styleFieldToClassName(
               $props.appearance?.clearBtn,
@@ -224,7 +228,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       const renderAllowedContent = () => (
         <div
-          class={twMerge(
+          class={cn(
             "h-[1.25rem] text-xs leading-5 text-gray-600",
             styleFieldToClassName(
               $props.appearance?.allowedContent,
@@ -247,7 +251,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       );
 
       const labelClass = computed(() =>
-        twMerge(
+        cn(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state.value === "readying" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
@@ -259,7 +263,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         ),
       );
       const containerClass = computed(() =>
-        twMerge(
+        cn(
           "flex flex-col items-center justify-center gap-1",
           $props.class,
           styleFieldToClassName(
