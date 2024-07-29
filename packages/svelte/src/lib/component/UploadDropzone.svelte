@@ -279,14 +279,21 @@
     data-state={state}
     disabled={__internal_dropzone_disabled ??
       (state === "disabled" || files.length < 1)}
-    on:click|preventDefault|stopPropagation={async () => {
-      if (files.length < 1) return;
+    on:click={async (e) => {
       if (state === "uploading") {
+        e.preventDefault();
+        e.stopPropagation();
+
         acRef.abort();
         acRef = new AbortController();
         return;
       }
-      await uploadFiles(files);
+      if (mode === "manual" && files.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        await uploadFiles(files);
+      }
     }}
   >
     <slot name="button-content" state={styleFieldArg}>
