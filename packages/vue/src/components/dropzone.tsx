@@ -171,7 +171,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         useDropzone(dropzoneOptions);
 
       const state = computed(() => {
-        if (props.disabled) return "disabled";
+        if (dropzoneOptions.disabled) return "disabled";
         if (!dropzoneOptions.disabled && !isUploading.value) return "ready";
         return "uploading";
       });
