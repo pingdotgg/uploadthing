@@ -261,6 +261,7 @@
   <button
     class={twMerge(
       "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      !files.length && "cursor-not-allowed bg-blue-400",
       state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
