@@ -163,7 +163,8 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         () => permittedFileTypes.value,
         (newVal) => {
           dropzoneOptions.multiple = newVal.multiple;
-          dropzoneOptions.disabled = newVal.fileTypes.length === 0;
+          dropzoneOptions.disabled =
+            $props.disabled ?? newVal.fileTypes.length === 0;
         },
       );
       const { getRootProps, getInputProps, isDragActive, rootRef } =
