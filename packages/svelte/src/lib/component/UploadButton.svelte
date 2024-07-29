@@ -212,7 +212,7 @@ Example:
       class="sr-only"
       type="file"
       accept={generateMimeTypes(fileTypes).join(", ")}
-      disabled={uploader.disabled ?? !ready ?? __internal_button_disabled}
+      disabled={__internal_button_disabled ?? uploader.disabled ?? !ready}
       {multiple}
       on:change={async (e) => {
         if (!e.currentTarget?.files) return;

@@ -148,8 +148,7 @@
     onDrop: onDropCallback,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled:
-      __internal_dropzone_disabled ?? !ready ?? __internal_button_disabled,
+    disabled: __internal_dropzone_disabled ?? uploader.disabled ?? !ready,
   };
 
   const {
