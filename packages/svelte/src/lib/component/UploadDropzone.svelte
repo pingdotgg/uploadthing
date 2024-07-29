@@ -78,8 +78,6 @@
   export let __internal_ready: boolean | undefined = undefined;
   // Allow to show the button even if no files were added
   // export let __internal_show_button: boolean | undefined = undefined;
-  // Allow to disable the button
-  export let __internal_button_disabled: boolean | undefined = undefined;
   // Allow to disable the dropzone
   export let __internal_dropzone_disabled: boolean | undefined = undefined;
 
@@ -268,14 +266,15 @@
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
       state === "ready" && "bg-blue-600",
-      "disabled:pointer-events-none",
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-ut-element="button"
     data-state={state}
-    disabled={__internal_dropzone_disabled ??
-      (!files.length || state === "uploading" || state === "disabled")}
+    disabled={__internal_dropzone_disabled ||
+      state === "disabled" ||
+      state === "uploading" ||
+      !files.length}
     on:click|preventDefault|stopPropagation={async () => {
       if (state === "uploading") {
         acRef.abort();
