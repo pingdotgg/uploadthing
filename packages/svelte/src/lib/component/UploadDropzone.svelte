@@ -203,6 +203,7 @@
   use:dropzoneRoot
   class={twMerge(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
+    state === "disabled" && "cursor-not-allowed",
     $dropzoneState.isDragActive && "bg-blue-600/10",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
@@ -236,7 +237,7 @@
       "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
       ready && state !== "disabled"
         ? "text-blue-600"
-        : "cursor-not-allowed text-gray-500 hover:text-gray-500",
+        : "text-gray-500 hover:text-gray-500",
       styleFieldToClassName(appearance?.label, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.label, styleFieldArg)}
