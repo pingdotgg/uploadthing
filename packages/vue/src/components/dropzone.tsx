@@ -307,7 +307,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
           if (mode === "manual" && files.value.length > 0) {
             return `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"}`;
           } else {
-            return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
+            return `Choose File${getInputProps().multiple ? `(s)` : ``}`;
           }
         }
       };
