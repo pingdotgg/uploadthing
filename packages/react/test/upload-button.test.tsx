@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import "@testing-library/jest-dom/vitest";
+/// <reference types="@testing-library/jest-dom/vitest" />
 
 import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
