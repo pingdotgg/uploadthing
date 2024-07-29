@@ -14,7 +14,11 @@ import {
   vi,
 } from "vitest";
 
-import { createUploadthing, extractRouterConfig } from "uploadthing/server";
+import {
+  createRouteHandler,
+  createUploadthing,
+  extractRouterConfig,
+} from "uploadthing/server";
 
 import { generateUploadButton } from "../src";
 
@@ -35,7 +39,7 @@ const utPost = vi.fn<[{ request: Request; body: any }]>();
 const server = setupServer(
   http.get("/api/uploadthing", ({ request }) => {
     utGet(request);
-    return HttpResponse.json(extractRouterConfig(testRouter));
+    return createRouteHandler({ router: testRouter }).GET(request);
   }),
   http.post("/api/uploadthing", async ({ request }) => {
     const body = await request.json();
