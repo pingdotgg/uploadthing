@@ -243,7 +243,7 @@
     <input
       use:dropzoneInput={dropzoneOptions}
       class="sr-only"
-      {multiple}
+      multiple={dropzoneOptions.multiple}
       disabled={dropzoneOptions.disabled}
     />
     <slot name="label" state={styleFieldArg}>
@@ -278,16 +278,14 @@
     data-ut-element="button"
     data-state={state}
     disabled={__internal_dropzone_disabled ??
-      state === "disabled" ??
-      state === "uploading" ??
-      files.length < 1}
+      (state === "disabled" || state === "uploading" || files.length < 1)}
     on:click|preventDefault|stopPropagation={async () => {
+      if (files.length < 1) return;
       if (state === "uploading") {
         acRef.abort();
         acRef = new AbortController();
         return;
       }
-      if (!files) return;
       await uploadFiles(files);
     }}
   >
