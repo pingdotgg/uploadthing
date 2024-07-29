@@ -31,7 +31,7 @@ const testRouter = {
   pdf: f({ "application/pdf": {} }).onUploadComplete(noop),
   multi: f({ image: { maxFileCount: 4 } }).onUploadComplete(noop),
 };
-
+const routeHandler = createRouteHandler({ router: testRouter });
 const UploadButton = generateUploadButton<typeof testRouter>();
 
 const utGet = vi.fn<[Request]>();
@@ -39,7 +39,7 @@ const utPost = vi.fn<[{ request: Request; body: any }]>();
 const server = setupServer(
   http.get("/api/uploadthing", ({ request }) => {
     utGet(request);
-    return createRouteHandler({ router: testRouter }).GET(request);
+    return routeHandler.GET(request);
   }),
   http.post("/api/uploadthing", async ({ request }) => {
     const body = await request.json();
