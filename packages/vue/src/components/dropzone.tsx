@@ -169,7 +169,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         useDropzone(dropzoneOptions);
 
       const state = computed(() => {
-        if (dropzoneOptions.disabled) return "readying";
+        if (dropzoneOptions.disabled) return "disabled";
         if (!dropzoneOptions.disabled && !isUploading.value) return "ready";
         return "uploading";
       });
@@ -253,10 +253,6 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         );
         if (customContent) return customContent;
 
-        if (state.value === "readying") {
-          return `Loading...`;
-        }
-
         return `Choose files or drag and drop`;
       });
 
@@ -273,29 +269,46 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         );
       };
 
-      const buttonContent = computed(() => {
+      const renderButton = () => {
         const customContent = contentFieldToContent(
           $props.content?.button,
           styleFieldArg.value,
         );
         if (customContent) return customContent;
 
-        if (state.value !== "uploading") {
-          if (files.value.length > 0) {
+        if (state.value === "uploading") {
+          if (uploadProgress.value === 100) {
+            return <Spinner />;
+          } else {
+            return (
+              <span class="z-50">
+                <span class="block group-hover:hidden">{uploadProgress}%</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class={twMerge(
+                    "fill-none stroke-current stroke-2",
+                    "hidden size-4 group-hover:block",
+                  )}
+                  {...props}
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m4.9 4.9 14.2 14.2" />
+                </svg>
+              </span>
+            );
+          }
+        } else {
+          // Default case: "ready" or "disabled" state
+          if (mode === "manual" && files.value.length > 0) {
             return `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"}`;
+          } else {
+            return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
           }
-          if (permittedFileTypes.value.fileTypes.length === 0) {
-            return "Loading...";
-          }
-          return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
         }
-
-        if (uploadProgress.value === 100) {
-          return <Spinner />;
-        }
-
-        return <span class="z-50">{`${uploadProgress.value}%`}</span>;
-      });
+      };
 
       const containerClass = computed(() =>
         twMerge(
@@ -327,7 +340,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const buttonClass = computed(() =>
         twMerge(
           "relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state.value === "readying" && "cursor-not-allowed bg-blue-400",
+          state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
           state.value === "ready" && "bg-blue-600",
@@ -401,7 +414,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
               data-state={state.value}
               disabled={files.value.length === 0 || state.value === "uploading"}
             >
-              {buttonContent.value}
+              {renderButton()}
             </button>
           </div>
         );

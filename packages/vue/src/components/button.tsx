@@ -163,7 +163,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       }));
 
       const state = computed(() => {
-        if (inputProps.value.disabled) return "readying";
+        if (inputProps.value.disabled) return "disabled";
         if (!inputProps.value.disabled && !isUploading.value) return "ready";
         return "uploading";
       });
@@ -199,24 +199,38 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         );
         if (customContent) return customContent;
 
-        if (state.value === "readying") {
-          return "Loading...";
-        }
-
-        if (state.value !== "uploading") {
-          if (mode === "manual" && files.value.length > 0) {
-            return `Upload ${files.value.length} file${
-              files.value.length > 1 ? "s" : ""
-            }`;
+        if (state.value === "uploading") {
+          if (uploadProgress.value === 100) {
+            return <Spinner />;
+          } else {
+            return (
+              <span class="z-50">
+                <span class="block group-hover:hidden">{uploadProgress}%</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class={twMerge(
+                    "fill-none stroke-current stroke-2",
+                    "hidden size-4 group-hover:block",
+                  )}
+                  {...props}
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m4.9 4.9 14.2 14.2" />
+                </svg>
+              </span>
+            );
           }
-          return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
+        } else {
+          // Default case: "ready" or "disabled" state
+          if (mode === "manual" && files.value.length > 0) {
+            return `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"}`;
+          } else {
+            return `Choose File${inputProps.value.multiple ? `(s)` : ``}`;
+          }
         }
-
-        if (uploadProgress.value === 100) {
-          return <Spinner />;
-        }
-
-        return <span class="z-50">{uploadProgress.value}%</span>;
       };
 
       const renderClearButton = () => (
@@ -276,7 +290,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const labelClass = computed(() =>
         twMerge(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state.value === "readying" && "cursor-not-allowed bg-blue-400",
+          state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${
               progressWidths[uploadProgress.value]
