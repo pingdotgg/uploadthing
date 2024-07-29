@@ -115,6 +115,7 @@
 
   $: state = (() => {
     if (__internal_state) return __internal_state;
+    if (uploader.disabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !$isUploading) return "ready";
 
@@ -179,6 +180,7 @@ Example:
   <label
     class={twMerge(
       "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
@@ -210,7 +212,7 @@ Example:
       class="sr-only"
       type="file"
       accept={generateMimeTypes(fileTypes).join(", ")}
-      disabled={__internal_button_disabled ?? !ready}
+      disabled={(uploader.disabled || !ready) ?? __internal_button_disabled}
       {multiple}
       on:change={async (e) => {
         if (!e.currentTarget?.files) return;
@@ -227,20 +229,31 @@ Example:
       }}
     />
     <slot name="button-content" state={styleFieldArg}>
-      {#if state !== "uploading"}
-        {#if fileTypes.length === 0}
-          <span>{`Loading...`}</span>
-        {:else if mode === "manual" && files.length > 0}
-          <span>
-            {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
-          </span>
+      {#if state === "uploading"}
+        {#if uploadProgress === 100}
+          <Spinner />
         {:else}
-          <span>{`Choose File${multiple ? `(s)` : ``}`}</span>
+          <span class="z-50">
+            <span class="block group-hover:hidden">{uploadProgress}%</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class={twMerge(
+                "fill-none stroke-current stroke-2",
+                "hidden size-4 group-hover:block",
+              )}
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m4.9 4.9 14.2 14.2" />
+            </svg>
+          </span>
         {/if}
-      {:else if uploadProgress === 100}
-        <Spinner />
+      {:else if mode === "manual" && files.length > 0}
+        {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
       {:else}
-        <span class="z-50">{`${uploadProgress}%`}</span>
+        {`Choose File${multiple ? `(s)` : ``}`}
       {/if}
     </slot>
   </label>

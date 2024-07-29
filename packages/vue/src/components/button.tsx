@@ -216,7 +216,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
                     "fill-none stroke-current stroke-2",
                     "hidden size-4 group-hover:block",
                   )}
-                  {...props}
                 >
                   <circle cx="12" cy="12" r="10" />
                   <path d="m4.9 4.9 14.2 14.2" />

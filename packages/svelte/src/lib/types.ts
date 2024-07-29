@@ -112,6 +112,7 @@ export type UploadthingComponentProps<
     mode?: "auto" | "manual";
     appendOnPaste?: boolean;
   };
+  disabled?: boolean;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {
