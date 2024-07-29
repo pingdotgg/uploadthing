@@ -240,7 +240,12 @@
     data-ut-element="label"
     data-state={state}
   >
-    <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
+    <input
+      use:dropzoneInput={dropzoneOptions}
+      class="sr-only"
+      {multiple}
+      disabled={dropzoneOptions.disabled}
+    />
     <slot name="label" state={styleFieldArg}>
       {ready ? `Choose files or drag and drop` : `Loading...`}
     </slot>
