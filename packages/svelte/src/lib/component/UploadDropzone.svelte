@@ -14,7 +14,6 @@
 >
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
-  import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
   import { createDropzone } from "@uploadthing/dropzone/svelte";
   import {
