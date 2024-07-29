@@ -271,9 +271,9 @@
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-ut-element="button"
     data-state={state}
-    disabled={__internal_dropzone_disabled ||
-      state === "disabled" ||
-      state === "uploading" ||
+    disabled={__internal_dropzone_disabled ??
+      state === "disabled" ??
+      state === "uploading" ??
       !files.length}
     on:click|preventDefault|stopPropagation={async () => {
       if (state === "uploading") {
