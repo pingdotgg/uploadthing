@@ -104,6 +104,7 @@ export type UploadthingComponentProps<
     mode?: "auto" | "manual";
     appendOnPaste?: boolean;
   };
+  disabled?: boolean;
   /**
    * Callback called when files are dropped or pasted.
    *

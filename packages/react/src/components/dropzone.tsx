@@ -74,13 +74,6 @@ export type UploadDropzoneProps<
    * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
-  /**
-   * Callback called when files are dropped, selected or pasted.
-   *
-   * @param files - The files that were accepted.
-   */
-  onChange?: (files: File[]) => void;
-  disabled?: boolean;
 };
 
 /** These are some internal stuff we use to test the component and for forcing a state in docs */

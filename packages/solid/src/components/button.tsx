@@ -61,12 +61,6 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
-  /**
-   * Callback called when files are selected or pasted.
-   *
-   * @param files - The files that were accepted.
-   */
-  onChange?: (files: File[]) => void;
 };
 
 /**

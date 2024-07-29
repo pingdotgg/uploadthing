@@ -72,15 +72,6 @@ export type UploadDropzoneProps<
    * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
-  /**
-   * Callback called when files are dropped or pasted.
-   *
-   * @param acceptedFiles - The files that were accepted.
-   */
-  onChange?: (files: File[]) => void;
-  config?: {
-    mode?: "manual" | "auto";
-  };
 };
 
 export const UploadDropzone = <
