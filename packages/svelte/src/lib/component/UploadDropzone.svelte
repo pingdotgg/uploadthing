@@ -278,7 +278,7 @@
     data-ut-element="button"
     data-state={state}
     disabled={__internal_dropzone_disabled ??
-      (state === "disabled" || state === "uploading" || files.length < 1)}
+      (state === "disabled" || files.length < 1)}
     on:click|preventDefault|stopPropagation={async () => {
       if (files.length < 1) return;
       if (state === "uploading") {
