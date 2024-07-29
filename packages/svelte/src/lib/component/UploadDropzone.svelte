@@ -14,6 +14,7 @@
 >
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
+  import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
   import { createDropzone } from "@uploadthing/dropzone/svelte";
   import {
@@ -85,6 +86,7 @@
   let uploadProgress = __internal_upload_progress ?? 0;
   let rootRef: HTMLElement;
   let acRef = new AbortController();
+  let input: HTMLInputElement;
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
@@ -241,6 +243,7 @@
     data-state={state}
   >
     <input
+      bind:this={input}
       use:dropzoneInput={dropzoneOptions}
       class="sr-only"
       multiple={dropzoneOptions.multiple}
@@ -277,8 +280,7 @@
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-ut-element="button"
     data-state={state}
-    disabled={__internal_dropzone_disabled ??
-      (state === "disabled" || files.length < 1)}
+    disabled={__internal_dropzone_disabled ?? state === "disabled"}
     on:click={async (e) => {
       if (state === "uploading") {
         e.preventDefault();
@@ -294,6 +296,8 @@
 
         await uploadFiles(files);
       }
+      // open file dialog
+      input.click();
     }}
   >
     <slot name="button-content" state={styleFieldArg}>
