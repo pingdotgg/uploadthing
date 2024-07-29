@@ -241,6 +241,8 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             if (fileInputRef.value) {
               fileInputRef.value.value = "";
             }
+
+            $props.onChange?.([]);
           }}
           class={twMerge(
             "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",

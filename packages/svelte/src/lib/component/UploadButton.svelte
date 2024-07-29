@@ -181,7 +181,7 @@ Example:
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <label
     class={twMerge(
-      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
       state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
@@ -264,6 +264,7 @@ Example:
       on:click={() => {
         files = [];
         fileInputRef.value = "";
+        onChange?.([]);
       }}
       class={twMerge(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",

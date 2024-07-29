@@ -253,6 +253,8 @@ export function UploadButton<
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
+
+        $props.onChange?.([]);
       }}
       className={twMerge(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
