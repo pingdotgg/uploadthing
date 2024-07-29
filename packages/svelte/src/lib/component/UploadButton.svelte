@@ -65,6 +65,8 @@
 
   export let onChange: ((files: File[]) => void) | undefined = undefined;
 
+  export let disabled: boolean = false;
+
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
   let files: File[] = [];
@@ -115,7 +117,7 @@
 
   $: state = (() => {
     if (__internal_state) return __internal_state;
-    if (uploader.disabled) return "disabled";
+    if (disabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !$isUploading) return "ready";
 
@@ -212,7 +214,7 @@ Example:
       class="sr-only"
       type="file"
       accept={generateMimeTypes(fileTypes).join(", ")}
-      disabled={__internal_button_disabled ?? uploader.disabled ?? !ready}
+      disabled={__internal_button_disabled ?? disabled ?? !ready}
       {multiple}
       on:change={async (e) => {
         if (!e.currentTarget?.files) return;

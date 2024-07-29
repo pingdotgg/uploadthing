@@ -69,6 +69,8 @@
 
   export let onChange: ((files: File[]) => void) | undefined = undefined;
 
+  export let disabled: boolean = false;
+
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
     undefined;
@@ -85,7 +87,6 @@
   let uploadProgress = __internal_upload_progress ?? 0;
   let rootRef: HTMLElement;
   let acRef = new AbortController();
-  let input: HTMLInputElement;
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
@@ -147,7 +148,7 @@
     onDrop: onDropCallback,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: __internal_dropzone_disabled ?? uploader.disabled ?? !ready,
+    disabled: __internal_dropzone_disabled ?? disabled ?? !ready,
   };
 
   const {
@@ -191,7 +192,7 @@
 
   $: state = (() => {
     if (__internal_state) return __internal_state;
-    if (uploader.disabled) return "disabled";
+    if (disabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !$isUploading) return "ready";
 
@@ -245,7 +246,6 @@
     data-state={state}
   >
     <input
-      bind:this={input}
       use:dropzoneInput={dropzoneOptions}
       class="sr-only"
       multiple={dropzoneOptions.multiple}
