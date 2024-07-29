@@ -65,7 +65,7 @@
 
   export let onChange: ((files: File[]) => void) | undefined = undefined;
 
-  export let disabled: boolean = false;
+  export let disabled = false;
 
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;

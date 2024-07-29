@@ -69,7 +69,7 @@
 
   export let onChange: ((files: File[]) => void) | undefined = undefined;
 
-  export let disabled: boolean = false;
+  export let disabled = false;
 
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
