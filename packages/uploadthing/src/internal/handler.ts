@@ -122,10 +122,6 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       });
     }
 
-    const appendResponseHeaders = Effect.map(
-      HttpServerResponse.setHeader("x-uploadthing-version", pkgJson.version),
-    );
-
     const GET = Effect.gen(function* () {
       return yield* HttpServerResponse.json(routerConfig);
     });
@@ -196,6 +192,9 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       );
 
       if (fiber) {
+        yield* Effect.logDebug("Running fiber as daemon").pipe(
+          Effect.annotateLogs("handleDaemon", handleDaemon),
+        );
         if (handleDaemon === "void") {
           // noop
         } else if (handleDaemon === "await") {
@@ -204,6 +203,10 @@ export const createRequestHandler = <TRouter extends FileRouter>(
           handleDaemon(Effect.runPromise(fiber.await));
         }
       }
+
+      yield* Effect.logDebug("Sending response").pipe(
+        Effect.annotateLogs("body", body),
+      );
 
       return yield* HttpServerResponse.json(body);
     }).pipe(
@@ -226,6 +229,10 @@ export const createRequestHandler = <TRouter extends FileRouter>(
             status: getStatusCodeFromError(e),
           }),
       }),
+    );
+
+    const appendResponseHeaders = Effect.map(
+      HttpServerResponse.setHeader("x-uploadthing-version", pkgJson.version),
     );
 
     return HttpRouter.empty.pipe(
@@ -606,14 +613,17 @@ const handleUploadAction = (opts: {
       Effect.tapBoth({
         onSuccess: (res) =>
           Effect.logDebug("Registerred metadata").pipe(
-            Effect.annotateLogs("metadata", res),
+            Effect.annotateLogs("response", res),
           ),
         onFailure: (err) =>
           err._tag === "ResponseError"
             ? Effect.flatMap(err.response.json, (json) =>
                 Effect.logError(
                   `Failed to register metadata (${err.response.status})`,
-                ).pipe(Effect.annotateLogs("error", json)),
+                ).pipe(
+                  Effect.annotateLogs("response", err.response),
+                  Effect.annotateLogs("json", json),
+                ),
               )
             : Effect.logError("Failed to register metadata").pipe(
                 Effect.annotateLogs("error", err),
@@ -654,7 +664,7 @@ const handleUploadAction = (opts: {
         metadataRequest.pipe(
           HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
         ),
-    }).pipe(Effect.ignoreLogged, Effect.forkDaemon);
+    }).pipe(Effect.forkDaemon);
 
     const presigneds = presignedUrls.map((p, i) => ({
       url: p.url,
