@@ -114,7 +114,12 @@ export const createRequestHandler = <TRouter extends FileRouter>(
     const isDevelopment = yield* IsDevelopment;
     const routerConfig = yield* extractRouterConfig(opts.router);
 
-    const handleDaemon = opts.config?.handleDaemonPromise;
+    const handleDaemon = (() => {
+      if (opts.config?.handleDaemonPromise) {
+        return opts.config.handleDaemonPromise;
+      }
+      return isDevelopment ? "void" : "await";
+    })();
     if (isDevelopment && handleDaemon === "await") {
       return yield* new UploadThingError({
         code: "INVALID_SERVER_CONFIG",
