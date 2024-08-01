@@ -137,13 +137,13 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         "x-uploadthing-version": clientVersion,
       } = yield* HttpServerRequest.schemaHeaders(
         S.Struct({
-          "uploadthing-hook": S.optional(UploadThingHook),
-          "x-uploadthing-package": S.optional(S.String, {
-            default: () => "unknown",
-          }),
-          "x-uploadthing-version": S.optional(S.String, {
-            default: () => pkgJson.version,
-          }),
+          "uploadthing-hook": UploadThingHook.pipe(S.optional),
+          "x-uploadthing-package": S.String.pipe(
+            S.optionalWith({ default: () => "unknown" }),
+          ),
+          "x-uploadthing-version": S.String.pipe(
+            S.optionalWith({ default: () => pkgJson.version }),
+          ),
         }),
       );
 
@@ -159,7 +159,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
 
       const { slug, actionType } = yield* HttpRouter.schemaParams(
         S.Struct({
-          actionType: S.optional(ActionType),
+          actionType: ActionType.pipe(S.optional),
           slug: S.String,
         }),
       );
@@ -322,7 +322,7 @@ const handleCallbackRequest = (opts: {
       S.Struct({
         status: S.String,
         file: UploadedFileData,
-        metadata: S.Record(S.String, S.Unknown),
+        metadata: S.Record({ key: S.String, value: S.Unknown }),
       }),
     );
     yield* Effect.logDebug("Handling callback request with input:").pipe(

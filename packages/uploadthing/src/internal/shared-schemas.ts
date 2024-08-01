@@ -31,12 +31,12 @@ export const ParsedToken = S.Struct({
   apiKey: S.String.pipe(S.startsWith("sk_")),
   appId: S.String,
   regions: S.NonEmptyArray(S.String),
-  ingestHost: S.optional(S.String, {
-    default: () => "ingest.uploadthing.com",
-  }),
+  ingestHost: S.String.pipe(
+    S.optionalWith({ default: () => "ingest.uploadthing.com" }),
+  ),
 });
 
-export const UploadThingToken = S.Base64.pipe(
+export const UploadThingToken = S.Uint8ArrayFromBase64.pipe(
   S.compose(DecodeString),
   S.compose(S.parseJson(ParsedToken)),
 );
@@ -54,7 +54,7 @@ export class FileUploadData extends S.Class<FileUploadData>("FileUploadData")({
   name: S.String,
   size: S.Number,
   type: S.String,
-  lastModified: S.optional(S.Number),
+  lastModified: S.Number.pipe(S.optional),
 }) {}
 
 /**
