@@ -209,6 +209,8 @@ export function createDropzone(_props: DropzoneOptions) {
       },
     });
 
+    console.log("Files Accepted", acceptedFiles);
+    console.log("running onDrop callback");
     get(props).onDrop(acceptedFiles);
   };
 
@@ -220,6 +222,8 @@ export function createDropzone(_props: DropzoneOptions) {
     if (isEventWithFiles(event)) {
       Promise.resolve(fromEvent(event))
         .then((files) => {
+          console.log("Drop event resolved");
+
           if (isPropagationStopped(event)) {
             return;
           }
@@ -234,6 +238,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const openFileDialog = () => {
     const input = get(inputRef);
     if (input) {
+      console.log("Opening file dialog");
       dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
@@ -258,6 +263,7 @@ export function createDropzone(_props: DropzoneOptions) {
   };
 
   const onInputElementClick = (event: MouseEvent) => {
+    console.log("Input element click event");
     event.stopPropagation();
   };
 
