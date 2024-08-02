@@ -238,7 +238,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const openFileDialog = () => {
     const input = get(inputRef);
     if (input) {
-      console.log("Opening file dialog");
+      console.log("Opening file dialog. inputref:", input);
       dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
