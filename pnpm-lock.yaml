@@ -1430,8 +1430,8 @@ importers:
         specifier: 3.6.0
         version: 3.6.0
       effect-log:
-        specifier: ^0.31.5
-        version: 0.31.5(effect@3.6.0)
+        specifier: ^0.31.8
+        version: 0.31.8(effect@3.6.0)
     devDependencies:
       '@types/body-parser':
         specifier: ^1.19.5
@@ -8082,10 +8082,10 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect-log@0.31.5:
-    resolution: {integrity: sha512-2nxwnpKNHiPbG/eVgGpKfxyoLfbdIyH6oeg4DJpOsl/1jhrFcn6fSAAW03SweFu68ikl4b5WbQscfAT0dcNHmA==}
+  effect-log@0.31.8:
+    resolution: {integrity: sha512-1SNGmdLvUU20sQr3HN8s/279PKmwkjjjhwM3/pZo7ZtlotIz+j1TqN9viAr4ggnY0W7LwAfzMJkFOLJEv0eJ9w==}
     peerDependencies:
-      effect: ^3.4.0
+      effect: ^3.6.0
 
   effect@3.6.0:
     resolution: {integrity: sha512-7bUV/Ytt058F3YWZJyra63MGA80msTk4AnFiVlvCM65RN7afc3LsvLOHpMifLqX/8CG0eDlJLg2lDLByyEnYGQ==}
@@ -20113,7 +20113,7 @@ snapshots:
       process: 0.11.10
       recast: 0.23.9
       util: 0.12.5
-      ws: 8.17.1
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -23410,7 +23410,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect-log@0.31.5(effect@3.6.0):
+  effect-log@0.31.8(effect@3.6.0):
     dependencies:
       effect: 3.6.0
 
