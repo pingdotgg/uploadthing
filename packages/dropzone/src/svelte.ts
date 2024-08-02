@@ -237,6 +237,10 @@ export function createDropzone(_props: DropzoneOptions) {
       dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
+    } else {
+      console.warn(
+        "No input element found for file picker. Please make sure to use the `dropzoneInput` action.",
+      );
     }
   };
 
@@ -260,6 +264,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const onFocus = () => dispatch({ type: "focus" });
   const onBlur = () => dispatch({ type: "blur" });
   const onClick = () => {
+    console.log("Dropzone click event");
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450

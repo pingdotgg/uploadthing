@@ -292,6 +292,7 @@
 
         await uploadFiles(files);
       }
+      console.log("Passing click event through");
     }}
   >
     <slot name="button-content" state={styleFieldArg}>
