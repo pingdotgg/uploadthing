@@ -75,8 +75,6 @@ beforeAll(() => {
 });
 afterAll(() => msw.close());
 
-export const resetMocks = () => msw.close();
-
 /**
  * Extend the base `it` function to provide a `db` instance to our tests
  * and extend the MSW handlers to mock the UploadThing API

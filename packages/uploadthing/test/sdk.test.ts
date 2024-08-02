@@ -16,7 +16,6 @@ import {
   INGEST_URL,
   it,
   requestSpy,
-  resetMocks,
   testToken,
   UTFS_IO_URL,
 } from "./__test-helpers";
@@ -422,7 +421,6 @@ describe.runIf(shouldRun)(
 
     // Clean up any files before and after tests
     beforeAll(async () => {
-      resetMocks();
       const { files } = await utapi.listFiles();
       await utapi.deleteFiles(files.map((f) => f.key));
     });

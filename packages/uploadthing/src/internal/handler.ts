@@ -456,6 +456,22 @@ const runRouteMiddleware = (opts: {
     return { metadata, filesWithCustomIds };
   }).pipe(Effect.withLogSpan("runRouteMiddleware"));
 
+export const handleJsonLineStream =
+  (onChunk: (chunk: MetadataFetchStreamPart) => Effect.Effect<void>) =>
+  <E, R>(stream: Stream.Stream<Uint8Array, E, R>) =>
+    stream.pipe(
+      Stream.decodeText(),
+      Stream.tap((chunk) =>
+        Effect.logDebug("Received chunk from UT").pipe(
+          Effect.annotateLogs("chunk", chunk),
+        ),
+      ),
+      Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
+      Stream.mapEffect(onChunk),
+      Stream.runDrain,
+      Effect.withSpan("handleJsonLineStream"),
+    );
+
 const handleUploadAction = (opts: {
   uploadable: Uploader<AnyParams>;
   fePackage: string;
@@ -643,11 +659,7 @@ const handleUploadAction = (opts: {
       onTrue: () =>
         metadataRequest.pipe(
           HttpClientResponse.stream,
-          Stream.decodeText(),
-          Stream.mapEffect(
-            S.decode(S.parseJson(S.Union(MetadataFetchStreamPart))),
-          ),
-          Stream.mapEffect(({ payload, signature, hook }) =>
+          handleJsonLineStream(({ payload, signature, hook }) =>
             devHookRequest.pipe(
               HttpClientRequest.setHeaders({
                 "uploadthing-hook": hook,
@@ -663,7 +675,6 @@ const handleUploadAction = (opts: {
               Effect.ignoreLogged,
             ),
           ),
-          Stream.runDrain,
         ),
       onFalse: () =>
         metadataRequest.pipe(
