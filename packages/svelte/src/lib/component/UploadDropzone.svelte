@@ -245,12 +245,7 @@
     data-ut-element="label"
     data-state={state}
   >
-    <input
-      use:dropzoneInput={dropzoneOptions}
-      class="sr-only"
-      multiple={dropzoneOptions.multiple}
-      disabled={dropzoneOptions.disabled}
-    />
+    <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
     <slot name="label" state={styleFieldArg}>
       {ready ? `Choose files or drag and drop` : `Loading...`}
     </slot>
@@ -271,7 +266,7 @@
   <button
     class={twMerge(
       "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 cursor-pointer",
-      state === "disabled" && "cursor-not-allowed bg-blue-400",
+      state === "disabled" && "cursor-not-allowed bg-gray-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
