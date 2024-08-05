@@ -16,7 +16,6 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Match from "effect/Match";
-import * as Stream from "effect/Stream";
 
 import {
   fillInputRouteConfig,
@@ -32,6 +31,7 @@ import {
 import * as pkgJson from "../../package.json";
 import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
+import { handleJsonLineStream } from "./jsonl";
 import { withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
@@ -456,22 +456,6 @@ const runRouteMiddleware = (opts: {
     return { metadata, filesWithCustomIds };
   }).pipe(Effect.withLogSpan("runRouteMiddleware"));
 
-export const handleJsonLineStream =
-  (onChunk: (chunk: MetadataFetchStreamPart) => Effect.Effect<void>) =>
-  <E, R>(stream: Stream.Stream<Uint8Array, E, R>) =>
-    stream.pipe(
-      Stream.decodeText(),
-      Stream.tap((chunk) =>
-        Effect.logDebug("Received chunk from UT").pipe(
-          Effect.annotateLogs("chunk", chunk),
-        ),
-      ),
-      Stream.mapEffect(S.decode(S.parseJson(MetadataFetchStreamPart))),
-      Stream.mapEffect(onChunk),
-      Stream.runDrain,
-      Effect.withSpan("handleJsonLineStream"),
-    );
-
 const handleUploadAction = (opts: {
   uploadable: Uploader<AnyParams>;
   fePackage: string;
@@ -659,21 +643,25 @@ const handleUploadAction = (opts: {
       onTrue: () =>
         metadataRequest.pipe(
           HttpClientResponse.stream,
-          handleJsonLineStream(({ payload, signature, hook }) =>
-            devHookRequest.pipe(
-              HttpClientRequest.setHeaders({
-                "uploadthing-hook": hook,
-                "x-uploadthing-signature": signature,
-              }),
-              HttpClientRequest.setBody(
-                HttpBody.text(payload, "application/json"),
+          handleJsonLineStream(
+            MetadataFetchStreamPart,
+            ({ payload, signature, hook }) =>
+              devHookRequest.pipe(
+                HttpClientRequest.setHeaders({
+                  "uploadthing-hook": hook,
+                  "x-uploadthing-signature": signature,
+                }),
+                HttpClientRequest.setBody(
+                  HttpBody.text(payload, "application/json"),
+                ),
+                httpClient,
+                HttpClientResponse.arrayBuffer,
+                Effect.asVoid,
+                Effect.tap(
+                  Effect.log(`Successfully simulated '${hook}' event`),
+                ),
+                Effect.ignoreLogged,
               ),
-              httpClient,
-              HttpClientResponse.arrayBuffer,
-              Effect.asVoid,
-              Effect.tap(Effect.log(`Successfully simulated '${hook}' event`)),
-              Effect.ignoreLogged,
-            ),
           ),
         ),
       onFalse: () =>
