@@ -15,10 +15,6 @@ export const handleJsonLineStream =
       Stream.mapEffect((chunk) =>
         Effect.gen(function* () {
           buf += chunk;
-          yield* Effect.logDebug("Received chunk").pipe(
-            Effect.annotateLogs("chunk", chunk),
-            Effect.annotateLogs("buf", buf),
-          );
 
           // Scan buffer for newlines
           const parts = buf.split("\n");
@@ -26,13 +22,20 @@ export const handleJsonLineStream =
 
           for (const part of parts) {
             try {
-              const parsed = JSON.parse(part) as unknown;
+              // Attempt to parse chunk as JSON
+              validChunks.push(JSON.parse(part) as unknown);
+              // Advance buffer if parsing succeeded
               buf = buf.slice(part.length + 1);
-              validChunks.push(parsed);
             } catch {
               //
             }
           }
+
+          yield* Effect.logDebug("Received chunks").pipe(
+            Effect.annotateLogs("chunk", chunk),
+            Effect.annotateLogs("parsedChunks", validChunks),
+            Effect.annotateLogs("buf", buf),
+          );
 
           return validChunks;
         }),
@@ -40,6 +43,6 @@ export const handleJsonLineStream =
       Stream.mapEffect(S.decodeUnknown(S.Array(schema))),
       Stream.mapEffect(Effect.forEach((part) => onChunk(part))),
       Stream.runDrain,
-      Effect.withSpan("handleJsonLineStream"),
+      Effect.withLogSpan("handleJsonLineStream"),
     );
   };
