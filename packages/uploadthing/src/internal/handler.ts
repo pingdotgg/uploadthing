@@ -382,7 +382,7 @@ const handleCallbackRequest = (opts: {
         Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
         Effect.tapErrorTag("ResponseError", ({ response: res }) =>
           Effect.flatMap(res.json, (json) =>
-            Effect.logError(`Failed to register metadata (${res.status})`).pipe(
+            Effect.logError(`Failed to register callback result (${res.status})`).pipe(
               Effect.annotateLogs("error", json),
             ),
           ),
