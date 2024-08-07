@@ -1,5 +1,14 @@
 # uploadthing
 
+## 6.13.3
+
+### Patch Changes
+
+- [#877](https://github.com/pingdotgg/uploadthing/pull/877) [`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update api paths to skip rewrites
+
+- Updated dependencies [[`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195)]:
+  - @uploadthing/shared@6.7.9
+
 ## 6.13.2
 
 ### Patch Changes

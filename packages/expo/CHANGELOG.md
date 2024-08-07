@@ -1,5 +1,13 @@
 # @uploadthing/expo
 
+## 6.7.3
+
+### Patch Changes
+
+- Updated dependencies [[`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195)]:
+  - @uploadthing/shared@6.7.9
+  - @uploadthing/react@6.7.3
+
 ## 6.7.2
 
 ### Patch Changes
