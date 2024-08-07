@@ -4,13 +4,11 @@ import { uploadRouter } from "$lib/server/uploadthing";
 import { createRouteHandler } from "uploadthing/server";
 
 // The Svelte extension complains if you export the handlers directly
-const { GET, POST } = createRouteHandler({
+const handler = createRouteHandler({
   router: uploadRouter,
   config: {
-    // callbackUrl: `http://localhost:${env.PORT ?? 5173}/api/uploadthing`,
-    uploadthingId: env.UPLOADTHING_APP_ID,
-    uploadthingSecret: env.UPLOADTHING_SECRET,
+    token: env.UPLOADTHING_TOKEN,
   },
 });
 
-export { GET, POST };
+export { handler as GET, handler as POST };

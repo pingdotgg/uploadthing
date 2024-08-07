@@ -11,10 +11,6 @@ export default defineEventHandler((event) => {
 
   return createRouteHandler({
     router: uploadRouter,
-    config: {
-      ...runtime.uploadthing,
-      uploadthingSecret: runtime.uploadthing?.secret,
-      uploadthingId: runtime.uploadthing?.appId,
-    },
+    config: runtime.uploadthing,
   })(event);
 });

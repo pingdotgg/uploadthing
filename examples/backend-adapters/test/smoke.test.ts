@@ -6,7 +6,7 @@ const testFile = (name: string) => path.join(dirname, "test-files", name);
 
 // Skip tests if no secret is provided (e.g. forks)
 const test =
-  process.env.UPLOADTHING_SECRET && process.env.UPLOADTHING_SECRET.length > 0
+  process.env.UPLOADTHING_TOKEN && process.env.UPLOADTHING_TOKEN.length > 0
     ? $test
     : $test.skip;
 

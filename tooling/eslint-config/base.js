@@ -20,6 +20,7 @@ const config = {
   },
   plugins: ["@typescript-eslint", "import"],
   rules: {
+    "@typescript-eslint/array-type": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/method-signature-style": ["error", "property"],

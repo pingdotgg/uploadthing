@@ -42,9 +42,7 @@
   "dependencies": {
     "@uploadthing/dropzone": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "@vueuse/core": "^10.9.0",
-    "file-selector": "^0.6.0",
-    "tailwind-merge": "^2.2.1"
+    "@vueuse/core": "^10.9.0"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",

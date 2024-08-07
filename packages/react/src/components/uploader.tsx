@@ -10,11 +10,10 @@ import { UploadDropzone } from "./dropzone";
 export function Uploader<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadthingComponentProps<TRouter, TEndpoint>,
 ) {
   return (
     <>

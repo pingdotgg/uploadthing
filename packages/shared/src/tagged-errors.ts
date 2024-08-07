@@ -92,5 +92,8 @@ export class BadRequestError<T = unknown>
   }
 }
 
+export class UploadPausedError
+  extends /** #__PURE__ */ Micro.TaggedError("UploadAborted") {}
+
 export class UploadAbortedError
   extends /** #__PURE__ */ Micro.TaggedError("UploadAborted") {}

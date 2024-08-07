@@ -11,7 +11,6 @@ function App() {
       <div>
         <UploadButton
           endpoint="videoAndImage"
-          skipPolling
           onClientUploadComplete={(file) => {
             console.log("uploaded", file);
             alert("Upload complete");
@@ -26,7 +25,6 @@ function App() {
         />
         <UploadDropzone
           endpoint="videoAndImage"
-          skipPolling
           onClientUploadComplete={(file) => {
             console.log("uploaded", file);
             alert("Upload complete");

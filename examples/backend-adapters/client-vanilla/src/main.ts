@@ -1,18 +1,30 @@
+import { setupUploader } from "./normal-upload";
+import { setupResumableUploader } from "./resumable-upload";
+
 import "./style.css";
 
-import { setupUploader } from "./uploader";
-
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
-  <div>
-    <h1>UploadThing x Vanilla JS</h1>
-    <div class="card">
-      <form id="upload-form">
-        <input type="file" />
-        <button>Upload</button>
-      </form>
-      <button id="abort" disabled="true">Abort</button>
-    </div>
+  <h1>UploadThing x Vanilla JS</h1>
+  <div class="card" id="vanilla-upload">
+    <h2>Normal upload</h2>
+    <form>
+      <input type="file" />
+      <button type="submit">Upload</button>
+    </form>
+    <button type="button" disabled="true">Abort</button>
+    <progress value="0" max="100" style="display: none"></progress>
+  </div>
+
+  <div class="card" id="resumable-upload">
+    <h2>Resumable upload</h2>
+    <form>
+      <input type="file" />
+      <button type="submit">Start Upload</button>
+    </form>
   </div>
 `;
 
-setupUploader(document.querySelector<HTMLFormElement>("#upload-form")!);
+setupUploader(document.querySelector<HTMLDivElement>("#vanilla-upload")!);
+setupResumableUploader(
+  document.querySelector<HTMLDivElement>("#resumable-upload")!,
+);

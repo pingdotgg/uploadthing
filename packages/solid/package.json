@@ -111,8 +111,7 @@
   },
   "dependencies": {
     "@uploadthing/dropzone": "workspace:*",
-    "@uploadthing/shared": "workspace:*",
-    "tailwind-merge": "^2.2.1"
+    "@uploadthing/shared": "workspace:*"
   },
   "devDependencies": {
     "postcss": "8.4.38",

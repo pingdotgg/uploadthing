@@ -1,11 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useRef, useState } from "react";
-import { twMerge } from "tailwind-merge";
 
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -50,8 +50,7 @@ type ButtonContent = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -86,23 +85,22 @@ type UploadThingInternalProps = {
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<
-    TRouter,
-    TEndpoint,
-    TSkipPolling
-  > &
+  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> &
     UploadThingInternalProps;
   const fileRouteInput = "input" in $props ? $props.input : undefined;
 
-  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+  const {
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
   const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
@@ -121,7 +119,6 @@ export function UploadButton<
     {
       signal: acRef.current.signal,
       headers: $props.headers,
-      skipPolling: !$props?.onClientUploadComplete ? true : $props?.skipPolling,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -232,7 +229,7 @@ export function UploadButton<
     return (
       <span className="z-50">
         <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" />
+        <Cancel className="hidden size-4 group-hover:block" cn={cn} />
       </span>
     );
   };
@@ -246,7 +243,7 @@ export function UploadButton<
           fileInputRef.current.value = "";
         }
       }}
-      className={twMerge(
+      className={cn(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
         styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
       )}
@@ -261,7 +258,7 @@ export function UploadButton<
 
   const renderAllowedContent = () => (
     <div
-      className={twMerge(
+      className={cn(
         "h-[1.25rem] text-xs leading-5 text-gray-600",
         styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
       )}
@@ -279,7 +276,7 @@ export function UploadButton<
 
   return (
     <div
-      className={twMerge(
+      className={cn(
         "flex flex-col items-center justify-center gap-1",
         $props.className,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
@@ -288,7 +285,7 @@ export function UploadButton<
       data-state={state}
     >
       <label
-        className={twMerge(
+        className={cn(
           "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&

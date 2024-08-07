@@ -5,7 +5,7 @@ import { createRouteHandler } from "uploadthing/server";
 import { uploadRouter } from "./router";
 
 export interface Env {
-  UPLOADTHING_SECRET: string;
+  UPLOADTHING_TOKEN: string;
   ENVIRONMENT?: string;
 }
 
@@ -18,15 +18,16 @@ const cors = (res?: Response) => {
 };
 
 const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
-  const handlers = createRouteHandler({
+  const handler = createRouteHandler({
     router: uploadRouter,
     config: {
       /**
        * Since workers doesn't have envs on `process`. We need to pass
        * secret and isDev flag manually.
        */
-      uploadthingSecret: env.UPLOADTHING_SECRET,
+      token: env.UPLOADTHING_TOKEN,
       isDev: env.ENVIRONMENT === "development",
+      logLevel: "Debug",
       /*
        * Cloudflare Workers doesn't support the cache option
        * so we need to remove it from the request init.
@@ -35,6 +36,8 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
         if (init && "cache" in init) delete init.cache;
         return fetch(url, init);
       },
+      handleDaemonPromise: (promise) => ctx.waitUntil(promise),
+      ingestUrl: "http://localhost:3001",
     },
   });
 
@@ -48,14 +51,7 @@ const handler = async (request: Request, env: Env, ctx: ExecutionContext) => {
         return cors(new Response("Method not allowed", { status: 405 }));
       }
 
-      const response = await handlers[request.method](request);
-      if ("cleanup" in response && response.cleanup) {
-        /**
-         * UploadThing dev server leaves some promises hanging around that we
-         * need to wait for to prevent the worker from exiting prematurely.
-         */
-        ctx.waitUntil(response.cleanup);
-      }
+      const response = await handler(request);
       return cors(response);
     }
     default: {

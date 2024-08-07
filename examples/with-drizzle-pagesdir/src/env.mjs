@@ -7,8 +7,7 @@ export const env = createEnv({
    * isn't built with invalid env vars.
    */
   server: {
-    UPLOADTHING_APP_ID: z.string(),
-    UPLOADTHING_SECRET: z.string(),
+    UPLOADTHING_TOKEN: z.string().base64(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),

@@ -1,17 +1,29 @@
 /* eslint-disable no-restricted-globals */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
+import {
+  HttpClient,
+  HttpServerRequest,
+  HttpServerResponse,
+} from "@effect/platform";
+import * as ConfigProvider from "effect/ConfigProvider";
+import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 import * as express from "express";
 import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
+import { configProvider } from "../src/internal/config";
 import {
   baseHeaders,
   createApiUrl,
+  INGEST_URL,
   it,
   middlewareMock,
   requestSpy,
+  requestsToDomain,
+  testToken,
   uploadCompleteMock,
 } from "./__test-helpers";
 
@@ -36,9 +48,7 @@ describe("adapters:h3", async () => {
   it("gets H3Event in middleware args", async ({ db }) => {
     const eventHandler = createRouteHandler({
       router,
-      config: {
-        uploadthingSecret: "sk_live_test",
-      },
+      config: { token: testToken.encoded },
     });
 
     // FIXME: Didn't know how to declaratively create a H3Event to
@@ -64,35 +74,39 @@ describe("adapters:h3", async () => {
       }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
-              contentDisposition: "inline",
-            },
-          },
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "h3",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(
+          `https://fra1.ingest.(uploadthing|ut-staging).com/.+`,
+        ),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "h3",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -117,11 +131,9 @@ describe("adapters:server", async () => {
   };
 
   it("gets Request in middleware args", async ({ db }) => {
-    const handlers = createRouteHandler({
+    const handler = createRouteHandler({
       router,
-      config: {
-        uploadthingSecret: "sk_live_test",
-      },
+      config: { token: testToken.encoded },
     });
 
     const req = new Request(createApiUrl("middleware", "upload"), {
@@ -131,7 +143,7 @@ describe("adapters:server", async () => {
         files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
     });
-    const res = await handlers.POST(req);
+    const res = await handler(req);
     expect(res.status).toBe(200);
 
     expect(middlewareMock).toHaveBeenCalledOnce();
@@ -139,35 +151,37 @@ describe("adapters:server", async () => {
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
-              contentDisposition: "inline",
-            },
-          },
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "server",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -192,9 +206,7 @@ describe("adapters:next", async () => {
   it("gets NextRequest in middleware args", async ({ db }) => {
     const handlers = createRouteHandler({
       router,
-      config: {
-        uploadthingSecret: "sk_live_test",
-      },
+      config: { token: testToken.encoded },
     });
 
     const req = new NextRequest(createApiUrl("middleware", "upload"), {
@@ -211,35 +223,38 @@ describe("adapters:next", async () => {
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({ event: undefined, req, res: undefined }),
     );
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
-              contentDisposition: "inline",
-            },
-          },
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "nextjs-app",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "nextjs-app",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -302,9 +317,7 @@ describe("adapters:next-legacy", async () => {
   }) => {
     const handler = createRouteHandler({
       router,
-      config: {
-        uploadthingSecret: "sk_live_test",
-      },
+      config: { token: testToken.encoded },
     });
 
     const { req } = mockReq({
@@ -315,45 +328,58 @@ describe("adapters:next-legacy", async () => {
       method: "POST",
       headers: baseHeaders,
     });
-    const { res, status } = mockRes();
+    const { res, status, json } = mockRes();
 
     await handler(req, res);
-    expect(status).not.toHaveBeenCalled(); // implicit 200
+    expect(status).toHaveBeenCalledWith(200);
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({ event: undefined, req, res }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const resJson = (json.mock.calls[0] as any[])[0];
+    const reader = (resJson as ReadableStream).getReader();
+    let data = "";
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      data += new TextDecoder().decode(value);
+    }
+    const jsonData = JSON.parse(data);
+    expect(jsonData).toEqual([
       {
-        body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
-              contentDisposition: "inline",
-            },
-          },
-          metadata: {},
-          callbackUrl: "http://localhost:3000/",
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "nextjs-pages",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [jsonData[0]?.key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "nextjs-pages",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
   });
 });
 
@@ -384,9 +410,7 @@ describe("adapters:express", async () => {
       "/api/uploadthing",
       createRouteHandler({
         router,
-        config: {
-          uploadthingSecret: "sk_live_test",
-        },
+        config: { token: testToken.encoded },
       }),
     );
 
@@ -423,35 +447,37 @@ describe("adapters:express", async () => {
       }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
-              contentDisposition: "inline",
-            },
-          },
-          metadata: {},
-          callbackUrl: url,
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "express",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: url,
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "express",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
 
     server.close();
   });
@@ -522,9 +548,7 @@ describe("adapters:fastify", async () => {
     const app = fastify.default();
     await app.register(createRouteHandler, {
       router,
-      config: {
-        uploadthingSecret: "sk_live_test",
-      },
+      config: { token: testToken.encoded },
     });
 
     const addr = await app.listen();
@@ -561,36 +585,148 @@ describe("adapters:fastify", async () => {
       }),
     );
 
-    // Should proceed to have requested URLs
-    expect(requestSpy).toHaveBeenCalledOnce();
-    expect(requestSpy).toHaveBeenCalledWith(
-      "https://api.uploadthing.com/v6/prepareUpload",
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
       {
-        body: {
-          files: [{ name: "foo.txt", size: 48 }],
-          routeConfig: {
-            blob: {
-              maxFileSize: "8MB",
-              maxFileCount: 1,
-              minFileCount: 1,
-              contentDisposition: "inline",
-            },
-          },
-          metadata: {},
-          callbackUrl: url,
-          callbackSlug: "middleware",
-        },
-        headers: {
-          "content-type": "application/json",
-          "x-uploadthing-api-key": "sk_live_test",
-          "x-uploadthing-be-adapter": "fastify",
-          "x-uploadthing-fe-package": "vitest",
-          "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
-        },
-        method: "POST",
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
       },
-    );
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: false,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: url,
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "fastify",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
 
     await server.close();
   });
+});
+
+describe("adapters:effect-platform", async () => {
+  const { it } = await import("@effect/vitest");
+
+  const { createUploadthing, createRouteHandler } = await import(
+    "../src/effect-platform"
+  );
+  const f = createUploadthing();
+
+  const router = {
+    middleware: f({ blob: {} })
+      .middleware((opts) => {
+        middlewareMock(opts);
+        expectTypeOf<{
+          event: undefined;
+          req: HttpServerRequest.HttpServerRequest;
+          res: undefined;
+        }>(opts);
+        return {};
+      })
+      .onUploadComplete(uploadCompleteMock),
+  };
+
+  it.effect("gets HttpServerRequest in middleware args", () =>
+    Effect.gen(function* () {
+      const handler = createRouteHandler({
+        router,
+        config: { token: testToken.encoded },
+      }).pipe(Effect.provide(HttpClient.layer));
+
+      const req = new Request(createApiUrl("middleware", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      });
+
+      const serverRequest = HttpServerRequest.fromWeb(req);
+      const response = yield* handler.pipe(
+        Effect.provideService(
+          HttpServerRequest.HttpServerRequest,
+          serverRequest,
+        ),
+      );
+
+      const json = yield* Effect.promise(() =>
+        HttpServerResponse.toWeb(response).json(),
+      );
+
+      expect(json).toEqual([
+        {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          url: expect.stringMatching(`${INGEST_URL}/.+`),
+          name: "foo.txt",
+        },
+      ]);
+      expect(response.status).toBe(200);
+
+      expect(middlewareMock).toHaveBeenCalledOnce();
+      expect(middlewareMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          event: undefined,
+          res: undefined,
+          req: serverRequest,
+        }),
+      );
+    }),
+  );
+
+  /**
+   * I'm not entirely sure how this is supposed to work, but Datner
+   * gave some thoughts on how Effect users having their own ConfigProvider
+   * might conflict with the one provided by UploadThing.
+   */
+  it.effect.skip("still finds the token with a custom config provider", () =>
+    Effect.gen(function* () {
+      const handler = createRouteHandler({
+        router,
+      }).pipe(Effect.provide(HttpClient.layer));
+
+      const req = new Request(createApiUrl("middleware", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+        }),
+      });
+
+      const serverRequest = HttpServerRequest.fromWeb(req);
+      const response = yield* handler.pipe(
+        Effect.provideService(
+          HttpServerRequest.HttpServerRequest,
+          serverRequest,
+        ),
+      );
+
+      expect(response.status).toBe(200);
+    }).pipe(
+      Effect.provide(
+        Layer.setConfigProvider(
+          ConfigProvider.fromJson({
+            uploadthingToken: testToken.encoded,
+          }),
+        ),
+      ),
+    ),
+  );
 });

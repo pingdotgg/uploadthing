@@ -1,9 +1,9 @@
 import { createSignal } from "solid-js";
-import { twMerge } from "tailwind-merge";
 
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   resolveMaybeUrlArg,
@@ -45,8 +45,7 @@ type ButtonContent = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -71,15 +70,16 @@ export type UploadButtonProps<
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   let inputRef: HTMLInputElement;
-  const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
+  const $props = props as UploadButtonProps<TRouter, TEndpoint>;
+
+  const { cn = defaultClassListMerger } = $props.config ?? {};
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
@@ -87,7 +87,6 @@ export function UploadButton<
 
   const uploadedThing = useUploadThing($props.endpoint, {
     headers: $props.headers,
-    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       if (inputRef) {
         inputRef.value = "";
@@ -130,7 +129,7 @@ export function UploadButton<
 
   return (
     <div
-      class={twMerge(
+      class={cn(
         "flex flex-col items-center justify-center gap-1",
         $props.class,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
@@ -139,7 +138,7 @@ export function UploadButton<
       data-state={state()}
     >
       <label
-        class={twMerge(
+        class={cn(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
           state() === "readying" && "cursor-not-allowed bg-blue-400",
           state() === "uploading" &&
@@ -174,7 +173,7 @@ export function UploadButton<
           ))}
       </label>
       <div
-        class={twMerge(
+        class={cn(
           "h-[1.25rem] text-xs leading-5 text-gray-600",
           styleFieldToClassName(
             $props.appearance?.allowedContent,

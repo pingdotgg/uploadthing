@@ -77,8 +77,8 @@ function formatDiff(diff) {
   let treemapMain = "_No treemap on forks_";
   let treemapPr = "_No treemap on forks_";
   if (
-    typeof process.env.UPLOADTHING_SECRET === "string" &&
-    process.env.UPLOADTHING_SECRET.length > 0
+    typeof process.env.UPLOADTHING_TOKEN === "string" &&
+    process.env.UPLOADTHING_TOKEN.length > 0
   ) {
     const utapi = new UTApi();
     const files = await utapi.uploadFiles([

@@ -5,7 +5,6 @@ name: CI
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
-  UPLOADTHING_TEST_SECRET: ${{ secrets.UPLOADTHING_TEST_SECRET }}
   
 on:
   push:
@@ -34,6 +33,10 @@ jobs:
         run: pnpm turbo build --filter "./packages/*"
       - name: Test
         run: pnpm run test
+        env:
+          UPLOADTHING_TEST_TOKEN: ${{ secrets.UPLOADTHING_TEST_TOKEN }}
+          UPLOADTHING_API_URL: https://api.ut-staging.com
+          UPLOADTHING_INGEST_URL: https://fra1.ingest.ut-staging.com
 
   lint:
     runs-on: ubuntu-latest
@@ -140,4 +143,6 @@ jobs:
         run: node .github/analyze-bundle.js
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          UPLOADTHING_SECRET: ${{ secrets.UPLOADTHING_E2E_TEST_SECRET }}
+          UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_E2E_TEST_TOKEN }}
+          UPLOADTHING_API_URL: https://api.ut-staging.com
+          UPLOADTHING_INGEST_URL: https://fra1.ingest.ut-staging.com

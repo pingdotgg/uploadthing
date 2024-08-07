@@ -3,6 +3,7 @@ import "dotenv/config";
 import { createServer } from "node:http";
 import {
   Headers,
+  HttpClient,
   HttpMiddleware,
   HttpRouter,
   HttpServer,
@@ -10,7 +11,7 @@ import {
   HttpServerResponse,
 } from "@effect/platform";
 import { NodeHttpServer, NodeRuntime } from "@effect/platform-node";
-import { Config, Effect, Layer } from "effect";
+import { Config, Effect, Layer, Logger, LogLevel } from "effect";
 
 import { createRouteHandler } from "uploadthing/effect-platform";
 
@@ -49,6 +50,7 @@ const cors = HttpMiddleware.make((app) =>
 
 const router = HttpRouter.empty.pipe(
   HttpRouter.get("/api", HttpServerResponse.text("Hello from Effect")),
+  // @ts-expect-error - FIXME!!!
   HttpRouter.mount("/api/uploadthing", uploadthingRouter),
 );
 
@@ -56,13 +58,14 @@ const app = router.pipe(
   cors,
   HttpServer.serve(HttpMiddleware.logger),
   HttpServer.withLogAddress,
+  Layer.provide(HttpClient.layer),
 );
 
 const Port = Config.integer("PORT").pipe(Config.withDefault(3000));
 const ServerLive = Layer.unwrapEffect(
   Effect.map(Port, (port) =>
     NodeHttpServer.layer(() => createServer(), { port }),
-  ),
+  ).pipe(Effect.provide(Logger.minimumLogLevel(LogLevel.Debug))),
 );
 
 NodeRuntime.runMain(Layer.launch(Layer.provide(app, ServerLive)));
