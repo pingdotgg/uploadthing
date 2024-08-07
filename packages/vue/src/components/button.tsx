@@ -206,7 +206,9 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           } else {
             return (
               <span class="z-50">
-                <span class="block group-hover:hidden">{uploadProgress}%</span>
+                <span class="block group-hover:hidden">
+                  {uploadProgress.value}%
+                </span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
