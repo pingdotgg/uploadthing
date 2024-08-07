@@ -4,6 +4,14 @@
 
 ### Patch Changes
 
+- Updated dependencies [[`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195)]:
+  - uploadthing@6.13.3
+  - @uploadthing/react@6.7.3
+
+## null
+
+### Patch Changes
+
 - Updated dependencies [[`df6334d`](https://github.com/pingdotgg/uploadthing/commit/df6334d368970ec9791b85f97c58eb7958421e78)]:
   - uploadthing@6.13.2
   - @uploadthing/react@6.7.2
