@@ -177,7 +177,7 @@ export default function Home() {
 UploadThing provides a few premade components that you can use to upload files
 in your app. For component customization, see [Theming](/theming), and for even
 more advanced use cases check out the
-[hook usage](#advanced-usage-useuploadthing)
+[hook usage](#advanced-usage-createuploadthing)
 
 #### UploadButton
 
@@ -293,7 +293,7 @@ export default function Home() {
 }
 ```
 
-## Advanced usage: `useUploadThing`
+## Advanced usage: `createUploadThing`
 
 For advanced use cases, the premade components might not be flexible enough to
 suit your needs. In that case, you can use the `useUploadThing` hook to build
@@ -301,9 +301,9 @@ your own components with a custom upload flow:
 
 <Steps>
 
-### Create the hook
+### Create the helper
 
-First, generate a typed hook using the `generateSolidHelpers` function from
+First, generate a typed helper using the `generateSolidHelpers` function from
 `@uploadthing/solid`:
 
 ```tsx copy filename="src/utils/uploadthing.ts"
@@ -311,16 +311,17 @@ import { generateSolidHelpers } from "@uploadthing/solid";
 
 import type { OurFileRouter } from "~/server/uploadthing";
 
-export const { useUploadThing } = generateSolidHelpers<OurFileRouter>();
+export const { createUploadThing } = generateSolidHelpers<OurFileRouter>();
 ```
 
-### Use the hook
+### Use the generated helper
 
-Then, use the hook in your component. By using the hook, you have full control
-of when and how to upload files.
+Then, use the `createUploadThing` function in your component. By using the raw
+`createUploadThing` function, you have full control of when and how to upload
+files.
 
 ```tsx copy filename="src/routes/index.tsx"
-import { useUploadThing } from "~/utils/uploadthing";
+import { createUploadThing } from "~/utils/uploadthing";
 
 async function compress(file: File) {
   // Run some compression algorithm on the file
@@ -328,7 +329,7 @@ async function compress(file: File) {
 }
 
 export default function Home() {
-  const { startUpload } = useUploadThing("profileImage", {
+  const { startUpload } = createUploadThing("profileImage", {
     onClientUploadComplete: () => {
       alert("Upload Completed");
     },

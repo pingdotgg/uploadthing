@@ -17,8 +17,8 @@ import type {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
+import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
@@ -81,11 +81,11 @@ export function UploadButton<
   let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
 
-  const uploadedThing = useUploadThing($props.endpoint, {
+  const uploadedThing = createUploadThing($props.endpoint, {
     headers: $props.headers,
     skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
