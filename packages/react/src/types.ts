@@ -121,6 +121,13 @@ export type UploadthingComponentProps<
     mode?: "auto" | "manual";
     appendOnPaste?: boolean;
   };
+  disabled?: boolean;
+  /**
+   * Callback called when files are selected
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
+  onChange?: (files: File[]) => void;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

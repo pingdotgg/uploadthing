@@ -46,7 +46,7 @@ export default defineNuxtModule<ModuleOptions>({
       {
         secret: options.secret,
         appId: options.appId,
-        logLevel: options.logLevel,
+        logLevel: options.logLevel ?? "info",
       },
     );
 
