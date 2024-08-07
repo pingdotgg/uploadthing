@@ -17,6 +17,7 @@
   "theming": "Theming",
   "regions-and-acl": "Regions and Access Controls",
   "api-reference": "API Reference",
+  "testing": "Testing",
   "errors": "Error Handling",
   "--2": {
     "type": "separator"
