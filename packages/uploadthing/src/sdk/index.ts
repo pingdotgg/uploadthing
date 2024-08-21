@@ -244,7 +244,7 @@ export class UTApi {
     )({
       success: S.Boolean,
       deletedCount: S.Number,
-    }) {}
+    }) { }
 
     return await this.executeAsync(
       this.requestUploadThing(
@@ -283,7 +283,7 @@ export class UTApi {
           url: S.String,
         }),
       ),
-    }) {}
+    }) { }
 
     return await this.executeAsync(
       this.requestUploadThing(
@@ -322,10 +322,11 @@ export class UTApi {
             "Failed",
             "Uploaded",
             "Uploading",
+            "Callback Failed",
           ),
         }),
       ),
-    }) {}
+    }) { }
 
     return await this.executeAsync(
       this.requestUploadThing("/v6/listFiles", { ...opts }, ListFileResponse),
@@ -339,7 +340,7 @@ export class UTApi {
       "RenameFileResponse",
     )({
       success: S.Boolean,
-    }) {}
+    }) { }
 
     return await this.executeAsync(
       this.requestUploadThing(
@@ -363,7 +364,7 @@ export class UTApi {
       appTotalBytes: S.Number,
       filesUploaded: S.Number,
       limitBytes: S.Number,
-    }) {}
+    }) { }
 
     return await this.executeAsync(
       this.requestUploadThing("/v6/getUsageInfo", {}, GetUsageInfoResponse),
@@ -397,7 +398,7 @@ export class UTApi {
       "GetSignedUrlResponse",
     )({
       url: S.String,
-    }) {}
+    }) { }
 
     return await this.executeAsync(
       this.requestUploadThing(
