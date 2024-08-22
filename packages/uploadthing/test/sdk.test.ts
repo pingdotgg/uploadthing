@@ -634,6 +634,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFiles(file);
       expect(result).toEqual({
         data: {
+          customId: null,
           key: expect.stringMatching(/.+/),
           name: "bar.txt",
           size: 3,
