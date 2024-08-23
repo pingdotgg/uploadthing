@@ -79,6 +79,14 @@ export const fillInputRouteConfig = (
     };
 
     newConfig[key] = { ...defaultValues, ...value };
+
+    if (newConfig[key].maxFileCount === Infinity) {
+      newConfig[key].maxFileCount = Number.MAX_SAFE_INTEGER;
+    }
+
+    if (newConfig[key].minFileCount === Infinity) {
+      newConfig[key].minFileCount = Number.MAX_SAFE_INTEGER;
+    }
   }
 
   return Micro.succeed(newConfig);
@@ -275,4 +283,27 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
   return maybeUrl instanceof URL
     ? maybeUrl
     : Micro.runSync(getFullApiUrl(maybeUrl));
+};
+
+/**
+ * Replacer for JSON.stringify that will replace numbers that cannot be
+ * serialized to JSON with "reasonable equivalents".
+ *
+ * Infinity and -Infinity are replaced by MAX_SAFE_INTEGER and MIN_SAFE_INTEGER
+ * NaN is replaced by 0
+ *
+ */
+export const safeNumberReplacer = (_: string, value: unknown) => {
+  if (typeof value === "number") {
+    if (
+      Number.isSafeInteger(value) ||
+      (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER)
+    ) {
+      return value;
+    }
+    if (value === Infinity) return Number.MAX_SAFE_INTEGER;
+    if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
+    if (Number.isNaN(value)) return 0;
+  }
+  return value;
 };
