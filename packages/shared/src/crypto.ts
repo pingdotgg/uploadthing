@@ -1,3 +1,4 @@
+import * as Either from "effect/Either";
 import * as Encoding from "effect/Encoding";
 
 const signaturePrefix = "hmac-sha256=";
@@ -39,7 +40,7 @@ export const verifySignature = async (
   return await crypto.subtle.verify(
     algorithm,
     signingKey,
-    Uint8Array.from(Buffer.from(sig, "hex")),
+    Either.getOrThrow(Encoding.decodeHex(sig)),
     encoder.encode(payload),
   );
 };
