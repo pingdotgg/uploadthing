@@ -79,14 +79,6 @@ export const fillInputRouteConfig = (
     };
 
     newConfig[key] = { ...defaultValues, ...value };
-
-    if (newConfig[key].maxFileCount === Infinity) {
-      newConfig[key].maxFileCount = Number.MAX_SAFE_INTEGER;
-    }
-
-    if (newConfig[key].minFileCount === Infinity) {
-      newConfig[key].minFileCount = Number.MAX_SAFE_INTEGER;
-    }
   }
 
   return Micro.succeed(newConfig);
@@ -294,7 +286,8 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
  *
  */
 export const safeNumberReplacer = (_: string, value: unknown) => {
-  if (typeof value === "number") {
+  if (typeof value !== "number") return value;
+  else {
     if (
       Number.isSafeInteger(value) ||
       (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER)
@@ -305,5 +298,4 @@ export const safeNumberReplacer = (_: string, value: unknown) => {
     if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
     if (Number.isNaN(value)) return 0;
   }
-  return value;
 };
