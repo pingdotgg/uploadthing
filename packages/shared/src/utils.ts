@@ -287,15 +287,13 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
  */
 export const safeNumberReplacer = (_: string, value: unknown) => {
   if (typeof value !== "number") return value;
-  else {
-    if (
-      Number.isSafeInteger(value) ||
-      (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER)
-    ) {
-      return value;
-    }
-    if (value === Infinity) return Number.MAX_SAFE_INTEGER;
-    if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
-    if (Number.isNaN(value)) return 0;
+  if (
+    Number.isSafeInteger(value) ||
+    (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER)
+  ) {
+    return value;
   }
+  if (value === Infinity) return Number.MAX_SAFE_INTEGER;
+  if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
+  if (Number.isNaN(value)) return 0;
 };
