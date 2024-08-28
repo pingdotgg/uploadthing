@@ -1,5 +1,7 @@
 import * as Encoding from "effect/Encoding";
+import * as Hash from "effect/Hash";
 import * as Micro from "effect/Micro";
+import SQIds, { defaultOptions } from "sqids";
 
 import { UploadThingError } from "./error";
 import type { ExtractHashPartsFn, FileProperties, Time } from "./types";
@@ -9,11 +11,21 @@ const signaturePrefix = "hmac-sha256=";
 const algorithm = { name: "HMAC", hash: "SHA-256" };
 const encoder = new TextEncoder();
 
-const sha256Hex = (data: string) =>
-  Micro.map(
-    Micro.promise(() => crypto.subtle.digest("SHA-256", encoder.encode(data))),
-    (arrayBuffer) => Encoding.encodeHex(new Uint8Array(arrayBuffer)),
-  );
+function shuffle(str: string, seed: string) {
+  const chars = str.split("");
+  const seedNum = Hash.string(seed);
+
+  let temp: string;
+  let j: number;
+  for (let i = 0; i < chars.length; i++) {
+    j = ((seedNum % (i + 1)) + i) % chars.length;
+    temp = chars[i];
+    chars[i] = chars[j];
+    chars[j] = temp;
+  }
+
+  return chars.join("");
+}
 
 export const signPayload = (payload: string, secret: string) =>
   Micro.gen(function* () {
@@ -75,7 +87,7 @@ export const generateKey = (
   apiKey: string,
   getHashParts?: ExtractHashPartsFn,
 ) =>
-  Micro.gen(function* () {
+  Micro.sync(() => {
     // Get the parts of which we should hash to constuct the key
     // This allows the user to customize the hashing algorithm
     // If they for example want to generate the same key for the
@@ -90,26 +102,28 @@ export const generateKey = (
       ],
     );
 
-    // Hash and Encode the parts and apiKey as hex strings
-    const encodedFileSeed = yield* sha256Hex(hashParts);
-    const encodedApiKey = yield* sha256Hex(apiKey);
+    // Hash and Encode the parts and apiKey as sqids
+    const alphabet = shuffle(defaultOptions.alphabet, apiKey);
+    const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
+      Math.abs(Hash.string(hashParts)),
+    ]);
+    const encodedApiKey = new SQIds({ alphabet, minLength: 12 }).encode([
+      Math.abs(Hash.string(apiKey)),
+    ]);
 
     // Concatenate them and encode as base64
-    return Encoding.encodeBase64([encodedApiKey, encodedFileSeed].join(":"));
+    return encodedApiKey + encodedFileSeed;
   }).pipe(Micro.withTrace("generateKey"));
 
 // Verify that the key was generated with the same apiKey
 export const verifyKey = (key: string, apiKey: string) =>
-  Micro.gen(function* () {
-    const given = yield* Micro.map(
-      Micro.fromEither(Encoding.decodeBase64String(key)),
-      (text) => text.split(":")[0],
-    );
+  Micro.sync(() => {
+    const alphabet = shuffle(defaultOptions.alphabet, apiKey);
+    const expectedPrefix = new SQIds({ alphabet, minLength: 12 }).encode([
+      Math.abs(Hash.string(apiKey)),
+    ]);
 
-    const expected = yield* sha256Hex(apiKey);
-
-    // q: Does it need to be timing safe?
-    return expected === given;
+    return key.startsWith(expectedPrefix);
   }).pipe(
     Micro.withTrace("verifyKey"),
     Micro.orElseSucceed(() => false),
