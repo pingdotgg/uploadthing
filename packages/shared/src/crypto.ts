@@ -82,8 +82,6 @@ export const verifySignature = (
     Micro.orElseSucceed(() => false),
   );
 
-const KEY_SEPARATOR = "|";
-
 export const generateKey = (
   file: FileProperties,
   apiKey: string,
@@ -114,21 +112,18 @@ export const generateKey = (
     ]);
 
     // Concatenate them and encode as base64
-    return [encodedApiKey, encodedFileSeed].join(KEY_SEPARATOR);
+    return encodedApiKey + encodedFileSeed;
   }).pipe(Micro.withTrace("generateKey"));
 
 // Verify that the key was generated with the same apiKey
 export const verifyKey = (key: string, apiKey: string) =>
   Micro.sync(() => {
-    const given = key.split(KEY_SEPARATOR)[0];
-
     const alphabet = shuffle(defaultOptions.alphabet, apiKey);
-    const expected = new SQIds({ alphabet, minLength: 12 }).encode([
+    const expectedPrefix = new SQIds({ alphabet, minLength: 12 }).encode([
       Math.abs(Hash.string(apiKey)),
     ]);
 
-    // q: Does it need to be timing safe?
-    return expected === given;
+    return key.startsWith(expectedPrefix);
   }).pipe(
     Micro.withTrace("verifyKey"),
     Micro.orElseSucceed(() => false),
