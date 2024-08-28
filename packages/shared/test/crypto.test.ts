@@ -87,7 +87,7 @@ describe("crypto sign / verify", () => {
 describe("key gen", () => {
   it.effect("generates a key", () =>
     Effect.gen(function* () {
-      const apiKey = "foo-123";
+      const appI = "foo-123";
 
       const key = yield* generateKey(
         {
@@ -96,7 +96,7 @@ describe("key gen", () => {
           type: "text/plain",
           lastModified: Date.now(),
         },
-        apiKey,
+        appI,
       );
 
       expect(key).toBeTruthy();
@@ -105,7 +105,7 @@ describe("key gen", () => {
 
   it.effect("verifies a key", () =>
     Effect.gen(function* () {
-      const apiKey = "foo-123";
+      const appI = "foo-123";
       const key = yield* generateKey(
         {
           name: "foo.txt",
@@ -113,17 +113,17 @@ describe("key gen", () => {
           type: "text/plain",
           lastModified: Date.now(),
         },
-        apiKey,
+        appI,
       );
 
-      const verified = yield* verifyKey(key, apiKey);
+      const verified = yield* verifyKey(key, appI);
       expect(verified).toBe(true);
     }),
   );
 
-  it.effect("doesn't verify a key with a bad apiKey", () =>
+  it.effect("doesn't verify a key with a bad appI", () =>
     Effect.gen(function* () {
-      const apiKey = "foo-123";
+      const appI = "foo-123";
       const key = yield* generateKey(
         {
           name: "foo.txt",
@@ -131,7 +131,7 @@ describe("key gen", () => {
           type: "text/plain",
           lastModified: Date.now(),
         },
-        apiKey,
+        appI,
       );
 
       const verified = yield* verifyKey(key, "bad");
@@ -141,7 +141,7 @@ describe("key gen", () => {
 
   it.effect("doesn't verify a key with a bad key", () =>
     Effect.gen(function* () {
-      const apiKey = "foo-123";
+      const appId = "foo-123";
       const key = yield* generateKey(
         {
           name: "foo.txt",
@@ -149,17 +149,17 @@ describe("key gen", () => {
           type: "text/plain",
           lastModified: Date.now(),
         },
-        apiKey,
+        appId,
       );
 
-      const verified = yield* verifyKey("badseed" + key.substring(7), apiKey);
+      const verified = yield* verifyKey("badseed" + key.substring(7), appId);
       expect(verified).toBe(false);
     }),
   );
 
   it.effect("verifies with a custom hash function", () =>
     Effect.gen(function* () {
-      const apiKey = "foo-123";
+      const appI = "foo-123";
       const key = yield* generateKey(
         {
           name: "foo.txt",
@@ -167,18 +167,18 @@ describe("key gen", () => {
           type: "text/plain",
           lastModified: Date.now(),
         },
-        apiKey,
+        appI,
         (file) => [file.name],
       );
 
-      const verified = yield* verifyKey(key, apiKey);
+      const verified = yield* verifyKey(key, appI);
       expect(verified).toBe(true);
     }),
   );
 
   it.effect("works even when there's nothing to seed", () =>
     Effect.gen(function* () {
-      const apiKey = "foo-123";
+      const appI = "foo-123";
       const key = yield* generateKey(
         {
           name: "foo.txt",
@@ -186,11 +186,11 @@ describe("key gen", () => {
           type: "text/plain",
           lastModified: Date.now(),
         },
-        apiKey,
+        appI,
         () => [],
       );
 
-      const verified = yield* verifyKey(key, apiKey);
+      const verified = yield* verifyKey(key, appI);
       expect(verified).toBe(true);
     }),
   );

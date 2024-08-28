@@ -558,7 +558,7 @@ const handleUploadAction = (opts: {
         Effect.gen(function* () {
           const key = yield* generateKey(
             file,
-            apiKey,
+            appId,
             routeOptions.getFileHashParts,
           );
 

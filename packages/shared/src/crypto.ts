@@ -84,7 +84,7 @@ export const verifySignature = (
 
 export const generateKey = (
   file: FileProperties,
-  apiKey: string,
+  appId: string,
   getHashParts?: ExtractHashPartsFn,
 ) =>
   Micro.sync(() => {
@@ -103,12 +103,12 @@ export const generateKey = (
     );
 
     // Hash and Encode the parts and apiKey as sqids
-    const alphabet = shuffle(defaultOptions.alphabet, apiKey);
+    const alphabet = shuffle(defaultOptions.alphabet, appId);
     const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
       Math.abs(Hash.string(hashParts)),
     ]);
     const encodedApiKey = new SQIds({ alphabet, minLength: 12 }).encode([
-      Math.abs(Hash.string(apiKey)),
+      Math.abs(Hash.string(appId)),
     ]);
 
     // Concatenate them and encode as base64
