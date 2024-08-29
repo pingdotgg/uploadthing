@@ -51,7 +51,7 @@
     "msw": "2.2.13",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5",
-    "turbo": "2.0.6-canary.0",
+    "turbo": "2.1.0",
     "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
     "vite-tsconfig-paths": "^4.3.1",
