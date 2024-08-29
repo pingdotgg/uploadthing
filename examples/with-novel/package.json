@@ -1,5 +1,5 @@
 {
-  "name": "with-novel",
+  "name": "@example/with-novel",
   "type": "module",
   "private": true,
   "scripts": {
