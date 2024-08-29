@@ -39,6 +39,7 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
 
 /**
  * This function takes in the user's input and "upscales" it to a full config
+ * Additionally, it replaces numbers with "safe" equivalents
  *
  * Example:
  * ```ts
@@ -81,7 +82,13 @@ export const fillInputRouteConfig = (
     newConfig[key] = { ...defaultValues, ...value };
   }
 
-  return Micro.succeed(newConfig);
+  // we know that the config is valid, so we can stringify it and parse it back
+  // this allows us to replace numbers with "safe" equivalents
+  return Micro.succeed(
+    JSON.parse(
+      JSON.stringify(newConfig, safeNumberReplacer),
+    ) as ExpandedRouteConfig,
+  );
 };
 
 export const getTypeFromFileName = (

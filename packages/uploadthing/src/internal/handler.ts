@@ -9,7 +9,6 @@ import {
   objectKeys,
   parseRequestJson,
   parseResponseJson,
-  safeNumberReplacer,
   UploadThingError,
   verifySignature,
 } from "@uploadthing/shared";
@@ -358,16 +357,13 @@ const handleUploadAction = Effect.gen(function* () {
     generateUploadThingURL("/v6/prepareUpload"),
     {
       method: "POST",
-      body: JSON.stringify(
-        {
-          files: filesWithCustomIds,
-          routeConfig: parsedConfig,
-          metadata,
-          callbackUrl: callbackUrl.origin + callbackUrl.pathname,
-          callbackSlug: opts.slug,
-        },
-        safeNumberReplacer,
-      ),
+      body: JSON.stringify({
+        files: filesWithCustomIds,
+        routeConfig: parsedConfig,
+        metadata,
+        callbackUrl: callbackUrl.origin + callbackUrl.pathname,
+        callbackSlug: opts.slug,
+      }),
       headers: { "Content-Type": "application/json" },
     },
   ).pipe(
