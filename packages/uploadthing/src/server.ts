@@ -1,5 +1,9 @@
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError, UploadThingError } from "@uploadthing/shared";
+import {
+  getStatusCodeFromError,
+  safeNumberReplacer,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import { UPLOADTHING_VERSION } from "./internal/constants";
 import { formatError } from "./internal/error-formatter";
@@ -75,7 +79,7 @@ export const INTERNAL_DO_NOT_USE_createRouteHandlerCore = <
   const GET = (request: Request | { request: Request }) => {
     const _req = request instanceof Request ? request : request.request;
 
-    return Response.json(getBuildPerms(), {
+    return new Response(JSON.stringify(getBuildPerms(), safeNumberReplacer), {
       headers: { "x-uploadthing-version": UPLOADTHING_VERSION },
     });
   };
