@@ -58,13 +58,10 @@ export const addUploadthingRoutes = <TRouter extends FileRouter>(
       if (!isCorsRequest) {
         return new Response();
       }
-      if (!process.env.CLIENT_ORIGIN) {
-        throw new Error("Convex deployment doesn't have CLIENT_ORIGIN set");
-      }
       return new Response(null, {
         status: 200,
         headers: {
-          "Access-Control-Allow-Origin": process.env.CLIENT_ORIGIN,
+          "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
           "Access-Control-Allow-Headers": "*",
           "Access-Control-Max-Age": "86400",
@@ -77,14 +74,11 @@ export const addUploadthingRoutes = <TRouter extends FileRouter>(
     path: "/api/uploadthing",
     handler: httpActionGeneric(async () => {
       const permissions = getBuildPerms();
-      if (!process.env.CLIENT_ORIGIN) {
-        throw new Error("Convex deployment doesn't have CLIENT_ORIGIN set");
-      }
       return new Response(JSON.stringify(permissions), {
         headers: {
           "X-Uploadthing-Version": UPLOADTHING_VERSION,
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": process.env.CLIENT_ORIGIN,
+          "Access-Control-Allow-Origin": "*",
           "Vary": "Origin",
         }
       });
@@ -94,13 +88,10 @@ export const addUploadthingRoutes = <TRouter extends FileRouter>(
     method: "POST",
     path: "/api/uploadthing",
     handler: httpActionGeneric(async (ctx, req) => {
-      if (!process.env.CLIENT_ORIGIN) {
-        throw new Error("Convex deployment doesn't have CLIENT_ORIGIN set");
-      }
       const headers = {
         "X-Uploadthing-Version": UPLOADTHING_VERSION,
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": process.env.CLIENT_ORIGIN,
+        "Access-Control-Allow-Origin": "*",
         "Vary": "Origin",
       }
       try {
