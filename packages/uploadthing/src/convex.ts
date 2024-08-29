@@ -1,6 +1,6 @@
 import { createBuilder, type CreateBuilderOptions } from "./internal/upload-builder";
-import { getStatusCodeFromError, type Json } from "@uploadthing/shared";
-import { type FileRouter, RouteHandlerOptions } from "./internal/types";
+import { FileRouterInputConfig, getStatusCodeFromError, type Json } from "@uploadthing/shared";
+import { type FileRouter, RouteHandlerOptions, UnsetMarker, UploadBuilder, Uploader } from "./internal/types";
 import { buildPermissionsInfoHandler, buildRequestHandler, runRequestHandlerAsync } from "./internal/handler";
 import { DataModelFromSchemaDefinition, GenericActionCtx, GenericDataModel, httpActionGeneric, HttpRouter, SchemaDefinition } from "convex/server"
 import { UPLOADTHING_VERSION } from "./internal/constants";
@@ -8,7 +8,7 @@ import { formatError } from "./internal/error-formatter";
 
 export type { FileRouter };
 
-type MiddlewareArgs<DataModel extends GenericDataModel> = { req: Request, res: undefined; event: GenericActionCtx<DataModel> };
+type MiddlewareArgs<DataModel extends GenericDataModel> = { req: Request, res: undefined; event: undefined };
 
 type ConvexBuilderOptions<TErrorShape extends Json, SchemaDef extends SchemaDefinition<any, boolean>> = CreateBuilderOptions<TErrorShape> & {
   schema?: SchemaDef
@@ -18,8 +18,26 @@ export const createUploadthing = <TErrorShape extends Json, SchemaDef extends Sc
   opts?: ConvexBuilderOptions<TErrorShape, SchemaDef>,
 ) => createBuilder<MiddlewareArgs<DataModelFromSchemaDefinition<SchemaDef>>, TErrorShape>(opts);
 
-export const installUploadthingRoutes = <TRouter extends FileRouter>(
+export function convexCtx<DataModel extends GenericDataModel>(
+  f: (input: FileRouterInputConfig) => UploadBuilder<{
+    _input: any,
+    _metadata: any,
+    _middlewareArgs: MiddlewareArgs<DataModel>,
+    _errorShape: any,
+    _errorFn: any,
+    _output: any,
+  }>
+): GenericActionCtx<DataModel> {
+  const fAny = f as any;
+  if (!fAny.ctx) {
+    throw new Error("convexCtx() called outside of an Uploadthing route");
+  }
+  return fAny.ctx;
+}
+
+export const addUploadthingRoutes = <TRouter extends FileRouter>(
   router: HttpRouter,
+  f: (input: FileRouterInputConfig) => UploadBuilder<any>,
   opts: RouteHandlerOptions<TRouter>,
 ) => {
   const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs<GenericDataModel>>(
@@ -27,6 +45,7 @@ export const installUploadthingRoutes = <TRouter extends FileRouter>(
     "convex",
   );
   const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
+  const fAny = f as any;
 
   router.route({
     method: "OPTIONS",
@@ -84,28 +103,33 @@ export const installUploadthingRoutes = <TRouter extends FileRouter>(
         "Access-Control-Allow-Origin": process.env.CLIENT_ORIGIN,
         "Vary": "Origin",
       }
-      const response = await runRequestHandlerAsync(
-        requestHandler,
-        {
-          req,
-          middlewareArgs: { req, res: undefined, event: ctx },
-        },
-        opts.config,
-      )
-      if (response.success === false) {
-        return new Response(JSON.stringify(formatError(response.error, opts.router)), {
-          status: getStatusCodeFromError(response.error),
+      try {
+        fAny.ctx = ctx;
+        const response = await runRequestHandlerAsync(
+          requestHandler,
+          {
+            req,
+            middlewareArgs: { req, res: undefined, event: undefined },
+          },
+          opts.config,
+        )
+        if (response.success === false) {
+          return new Response(JSON.stringify(formatError(response.error, opts.router)), {
+            status: getStatusCodeFromError(response.error),
+            headers,
+          })
+        }
+        if (!response.body) {
+          return new Response(JSON.stringify({ ok: true }), {
+            headers,
+          })
+        }
+        return new Response(JSON.stringify(response.body), {
           headers,
         })
+      } finally {
+        delete fAny.ctx;
       }
-      if (!response.body) {
-        return new Response(JSON.stringify({ ok: true }), {
-          headers,
-        })
-      }
-      return new Response(JSON.stringify(response.body), {
-        headers,
-      })
     })
   })
 }
