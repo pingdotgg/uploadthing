@@ -40,6 +40,7 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
 
 /**
  * This function takes in the user's input and "upscales" it to a full config
+ * Additionally, it replaces numbers with "safe" equivalents
  *
  * Example:
  * ```ts
@@ -82,7 +83,13 @@ export const fillInputRouteConfig = (
     newConfig[key] = { ...defaultValues, ...value };
   }
 
-  return Micro.succeed(newConfig);
+  // we know that the config is valid, so we can stringify it and parse it back
+  // this allows us to replace numbers with "safe" equivalents
+  return Micro.succeed(
+    JSON.parse(
+      JSON.stringify(newConfig, safeNumberReplacer),
+    ) as ExpandedRouteConfig,
+  );
 };
 
 export const getTypeFromFileName = (
@@ -307,3 +314,24 @@ export function parseTimeToSeconds(time: Time) {
 
   return num * multiplier;
 }
+
+/**
+ * Replacer for JSON.stringify that will replace numbers that cannot be
+ * serialized to JSON with "reasonable equivalents".
+ *
+ * Infinity and -Infinity are replaced by MAX_SAFE_INTEGER and MIN_SAFE_INTEGER
+ * NaN is replaced by 0
+ *
+ */
+export const safeNumberReplacer = (_: string, value: unknown) => {
+  if (typeof value !== "number") return value;
+  if (
+    Number.isSafeInteger(value) ||
+    (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER)
+  ) {
+    return value;
+  }
+  if (value === Infinity) return Number.MAX_SAFE_INTEGER;
+  if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
+  if (Number.isNaN(value)) return 0;
+};
