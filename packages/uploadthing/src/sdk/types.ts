@@ -84,7 +84,7 @@ export interface ListFilesOptions {
   offset?: number;
 }
 
-type KeyRename = { key: string; newName: string };
+type KeyRename = { fileKey: string; newName: string };
 type CustomIdRename = { customId: string; newName: string };
 export type RenameFileUpdate = KeyRename | CustomIdRename;
 

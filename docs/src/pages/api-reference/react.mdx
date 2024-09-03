@@ -150,9 +150,10 @@ export const OurUploadButton = () => (
 
 Config object
 
-| Attribute     | Type    | Required | Notes           | Description                                   |
-| :------------ | :------ | :------- | :-------------- | :-------------------------------------------- |
-| appendOnPaste | boolean | No       | Added in `v5.7` | enables ability to paste files from clipboard |
+| Attribute     | Type               | Required | Notes           | Description                                                                                                                                |
+| :------------ | :----------------- | :------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| mode          | 'auto' \| 'manual' | No       | Added in `v5.4` | mode of button. 'auto' is default one and triggers upload right after selection. 'manual' requires an additional click to start the upload |
+| appendOnPaste | boolean            | No       | Added in `v5.7` | enables ability to paste files from clipboard                                                                                              |
 
 <Callout type="info">
   If you want to disable the button based on when your `input` is not satisfied,

@@ -627,7 +627,48 @@ describe.runIf(shouldRun)(
       localInfo.filesUploaded++;
     });
 
-    rawIt("should rename a file", async () => {
+    rawIt("should rename a file with fileKey", async () => {
+      const customId = crypto.randomUUID();
+
+      const file = new UTFile(["foo"], "bar.txt");
+      const result = await utapi.uploadFiles(file);
+      expect(result).toEqual({
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          name: "bar.txt",
+          size: 3,
+          type: "text/plain",
+          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+        },
+        error: null,
+      });
+
+      const fileKey = result.data!.key;
+
+      const { success } = await utapi.renameFiles({
+        fileKey,
+        newName: "baz.txt",
+      });
+      expect(success).toBe(true);
+
+      const { files } = await utapi.listFiles();
+      expect(files.find((f) => f.key === fileKey)).toHaveProperty(
+        "name",
+        "baz.txt",
+      );
+
+      // FIXME: Bug in uploadthing server
+      // const heads = await fetch(result.data!.url).then((r) => r.headers);
+      // expect(heads.get("Content-Disposition")).toEqual(
+      //   expect.stringContaining("filename=baz.txt"),
+      // );
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should rename a file with customId", async () => {
       const customId = crypto.randomUUID();
 
       const file = new UTFile(["foo"], "bar.txt", { customId });

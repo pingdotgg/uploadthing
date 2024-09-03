@@ -1,3 +1,6 @@
+import * as Either from "effect/Either";
+import * as Encoding from "effect/Encoding";
+
 const signaturePrefix = "hmac-sha256=";
 const algorithm = { name: "HMAC", hash: "SHA-256" };
 
@@ -13,7 +16,7 @@ export const signPayload = async (payload: string, secret: string) => {
 
   const signature = await crypto.subtle
     .sign(algorithm, signingKey, encoder.encode(payload))
-    .then((sig) => Buffer.from(sig).toString("hex"));
+    .then((arrayBuffer) => Encoding.encodeHex(new Uint8Array(arrayBuffer)));
 
   return `${signaturePrefix}${signature}`;
 };
@@ -37,7 +40,7 @@ export const verifySignature = async (
   return await crypto.subtle.verify(
     algorithm,
     signingKey,
-    Uint8Array.from(Buffer.from(sig, "hex")),
+    Either.getOrThrow(Encoding.decodeHex(sig)),
     encoder.encode(payload),
   );
 };
