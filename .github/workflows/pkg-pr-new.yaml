@@ -24,7 +24,7 @@ jobs:
             fi
           fi
       
-          echo "::set-output name=changed_packages::$changed_packages"
+          echo "changed_packages=$changed_packages" >> $GITHUB_OUTPUT
         
 
       - name: Setup
