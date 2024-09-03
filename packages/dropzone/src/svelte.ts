@@ -209,8 +209,6 @@ export function createDropzone(_props: DropzoneOptions) {
       },
     });
 
-    console.log("Files Accepted", acceptedFiles);
-    console.log("running onDrop callback");
     get(props).onDrop(acceptedFiles);
   };
 
@@ -222,8 +220,6 @@ export function createDropzone(_props: DropzoneOptions) {
     if (isEventWithFiles(event)) {
       Promise.resolve(fromEvent(event))
         .then((files) => {
-          console.log("Drop event resolved");
-
           if (isPropagationStopped(event)) {
             return;
           }
@@ -238,7 +234,6 @@ export function createDropzone(_props: DropzoneOptions) {
   const openFileDialog = () => {
     const input = get(inputRef);
     if (input) {
-      console.log("Opening file dialog. inputref:", input);
       dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
@@ -263,14 +258,12 @@ export function createDropzone(_props: DropzoneOptions) {
   };
 
   const onInputElementClick = (event: MouseEvent) => {
-    console.log("Input element click event");
     event.stopPropagation();
   };
 
   const onFocus = () => dispatch({ type: "focus" });
   const onBlur = () => dispatch({ type: "blur" });
   const onClick = () => {
-    console.log("Dropzone click event");
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
