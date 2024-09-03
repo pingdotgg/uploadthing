@@ -311,7 +311,7 @@ export function UploadButton<
         data-state={state}
         data-ut-element="button"
         ref={labelRef}
-        onClick={async (e) => {
+        onClick={(e) => {
           if (state === "uploading") {
             e.preventDefault();
             e.stopPropagation();
@@ -324,7 +324,7 @@ export function UploadButton<
             e.preventDefault();
             e.stopPropagation();
 
-            await uploadFiles(files);
+            uploadFiles(files);
           }
         }}
       >
