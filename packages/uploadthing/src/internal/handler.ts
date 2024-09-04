@@ -524,6 +524,7 @@ const handleUploadAction = (opts: {
           }),
       ),
     );
+    yield* Effect.logDebug("Files validated.");
 
     const fileUploadRequests = yield* Effect.forEach(
       filesWithCustomIds,
@@ -551,7 +552,13 @@ const handleUploadAction = (opts: {
 
     const routeOptions = uploadable._def.routeOptions;
     const { apiKey, appId } = yield* UTToken;
+    const ingestUrl = yield* IngestUrl;
+    const isDev = yield* IsDevelopment;
 
+    yield* Effect.logDebug("Generating presigned URLs").pipe(
+      Effect.annotateLogs("fileUploadRequests", fileUploadRequests),
+      Effect.annotateLogs("ingestUrl", ingestUrl),
+    );
     const presignedUrls = yield* Effect.forEach(
       fileUploadRequests,
       (file) =>
@@ -562,8 +569,7 @@ const handleUploadAction = (opts: {
             routeOptions.getFileHashParts,
           );
 
-          const baseUrl = yield* IngestUrl;
-          const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
+          const url = yield* generateSignedURL(`${ingestUrl}/${key}`, apiKey, {
             ttlInSeconds: routeOptions.presignedURLTTL,
             data: {
               "x-ut-identifier": appId,
@@ -581,10 +587,8 @@ const handleUploadAction = (opts: {
       { concurrency: "unbounded" },
     );
 
-    const requestUrl = new URL(
-      // FIXME: We should also try parsing from headers
-      (yield* HttpServerRequest.HttpServerRequest).url,
-    );
+    const serverReq = yield* HttpServerRequest.HttpServerRequest;
+    const requestUrl = yield* HttpServerRequest.toURL(serverReq);
 
     const devHookRequest = yield* Config.string("callbackUrl").pipe(
       Config.withDefault(requestUrl.origin + requestUrl.pathname),
@@ -595,11 +599,8 @@ const handleUploadAction = (opts: {
       ),
     );
 
-    const isDev = yield* IsDevelopment;
-    const baseUrl = yield* IngestUrl;
-
     const metadataRequest = HttpClientRequest.post("/route-metadata").pipe(
-      HttpClientRequest.prependUrl(baseUrl),
+      HttpClientRequest.prependUrl(ingestUrl),
       HttpClientRequest.setHeaders({
         "x-uploadthing-api-key": apiKey,
         "x-uploadthing-version": pkgJson.version,
