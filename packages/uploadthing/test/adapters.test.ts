@@ -57,7 +57,11 @@ describe("adapters:h3", async () => {
     const res = await toWebHandler(createApp().use(eventHandler))(
       new Request(createApiUrl("middleware", "upload"), {
         method: "POST",
-        headers: baseHeaders,
+        headers: {
+          ...baseHeaders,
+          host: "localhost:3000",
+          "x-forwarded-proto": "http",
+        },
         body: JSON.stringify({
           files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
         }),
@@ -138,7 +142,11 @@ describe("adapters:server", async () => {
 
     const req = new Request(createApiUrl("middleware", "upload"), {
       method: "POST",
-      headers: baseHeaders,
+      headers: {
+        ...baseHeaders,
+        host: "localhost:3000",
+        "x-forwarded-proto": "http",
+      },
       body: JSON.stringify({
         files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
@@ -211,7 +219,11 @@ describe("adapters:next", async () => {
 
     const req = new NextRequest(createApiUrl("middleware", "upload"), {
       method: "POST",
-      headers: baseHeaders,
+      headers: {
+        ...baseHeaders,
+        host: "localhost:3000",
+        "x-forwarded-proto": "http",
+      },
       body: JSON.stringify({
         files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       }),
@@ -326,7 +338,11 @@ describe("adapters:next-legacy", async () => {
         files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
       },
       method: "POST",
-      headers: baseHeaders,
+      headers: {
+        ...baseHeaders,
+        host: "localhost:3000",
+        "x-forwarded-proto": "http",
+      },
     });
     const { res, status, json } = mockRes();
 

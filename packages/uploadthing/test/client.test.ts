@@ -8,7 +8,9 @@ import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
 import type { ClientUploadedFileData } from "../src/types";
 import {
+  appUrlPattern,
   doNotExecute,
+  fileUrlPattern,
   it,
   middlewareMock,
   onErrorMock,
@@ -121,7 +123,8 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(fileUrlPattern),
+        appUrl: expect.stringMatching(appUrlPattern()),
       },
     ]);
 
@@ -165,7 +168,8 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(fileUrlPattern),
+        appUrl: expect.stringMatching(appUrlPattern()),
       },
     ]);
 
@@ -198,7 +202,8 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(fileUrlPattern),
+        appUrl: expect.stringMatching(appUrlPattern()),
       },
     ]);
 

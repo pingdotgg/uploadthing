@@ -14,8 +14,6 @@ import {
   requestSpy,
   testToken,
   uploadCompleteMock,
-  useBadIngestServer,
-  useBadUTApi,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -333,6 +331,7 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -366,6 +365,7 @@ describe(".onUploadComplete()", () => {
         size: 48,
         type: "image/png",
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
       },
       metadata: {},
     });
@@ -377,6 +377,7 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -408,6 +409,7 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,

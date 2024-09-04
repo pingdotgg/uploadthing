@@ -74,6 +74,7 @@ export class UploadedFileData extends FileUploadDataWithCustomId.extend<Uploaded
 )({
   key: S.String,
   url: S.String,
+  appUrl: S.String,
 }) {}
 
 /**

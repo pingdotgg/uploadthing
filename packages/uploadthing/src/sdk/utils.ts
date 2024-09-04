@@ -178,11 +178,12 @@ const uploadFile = (
   Effect.gen(function* () {
     const { file, presigned } = input;
 
-    const { url } = yield* uploadWithoutProgress(file, presigned);
+    const { url, appUrl } = yield* uploadWithoutProgress(file, presigned);
 
     return {
       key: presigned.key,
       url: url,
+      appUrl: appUrl,
       lastModified: file.lastModified ?? Date.now(),
       name: file.name,
       size: file.size,

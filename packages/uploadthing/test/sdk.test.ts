@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-import { f } from "node_modules/msw/lib/core/HttpResponse-vQNlixkj";
+import * as S from "@effect/schema/Schema";
 import {
   afterAll,
   beforeAll,
@@ -9,10 +9,13 @@ import {
   it as rawIt,
 } from "vitest";
 
+import { UploadThingToken } from "../src/internal/shared-schemas";
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
+  appUrlPattern,
+  fileUrlPattern,
   INGEST_URL,
   it,
   requestSpy,
@@ -46,7 +49,8 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         lastModified: fooFile.lastModified,
-        url: `${UTFS_IO_URL}/${key}`,
+        url: `${UTFS_IO_URL}/f/${key}`,
+        appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
         customId: null,
         type: "text/plain",
       },
@@ -127,7 +131,8 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         lastModified: expect.any(Number),
-        url: `${UTFS_IO_URL}/${key}`,
+        url: `${UTFS_IO_URL}/f/${key}`,
+        appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
         customId: null,
         type: "text/plain",
       },
@@ -227,7 +232,8 @@ describe("uploadFilesFromUrl", () => {
           name: "foo.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/${key1}`,
+          url: `${UTFS_IO_URL}/f/${key1}`,
+          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
         },
         error: null,
       },
@@ -248,7 +254,8 @@ describe("uploadFilesFromUrl", () => {
           name: "bar.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/${key2}`,
+          url: `${UTFS_IO_URL}/f/${key2}`,
+          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key2}`,
         },
         error: null,
       },
@@ -409,11 +416,12 @@ describe.runIf(shouldRun)(
   "smoke test with live api",
   { timeout: 15_000 },
   () => {
-    const utapi = new UTApi({
-      token: shouldRun
-        ? process.env.UPLOADTHING_TEST_TOKEN!
-        : testToken.encoded,
-    });
+    const token = shouldRun
+      ? process.env.UPLOADTHING_TEST_TOKEN!
+      : testToken.encoded;
+    const utapi = new UTApi({ token });
+
+    const appId = S.decodeSync(UploadThingToken)(token).appId;
 
     const localInfo = { totalBytes: 0, filesUploaded: 0 };
     // const TEST_APP_LIMIT_BYTES = 2147483648; // free 2GB
@@ -458,7 +466,8 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+          url: expect.stringMatching(fileUrlPattern),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
         },
         error: null,
       });
@@ -491,7 +500,8 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+          url: expect.stringMatching(fileUrlPattern),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
         },
         error: null,
       });
@@ -519,7 +529,8 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+          url: expect.stringMatching(fileUrlPattern),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
         },
         error: null,
       });
@@ -540,7 +551,8 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: expect.stringMatching(fileUrlPattern),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
         },
         error: null,
       });
@@ -582,7 +594,8 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+          url: expect.stringMatching(fileUrlPattern),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
         },
         error: null,
       });
@@ -620,7 +633,8 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+          url: expect.stringMatching(fileUrlPattern),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
         },
         error: null,
       });
@@ -642,7 +656,7 @@ describe.runIf(shouldRun)(
       const { files } = await utapi.listFiles();
       const someFile = files[0];
 
-      const response = await fetch(`${UTFS_IO_URL}/${someFile.key}`);
+      const response = await fetch(`${UTFS_IO_URL}/f/${someFile.key}`);
       const size = Number(response.headers.get("Content-Length"));
 
       const result = await utapi.deleteFiles(someFile.key);
