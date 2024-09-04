@@ -222,12 +222,12 @@ export function UploadButton<
     );
     if (customContent) return customContent;
 
-    if (state === "readying") {
-      return "Loading...";
-    } else if (state === "uploading") {
-      if (uploadProgress === 100) {
-        return <Spinner />;
-      } else {
+    switch (state) {
+      case "readying": {
+        return "Loading...";
+      }
+      case "uploading": {
+        if (uploadProgress === 100) return <Spinner />;
         return (
           <span className="z-50">
             <span className="block group-hover:hidden">{uploadProgress}%</span>
@@ -235,11 +235,12 @@ export function UploadButton<
           </span>
         );
       }
-    } else {
-      // Default case: "ready" or "disabled" state
-      if (mode === "manual" && files.length > 0) {
-        return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-      } else {
+      case "disabled":
+      case "ready":
+      default: {
+        if (mode === "manual" && files.length > 0) {
+          return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+        }
         return `Choose File${inputProps.multiple ? `(s)` : ``}`;
       }
     }
