@@ -45,6 +45,7 @@ const mockPresigned = (file: {
     fileName: file.name,
     fileType: lookup(file.name) as any,
     fileUrl: "https://utfs.io/f/abc-123.txt",
+    appUrl: "https://utfs.io/a/app-1/abc-123.txt",
     key: "abc-123.txt",
     pollingJwt: "random-jwt",
     pollingUrl: generateUploadThingURL("/v6/serverCallback"),

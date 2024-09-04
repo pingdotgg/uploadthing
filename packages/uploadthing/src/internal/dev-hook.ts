@@ -13,6 +13,7 @@ import {
 } from "@uploadthing/shared";
 import type { ResponseEsque } from "@uploadthing/shared";
 
+import type { MPUResponse, PSPResponse } from "./shared-schemas";
 import { PollUploadResponse, UploadedFileData } from "./shared-schemas";
 
 const isValidResponse = (response: ResponseEsque) => {
@@ -23,10 +24,13 @@ const isValidResponse = (response: ResponseEsque) => {
   return true;
 };
 
-export const conditionalDevServer = (fileKey: string, apiKey: string) => {
+export const conditionalDevServer = (
+  presigned: PSPResponse | MPUResponse,
+  apiKey: string,
+) => {
   return Effect.gen(function* () {
     const file = yield* fetchEff(
-      generateUploadThingURL(`/v6/pollUpload/${fileKey}`),
+      generateUploadThingURL(`/v6/pollUpload/${presigned.key}`),
     ).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(PollUploadResponse)),
@@ -66,8 +70,9 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
       status: "uploaded",
       metadata: JSON.parse(file.metadata ?? "{}") as unknown,
       file: new UploadedFileData({
-        url: `https://utfs.io/f/${encodeURIComponent(fileKey)}`,
-        key: fileKey,
+        url: presigned.fileUrl,
+        appUrl: presigned.appUrl,
+        key: presigned.key,
         name: file.fileName,
         size: file.fileSize,
         customId: file.customId,
@@ -102,7 +107,7 @@ export const conditionalDevServer = (fileKey: string, apiKey: string) => {
     if (isValidResponse(callbackResponse)) {
       yield* Effect.logInfo(
         "Successfully simulated callback for file",
-        fileKey,
+        presigned.key,
       );
     } else {
       yield* Effect.logError(
