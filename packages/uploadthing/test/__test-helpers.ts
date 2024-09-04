@@ -35,6 +35,10 @@ export const INGEST_URL = process.env.UPLOADTHING_API_URL
   ? "https://fra1.ingest.ut-staging.com"
   : "https://fra1.ingest.uploadthing.com";
 
+export const fileUrlPattern = new RegExp(`^${UTFS_IO_URL}/f/.+$`);
+export const appUrlPattern = (appId = testToken.decoded.appId) =>
+  new RegExp(`^${UTFS_IO_URL}/a/${appId}/.+$`);
+
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
   const url = new URL("http://localhost:3000");
   url.searchParams.set("slug", slug);
