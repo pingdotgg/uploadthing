@@ -8,7 +8,7 @@ import { UPLOADTHING_VERSION } from "../src/internal/config";
 import { ParsedToken, UploadThingToken } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/shared-schemas";
 
-export const requestSpy = vi.fn<[string, RequestInit]>();
+export const requestSpy = vi.fn<(url: string, req: RequestInit) => void>();
 export const requestsToDomain = (domain: string) =>
   requestSpy.mock.calls.filter(([url]) => url.includes(domain));
 
@@ -29,8 +29,8 @@ export const testToken = {
 export const API_URL =
   process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com";
 export const UTFS_IO_URL = process.env.UPLOADTHING_API_URL
-  ? "https://staging.utfs.io/f"
-  : "https://utfs.io/f";
+  ? "https://staging.utfs.io"
+  : "https://utfs.io";
 export const INGEST_URL = process.env.UPLOADTHING_API_URL
   ? "https://fra1.ingest.ut-staging.com"
   : "https://fra1.ingest.uploadthing.com";
@@ -99,7 +99,7 @@ export const it = itBase.extend({
         await callRequestSpy(request);
         return HttpResponse.text("Lorem ipsum doler sit amet");
       }),
-      http.get(`${UTFS_IO_URL}/:key`, async ({ request }) => {
+      http.get(`${UTFS_IO_URL}/f/:key`, async ({ request }) => {
         await callRequestSpy(request);
         return HttpResponse.text("Lorem ipsum doler sit amet");
       }),
@@ -110,8 +110,10 @@ export const it = itBase.extend({
         `${INGEST_URL}/:key`,
         async ({ request, params }) => {
           await callRequestSpy(request);
+          const appId = new URLSearchParams(request.url).get("x-ut-identifier");
           return HttpResponse.json({
-            url: `${UTFS_IO_URL}/${params.key}`,
+            url: `${UTFS_IO_URL}/f/${params.key}`,
+            appUrl: `${UTFS_IO_URL}/a/${appId}/${params.key}`,
             serverData: null,
           });
         },
@@ -122,7 +124,7 @@ export const it = itBase.extend({
       http.post(`${API_URL}/v6/requestFileAccess`, async ({ request }) => {
         await callRequestSpy(request);
         return HttpResponse.json({
-          url: `${UTFS_IO_URL}/someFileKey?x-some-amz=query-param`,
+          url: `${UTFS_IO_URL}/f/someFileKey?x-some-amz=query-param`,
         });
       }),
       http.post(`${API_URL}/v6/updateACL`, async ({ request }) => {
@@ -140,7 +142,7 @@ export const it = itBase.extend({
  */
 export const useBadIngestServer = () =>
   msw.use(
-    http.put(`${INGEST_URL}/:key`, async ({ request, params }) => {
+    http.put(`${INGEST_URL}/f/:key`, async ({ request, params }) => {
       await callRequestSpy(request);
 
       return new HttpResponse(null, { status: 403 });

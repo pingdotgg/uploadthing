@@ -121,7 +121,10 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/f/.+$`)),
+        appUrl: expect.stringMatching(
+          new RegExp(`^${UTFS_IO_URL}/a/${testToken.decoded.appId}/.+$`),
+        ),
       },
     ]);
 
@@ -165,7 +168,10 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/f/.+$`)),
+        appUrl: expect.stringMatching(
+          new RegExp(`^${UTFS_IO_URL}/a/${testToken.decoded.appId}/.+$`),
+        ),
       },
     ]);
 
@@ -198,7 +204,10 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/.+$`)),
+        url: expect.stringMatching(new RegExp(`^${UTFS_IO_URL}/f/.+$`)),
+        appUrl: expect.stringMatching(
+          new RegExp(`^${UTFS_IO_URL}/a/${testToken.decoded.appId}/.+$`),
+        ),
       },
     ]);
 
