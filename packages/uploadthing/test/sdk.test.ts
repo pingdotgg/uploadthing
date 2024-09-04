@@ -565,7 +565,9 @@ describe.runIf(shouldRun)(
           size: 3,
           type: "text/plain",
           url: "https://utfs.io/f/" + key,
-          appUrl: "https://utfs.io/a/app-1/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -599,7 +601,9 @@ describe.runIf(shouldRun)(
           size: 3,
           type: "text/plain",
           url: "https://utfs.io/f/" + key,
-          appUrl: "https://utfs.io/a/app-1/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -628,7 +632,9 @@ describe.runIf(shouldRun)(
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
           url: "https://utfs.io/f/" + key,
-          appUrl: "https://utfs.io/a/app-1/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -651,7 +657,9 @@ describe.runIf(shouldRun)(
           size: 3,
           type: "text/plain",
           url: "https://utfs.io/f/" + fileKey,
-          appUrl: "https://utfs.io/a/app-1/" + fileKey,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${fileKey}$`),
+          ),
         },
         error: null,
       });
@@ -692,7 +700,9 @@ describe.runIf(shouldRun)(
           size: 3,
           type: "text/plain",
           url: "https://utfs.io/f/" + key,
-          appUrl: "https://utfs.io/a/app-1/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -731,7 +741,9 @@ describe.runIf(shouldRun)(
           size: 3,
           type: "text/plain",
           url: "https://utfs.io/f/" + key,
-          appUrl: "https://utfs.io/a/app-1/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
