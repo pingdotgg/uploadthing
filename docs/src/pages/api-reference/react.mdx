@@ -164,13 +164,17 @@ export type UploadFileResponse<TServerOutput> = {
   name: string;
   size: number;
   key: string;
-  url: string;
+  url: string; // e.g. `utfs.io/f/abc-123.txt`
+  appUrl: string; // e.g. `utfs.io/a/app-1/abc-123.txt`
 
   // Matches what's returned from the serverside `onUploadComplete` callback
   // Will be `null` if `skipPolling` is set to `true`.
   serverdata: TServerOutput;
 };
 ```
+
+For the difference of the two URLs, see
+[Accessing Files](/working-with-files#accessing-files).
 
 ### UploadDropzone
 
