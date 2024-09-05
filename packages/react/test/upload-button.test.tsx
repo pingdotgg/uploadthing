@@ -58,12 +58,41 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
+/**
+ * This is a basic suite of tests for the UploadButton component.
+ * This is not meant to be a comprehensive test suite, but rather a
+ * basic check of core functionality.
+ *
+ * In the future, the goal is to use these and other tests to ensure
+ * consistency across the components in alll of the supported libraries
+ * (React, Solid, Svelte, Vue, etc.). Ideally core test logic should be
+ * shared as much as possible, so that we don;t have to maintain the test
+ * implementations in addition to the component implementations.
+ *
+ * In #886, we attempted to bring all of the libraries in line with each
+ * other, and at that time we manually went verified the following:
+ * - components all accept the same props/have similar APIs
+ * - styles match across libraries in each component state
+ * - copy matches across libraries
+ * - components are reactive
+ * - selecting files changes the text on the button
+ * - uploading changes style and text on button
+ * - paste works
+ * - abort works
+ *
+ * Some other items we did not check but probably should have:
+ * - functions are triggered at the right times
+ * - onChange should occur on select, clear, and drop
+ * - custom styling overrides are available and functioning (and always apply
+ *   to the same parts of the component)
+ */
+
 describe("UploadButton - basic", () => {
   it("fetches and displays route config", async () => {
     const utils = render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
 
-    // Not possible to get to this state
+    // Previously, when component was disabled, it would show "Loading..."
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
