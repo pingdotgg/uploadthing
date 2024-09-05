@@ -67,6 +67,7 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
         customId: null,
         type: "text/plain",
       },
@@ -180,6 +181,7 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
         customId: null,
         type: "text/plain",
       },
@@ -294,6 +296,7 @@ describe("uploadFilesFromUrl", () => {
       [
         {
           "data": {
+            "appUrl": "https://utfs.io/a/app-1/abc-123.txt",
             "customId": null,
             "key": "abc-123.txt",
             "name": "foo.txt",
@@ -313,6 +316,7 @@ describe("uploadFilesFromUrl", () => {
         },
         {
           "data": {
+            "appUrl": "https://utfs.io/a/app-1/abc-123.txt",
             "customId": null,
             "key": "abc-123.txt",
             "name": "bar.txt",
@@ -552,6 +556,7 @@ describe.runIf(shouldRun)(
     rawIt("should upload a file", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -559,7 +564,10 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -584,6 +592,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFiles(file, {
         acl: "private",
       });
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -591,7 +600,10 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -611,6 +623,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFilesFromUrl(
         "https://uploadthing.com/favicon.ico",
       );
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -618,7 +631,10 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -632,6 +648,7 @@ describe.runIf(shouldRun)(
 
       const file = new UTFile(["foo"], "bar.txt");
       const result = await utapi.uploadFiles(file);
+      const fileKey = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -639,12 +656,13 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + fileKey,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${fileKey}$`),
+          ),
         },
         error: null,
       });
-
-      const fileKey = result.data!.key;
 
       const { success } = await utapi.renameFiles({
         fileKey,
@@ -673,6 +691,7 @@ describe.runIf(shouldRun)(
 
       const file = new UTFile(["foo"], "bar.txt", { customId });
       const result = await utapi.uploadFiles(file);
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: customId,
@@ -680,7 +699,10 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -710,6 +732,7 @@ describe.runIf(shouldRun)(
     rawIt("should update ACL", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
+      const { key, url } = result.data!;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -717,11 +740,13 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
-      const { url, key } = result.data!;
 
       const firstChange = await utapi.updateACL(key, "private");
       expect(firstChange.success).toBe(true);

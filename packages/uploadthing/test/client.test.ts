@@ -81,6 +81,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -122,6 +123,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -164,6 +166,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -197,6 +200,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -261,6 +265,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 

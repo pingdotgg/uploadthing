@@ -213,6 +213,7 @@ const uploadFile = (
     return {
       key: presigned.key,
       url: presigned.fileUrl,
+      appUrl: presigned.appUrl,
       name: file.name,
       size: file.size,
       type: file.type,

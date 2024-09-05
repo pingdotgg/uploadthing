@@ -104,9 +104,11 @@ type UploadFileResponse =
 
 type UploadData = {
   key: string;
-  url: string;
+  url: string; // e.g. `https://utfs.io/f/abc-123.txt`
+  appUrl: string; // e.g. `https://utfs.io/a/app-1/abc-123.txt`
   name: string;
   size: number;
+  customId: string | null;
 };
 
 type UploadError = {
@@ -115,6 +117,9 @@ type UploadError = {
   data: any;
 };
 ```
+
+For the difference of the two URLs, see
+[Accessing Files](/working-with-files#accessing-files).
 
 ### `uploadFilesFromUrl`
 
