@@ -99,6 +99,16 @@
         "default": "./h3/index.cjs"
       }
     },
+    "./convex": {
+      "import": {
+        "types": "./convex/index.d.ts",
+        "default": "./convex/index.js"
+      },
+      "require": {
+        "types": "./convex/index.d.cts",
+        "default": "./convex/index.cjs"
+      }
+    },
     "./types": {
       "types": "./types/index.d.ts",
       "default": "./types/index.js"
@@ -116,6 +126,7 @@
   },
   "files": [
     "client",
+    "convex",
     "effect-platform",
     "express",
     "fastify",
@@ -172,6 +183,7 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
+    "convex": "*",
     "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
@@ -190,6 +202,9 @@
       "optional": true
     },
     "fastify": {
+      "optional": true
+    },
+    "convex": {
       "optional": true
     },
     "h3": {
