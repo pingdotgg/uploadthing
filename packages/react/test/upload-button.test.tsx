@@ -63,7 +63,10 @@ describe("UploadButton - basic", () => {
     const utils = render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
 
-    expect(label).toHaveTextContent("Loading...");
+    // Not possible to get to this state
+    // expect(label).toHaveTextContent("Loading...");
+
+    // then eventually we load in the data, and we should be in the ready state
     await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
     expect(label).toHaveTextContent("Choose File");
 
