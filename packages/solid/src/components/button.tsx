@@ -105,7 +105,7 @@ export function UploadButton<
   });
 
   const fileInfo = () =>
-    generatePermittedFileTypes(uploadedThing.permittedFileInfo()?.config);
+    generatePermittedFileTypes(uploadedThing.routeConfig());
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
@@ -189,9 +189,7 @@ export function UploadButton<
         data-ut-element="allowed-content"
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(
-            uploadedThing.permittedFileInfo()?.config,
-          )}
+          allowedContentTextLabelGenerator(uploadedThing.routeConfig())}
       </div>
     </div>
   );

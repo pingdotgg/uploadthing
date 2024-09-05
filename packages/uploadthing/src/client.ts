@@ -52,6 +52,8 @@ export {
   /** @public */
   generatePermittedFileTypes,
   /** @public */
+  bytesToFileSize,
+  /** @public */
   UploadAbortedError,
 } from "@uploadthing/shared";
 
