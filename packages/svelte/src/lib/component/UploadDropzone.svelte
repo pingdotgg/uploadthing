@@ -93,6 +93,7 @@
       onClientUploadComplete: (res) => {
         files = [];
         uploadProgress = 0;
+        uploader.onClientUploadComplete?.(res);
       },
       onUploadProgress: (p) => {
         uploadProgress = p;
