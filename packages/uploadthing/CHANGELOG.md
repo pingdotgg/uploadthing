@@ -1,5 +1,20 @@
 # uploadthing
 
+## 6.13.3
+
+### Patch Changes
+
+- [#924](https://github.com/pingdotgg/uploadthing/pull/924) [`04c5971`](https://github.com/pingdotgg/uploadthing/commit/04c5971b4285eecc15b82c439666223786b41437) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: Add app-scoped urls to types for api returns
+
+- [#877](https://github.com/pingdotgg/uploadthing/pull/877) [`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update api paths to skip rewrites
+
+- [#921](https://github.com/pingdotgg/uploadthing/pull/921) [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: number serialization - passing non-serializable numbers in the router config should no longer cause unexpected failures.
+
+- [#919](https://github.com/pingdotgg/uploadthing/pull/919) [`03ca6f3`](https://github.com/pingdotgg/uploadthing/commit/03ca6f30ef7cb2c1f14b823a2c6a09664962001d) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: types for renameFiles match infra
+
+- Updated dependencies [[`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195), [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c), [`9a69b90`](https://github.com/pingdotgg/uploadthing/commit/9a69b906ed921ac7d2b8aa56445f25935401f20e)]:
+  - @uploadthing/shared@6.7.9
+
 ## 6.13.2
 
 ### Patch Changes
