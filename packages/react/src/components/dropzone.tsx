@@ -70,9 +70,9 @@ export type UploadDropzoneProps<
    * Callback called when files are dropped or pasted.
    *
    * @param acceptedFiles - The files that were accepted.
+   * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
-  disabled?: boolean;
 };
 
 /** These are some internal stuff we use to test the component and for forcing a state in docs */
@@ -143,8 +143,8 @@ export function UploadDropzone<
   );
 
   const uploadFiles = useCallback(
-    (files: File[]) => {
-      void startUpload(files, fileRouteInput).catch((e) => {
+    async (files: File[]) => {
+      await startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
@@ -160,11 +160,12 @@ export function UploadDropzone<
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       $props.onDrop?.(acceptedFiles);
+      $props.onChange?.(acceptedFiles);
 
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if (mode === "auto") uploadFiles(acceptedFiles);
+      if (mode === "auto") void uploadFiles(acceptedFiles);
     },
     [$props, mode, uploadFiles],
   );
@@ -187,7 +188,7 @@ export function UploadDropzone<
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
 
-  const onUploadClick = (
+  const onUploadClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     if (state === "uploading") {
@@ -202,7 +203,7 @@ export function UploadDropzone<
       e.preventDefault();
       e.stopPropagation();
 
-      uploadFiles(files);
+      await uploadFiles(files);
     }
   };
 
@@ -217,10 +218,15 @@ export function UploadDropzone<
       let filesToUpload = pastedFiles;
       setFiles((prev) => {
         filesToUpload = [...prev, ...pastedFiles];
+
+        $props.onChange?.(filesToUpload);
+
         return filesToUpload;
       });
 
-      if (mode === "auto") uploadFiles(filesToUpload);
+      $props.onChange?.(filesToUpload);
+
+      if (mode === "auto") void uploadFiles(filesToUpload);
     };
 
     window.addEventListener("paste", handlePaste);
@@ -229,27 +235,35 @@ export function UploadDropzone<
     };
   }, [uploadFiles, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
 
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (files.length > 0)
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-    if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
-
-  const getUploadButtonContents = (fileTypes: string[]) => {
-    if (state !== "uploading") {
-      return getUploadButtonText(fileTypes);
-    }
-    if (uploadProgress === 100) {
-      return <Spinner />;
-    }
-
-    return (
-      <span className="z-50">
-        <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" cn={cn} />
-      </span>
+  const getUploadButtonContents = () => {
+    const customContent = contentFieldToContent(
+      $props.content?.button,
+      styleFieldArg,
     );
+    if (customContent) return customContent;
+
+    switch (state) {
+      case "readying": {
+        return "Loading...";
+      }
+      case "uploading": {
+        if (uploadProgress === 100) return <Spinner />;
+        return (
+          <span className="z-50">
+            <span className="block group-hover:hidden">{uploadProgress}%</span>
+            <Cancel className="hidden size-4 group-hover:block" />
+          </span>
+        );
+      }
+      case "disabled":
+      case "ready":
+      default: {
+        if (mode === "manual" && files.length > 0) {
+          return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+        }
+        return `Choose File${multiple ? `(s)` : ``}`;
+      }
+    }
   };
 
   const styleFieldArg = {
@@ -262,6 +276,7 @@ export function UploadDropzone<
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
+    if (isDisabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !isUploading) return "ready";
 
@@ -339,6 +354,7 @@ export function UploadDropzone<
       <button
         className={cn(
           "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          state === "disabled" && "cursor-not-allowed bg-blue-400",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
@@ -353,8 +369,7 @@ export function UploadDropzone<
         type="button"
         disabled={$props.__internal_button_disabled ?? !files.length}
       >
-        {contentFieldToContent($props.content?.button, styleFieldArg) ??
-          getUploadButtonContents(fileTypes)}
+        {getUploadButtonContents()}
       </button>
     </div>
   );

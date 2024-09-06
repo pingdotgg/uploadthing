@@ -63,7 +63,6 @@ export type UploadButtonProps<
    * @see https://docs.uploadthing.com/theming#content-customisation
    */
   content?: ButtonContent;
-  disabled?: boolean;
 };
 
 /** These are some internal stuff we use to test the component and for forcing a state in docs */
@@ -139,7 +138,7 @@ export function UploadButton<
 
   const uploadFiles = useCallback(
     (files: File[]) => {
-      void startUpload(files, fileRouteInput).catch((e) => {
+      startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
@@ -162,17 +161,19 @@ export function UploadButton<
         if (!e.target.files) return;
         const selectedFiles = Array.from(e.target.files);
 
+        $props.onChange?.(selectedFiles);
+
         if (mode === "manual") {
           setFiles(selectedFiles);
           return;
         }
 
-        uploadFiles(selectedFiles);
+        void uploadFiles(selectedFiles);
       },
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
     }),
-    [fileTypes, mode, multiple, uploadFiles],
+    [$props, fileTypes, mode, multiple, uploadFiles],
   );
 
   if ($props.__internal_button_disabled) inputProps.disabled = true;
@@ -180,7 +181,7 @@ export function UploadButton<
 
   const state = (() => {
     if ($props.__internal_state) return $props.__internal_state;
-    if (inputProps.disabled) return "readying";
+    if (inputProps.disabled) return "disabled";
     if (!inputProps.disabled && !isUploading) return "ready";
     return "uploading";
   })();
@@ -195,10 +196,13 @@ export function UploadButton<
     let filesToUpload = pastedFiles;
     setFiles((prev) => {
       filesToUpload = [...prev, ...pastedFiles];
+
+      $props.onChange?.(filesToUpload);
+
       return filesToUpload;
     });
 
-    if (mode === "auto") uploadFiles(files);
+    if (mode === "auto") void uploadFiles(files);
   });
 
   const styleFieldArg = {
@@ -215,23 +219,28 @@ export function UploadButton<
     );
     if (customContent) return customContent;
 
-    if (state === "readying") return "Loading...";
-
-    if (state !== "uploading") {
-      if (mode === "manual" && files.length > 0) {
-        return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+    switch (state) {
+      case "readying": {
+        return "Loading...";
       }
-      return `Choose File${inputProps.multiple ? `(s)` : ``}`;
+      case "uploading": {
+        if (uploadProgress === 100) return <Spinner />;
+        return (
+          <span className="z-50">
+            <span className="block group-hover:hidden">{uploadProgress}%</span>
+            <Cancel className="hidden size-4 group-hover:block" />
+          </span>
+        );
+      }
+      case "disabled":
+      case "ready":
+      default: {
+        if (mode === "manual" && files.length > 0) {
+          return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+        }
+        return `Choose File${inputProps.multiple ? `(s)` : ``}`;
+      }
     }
-
-    if (uploadProgress === 100) return <Spinner />;
-
-    return (
-      <span className="z-50">
-        <span className="block group-hover:hidden">{uploadProgress}%</span>
-        <Cancel className="hidden size-4 group-hover:block" cn={cn} />
-      </span>
-    );
   };
 
   const renderClearButton = () => (
@@ -242,6 +251,8 @@ export function UploadButton<
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
+
+        $props.onChange?.([]);
       }}
       className={cn(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
@@ -287,6 +298,7 @@ export function UploadButton<
       <label
         className={cn(
           "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          state === "disabled" && "cursor-not-allowed bg-blue-400",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
@@ -301,6 +313,7 @@ export function UploadButton<
           if (state === "uploading") {
             e.preventDefault();
             e.stopPropagation();
+
             acRef.current.abort();
             acRef.current = new AbortController();
             return;
@@ -308,6 +321,7 @@ export function UploadButton<
           if (mode === "manual" && files.length > 0) {
             e.preventDefault();
             e.stopPropagation();
+
             uploadFiles(files);
           }
         }}

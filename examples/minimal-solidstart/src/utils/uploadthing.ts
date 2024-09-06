@@ -15,4 +15,5 @@ const initOpts = {
 
 export const UploadButton = generateUploadButton<OurFileRouter>(initOpts);
 export const UploadDropzone = generateUploadDropzone<OurFileRouter>(initOpts);
-export const { useUploadThing } = generateSolidHelpers<OurFileRouter>(initOpts);
+export const { createUploadThing } =
+  generateSolidHelpers<OurFileRouter>(initOpts);

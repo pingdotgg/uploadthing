@@ -18,6 +18,7 @@
     defaultClassListMerger,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    UploadAbortedError,
   } from "@uploadthing/shared";
   import type { StyleField } from "@uploadthing/shared";
   import {
@@ -57,11 +58,14 @@
   // Allow to disable the button
   export let __internal_button_disabled: boolean | undefined = undefined;
 
+  export let onChange: ((files: File[]) => void) | undefined = undefined;
+
+  export let disabled = false;
+
   let uploadProgress = 0;
   let fileInputRef: HTMLInputElement;
-  let labelRef: HTMLLabelElement;
-  let isManualTriggerDisplayed = false;
   let files: File[] = [];
+  let acRef = new AbortController();
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
@@ -69,11 +73,9 @@
   const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
     uploader.endpoint,
     {
+      signal: acRef.signal,
       onClientUploadComplete: (res) => {
-        if (fileInputRef) {
-          fileInputRef.value = "";
-        }
-        isManualTriggerDisplayed = false;
+        fileInputRef.value = "";
         files = [];
         uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
@@ -111,43 +113,48 @@
 
   $: state = (() => {
     if (__internal_state) return __internal_state;
+    if (disabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !$isUploading) return "ready";
 
     return "uploading";
   })();
 
+  const uploadFiles = async (files: File[]) => {
+    const input = "input" in uploader ? uploader.input : undefined;
+
+    await startUpload(files, input).catch((e) => {
+      if (e instanceof UploadAbortedError) {
+        void uploader.onUploadAborted?.();
+      } else {
+        throw e;
+      }
+    });
+  };
+
   const handlePaste = (event: ClipboardEvent) => {
     if (!appendOnPaste) return;
     // eslint-disable-next-line no-undef
-    if (document.activeElement !== labelRef) return;
+    if (document.activeElement !== fileInputRef) return;
 
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
 
     files = [...files, ...pastedFiles];
 
-    if (mode === "auto") {
-      const input = "input" in uploader ? uploader.input : undefined;
-      void startUpload(files, input);
-    }
+    onChange?.(files);
+
+    if (mode === "auto") void uploadFiles(files);
   };
 
   onMount(() => {
     // eslint-disable-next-line no-undef
-    window.addEventListener("paste", handlePaste);
+    document.addEventListener("paste", handlePaste);
     return () => {
       // eslint-disable-next-line no-undef
-      window.removeEventListener("paste", handlePaste);
+      document.removeEventListener("paste", handlePaste);
     };
   });
-
-  const getUploadButtonText = (fileTypes: string[]) => {
-    if (isManualTriggerDisplayed)
-      return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-    if (fileTypes.length === 0) return "Loading...";
-    return `Choose File${multiple ? `(s)` : ``}`;
-  };
 </script>
 
 <!--
@@ -169,9 +176,9 @@ Example:
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <label
-    bind:this={labelRef}
     class={cn(
-      "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
@@ -181,12 +188,20 @@ Example:
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-state={state}
     data-ut-element="button"
-    on:click={(e) => {
-      if (isManualTriggerDisplayed) {
+    on:click={async (e) => {
+      if (state === "uploading") {
         e.preventDefault();
         e.stopPropagation();
-        const input = "input" in uploader ? uploader.input : undefined;
-        void startUpload(files, input);
+
+        acRef.abort();
+        acRef = new AbortController();
+        return;
+      }
+      if (mode === "manual" && files.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        await uploadFiles(files);
       }
     }}
   >
@@ -195,29 +210,48 @@ Example:
       class="sr-only"
       type="file"
       accept={generateMimeTypes(fileTypes).join(", ")}
-      disabled={__internal_button_disabled ?? !ready}
+      disabled={__internal_button_disabled ?? disabled ?? !ready}
       {multiple}
-      on:change={(e) => {
+      on:change={async (e) => {
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
 
+        onChange?.(selectedFiles);
+
         if (mode === "manual") {
           files = selectedFiles;
-          isManualTriggerDisplayed = true;
           return;
         }
 
-        const input = "input" in uploader ? uploader.input : undefined;
-        void startUpload(selectedFiles, input);
+        await uploadFiles(selectedFiles);
       }}
     />
     <slot name="button-content" state={styleFieldArg}>
-      {#if state !== "uploading"}
-        {getUploadButtonText(fileTypes)}
-      {:else if uploadProgress === 100}
-        <Spinner />
+      {#if state === "uploading"}
+        {#if uploadProgress === 100}
+          <Spinner />
+        {:else}
+          <span class="z-50">
+            <span class="block group-hover:hidden">{uploadProgress}%</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class={cn(
+                "fill-none stroke-current stroke-2",
+                "hidden size-4 group-hover:block",
+              )}
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="m4.9 4.9 14.2 14.2" />
+            </svg>
+          </span>
+        {/if}
+      {:else if mode === "manual" && files.length > 0}
+        {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
       {:else}
-        <span class="z-50">{uploadProgress}%</span>
+        {`Choose File${multiple ? `(s)` : ``}`}
       {/if}
     </slot>
   </label>
@@ -225,11 +259,8 @@ Example:
     <button
       on:click={() => {
         files = [];
-        isManualTriggerDisplayed = false;
-
-        if (fileInputRef) {
-          fileInputRef.value = "";
-        }
+        fileInputRef.value = "";
+        onChange?.([]);
       }}
       class={cn(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",

@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { createSignal, onCleanup, onMount } from "solid-js";
 
 import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
@@ -7,9 +7,11 @@ import {
   defaultClassListMerger,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
+  getFilesFromClipboardEvent,
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -18,8 +20,8 @@ import type {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
+import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
 import { progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
@@ -66,6 +68,7 @@ export type UploadDropzoneProps<
    * Callback called when files are dropped or pasted.
    *
    * @param acceptedFiles - The files that were accepted.
+   * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
 };
@@ -81,12 +84,20 @@ export const UploadDropzone = <
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
 
-  const { mode = "manual", cn = defaultClassListMerger } = $props.config ?? {};
+  const {
+    mode = "manual",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+  let rootRef: HTMLElement;
+  let acRef = new AbortController();
+
+  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
-  const uploadThing = useUploadThing($props.endpoint, {
+  const uploadThing = createUploadThing($props.endpoint, {
+    signal: acRef.signal,
     headers: $props.headers,
     onClientUploadComplete: (res) => {
       setFiles([]);
@@ -103,20 +114,29 @@ export const UploadDropzone = <
   });
 
   const [files, setFiles] = createSignal<File[]>([]);
+
+  const uploadFiles = async (files: File[]) => {
+    const input = "input" in $props ? $props.input : undefined;
+
+    await uploadThing.startUpload(files, input).catch((e) => {
+      if (e instanceof UploadAbortedError) {
+        void $props.onUploadAborted?.();
+      } else {
+        throw e;
+      }
+    });
+  };
+
   const onDrop = (acceptedFiles: File[]) => {
     $props.onDrop?.(acceptedFiles);
+    $props.onChange?.(acceptedFiles);
 
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") {
-      const input = "input" in $props ? $props.input : undefined;
-      void uploadThing.startUpload(acceptedFiles, input);
-      return;
-    }
+    if (mode === "auto") void uploadFiles(acceptedFiles);
   };
-  const fileInfo = () =>
-    generatePermittedFileTypes(uploadThing.permittedFileInfo()?.config);
+  const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
   const { getRootProps, getInputProps, isDragActive } = createDropzone({
     onDrop,
@@ -145,6 +165,35 @@ export const UploadDropzone = <
     return "uploading";
   };
 
+  const pasteHandler = (e: ClipboardEvent) => {
+    if (!appendOnPaste) return;
+    if (document.activeElement !== rootRef) return;
+
+    const pastedFiles = getFilesFromClipboardEvent(e);
+    if (!pastedFiles) return;
+
+    setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
+
+    $props.onChange?.(files());
+
+    if (mode === "auto") void uploadFiles(files());
+  };
+
+  // onMount will only be called client side, so it guarantees DOM APIs exist.
+  onMount(() => {
+    try {
+      document?.addEventListener("paste", pasteHandler);
+    } catch {
+      // noop - we're not in a browser
+    }
+  });
+  onCleanup(() => {
+    try {
+      document?.removeEventListener("paste", pasteHandler);
+    } catch {
+      // noop - we're not in a browser
+    }
+  });
   return (
     <div
       class={cn(
@@ -154,6 +203,7 @@ export const UploadDropzone = <
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
       {...getRootProps()}
+      ref={(el) => (rootRef = el)}
       style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state()}
     >
@@ -210,9 +260,7 @@ export const UploadDropzone = <
         data-state={state()}
       >
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(
-            uploadThing.permittedFileInfo()?.config,
-          )}
+          allowedContentTextLabelGenerator(uploadThing.routeConfig())}
       </div>
       {files().length > 0 && (
         <button
@@ -229,13 +277,17 @@ export const UploadDropzone = <
             $props.appearance?.button,
             styleFieldArg,
           )}
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (!files()) return;
+            if (state() === "uploading") {
+              acRef.abort();
+              acRef = new AbortController();
 
-            const input = "input" in $props ? $props.input : undefined;
-            void uploadThing.startUpload(files(), input);
+              return;
+            }
+            if (!files()) return;
+            await uploadFiles(files());
           }}
           data-ut-element="button"
           data-state={state()}

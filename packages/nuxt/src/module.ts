@@ -9,7 +9,6 @@ import {
   resolvePath,
   useLogger,
 } from "@nuxt/kit";
-import type from "@nuxt/schema";
 import defu from "defu";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";

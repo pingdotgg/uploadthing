@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { EndpointMetadata } from "@uploadthing/shared";
@@ -13,15 +14,18 @@ import type {
   inferErrorShape,
 } from "uploadthing/types";
 
-import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
+import type {
+  CreateUploadthingProps,
+  GenerateTypedHelpersOptions,
+} from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const createEndpointMetadata = (url: URL, endpoint: string) => {
+const useRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
-  return () => dataGetter()?.data?.find((x) => x.slug === endpoint);
+  return () => dataGetter()?.data?.find((x) => x.slug === endpoint)?.config;
 };
 
-export const INTERNAL_uploadthingHookGen = <
+export const INTERNAL_createUploadThingGen = <
   TRouter extends FileRouter,
 >(initOpts: {
   /**
@@ -36,15 +40,12 @@ export const INTERNAL_uploadthingHookGen = <
     package: "@uploadthing/solid",
   });
 
-  const useUploadThing = <TEndpoint extends keyof TRouter>(
+  const createUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: CreateUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
-    const permittedFileInfo = createEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
@@ -90,6 +91,12 @@ export const INTERNAL_uploadthingHookGen = <
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        /**
+         * This is the only way to introduce this as a non-breaking change
+         * TODO: Consider refactoring API in the next major version
+         */
+        if (e instanceof UploadAbortedError) throw e;
+
         let error: UploadThingError<inferErrorShape<TRouter>>;
         if (e instanceof UploadThingError) {
           error = e as UploadThingError<inferErrorShape<TRouter>>;
@@ -109,23 +116,32 @@ export const INTERNAL_uploadthingHookGen = <
       }
     };
 
+    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+
     return {
       startUpload,
       isUploading,
-      permittedFileInfo,
+      routeConfig,
+      /**
+       * @deprecated Use `routeConfig` instead
+       */
+      permittedFileInfo: routeConfig
+        ? { slug: endpoint, config: routeConfig }
+        : undefined,
     } as const;
   };
 
-  return useUploadThing;
+  return createUploadThing;
 };
 
 export const generateSolidHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({ url });
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url }),
     ...genUploader<TRouter>({
       url,
       package: "@uploadthing/solid",

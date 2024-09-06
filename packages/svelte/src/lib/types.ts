@@ -2,6 +2,7 @@ import type {
   ClassListMerger,
   ErrorMessage,
   ExtendObjectIf,
+  MaybePromise,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
@@ -70,12 +71,33 @@ export type UseUploadthingProps<
    * Called if the upload fails
    */
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
+  /**
+   * An AbortSignal to cancel the upload
+   * Calling `abort()` on the parent AbortController will cause the
+   * upload to throw an `UploadAbortedError`. In a future version
+   * the function will not throw in favor of an `onUploadAborted` callback.
+   */
+  signal?: AbortSignal | undefined;
 };
 
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-> = UseUploadthingProps<TRouter, TEndpoint> & {
+> = Omit<
+  UseUploadthingProps<TRouter, TEndpoint>,
+  /**
+   * Signal is omitted, component has its own AbortController
+   * If you need to control the interruption with more granularity,
+   * create your own component and pass your own signal to
+   * `useUploadThing`
+   * @see https://github.com/pingdotgg/uploadthing/pull/838#discussion_r1624189818
+   */
+  "signal"
+> & {
+  /**
+   * Called when the upload is aborted
+   */
+  onUploadAborted?: (() => MaybePromise<void>) | undefined;
   /**
    * The endpoint from your FileRouter to use for the upload
    */
@@ -101,6 +123,7 @@ export type UploadthingComponentProps<
      */
     cn?: ClassListMerger;
   };
+  disabled?: boolean;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

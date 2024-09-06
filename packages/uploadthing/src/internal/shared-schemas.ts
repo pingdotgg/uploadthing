@@ -67,7 +67,10 @@ export class FileUploadDataWithCustomId extends FileUploadData.extend<FileUpload
 }) {}
 
 /**
- * When files are uploaded, we get back a key and a URL for the file
+ * When files are uploaded, we get back
+ * - a key
+ * - a direct URL for the file
+ * - an app-specific URL for the file (useful for scoping eg. for optimization allowed origins)
  */
 export class UploadedFileData extends FileUploadDataWithCustomId.extend<UploadedFileData>(
   "UploadedFileData",

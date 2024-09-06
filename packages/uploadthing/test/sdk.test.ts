@@ -458,6 +458,7 @@ describe.runIf(shouldRun)(
     rawIt("should upload a file", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -492,6 +493,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFiles(file, {
         acl: "private",
       });
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -521,6 +523,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFilesFromUrl(
         "https://uploadthing.com/favicon.ico",
       );
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -544,6 +547,7 @@ describe.runIf(shouldRun)(
 
       const file = new UTFile(["foo"], "bar.txt");
       const result = await utapi.uploadFiles(file);
+      const fileKey = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -556,8 +560,6 @@ describe.runIf(shouldRun)(
         },
         error: null,
       });
-
-      const fileKey = result.data!.key;
 
       const { success } = await utapi.renameFiles({
         fileKey,
@@ -586,6 +588,7 @@ describe.runIf(shouldRun)(
 
       const file = new UTFile(["foo"], "bar.txt", { customId });
       const result = await utapi.uploadFiles(file);
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: customId,
@@ -625,6 +628,7 @@ describe.runIf(shouldRun)(
     rawIt("should update ACL", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
+      const { key, url } = result.data!;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -638,7 +642,6 @@ describe.runIf(shouldRun)(
         },
         error: null,
       });
-      const { url, key } = result.data!;
 
       const firstChange = await utapi.updateACL(key, "private");
       expect(firstChange.success).toBe(true);

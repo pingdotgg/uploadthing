@@ -14,6 +14,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
@@ -69,6 +70,7 @@ export type UploadDropzoneProps<
    * Callback called when files are dropped or pasted.
    *
    * @param acceptedFiles - The files that were accepted.
+   * @deprecated Use `onChange` instead
    */
   onDrop?: (acceptedFiles: File[]) => void;
 };
@@ -92,6 +94,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         cn = defaultClassListMerger,
       } = $props.config ?? {};
 
+      const acRef = ref(new AbortController());
       const files = ref<File[]>([]);
       const uploadProgress = ref(0);
 
@@ -124,23 +127,24 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
 
       const onDrop = (acceptedFiles: File[]) => {
+        // don't trigger onChange if no files are accepted
+        if (acceptedFiles.length === 0) return;
+
         $props.onDrop?.(acceptedFiles);
+        $props.onChange?.(acceptedFiles);
 
         files.value = acceptedFiles;
 
         // If mode is auto, start upload immediately.
-        if (mode === "auto") {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(acceptedFiles, input);
-          return;
-        }
+        if (mode === "auto") void uploadFiles(acceptedFiles);
       };
 
       const dropzoneOptions: DropzoneOptions = reactive({
         onDrop: onDrop,
         accept: acceptedFileTypes.value,
         multiple: permittedFileTypes.value.multiple,
-        disabled: permittedFileTypes.value.fileTypes.length === 0,
+        disabled:
+          $props.disabled ?? permittedFileTypes.value.fileTypes.length === 0,
       });
       watch(
         () => acceptedFileTypes.value,
@@ -152,17 +156,30 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         () => permittedFileTypes.value,
         (newVal) => {
           dropzoneOptions.multiple = newVal.multiple;
-          dropzoneOptions.disabled = newVal.fileTypes.length === 0;
+          dropzoneOptions.disabled =
+            $props.disabled ?? newVal.fileTypes.length === 0;
         },
       );
       const { getRootProps, getInputProps, isDragActive, rootRef } =
         useDropzone(dropzoneOptions);
 
       const state = computed(() => {
-        if (dropzoneOptions.disabled) return "readying";
+        if (dropzoneOptions.disabled) return "disabled";
         if (!dropzoneOptions.disabled && !isUploading.value) return "ready";
         return "uploading";
       });
+
+      const uploadFiles = async (files: File[]) => {
+        const input = "input" in $props ? $props.input : undefined;
+
+        await startUpload(files, input).catch((e) => {
+          if (e instanceof UploadAbortedError) {
+            void $props.onUploadAborted?.();
+          } else {
+            throw e;
+          }
+        });
+      };
 
       usePaste((event) => {
         if (!appendOnPaste) return;
@@ -173,10 +190,9 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
         files.value = [...files.value, ...pastedFiles];
 
-        if (mode === "auto") {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(files.value, input);
-        }
+        $props.onChange?.(files.value);
+
+        if (mode === "auto") void uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -232,10 +248,6 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         );
         if (customContent) return customContent;
 
-        if (state.value === "readying") {
-          return `Loading...`;
-        }
-
         return `Choose files or drag and drop`;
       });
 
@@ -252,29 +264,47 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         );
       };
 
-      const buttonContent = computed(() => {
+      const renderButton = () => {
         const customContent = contentFieldToContent(
           $props.content?.button,
           styleFieldArg.value,
         );
         if (customContent) return customContent;
 
-        if (state.value !== "uploading") {
-          if (files.value.length > 0) {
+        if (state.value === "uploading") {
+          if (uploadProgress.value === 100) {
+            return <Spinner />;
+          } else {
+            return (
+              <span class="z-50">
+                <span class="block group-hover:hidden">
+                  {uploadProgress.value}%
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class={twMerge(
+                    "fill-none stroke-current stroke-2",
+                    "hidden size-4 group-hover:block",
+                  )}
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m4.9 4.9 14.2 14.2" />
+                </svg>
+              </span>
+            );
+          }
+        } else {
+          // Default case: "ready" or "disabled" state
+          if (mode === "manual" && files.value.length > 0) {
             return `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"}`;
+          } else {
+            return `Choose File${getInputProps().multiple ? `(s)` : ``}`;
           }
-          if (permittedFileTypes.value.fileTypes.length === 0) {
-            return "Loading...";
-          }
-          return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
         }
-
-        if (uploadProgress.value === 100) {
-          return <Spinner />;
-        }
-
-        return <span class="z-50">{`${uploadProgress.value}%`}</span>;
-      });
+      };
 
       const containerClass = computed(() =>
         cn(
@@ -306,11 +336,10 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const buttonClass = computed(() =>
         cn(
           "relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state.value === "readying" && "cursor-not-allowed bg-blue-400",
+          state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
           state.value === "ready" && "bg-blue-600",
-          "disabled:pointer-events-none",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
       );
@@ -364,19 +393,23 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             <button
               class={buttonClass.value}
               style={buttonStyle.value}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 if (!files.value) return;
+                if (state.value === "uploading") {
+                  acRef.value.abort();
+                  acRef.value = new AbortController();
+                  return;
+                }
 
-                const input = "input" in $props ? $props.input : undefined;
-                void startUpload(files.value, input);
+                await uploadFiles(files.value);
               }}
               data-ut-element="button"
               data-state={state.value}
               disabled={files.value.length === 0 || state.value === "uploading"}
             >
-              {buttonContent.value}
+              {renderButton()}
             </button>
           </div>
         );

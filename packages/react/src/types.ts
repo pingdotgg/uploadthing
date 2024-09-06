@@ -132,6 +132,13 @@ export type UploadthingComponentProps<
      */
     cn?: ClassListMerger;
   };
+  disabled?: boolean;
+  /**
+   * Callback called when files are selected
+   *
+   * @param acceptedFiles - The files that were accepted.
+   */
+  onChange?: (files: File[]) => void;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

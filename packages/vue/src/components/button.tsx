@@ -11,6 +11,7 @@ import {
   resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 import type { ContentField, StyleField } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
@@ -82,11 +83,14 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       } = $props.config ?? {};
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
+      const acRef = ref(new AbortController());
+
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
       const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
         reactive({
+          signal: acRef.value.signal,
           headers: $props.headers,
           onClientUploadComplete: (res) => {
             if (fileInputRef.value) {
@@ -114,6 +118,18 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         generatePermittedFileTypes(permittedFileInfo.value?.config),
       );
 
+      const uploadFiles = async (files: File[]) => {
+        const input = "input" in $props ? $props.input : undefined;
+
+        await startUpload(files, input).catch((e) => {
+          if (e instanceof UploadAbortedError) {
+            void $props.onUploadAborted?.();
+          } else {
+            throw e;
+          }
+        });
+      };
+
       const inputProps = computed(() => ({
         type: "file",
         ref: fileInputRef,
@@ -121,25 +137,27 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         accept: generateMimeTypes(permittedFileTypes.value.fileTypes).join(
           ", ",
         ),
-        disabled: permittedFileTypes.value.fileTypes.length === 0,
+        disabled:
+          $props.disabled ?? permittedFileTypes.value.fileTypes.length === 0,
         tabindex: permittedFileTypes.value.fileTypes.length === 0 ? -1 : 0,
         onChange: (e: Event) => {
           if (!e.target) return;
           const { files: selectedFiles } = e.target as HTMLInputElement;
           if (!selectedFiles) return;
 
+          $props.onChange?.(Array.from(selectedFiles));
+
           if (mode === "manual") {
             files.value = Array.from(selectedFiles);
             return;
           }
 
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(files.value, input);
+          void uploadFiles(Array.from(selectedFiles));
         },
       }));
 
       const state = computed(() => {
-        if (inputProps.value.disabled) return "readying";
+        if (inputProps.value.disabled) return "disabled";
         if (!inputProps.value.disabled && !isUploading.value) return "ready";
         return "uploading";
       });
@@ -153,10 +171,9 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         files.value = [...files.value, ...pastedFiles];
 
-        if (mode === "auto") {
-          const input = "input" in $props ? $props.input : undefined;
-          void startUpload(files.value, input);
-        }
+        $props.onChange?.(files.value);
+
+        if (mode === "auto") void uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -176,24 +193,39 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         );
         if (customContent) return customContent;
 
-        if (state.value === "readying") {
-          return "Loading...";
-        }
-
-        if (state.value !== "uploading") {
-          if (mode === "manual" && files.value.length > 0) {
-            return `Upload ${files.value.length} file${
-              files.value.length > 1 ? "s" : ""
-            }`;
+        if (state.value === "uploading") {
+          if (uploadProgress.value === 100) {
+            return <Spinner />;
+          } else {
+            return (
+              <span class="z-50">
+                <span class="block group-hover:hidden">
+                  {uploadProgress.value}%
+                </span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class={cn(
+                    "fill-none stroke-current stroke-2",
+                    "hidden size-4 group-hover:block",
+                  )}
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m4.9 4.9 14.2 14.2" />
+                </svg>
+              </span>
+            );
           }
-          return `Choose File${permittedFileTypes.value.multiple ? `(s)` : ``}`;
+        } else {
+          // Default case: "ready" or "disabled" state
+          if (mode === "manual" && files.value.length > 0) {
+            return `Upload ${files.value.length} file${files.value.length === 1 ? "" : "s"}`;
+          } else {
+            return `Choose File${inputProps.value.multiple ? `(s)` : ``}`;
+          }
         }
-
-        if (uploadProgress.value === 100) {
-          return <Spinner />;
-        }
-
-        return <span class="z-50">{uploadProgress.value}%</span>;
       };
 
       const renderClearButton = () => (
@@ -204,6 +236,8 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             if (fileInputRef.value) {
               fileInputRef.value.value = "";
             }
+
+            $props.onChange?.([]);
           }}
           class={cn(
             "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
@@ -252,12 +286,10 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       const labelClass = computed(() =>
         cn(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state.value === "readying" && "cursor-not-allowed bg-blue-400",
+          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${
-              progressWidths[uploadProgress.value]
-            }`,
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
           state.value === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
@@ -295,12 +327,16 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
-              onClick={(e) => {
+              onClick={async (e) => {
+                if (state.value === "uploading") {
+                  acRef.value.abort();
+                  acRef.value = new AbortController();
+                  return;
+                }
                 if (mode === "manual" && files.value.length > 0) {
                   e.preventDefault();
                   e.stopPropagation();
-                  const input = "input" in $props ? $props.input : undefined;
-                  void startUpload(files.value, input);
+                  await uploadFiles(files.value);
                 }
               }}
             >
