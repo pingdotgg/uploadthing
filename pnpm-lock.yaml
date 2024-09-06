@@ -37,6 +37,15 @@ importers:
       '@prettier/sync':
         specifier: ^0.5.2
         version: 0.5.2(prettier@3.3.2)
+      '@testing-library/dom':
+        specifier: ^10.4.0
+        version: 10.4.0
+      '@testing-library/jest-dom':
+        specifier: ^6.4.8
+        version: 6.4.8
+      '@testing-library/react':
+        specifier: ^16.0.0
+        version: 16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/bun':
         specifier: ^1.1.5
         version: 1.1.5
@@ -516,7 +525,7 @@ importers:
         version: 0.12.5(solid-js@1.8.16)
       '@solidjs/start':
         specifier: ^0.6.0
-        version: 0.6.1(@testing-library/jest-dom@6.4.5(@types/bun@1.1.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)))(rollup@4.18.0)(solid-js@1.8.16)(vinxi@0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(terser@5.19.2))(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+        version: 0.6.1(@testing-library/jest-dom@6.4.8)(rollup@4.18.0)(solid-js@1.8.16)(vinxi@0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(terser@5.19.2))(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
       '@uploadthing/solid':
         specifier: 6.5.3
         version: link:../../packages/solid
@@ -5531,6 +5540,10 @@ packages:
     resolution: {integrity: sha512-wdsYKy5zupPyLCW2Je5DLHSxSfbIp6h80WoHOQc+RPtmPGA52O9x5MJEkv92Sjonpq+poOAtUKhh1kBGAXBrNA==}
     engines: {node: '>=18'}
 
+  '@testing-library/dom@10.4.0':
+    resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
+    engines: {node: '>=18'}
+
   '@testing-library/jest-dom@6.4.5':
     resolution: {integrity: sha512-AguB9yvTXmCnySBP1lWjfNNUwpbElsaQ567lt2VdGqAdHtpieLgjmcVyv1q7PMIvLbgpDdkWV5Ydv3FEejyp2A==}
     engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
@@ -5550,6 +5563,25 @@ packages:
       jest:
         optional: true
       vitest:
+        optional: true
+
+  '@testing-library/jest-dom@6.4.8':
+    resolution: {integrity: sha512-JD0G+Zc38f5MBHA4NgxQMR5XtO5Jx9g86jqturNTt2WUfRmLDIY7iKkWHDCCTiDuFMre6nxAD5wHw9W5kI4rGw==}
+    engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
+
+  '@testing-library/react@16.0.0':
+    resolution: {integrity: sha512-guuxUKRWQ+FgNX0h0NS0FIq3Q3uLtWVpBzcLOggmfMoUpgBnzBzvLLd4fbm6yS8ydJd94cIfY4yP9qUQjM2KwQ==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@testing-library/dom': ^10.0.0
+      '@types/react': ^18.0.0
+      '@types/react-dom': ^18.0.0
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
         optional: true
 
   '@testing-library/user-event@14.5.2':
@@ -20214,7 +20246,7 @@ snapshots:
     dependencies:
       solid-js: 1.8.16
 
-  '@solidjs/start@0.6.1(@testing-library/jest-dom@6.4.5(@types/bun@1.1.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)))(rollup@4.18.0)(solid-js@1.8.16)(vinxi@0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(terser@5.19.2))(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))':
+  '@solidjs/start@0.6.1(@testing-library/jest-dom@6.4.8)(rollup@4.18.0)(solid-js@1.8.16)(vinxi@0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(terser@5.19.2))(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))':
     dependencies:
       '@vinxi/plugin-directives': 0.3.1(vinxi@0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(terser@5.19.2))
       '@vinxi/server-components': 0.3.3(vinxi@0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.4)(terser@5.19.2))
@@ -20229,7 +20261,7 @@ snapshots:
       source-map-js: 1.2.0
       terracotta: 1.0.5(solid-js@1.8.16)
       vite-plugin-inspect: 0.7.38(rollup@4.18.0)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
-      vite-plugin-solid: 2.9.1(@testing-library/jest-dom@6.4.5(@types/bun@1.1.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)))(solid-js@1.8.16)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
+      vite-plugin-solid: 2.9.1(@testing-library/jest-dom@6.4.8)(solid-js@1.8.16)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
     transitivePeerDependencies:
       - '@nuxt/kit'
       - '@testing-library/jest-dom'
@@ -20248,7 +20280,7 @@ snapshots:
       '@storybook/csf': 0.1.11
       '@types/cross-spawn': 6.0.6
       cross-spawn: 7.0.3
-      globby: 14.0.1
+      globby: 14.0.2
       jscodeshift: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.4))
       lodash: 4.17.21
       prettier: 3.3.2
@@ -20271,7 +20303,7 @@ snapshots:
       process: 0.11.10
       recast: 0.23.9
       util: 0.12.5
-      ws: 8.17.1
+      ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -20542,6 +20574,17 @@ snapshots:
       lz-string: 1.5.0
       pretty-format: 27.5.1
 
+  '@testing-library/dom@10.4.0':
+    dependencies:
+      '@babel/code-frame': 7.24.6
+      '@babel/runtime': 7.24.4
+      '@types/aria-query': 5.0.4
+      aria-query: 5.3.0
+      chalk: 4.1.2
+      dom-accessibility-api: 0.5.16
+      lz-string: 1.5.0
+      pretty-format: 27.5.1
+
   '@testing-library/jest-dom@6.4.5(@types/bun@1.1.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))':
     dependencies:
       '@adobe/css-tools': 4.4.0
@@ -20555,6 +20598,27 @@ snapshots:
     optionalDependencies:
       '@types/bun': 1.1.5
       vitest: 1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)
+
+  '@testing-library/jest-dom@6.4.8':
+    dependencies:
+      '@adobe/css-tools': 4.4.0
+      '@babel/runtime': 7.24.4
+      aria-query: 5.3.0
+      chalk: 3.0.0
+      css.escape: 1.5.1
+      dom-accessibility-api: 0.6.3
+      lodash: 4.17.21
+      redent: 3.0.0
+
+  '@testing-library/react@16.0.0(@testing-library/dom@10.4.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.24.4
+      '@testing-library/dom': 10.4.0
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    optionalDependencies:
+      '@types/react': 18.3.3
+      '@types/react-dom': 18.3.0
 
   '@testing-library/user-event@14.5.2(@testing-library/dom@10.1.0)':
     dependencies:
@@ -24551,7 +24615,7 @@ snapshots:
       enhanced-resolve: 5.15.0
       mlly: 1.7.1
       pathe: 1.1.2
-      ufo: 1.5.3
+      ufo: 1.5.4
 
   fake-indexeddb@5.0.2: {}
 
@@ -28442,7 +28506,7 @@ snapshots:
       execa: 8.0.1
       pathe: 1.1.2
       pkg-types: 1.1.3
-      ufo: 1.5.3
+      ufo: 1.5.4
 
   oauth4webapi@2.10.4: {}
 
@@ -30725,13 +30789,13 @@ snapshots:
       find-up: 5.0.0
       fs-extra: 11.2.0
       giget: 1.2.3
-      globby: 14.0.1
+      globby: 14.0.2
       jscodeshift: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.4))
       leven: 3.1.0
       ora: 5.4.1
       prettier: 3.3.2
       prompts: 2.4.2
-      semver: 7.6.2
+      semver: 7.6.3
       strip-json-comments: 3.1.1
       tempy: 3.1.0
       tiny-invariant: 1.3.3
@@ -31593,7 +31657,7 @@ snapshots:
       mime: 3.0.0
       node-fetch-native: 1.6.4
       pathe: 1.1.2
-      ufo: 1.5.3
+      ufo: 1.5.4
 
   unenv@1.9.0:
     dependencies:
@@ -32233,7 +32297,7 @@ snapshots:
       - rollup
       - supports-color
 
-  vite-plugin-solid@2.9.1(@testing-library/jest-dom@6.4.5(@types/bun@1.1.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2)))(solid-js@1.8.16)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2)):
+  vite-plugin-solid@2.9.1(@testing-library/jest-dom@6.4.8)(solid-js@1.8.16)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2)):
     dependencies:
       '@babel/core': 7.24.4
       '@types/babel__core': 7.20.5
@@ -32244,7 +32308,7 @@ snapshots:
       vite: 5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2)
       vitefu: 0.2.5(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.19.2))
     optionalDependencies:
-      '@testing-library/jest-dom': 6.4.5(@types/bun@1.1.5)(vitest@1.6.0(@types/node@20.14.0)(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.19.2))
+      '@testing-library/jest-dom': 6.4.8
     transitivePeerDependencies:
       - supports-color
 
