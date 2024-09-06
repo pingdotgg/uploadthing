@@ -285,7 +285,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
                   viewBox="0 0 24 24"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class={twMerge(
+                  class={cn(
                     "fill-none stroke-current stroke-2",
                     "hidden size-4 group-hover:block",
                   )}
