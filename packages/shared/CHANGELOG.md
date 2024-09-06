@@ -1,5 +1,15 @@
 # @uploadthing/shared
 
+## 6.7.9
+
+### Patch Changes
+
+- [#877](https://github.com/pingdotgg/uploadthing/pull/877) [`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update api paths to skip rewrites
+
+- [#921](https://github.com/pingdotgg/uploadthing/pull/921) [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: number serialization - passing non-serializable numbers in the router config should no longer cause unexpected failures.
+
+- [#922](https://github.com/pingdotgg/uploadthing/pull/922) [`9a69b90`](https://github.com/pingdotgg/uploadthing/commit/9a69b906ed921ac7d2b8aa56445f25935401f20e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: use effect/Encoding over Node.js Buffer
+
 ## 6.7.8
 
 ### Patch Changes

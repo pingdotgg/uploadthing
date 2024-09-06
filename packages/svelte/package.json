@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/svelte",
-  "version": "6.6.3",
+  "version": "6.7.0",
   "license": "MIT",
   "scripts": {
     "dev": "vite dev",

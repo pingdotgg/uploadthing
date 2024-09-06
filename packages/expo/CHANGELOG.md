@@ -1,5 +1,13 @@
 # @uploadthing/expo
 
+## 6.7.3
+
+### Patch Changes
+
+- Updated dependencies [[`079b434`](https://github.com/pingdotgg/uploadthing/commit/079b43423793b2c4510bc6058174d8607dd402c4), [`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195), [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c), [`9a69b90`](https://github.com/pingdotgg/uploadthing/commit/9a69b906ed921ac7d2b8aa56445f25935401f20e)]:
+  - @uploadthing/react@6.8.0
+  - @uploadthing/shared@6.7.9
+
 ## 6.7.2
 
 ### Patch Changes
