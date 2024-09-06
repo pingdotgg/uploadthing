@@ -129,7 +129,14 @@ describe("UploadButton - basic", () => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
-            files: [{ name: "foo.txt", type: "text/plain", size: 3 }],
+            files: [
+              {
+                name: "foo.txt",
+                type: "text/plain",
+                size: 3,
+                lastModified: expect.any(Number),
+              },
+            ],
           },
         }),
       );
