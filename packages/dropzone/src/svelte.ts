@@ -237,6 +237,10 @@ export function createDropzone(_props: DropzoneOptions) {
       dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
+    } else {
+      console.warn(
+        "No input element found for file picker. Please make sure to use the `dropzoneInput` action.",
+      );
     }
   };
 
@@ -304,21 +308,23 @@ export function createDropzone(_props: DropzoneOptions) {
     options,
   ) => {
     inputRef.set(node);
-    node.setAttribute("type", "file");
     node.style.display = "none";
+    node.setAttribute("type", "file");
     node.setAttribute("multiple", String(options.multiple));
+    node.setAttribute("disabled", String(options.disabled));
     node.setAttribute("tabIndex", "-1");
     const acceptAttrUnsub = acceptAttr.subscribe((accept) => {
       node.setAttribute("accept", accept!);
     });
-    if (!options.disabled) {
-      node.addEventListener("change", onDropCb);
-      node.addEventListener("click", onInputElementClick);
-    }
+
+    node.addEventListener("change", onDropCb);
+    node.addEventListener("click", onInputElementClick);
+
     return {
       update(options: DropzoneOptions) {
         props.update(($props) => ({ ...$props, ...options }));
         node.setAttribute("multiple", String(options.multiple));
+        node.setAttribute("disabled", String(options.disabled));
       },
       destroy() {
         inputRef.set(null);

@@ -6,15 +6,16 @@
   "scripts": {
     "dev": "next dev --port 3030",
     "clean": "git clean -xdf dist node_modules",
-    "build": "next build",
+    "build": "next build && next-sitemap",
     "start": "next start",
     "debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.1.2",
-    "@scalar/api-reference-react": "0.0.4",
+    "@scalar/api-reference-react": "0.3.37",
     "@uploadthing/react": "workspace:*",
     "next": "14.2.3",
+    "next-sitemap": "^4.2.3",
     "nextra": "^2.13.2",
     "nextra-theme-docs": "^2.13.2",
     "react": "18.3.1",

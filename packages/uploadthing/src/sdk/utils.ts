@@ -149,7 +149,7 @@ const getPresignedUrls = (input: UploadFilesInternalOptions) =>
     });
 
     const presigneds = yield* fetchEff(
-      generateUploadThingURL("/api/uploadFiles"),
+      generateUploadThingURL("/v6/uploadFiles"),
       {
         method: "POST",
         cache: "no-store",
@@ -188,7 +188,7 @@ const uploadFile = (
     }
 
     yield* fetchEff(
-      generateUploadThingURL(`/api/pollUpload/${presigned.key}`),
+      generateUploadThingURL(`/v6/pollUpload/${presigned.key}`),
     ).pipe(
       Effect.andThen(parseResponseJson),
       Effect.andThen(S.decodeUnknown(PollUploadResponse)),
@@ -213,6 +213,7 @@ const uploadFile = (
     return {
       key: presigned.key,
       url: presigned.fileUrl,
+      appUrl: presigned.appUrl,
       name: file.name,
       size: file.size,
       type: file.type,

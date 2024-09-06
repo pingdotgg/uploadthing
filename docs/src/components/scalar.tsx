@@ -1,8 +1,10 @@
-import { useEffect } from "react";
 import { ApiReferenceReact } from "@scalar/api-reference-react";
+
+import "@scalar/api-reference-react/style.css";
+
 import { useTheme } from "nextra-theme-docs";
 
-const specUrl = "https://uploadthing.com/api/openapi-spec.json";
+const specUrl = "https://api.uploadthing.com/openapi-spec.json";
 
 export function ScalarApiRef() {
   const theme = useTheme();

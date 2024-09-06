@@ -1,0 +1,38 @@
+name: Publish Test Releases
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed packages
+        id: changed-packages
+        run: |
+          changed_packages=$(git diff --name-only origin/main origin/${GITHUB_HEAD_REF} ./packages | awk -F'/' '{print "./packages/" $2}' | sort -u | tr '\n' ' ')
+
+          # add nuxt IFF it is not already in the list but vue is
+          if echo "$changed_packages" | grep -q "./packages/vue"; then
+            if ! echo "$changed_packages" | grep -q "./packages/nuxt"; then
+              changed_packages="$changed_packages ./packages/nuxt"
+            fi
+          fi
+      
+          echo "changed_packages=$changed_packages" >> $GITHUB_OUTPUT
+        
+
+      - name: Setup
+        uses: ./tooling/gh-actions/setup
+
+      - name: Build
+        run: pnpm turbo build --filter "./packages/*"
+
+      - name: Release
+        if: steps.changed-packages.outputs.changed_packages != ''
+        run: pnpx pkg-pr-new --compact publish ${{ steps.changed-packages.outputs.changed_packages }} --template './examples/minimal-*'

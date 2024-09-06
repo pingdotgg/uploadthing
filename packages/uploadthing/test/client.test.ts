@@ -81,6 +81,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -122,6 +123,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -164,6 +166,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -197,6 +200,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -261,6 +265,7 @@ describe("uploadFiles", () => {
         serverData: null,
         key: "abc-123.txt",
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
       },
     ]);
 
@@ -290,7 +295,7 @@ describe("uploadFiles", () => {
     expect(requestsToDomain("amazonaws.com")).toHaveLength(1);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      generateUploadThingURL("/api/failureCallback"),
+      generateUploadThingURL("/v6/failureCallback"),
       {
         body: { fileKey: "abc-123.txt", uploadId: null },
         headers: {
@@ -327,7 +332,7 @@ describe("uploadFiles", () => {
     expect(requestsToDomain("amazonaws.com")).toHaveLength(7);
     expect(onErrorMock).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      generateUploadThingURL("/api/failureCallback"),
+      generateUploadThingURL("/v6/failureCallback"),
       {
         body: { fileKey: "abc-123.txt", uploadId: "random-upload-id" },
         headers: {

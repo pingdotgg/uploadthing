@@ -332,6 +332,7 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: "https://utfs.io/a/app-1/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -363,6 +364,7 @@ describe(".onUploadComplete()", () => {
         size: 48,
         type: "image/png",
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: "https://utfs.io/a/app-1/some-random-key.png",
       },
       metadata: {},
     });
@@ -374,6 +376,7 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: "https://utfs.io/a/app-1/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -405,6 +408,7 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: "https://utfs.io/a/app-1/some-random-key.png",
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -451,10 +455,10 @@ describe("bad request handling", () => {
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({
       message:
-        "Request to https://uploadthing.com/api/prepareUpload failed with status 404",
+        "Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
       data: { error: "Not found" },
       cause:
-        "BadRequestError: Request to https://uploadthing.com/api/prepareUpload failed with status 404",
+        "BadRequestError: Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
     });
   });
 });

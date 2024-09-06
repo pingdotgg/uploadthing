@@ -23,7 +23,7 @@ describe("uploadFiles", () => {
     expect(requestSpy).toHaveBeenCalledTimes(3);
     expect(requestSpy).toHaveBeenNthCalledWith(
       1,
-      "https://uploadthing.com/api/uploadFiles",
+      "https://api.uploadthing.com/v6/uploadFiles",
       {
         body: {
           files: [{ name: "foo.txt", type: "text/plain", size: 3 }],
@@ -49,7 +49,7 @@ describe("uploadFiles", () => {
     );
     expect(requestSpy).toHaveBeenNthCalledWith(
       3,
-      "https://uploadthing.com/api/pollUpload/abc-123.txt",
+      "https://api.uploadthing.com/v6/pollUpload/abc-123.txt",
       {
         body: null,
         headers: {
@@ -67,6 +67,7 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
         customId: null,
         type: "text/plain",
       },
@@ -95,7 +96,7 @@ describe("uploadFiles", () => {
     expect(file.type).toBe("text/plain");
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/uploadFiles",
+      "https://api.uploadthing.com/v6/uploadFiles",
       expect.objectContaining({}),
     );
   });
@@ -114,7 +115,7 @@ describe("uploadFiles", () => {
     expect(fileWithId.customId).toBe("foo");
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/uploadFiles",
+      "https://api.uploadthing.com/v6/uploadFiles",
       {
         body: {
           files: [
@@ -145,7 +146,7 @@ describe("uploadFilesFromUrl", () => {
     expect(requestSpy).toHaveBeenCalledTimes(4); // download, request url, upload, poll
     expect(requestSpy).toHaveBeenNthCalledWith(
       2,
-      "https://uploadthing.com/api/uploadFiles",
+      "https://api.uploadthing.com/v6/uploadFiles",
       {
         body: {
           files: [{ name: "foo.txt", type: "text/plain", size: 26 }],
@@ -170,7 +171,7 @@ describe("uploadFilesFromUrl", () => {
     );
     expect(requestSpy).toHaveBeenNthCalledWith(
       4,
-      "https://uploadthing.com/api/pollUpload/abc-123.txt",
+      "https://api.uploadthing.com/v6/pollUpload/abc-123.txt",
       expect.objectContaining({}),
     );
 
@@ -180,6 +181,7 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         url: "https://utfs.io/f/abc-123.txt",
+        appUrl: "https://utfs.io/a/app-1/abc-123.txt",
         customId: null,
         type: "text/plain",
       },
@@ -214,7 +216,7 @@ describe("uploadFilesFromUrl", () => {
     });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/uploadFiles",
+      "https://api.uploadthing.com/v6/uploadFiles",
       {
         body: {
           files: [{ name: "bar.txt", type: "text/plain", size: 26 }],
@@ -240,7 +242,7 @@ describe("uploadFilesFromUrl", () => {
     });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/uploadFiles",
+      "https://api.uploadthing.com/v6/uploadFiles",
       {
         body: {
           files: [
@@ -294,6 +296,7 @@ describe("uploadFilesFromUrl", () => {
       [
         {
           "data": {
+            "appUrl": "https://utfs.io/a/app-1/abc-123.txt",
             "customId": null,
             "key": "abc-123.txt",
             "name": "foo.txt",
@@ -313,6 +316,7 @@ describe("uploadFilesFromUrl", () => {
         },
         {
           "data": {
+            "appUrl": "https://utfs.io/a/app-1/abc-123.txt",
             "customId": null,
             "key": "abc-123.txt",
             "name": "bar.txt",
@@ -349,7 +353,7 @@ describe("getSignedURL", () => {
 
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/requestFileAccess",
+      "https://api.uploadthing.com/v6/requestFileAccess",
       {
         body: { fileKey: "foo" },
         headers: {
@@ -369,7 +373,7 @@ describe("getSignedURL", () => {
 
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/requestFileAccess",
+      "https://api.uploadthing.com/v6/requestFileAccess",
       {
         body: { fileKey: "foo", expiresIn: 86400 },
         headers: {
@@ -389,7 +393,7 @@ describe("getSignedURL", () => {
 
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/requestFileAccess",
+      "https://api.uploadthing.com/v6/requestFileAccess",
       {
         body: { fileKey: "foo", expiresIn: 180 },
         headers: {
@@ -434,7 +438,7 @@ describe("updateACL", () => {
     });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/updateACL",
+      "https://api.uploadthing.com/v6/updateACL",
       {
         body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
         headers: {
@@ -456,7 +460,7 @@ describe("updateACL", () => {
     ).resolves.toEqual({ success: true });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/updateACL",
+      "https://api.uploadthing.com/v6/updateACL",
       {
         body: {
           updates: [
@@ -485,7 +489,7 @@ describe("updateACL", () => {
     ).resolves.toEqual({ success: true });
 
     expect(requestSpy).toHaveBeenCalledWith(
-      "https://uploadthing.com/api/updateACL",
+      "https://api.uploadthing.com/v6/updateACL",
       {
         body: {
           updates: [
@@ -552,6 +556,7 @@ describe.runIf(shouldRun)(
     rawIt("should upload a file", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -559,7 +564,10 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -584,6 +592,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFiles(file, {
         acl: "private",
       });
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -591,7 +600,10 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -611,6 +623,7 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFilesFromUrl(
         "https://uploadthing.com/favicon.ico",
       );
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -618,7 +631,10 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -627,11 +643,55 @@ describe.runIf(shouldRun)(
       localInfo.filesUploaded++;
     });
 
-    rawIt("should rename a file", async () => {
+    rawIt("should rename a file with fileKey", async () => {
+      const customId = crypto.randomUUID();
+
+      const file = new UTFile(["foo"], "bar.txt");
+      const result = await utapi.uploadFiles(file);
+      const fileKey = result.data!.key;
+      expect(result).toEqual({
+        data: {
+          customId: null,
+          key: expect.stringMatching(/.+/),
+          name: "bar.txt",
+          size: 3,
+          type: "text/plain",
+          url: "https://utfs.io/f/" + fileKey,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${fileKey}$`),
+          ),
+        },
+        error: null,
+      });
+
+      const { success } = await utapi.renameFiles({
+        fileKey,
+        newName: "baz.txt",
+      });
+      expect(success).toBe(true);
+
+      const { files } = await utapi.listFiles();
+      expect(files.find((f) => f.key === fileKey)).toHaveProperty(
+        "name",
+        "baz.txt",
+      );
+
+      // FIXME: Bug in uploadthing server
+      // const heads = await fetch(result.data!.url).then((r) => r.headers);
+      // expect(heads.get("Content-Disposition")).toEqual(
+      //   expect.stringContaining("filename=baz.txt"),
+      // );
+
+      localInfo.totalBytes += result.data!.size;
+      localInfo.filesUploaded++;
+    });
+
+    rawIt("should rename a file with customId", async () => {
       const customId = crypto.randomUUID();
 
       const file = new UTFile(["foo"], "bar.txt", { customId });
       const result = await utapi.uploadFiles(file);
+      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: customId,
@@ -639,7 +699,10 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
@@ -669,6 +732,7 @@ describe.runIf(shouldRun)(
     rawIt("should update ACL", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
+      const { key, url } = result.data!;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -676,11 +740,13 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(/https:\/\/utfs.io\/f\/.+/),
+          url: "https://utfs.io/f/" + key,
+          appUrl: expect.stringMatching(
+            new RegExp(`^https://utfs.io/a/.+/${key}$`),
+          ),
         },
         error: null,
       });
-      const { url, key } = result.data!;
 
       const firstChange = await utapi.updateACL(key, "private");
       expect(firstChange.success).toBe(true);
