@@ -89,6 +89,18 @@ export type CreateUploadthingProps<
   signal?: AbortSignal | undefined;
 };
 
+/**
+ * @deprecated Use `CreateUploadthingProps` instead
+ */
+export type UseUploadThingProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+  TSkipPolling extends boolean = false,
+  TServerOutput = false extends TSkipPolling
+    ? inferEndpointOutput<TRouter[TEndpoint]>
+    : null,
+> = CreateUploadthingProps<TRouter, TEndpoint, TSkipPolling, TServerOutput>;
+
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,

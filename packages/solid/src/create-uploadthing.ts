@@ -63,6 +63,7 @@ export const INTERNAL_createUploadThingGen = <
       files.forEach((f) => fileProgress.set(f, 0));
       try {
         const res = await uploadFiles<TEndpoint>(endpoint, {
+          signal: opts?.signal,
           headers: opts?.headers,
           files,
           onUploadProgress: (progress) => {
