@@ -95,11 +95,8 @@ export type CreateUploadthingProps<
 export type UseUploadThingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-  TServerOutput = false extends TSkipPolling
-    ? inferEndpointOutput<TRouter[TEndpoint]>
-    : null,
-> = CreateUploadthingProps<TRouter, TEndpoint, TSkipPolling, TServerOutput>;
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
+> = CreateUploadthingProps<TRouter, TEndpoint, TServerOutput>;
 
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
