@@ -251,7 +251,7 @@ export function UploadDropzone<
         return (
           <span className="z-50">
             <span className="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel className="hidden size-4 group-hover:block" />
+            <Cancel cn={cn} className="hidden size-4 group-hover:block" />
           </span>
         );
       }
