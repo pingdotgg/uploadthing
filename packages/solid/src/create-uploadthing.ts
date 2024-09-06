@@ -139,7 +139,6 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
-  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({ url });
 
   return {
     createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url }),
