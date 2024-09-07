@@ -23,7 +23,13 @@ const envProvider = ConfigProvider.fromEnv().pipe(
   ConfigProvider.orElse(() =>
     ConfigProvider.fromMap(
       new Map(
-        Object.entries(filterDefinedObjectValues(import.meta?.env ?? {})),
+        Object.entries(
+          filterDefinedObjectValues(
+            // fuck this I give up. import.meta is a mistake, someone else can fix it
+            (import.meta as unknown as { env: Record<string, string> })?.env ??
+              {},
+          ),
+        ),
       ),
       {
         pathDelim: "_",
