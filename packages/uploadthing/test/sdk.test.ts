@@ -424,8 +424,8 @@ describe.runIf(shouldRun)(
     const appId = S.decodeSync(UploadThingToken)(token).appId;
 
     const localInfo = { totalBytes: 0, filesUploaded: 0 };
-    // const TEST_APP_LIMIT_BYTES = 2147483648; // free 2GB
-    const TEST_APP_LIMIT_BYTES = 107374182400; // paid 100GB
+    const TEST_APP_LIMIT_BYTES = 2147483648; // free 2GB
+    // const TEST_APP_LIMIT_BYTES = 107374182400; // paid 100GB
 
     // Clean up any files before and after tests
     beforeAll(async () => {
