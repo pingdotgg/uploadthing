@@ -556,6 +556,8 @@ describe.runIf(shouldRun)(
         data: {
           customId: null,
           key: expect.stringMatching(/.+/),
+          lastModified: expect.any(Number),
+
           name: "bar.txt",
           size: 3,
           type: "text/plain",
