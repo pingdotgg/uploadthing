@@ -18,6 +18,7 @@ import {
   fileUrlPattern,
   INGEST_URL,
   it,
+  msw,
   requestSpy,
   testToken,
   UTFS_IO_URL,
@@ -429,6 +430,9 @@ describe.runIf(shouldRun)(
 
     // Clean up any files before and after tests
     beforeAll(async () => {
+      // Close MSW proxy, don't want to interfere with these live tests
+      msw.close();
+
       const { files } = await utapi.listFiles();
       await utapi.deleteFiles(files.map((f) => f.key));
     });

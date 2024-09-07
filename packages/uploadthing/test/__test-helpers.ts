@@ -73,7 +73,7 @@ const callRequestSpy = async (request: StrictRequest<any>) =>
     })(),
   });
 
-const msw = setupServer();
+export const msw = setupServer();
 beforeAll(() => {
   msw.listen({ onUnhandledRequest: "bypass" });
 });
