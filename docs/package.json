@@ -1,13 +1,15 @@
 {
-  "name": "tailwindui-protocol",
+  "name": "docs",
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev--port 3030",
+    "clean": "git clean -xdf dist node_modules",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write . --list-different"
+    "format": "prettier --write . --list-different",
+    "debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "browserslist": "defaults, not ie <= 11",
   "dependencies": {
@@ -66,15 +68,6 @@
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.11",
     "sharp": "0.33.1"
-  },
-  "eslintConfig": {},
-  "prettier": {
-    "singleQuote": true,
-    "semi": false,
-    "plugins": [
-      "prettier-plugin-tailwindcss"
-    ],
-    "proseWrap": "preserve"
   },
   "packageManager": "pnpm@9.6.0"
 }
