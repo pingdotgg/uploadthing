@@ -4,8 +4,8 @@
  * For more information, see https://remix.run/file-conventions/entry.client
  */
 
-import { RemixBrowser } from "@remix-run/react";
 import { startTransition, StrictMode } from "react";
+import { RemixBrowser } from "@remix-run/react";
 import { hydrateRoot } from "react-dom/client";
 
 startTransition(() => {
@@ -13,6 +13,6 @@ startTransition(() => {
     document,
     <StrictMode>
       <RemixBrowser />
-    </StrictMode>
+    </StrictMode>,
   );
 });
