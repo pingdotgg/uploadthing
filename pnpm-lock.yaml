@@ -817,7 +817,7 @@ importers:
         specifier: ^2.12.0
         version: 2.12.0(typescript@5.5.2)
       '@uploadthing/react':
-        specifier: ^6.8.0
+        specifier: 6.8.0
         version: link:../../packages/react
       isbot:
         specifier: ^4.1.0
@@ -829,7 +829,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: ^6.13.3
+        specifier: 6.13.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@remix-run/dev':
