@@ -1,45 +1,21 @@
-# Welcome to Remix!
+# Example of Remix with UploadThing and Clerk
 
-- 📖 [Remix docs](https://remix.run/docs)
+<a href="https://stackblitz.com/github/pingdotgg/uploadthing/tree/main/examples/with-clerk-pagesdir">
+  <img height="64" src="https://github.com/pingdotgg/uploadthing/assets/51714798/45907a4e-aa64-401a-afb3-b6c6df6eb71f" />
+</a>
 
-## Development
+## QuickStart
 
-Run the dev server:
+1. Grab your token from the UploadThing dashboard:
+   https://uploadthing.com/dashboard
+2. Grab Clerk API keys:
+   https://clerk.com/docs/quickstarts/remix#set-environment-keys
+3. `cp .env.example .env` and paste in your API keys in the newly created `.env`
+   file
+4. `pnpm i && pnpm dev`
+5. Try to upload files without being signed in
+6. Sign in and try again
 
-```shellscript
-npm run dev
-```
+## Further reference
 
-## Deployment
-
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app
-server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already
-configured for a simple default starting experience. You can use whatever css
-framework you prefer. See the
-[Vite docs on css](https://vitejs.dev/guide/features.html#css) for more
-information.
+Check out the docs at: https://docs.uploadthing.com/getting-started/remix
