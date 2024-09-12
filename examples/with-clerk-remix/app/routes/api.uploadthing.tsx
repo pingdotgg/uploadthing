@@ -1,7 +1,7 @@
+import { getAuth } from "@clerk/remix/ssr.server";
+
 import { createRouteHandler, createUploadthing } from "uploadthing/remix";
 import { FileRouter } from "uploadthing/types";
-
-// import { getAuth } from '@clerk/remix/ssr.server'
 
 const f = createUploadthing();
 
@@ -12,7 +12,8 @@ export const uploadRouter = {
   })
     .middleware(async ({ event }) => {
       // You should perform authentication here
-      // const { sessionId } = await getAuth(event);
+      const authObject = await getAuth(event);
+      console.log({ authObject });
 
       return { userId: "123" };
     })
