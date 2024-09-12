@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev--port 3030",
+    "dev": "next dev --port 3030",
     "clean": "git clean -xdf dist node_modules",
     "build": "next build && next-sitemap",
     "start": "next start",
