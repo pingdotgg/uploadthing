@@ -30,7 +30,7 @@ const PreviewBanner = (props: {
             target="_blank"
             rel="noreferrer"
           >
-            <strong className="font-semibold">Preview Docs</strong>
+            <strong className="font-semibold">V7 Docs</strong>
             <svg
               viewBox="0 0 2 2"
               aria-hidden="true"
@@ -38,9 +38,11 @@ const PreviewBanner = (props: {
             >
               <circle r={1} cx={1} cy={1} />
             </svg>
-            You're looking at preview documentation for an upcoming version of
-            UploadThing. Go to current documentation{' '}
-            <span aria-hidden="true">&rarr;</span>
+            You're looking at documentation for the latest version of
+            UploadThing.{' '}
+            <span className="font-semibold">
+              Go to legacy documentation <span aria-hidden="true">&rarr;</span>
+            </span>
           </a>
         </p>
         <button
