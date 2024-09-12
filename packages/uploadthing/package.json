@@ -133,6 +133,7 @@
     "internal",
     "next",
     "next-legacy",
+    "remix",
     "server",
     "types",
     "tw"
