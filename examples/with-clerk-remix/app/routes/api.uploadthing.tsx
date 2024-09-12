@@ -1,7 +1,7 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 
-import { UploadThingError } from "@uploadthing/shared";
 import { createRouteHandler, createUploadthing } from "uploadthing/remix";
+import { UploadThingError } from "uploadthing/server";
 import { FileRouter } from "uploadthing/types";
 
 const f = createUploadthing();
