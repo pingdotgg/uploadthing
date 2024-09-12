@@ -5,22 +5,17 @@
 
   type TRouter = FileRouter;
   type TEndpoint = keyof TRouter;
-  type TSkipPolling = boolean;
 </script>
 
 <script
   lang="ts"
-  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
+  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter"
 >
   import type { UploadthingComponentProps } from "../types";
   import UploadButton from "./UploadButton.svelte";
   import UploadDropzone from "./UploadDropzone.svelte";
 
-  export let uploader: UploadthingComponentProps<
-    TRouter,
-    TEndpoint,
-    TSkipPolling
-  >;
+  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">

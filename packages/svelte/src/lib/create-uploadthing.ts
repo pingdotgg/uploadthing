@@ -34,16 +34,13 @@ export const INTERNAL_createUploadThingGen = <
    */
   url: URL;
 }) => {
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/svelte",
   });
-  const useUploadThing = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = writable(false);
     const permittedFileInfo = createEndpointMetadata(
@@ -51,7 +48,7 @@ export const INTERNAL_createUploadThingGen = <
       endpoint as string,
     );
     let uploadProgress = 0;
-    let fileProgress = new Map();
+    let fileProgress = new Map<File, number>();
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -63,11 +60,10 @@ export const INTERNAL_createUploadThingGen = <
       const input = args[1];
       isUploading.set(true);
       opts?.onUploadProgress?.(0);
-      files.forEach((f) => fileProgress.set(f.name, 0));
+      files.forEach((f) => fileProgress.set(f, 0));
       try {
         const res = await uploadFiles(endpoint, {
           files,
-          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.set(progress.file, progress.progress);
@@ -120,15 +116,9 @@ export const INTERNAL_createUploadThingGen = <
 };
 
 const generateUploader = <TRouter extends FileRouter>() => {
-  return <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  return <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    props: Omit<
-      UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling>,
-      "endpoint"
-    >,
+    props: Omit<UploadthingComponentProps<TRouter, TEndpoint>, "endpoint">,
   ) => ({ endpoint, ...props });
 };
 
@@ -139,10 +129,10 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
 
   return {
     createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    createUploader: generateUploader<TRouter>(),
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/svelte",
     }),
-    createUploader: generateUploader<TRouter>(),
   } as const;
 };

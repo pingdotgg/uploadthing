@@ -9,7 +9,7 @@ import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./router";
 
-const { GET, POST } = createRouteHandler({
+const handler = createRouteHandler({
   router: uploadRouter,
 });
 
@@ -18,11 +18,7 @@ app.use("*", cors());
 app.use("*", logger());
 
 app.get("/api", (c) => c.text("Hello from Hono!"));
-
-const ut = new Hono()
-  .get("/", (c) => GET(c.req.raw))
-  .post("/", (c) => POST(c.req.raw));
-app.route("/api/uploadthing", ut);
+app.all("/api/uploadthing", (c) => handler(c.req.raw));
 
 serve({
   port: 3000,

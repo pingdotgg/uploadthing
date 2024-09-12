@@ -1,32 +1,24 @@
 import type { Schema } from "@effect/schema/Schema";
-import type * as S from "@effect/schema/Schema";
-import type * as Effect from "effect/Effect";
+import type * as LogLevel from "effect/LogLevel";
 
 import type {
   ErrorMessage,
-  FetchContext,
   FetchEsque,
   FileRouterInputConfig,
   Json,
   MaybePromise,
+  RouteOptions,
   Simplify,
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { FileUploadDataWithCustomId, UploadedFileData } from "../types";
-import type { LogLevel } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
-  FailureActionPayload,
-  MultipartCompleteActionPayload,
-  PresignedURLResponse,
+  FileUploadDataWithCustomId,
+  NewPresignedUrl,
   UploadActionPayload,
+  UploadedFileData,
 } from "./shared-schemas";
-
-/**
- * Returned by `/api/prepareUpload` and `/api/uploadFiles`
- */
-export type PresignedURLs = S.Schema.Type<typeof PresignedURLResponse>;
 
 /**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
@@ -74,6 +66,7 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
 };
 
 export interface AnyParams {
+  _routeOptions: any;
   _input: any;
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _middlewareArgs: MiddlewareFnArgs<any, any, any>;
@@ -100,7 +93,7 @@ type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
 type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
-}) => void;
+}) => Promise<void> | void;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -108,6 +101,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? TParser
       : ErrorMessage<"input is already set">,
   ) => UploadBuilder<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParser["_output"];
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -120,6 +114,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
       : ErrorMessage<"middleware is already set">,
   ) => UploadBuilder<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TOutput;
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -130,6 +125,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
   onUploadComplete: <TOutput extends Json | void>(
     fn: ResolverFn<TOutput, TParams>,
   ) => Uploader<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -142,6 +138,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? UploadErrorFn
       : ErrorMessage<"onUploadError is already set">,
   ) => UploadBuilder<{
+    _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
@@ -153,6 +150,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
 
 export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
+  routeOptions: RouteOptions;
   inputParser: JsonParser;
   // eslint-disable-next-line @typescript-eslint/ban-types
   middleware: MiddlewareFn<TParams["_input"], {}, TParams["_middlewareArgs"]>;
@@ -172,10 +170,9 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
 >;
 
 export type RouteHandlerConfig = {
-  logLevel?: LogLevel;
+  logLevel?: LogLevel.Literal;
   callbackUrl?: string;
-  uploadthingId?: string;
-  uploadthingSecret?: string;
+  token?: string;
   /**
    * Used to determine whether to run dev hook or not
    * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
@@ -186,32 +183,31 @@ export type RouteHandlerConfig = {
    * @default `globalThis.fetch`
    */
   fetch?: FetchEsque;
+  /**
+   * Set how UploadThing should handle the daemon promise before returning a response to the client.
+   * You can also provide a synchronous function that will be called before returning a response to
+   * the client. This can be useful for things like:
+   * -  [`@vercel/functions.waitUntil`](https://vercel.com/docs/functions/functions-api-reference#waituntil)
+   * - [`next/after`](https://nextjs.org/blog/next-15-rc#executing-code-after-a-response-with-nextafter-experimental)
+   * - or equivalent function from your serverless infrastructure provider that allows asynchronous streaming
+   * If deployed on a stateful server, you most likely want "void" to run the daemon in the background.
+   * @remarks - `"await"` is not allowed in development environments
+   * @default isDev === true ? "void" : "await"
+   */
+  handleDaemonPromise?:
+    | "void"
+    | "await"
+    | ((promise: Promise<unknown>) => void);
+  /**
+   * URL override for the ingest server
+   */
+  ingestUrl?: string;
 };
 
 export type RouteHandlerOptions<TRouter extends FileRouter> = {
   router: TRouter;
   config?: RouteHandlerConfig;
 };
-
-export type RequestHandlerInput<TArgs extends MiddlewareFnArgs<any, any, any>> =
-  {
-    req: Request | Effect.Effect<Request, UploadThingError>;
-    middlewareArgs: TArgs;
-  };
-export type RequestHandlerSuccess = {
-  success: true;
-  body: UTEvents[keyof UTEvents]["out"];
-  cleanup?: Promise<unknown> | undefined;
-};
-export type RequestHandlerError = {
-  success: false;
-  error: UploadThingError;
-};
-export type RequestHandlerOutput = RequestHandlerSuccess | RequestHandlerError;
-
-export type RequestHandler<TArgs extends MiddlewareFnArgs<any, any, any>> = (
-  input: RequestHandlerInput<TArgs>,
-) => Effect.Effect<RequestHandlerSuccess, UploadThingError, FetchContext>;
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
   TUploader["_def"]["_input"] extends UnsetMarker
@@ -221,32 +217,12 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
 export type inferEndpointOutput<TUploader extends AnyUploader> =
   TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
     ? null
-    : TUploader["_def"]["_output"];
+    : TUploader["_def"]["_routeOptions"]["awaitServerData"] extends true
+      ? TUploader["_def"]["_output"]
+      : null;
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];
-
-/**
- * Valid options for the `?actionType` query param
- */
-export const VALID_ACTION_TYPES = [
-  "upload",
-  "failure",
-  "multipart-complete",
-] as const;
-export type ActionType = (typeof VALID_ACTION_TYPES)[number];
-export const isActionType = (input: unknown): input is ActionType =>
-  typeof input === "string" && VALID_ACTION_TYPES.includes(input as ActionType);
-
-/**
- * Valid options for the `uploadthing-hook` header
- * for requests coming from UT server
- */
-export const VALID_UT_HOOKS = ["callback"] as const;
-export type UploadThingHook = (typeof VALID_UT_HOOKS)[number];
-export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
-  typeof input === "string" &&
-  VALID_UT_HOOKS.includes(input as UploadThingHook);
 
 /**
  * Map actionType to the required payload for that action
@@ -254,15 +230,7 @@ export const isUploadThingHook = (input: unknown): input is UploadThingHook =>
  */
 export type UTEvents = {
   upload: {
-    in: S.Schema.Type<typeof UploadActionPayload>;
-    out: S.Schema.Type<typeof PresignedURLResponse>;
-  };
-  failure: {
-    in: S.Schema.Type<typeof FailureActionPayload>;
-    out: null;
-  };
-  "multipart-complete": {
-    in: S.Schema.Type<typeof MultipartCompleteActionPayload>;
-    out: null;
+    in: typeof UploadActionPayload.Type;
+    out: ReadonlyArray<NewPresignedUrl>;
   };
 };

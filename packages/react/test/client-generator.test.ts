@@ -13,7 +13,7 @@ const doNotExecute = (_fn: (...args: any[]) => any) => {
 const f = createUploadthing();
 
 const router = {
-  exampleRoute: f(["image"])
+  exampleRoute: f(["image"], { awaitServerData: true })
     .middleware(() => ({ foo: "bar" }))
     .onUploadComplete(({ metadata }) => {
       console.log(metadata);
@@ -114,7 +114,7 @@ it("infers output properly", () => {
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withFooInput");
     const res = await startUpload(files, { foo: "bar" });
-    expectTypeOf<ClientUploadedFileData<{ baz: "qux" }>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
@@ -131,7 +131,6 @@ it("infers output properly", () => {
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withFooInput", {
-      skipPolling: true,
       onClientUploadComplete: (res) => {
         expectTypeOf<ClientUploadedFileData<null>[]>(res);
       },
@@ -142,7 +141,6 @@ it("infers output properly", () => {
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withBarInput", {
-      skipPolling: true,
       onClientUploadComplete: (res) => {
         expectTypeOf<ClientUploadedFileData<null>[]>(res);
       },

@@ -29,7 +29,6 @@ export const uploadFn = createImageUpload({
      */
     const uploadPromise = uploadFiles("imageUploader", {
       files: [file],
-      skipPolling: true,
     });
 
     return new Promise<string>((resolve) => {

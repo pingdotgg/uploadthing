@@ -34,8 +34,7 @@
   },
   "dependencies": {
     "@uploadthing/dropzone": "workspace:*",
-    "@uploadthing/shared": "workspace:*",
-    "tailwind-merge": "^2.2.1"
+    "@uploadthing/shared": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.1.1",

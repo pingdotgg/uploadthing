@@ -57,21 +57,18 @@ export const INTERNAL_uploadthingHookGen = <
       `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
     );
   }
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/react",
   });
 
-  const useUploadThing = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = useState(false);
     const uploadProgress = useRef(0);
-    const fileProgress = useRef<Map<string, number>>(new Map());
+    const fileProgress = useRef<Map<File, number>>(new Map());
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -83,14 +80,13 @@ export const INTERNAL_uploadthingHookGen = <
       const input = args[1];
 
       setUploading(true);
-      files.forEach((f) => fileProgress.current.set(f.name, 0));
+      files.forEach((f) => fileProgress.current.set(f, 0));
       opts?.onUploadProgress?.(0);
       try {
-        const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
+        const res = await uploadFiles<TEndpoint>(endpoint, {
           signal: opts?.signal,
           headers: opts?.headers,
           files,
-          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.current.set(progress.file, progress.progress);
@@ -147,13 +143,6 @@ export const INTERNAL_uploadthingHookGen = <
       startUpload,
       isUploading,
       routeConfig,
-
-      /**
-       * @deprecated Use `routeConfig` instead
-       */
-      permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: routeConfig }
-        : undefined,
     } as const;
   };
 
@@ -178,7 +167,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/react",
     }),

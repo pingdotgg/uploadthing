@@ -26,6 +26,17 @@ export type DeepPartial<T> = T extends object
     }
   : T;
 
+export interface FileProperties {
+  name: string;
+  size: number;
+  type: string;
+  lastModified?: number;
+}
+
+export type ExtractHashPartsFn = (
+  file: FileProperties,
+) => Array<string | number | undefined | null | boolean>;
+
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
  * @see RequestInit from lib.dom.d.ts
@@ -64,6 +75,7 @@ export interface ResponseEsque {
   json: <T = unknown>() => Promise<T>;
   text: () => Promise<string>;
   blob: () => Promise<Blob>;
+  body: ReadableStream | null;
 
   headers: Headers;
 
@@ -155,6 +167,39 @@ type RouteConfig<TAdditionalProperties extends Record<string, unknown>> = {
    * @remarks These properties are not validated on the server on upload
    */
   additionalProperties?: AdditionalProperties<TAdditionalProperties>;
+};
+
+/**
+ * Shared config options for an entire route not bound to any specific file type
+ * @example
+ * ```ts
+ * f(
+ *   { image: {} },
+ *   { awaitServerData: true },
+ * )
+ * ```
+ */
+export type RouteOptions = {
+  /**
+   * Set this to `true` to wait for the server onUploadComplete data
+   * on the client before running `onClientUploadComplete`.
+   * @default false
+   */
+  awaitServerData?: boolean;
+  /**
+   * TTL for the presigned URLs generated for the upload
+   * @default `1h`
+   */
+  presignedURLTTL?: Time;
+  /**
+   * Function that pulls out the properties of the uploaded file
+   * that you want to be included as part of the presigned URL generation.
+   * By default, we include all properties as well as a timestamp to make
+   * each URL unique. You can for example override this to always return
+   * the same hash for the same file, no matter when it was uploaded.
+   * @default (file) => [file.name, file.size, file.type, file.lastModified,  Date.now()]
+   */
+  getFileHashParts?: ExtractHashPartsFn;
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;

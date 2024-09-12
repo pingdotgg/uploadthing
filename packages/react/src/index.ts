@@ -5,7 +5,6 @@ export {
   generateUploadButton,
   generateUploadDropzone,
   generateUploader,
-  generateComponents,
 } from "./components";
 
 export { generateReactHelpers } from "./useUploadThing";

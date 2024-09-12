@@ -34,12 +34,14 @@ const testRouter = {
 const routeHandler = createRouteHandler({ router: testRouter });
 const UploadButton = generateUploadButton<typeof testRouter>();
 
-const utGet = vi.fn<[Request]>();
-const utPost = vi.fn<[{ request: Request; body: any }]>();
+const utGet = vi.fn<(req: Request) => void>();
+const utPost =
+  vi.fn<({ request, body }: { request: Request; body: any }) => void>();
+
 const server = setupServer(
   http.get("/api/uploadthing", ({ request }) => {
     utGet(request);
-    return routeHandler.GET(request);
+    return routeHandler(request);
   }),
   http.post("/api/uploadthing", async ({ request }) => {
     const body = await request.json();
@@ -92,6 +94,8 @@ describe("UploadButton - basic", () => {
     const utils = render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
 
+    if (!label) throw new Error("No label found");
+
     // Previously, when component was disabled, it would show "Loading..."
     // expect(label).toHaveTextContent("Loading...");
 
@@ -125,7 +129,14 @@ describe("UploadButton - basic", () => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
-            files: [{ name: "foo.txt", type: "text/plain", size: 3 }],
+            files: [
+              {
+                name: "foo.txt",
+                type: "text/plain",
+                size: 3,
+                lastModified: expect.any(Number),
+              },
+            ],
           },
         }),
       );

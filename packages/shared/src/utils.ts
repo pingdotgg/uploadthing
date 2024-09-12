@@ -1,5 +1,4 @@
 import * as Micro from "effect/Micro";
-import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
 
@@ -18,6 +17,8 @@ import type {
   FileRouterInputKey,
   FileSize,
   ResponseEsque,
+  Time,
+  TimeShort,
 } from "./types";
 
 export function isRouteArray(
@@ -106,8 +107,8 @@ export const getTypeFromFileName = (
 
   // If the user has specified a specific mime type, use that
   if (allowedTypes.some((type) => type.includes("/"))) {
-    if (allowedTypes.includes(mimeType)) {
-      return Micro.succeed(mimeType);
+    if (allowedTypes.includes(mimeType as FileRouterInputKey)) {
+      return Micro.succeed(mimeType as FileRouterInputKey);
     }
   }
 
@@ -129,14 +130,6 @@ export const getTypeFromFileName = (
 
   return Micro.succeed(type);
 };
-
-export function generateUploadThingURL(path: `/${string}`) {
-  let host = "https://api.uploadthing.com";
-  if (process.env.CUSTOM_INFRA_URL) {
-    host = process.env.CUSTOM_INFRA_URL;
-  }
-  return `${host}${path}`;
-}
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
@@ -206,6 +199,14 @@ export function asArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
+export function filterDefinedObjectValues<T>(
+  obj: Record<string, T | null | undefined>,
+): Record<string, T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter((pair): pair is [string, T] => pair[1] != null),
+  );
+}
+
 /** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,
@@ -251,6 +252,19 @@ export function semverLite(required: string, toCheck: string) {
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
 }
 
+export const getRequestUrl = (req: Request) =>
+  Micro.gen(function* () {
+    const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+    const proto = req.headers.get("x-forwarded-proto") ?? "https";
+    const protocol = proto.endsWith(":") ? proto : `${proto}:`;
+    const url = yield* Micro.try({
+      try: () => new URL(req.url, `${protocol}//${host}`),
+      catch: () => new InvalidURLError(req.url),
+    });
+    url.search = "";
+    return url;
+  });
+
 export const getFullApiUrl = (
   maybeUrl?: string,
 ): Micro.Micro<URL, InvalidURLError> =>
@@ -283,6 +297,23 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
     ? maybeUrl
     : Micro.runSync(getFullApiUrl(maybeUrl));
 };
+
+export function parseTimeToSeconds(time: Time) {
+  if (typeof time === "number") return time;
+
+  const match = time.split(/(\d+)/).filter(Boolean);
+  const num = Number(match[0]);
+  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
+
+  const multiplier = {
+    s: 1,
+    m: 60,
+    h: 3600,
+    d: 86400,
+  }[unit];
+
+  return num * multiplier;
+}
 
 /**
  * Replacer for JSON.stringify that will replace numbers that cannot be

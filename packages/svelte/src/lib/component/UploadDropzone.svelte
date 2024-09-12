@@ -5,19 +5,18 @@
 
   type TRouter = FileRouter;
   type TEndpoint = keyof TRouter;
-  type TSkipPolling = boolean;
 </script>
 
 <script
   lang="ts"
-  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
+  generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter"
 >
   import { onMount } from "svelte";
-  import { twMerge } from "tailwind-merge";
 
   import { createDropzone } from "@uploadthing/dropzone/svelte";
   import {
     allowedContentTextLabelGenerator,
+    defaultClassListMerger,
     resolveMaybeUrlArg,
     styleFieldToClassName,
     UploadAbortedError,
@@ -50,11 +49,7 @@
     button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
 
-  export let uploader: UploadthingComponentProps<
-    TRouter,
-    TEndpoint,
-    TSkipPolling
-  >;
+  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
   export let appearance: UploadDropzoneAppearance = {};
 
   /**
@@ -95,13 +90,10 @@
     uploader.endpoint,
     {
       signal: acRef.signal,
-      skipPolling: !uploader?.onClientUploadComplete
-        ? true
-        : uploader?.skipPolling,
       onClientUploadComplete: (res) => {
         files = [];
-        uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
+        uploader.onClientUploadComplete?.(res);
       },
       onUploadProgress: (p) => {
         uploadProgress = p;
@@ -113,7 +105,11 @@
     },
   );
 
-  $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
+  $: ({
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
   $: ({ fileTypes, multiple } = generatePermittedFileTypes(
     $permittedFileInfo?.config,
@@ -202,7 +198,7 @@
 
 <div
   use:dropzoneRoot
-  class={twMerge(
+  class={cn(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
     state === "disabled" && "cursor-not-allowed",
     $dropzoneState.isDragActive && "bg-blue-600/10",
@@ -217,7 +213,7 @@
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
-      class={twMerge(
+      class={cn(
         "mx-auto block h-12 w-12 align-middle text-gray-400",
         styleFieldToClassName(appearance?.uploadIcon, styleFieldArg),
       )}
@@ -234,7 +230,7 @@
     </svg>
   </slot>
   <label
-    class={twMerge(
+    class={cn(
       "relative mt-4 flex w-64 items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
       ready && state !== "disabled"
         ? "text-blue-600 cursor-pointer"
@@ -251,7 +247,7 @@
     </slot>
   </label>
   <div
-    class={twMerge(
+    class={cn(
       "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
       styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
     )}
@@ -264,7 +260,7 @@
     </slot>
   </div>
   <button
-    class={twMerge(
+    class={cn(
       "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 cursor-pointer",
       state === "disabled" && "cursor-not-allowed bg-gray-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
@@ -307,7 +303,7 @@
               viewBox="0 0 24 24"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class={twMerge(
+              class={cn(
                 "fill-none stroke-current stroke-2",
                 "hidden size-4 group-hover:block",
               )}
