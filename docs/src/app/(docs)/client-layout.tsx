@@ -26,11 +26,11 @@ const PreviewBanner = (props: {
       <div className="pointer-events-auto flex items-center justify-between gap-x-6 bg-gradient-to-r from-[#f36b6b] to-[#b85757] px-6 py-2.5 sm:rounded-xl sm:py-3 sm:pl-4 sm:pr-3.5 dark:from-[#8f4545] dark:to-[#4e2525]">
         <p className="text-sm leading-6 text-zinc-900 dark:text-zinc-50">
           <a
-            href="https://docs.uploadthing.com"
+            href="https://v6.docs.uploadthing.com"
             target="_blank"
             rel="noreferrer"
           >
-            <strong className="font-semibold">Preview Docs</strong>
+            <strong className="font-semibold">New Docs!</strong>
             <svg
               viewBox="0 0 2 2"
               aria-hidden="true"
@@ -38,8 +38,8 @@ const PreviewBanner = (props: {
             >
               <circle r={1} cx={1} cy={1} />
             </svg>
-            You're looking at preview documentation for an upcoming version of
-            UploadThing. Go to current documentation{' '}
+            You're looking at documentation for the latest version of
+            UploadThing. Go to legacy documentation{' '}
             <span aria-hidden="true">&rarr;</span>
           </a>
         </p>
