@@ -1,5 +1,6 @@
 import { getAuth } from "@clerk/remix/ssr.server";
 
+import { UploadThingError } from "@uploadthing/shared";
 import { createRouteHandler, createUploadthing } from "uploadthing/remix";
 import { FileRouter } from "uploadthing/types";
 
@@ -15,7 +16,11 @@ export const uploadRouter = {
       const authObject = await getAuth(event);
       console.log({ authObject });
 
-      return { userId: "123" };
+      if (!authObject.userId) {
+        throw new UploadThingError("You need to be signed in to upload");
+      }
+
+      return { userId: authObject.userId };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       console.log("Upload complete for userId:", metadata.userId);
