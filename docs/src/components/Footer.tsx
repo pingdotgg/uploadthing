@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import { Link } from 'next-view-transitions'
-import { usePathname } from 'next/navigation'
-import { socials } from '@/site-config'
-import { Button } from '@/components/Button'
-import { navigation } from '@/site-config'
-import { DiscordIcon, GitHubIcon, XIcon } from './Icons'
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/Button";
+import { navigation, socials } from "@/site-config";
+import { Link } from "next-view-transitions";
+
+import { DiscordIcon, GitHubIcon, XIcon } from "./icons";
 
 function PageLink({
   label,
   page,
   previous = false,
 }: {
-  label: string
-  page: { href: string; title: string }
-  previous?: boolean
+  label: string;
+  page: { href: string; title: string };
+  previous?: boolean;
 }) {
   return (
     <>
@@ -22,7 +22,7 @@ function PageLink({
         href={page.href}
         aria-label={`${label}: ${page.title}`}
         variant="secondary"
-        arrow={previous ? 'left' : 'right'}
+        arrow={previous ? "left" : "right"}
       >
         {label}
       </Button>
@@ -35,23 +35,23 @@ function PageLink({
         {page.title}
       </Link>
     </>
-  )
+  );
 }
 
 function PageNavigation() {
-  let pathname = usePathname()
-  let allPages = navigation.flatMap((group) => group.links)
-  let currentPageIndex = allPages.findIndex((page) => page.href === pathname)
+  let pathname = usePathname();
+  let allPages = navigation.flatMap((group) => group.links);
+  let currentPageIndex = allPages.findIndex((page) => page.href === pathname);
 
   if (currentPageIndex === -1) {
-    return null
+    return null;
   }
 
-  let previousPage = allPages[currentPageIndex - 1]
-  let nextPage = allPages[currentPageIndex + 1]
+  let previousPage = allPages[currentPageIndex - 1];
+  let nextPage = allPages[currentPageIndex + 1];
 
   if (!previousPage && !nextPage) {
-    return null
+    return null;
   }
 
   return (
@@ -67,7 +67,7 @@ function PageNavigation() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 function SocialLink({
@@ -75,9 +75,9 @@ function SocialLink({
   icon: Icon,
   children,
 }: {
-  href: string
-  icon: React.ComponentType<{ className?: string }>
-  children: React.ReactNode
+  href: string;
+  icon: React.ComponentType<{ className?: string }>;
+  children: React.ReactNode;
 }) {
   return (
     <Link
@@ -89,7 +89,7 @@ function SocialLink({
       <span className="sr-only">{children}</span>
       <Icon className="h-5 w-5 fill-zinc-700 transition group-hover:fill-zinc-900 dark:group-hover:fill-zinc-500" />
     </Link>
-  )
+  );
 }
 
 function SmallPrint() {
@@ -111,7 +111,7 @@ function SmallPrint() {
         </SocialLink>
       </div>
     </div>
-  )
+  );
 }
 
 export function Footer() {
@@ -120,5 +120,5 @@ export function Footer() {
       <PageNavigation />
       <SmallPrint />
     </footer>
-  )
+  );
 }

@@ -1,24 +1,25 @@
-'use client'
+"use client";
 
-import { forwardRef, useState } from 'react'
-import { Transition } from '@headlessui/react'
-import { CheckIcon } from './Icons'
+import { forwardRef, useState } from "react";
+import { Transition } from "@headlessui/react";
+
+import { CheckIcon } from "./icons";
 
 function FeedbackButton(
-  props: Omit<React.ComponentPropsWithoutRef<'button'>, 'type' | 'className'>,
+  props: Omit<React.ComponentPropsWithoutRef<"button">, "type" | "className">,
 ) {
   return (
     <button
       type="submit"
-      className="px-3 text-sm font-medium text-zinc-600 transition hover:bg-zinc-900/2.5 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"
+      className="hover:bg-zinc-900/2.5 px-3 text-sm font-medium text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-white"
       {...props}
     />
-  )
+  );
 }
 
 const FeedbackForm = forwardRef<
-  React.ElementRef<'form'>,
-  Pick<React.ComponentPropsWithoutRef<'form'>, 'onSubmit'>
+  React.ElementRef<"form">,
+  Pick<React.ComponentPropsWithoutRef<"form">, "onSubmit">
 >(function FeedbackForm({ onSubmit }, ref) {
   return (
     <form
@@ -35,10 +36,10 @@ const FeedbackForm = forwardRef<
         <FeedbackButton data-response="no">No</FeedbackButton>
       </div>
     </form>
-  )
-})
+  );
+});
 
-const FeedbackThanks = forwardRef<React.ElementRef<'div'>>(
+const FeedbackThanks = forwardRef<React.ElementRef<"div">>(
   function FeedbackThanks(_props, ref) {
     return (
       <div
@@ -50,20 +51,20 @@ const FeedbackThanks = forwardRef<React.ElementRef<'div'>>(
           Thanks for your feedback!
         </div>
       </div>
-    )
+    );
   },
-)
+);
 
 export function Feedback() {
-  let [submitted, setSubmitted] = useState(false)
+  let [submitted, setSubmitted] = useState(false);
 
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+    event.preventDefault();
 
     // event.nativeEvent.submitter.dataset.response
     // => "yes" or "no"
 
-    setSubmitted(true)
+    setSubmitted(true);
   }
 
   return (
@@ -85,5 +86,5 @@ export function Feedback() {
         <FeedbackThanks />
       </Transition>
     </div>
-  )
+  );
 }

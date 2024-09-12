@@ -1,13 +1,13 @@
-'use client'
+"use client";
 
-import { useEffect, useRef } from 'react'
-import { Link } from 'next-view-transitions'
-import { useInView } from 'framer-motion'
+import { useEffect, useRef } from "react";
+import { useSectionStore } from "@/components/SectionProvider";
+import { Tag, TagColor } from "@/components/Tag";
+import { remToPx } from "@/lib/remToPx";
+import { useInView } from "framer-motion";
+import { Link } from "next-view-transitions";
 
-import { useSectionStore } from '@/components/SectionProvider'
-import { Tag, TagColor } from '@/components/Tag'
-import { remToPx } from '@/lib/remToPx'
-import { AnchorIcon } from './Icons'
+import { AnchorIcon } from "./icons";
 
 function Eyebrow({
   tag,
@@ -16,14 +16,14 @@ function Eyebrow({
   since,
   deprecated,
 }: {
-  tag?: string
-  tagColor?: TagColor
-  label?: string
-  since?: string
-  deprecated?: boolean
+  tag?: string;
+  tagColor?: TagColor;
+  label?: string;
+  since?: string;
+  deprecated?: boolean;
 }) {
   if (!tag && !label && !since && !deprecated) {
-    return null
+    return null;
   }
 
   return (
@@ -38,7 +38,7 @@ function Eyebrow({
         <span className="font-mono text-xs text-zinc-400">{label}</span>
       )}
     </div>
-  )
+  );
 }
 
 function Anchor({
@@ -46,9 +46,9 @@ function Anchor({
   inView,
   children,
 }: {
-  id: string
-  inView: boolean
-  children: React.ReactNode
+  id: string;
+  inView: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <Link
@@ -64,7 +64,7 @@ function Anchor({
       )}
       {children}
     </Link>
-  )
+  );
 }
 
 export function Heading<Level extends 2 | 3>({
@@ -78,32 +78,32 @@ export function Heading<Level extends 2 | 3>({
   anchor = true,
   ...props
 }: React.ComponentPropsWithoutRef<`h${Level}`> & {
-  id: string
-  tag?: string
-  tagColor?: TagColor
-  since?: string
-  label?: string
-  deprecated?: boolean
-  level?: Level
-  anchor?: boolean
+  id: string;
+  tag?: string;
+  tagColor?: TagColor;
+  since?: string;
+  label?: string;
+  deprecated?: boolean;
+  level?: Level;
+  anchor?: boolean;
 }) {
-  level = level ?? (2 as Level)
-  let Component = `h${level}` as 'h2' | 'h3'
-  let ref = useRef<HTMLHeadingElement>(null)
-  let registerHeading = useSectionStore((s) => s.registerHeading)
+  level = level ?? (2 as Level);
+  let Component = `h${level}` as "h2" | "h3";
+  let ref = useRef<HTMLHeadingElement>(null);
+  let registerHeading = useSectionStore((s) => s.registerHeading);
 
   let inView = useInView(ref, {
     margin: `${remToPx(-3.5)}px 0px 0px 0px`,
-    amount: 'all',
-  })
+    amount: "all",
+  });
 
   useEffect(() => {
     registerHeading({
       id: props.id,
       ref,
       offsetRem: tag || label || since || deprecated ? 8 : 6,
-    })
-  }, [])
+    });
+  }, []);
 
   return (
     <>
@@ -119,8 +119,8 @@ export function Heading<Level extends 2 | 3>({
         ref={ref}
         className={
           tag || label || since || deprecated
-            ? 'mt-2 scroll-mt-32'
-            : 'scroll-mt-24'
+            ? "mt-2 scroll-mt-32"
+            : "scroll-mt-24"
         }
         {...props}
       >
@@ -133,5 +133,5 @@ export function Heading<Level extends 2 | 3>({
         )}
       </Component>
     </>
-  )
+  );
 }
