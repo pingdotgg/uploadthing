@@ -31,5 +31,5 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     opts,
     "remix",
   );
-  return { POST: handler, GET: handler };
+  return { action: handler, loader: handler };
 };
