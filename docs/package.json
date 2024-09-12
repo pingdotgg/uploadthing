@@ -7,8 +7,6 @@
     "clean": "git clean -xdf dist node_modules",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write . --list-different",
     "debug": "NODE_OPTIONS='--inspect' next dev"
   },
   "browserslist": "defaults, not ie <= 11",
