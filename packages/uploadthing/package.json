@@ -99,6 +99,16 @@
         "default": "./h3/index.cjs"
       }
     },
+    "./remix": {
+      "import": {
+        "types": "./remix/index.d.ts",
+        "default": "./remix/index.js"
+      },
+      "require": {
+        "types": "./remix/index.d.cts",
+        "default": "./remix/index.cjs"
+      }
+    },
     "./types": {
       "types": "./types/index.d.ts",
       "default": "./types/index.js"
@@ -147,6 +157,7 @@
     "effect-log": "0.32.0"
   },
   "devDependencies": {
+    "@remix-run/server-runtime": "^2.12.0",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
