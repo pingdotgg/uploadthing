@@ -1,125 +1,125 @@
-import { Button } from '@/components/Button'
-import { Heading } from '@/components/Heading'
-import { Prose } from './Prose'
-
+import { Button } from "@/components/Button";
+import { Heading } from "@/components/Heading";
 import {
-  SolidJsIcon,
-  SolidStartIcon,
-  SvelteIcon,
   AstroIcon,
-  NextJsIcon,
-  ReactIcon,
-  JavaScriptIcon,
   ExpressIcon,
   FastifyIcon,
   H3Icon,
+  JavaScriptIcon,
+  NextJsIcon,
   NuxtIcon,
-  WinterCGIcon,
+  ReactIcon,
+  SolidJsIcon,
+  SolidStartIcon,
+  SvelteIcon,
   VueIcon,
-} from '@/components/Icons'
+  WinterCGIcon,
+} from "@/components/icons";
+
+import { Prose } from "./Prose";
 
 const frameworks = [
   {
-    href: '/getting-started/appdir',
-    name: 'Next.js App Router',
+    href: "/getting-started/appdir",
+    name: "Next.js App Router",
     description:
       "The Next.js App Router introduces a new model for building applications using React's latest features.",
     Logo: NextJsIcon,
   },
   {
-    href: '/getting-started/pagedir',
-    name: 'Next.js Pages Router',
+    href: "/getting-started/pagedir",
+    name: "Next.js Pages Router",
     description:
-      'Before Next.js 13, the Pages Router was the main way to create routes in Next.js.',
+      "Before Next.js 13, the Pages Router was the main way to create routes in Next.js.",
     Logo: NextJsIcon,
   },
   {
-    href: '/getting-started/astro',
-    name: 'Astro',
-    description: 'The web framework for content-driven websites.',
+    href: "/getting-started/astro",
+    name: "Astro",
+    description: "The web framework for content-driven websites.",
     Logo: AstroIcon,
   },
   {
-    href: '/getting-started/solid',
-    name: 'Solid Start',
+    href: "/getting-started/solid",
+    name: "Solid Start",
     description: "SolidJS is a modern JavaScript framework for today's web.",
     Logo: SolidStartIcon,
   },
   {
-    href: '/getting-started/svelte',
-    name: 'SvelteKit',
-    description: 'Web development, streamlined',
+    href: "/getting-started/svelte",
+    name: "SvelteKit",
+    description: "Web development, streamlined",
     Logo: SvelteIcon,
   },
   {
-    href: '/getting-started/nuxt',
-    name: 'Nuxt',
-    description: 'The Intuitive Vue Framework',
+    href: "/getting-started/nuxt",
+    name: "Nuxt",
+    description: "The Intuitive Vue Framework",
     Logo: NuxtIcon,
   },
-]
+];
 
 const backends = [
   {
-    href: '/backend-adapters/express',
-    name: 'Express',
-    description: 'Fast, unopinionated, minimalist web framework for Node.js',
+    href: "/backend-adapters/express",
+    name: "Express",
+    description: "Fast, unopinionated, minimalist web framework for Node.js",
     Logo: ExpressIcon,
   },
   {
-    href: '/backend-adapters/fastify',
-    name: 'Fastify',
-    description: 'Fast and low overhead web framework, for Node.js',
+    href: "/backend-adapters/fastify",
+    name: "Fastify",
+    description: "Fast and low overhead web framework, for Node.js",
     Logo: FastifyIcon,
   },
   {
-    href: '/backend-adapters/h3',
-    name: 'H3',
-    description: 'The Web Framework for Modern JavaScript Era',
+    href: "/backend-adapters/h3",
+    name: "H3",
+    description: "The Web Framework for Modern JavaScript Era",
     Logo: H3Icon,
   },
   {
-    href: '/backend-adapters/fetch',
-    name: 'WinterCG / Fetch API',
+    href: "/backend-adapters/fetch",
+    name: "WinterCG / Fetch API",
     description:
       "UploadThing's core builds on web standards, making it easy to integrate into any web framework following the WinterCG spec.",
     Logo: WinterCGIcon,
   },
-]
+];
 
 const frontends = [
   {
-    href: '/api-reference/react',
-    name: 'React',
-    description: 'The library for web and native user interfaces',
+    href: "/api-reference/react",
+    name: "React",
+    description: "The library for web and native user interfaces",
     Logo: ReactIcon,
   },
   {
-    href: 'https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/client-vue',
-    name: 'Vue',
-    description: 'The Progressive JavaScript Framework',
+    href: "https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/client-vue",
+    name: "Vue",
+    description: "The Progressive JavaScript Framework",
     Logo: VueIcon,
   },
   {
-    href: '/getting-started/solid#creating-the-upload-thing-components',
-    name: 'SolidJS',
-    description: 'Reactive Javascript Library',
+    href: "/getting-started/solid#creating-the-upload-thing-components",
+    name: "SolidJS",
+    description: "Reactive Javascript Library",
     Logo: SolidJsIcon,
   },
   {
-    href: '/getting-started/svelte#creating-the-upload-thing-helpers',
-    name: 'Svelte',
-    description: 'Cybernetically enhanced web apps',
+    href: "/getting-started/svelte#creating-the-upload-thing-helpers",
+    name: "Svelte",
+    description: "Cybernetically enhanced web apps",
     Logo: SvelteIcon,
   },
   {
-    href: '/api-reference/client',
-    name: 'Vanilla JS',
+    href: "/api-reference/client",
+    name: "Vanilla JS",
     description:
       "Is your favorite library missing? We've got you covered. No framework required.",
     Logo: JavaScriptIcon,
   },
-]
+];
 
 export function Frameworks() {
   return (
@@ -153,7 +153,7 @@ export function Frameworks() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function BackendAdapters() {
@@ -187,7 +187,7 @@ export function BackendAdapters() {
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export function FrontendLibraries() {
@@ -221,5 +221,5 @@ export function FrontendLibraries() {
         ))}
       </div>
     </div>
-  )
+  );
 }
