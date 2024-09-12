@@ -1,9 +1,10 @@
-This is the source code for the [UploadThing docs](https://docs.uploadthing.com) site.
+This is the source code for the [UploadThing docs](https://docs.uploadthing.com)
+site.
 
 ## License
 
-This site is based off thhe "Protocol" template, which is a commercial product and is licensed under the
-[Tailwind UI license](https://tailwindui.com/license).
+This site is based off the "Protocol" template, which is a commercial product
+and is licensed under the [Tailwind UI license](https://tailwindui.com/license).
 
 Protocol is a [Tailwind UI](https://tailwindui.com) site template built using
 [Tailwind CSS](https://tailwindcss.com) and [Next.js](https://nextjs.org).
