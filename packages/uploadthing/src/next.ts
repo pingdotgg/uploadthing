@@ -26,5 +26,5 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     opts,
     "nextjs-app",
   );
-  return { POST: handler, GET: handler };
+  return { action: handler, loader: handler };
 };
