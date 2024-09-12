@@ -1,0 +1,74 @@
+import { docsMetadata } from '@/lib/utils'
+
+export const metadata = docsMetadata({
+  title: 'Working with Files',
+  description:
+    'After your files have been uploaded, you will most likely want to do something with them. This page shows how to work with your uploaded files.',
+  category: 'Concepts',
+})
+
+# Working with Files
+
+After your files have been uploaded, you will most likely want to do something
+with them. This page shows how to work with your uploaded files.
+
+## Accessing Files
+
+<Warning>
+    Do not use the raw file URL from the storage provider, e.g. `https://bucket.s3.region.amazonaws.com/<FILE_KEY>`. We reserve the right to move objects between different storage providers and/or buckets, so this URL is not guaranteed to remain valid.
+</Warning>
+
+There are multiple ways to access your files. The most generic way is to
+construct the URL from the `fileKey` you get back after the file has been
+uploaded:
+
+`https://utfs.io/f/<FILE_KEY>`
+
+This URL will always work for public files and is the default URL returned by
+the API and from any SDK method. However, sometimes you may want a URL that's
+scoped to your application, for example when doing image optimizations and want
+to filter what URLs are allowed to be optimized on your server. For this, the
+following URL can be used:
+
+`https://utfs.io/a/<APP_ID>/<FILE_KEY>`
+
+By using this URL pattern, you have more granular control over what URLs are
+allowed to be optimized. Below is an example of how to setup image optimization
+allow filtering in Next.js:
+
+```js
+/** @type {import('next').NextConfig} */
+export default {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'utfs.io',
+        pathname: '/a/<APP_ID>/*',
+      },
+    ],
+  },
+}
+```
+
+<Note>
+  If you set a `customId` when uploading the file, you can also use `https://utfs.io/a/<APP_ID>/<CUSTOM_ID>`.
+</Note>
+
+## Accessing Private Files
+
+If your files are protected with
+[access controls](/concepts/regions-acl#access-controls), you will need to request a
+short-lived presigned URL from the API to access the file. You can request one
+using [`UTApi.getSignedUrl`](/api-reference/ut-api#get-signed-url), or from the
+`/requestFileAccess` API endpoint (see
+[OpenAPI Specification](/api-reference/openapi-spec)).
+
+Presigned URL follows the same patterns as above, with additional query
+parameters to authenticate the request.
+
+## Other File Operations
+
+Please refer to our server SDK, [UTApi](/api-reference/ut-api) for more
+information on how to work with files. You can also access the API directly
+using the [OpenAPI Specification](/api-reference/openapi-spec).
