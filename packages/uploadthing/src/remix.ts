@@ -12,7 +12,7 @@ export type { FileRouter };
 export { UTFiles } from "./internal/types";
 
 type MiddlewareArgs = {
-  req: Request;
+  req: undefined;
   res: undefined;
   event: ActionFunctionArgs;
 };
@@ -25,8 +25,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
   const handler = makeAdapterHandler<[ActionFunctionArgs]>(
-    (args) =>
-      Effect.succeed({ req: args.request, res: undefined, event: args }),
+    (args) => Effect.succeed({ req: undefined, res: undefined, event: args }),
     (args) => Effect.succeed(args.request),
     opts,
     "remix",
