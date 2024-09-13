@@ -11,7 +11,7 @@ export const article = {
     },
   ],
   date: "2024-09-13",
-  title: "We Rebuilt UploadThing",
+  title: "UploadThing is 3x Faster",
   description:
     "UploadThing v7 has finally shipped! We're now the FASTEST way for your users to upload files.",
   tags: ["launch"],
@@ -42,7 +42,21 @@ mind, here's what's relevant for most of y'all:
 Ready to upgrade? Julius
 [wrote an awesome guide](https://docs.uploadthing.com/v7) to get you going.
 
-Anyways, let's get into those nerdy details.
+Before we go into the nerdy details, I want to brag a bit about the speed.
+
+## Benchmarks
+
+These benchmarks tested the simplest possible "full-stack" UploadThing
+implementation. You can
+[see the implementation on GitHub](https://github.com/t3dotgg/ut-v6-bench)
+
+### Multiple images test
+
+**4713ms** (v6) -> **1250ms** (v7) **73% faster**
+
+### Single image test
+
+**3733ms** (v6) -> **733ms** (v7) **80% faster**
 
 ## The Road To V7
 
@@ -53,7 +67,9 @@ that.
 The next step was obvious: Make UploadThing the _best_ way to upload files as
 well. Which means moving away from S3 direct uploads.
 
-> Wait, how can you possibly be better than S3? Hear me out.
+> Wait, how can you possibly be better than S3?
+
+Hear me out.
 
 Every upload has 4 touch points: **User's Browser**, **Your Server**,
 **UploadThing API**, and **S3**.
@@ -102,3 +118,9 @@ First, let's look at how much simpler the flow is (note the addition of
 We cut the number of hops in HALF. We removed the need for polling entirely. We
 no longer block uploads starting on our API's verifying the upload. And with all
 these changes, we cut the amount of JS in our client side bundle by over 30%.
+
+## ...and we're just getting started
+
+This infra overhaul enables us to do a LOT more cool stuff with UploadThing.
+Things like content analysis and detection, transcoding, "bring-your-own-bucket"
+and much, much more. We're so hyped for what's next.
