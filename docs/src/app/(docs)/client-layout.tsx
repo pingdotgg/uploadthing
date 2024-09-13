@@ -17,7 +17,7 @@ const PreviewBanner = (props: {
 }) => {
   return (
     <motion.div
-      className="pointer-events-none fixed inset-x-0 top-14 sm:top-16 sm:px-6 sm:pb-5 lg:left-80 lg:px-8"
+      className="pointer-events-none fixed inset-x-0 top-14 z-50 sm:top-16 sm:px-6 sm:pb-5 lg:left-80 lg:px-8"
       animate={{ opacity: props.open ? 1 : 0 }}
       transition={{ duration: 0.5 }}
       initial={{ opacity: 0 }}
