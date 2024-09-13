@@ -13,7 +13,7 @@ const doNotExecute = (_fn: (...args: any[]) => any) => {
 const f = createUploadthing();
 
 const router = {
-  exampleRoute: f(["image"], { awaitServerData: true })
+  exampleRoute: f(["image"])
     .middleware(() => ({ foo: "bar" }))
     .onUploadComplete(({ metadata }) => {
       console.log(metadata);
@@ -21,7 +21,7 @@ const router = {
       return { foo: "bar" as const };
     }),
 
-  withFooInput: f(["image"])
+  withFooInput: f(["image"], { awaitServerData: false })
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => ({ number: opts.input.foo.length }))
     .onUploadComplete(({ metadata }) => {
@@ -30,7 +30,7 @@ const router = {
       return { baz: "qux" as const };
     }),
 
-  withBarInput: f(["image"])
+  withBarInput: f(["image"], { awaitServerData: false })
     .input(z.object({ bar: z.number() }))
     .middleware((opts) => ({ square: opts.input.bar * opts.input.bar }))
     .onUploadComplete(({ metadata }) => {
