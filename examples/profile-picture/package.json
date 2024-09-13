@@ -46,6 +46,5 @@
     "tailwindcss": "npm:tailwindcss@4.0.0-alpha.11",
     "typescript": "^5.5.2",
     "typescript-eslint": "^7.4.0"
-  },
-  "version": null
+  }
 }
