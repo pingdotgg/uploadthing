@@ -166,7 +166,7 @@ A simple button that opens the native file picker and uploads the selected
 files. The default button is shown below. See [Theming](/concepts/theming) on
 how to customize it.
 
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton } from "@/components/UploadThing";
 
 <UploadButton
   className="mt-5"
@@ -309,7 +309,7 @@ A `react-dropzone` powered dropzone that let's you drag and drop files to
 upload. The default dropzone is shown below. See [Theming](/concepts/theming) on
 how to customize it.
 
-import { UploadDropzone } from "@uploadthing/react";
+import { UploadDropzone } from "@/components/UploadThing";
 
 <UploadDropzone
   __internal_state="ready"
@@ -547,7 +547,7 @@ and `useUploadThing` hooks. For a more complete example, take a look at
 [our prebuilt components](https://github.com/pingdotgg/uploadthing/tree/main/packages/react/src/components).
 
 ```tsx {{ title: "app/example-custom-uploader.tsx" }}
-import { useDropzone } from "@uploadthing/react";
+// import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";

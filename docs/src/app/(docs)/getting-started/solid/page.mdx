@@ -171,7 +171,7 @@ files are allowed and how many files can be uploaded of that type.
 
 {/* using React package since Nextra can't mount Solid components, but they look the same */}
 
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton } from "@/components/UploadThing";
 
 <UploadButton
   __internal_button_disabled
@@ -213,7 +213,7 @@ export default function Home() {
 This is a SolidJS dropzone component that you can use to upload files, you can
 drag files into it.
 
-import { UploadDropzone } from "@uploadthing/react";
+import { UploadDropzone } from "@/components/UploadThing";
 
 <UploadDropzone
   __internal_state="ready"
