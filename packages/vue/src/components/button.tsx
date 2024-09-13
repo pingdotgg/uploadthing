@@ -1,11 +1,10 @@
-import { twMerge } from "tailwind-merge";
 import * as Vue from "vue";
 import { computed, reactive, ref } from "vue";
 
-import type { ContentField, StyleField } from "@uploadthing/shared";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -14,6 +13,7 @@ import {
   styleFieldToCssObject,
   UploadAbortedError,
 } from "@uploadthing/shared";
+import type { ContentField, StyleField } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 
 import type {
@@ -48,8 +48,7 @@ export type ButtonContent = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -72,15 +71,16 @@ export const generateUploadButton = <TRouter extends FileRouter>(
   });
 
   return Vue.defineComponent(
-    <
-      TEndpoint extends keyof TRouter,
-      TSkipPolling extends boolean = false,
-    >(props: {
-      config: UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
+    <TEndpoint extends keyof TRouter>(props: {
+      config: UploadButtonProps<TRouter, TEndpoint>;
     }) => {
       const $props = props.config;
 
-      const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+      const {
+        mode = "auto",
+        appendOnPaste = false,
+        cn = defaultClassListMerger,
+      } = $props.config ?? {};
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
       const acRef = ref(new AbortController());
@@ -88,33 +88,26 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
-      const useUploadthingProps: UseUploadthingProps<
-        TRouter,
-        TEndpoint,
-        TSkipPolling
-      > = reactive({
-        signal: acRef.value.signal,
-        headers: $props.headers,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        skipPolling: !$props?.onClientUploadComplete
-          ? true
-          : ($props?.skipPolling as any),
-        onClientUploadComplete: (res) => {
-          if (fileInputRef.value) {
-            fileInputRef.value.value = "";
-          }
-          files.value = [];
-          $props.onClientUploadComplete?.(res);
-          uploadProgress.value = 0;
-        },
-        onUploadProgress: (p) => {
-          uploadProgress.value = p;
-          $props.onUploadProgress?.(p);
-        },
-        onUploadError: $props.onUploadError,
-        onUploadBegin: $props.onUploadBegin,
-        onBeforeUploadBegin: $props.onBeforeUploadBegin,
-      });
+      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+        reactive({
+          signal: acRef.value.signal,
+          headers: $props.headers,
+          onClientUploadComplete: (res) => {
+            if (fileInputRef.value) {
+              fileInputRef.value.value = "";
+            }
+            files.value = [];
+            $props.onClientUploadComplete?.(res);
+            uploadProgress.value = 0;
+          },
+          onUploadProgress: (p) => {
+            uploadProgress.value = p;
+            $props.onUploadProgress?.(p);
+          },
+          onUploadError: $props.onUploadError,
+          onUploadBegin: $props.onUploadBegin,
+          onBeforeUploadBegin: $props.onBeforeUploadBegin,
+        });
 
       const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
         $props.endpoint,
@@ -214,7 +207,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
                   viewBox="0 0 24 24"
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  class={twMerge(
+                  class={cn(
                     "fill-none stroke-current stroke-2",
                     "hidden size-4 group-hover:block",
                   )}
@@ -246,7 +239,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
             $props.onChange?.([]);
           }}
-          class={twMerge(
+          class={cn(
             "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
             styleFieldToClassName(
               $props.appearance?.clearBtn,
@@ -269,7 +262,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       const renderAllowedContent = () => (
         <div
-          class={twMerge(
+          class={cn(
             "h-[1.25rem] text-xs leading-5 text-gray-600",
             styleFieldToClassName(
               $props.appearance?.allowedContent,
@@ -292,7 +285,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       );
 
       const labelClass = computed(() =>
-        twMerge(
+        cn(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
@@ -302,7 +295,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         ),
       );
       const containerClass = computed(() =>
-        twMerge(
+        cn(
           "flex flex-col items-center justify-center gap-1",
           $props.class,
           styleFieldToClassName(

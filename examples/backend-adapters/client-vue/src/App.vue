@@ -17,7 +17,6 @@ function alert(message: string) {
             appendOnPaste: true,
           },
           endpoint: 'videoAndImage',
-          skipPolling: true,
           onClientUploadComplete: (file) => {
             console.log('uploaded', file);
             alert('Upload complete');
@@ -35,7 +34,6 @@ function alert(message: string) {
             appendOnPaste: true,
           },
           endpoint: 'videoAndImage',
-          skipPolling: true,
           onClientUploadComplete: (file) => {
             console.log('uploaded', file);
             alert('Upload complete');

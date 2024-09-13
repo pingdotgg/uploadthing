@@ -8,5 +8,4 @@ export {
   generateUploadButton,
   generateUploadDropzone,
   generateUploader,
-  generateComponents,
 } from "./components";

@@ -5,18 +5,17 @@
 
   type TRouter = FileRouter;
   type TEndpoint = keyof TRouter;
-  type TSkipPolling = boolean;
 </script>
 
 <script
   lang="ts"
-  generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter, TSkipPolling extends boolean = false"
+  generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter"
 >
   import { onMount } from "svelte";
-  import { twMerge } from "tailwind-merge";
 
   import {
     allowedContentTextLabelGenerator,
+    defaultClassListMerger,
     resolveMaybeUrlArg,
     styleFieldToClassName,
     UploadAbortedError,
@@ -47,11 +46,7 @@
     clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
   };
 
-  export let uploader: UploadthingComponentProps<
-    TRouter,
-    TEndpoint,
-    TSkipPolling
-  >;
+  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
   export let appearance: UploadButtonAppearance = {};
   // Allow to set internal state for testing
   export let __internal_state: "readying" | "ready" | "uploading" | undefined =
@@ -79,9 +74,6 @@
     uploader.endpoint,
     {
       signal: acRef.signal,
-      skipPolling: !uploader?.onClientUploadComplete
-        ? true
-        : uploader?.skipPolling,
       onClientUploadComplete: (res) => {
         fileInputRef.value = "";
         files = [];
@@ -98,7 +90,11 @@
     },
   );
 
-  $: ({ mode = "auto", appendOnPaste = false } = uploader.config ?? {});
+  $: ({
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
   $: ({ fileTypes, multiple } = generatePermittedFileTypes(
     $permittedFileInfo?.config,
@@ -169,7 +165,7 @@ Example:
 ```
 -->
 <div
-  class={twMerge(
+  class={cn(
     "flex flex-col items-center justify-center gap-1",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
@@ -180,7 +176,7 @@ Example:
   <!-- svelte-ignore a11y-click-events-have-key-events -->
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <label
-    class={twMerge(
+    class={cn(
       "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
       state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
@@ -242,7 +238,7 @@ Example:
               viewBox="0 0 24 24"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class={twMerge(
+              class={cn(
                 "fill-none stroke-current stroke-2",
                 "hidden size-4 group-hover:block",
               )}
@@ -266,7 +262,7 @@ Example:
         fileInputRef.value = "";
         onChange?.([]);
       }}
-      class={twMerge(
+      class={cn(
         "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
         styleFieldToClassName(appearance?.clearBtn, styleFieldArg),
       )}
@@ -278,7 +274,7 @@ Example:
     </button>
   {:else}
     <div
-      class={twMerge(
+      class={cn(
         "h-[1.25rem]  text-xs leading-5 text-gray-600",
         styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
       )}

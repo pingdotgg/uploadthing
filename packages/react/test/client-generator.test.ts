@@ -21,7 +21,7 @@ const router = {
       return { foo: "bar" as const };
     }),
 
-  withFooInput: f(["image"])
+  withFooInput: f(["image"], { awaitServerData: false })
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => ({ number: opts.input.foo.length }))
     .onUploadComplete(({ metadata }) => {
@@ -30,7 +30,7 @@ const router = {
       return { baz: "qux" as const };
     }),
 
-  withBarInput: f(["image"])
+  withBarInput: f(["image"], { awaitServerData: false })
     .input(z.object({ bar: z.number() }))
     .middleware((opts) => ({ square: opts.input.bar * opts.input.bar }))
     .onUploadComplete(({ metadata }) => {
@@ -114,7 +114,7 @@ it("infers output properly", () => {
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withFooInput");
     const res = await startUpload(files, { foo: "bar" });
-    expectTypeOf<ClientUploadedFileData<{ baz: "qux" }>[] | undefined>(res);
+    expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
   });
 
   doNotExecute(async () => {
@@ -131,7 +131,6 @@ it("infers output properly", () => {
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withFooInput", {
-      skipPolling: true,
       onClientUploadComplete: (res) => {
         expectTypeOf<ClientUploadedFileData<null>[]>(res);
       },
@@ -142,7 +141,6 @@ it("infers output properly", () => {
 
   doNotExecute(async () => {
     const { startUpload } = useUploadThing("withBarInput", {
-      skipPolling: true,
       onClientUploadComplete: (res) => {
         expectTypeOf<ClientUploadedFileData<null>[]>(res);
       },

@@ -1,9 +1,9 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
-import { twMerge } from "tailwind-merge";
 
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateMimeTypes,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -47,8 +47,7 @@ type ButtonContent = {
 export type UploadButtonProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -73,19 +72,20 @@ export type UploadButtonProps<
 export function UploadButton<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadButtonProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const [files, setFiles] = createSignal<File[]>([]);
 
   let inputRef: HTMLInputElement;
-  let acRef = new AbortController();
+  const $props = props as UploadButtonProps<TRouter, TEndpoint>;
 
-  const $props = props as UploadButtonProps<TRouter, TEndpoint, TSkipPolling>;
+  const { cn = defaultClassListMerger } = $props.config ?? {};
+
+  let acRef = new AbortController();
 
   const fileRouteInput = "input" in $props ? $props.input : undefined;
 
@@ -98,7 +98,6 @@ export function UploadButton<
   const uploadThing = createUploadThing($props.endpoint, {
     signal: acRef.signal,
     headers: $props.headers,
-    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);
       inputRef.value = "";
@@ -199,7 +198,7 @@ export function UploadButton<
           viewBox="0 0 24 24"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class={twMerge(
+          class={cn(
             "fill-none stroke-current stroke-2",
             "hidden size-4 group-hover:block",
           )}
@@ -213,7 +212,7 @@ export function UploadButton<
 
   return (
     <div
-      class={twMerge(
+      class={cn(
         "flex flex-col items-center justify-center gap-1",
         $props.class,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
@@ -222,7 +221,7 @@ export function UploadButton<
       data-state={state()}
     >
       <label
-        class={twMerge(
+        class={cn(
           "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state() === "readying" && "cursor-not-allowed bg-blue-400",
           state() === "uploading" &&
@@ -281,7 +280,7 @@ export function UploadButton<
             inputRef.value = "";
             $props.onChange?.([]);
           }}
-          class={twMerge(
+          class={cn(
             "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
             styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
           )}
@@ -297,7 +296,7 @@ export function UploadButton<
         </button>
       ) : (
         <div
-          class={twMerge(
+          class={cn(
             "h-[1.25rem] text-xs leading-5 text-gray-600",
             styleFieldToClassName(
               $props.appearance?.allowedContent,

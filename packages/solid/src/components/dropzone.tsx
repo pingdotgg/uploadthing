@@ -1,10 +1,10 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
-import { twMerge } from "tailwind-merge";
 
 import { createDropzone } from "@uploadthing/dropzone/solid";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
+  defaultClassListMerger,
   generateClientDropzoneAccept,
   generatePermittedFileTypes,
   getFilesFromClipboardEvent,
@@ -51,8 +51,7 @@ type DropzoneContent = {
 export type UploadDropzoneProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UploadthingComponentProps<TRouter, TEndpoint, TSkipPolling> & {
+> = UploadthingComponentProps<TRouter, TEndpoint> & {
   /**
    * @see https://docs.uploadthing.com/theming#style-using-the-classname-prop
    */
@@ -77,16 +76,19 @@ export type UploadDropzoneProps<
 export const UploadDropzone = <
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
 >(
   props: FileRouter extends TRouter
     ? ErrorMessage<"You forgot to pass the generic">
-    : UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>,
+    : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
   const [uploadProgress, setUploadProgress] = createSignal(0);
-  const $props = props as UploadDropzoneProps<TRouter, TEndpoint, TSkipPolling>;
+  const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
 
-  const { mode = "manual", appendOnPaste = false } = $props.config ?? {};
+  const {
+    mode = "manual",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
 
   let rootRef: HTMLElement;
   let acRef = new AbortController();
@@ -97,7 +99,6 @@ export const UploadDropzone = <
   const uploadThing = createUploadThing($props.endpoint, {
     signal: acRef.signal,
     headers: $props.headers,
-    skipPolling: $props.skipPolling,
     onClientUploadComplete: (res) => {
       setFiles([]);
       $props.onClientUploadComplete?.(res);
@@ -195,7 +196,7 @@ export const UploadDropzone = <
   });
   return (
     <div
-      class={twMerge(
+      class={cn(
         "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
         isDragActive && "bg-blue-600/10",
         $props.class,
@@ -210,7 +211,7 @@ export const UploadDropzone = <
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 20 20"
-          class={twMerge(
+          class={cn(
             "mx-auto block h-12 w-12 align-middle text-gray-400",
             styleFieldToClassName($props.appearance?.uploadIcon, styleFieldArg),
           )}
@@ -230,7 +231,7 @@ export const UploadDropzone = <
         </svg>
       )}
       <label
-        class={twMerge(
+        class={cn(
           "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
           ready() ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg),
@@ -244,7 +245,7 @@ export const UploadDropzone = <
           (ready() ? `Choose files or drag and drop` : `Loading...`)}
       </label>
       <div
-        class={twMerge(
+        class={cn(
           "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
           styleFieldToClassName(
             $props.appearance?.allowedContent,
@@ -263,7 +264,7 @@ export const UploadDropzone = <
       </div>
       {files().length > 0 && (
         <button
-          class={twMerge(
+          class={cn(
             "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
             state() === "uploading"
               ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${

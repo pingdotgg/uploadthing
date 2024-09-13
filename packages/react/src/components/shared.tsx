@@ -1,4 +1,4 @@
-import { twMerge } from "tailwind-merge";
+import type { ClassListMerger } from "@uploadthing/shared";
 
 export function Spinner() {
   return (
@@ -16,14 +16,18 @@ export function Spinner() {
   );
 }
 
-export function Cancel({ className, ...props }: React.SVGProps<SVGSVGElement>) {
+export function Cancel({
+  className,
+  cn,
+  ...props
+}: React.SVGProps<SVGSVGElement> & { cn: ClassListMerger }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={twMerge("fill-none stroke-current stroke-2", className)}
+      className={cn("fill-none stroke-current stroke-2", className)}
       {...props}
     >
       <circle cx="12" cy="12" r="10" />

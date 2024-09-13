@@ -1,3 +1,4 @@
+import { Readable } from "node:stream";
 import * as Effect from "effect/Effect";
 import type {
   Request as ExpressRequest,
@@ -6,16 +7,8 @@ import type {
 import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
-import { getStatusCodeFromError } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/constants";
-import { formatError } from "./internal/error-formatter";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-  runRequestHandlerAsync,
-} from "./internal/handler";
-import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
+import { makeAdapterHandler } from "./internal/handler";
 import { getPostBody, toWebRequest } from "./internal/to-web-request";
 import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
@@ -37,50 +30,26 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  incompatibleNodeGuard();
-
-  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
+  const handler = makeAdapterHandler<[ExpressRequest, ExpressResponse]>(
+    (req, res) => Effect.succeed({ req, res, event: undefined }),
+    (req) =>
+      Effect.flatMap(getPostBody({ req }), (body) =>
+        toWebRequest(req, body),
+      ).pipe(Effect.orDie),
     opts,
     "express",
   );
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
-  const router = ExpressRouter();
 
-  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-  router.post("/", async (req, res) => {
-    const response = await runRequestHandlerAsync(
-      requestHandler,
-      {
-        req: getPostBody({ req }).pipe(
-          Effect.andThen((body) => toWebRequest(req, body)),
-        ),
-        middlewareArgs: { req, res, event: undefined },
-      },
-      opts.config,
-    );
-
-    if (response.success === false) {
-      res.status(getStatusCodeFromError(response.error));
-      res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-      res.send(JSON.stringify(formatError(response.error, opts.router)));
-      return;
-    }
-
-    res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-    res.send(JSON.stringify(response.body));
-  });
-
-  router.get("/", (_req, res) => {
-    res.status(200);
-    res.setHeader("x-uploadthing-version", UPLOADTHING_VERSION);
-
-    res.send(JSON.stringify(getBuildPerms()));
-  });
-
-  return router;
+  return ExpressRouter().all(
+    "/",
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    async (req, res) => {
+      const response = await handler(req, res);
+      res.writeHead(response.status, Object.fromEntries(response.headers));
+      if (!response.body) return res.end();
+      // Slight type mismatch in `node:stream.ReadableStream` and Fetch's `ReadableStream`.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      return Readable.fromWeb(response.body as any).pipe(res);
+    },
+  );
 };
-
-/**
- * @deprecated Use {@link createRouteHandler} instead
- */
-export const createUploadthingExpressHandler = createRouteHandler;

@@ -9,18 +9,12 @@ import {
   resolvePath,
   useLogger,
 } from "@nuxt/kit";
-import type from "@nuxt/schema";
 import defu from "defu";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";
 
-type HandlerConfig = Omit<
-  RouteHandlerConfig,
-  "uploadthingSecret" | "uploadthingId"
->;
-
 // Module options TypeScript interface definition
-export type ModuleOptions = HandlerConfig & {
+export type ModuleOptions = RouteHandlerConfig & {
   routerPath: string;
   secret?: string;
   appId?: string;
@@ -44,9 +38,8 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.runtimeConfig.uploadthing = defu(
       nuxt.options.runtimeConfig.uploadthing as any,
       {
-        secret: options.secret,
-        appId: options.appId,
-        logLevel: options.logLevel ?? "info",
+        token: options.token,
+        logLevel: options.logLevel,
       },
     );
 

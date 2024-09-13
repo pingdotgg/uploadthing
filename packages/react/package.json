@@ -20,16 +20,6 @@
         "default": "./dist/index.cjs"
       }
     },
-    "./hooks": {
-      "import": {
-        "types": "./hooks/index.d.ts",
-        "default": "./hooks/index.js"
-      },
-      "require": {
-        "types": "./hooks/index.d.cts",
-        "default": "./hooks/index.cjs"
-      }
-    },
     "./native": {
       "import": {
         "types": "./native/index.d.ts",
@@ -53,7 +43,6 @@
   },
   "files": [
     "dist",
-    "hooks",
     "native",
     "next-ssr-plugin"
   ],
@@ -74,9 +63,7 @@
   },
   "dependencies": {
     "@uploadthing/dropzone": "workspace:*",
-    "@uploadthing/shared": "workspace:*",
-    "file-selector": "^0.6.0",
-    "tailwind-merge": "^2.2.1"
+    "@uploadthing/shared": "workspace:*"
   },
   "peerDependencies": {
     "next": "*",
@@ -94,10 +81,11 @@
     "@types/react-dom": "18.3.0",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
+    "@vitest/browser": "2.0.5",
     "bunchee": "^5.2.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "next": "14.2.3",
+    "next": "14.2.11",
     "react": "18.3.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.5.2",

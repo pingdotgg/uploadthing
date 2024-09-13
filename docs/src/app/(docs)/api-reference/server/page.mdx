@@ -1,0 +1,315 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "uploadthing/server",
+  description: "Server bindings for UploadThing.",
+  category: "API Reference",
+});
+
+# UploadThing Server
+
+Server bindings for UploadThing.
+
+## createUploadthing {{ tag: 'function', since: '5.0' }}
+
+The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
+FROM THE RIGHT PLACE. The export name ensures your file routes'
+[`middleware`](/api-reference/file-routes#middleware) functions are typed
+correctly.
+
+<Tabs tabs={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/next";
+
+    const f = createUploadthing();
+    export const uploadRouter = {  };
+
+    // ...
+    f({  })
+      .middleware(({ req }) => {
+        //           ^? req: NextRequest
+        return {}
+      })
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/next-legacy";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req, res }) => {
+        //           ^? req: NextApiRequest, res: NextApiResponse
+      })
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/server";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req }) => {
+        //           ^? req: Request
+      })
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/express";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req, res }) => {
+        //           ^? req: ExpressRequest, res: ExpressResponse
+      })
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/fastify";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ req, res }) => {
+        //           ^? req: FastifyRequest, res: FastifyReply
+      })
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createUploadthing, type FileRouter } from "uploadthing/h3";
+
+    const f = createUploadthing();
+    export const uploadRouter = { ... };
+
+    // ...
+    f({ ... })
+      .middleware(({ event }) => {
+        //           ^? event: H3Event
+      })
+    ```
+
+  </Tab>
+</Tabs>
+
+## `createRouteHandler` {{ tag: 'function', since: '6.3' }}
+
+All adapters exports a `createRouteHandler` function that exposes your router to
+the world. By default, you should only have to pass your router to this
+function, although there are some extra configuration options available.
+
+> The names of the exported `createRouteHandler` is different prior to `v6.3`.
+
+<Tabs tabs={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+  <Tab>
+    ```ts
+    import { createRouteHandler } from "uploadthing/next";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    export const { GET, POST } = createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    });
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import { createRouteHandler } from "uploadthing/next-legacy";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    export default createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    });
+    ```
+
+  </Tab>
+  <Tab>
+    ```ts
+    import { createRouteHandler } from "uploadthing/server";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    export const handlers = createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    });
+    export { handlers as GET, handlers as POST };
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import express from "express";
+    import { createRouteHandler } from "uploadthing/express";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    const app = express();
+
+    app.use("/api/uploadthing", createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    }));
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import Fastify from "fastify";
+    import { createRouteHandler } from "uploadthing/fastify";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    const fastify = Fastify();
+
+    fastify.register(createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    }));
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```ts
+    import { createApp, createRouter } from "h3";
+    import { createRouteHandler } from "uploadthing/h3";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    const app = createApp();
+    const router = createRouter();
+
+    router.use("/api/uploadthing", createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    }));
+    app.use(router.handler);
+    ```
+
+  </Tab>
+</Tabs>
+
+### Config Parameters
+
+You can configure the route handler either by passing a config object to the
+`createRouteHandler` function, or by setting them as environment variables.
+Environment variables follows the naming convention of `UPLOADTHING_<NAME>`
+,where `<NAME>` is the name of the config option in constant case, e.g.
+`UPLOADTHING_LOG_LEVEL`. If both are set, the config object takes precedence.
+
+<Properties>
+  <Property name="callbackUrl" type="string" since="6.0">
+    The URL to where your route handler is hosted. This is called via webhook
+    after your file is uploaded. UploadThing attempts to automatically detect
+    this value based on the request URL and headers. You can override this if
+    the automatic detection fails.
+  </Property>
+  <Property
+    name="token"
+    type="string"
+    since="7.0"
+    defaultValue="env.UPLOADTHING_TOKEN"
+  >
+    Your UploadThing token. You can find this on the UploadThing dashboard.
+  </Property>
+  <Property
+    name="logLevel"
+    type="Error | Warning | Info | Debug | Trace"
+    since="7.0"
+    defaultValue="Info"
+  >
+    Enable more verbose logging.
+    <Note>If using an older version of the SDK, levels might vary.</Note>
+  </Property>
+  <Property
+    name="isDev"
+    type="boolean"
+    since="6.3"
+    defaultValue="env.NODE_ENV === 'development'"
+  >
+    Used to determine whether to run dev hook or not
+  </Property>
+  <Property
+    name="fetch"
+    type="FetchEsque"
+    since="6.3"
+    defaultValue="globalThis.fetch"
+  >
+    Used to override the fetch implementation
+  </Property>
+  <Property name="ingestUrl" type="string" since="7.0">
+    The URL of the UploadThing Ingest API. Will be decoded from the `token` if
+    not specified.
+    <Note>
+      This option should only be set for self-hosted instances or for testing.
+    </Note>
+  </Property>
+</Properties>
+
+## `UTApi` {{ tag: 'class', since: '5.7' }}
+
+See [UTApi](/api-reference/ut-api)
+
+## `UTFile` {{ tag: 'class', since: '6.4' }}
+
+A helper class to construct
+[`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) in environments
+that don't support it natively.
+
+Also accepts a `customId` property to set a custom identifier for the file to be
+uploaded using [UTApi.uploadFiles](/api-reference/ut-api#upload-files).
+
+### Constructor
+
+<Properties>
+  <Property name="parts" type="BlobPart[]" required>
+    The parts of the file to be uploaded.
+  </Property>
+  <Property name="name" type="string" required>
+    The name of the file to be uploaded.
+  </Property>
+  <Property name="opts.type" type="string" since="6.4">
+    The type of the file to be uploaded.
+  </Property>
+  <Property name="opts.customId" type="string" since="6.4">
+    A custom identifier for the file to be uploaded using
+    [UTApi.uploadFiles](/api-reference/ut-api#upload-files).
+  </Property>
+  <Property name="opts.lastModified" type="number" since="6.4">
+    The last modified time of the file to be uploaded.
+  </Property>
+</Properties>
+
+### Example
+
+```ts
+import { UTApi, UTFile } from "uploadthing/server";
+
+const utapi = new UTApi();
+
+const file = new UTFile(["foo"], "foo.txt", { customId: "foo" });
+const response = await utapi.uploadFiles([file]);
+```

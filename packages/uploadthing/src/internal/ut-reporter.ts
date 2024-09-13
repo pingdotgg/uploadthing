@@ -9,9 +9,9 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./constants";
-import { maybeParseResponseXML } from "./s3-error-parser";
-import type { ActionType, UTEvents } from "./types";
+import * as pkgJson from "../../package.json";
+import type { ActionType } from "./shared-schemas";
+import type { UTEvents } from "./types";
 
 const createAPIRequestUrl = (config: {
   /**
@@ -21,7 +21,7 @@ const createAPIRequestUrl = (config: {
    */
   url: URL;
   slug: string;
-  actionType: ActionType;
+  actionType: typeof ActionType.Type;
 }) => {
   const url = new URL(config.url);
 
@@ -56,21 +56,19 @@ export const createUTReporter =
         slug: cfg.endpoint,
         actionType: type,
       });
-      let headers =
-        typeof cfg.headers === "function" ? cfg.headers() : cfg.headers;
-      if (headers instanceof Promise) {
-        headers = yield* Micro.promise(() => headers as Promise<HeadersInit>);
-      }
+      const headers = new Headers(
+        yield* Micro.promise(async () =>
+          typeof cfg.headers === "function" ? await cfg.headers() : cfg.headers,
+        ),
+      );
+      headers.set("x-uploadthing-package", cfg.package);
+      headers.set("x-uploadthing-version", pkgJson.version);
+      headers.set("Content-Type", "application/json");
 
       const response = yield* fetchEff(url, {
         method: "POST",
         body: JSON.stringify(payload),
-        headers: {
-          "Content-Type": "application/json",
-          "x-uploadthing-package": cfg.package,
-          "x-uploadthing-version": UPLOADTHING_VERSION,
-          ...headers,
-        },
+        headers,
       }).pipe(
         Micro.andThen(parseResponseJson),
         /**
@@ -107,26 +105,6 @@ export const createUTReporter =
           ),
         ),
       );
-
-      switch (type) {
-        case "failure": {
-          // why isn't this narrowed automatically?
-          const p = payload as UTEvents["failure"]["in"];
-          const parsed = maybeParseResponseXML(p.storageProviderError ?? "");
-          if (parsed?.message) {
-            return yield* new UploadThingError({
-              code: parsed.code,
-              message: parsed.message,
-            });
-          } else {
-            return yield* new UploadThingError({
-              code: "UPLOAD_FAILED",
-              message: `Failed to upload file ${p.fileName} to S3`,
-              cause: p.storageProviderError,
-            });
-          }
-        }
-      }
 
       return response;
     });

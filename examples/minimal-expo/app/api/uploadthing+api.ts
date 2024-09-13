@@ -63,7 +63,9 @@ export const uploadRouter = {
 
 export type UploadRouter = typeof uploadRouter;
 
-export const { GET, POST } = createRouteHandler({
+const handler = createRouteHandler({
   router: uploadRouter,
-  config: { logLevel: "debug" },
+  config: { logLevel: "Debug" },
 });
+
+export { handler as GET, handler as POST };

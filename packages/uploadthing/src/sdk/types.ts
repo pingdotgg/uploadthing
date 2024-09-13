@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 
 import type { Blob as NodeBlob } from "buffer";
+import type * as LogLevel from "effect/LogLevel";
 
 import type {
   ACL,
   ContentDisposition,
   Either,
   FetchEsque,
-  Json,
   MaybeUrl,
   SerializedUploadThingError,
   Time,
 } from "@uploadthing/shared";
 
-import type { LogLevel } from "../internal/logger";
 import type { UploadedFileData } from "../types";
 
 export interface UTApiOptions {
@@ -23,20 +22,28 @@ export interface UTApiOptions {
    */
   fetch?: FetchEsque;
   /**
-   * Provide a custom UploadThing API key.
-   * @default process.env.UPLOADTHING_SECRET
+   * Provide a custom UploadThing token
+   * @default process.env.UPLOADTHING_TOKEN
    */
-  apiKey?: string;
+  token?: string;
   /**
    * @default "info"
    */
-  logLevel?: LogLevel;
+  logLevel?: LogLevel.Literal;
   /**
    * Set the default key type for file operations. Allows you to set your preferred filter
    * for file keys or custom identifiers without needing to specify it on every call.
    * @default "fileKey"
    */
   defaultKeyType?: "fileKey" | "customId";
+  /**
+   * URL override for the API server
+   */
+  apiUrl?: string;
+  /**
+   * URL override for the ingest server
+   */
+  ingestUrl?: string;
 }
 
 export type UrlWithOverrides = {
@@ -48,11 +55,11 @@ export type UrlWithOverrides = {
 type BlobEsque = NodeBlob | Blob;
 export type FileEsque = BlobEsque & {
   name: string;
+  lastModified?: number;
   customId?: string | null | undefined;
 };
 
 export interface UploadFilesOptions {
-  metadata?: Json;
   contentDisposition?: ContentDisposition;
   acl?: ACL;
   /**

@@ -5,13 +5,12 @@ import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./router";
 
-const { GET, POST } = createRouteHandler({
+const handler = createRouteHandler({
   router: uploadRouter,
 });
 
 const app = new Elysia().use(cors());
 app.get("/api", () => "Hello from Elysia!");
-
-app.group("/api/uploadthing", (app) => app.post("/", POST).get("/", GET));
+app.all("/api/uploadthing", handler);
 
 app.listen(3000);
