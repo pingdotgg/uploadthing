@@ -4,11 +4,12 @@ import {
   Frameworks,
   FrontendLibraries,
 } from "@/components/Libraries";
+import { docsMetadata } from "@/lib/utils";
 
-export const metadata = {
+export const metadata = docsMetadata({
   title: "UploadThing Docs",
   description: "Docs for the best file uploader to date",
-};
+});
 
 export const sections = [
   { title: "Frameworks", id: "frameworks" },
