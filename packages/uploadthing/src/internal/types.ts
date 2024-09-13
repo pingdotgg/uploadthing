@@ -217,9 +217,9 @@ export type inferEndpointInput<TUploader extends Uploader<any>> =
 export type inferEndpointOutput<TUploader extends AnyUploader> =
   TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
     ? null
-    : TUploader["_def"]["_routeOptions"]["awaitServerData"] extends true
-      ? TUploader["_def"]["_output"]
-      : null;
+    : TUploader["_def"]["_routeOptions"]["awaitServerData"] extends false
+      ? null
+      : TUploader["_def"]["_output"];
 
 export type inferErrorShape<TRouter extends FileRouter> =
   TRouter[keyof TRouter]["_def"]["_errorShape"];

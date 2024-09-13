@@ -1,0 +1,85 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "Regions & ACL",
+  description:
+    "UploadThing has support for multiple regions and access control lists to help you secure your files",
+  category: "Concepts",
+});
+
+<Note>Regions and Private files are only available on paid plans.</Note>
+
+## Regions
+
+UploadThing allows you to select where your files are stored by configuring your
+app's region on the UploadThing dashboard. If no configuration is set, your
+files are uploaded to our default region which is currently `AWS us-west-2`.
+
+### Available regions
+
+The following regions are currently supported by UploadThing:
+
+| Region                          | Region Alias |
+| ------------------------------- | ------------ |
+| Asia - Mumbai                   | bom1         |
+| Asia - Seoul                    | icn1         |
+| Asia - Sydney                   | syd1         |
+| Canada - Central                | can1         |
+| EU Central - Frankfurt          | fra1         |
+| EU Central - Zurich             | zrh1         |
+| EU West - Dublin                | dub1         |
+| US East - Ohio                  | cle1         |
+| US West - San Fransisco         | sfo1         |
+| US West - Seattle **(default)** | sea1         |
+
+### Configuring region
+
+Go to your app's settings on the UploadThing dashboard. Under `Regions and ACL`,
+you can select the region you want to upload your files to. Once changed, all
+**new** file uploads will go to the selected region.
+
+![Region settings](@/images/region-settings.png)
+
+<Note>
+  Changing your app's region will not move your existing files to the new
+  region, it will only affect new files. For assistance migrating your existing
+  files to the new region, please reach out on [Discord](https://t3.gg/discord)
+  or via [email](mailto:ut-support@ping.gg).
+</Note>
+
+## Access Controls
+
+By default every file uploaded to UploadThing is accessible simply by it's URL
+(`utfs.io/f/FILE_KEY`). Although this hard-to-guess URL is fine for many
+applications, some applications require a more secure way to store their files.
+
+You can configure your app's access control list (ACL) to restrict access to
+your files. UploadThing currently supports two different ACLs:
+
+- `public-read`: Files will be accessible simply by it's URL.
+- `private`: Private files will not be accessible by it's URL, but instead will
+  require a short-lived signed URL to be accessed.
+
+### Configuring ACL
+
+To configure your app's ACL, go to your app's settings on the UploadThing
+dashboard. Under `Regions and ACL`, you can select the ACL you want to use as
+default. You may also toggle the ability to override the default ACL on a
+per-request basis.
+
+<Note>
+  Private files are currently only available on regions other than the default
+  (`AWS us-west-2`).
+</Note>
+
+![Access control settings](@/images/acl-settings.png)
+
+### Using signed URLs
+
+Signed URLs can be retrieved using the
+[`getSignedURL`](/api-reference/ut-api#get-signed-url) method on the UTApi. It
+accepts the expiration time in seconds as a parameter, which defaults to
+whatever you've set in your app's settings. Overriding this value is only
+allowed if you've enabled the
+`Allow overriding this value on a per-request basis` setting on your app's
+settings.

@@ -1,0 +1,594 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "@uploadthing/react",
+  description: "React bindings for UploadThing.",
+  category: "API Reference",
+});
+
+# UploadThing React
+
+React bindings for UploadThing.
+
+## generateComponents {{ tag: 'factory', deprecated: true }}
+
+<Warning>
+  As of `v6.2.1`, the `generateComponents` function has been deprecated in favor
+  of the `generateUploadButton` and `generateUploadDropzone` functions to
+  improve tree-shaking.
+</Warning>
+
+The `generateComponents` function is used to generate the UploadButton and
+UploadDropzone components you use to interact with UploadThing. Generating
+components allows for fully typesafe components bound to the type of your file
+router.
+
+```tsx {{ title: "utils/uploadthing.tsx" }}
+import { generateComponents } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { UploadButton, UploadDropzone } =
+  generateComponents<OurFileRouter>();
+```
+
+## generateUploadButton {{ tag: 'factory', since: '6.2' }}
+
+The `generateUploadButton` function is used to generate the UploadButton
+component you use to interact with UploadThing. Generating components allows for
+fully typesafe components bound to the type of your file router.
+
+```tsx {{ title: "utils/uploadthing.tsx" }}
+import { generateUploadButton } from "@uploadthing/react";
+
+export const UploadButton = generateUploadButton<OurFileRouter>();
+```
+
+### Parameters
+
+<Properties>
+  <Property
+    name="url"
+    type="string | URL"
+    since="6.0"
+    default="(VERCEL_URL ?? window.location.origin) + '/api/uploadthing'"
+  >
+    The url to where you are serving your uploadthing file router.
+    <Warning>
+      Required if your [route
+      handler](/api-reference/server#create-route-handler) is not served from
+      `/api/uploadthing`
+    </Warning>
+  </Property>
+</Properties>
+
+### Returns
+
+[`UploadButton`](/api-reference/react#upload-button)
+
+## generateUploadDropzone {{ tag: 'factory', since: '6.2' }}
+
+The `generateUploadDropzone` function is used to generate the UploadDropzone
+component you use to interact with UploadThing. Generating components allows for
+fully typesafe components bound to the type of your file router.
+
+```tsx {{ title: "utils/uploadthing.tsx" }}
+import { generateUploadDropzone } from "@uploadthing/react";
+
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
+```
+
+### Parameters
+
+<Properties>
+  <Property
+    name="url"
+    type="string | URL"
+    since="6.0"
+    default="(VERCEL_URL ?? window.location.origin) + '/api/uploadthing'"
+  >
+    The url to where you are serving your uploadthing file router.
+    <Warning>
+      Required if your [route
+      handler](/api-reference/server#create-route-handler) is not served from
+      `/api/uploadthing`
+    </Warning>
+  </Property>
+</Properties>
+
+### Returns
+
+[`UploadDropzone`](/api-reference/react#upload-dropzone)
+
+## generateReactHelpers {{ tag: 'factory', since: '5.0' }}
+
+The `generateReactHelpers` function is used to generate the
+[useUploadThing](/api-reference/react#use-upload-thing) hook and the
+[uploadFiles]/api-reference/client#upload-files) functions you use to interact
+with UploadThing in custom components. It takes your File Router as a generic
+
+```tsx
+import { generateReactHelpers } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+export const { useUploadThing, uploadFiles } =
+  generateReactHelpers<OurFileRouter>();
+```
+
+### Parameters
+
+<Properties>
+  <Property
+    name="url"
+    type="string | URL"
+    since="6.0"
+    default="(VERCEL_URL ?? window.location.origin) + '/api/uploadthing'"
+  >
+    The url to where you are serving your uploadthing file router.
+    <Warning>
+      Required if your [route
+      handler](/api-reference/server#create-route-handler) is not served from
+      `/api/uploadthing`
+    </Warning>
+  </Property>
+</Properties>
+
+### Returns
+
+<Properties>
+  <Property name="useUploadThing">
+    The typed [useUploadThing](/api-reference/react#use-upload-thing) hook
+  </Property>
+  <Property name="uploadFiles">
+    The typed [uploadFiles](/api-reference/client#upload-files) function
+  </Property>
+  <Property
+    name="getRouteConfig"
+    type="(endpoint: string) => ExpandedRouteConfig"
+    since="6.6"
+  >
+    Get the config for a given endpoint outside of React context.
+    <Note>Can only be used if the NextSSRPlugin is used in the app.</Note>
+  </Property>
+</Properties>
+
+## UploadButton {{ tag: 'component', since: '5.0' }}
+
+<Note>
+  We strongly recommend using the
+  [`generateUploadButton`](/api-reference/react#generate-upload-button) function
+  instead of importing it from `@uploadthing/react` directly for a fully
+  typesafe component.
+</Note>
+
+A simple button that opens the native file picker and uploads the selected
+files. The default button is shown below. See [Theming](/concepts/theming) on
+how to customize it.
+
+import { UploadButton } from "@/components/UploadThing";
+
+<UploadButton
+  className="mt-5"
+  __internal_button_disabled
+  __internal_state="ready"
+  content={{
+    allowedContent: "Allowed content",
+    button: "Choose file(s)",
+  }}
+/>
+
+```tsx {{ title: "app/example-uploader.tsx" }}
+import { UploadButton } from "@uploadthing/react";
+
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export const OurUploadButton = () => (
+  <UploadButton<OurFileRouter>
+    endpoint="imageUploader"
+    onClientUploadComplete={(res) => {
+      // Do something with the response
+      console.log("Files: ", res);
+      alert("Upload Completed");
+    }}
+    onUploadError={(error: Error) => {
+      // Do something with the error.
+      alert(`ERROR! ${error.message}`);
+    }}
+    onBeforeUploadBegin={(files) => {
+      // Preprocess files before uploading (e.g. rename them)
+      return files.map(
+        (f) => new File([f], "renamed-" + f.name, { type: f.type }),
+      );
+    }}
+    onUploadBegin={(name) => {
+      // Do something once upload begins
+      console.log("Uploading: ", name);
+    }}
+  />
+);
+```
+
+### Props
+
+<Properties>
+  <Property name="endpoint" type="keyof FileRouter" required>
+    The name/slug of the [route](/file-routes) you want to upload to
+  </Property>
+<Property name="input" type="TInput" since="5.0"> 
+    Input JSON data matching your validator set on the [FileRoute](/file-routes#input)
+    to send with the request.
+  </Property>
+  <Property name="headers" type="HeadersInit | () => HeadersInit" since="6.4">
+    Headers to be sent along the request to request the presigned URLs. Useful
+    for authentication outside full-stack framework setups.
+  </Property>
+  <Property
+    name="onClientUploadComplete"
+    type="(UploadedFileResponse[]) => void"
+    since="5.0"
+  >
+    Callback function that runs **after** the serverside
+    [`onUploadComplete`](/file-routes#on-upload-complete) callback.
+    ```ts
+    export type UploadFileResponse<TServerOutput> = {
+      name: string
+      size: number
+      key: string
+      url: string
+      customId: string | null
+      // The data returned from the `onUploadComplete` callback on
+      // the file route. Note that if `RouteOptions.awaitServerData`
+      // isn't enabled this will be `null`.
+      serverData: TServerOutput
+    }
+    ```
+
+  </Property>
+  <Property name="onUploadError" type="function" since="5.0">
+    Callback function when that runs when an upload fails.
+  </Property>
+  <Property name="onUploadAborted" type="function" since="6.7">
+    Callback function when that runs when an upload is aborted.
+  </Property>
+  <Property name="onUploadProgress" type="function" since="5.1">
+    Callback function that gets continuously called as the file is uploaded to
+    the storage provider.
+  </Property>
+  <Property
+    name="onBeforeUploadBegin"
+    type="(files: File[]) => File[]"
+    since="6.0"
+  >
+    Callback function called before requesting the presigned URLs. The files
+    returned are the files that will be uploaded, meaning you can use this to
+    e.g. rename or resize the files.
+  </Property>
+  <Property name="onUploadBegin" type="function" since="5.4">
+    Callback function called after the presigned URLs have been retrieved, just
+    before the files are uploaded to the storage provider.
+  </Property>
+  <Property name="disabled" type="boolean" since="6.7" defaultValue="false">
+    Disables the button.
+  </Property>
+  <Property name="config.appendOnPaste" type="boolean" since="5.7" defaultValue="false">
+    Enables ability to paste files from clipboard when the button is focused.
+  </Property>
+  <Property
+    name="config.mode"
+    type="auto | manual"
+    since="5.4"
+    defaultValue="auto"
+  >
+    Set the mode of the button. 'auto' triggers upload right after selection,
+    'manual' requires an extra click to start uploading.
+  </Property>
+  <Property name="config.cn" type="(classes: string[]) => string" since="7.0" defaultValue="classes.join(' ')">
+    Function that merges classes together. May be required if you are [are theming components with TailwindCSS](/concepts/theming#theming-with-tailwind-css)
+    and your classes are not applied correctly.
+  </Property>
+</Properties>
+
+<Note>
+  If you want to disable the button based on when your `input` is not satisfied,
+  you can place your validator in a shared file, so that you can import it in
+  both the server-side `.input()` and on the client-side for your `disabled`
+  prop logic.
+</Note>
+
+## UploadDropzone {{ tag: 'component', since: '5.0' }}
+
+<Note>
+  We strongly recommend using the
+  [`generateUploadDropzone`](/api-reference/react#generate-upload-dropzone)
+  function instead of importing it from `@uploadthing/react` directly for a
+  fully typesafe component.
+</Note>
+
+A `react-dropzone` powered dropzone that let's you drag and drop files to
+upload. The default dropzone is shown below. See [Theming](/concepts/theming) on
+how to customize it.
+
+import { UploadDropzone } from "@/components/UploadThing";
+
+<UploadDropzone
+  __internal_state="ready"
+  __internal_button_disabled
+  __internal_dropzone_disabled
+  __internal_show_button
+  content={{
+    allowedContent: "Allowed content",
+    button: "Ready",
+  }}
+/>
+
+```tsx {{ title: "app/example-uploader.tsx" }}
+import { UploadDropzone } from "@uploadthing/react";
+
+import { OurFileRouter } from "./api/uploadthing/core";
+
+export const OurUploadDropzone = () => (
+  <UploadDropzone<OurFileRouter>
+    endpoint="withoutMdwr"
+    onClientUploadComplete={(res) => {
+      // Do something with the response
+      console.log("Files: ", res);
+      alert("Upload Completed");
+    }}
+    onUploadError={(error: Error) => {
+      alert(`ERROR! ${error.message}`);
+    }}
+    onUploadBegin={(name) => {
+      // Do something once upload begins
+      console.log("Uploading: ", name);
+    }}
+    onDrop={(acceptedFiles) => {
+      // Do something with the accepted files
+      console.log("Accepted files: ", acceptedFiles);
+    }}
+  />
+);
+```
+
+### Props
+
+<Properties>
+  <Property name="endpoint" type="keyof FileRouter" required>
+    The name/slug of the [route](/file-routes) you want to upload to upload to
+  </Property>
+<Property name="input" type="TInput" since="5.0"> 
+    Input JSON data matching your validator set on the [FileRoute](/file-routes#input)
+    to send with the request.
+  </Property>
+  <Property name="headers" type="HeadersInit | () => HeadersInit" since="6.4">
+    Headers to be sent along the request to request the presigned URLs. Useful
+    for authentication outside full-stack framework setups.
+  </Property>
+  <Property
+    name="onClientUploadComplete"
+    type="(UploadedFileResponse[]) => void"
+    since="5.0"
+  >
+    Callback function that runs **after** the serverside
+    [`onUploadComplete`](/file-routes#on-upload-complete) callback.
+    ```ts
+    export type UploadFileResponse<TServerOutput> = {
+      name: string
+      size: number
+      key: string
+      url: string
+      customId: string | null
+      // The data returned from the `onUploadComplete` callback on
+      // the file route. Note that if `RouteOptions.awaitServerData`
+      // isn't enabled this will be `null`.
+      serverData: TServerOutput
+    }
+    ```
+
+  </Property>
+  <Property name="onUploadError" type="function" since="5.0">
+    Callback function when that runs when an upload fails.
+  </Property>
+  <Property name="onUploadAborted" type="function" since="6.7">
+    Callback function when that runs when an upload is aborted.
+  </Property>
+  <Property name="onUploadProgress" type="function" since="5.1">
+    Callback function that gets continuously called as the file is uploaded to
+    the storage provider.
+  </Property>
+  <Property
+    name="onBeforeUploadBegin"
+    type="(files: File[]) => File[]"
+    since="6.0"
+  >
+    Callback function called before requesting the presigned URLs. The files
+    returned are the files that will be uploaded, meaning you can use this to
+    e.g. rename or resize the files.
+  </Property>
+  <Property name="onUploadBegin" type="function" since="5.4">
+    Callback function called after the presigned URLs have been retrieved, just
+    before the files are uploaded to the storage provider.
+  </Property>
+  <Property name="disabled" type="boolean" since="6.7" defaultValue="false">
+    Disables the button.
+  </Property>
+  <Property name="config.appendOnPaste" type="boolean" since="5.7" defaultValue="false">
+    Enables ability to paste files from clipboard when the button is focused.
+  </Property>
+  <Property
+    name="config.mode"
+    type="auto | manual"
+    since="5.4"
+    defaultValue="manual"
+  >
+    Set the mode of the button. 'auto' triggers upload right after selection,
+    'manual' requires an extra click to start uploading.
+  </Property>
+  <Property name="config.cn" type="(classes: string[]) => string" since="7.0" defaultValue="classes.join(' ')">
+    Function that merges classes together. May be required if you are [are theming components with TailwindCSS](/concepts/theming#theming-with-tailwind-css)
+    and your classes are not applied correctly.
+  </Property>
+</Properties>
+
+<Note>
+  If you want to disable the dropzone based on when your `input` is not
+  satisfied, you can place your validator in a shared file, so that you can
+  import it in both the server-side `.input()` and on the client-side for your
+  `disabled` prop logic.
+</Note>
+
+## useDropzone {{ tag: 'hook', since: '5.6' }}
+
+This hook is currently a minified fork of
+[react-dropzone](https://github.com/react-dropzone/react-dropzone) with better
+ESM support. See [their docs](https://react-dropzone.js.org/) for reference.
+
+You can import the minified hook from `@uploadthing/react`. If you need access
+to any of the removed APIs, you should import the original hook from
+`react-dropzone`.
+
+<Note>
+  This hook isn't strictly covered by semver as we might make changes to tailor
+  it to our needs in a future minor release. Migration guides will be provided
+  if this happens.
+</Note>
+
+## useUploadThing {{ tag: 'hook', since: '5.0' }}
+
+This hook provides a function to start uploading, an `isUploading` state, and
+the `permittedFileInfo` which gives information about what file types, sizes and
+counts are allowed by the endpoint.
+
+<Note>
+  You have to generate this hook using the
+  [`generateReactHelpers`](/api-reference/react#generate-react-helpers)
+  function.
+</Note>
+
+### Parameters
+
+The first parameter is the route endpoint to upload to, and the second parameter
+is an options object:
+
+<Properties>
+  <Property name="files" type="File[]" required since="5.0">
+    An array of files to upload.
+  </Property>
+  <Property name="headers" type="HeadersInit | () => HeadersInit" since="6.4">
+    Headers to be sent along the request to request the presigned URLs. Useful
+    for authentication outside full-stack framework setups.
+  </Property>
+  <Property name="signal" type="AbortSignal" since="6.7">
+    An abort signal to abort the upload.
+  </Property>
+  <Property
+    name="onClientUploadComplete"
+    type="(UploadedFileResponse[]) => void"
+    since="5.0"
+  >
+    Callback function that runs **after** the serverside
+    [`onUploadComplete`](/file-routes#on-upload-complete) callback.
+    ```ts
+    export type UploadFileResponse<TServerOutput> = {
+      name: string
+      size: number
+      key: string
+      url: string
+      customId: string | null
+      // The data returned from the `onUploadComplete` callback on
+      // the file route. Note that if `RouteOptions.awaitServerData`
+      // isn't enabled this will be `null`.
+      serverData: TServerOutput
+    }
+    ```
+  </Property>
+  <Property name="onUploadError" type="function" since="5.0">
+    Callback function when that runs when an upload fails.
+  </Property>
+  <Property name="onUploadAborted" type="function" since="6.7">
+    Callback function when that runs when an upload is aborted.
+  </Property>
+  <Property name="onUploadProgress" type="function" since="5.1">
+    Callback function that gets continuously called as the file is uploaded to
+    the storage provider.
+  </Property>
+  <Property name="onUploadBegin" type="function" since="5.4">
+    Callback function called after the presigned URLs have been retrieved, just
+    before the files are uploaded to the storage provider.
+  </Property>
+</Properties>
+
+### Returns
+
+<Properties>
+  <Property name="startUpload" type="(files: File[], input?: TInput) => void">
+    Function to start the upload. `TInput` is inferred from what you've defined
+    on [the fileroute](/file-routes#input) on the backend.
+  </Property>
+  <Property name="isUploading" type="boolean">
+    Flag for if file(s) are currently uploading
+  </Property>
+  <Property
+    name="permittedFileTypes"
+    type="{ slug: string, config: ExpandedRouteConfig }"
+    deprecated
+  >
+    Information on permitted file types, sizes, and counts etc.
+  </Property>
+  <Property name="routeConfig" type="ExpandedRouteConfig" since="6.6">
+    Information on permitted file types, sizes, and counts etc.
+  </Property>
+</Properties>
+
+### Example
+
+The following example shows a simple dropzone component using the `useDropzone`
+and `useUploadThing` hooks. For a more complete example, take a look at
+[our prebuilt components](https://github.com/pingdotgg/uploadthing/tree/main/packages/react/src/components).
+
+```tsx {{ title: "app/example-custom-uploader.tsx" }}
+// import { useDropzone } from "@uploadthing/react";
+import { generateClientDropzoneAccept } from "uploadthing/client";
+
+import { useUploadThing } from "~/utils/uploadthing";
+
+export function MultiUploader() {
+  const [files, setFiles] = useState<File[]>([]);
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    setFiles(acceptedFiles);
+  }, []);
+
+  const { startUpload, routeConfig } = useUploadThing("myUploadEndpoint", {
+    onClientUploadComplete: () => {
+      alert("uploaded successfully!");
+    },
+    onUploadError: () => {
+      alert("error occurred while uploading");
+    },
+    onUploadBegin: () => {
+      alert("upload has begun");
+    },
+  });
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept: generateClientDropzoneAccept(
+      generatePermittedFileTypes(routeConfig).fileTypes,
+    ),
+  });
+
+  return (
+    <div {...getRootProps()}>
+      <input {...getInputProps()} />
+      <div>
+        {files.length > 0 && (
+          <button onClick={() => startUpload(files)}>
+            Upload {files.length} files
+          </button>
+        )}
+      </div>
+      Drop files here!
+    </div>
+  );
+}
+```

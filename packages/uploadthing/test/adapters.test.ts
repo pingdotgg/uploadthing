@@ -96,7 +96,7 @@ describe("adapters:h3", async () => {
     expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
       body: {
         isDev: false,
-        awaitServerData: false,
+        awaitServerData: true,
         fileKeys: [json[0].key],
         metadata: {},
         callbackUrl: "http://localhost:3000/",
@@ -175,7 +175,7 @@ describe("adapters:server", async () => {
     expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
       body: {
         isDev: false,
-        awaitServerData: false,
+        awaitServerData: true,
         fileKeys: [json[0].key],
         metadata: {},
         callbackUrl: "http://localhost:3000/",
@@ -252,7 +252,7 @@ describe("adapters:next", async () => {
     expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
       body: {
         isDev: false,
-        awaitServerData: false,
+        awaitServerData: true,
         fileKeys: [json[0].key],
         metadata: {},
         callbackUrl: "http://localhost:3000/",
@@ -381,7 +381,7 @@ describe("adapters:next-legacy", async () => {
     expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
       body: {
         isDev: false,
-        awaitServerData: false,
+        awaitServerData: true,
         fileKeys: [jsonData[0]?.key],
         metadata: {},
         callbackUrl: "http://localhost:3000/",
@@ -479,7 +479,7 @@ describe("adapters:express", async () => {
     expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
       body: {
         isDev: false,
-        awaitServerData: false,
+        awaitServerData: true,
         fileKeys: [json[0].key],
         metadata: {},
         callbackUrl: url,
@@ -617,7 +617,7 @@ describe("adapters:fastify", async () => {
     expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
       body: {
         isDev: false,
-        awaitServerData: false,
+        awaitServerData: true,
         fileKeys: [json[0].key],
         metadata: {},
         callbackUrl: url,

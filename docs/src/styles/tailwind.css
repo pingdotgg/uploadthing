@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  [inert] ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /**
+   * Shiki 
+   */
+  pre.shiki {
+    counter-reset: line-number;
+  }
+
+  pre.shiki code {
+    display: grid;
+  }
+
+  pre.shiki,
+  pre.shiki span {
+    color: var(--shiki-light) !important;
+    background-color: transparent;
+  }
+
+  html.dark pre.shiki,
+  html.dark pre.shiki span {
+    color: var(--shiki-dark) !important;
+  }
+
+  pre.shiki .line {
+    counter-increment: line-number;
+  }
+
+  pre.shiki .line:not(:last-of-type)::before {
+    content: counter(line-number);
+    color: hsl(240 5.3% 26.1%);
+    display: inline-block;
+    text-align: right;
+    margin-right: 1em;
+    width: 2ch;
+  }
+
+  html.dark pre.shiki .line:not(:last-of-type)::before {
+    color: hsl(240 5% 64.9%);
+  }
+
+  pre.shiki .diff.add {
+    background-color: hsla(141.7 76.6% 73.1% / 0.5);
+  }
+  pre.shiki .diff.remove {
+    background-color: hsla(0 93.5% 81.8% / 0.7);
+  }
+
+  html.dark pre.shiki .diff.add {
+    background-color: hsla(143.8 61.2% 20.2% / 0.7);
+  }
+  html.dark pre.shiki .diff.remove {
+    background-color: hsla(0 62.8% 30.6% / 0.7);
+  }
+}
+
+/*
+ * Scalar
+ */
+.references-layout {
+  height: max-content;
+}
+
+.references-classic-header-container,
+.section-content {
+  display: none;
+}
+
+.section.introduction-section {
+  padding: 16px 0 !important;
+}
+
+.section-container {
+  border: none !important;
+  padding: 0 !important;
+}
+
+.tag-section {
+  padding: 0 !important;
+}
+
+.endpoint-label-path {
+  display: none !important;
+}
+
+.show-api-client-button {
+  background: var(--theme-color-accent) !important;
+}
+
+.scalar-codeblock-code {
+  display: unset;
+}
+
+:root {
+  --theme-color-accent: rgb(248 113 113);
+  --theme-color-background: hsla(348, 71%, 93%, 1);
+  --scalar-api-client-color: var(--theme-color-accent);
+  --scalar-background-1: hsla(241.9, 6.3926%, 10.038%) !important;
+}
+
+.dark-mode {
+  --scalar-background-1: hsla(241.9, 6.3926%, 10.038%) !important;
+  --scalar-color-accent: rgb(248 113 113) !important;
+  --scalar-color-background: hsla(348, 24%, 12%, 1) !important;
+}

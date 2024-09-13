@@ -67,7 +67,7 @@ export type UploadFilesOptions<
     | undefined;
   /**
    * This option has been moved to your serverside route config.
-   * Please opt-in by setting `awaitServerData: true` in your route
+   * Please opt-in by setting `awaitServerData: false` in your route
    * config instead.
    * ### Example
    * ```ts

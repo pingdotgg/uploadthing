@@ -27,7 +27,8 @@
 + const { uploadFiles } = genUploader(opts)
 ```
 
-- Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteOption `awaitServerData`. This also means the default has been swapped to no longer await server data by default and instead resolve as soon as the file has been uploaded.
+- Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteOption `awaitServerData`. If you want your client callback to run as soon as the file has been uploaded,
+without waiting for your server side `onUploadComplete` to run, you can now set `awaitServerData` to `false`.
 
 ```diff
   // Client option

@@ -1,0 +1,180 @@
+import { ArticleLayout } from "@/app/blog/_components/layouts";
+import { blogMetadata } from "@/lib/utils";
+
+export const article = {
+  authors: [
+    {
+      name: "Theo Browne",
+      role: "CEO @ Ping Labs",
+      src: "https://github.com/t3dotgg.png",
+      href: "https://x.com/t3dotgg",
+    },
+  ],
+  date: "2024-09-11",
+  title: "Our First Major Outage",
+  description:
+    "We had our first major outage on September 10th, preventing users from accessing files.",
+  tags: ["incidents"],
+  image: "/images/blog/incident-report-20240910-og.png",
+};
+export const metadata = blogMetadata(article);
+
+export const dynamic = "force-static";
+
+export default (props) => <ArticleLayout article={article} {...props} />;
+
+# Incident report: 2024-09-10
+
+On Tuesday, September 10th, 2024, from 08:51 to 09:44 UTC, all URLs to files
+hosted by UploadThing were inaccessible. **No data was lost.**
+
+While we are thankful for the lack of data loss, this is an unacceptable outage.
+UploadThing users should trust that their files are accessible at all times, and
+I sympathize for the engineers who had managers, customers and more doubting
+their choices as a result of our failure. We f\*\*k'd up, and we're sorry.
+
+We've spent the last 24 hours breaking down what caused it and how we can
+prevent regressions going forward.
+
+## What happened??
+
+tl;dr - we made a change to our KV that resolves file URLs. It wrote bad URLs on
+every request, preventing files from resolving.
+
+If you've played with UploadThing much, you've likely noticed the `utfs.io`
+domains that files are hosted on. utfs.io is hosted on Cloudflare as a way to
+authenticate and resolve files from our file host (currently S3).
+
+This layer has made our lives significantly easier and helped provide a bunch of
+cool features. We would not have been able to do our multi-region push without
+it. Multi-region was still a massive lift though, and when we did it, we
+realized our old "all in one" S3 bucket would no longer work.
+
+It's been a goal of ours to remove this particular "uploadthing-prod.s3" bucket
+for awhile. To start the move, we transferred all the files over, and started
+overriding URLs in the Cloudflare KV on request. The code we deployed at 08:51
+was the following:
+
+```ts
+const newUrl = fileUrl.replace(
+  "uploadthing-prod.s3",
+  "uploadthing-prod-sea1.s3",
+);
+// non-blocking update of KV
+ctx.waitUntil(env.UTFS_KV.put(cacheKey, newUrl));
+```
+
+By itself, this code should not look suspicious in any way. We're updating the
+file's URL to point at the new default region (sea1).
+
+The issue becomes more apparent if you see the _other_ place we update the KV:
+
+```ts
+ctx.waitUntil(env.UTFS_KV.put(cacheKey, JSON.stringify(row.download_url)));
+```
+
+Note the `JSON.stringify` call. We were stringifying the input URLs, which meant
+were were calling `JSON.parse` on the outputs.
+
+If this error was made in isolation, it would have only broken old files. But it
+broke _all_ files. How is that? Well, I hid a bit of the code from that first
+snippet.
+
+```ts
+if (fileUrl?.includes('uploadthing-prod')) {
+  // <-- Pay attention here
+  const newUrl = fileUrl.replace(
+    'uploadthing-prod.s3',
+    'uploadthing-prod-sea1.s3',
+  )
+  // non-blocking update of KV
+  ctx.waitUntil(env.UTFS_KV.put(cacheKey, newUrl))
+  return newUrl
+}
+```
+
+See the "fileUrl.includes" call there? It should have been
+`fileUrl.includes('uploadthing-prod.s3')`. It wasn't. Which meant this code ran
+on _every single call URL when requested_.
+
+These two mistakes in combination caused every request to a given file to break
+it's entry in KV, thereby breaking the resolution of that file going forward. A
+file would load once, then never again after the KV update fired.
+
+## How did this get deployed?
+
+An honest mistake. 08:51 UTC is 01:51 PDT, which is our timezone. The code got a
+semi-sleepy review and was yolo merged late at night. It seemed like the most
+innocent change in the world, and I do not fault either the people who wrote the
+code nor those who reviewed it. As CEO and "tech lead", I am 100% at fault here,
+and believe me, I feel it.
+
+The resolver code is tiny, under 200 lines of code, and it runs the most
+critical business logic of UploadThing. Even if our infra collapses entirely,
+files should still be accessible. I have not been diligent in reviews or testing
+environments for this particular path, as it was so stupid simple it felt
+unnecessary.
+
+Massive, unforced L on our part.
+
+## How did we fix it?
+
+The bad `if` statement was obvious upon looking at the code, and the lack of
+`JSON.stringify` was quickly caught by Julius right after. From alert to fix, we
+were back in under 10 minutes.
+
+The fix? Revert and nuke the entire KV. Since the KV was effectively a mirror of
+data from our database, it was able to "recreate" itself just upon users hitting
+it. We only use the KV to speed up the lookup from file key to URL (this is also
+why no data was lost, the DB was 100% fine).
+
+## How do we prevent this going forward?
+
+More testing!
+
+Just kidding there. It would take 2,000+ lines of code, mocks, and quicksand to
+make this 200loc worker even vaguely testable. Even if we were thorough with our
+testing, it is unlikely we would have caught this without diligent code reviews.
+
+I see a handful of meaningful opportunities to improve here.
+
+### 1. Diligence in code review
+
+I know I preach this a lot, but it was a big miss on our part. Going forward,
+all changes to core infra code will be reviewed by at least two people before
+shipping. Ideally we'll also wait a day before shipping as well 🙃
+
+### 2. Stay up after deployments to make sure nothing dies
+
+Being in bed when this happened sucked. We shouldn't be deploying changes when
+2/3rds of our 3 person team is trying to sleep. I'm incredibly thankful for the
+users who spammed my DMs enough to get me out of bed, I don't want to think
+about how much longer we might have taken to recover otherwise.
+
+### 3. Better alerting
+
+Our current alerting has two major issues: 1. It's only checking the website and
+uploading infra, and 2. It doesn't alert us.
+
+We need a paging system. And not just one with automated alerts, one that our
+customers can use when things are broken in unexpected ways.
+
+We've probably needed it for awhile, but things have been stable enough and the
+team's sleep schedule...uh...covers time zones well? lol.
+
+## Wrapping up
+
+Despite my jokes, please know how seriously we're taking this. I'm currently up
+at 3am before stream day just to make sure we share every detail. We're working
+our butts off to make UploadThing the best way to upload files on the web. And
+I'm so excited to show you what we've been cooking.
+
+This change was part of a years long effort to overhaul our infra. I'm so
+excited about what's next. My excitement can't build trust though, and failures
+like this hurt a lot.
+
+Know we're working hard to maintain the resilience y'all have come to expect.
+And thank you to everyone who let us know so quickly and stuck with us through
+the turbulence, you're real as hell.
+
+Peace nerds. 🫡
