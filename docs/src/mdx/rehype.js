@@ -4,7 +4,7 @@ import { slugifyWithCounter } from "@sindresorhus/slugify";
 import * as acorn from "acorn";
 import { toString } from "mdast-util-to-string";
 import { mdxAnnotations } from "mdx-annotations";
-import { getHighlighter } from "shiki";
+import { getSingletonHighlighter } from "shiki";
 import { visit } from "unist-util-visit";
 
 function rehypeParseCodeBlocks() {
@@ -25,7 +25,7 @@ let highlighter;
 
 function rehypeShiki() {
   return async (tree) => {
-    highlighter ??= await getHighlighter({
+    highlighter ??= await getSingletonHighlighter({
       themes: ["github-light", "github-dark"],
       langs: [
         "bash",
