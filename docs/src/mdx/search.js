@@ -75,7 +75,6 @@ export default function withSearch(nextConfig = {}) {
               // Remove double slashes that might have occured from removing route groups
               url = url.replaceAll(/\/\/+/g, "/");
 
-              console.log("search url", { file, url });
               let mdx = fs.readFileSync(path.join(appDir, file), "utf8");
 
               let sections = [];
