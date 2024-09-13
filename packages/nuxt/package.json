@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/nuxt",
-  "version": "6.5.10",
+  "version": "7.0.0",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -43,7 +43,7 @@
     "uploadthing": "workspace:*"
   },
   "peerDependencies": {
-    "uploadthing": "^6.10.0"
+    "uploadthing": "^7.0.0"
   },
   "eslintConfig": {
     "root": true,

@@ -1,5 +1,116 @@
 # uploadthing
 
+## 7.0.0
+
+### Major Changes
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: reduce bundle size
+
+  We've continued our efforts to reduce the bundle size of the client side javascript. In a previous minor release, we reduced the bundle size by 70%, from 120kB to 40kB. This release continues on that work with a further reduction of 35% down to just over 25kB client side
+  javascript shipped to the browser from the `uploadthing/client` package.
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: change signature of `genUploader` to return an object with 2 functions, `uploadFiles` and `createUpload`
+
+  `createUpload` can be used to create a resumable upload which you can pause and resume as you wish.
+  See example: https://github.com/pingdotgg/uploadthing/blob/v7/examples/backend-adapters/client-vanilla/src/resumable-upload.ts
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: use ingest server
+
+  Multi Part Uplaods hasve been abstracted away and files are now uploaded as a single stream to UploadThing, reducing the manual steps required to upload files and improves performance.
+
+  Polling has been removed in favor of a streaming upload process with instant feedback
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update paths to new api domain
+
+  Previously the SDK version was just sent in the header which made it cumbersome to make large changes on the API without risking breaking older versions. This change improves our flexibility to make changes to the API without needing to do a major bump on the SDK. It should come with some nice performance wins too!
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - ## 🚨 Breaking Changes
+
+  ### General
+
+  - Change `UPLOADTHING_API_KEY` to `UPLOADTHING_TOKEN`. The token contains both your API key and some other metadata required by the SDK. You can get a token from the [UploadThing dashboard](https://uploadthing.com/dashboard). All options related to `uploadthingSecret` / `apiKey` has now been removed and replaced with `token`:
+
+  ```diff
+  - createRouteHandler({ router, config: { uploadthingSecret: 'sk_123' } })
+  + createRouteHandler({ router, config: { token: 'MY_TOKEN' } })
+
+  - new UTApi({ apiKey: 'sk_123' })
+  + new UTApi({ token: 'MY_TOKEN' })
+  ```
+
+  - If you relied on the `CUSTOM_INFRA_URL` environment variable override, you will have to change this to `UPLOADTHING_API_URL` or `UPLOADTHING_INGEST_URL` depending on your use case.
+
+  ### `uploadthing/client`
+
+  - Change signature of `genUploader` to return an object instead of a single function.
+
+  ```diff
+  - const uploadFiles = genUploader(opts)
+  + const { uploadFiles } = genUploader(opts)
+  ```
+
+  - Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteOption `awaitServerData`. If you want your client callback to run as soon as the file has been uploaded,
+    without waiting for your server side `onUploadComplete` to run, you can now set `awaitServerData` to `false`.
+
+  ```diff
+    // Client option
+    uploadFiles({
+  -   skipPolling: true
+    })
+    // Server option
+    const router = {
+      myRoute: f(
+        { ... },
+  +     { awaitServerData: false }
+      )
+    }
+  ```
+
+  Read more about the new `RouteOptions` in the [📚 Server API Reference docs](https://docs.uploadthing.com/api-reference/server#route-options)
+
+  ### Adapters
+
+  - Change `config.logLevel` levels. Most are now capitalized to match our new logger. Auto-complete should make migrating trivial.
+
+  ```diff
+  - logLevel: 'info'
+  + logLevel: 'Info'
+  ```
+
+  - `uploadthing/server` adapter now returns a single function instead of individual named functions. The handler accepts a request and will handle routing internally.
+
+  ```diff
+  - const { GET, POST } = createRouteHandler({ router, config })
+  + const handler = createRouteHandler({ router, config })
+  ```
+
+  You can re-export the handler as named functions if your framework requires it.
+
+  ```ts
+  const handler = createRouteHandler({ router, config });
+  export { handler as GET, handler as POST };
+  ```
+
+  ## Features
+
+  ### General
+
+  - Add new configuration provider. All config options (e.g. `UTApi.constructor` options or `createRouteHandler.config` option can now also be set using an environment variable. Setting the option in the constructor is still supported and takes precedence over the environment variable.
+
+  ```ts
+  const api = new UTApi({
+    logLevel: "Info",
+  });
+  // is the same as
+  process.env.UPLOADTHING_LOG_LEVEL = "Info";
+  const api = new UTApi();
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13), [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13)]:
+  - @uploadthing/shared@7.0.0
+
 ## 6.13.3
 
 ### Patch Changes

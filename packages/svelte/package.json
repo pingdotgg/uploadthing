@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/svelte",
-  "version": "6.7.0",
+  "version": "7.0.0",
   "license": "MIT",
   "scripts": {
     "dev": "vite dev",
@@ -30,7 +30,7 @@
   ],
   "peerDependencies": {
     "svelte": "^4.0.0",
-    "uploadthing": "^6.10.0"
+    "uploadthing": "^7.0.0"
   },
   "dependencies": {
     "@uploadthing/dropzone": "workspace:*",
