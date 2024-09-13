@@ -61,7 +61,7 @@ const Head = () => {
   const { asPath, defaultLocale, locale } = useRouter();
   const { frontMatter } = useConfig();
   const url =
-    "https://docs.uploadthing.com" +
+    "https://v6.docs.uploadthing.com" +
     (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
 
   return (
@@ -80,7 +80,7 @@ const Head = () => {
       />
       <meta
         name="twitter:image"
-        content="https://docs.uploadthing.com/og.jpg?v=3"
+        content="https://v6.docs.uploadthing.com/og.jpg?v=3"
       />
     </>
   );
@@ -161,14 +161,14 @@ const config = {
       ],
       description: "Docs for the best file uploader to date",
       openGraph: {
-        images: [{ url: "https://docs.uploadthing.com/og.jpg?v=3" }],
+        images: [{ url: "https://v6.docs.uploadthing.com/og.jpg?v=3" }],
       },
-      canonical: `https://docs.uploadthing.com${currentUrl}`,
+      canonical: `https://v6.docs.uploadthing.com${currentUrl}`,
       noindex: process.env.NO_INDEX === "true",
       titleTemplate: "%s – uploadthing",
       twitter: {
         cardType: "summary_large_image",
-        site: "https://docs.uploadthing.com",
+        site: "https://v6.docs.uploadthing.com",
       },
     };
   },
