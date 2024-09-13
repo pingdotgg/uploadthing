@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.2.10",
+  "version": "0.3.0",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
