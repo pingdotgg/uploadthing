@@ -29,7 +29,7 @@
     "@types/react-highlight-words": "^0.20.0",
     "@uploadthing/react": "workspace:*",
     "acorn": "^8.12.1",
-    "autoprefixer": "^10.4.7",
+    "autoprefixer": "^10.4.19",
     "clsx": "^2.1.0",
     "fast-glob": "^3.3.2",
     "flexsearch": "^0.7.43",

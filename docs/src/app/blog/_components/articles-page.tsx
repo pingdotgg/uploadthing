@@ -11,6 +11,7 @@ export async function ArticlesPage(
 ) {
   const activeTag = props.tag;
   let { articles, allTags } = await getAllArticles(activeTag);
+  const [featuredArticle, ...remainingArticles] = articles;
 
   return (
     <Container className="mt-16 w-full sm:mt-32">
@@ -41,14 +42,14 @@ export async function ArticlesPage(
           {activeTag ?? "All posts"}
         </h1>
         <div className="mt-16">
-          <FeaturedArticle article={articles[0]} />
+          <FeaturedArticle article={featuredArticle} />
         </div>
       </header>
 
       <div className="mt-16 sm:mt-20">
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex flex-col space-y-16">
-            {articles.slice(1).map((article) => (
+            {remainingArticles.map((article) => (
               <ArticleCard key={article.slug} article={article} />
             ))}
           </div>

@@ -146,7 +146,7 @@ importers:
         specifier: ^8.12.1
         version: 8.12.1
       autoprefixer:
-        specifier: ^10.4.7
+        specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
       clsx:
         specifier: ^2.1.0
