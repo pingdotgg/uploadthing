@@ -24,6 +24,12 @@ const nextConfig = {
       },
     ],
   },
+  rewrites: async () => [
+    { source: "/auth-security", destination: "/concepts/auth-security" },
+    { source: "/errors", destination: "/concepts/error-handling" },
+    { source: "/regions-and-acl", destination: "/concepts/regions-acl" },
+    { source: "/theming", destination: "/concepts/theming" },
+  ],
 };
 
 export default withSearch(withMDX(nextConfig));
