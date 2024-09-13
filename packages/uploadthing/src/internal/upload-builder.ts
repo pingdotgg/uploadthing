@@ -38,7 +38,7 @@ function internalCreateBuilder<
       },
     },
     routeOptions: {
-      awaitServerData: false,
+      awaitServerData: true,
     },
 
     inputParser: {

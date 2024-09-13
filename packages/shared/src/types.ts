@@ -181,9 +181,10 @@ type RouteConfig<TAdditionalProperties extends Record<string, unknown>> = {
  */
 export type RouteOptions = {
   /**
-   * Set this to `true` to wait for the server onUploadComplete data
-   * on the client before running `onClientUploadComplete`.
-   * @default false
+   * Set this to `false` to run the client-side `onClientUploadComplete`
+   * immediately after file has been uploaded without waiting for the
+   * server to return the `onUploadComplete` data.
+   * @default true
    */
   awaitServerData?: boolean;
   /**

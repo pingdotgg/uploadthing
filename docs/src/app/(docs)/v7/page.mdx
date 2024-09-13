@@ -158,14 +158,13 @@ downside, but in order to be non-breaking, could not not be default, and thus
 was not an ideal solution.
 
 In v7, we're moving this option to the server-side route configuration so that
-you have all the configuration for a given file route in one place. We're also
-changing the default behaviour to make waiting opt-in.
+you have all the configuration for a given file route in one place.
 
 ```ts
 // On the client
 await uploadFiles("myUploader", {
   files: [ ... ],
-  // Opt-out of waiting for server data // [!code --]
+  // Opt-out of waiting for server data
   skipPolling: true // [!code --]
 })
 ```
@@ -179,8 +178,8 @@ const f = createUploadThing();
 export const uploadRouter = {
   myUploader: f(
     { image: { maxFileSize: "16MB" } },
-    // Waiting for server data is now opt-in // [!code ++]
-    { awaitServerData: true }, // [!code ++]
+    // Opt-out of waiting for server data
+    { awaitServerData: false }, // [!code ++]
   ),
 };
 ```

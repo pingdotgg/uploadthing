@@ -10,10 +10,12 @@ describe("genuploader", () => {
   const f = createBuilder();
 
   const router = {
-    uploadable1: f(["image", "video"]).onUploadComplete(() => {
+    uploadable1: f(["image", "video"], {
+      awaitServerData: false,
+    }).onUploadComplete(() => {
       return { foo: "bar" as const };
     }),
-    uploadable2: f(["image"], { awaitServerData: true })
+    uploadable2: f(["image"])
       .input(z.object({ foo: z.number() }))
       .onUploadComplete(() => {
         return { baz: "qux" as const };

@@ -613,7 +613,7 @@ const handleUploadAction = (opts: {
         isDev,
         callbackUrl: devHookRequest.url,
         callbackSlug: slug,
-        awaitServerData: routeOptions.awaitServerData ?? false,
+        awaitServerData: routeOptions.awaitServerData ?? true,
       }),
       Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
       Effect.tapBoth({
