@@ -1,5 +1,19 @@
 # @uploadthing/shared
 
+## 7.0.0
+
+### Major Changes
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: use ingest server
+
+  Multi Part Uplaods hasve been abstracted away and files are now uploaded as a single stream to UploadThing, reducing the manual steps required to upload files and improves performance.
+
+  Polling has been removed in favor of a streaming upload process with instant feedback
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update paths to new api domain
+
+  Previously the SDK version was just sent in the header which made it cumbersome to make large changes on the API without risking breaking older versions. This change improves our flexibility to make changes to the API without needing to do a major bump on the SDK. It should come with some nice performance wins too!
+
 ## 6.7.9
 
 ### Patch Changes

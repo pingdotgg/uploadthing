@@ -12,9 +12,9 @@
     "@solidjs/meta": "^0.29.3",
     "@solidjs/router": "^0.12.4",
     "@solidjs/start": "^0.6.0",
-    "@uploadthing/solid": "6.6.0",
+    "@uploadthing/solid": "7.0.0",
     "solid-js": "^1.8.15",
-    "uploadthing": "6.13.3",
+    "uploadthing": "7.0.0",
     "vinxi": "0.3.11"
   },
   "devDependencies": {
