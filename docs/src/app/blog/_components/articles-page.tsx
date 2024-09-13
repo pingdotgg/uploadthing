@@ -48,9 +48,9 @@ export async function ArticlesPage(
       <div className="mt-16 sm:mt-20">
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex flex-col space-y-16">
-            {/* {articles.map((article) => (
+            {articles.slice(1).map((article) => (
               <ArticleCard key={article.slug} article={article} />
-            ))} */}
+            ))}
           </div>
         </div>
       </div>
