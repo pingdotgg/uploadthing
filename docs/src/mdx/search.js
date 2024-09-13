@@ -71,6 +71,10 @@ export default function withSearch(nextConfig = {}) {
                   .replaceAll(/\(.+\)/g, "")
                   // Remove `page.msx`
                   .replace(/(^|\/)page\.mdx$/, "");
+
+              // Remove double slashes that might have occured from removing route groups
+              url = url.replaceAll(/\/\/+/g, "/");
+
               let mdx = fs.readFileSync(path.join(appDir, file), "utf8");
 
               let sections = [];
