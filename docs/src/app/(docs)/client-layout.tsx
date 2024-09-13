@@ -1,20 +1,19 @@
-'use client'
+"use client";
 
-import { Link } from 'next-view-transitions'
-import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
-
-import { Footer } from '@/components/Footer'
-import { Header } from '@/components/Header'
-import { LogoBlob, LogoText } from '@/components/Logo'
-import { Navigation } from '@/components/Navigation'
-import { type Section, SectionProvider } from '@/components/SectionProvider'
-import { XMarkIcon } from '@heroicons/react/20/solid'
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { LogoBlob, LogoText } from "@/components/Logo";
+import { Navigation } from "@/components/Navigation";
+import { SectionProvider, type Section } from "@/components/SectionProvider";
+import { XMarkIcon } from "@heroicons/react/20/solid";
+import { motion } from "framer-motion";
+import { Link } from "next-view-transitions";
 
 const PreviewBanner = (props: {
-  open: boolean
-  setOpen: (open: boolean) => void
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }) => {
   return (
     <motion.div
@@ -39,7 +38,7 @@ const PreviewBanner = (props: {
               <circle r={1} cx={1} cy={1} />
             </svg>
             You're looking at documentation for the latest version of
-            UploadThing. Go to legacy documentation{' '}
+            UploadThing. Go to legacy documentation{" "}
             <span aria-hidden="true">&rarr;</span>
           </a>
         </p>
@@ -56,23 +55,23 @@ const PreviewBanner = (props: {
         </button>
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
 export function Layout({
   children,
   allSections,
 }: {
-  children: React.ReactNode
-  allSections: Record<string, Array<Section>>
+  children: React.ReactNode;
+  allSections: Record<string, Array<Section>>;
 }) {
-  let pathname = usePathname()
-  const [bannerOpen, setBannerOpen] = useState(false)
+  let pathname = usePathname();
+  const [bannerOpen, setBannerOpen] = useState(false);
   useEffect(() => {
     setTimeout(() => {
-      setBannerOpen(true)
-    }, 1000)
-  }, [])
+      setBannerOpen(true);
+    }, 1000);
+  }, []);
 
   return (
     <SectionProvider sections={allSections[pathname] ?? []}>
@@ -105,5 +104,5 @@ export function Layout({
         </div>
       </div>
     </SectionProvider>
-  )
+  );
 }

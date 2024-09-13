@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: '@uploadthing/react',
-  description: 'React bindings for UploadThing.',
-  category: 'API Reference',
-})
+  title: "@uploadthing/react",
+  description: "React bindings for UploadThing.",
+  category: "API Reference",
+});
 
 # UploadThing React
 
@@ -24,12 +24,12 @@ components allows for fully typesafe components bound to the type of your file
 router.
 
 ```tsx {{ title: "utils/uploadthing.tsx" }}
-import { generateComponents } from '@uploadthing/react'
+import { generateComponents } from "@uploadthing/react";
 
-import type { OurFileRouter } from '~/app/api/uploadthing/core'
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
 export const { UploadButton, UploadDropzone } =
-  generateComponents<OurFileRouter>()
+  generateComponents<OurFileRouter>();
 ```
 
 ## generateUploadButton {{ tag: 'factory', since: '6.2' }}
@@ -39,9 +39,9 @@ component you use to interact with UploadThing. Generating components allows for
 fully typesafe components bound to the type of your file router.
 
 ```tsx {{ title: "utils/uploadthing.tsx" }}
-import { generateUploadButton } from '@uploadthing/react'
+import { generateUploadButton } from "@uploadthing/react";
 
-export const UploadButton = generateUploadButton<OurFileRouter>()
+export const UploadButton = generateUploadButton<OurFileRouter>();
 ```
 
 ### Parameters
@@ -73,9 +73,9 @@ component you use to interact with UploadThing. Generating components allows for
 fully typesafe components bound to the type of your file router.
 
 ```tsx {{ title: "utils/uploadthing.tsx" }}
-import { generateUploadDropzone } from '@uploadthing/react'
+import { generateUploadDropzone } from "@uploadthing/react";
 
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>()
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Parameters
@@ -102,17 +102,18 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>()
 
 ## generateReactHelpers {{ tag: 'factory', since: '5.0' }}
 
-The `generateReactHelpers` function is used to generate the [useUploadThing](/api-reference/react#use-upload-thing) hook
-and the [uploadFiles]/api-reference/client#upload-files) functions you use to interact with UploadThing in custom
-components. It takes your File Router as a generic
+The `generateReactHelpers` function is used to generate the
+[useUploadThing](/api-reference/react#use-upload-thing) hook and the
+[uploadFiles]/api-reference/client#upload-files) functions you use to interact
+with UploadThing in custom components. It takes your File Router as a generic
 
 ```tsx
-import { generateReactHelpers } from '@uploadthing/react'
+import { generateReactHelpers } from "@uploadthing/react";
 
-import type { OurFileRouter } from '~/app/api/uploadthing/core'
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
 export const { useUploadThing, uploadFiles } =
-  generateReactHelpers<OurFileRouter>()
+  generateReactHelpers<OurFileRouter>();
 ```
 
 ### Parameters
@@ -162,50 +163,50 @@ export const { useUploadThing, uploadFiles } =
 </Note>
 
 A simple button that opens the native file picker and uploads the selected
-files. The default button is shown below. See [Theming](/concepts/theming) on how to
-customize it.
+files. The default button is shown below. See [Theming](/concepts/theming) on
+how to customize it.
 
-import { UploadButton } from '@uploadthing/react'
+import { UploadButton } from "@uploadthing/react";
 
 <UploadButton
   className="mt-5"
   __internal_button_disabled
   __internal_state="ready"
   content={{
-    allowedContent: 'Allowed content',
-    button: 'Choose file(s)',
+    allowedContent: "Allowed content",
+    button: "Choose file(s)",
   }}
 />
 
 ```tsx {{ title: "app/example-uploader.tsx" }}
-import { UploadButton } from '@uploadthing/react'
+import { UploadButton } from "@uploadthing/react";
 
-import { OurFileRouter } from './api/uploadthing/core'
+import { OurFileRouter } from "./api/uploadthing/core";
 
 export const OurUploadButton = () => (
   <UploadButton<OurFileRouter>
     endpoint="imageUploader"
     onClientUploadComplete={(res) => {
       // Do something with the response
-      console.log('Files: ', res)
-      alert('Upload Completed')
+      console.log("Files: ", res);
+      alert("Upload Completed");
     }}
     onUploadError={(error: Error) => {
       // Do something with the error.
-      alert(`ERROR! ${error.message}`)
+      alert(`ERROR! ${error.message}`);
     }}
     onBeforeUploadBegin={(files) => {
       // Preprocess files before uploading (e.g. rename them)
       return files.map(
-        (f) => new File([f], 'renamed-' + f.name, { type: f.type }),
-      )
+        (f) => new File([f], "renamed-" + f.name, { type: f.type }),
+      );
     }}
     onUploadBegin={(name) => {
       // Do something once upload begins
-      console.log('Uploading: ', name)
+      console.log("Uploading: ", name);
     }}
   />
-)
+);
 ```
 
 ### Props
@@ -305,10 +306,10 @@ export const OurUploadButton = () => (
 </Note>
 
 A `react-dropzone` powered dropzone that let's you drag and drop files to
-upload. The default dropzone is shown below. See [Theming](/concepts/theming) on how to
-customize it.
+upload. The default dropzone is shown below. See [Theming](/concepts/theming) on
+how to customize it.
 
-import { UploadDropzone } from '@uploadthing/react'
+import { UploadDropzone } from "@uploadthing/react";
 
 <UploadDropzone
   __internal_state="ready"
@@ -316,37 +317,37 @@ import { UploadDropzone } from '@uploadthing/react'
   __internal_dropzone_disabled
   __internal_show_button
   content={{
-    allowedContent: 'Allowed content',
-    button: 'Ready',
+    allowedContent: "Allowed content",
+    button: "Ready",
   }}
 />
 
 ```tsx {{ title: "app/example-uploader.tsx" }}
-import { UploadDropzone } from '@uploadthing/react'
+import { UploadDropzone } from "@uploadthing/react";
 
-import { OurFileRouter } from './api/uploadthing/core'
+import { OurFileRouter } from "./api/uploadthing/core";
 
 export const OurUploadDropzone = () => (
   <UploadDropzone<OurFileRouter>
     endpoint="withoutMdwr"
     onClientUploadComplete={(res) => {
       // Do something with the response
-      console.log('Files: ', res)
-      alert('Upload Completed')
+      console.log("Files: ", res);
+      alert("Upload Completed");
     }}
     onUploadError={(error: Error) => {
-      alert(`ERROR! ${error.message}`)
+      alert(`ERROR! ${error.message}`);
     }}
     onUploadBegin={(name) => {
       // Do something once upload begins
-      console.log('Uploading: ', name)
+      console.log("Uploading: ", name);
     }}
     onDrop={(acceptedFiles) => {
       // Do something with the accepted files
-      console.log('Accepted files: ', acceptedFiles)
+      console.log("Accepted files: ", acceptedFiles);
     }}
   />
-)
+);
 ```
 
 ### Props
@@ -466,7 +467,8 @@ counts are allowed by the endpoint.
 
 ### Parameters
 
-The first parameter is the route endpoint to upload to, and the second parameter is an options object:
+The first parameter is the route endpoint to upload to, and the second parameter
+is an options object:
 
 <Properties>
   <Property name="files" type="File[]" required since="5.0">
@@ -540,40 +542,40 @@ The first parameter is the route endpoint to upload to, and the second parameter
 
 ### Example
 
-The following example shows a simple dropzone component using the
-`useDropzone` and `useUploadThing` hooks. For a more complete example,
-take a look at [our prebuilt components](https://github.com/pingdotgg/uploadthing/tree/main/packages/react/src/components).
+The following example shows a simple dropzone component using the `useDropzone`
+and `useUploadThing` hooks. For a more complete example, take a look at
+[our prebuilt components](https://github.com/pingdotgg/uploadthing/tree/main/packages/react/src/components).
 
 ```tsx {{ title: "app/example-custom-uploader.tsx" }}
-import { useDropzone } from '@uploadthing/react'
-import { generateClientDropzoneAccept } from 'uploadthing/client'
+import { useDropzone } from "@uploadthing/react";
+import { generateClientDropzoneAccept } from "uploadthing/client";
 
-import { useUploadThing } from '~/utils/uploadthing'
+import { useUploadThing } from "~/utils/uploadthing";
 
 export function MultiUploader() {
-  const [files, setFiles] = useState<File[]>([])
+  const [files, setFiles] = useState<File[]>([]);
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFiles(acceptedFiles)
-  }, [])
+    setFiles(acceptedFiles);
+  }, []);
 
-  const { startUpload, routeConfig } = useUploadThing('myUploadEndpoint', {
+  const { startUpload, routeConfig } = useUploadThing("myUploadEndpoint", {
     onClientUploadComplete: () => {
-      alert('uploaded successfully!')
+      alert("uploaded successfully!");
     },
     onUploadError: () => {
-      alert('error occurred while uploading')
+      alert("error occurred while uploading");
     },
     onUploadBegin: () => {
-      alert('upload has begun')
+      alert("upload has begun");
     },
-  })
+  });
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: generateClientDropzoneAccept(
       generatePermittedFileTypes(routeConfig).fileTypes,
     ),
-  })
+  });
 
   return (
     <div {...getRootProps()}>
@@ -587,6 +589,6 @@ export function MultiUploader() {
       </div>
       Drop files here!
     </div>
-  )
+  );
 }
 ```

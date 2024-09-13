@@ -1,16 +1,16 @@
-import { Container } from '@/components/Container'
+import { Button } from "@/components/Button";
+import { Container } from "@/components/Container";
+import { getAllArticles } from "@/lib/articles";
 
-import { getAllArticles } from '@/lib/articles'
-import { Button } from '@/components/Button'
-import { ArticleCard, FeaturedArticle } from './article-card'
+import { ArticleCard, FeaturedArticle } from "./article-card";
 
 export async function ArticlesPage(
   props: Readonly<{
-    tag: string | undefined
+    tag: string | undefined;
   }>,
 ) {
-  const activeTag = props.tag
-  let { articles, allTags } = await getAllArticles(activeTag)
+  const activeTag = props.tag;
+  let { articles, allTags } = await getAllArticles(activeTag);
 
   return (
     <Container className="mt-16 w-full sm:mt-32">
@@ -20,7 +20,7 @@ export async function ArticlesPage(
             <Button
               className="capitalize"
               href={`/blog`}
-              variant={!activeTag ? 'primary' : 'outline'}
+              variant={!activeTag ? "primary" : "outline"}
             >
               All posts
             </Button>
@@ -30,7 +30,7 @@ export async function ArticlesPage(
               <Button
                 className="capitalize"
                 href={`/blog/category/${tag}`}
-                variant={tag === activeTag ? 'primary' : 'outline'}
+                variant={tag === activeTag ? "primary" : "outline"}
               >
                 {tag}
               </Button>
@@ -38,7 +38,7 @@ export async function ArticlesPage(
           ))}
         </ul>
         <h1 className="mt-6 text-4xl font-bold capitalize tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-          {activeTag ?? 'All posts'}
+          {activeTag ?? "All posts"}
         </h1>
         <div className="mt-16">
           <FeaturedArticle article={articles[0]} />
@@ -55,5 +55,5 @@ export async function ArticlesPage(
         </div>
       </div>
     </Container>
-  )
+  );
 }

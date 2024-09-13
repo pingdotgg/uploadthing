@@ -1,21 +1,22 @@
-import { ImageResponse } from 'next/og'
-import { blogParams, getFont } from '../utils'
+import { ImageResponse } from "next/og";
 
-export const runtime = 'edge'
+import { blogParams, getFont } from "../utils";
+
+export const runtime = "edge";
 
 export const GET = async (req: Request) => {
   const poppins = await getFont({
-    family: 'Poppins',
+    family: "Poppins",
     weights: [400, 700, 900],
-  })
+  });
 
-  const parsed = blogParams.decodeRequest(req)
+  const parsed = blogParams.decodeRequest(req);
 
   if (!parsed.success) {
-    return new Response(parsed.error.toString(), { status: 400 })
+    return new Response(parsed.error.toString(), { status: 400 });
   }
 
-  const props = parsed.data.input
+  const props = parsed.data.input;
 
   return new ImageResponse(
     (
@@ -23,8 +24,8 @@ export const GET = async (req: Request) => {
         tw="bg-zinc-900 h-full w-full flex flex-col p-14"
         style={{
           backgroundImage:
-            'url(https://utfs.io/f/656e69ef-2800-45fd-87ac-b9f88346348c-hi270o.png)',
-          backgroundPosition: 'cover',
+            "url(https://utfs.io/f/656e69ef-2800-45fd-87ac-b9f88346348c-hi270o.png)",
+          backgroundPosition: "cover",
         }}
       >
         <div tw="flex flex-col w-full h-full">
@@ -50,13 +51,13 @@ export const GET = async (req: Request) => {
       width: 1200,
       height: 600,
       fonts: [
-        { name: 'Poppins', data: poppins[900], weight: 900 },
-        { name: 'Poppins', data: poppins[700], weight: 700 },
-        { name: 'Poppins', data: poppins[400], weight: 400 },
+        { name: "Poppins", data: poppins[900], weight: 900 },
+        { name: "Poppins", data: poppins[700], weight: 700 },
+        { name: "Poppins", data: poppins[400], weight: 400 },
       ],
     },
-  )
-}
+  );
+};
 
 const Logo = () => (
   <div tw="flex">
@@ -74,7 +75,7 @@ const Logo = () => (
         fill="#B91C1C"
         stroke="none"
       >
-        <path d="M2193 2980 c-111 -20 -248 -91 -339 -177 -122 -114 -210 -295 -230 -474 -7 -60 -18 -75 -29 -40 -10 32 -79 134 -121 177 -128 135 -290 206 -469 207 -181 1 -322 -59 -455 -192 -95 -96 -141 -166 -181 -280 -75 -212 -59 -449 42 -647 22 -42 38 -78 37 -79 -2 -1 -23 -13 -48 -25 -153 -77 -278 -226 -343 -405 -72 -203 -58 -444 37 -633 89 -177 213 -288 398 -358 66 -25 86 -28 198 -28 112 0 133 3 200 27 216 79 374 248 445 477 9 30 18 60 20 67 3 8 27 0 71 -22 204 -103 451 -83 640 51 137 97 245 254 290 424 20 72 25 283 11 380 l-9 55 66 13 c223 42 429 232 510 470 163 479 -142 994 -602 1017 -48 2 -110 0 -139 -5z" />{' '}
+        <path d="M2193 2980 c-111 -20 -248 -91 -339 -177 -122 -114 -210 -295 -230 -474 -7 -60 -18 -75 -29 -40 -10 32 -79 134 -121 177 -128 135 -290 206 -469 207 -181 1 -322 -59 -455 -192 -95 -96 -141 -166 -181 -280 -75 -212 -59 -449 42 -647 22 -42 38 -78 37 -79 -2 -1 -23 -13 -48 -25 -153 -77 -278 -226 -343 -405 -72 -203 -58 -444 37 -633 89 -177 213 -288 398 -358 66 -25 86 -28 198 -28 112 0 133 3 200 27 216 79 374 248 445 477 9 30 18 60 20 67 3 8 27 0 71 -22 204 -103 451 -83 640 51 137 97 245 254 290 424 20 72 25 283 11 380 l-9 55 66 13 c223 42 429 232 510 470 163 479 -142 994 -602 1017 -48 2 -110 0 -139 -5z" />{" "}
       </g>
     </svg>
     <svg
@@ -93,4 +94,4 @@ const Logo = () => (
       />
     </svg>
   </div>
-)
+);

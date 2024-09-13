@@ -1,10 +1,11 @@
-'use client'
+"use client";
+
+import type { UploadRouter } from "@/app/(api)/api/uploadthing/route";
 
 import {
   generateUploadButton,
   generateUploadDropzone,
-} from '@uploadthing/react'
-import type { UploadRouter } from '@/app/(api)/api/uploadthing/route'
+} from "@uploadthing/react";
 
-export const UploadButton = generateUploadButton<UploadRouter>()
-export const UploadDropzone = generateUploadDropzone<UploadRouter>()
+export const UploadButton = generateUploadButton<UploadRouter>();
+export const UploadDropzone = generateUploadDropzone<UploadRouter>();

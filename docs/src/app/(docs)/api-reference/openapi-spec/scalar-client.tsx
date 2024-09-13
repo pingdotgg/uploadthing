@@ -1,11 +1,11 @@
-'use client'
+"use client";
+
 // import '@scalar/api-reference-react/style.css'
-import { ApiReferenceReact } from '@scalar/api-reference-react'
+import { RefObject, useEffect, useRef, useState } from "react";
+import { ApiReferenceReact } from "@scalar/api-reference-react";
+import { useTheme } from "next-themes";
 
-import { useTheme } from 'next-themes'
-import { RefObject, useEffect, useRef, useState } from 'react'
-
-const specUrl = 'https://api.uploadthing.com/openapi-spec.json'
+const specUrl = "https://api.uploadthing.com/openapi-spec.json";
 
 const useMutationObserver = (
   ref: RefObject<HTMLElement>,
@@ -21,14 +21,14 @@ const useMutationObserver = (
     if (ref.current) {
       const observer = new MutationObserver((args) => {
         if (callback(args, observer)) {
-          observer.disconnect()
+          observer.disconnect();
         }
-      })
-      observer.observe(ref.current, options)
-      return () => observer.disconnect()
+      });
+      observer.observe(ref.current, options);
+      return () => observer.disconnect();
     }
-  }, [callback, options])
-}
+  }, [callback, options]);
+};
 
 export function Loader() {
   return (
@@ -39,32 +39,32 @@ export function Loader() {
         <div className="h-5 w-5 animate-bounce rounded-full bg-red-400"></div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function ScalarApiRef() {
-  const theme = useTheme()
-  const isDark = theme.resolvedTheme === 'dark'
+  const theme = useTheme();
+  const isDark = theme.resolvedTheme === "dark";
 
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false);
 
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null);
   useMutationObserver(ref, (args) => {
     if (
       args.filter(
         (a) =>
-          a.type === 'attributes' &&
+          a.type === "attributes" &&
           a.target instanceof Element &&
-          a.target.classList.contains('scalar-app') &&
-          a.target.classList.contains('references-layout'),
+          a.target.classList.contains("scalar-app") &&
+          a.target.classList.contains("references-layout"),
       ).length > 0
     ) {
-      setLoaded(true)
-      return true
+      setLoaded(true);
+      return true;
     }
 
-    return false
-  })
+    return false;
+  });
 
   return (
     <div ref={ref}>
@@ -72,8 +72,8 @@ export default function ScalarApiRef() {
       <ApiReferenceReact
         configuration={{
           hideModels: true,
-          layout: 'classic',
-          searchHotKey: '' as any, // doesn't look like it's disableable
+          layout: "classic",
+          searchHotKey: "" as any, // doesn't look like it's disableable
           darkMode: isDark,
           // customCss: `
           //   .dark-mode {
@@ -84,5 +84,5 @@ export default function ScalarApiRef() {
         }}
       />
     </div>
-  )
+  );
 }

@@ -1,20 +1,32 @@
-'use client'
+"use client";
 
-import { useContext } from 'react'
-import { usePathname } from 'next/navigation'
-
-import { AppContext } from '@/app/providers'
-import { Container } from '@/components/Container'
-import { Prose } from '@/components/Prose'
-import { type ArticleWithSlug } from '@/lib/articles'
-import { formatDate } from '@/lib/utils'
+import { useContext } from "react";
+import { usePathname } from "next/navigation";
+import { AppContext } from "@/app/providers";
+import { Avatar } from "@/components/Avatar";
+import { Container } from "@/components/Container";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { HeroPattern } from "@/components/HeroPattern";
+import { LogoBlob, LogoText } from "@/components/Logo";
+import { NavLink, VisibleSectionHighlight } from "@/components/Navigation";
+import { Prose } from "@/components/Prose";
 import {
   Section,
   SectionProvider,
   useSectionStore,
-} from '@/components/SectionProvider'
+} from "@/components/SectionProvider";
+import { type ArticleWithSlug } from "@/lib/articles";
+import { formatDate } from "@/lib/utils";
+import {
+  AnimatePresence,
+  motion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { Link, useTransitionRouter } from "next-view-transitions";
 
-function ArrowLeftIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
+function ArrowLeftIcon(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true" {...props}>
       <path
@@ -24,32 +36,22 @@ function ArrowLeftIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
-
-import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { Link } from 'next-view-transitions'
-import { LogoBlob, LogoText } from '@/components/Logo'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
-import { HeroPattern } from '@/components/HeroPattern'
-import { useTransitionRouter } from 'next-view-transitions'
-import { Avatar } from '@/components/Avatar'
-import { NavLink, VisibleSectionHighlight } from '@/components/Navigation'
 
 export function ArticlesLayout({
   children,
   allSections,
 }: {
-  children: React.ReactNode
-  allSections: Record<string, Array<Section>>
+  children: React.ReactNode;
+  allSections: Record<string, Array<Section>>;
 }) {
-  let pathname = usePathname()
-  const articleSlug = pathname.replace(/^\/blog/, '')
+  let pathname = usePathname();
+  const articleSlug = pathname.replace(/^\/blog/, "");
 
-  let { scrollY } = useScroll()
-  let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9])
-  let bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.9])
+  let { scrollY } = useScroll();
+  let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);
+  let bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.9]);
 
   return (
     <SectionProvider sections={allSections[articleSlug] ?? []}>
@@ -59,8 +61,8 @@ export function ArticlesLayout({
             className="hidden h-full items-center border-b border-zinc-900/10 bg-white/[--bg-opacity-light] backdrop-blur-sm transition lg:flex lg:w-72 lg:px-6 xl:w-80 dark:border-white/10 dark:bg-zinc-900/[--bg-opacity-dark] dark:backdrop-blur"
             style={
               {
-                '--bg-opacity-light': bgOpacityLight,
-                '--bg-opacity-dark': bgOpacityDark,
+                "--bg-opacity-light": bgOpacityLight,
+                "--bg-opacity-dark": bgOpacityDark,
               } as React.CSSProperties
             }
           >
@@ -82,21 +84,21 @@ export function ArticlesLayout({
         </div>
       </div>
     </SectionProvider>
-  )
+  );
 }
 
 export function ArticleLayout({
   article,
   children,
 }: {
-  article: ArticleWithSlug
-  children: React.ReactNode
+  article: ArticleWithSlug;
+  children: React.ReactNode;
 }) {
-  let pathname = usePathname()
-  let router = useTransitionRouter()
-  let { previousPathname } = useContext(AppContext)
+  let pathname = usePathname();
+  let router = useTransitionRouter();
+  let { previousPathname } = useContext(AppContext);
 
-  const sections = useSectionStore((s) => s.sections)
+  const sections = useSectionStore((s) => s.sections);
 
   return (
     <Container className="mt-16 lg:mt-32">
@@ -107,9 +109,9 @@ export function ArticleLayout({
               <div className="flex items-center gap-4">
                 <button
                   type="button"
-                  onClick={() => router.push(previousPathname ?? '/blog')}
+                  onClick={() => router.push(previousPathname ?? "/blog")}
                   aria-label="Go back to articles"
-                  className="group flex size-8 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition  dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
+                  className="group flex size-8 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 transition dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0 dark:ring-white/10 dark:hover:border-zinc-700 dark:hover:ring-white/20"
                 >
                   <ArrowLeftIcon className="h-4 w-4 stroke-zinc-500 transition group-hover:stroke-zinc-700 dark:stroke-zinc-500 dark:group-hover:stroke-zinc-400" />
                 </button>
@@ -191,8 +193,8 @@ export function ArticleLayout({
                     <VisibleSectionHighlight
                       noHeading
                       group={{
-                        links: [{ href: pathname, title: 'Sections' }],
-                        title: '',
+                        links: [{ href: pathname, title: "Sections" }],
+                        title: "",
                       }}
                       pathname={pathname}
                     />
@@ -222,7 +224,7 @@ export function ArticleLayout({
                         </li>
                       ))}
                     </motion.ul>
-                  </AnimatePresence>{' '}
+                  </AnimatePresence>{" "}
                 </div>
               </div>
             )}
@@ -230,5 +232,5 @@ export function ArticleLayout({
         </div>
       </div>
     </Container>
-  )
+  );
 }

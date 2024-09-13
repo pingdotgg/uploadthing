@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Expo Setup',
-  description: 'Learn how to set up an Expo project with UploadThing',
-  category: 'Getting Started',
-})
+  title: "Expo Setup",
+  description: "Learn how to set up an Expo project with UploadThing",
+  category: "Getting Started",
+});
 
 # Expo Setup
 
@@ -61,40 +61,40 @@ To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
 ```ts {{ title: "src/app/api/uploadthing+api.ts" }}
-import { createUploadthing, UploadThingError } from 'uploadthing/server'
-import type { FileRouter } from 'uploadthing/server'
+import { createUploadthing, UploadThingError } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
 
-const f = createUploadthing()
+const f = createUploadthing();
 
-const auth = (req: Request) => ({ id: 'fakeId' }) // Fake auth function
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 const uploadRouter = {
   profileImage: f({
     image: {
-      maxFileSize: '4MB',
+      maxFileSize: "4MB",
     },
   })
     .middleware(async ({ req }) => {
       // This code runs on your server before upload
-      const user = await auth(req)
+      const user = await auth(req);
 
       // If you throw, the user will not be able to upload
-      if (!user) throw new UploadThingError('Unauthorized')
+      if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id }
+      return { userId: user.id };
     })
     .onUploadComplete(({ file, metadata }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log('Upload complete for userId:', metadata.userId)
+      console.log("Upload complete for userId:", metadata.userId);
 
-      console.log('file url', file.url)
+      console.log("file url", file.url);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId }
+      return { uploadedBy: metadata.userId };
     }),
-} satisfies FileRouter
-export type UploadRouter = typeof uploadRouter
+} satisfies FileRouter;
+export type UploadRouter = typeof uploadRouter;
 ```
 
 ### Create an API route using the FileRouter
@@ -124,9 +124,9 @@ prebuilt components. Instead, we provide some helper hooks to help interact with
 the native file pickers.
 
 ```tsx {{title: "src/utils/uploadthing.ts" }}
-import { generateReactNativeHelpers } from '@uploadthing/expo'
+import { generateReactNativeHelpers } from "@uploadthing/expo";
 
-import type { UploadRouter } from '~/app/api/uploadthing+api'
+import type { UploadRouter } from "~/app/api/uploadthing+api";
 
 export const { useImageUploader, useDocumentUploader } =
   generateReactNativeHelpers<UploadRouter>({
@@ -135,8 +135,8 @@ export const { useImageUploader, useDocumentUploader } =
      * @default process.env.EXPO_PUBLIC_SERVER_URL
      * @remarks In dev we will also try to use Expo.debuggerHost
      */
-    url: 'https://my-server.com',
-  })
+    url: "https://my-server.com",
+  });
 ```
 
 ### Use the FileRouter in your app

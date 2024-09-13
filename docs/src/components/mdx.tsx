@@ -1,26 +1,27 @@
-import { Link } from 'next-view-transitions'
-import clsx from 'clsx'
-import { Tag } from './Tag'
+import Image, { type ImageProps } from "next/image";
+import { Feedback } from "@/components/Feedback";
+import { Heading } from "@/components/Heading";
+import { Prose } from "@/components/Prose";
 import {
-  InformationCircleIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/16/solid'
-import { Feedback } from '@/components/Feedback'
-import { Heading } from '@/components/Heading'
-import { Prose } from '@/components/Prose'
-import {
-  Tab as TabListItem,
   TabGroup,
   TabList,
+  Tab as TabListItem,
   TabPanel,
   TabPanels,
-} from '@headlessui/react'
-import Image, { type ImageProps } from 'next/image'
+} from "@headlessui/react";
+import {
+  ExclamationCircleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/16/solid";
+import clsx from "clsx";
+import { Link } from "next-view-transitions";
 
-export * from './UploadThing'
+import { Tag } from "./Tag";
 
-export { Button } from '@/components/Button'
-export { CodeGroup, Code as code, Pre as pre } from '@/components/Code'
+export * from "./UploadThing";
+
+export { Button } from "@/components/Button";
+export { CodeGroup, Code as code, Pre as pre } from "@/components/Code";
 
 export function wrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -30,39 +31,39 @@ export function wrapper({ children }: { children: React.ReactNode }) {
         <Feedback />
       </footer>
     </article>
-  )
+  );
 }
 
 export const a = function A({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<typeof Link> & { href: string }) {
-  const isExternal = props.href.startsWith('http')
+  const isExternal = props.href.startsWith("http");
 
   if (isExternal) {
     return (
       <a {...props} target="_blank" rel="noopener noreferrer">
         {children} ↗
       </a>
-    )
+    );
   }
 
-  return <Link {...props}>{children}</Link>
-}
+  return <Link {...props}>{children}</Link>;
+};
 
 export const h2 = function H2(
-  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, 'level'>,
+  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, "level">,
 ) {
-  return <Heading level={2} {...props} />
-}
+  return <Heading level={2} {...props} />;
+};
 
 export const h3 = function H3(
-  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, 'level'>,
+  props: Omit<React.ComponentPropsWithoutRef<typeof Heading>, "level">,
 ) {
-  return <Heading level={3} {...props} />
-}
+  return <Heading level={3} {...props} />;
+};
 
-type ImagePropsWithOptionalAlt = Omit<ImageProps, 'alt'> & { alt?: string }
+type ImagePropsWithOptionalAlt = Omit<ImageProps, "alt"> & { alt?: string };
 
 export const img = function Img(props: ImagePropsWithOptionalAlt) {
   return (
@@ -74,8 +75,8 @@ export const img = function Img(props: ImagePropsWithOptionalAlt) {
       />
       <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-white/10" />
     </div>
-  )
-}
+  );
+};
 
 export function Note({ children }: { children: React.ReactNode }) {
   return (
@@ -85,7 +86,7 @@ export function Note({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </div>
-  )
+  );
 }
 
 export function Warning({ children }: { children: React.ReactNode }) {
@@ -96,15 +97,15 @@ export function Warning({ children }: { children: React.ReactNode }) {
         {children}
       </div>
     </div>
-  )
+  );
 }
 
 export function Tabs({
   children,
   tabs,
 }: {
-  children: React.ReactNode
-  tabs: string[]
+  children: React.ReactNode;
+  tabs: string[];
 }) {
   return (
     <TabGroup>
@@ -120,35 +121,35 @@ export function Tabs({
       </TabList>
       <TabPanels>{children}</TabPanels>
     </TabGroup>
-  )
+  );
 }
-export const Tab = TabPanel
+export const Tab = TabPanel;
 
 export function Row({ children }: { children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-1 items-start gap-x-16 gap-y-10 xl:max-w-none xl:grid-cols-2">
       {children}
     </div>
-  )
+  );
 }
 
 export function Col({
   children,
   sticky = false,
 }: {
-  children: React.ReactNode
-  sticky?: boolean
+  children: React.ReactNode;
+  sticky?: boolean;
 }) {
   return (
     <div
       className={clsx(
-        '[&>:first-child]:mt-0 [&>:last-child]:mb-0',
-        sticky && 'xl:sticky xl:top-24',
+        "[&>:first-child]:mt-0 [&>:last-child]:mb-0",
+        sticky && "xl:sticky xl:top-24",
       )}
     >
       {children}
     </div>
-  )
+  );
 }
 
 export function Properties({ children }: { children: React.ReactNode }) {
@@ -161,7 +162,7 @@ export function Properties({ children }: { children: React.ReactNode }) {
         {children}
       </ul>
     </div>
-  )
+  );
 }
 
 export async function Property({
@@ -174,14 +175,14 @@ export async function Property({
   defaultValue,
   since,
 }: {
-  name: string
-  children: React.ReactNode
-  type?: string
-  required?: boolean
-  optional?: boolean
-  deprecated?: boolean
-  defaultValue?: string
-  since?: string
+  name: string;
+  children: React.ReactNode;
+  type?: string;
+  required?: boolean;
+  optional?: boolean;
+  deprecated?: boolean;
+  defaultValue?: string;
+  since?: string;
 }) {
   return (
     <li className="m-0 px-0 py-4 first:pt-0 last:pb-0">
@@ -222,5 +223,5 @@ export async function Property({
         </dd>
       </dl>
     </li>
-  )
+  );
 }

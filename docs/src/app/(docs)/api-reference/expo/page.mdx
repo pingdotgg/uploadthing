@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: '@uploadthing/expo',
-  description: 'Expo bindings for UploadThing.',
-  category: 'API Reference',
-})
+  title: "@uploadthing/expo",
+  description: "Expo bindings for UploadThing.",
+  category: "API Reference",
+});
 
 # UploadThing Expo
 
@@ -17,9 +17,9 @@ useImageUploader and useDocumentUploader hooks you use to interact with
 UploadThing in your app.
 
 ```tsx {{ title: "utils/uploadthing.tsx" }}
-import { generateReactNativeHelpers } from '@uploadthing/expo'
+import { generateReactNativeHelpers } from "@uploadthing/expo";
 
-import type { UploadRouter } from '~/app/api/uploadthing+api'
+import type { UploadRouter } from "~/app/api/uploadthing+api";
 
 export const { useImageUploader, useDocumentUploader } =
   generateReactNativeHelpers<UploadRouter>({
@@ -28,8 +28,8 @@ export const { useImageUploader, useDocumentUploader } =
      * @default process.env.EXPO_PUBLIC_SERVER_URL
      * @remarks In dev we will also try to use Expo.debuggerHost
      */
-    url: 'https://my-server.com',
-  })
+    url: "https://my-server.com",
+  });
 ```
 
 ## `useImageUploader` {{ tag: 'hook', since: '6.6' }}
@@ -40,19 +40,19 @@ user triggers the picker they will be prompted to grant your app permission to
 access the camera or photo library.
 
 ```tsx {{ title: "app/example-uploader.tsx" }}
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View } from "react-native";
 
-import { useImageUploader } from '@uploadthing/expo'
+import { useImageUploader } from "@uploadthing/expo";
 
 export function MultiUploader() {
-  const { openImagePicker, isUploading } = useImageUploader('imageUploader', {
+  const { openImagePicker, isUploading } = useImageUploader("imageUploader", {
     /**
      * Any props here are forwarded to the underlying `useUploadThing` hook.
      * Refer to the React API reference for more info.
      */
-    onClientUploadComplete: () => Alert.alert('Upload Completed'),
-    onUploadError: (error) => Alert.alert('Upload Error', error.message),
-  })
+    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+    onUploadError: (error) => Alert.alert("Upload Error", error.message),
+  });
 
   return (
     <View>
@@ -60,24 +60,24 @@ export function MultiUploader() {
         onPress={() => {
           openImagePicker({
             input, // Matches the input schema from the FileRouter endpoint
-            source: 'library', // or "camera"
+            source: "library", // or "camera"
             onInsufficientPermissions: () => {
               Alert.alert(
-                'No Permissions',
-                'You need to grant permission to your Photos to use this',
+                "No Permissions",
+                "You need to grant permission to your Photos to use this",
                 [
-                  { text: 'Dismiss' },
-                  { text: 'Open Settings', onPress: openSettings },
+                  { text: "Dismiss" },
+                  { text: "Open Settings", onPress: openSettings },
                 ],
-              )
+              );
             },
-          })
+          });
         }}
       >
         <Text>Select Image</Text>
       </Pressable>
     </View>
-  )
+  );
 }
 ```
 
@@ -131,19 +131,19 @@ A hook wrapping the native `expo-document-picker` module that allows access to
 the native file system and uploads files to your server.
 
 ```tsx {{ title: "app/example-uploader.tsx" }}
-import { Alert, Pressable, Text, View } from 'react-native'
+import { Alert, Pressable, Text, View } from "react-native";
 
-import { useDocumentUploader } from '@uploadthing/expo'
+import { useDocumentUploader } from "@uploadthing/expo";
 
 export function MultiUploader() {
-  const { openDocumentPicker, isUploading } = useDocumentUploader('document', {
+  const { openDocumentPicker, isUploading } = useDocumentUploader("document", {
     /**
      * Any props here are forwarded to the underlying `useUploadThing` hook.
      * Refer to the React API reference for more info.
      */
-    onClientUploadComplete: () => Alert.alert('Upload Completed'),
-    onUploadError: (error) => Alert.alert('Upload Error', error.message),
-  })
+    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+    onUploadError: (error) => Alert.alert("Upload Error", error.message),
+  });
 
   return (
     <View>
@@ -153,21 +153,21 @@ export function MultiUploader() {
             input, // Matches the input schema from the FileRouter endpoint
             onInsufficientPermissions: () => {
               Alert.alert(
-                'No Permissions',
-                'You need to grant permission to your Photos to use this',
+                "No Permissions",
+                "You need to grant permission to your Photos to use this",
                 [
-                  { text: 'Dismiss' },
-                  { text: 'Open Settings', onPress: openSettings },
+                  { text: "Dismiss" },
+                  { text: "Open Settings", onPress: openSettings },
                 ],
-              )
+              );
             },
-          })
+          });
         }}
       >
         <Text>Select Document</Text>
       </Pressable>
     </View>
-  )
+  );
 }
 ```
 

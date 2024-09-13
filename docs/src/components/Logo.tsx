@@ -1,4 +1,4 @@
-export function LogoText(props: React.ComponentPropsWithoutRef<'svg'>) {
+export function LogoText(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
     <svg
       viewBox="0 0 1284 220"
@@ -15,10 +15,10 @@ export function LogoText(props: React.ComponentPropsWithoutRef<'svg'>) {
         className="fill-[#e22400] dark:fill-[#B91C1C]"
       />
     </svg>
-  )
+  );
 }
 
-export function LogoBlob(props: React.ComponentPropsWithoutRef<'svg'>) {
+export function LogoBlob(props: React.ComponentPropsWithoutRef<"svg">) {
   return (
     <svg
       version="1.0"
@@ -31,8 +31,8 @@ export function LogoBlob(props: React.ComponentPropsWithoutRef<'svg'>) {
         transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)"
         className="fill-[#e22400] stroke-none dark:fill-[#B91C1C]"
       >
-        <path d="M2193 2980 c-111 -20 -248 -91 -339 -177 -122 -114 -210 -295 -230 -474 -7 -60 -18 -75 -29 -40 -10 32 -79 134 -121 177 -128 135 -290 206 -469 207 -181 1 -322 -59 -455 -192 -95 -96 -141 -166 -181 -280 -75 -212 -59 -449 42 -647 22 -42 38 -78 37 -79 -2 -1 -23 -13 -48 -25 -153 -77 -278 -226 -343 -405 -72 -203 -58 -444 37 -633 89 -177 213 -288 398 -358 66 -25 86 -28 198 -28 112 0 133 3 200 27 216 79 374 248 445 477 9 30 18 60 20 67 3 8 27 0 71 -22 204 -103 451 -83 640 51 137 97 245 254 290 424 20 72 25 283 11 380 l-9 55 66 13 c223 42 429 232 510 470 163 479 -142 994 -602 1017 -48 2 -110 0 -139 -5z" />{' '}
+        <path d="M2193 2980 c-111 -20 -248 -91 -339 -177 -122 -114 -210 -295 -230 -474 -7 -60 -18 -75 -29 -40 -10 32 -79 134 -121 177 -128 135 -290 206 -469 207 -181 1 -322 -59 -455 -192 -95 -96 -141 -166 -181 -280 -75 -212 -59 -449 42 -647 22 -42 38 -78 37 -79 -2 -1 -23 -13 -48 -25 -153 -77 -278 -226 -343 -405 -72 -203 -58 -444 37 -633 89 -177 213 -288 398 -358 66 -25 86 -28 198 -28 112 0 133 3 200 27 216 79 374 248 445 477 9 30 18 60 20 67 3 8 27 0 71 -22 204 -103 451 -83 640 51 137 97 245 254 290 424 20 72 25 283 11 380 l-9 55 66 13 c223 42 429 232 510 470 163 479 -142 994 -602 1017 -48 2 -110 0 -139 -5z" />{" "}
       </g>
     </svg>
-  )
+  );
 }

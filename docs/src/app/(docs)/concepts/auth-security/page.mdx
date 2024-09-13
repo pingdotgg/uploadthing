@@ -1,11 +1,11 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Authentication & Security',
+  title: "Authentication & Security",
   description:
     "Authentication is a vital part in protecting your app from malicious usage. In this section we'll go over how to protect different parts of the UploadThing flow.",
-  category: 'Concepts',
-})
+  category: "Concepts",
+});
 
 # Authentication & Security
 
@@ -32,8 +32,8 @@ endpoint is appropriately protected.
 ## Protecting unauthenticated users from uploading files
 
 You can protect unauthenticated users from uploading files via the
-[`.middleware()`](/file-routes#middleware) function in each file route.
-This makes it trivial to protect some file routes, and keep some public.
+[`.middleware()`](/file-routes#middleware) function in each file route. This
+makes it trivial to protect some file routes, and keep some public.
 
 Using your favorite authentication provider (or self-roll if that's your thing),
 retrieve the current user's session from the incoming request. If it's not
@@ -43,25 +43,25 @@ limiting, and a protected route that allows any authenticated user to upload
 files:
 
 ```ts
-import { auth } from 'auth'
+import { auth } from "auth";
 
-import { createUploadthing, UploadThingError } from 'uploadthing/server'
+import { createUploadthing, UploadThingError } from "uploadthing/server";
 
-import { RateLimit } from '~/lib/ratelimit'
+import { RateLimit } from "~/lib/ratelimit";
 
 const ratelimiter = new RateLimit({
   /** rules */
-})
+});
 
 export const uploadRouter = {
   publicRoute: f({ image: {} })
     .middleware(async ({ req }) => {
-      const limit = await ratelimiter.verify(req)
+      const limit = await ratelimiter.verify(req);
       if (!limit.ok) {
-        throw new UploadThingError('Rate limit exceeded')
+        throw new UploadThingError("Rate limit exceeded");
       }
 
-      return {}
+      return {};
     })
     .onUploadComplete(() => {
       /** ... */
@@ -69,17 +69,17 @@ export const uploadRouter = {
 
   privateRoute: f({ image: {} })
     .middleware(async ({ req }) => {
-      const session = await auth(req)
+      const session = await auth(req);
       if (!session) {
-        throw new UploadThingError('You need to be logged in to upload files')
+        throw new UploadThingError("You need to be logged in to upload files");
       }
 
-      return { userId: session.user.id }
+      return { userId: session.user.id };
     })
     .onUploadComplete(() => {
       /** ... */
     }),
-}
+};
 ```
 
 <Note>

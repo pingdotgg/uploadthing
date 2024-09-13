@@ -1,12 +1,12 @@
-import Image from 'next/image'
-import { docsMetadata } from '@/lib/utils'
+import Image from "next/image";
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Uploading Files',
+  title: "Uploading Files",
   description:
-    'Uploading files is the first step in the process of uploading files to UploadThing. This page explains the general process of uploading files and how you can use the UploadThing API to upload files. There are two ways to upload files to UploadThing:',
-  category: 'Concepts',
-})
+    "Uploading files is the first step in the process of uploading files to UploadThing. This page explains the general process of uploading files and how you can use the UploadThing API to upload files. There are two ways to upload files to UploadThing:",
+  category: "Concepts",
+});
 
 # Uploading Files
 
@@ -21,9 +21,9 @@ files to UploadThing:
 
 The most common approach to uploading files is to use client-side uploads. With
 client side uploads, you do not have to pay ingress / egress fees for
-transferring the files binary data through your server. Your server instead acts as a proxy
-for requesting presigned URLs from the UploadThing API that the client will then
-use to upload the files to UploadThing.
+transferring the files binary data through your server. Your server instead acts
+as a proxy for requesting presigned URLs from the UploadThing API that the
+client will then use to upload the files to UploadThing.
 
 ![Client Side Uploads Diagram](./client-uploads.svg)
 
@@ -38,10 +38,11 @@ use to upload the files to UploadThing.
 </Note>
 
 The easiest way to get started with client-side uploads it to define a
-[File Router](/file-routes), expose it on your server using
-one of our adapters [route handlers](/api-reference/server#create-route-handler),
-and then upload the files using our built-in components or upload helpers.
-Here are some examples that should fit most of your needs, no matter what framework you're using:
+[File Router](/file-routes), expose it on your server using one of our adapters
+[route handlers](/api-reference/server#create-route-handler), and then upload
+the files using our built-in components or upload helpers. Here are some
+examples that should fit most of your needs, no matter what framework you're
+using:
 
 | Framework            | Docs                                                                                                                                     | Example                                                                                                                        |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -87,7 +88,8 @@ should follow this interface:
 
   - Input Query Parameters:
     - `slug: string`: The slug of the file route
-    - `actionType: "upload"`: The action type of the file route the client wish to perform
+    - `actionType: "upload"`: The action type of the file route the client wish
+      to perform
   - Input / Output JSON:
     [Depends on action](https://github.com/pingdotgg/uploadthing/blob/65565d907bd1671fbede5a8eb82a4eab250b4198/packages/uploadthing/src/internal/types.ts#L231-L236)
 
@@ -97,50 +99,52 @@ Once your backend adapter has received and validated the request, you will next
 need to generate presigned URLs. First, generate some file keys for the files to
 be uploaded.
 
-To generate a file key, generate a sha256 hex digest of a file seed of
-your choice, as well as of your API key. Concatenate the API key and the file
-seed with a `:` separator and encode the result as a base64 string.
+To generate a file key, generate a sha256 hex digest of a file seed of your
+choice, as well as of your API key. Concatenate the API key and the file seed
+with a `:` separator and encode the result as a base64 string.
 
 ```ts
-const fileSeed = `${file.name}${file.size}` // can be anything
-const seedHash = sha256Hex(fileSeed)
-const apiKeyHash = sha256Hex(apiKey)
+const fileSeed = `${file.name}${file.size}`; // can be anything
+const seedHash = sha256Hex(fileSeed);
+const apiKeyHash = sha256Hex(apiKey);
 
-const fileKey = encodeBase64(`${apiKeyHash}:${seedHash}`)
+const fileKey = encodeBase64(`${apiKeyHash}:${seedHash}`);
 ```
 
-The URL, to which you will upload the file, will depend on your app's region. You can find the list of regions
-in the [regions documentation](/concepts/regions-acl#regions). The upload URL
-can then be constructed using the following format:
+The URL, to which you will upload the file, will depend on your app's region.
+You can find the list of regions in the
+[regions documentation](/concepts/regions-acl#regions). The upload URL can then
+be constructed using the following format:
 
 `https://{{ REGION_ALIAS }}.ingest.uploadthing.com/{FILE_KEY}`
 
-Next, generate a signed URL by appending some query parameters to the upload URL, and finally a `signature`
-parameter containing the HMAC SHA256 digest of the URL:
+Next, generate a signed URL by appending some query parameters to the upload
+URL, and finally a `signature` parameter containing the HMAC SHA256 digest of
+the URL:
 
 ```ts
 const searchParams = new URLSearchParams({
   // Required
   expires: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now (you choose)
-  'x-ut-identifier': 'MY_APP_ID',
-  'x-ut-file-name': 'my-file.png',
-  'x-ut-file-size': 131072,
-  'x-ut-slug': 'MY_FILE_ROUTE',
+  "x-ut-identifier": "MY_APP_ID",
+  "x-ut-file-name": "my-file.png",
+  "x-ut-file-size": 131072,
+  "x-ut-slug": "MY_FILE_ROUTE",
 
   // Optional
-  'x-ut-file-type': 'image/png',
-  'x-ut-custom-id': 'MY_CUSTOM_ID',
-  'x-ut-content-disposition': 'inline',
-  'x-ut-acl': 'public-read',
-})
+  "x-ut-file-type": "image/png",
+  "x-ut-custom-id": "MY_CUSTOM_ID",
+  "x-ut-content-disposition": "inline",
+  "x-ut-acl": "public-read",
+});
 
 const url = new URL(
   `https://{{ REGION_ALIAS }}.ingest.uploadthing.com/${fileKey}`,
-)
-url.search = searchParams.toString()
+);
+url.search = searchParams.toString();
 
-const signature = hmacSha256(url, apiKey)
-url.searchParams.append('signature', signature)
+const signature = hmacSha256(url, apiKey);
+url.searchParams.append("signature", signature);
 ```
 
 <Warning>
@@ -153,10 +157,12 @@ Return the signed URL(s) to the client.
 
 ### Registering the upload
 
-As you return the signed URL(s) to the client and the client starts uploading, you'll need to register
-the upload to UploadThing. This is so that the metadata, the result of running the [file route middleware](/api-reference/server#file-routes),
-can be retrieved later. Include also the callback URL and slug, this will be used by
-UploadThing to callback your server when the upload has been completed so that you can run
+As you return the signed URL(s) to the client and the client starts uploading,
+you'll need to register the upload to UploadThing. This is so that the metadata,
+the result of running the
+[file route middleware](/api-reference/server#file-routes), can be retrieved
+later. Include also the callback URL and slug, this will be used by UploadThing
+to callback your server when the upload has been completed so that you can run
 the `onUploadComplete` / `onUploadError` callbacks for the upload.
 
 ```sh
@@ -177,18 +183,21 @@ curl -X POST https://{{ REGION_ALIAS }}.ingest.uploadthing.com/route-metadata \
     }'
 ```
 
-The two boolean flags are optional, and used to alter the behaviour of the upload.
+The two boolean flags are optional, and used to alter the behaviour of the
+upload.
 
 - `awaitServerData`: If set to `true`, the upload request will not respond
   immediately after file upload, but instead wait for your server to call the
   `/callback-result` endpoint with the result of running the `onUploadComplete`
   callback. **Enable this only if your client needs to get data from the server
   callback as it will increase the duration of the upload.**
-- `isDev`: If set to `true`, the response of this request will be a `ReadableStream`
-  instead of JSON. The stream will be open for the duration of the upload and enqueue
-  chunks as files are uploaded. This is in exchange of callback requests when your dev server
-  cannot be reached from external servers. Each chunk will be a JSON string containing `payload`, `signature` and `hook`.
-  Forward these to send a request to your dev server to simulate the callback request in development.
+- `isDev`: If set to `true`, the response of this request will be a
+  `ReadableStream` instead of JSON. The stream will be open for the duration of
+  the upload and enqueue chunks as files are uploaded. This is in exchange of
+  callback requests when your dev server cannot be reached from external
+  servers. Each chunk will be a JSON string containing `payload`, `signature`
+  and `hook`. Forward these to send a request to your dev server to simulate the
+  callback request in development.
 
   ```sh
   curl -X POST http://localhost:3000/api/uploadthing \
@@ -203,38 +212,39 @@ The two boolean flags are optional, and used to alter the behaviour of the uploa
 Uploading the files is as simple as submitting a PUT request to the signed URL.
 
 ```ts
-const formData = new FormData()
-formData.append('file', file)
+const formData = new FormData();
+formData.append("file", file);
 
 await fetch(presigned.url, {
-  method: 'PUT',
+  method: "PUT",
   body: formData,
-})
+});
 ```
 
-If you want to implement resumable uploads, you can additionally include the `Range`
-header in the request, with the starting byte offset. To get the range start, you can
-send a HEAD request to the presigned URL and get the `x-ut-range-start` header.
+If you want to implement resumable uploads, you can additionally include the
+`Range` header in the request, with the starting byte offset. To get the range
+start, you can send a HEAD request to the presigned URL and get the
+`x-ut-range-start` header.
 
 ```ts
-const rangeStart = await fetch(presigned.url, { method: 'HEAD' }).then((res) =>
-  parseInt(res.headers.get('x-ut-range-start') ?? '0', 10),
-)
+const rangeStart = await fetch(presigned.url, { method: "HEAD" }).then((res) =>
+  parseInt(res.headers.get("x-ut-range-start") ?? "0", 10),
+);
 await fetch(presigned.url, {
-  method: 'PUT',
+  method: "PUT",
   headers: {
     Range: `bytes=${rangeStart}-`,
   },
   body: file.slice(rangeStart),
-})
+});
 ```
 
 ### Handling the callback request
 
 When your file has been uploaded, the UploadThing API will send a callback
 request (similar to a webhook) to the `callbackUrl` you provided when requesting
-the presigned URLs. The callback request will contain the file information
-along with the `metadata`.
+the presigned URLs. The callback request will contain the file information along
+with the `metadata`.
 
 <Note>
   As explained earlier, if the `isDev` flag is set to `true`, you'll have to
@@ -251,7 +261,8 @@ After you have verified the request is authentic, run the `onUploadComplete`
 function for the file route. The data returned from the callback can then be
 submitted back to the UploadThing API using the `/callback-result` endpoint.
 Once the data has been submitted, the client upload request will finish assuming
-the `awaitServerData` flag was set to `true` when registerring the upload in a previous step.
+the `awaitServerData` flag was set to `true` when registerring the upload in a
+previous step.
 
 Congratulations, you have now uploaded your files to UploadThing.
 
@@ -276,12 +287,13 @@ for example using FormData from a file upload form.
 
 Fortunately, server side uploads are very straight forward, and in many ways
 similar to client side uploads. Generating presigned URLs is the same for
-server-side uploads as for client-side uploads. The only difference is that
-you do not have to include the `x-ut-slug` search parameter in the URL.
+server-side uploads as for client-side uploads. The only difference is that you
+do not have to include the `x-ut-slug` search parameter in the URL.
 
-After you have generated the presigned URLs, you can upload the files to UploadThing
-using the same steps as explained for client-side uploads. The response of the request
-will contain the file information for successful uploads, or an error message if the upload failed.
+After you have generated the presigned URLs, you can upload the files to
+UploadThing using the same steps as explained for client-side uploads. The
+response of the request will contain the file information for successful
+uploads, or an error message if the upload failed.
 
-And that's it. There is no need to register the upload to UploadThing, or handle any callback
-requests when doing server-side uploads.
+And that's it. There is no need to register the upload to UploadThing, or handle
+any callback requests when doing server-side uploads.

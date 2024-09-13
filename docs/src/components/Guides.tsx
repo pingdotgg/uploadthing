@@ -1,43 +1,43 @@
-import { Button } from '@/components/Button'
-import { Heading } from '@/components/Heading'
+import { Button } from "@/components/Button";
+import { Heading } from "@/components/Heading";
 
 const guides = [
   {
-    href: '/getting-started/appdir',
-    name: 'Next.js App Router',
-    description: 'Learn how to use UploadThing with Next.js App Router.',
+    href: "/getting-started/appdir",
+    name: "Next.js App Router",
+    description: "Learn how to use UploadThing with Next.js App Router.",
   },
   {
-    href: '/getting-started/pagedir',
-    name: 'Next.js Pages Router',
-    description: 'Learn how to use UploadThing with Next.js Pages Router.',
+    href: "/getting-started/pagedir",
+    name: "Next.js Pages Router",
+    description: "Learn how to use UploadThing with Next.js Pages Router.",
   },
   {
-    href: '/getting-started/solid',
-    name: 'Solid Start',
-    description: 'Learn how to use UploadThing with Solid Start.',
+    href: "/getting-started/solid",
+    name: "Solid Start",
+    description: "Learn how to use UploadThing with Solid Start.",
   },
   {
-    href: '/getting-started/astro',
-    name: 'Astro',
-    description: 'Learn how to use UploadThing with Astro.',
+    href: "/getting-started/astro",
+    name: "Astro",
+    description: "Learn how to use UploadThing with Astro.",
   },
   {
-    href: '/getting-started/svelte',
-    name: 'SvelteKit',
-    description: 'Learn how to use UploadThing with Svelte and SvelteKit.',
+    href: "/getting-started/svelte",
+    name: "SvelteKit",
+    description: "Learn how to use UploadThing with Svelte and SvelteKit.",
   },
   {
-    href: '/getting-started/nuxt',
-    name: 'Nuxt',
-    description: 'Learn how to use UploadThing with Vue and Nuxt.',
+    href: "/getting-started/nuxt",
+    name: "Nuxt",
+    description: "Learn how to use UploadThing with Vue and Nuxt.",
   },
   {
-    href: '/backend-adapters',
-    name: 'Backend Apadters',
-    description: 'Learn how to use UploadThing with a separate backend.',
+    href: "/backend-adapters",
+    name: "Backend Apadters",
+    description: "Learn how to use UploadThing with a separate backend.",
   },
-]
+];
 
 export function Guides() {
   return (
@@ -63,5 +63,5 @@ export function Guides() {
         ))}
       </div>
     </div>
-  )
+  );
 }

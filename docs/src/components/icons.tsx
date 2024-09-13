@@ -1,6 +1,6 @@
-import React, { useId } from 'react'
+import React, { useId } from "react";
 
-type IconProps = React.ComponentPropsWithoutRef<'svg'>
+type IconProps = React.ComponentPropsWithoutRef<"svg">;
 
 export function CheckIcon(props: IconProps) {
   return (
@@ -14,7 +14,7 @@ export function CheckIcon(props: IconProps) {
         d="m6.75 10.813 2.438 2.437c1.218-4.469 4.062-6.5 4.062-6.5"
       />
     </svg>
-  )
+  );
 }
 
 export function AnchorIcon(props: IconProps) {
@@ -28,10 +28,10 @@ export function AnchorIcon(props: IconProps) {
     >
       <path d="m6.5 11.5-.964-.964a3.535 3.535 0 1 1 5-5l.964.964m2 2 .964.964a3.536 3.536 0 0 1-5 5L8.5 13.5m0-5 3 3" />
     </svg>
-  )
+  );
 }
 
-export { MagnifyingGlassIcon as SearchIcon } from '@heroicons/react/24/outline'
+export { MagnifyingGlassIcon as SearchIcon } from "@heroicons/react/24/outline";
 
 export function NoResultsIcon(props: IconProps) {
   return (
@@ -42,11 +42,11 @@ export function NoResultsIcon(props: IconProps) {
         d="M12.01 12a4.237 4.237 0 0 0 1.24-3c0-.62-.132-1.207-.37-1.738M12.01 12A4.237 4.237 0 0 1 9 13.25c-.635 0-1.237-.14-1.777-.388M12.01 12l3.24 3.25m-3.715-9.661a4.25 4.25 0 0 0-5.975 5.908M4.5 15.5l11-11"
       />
     </svg>
-  )
+  );
 }
 
 export function LoadingIcon(props: IconProps) {
-  let id = useId()
+  let id = useId();
 
   return (
     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
@@ -71,7 +71,7 @@ export function LoadingIcon(props: IconProps) {
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }
 
 export function XIcon(props: IconProps) {
@@ -79,7 +79,7 @@ export function XIcon(props: IconProps) {
     <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
       <path d="M11.1527 8.92804L16.2525 3H15.044L10.6159 8.14724L7.07919 3H3L8.34821 10.7835L3 17H4.20855L8.88474 11.5643L12.6198 17H16.699L11.1524 8.92804H11.1527ZM9.49748 10.8521L8.95559 10.077L4.644 3.90978H6.50026L9.97976 8.88696L10.5216 9.66202L15.0446 16.1316H13.1883L9.49748 10.8524V10.8521Z" />
     </svg>
-  )
+  );
 }
 
 export function GitHubIcon(props: IconProps) {
@@ -91,7 +91,7 @@ export function GitHubIcon(props: IconProps) {
         d="M10 1.667c-4.605 0-8.334 3.823-8.334 8.544 0 3.78 2.385 6.974 5.698 8.106.417.075.573-.182.573-.406 0-.203-.011-.875-.011-1.592-2.093.397-2.635-.522-2.802-1.002-.094-.246-.5-1.005-.854-1.207-.291-.16-.708-.556-.01-.567.656-.01 1.124.62 1.281.876.75 1.292 1.948.93 2.427.705.073-.555.291-.93.531-1.143-1.854-.213-3.791-.95-3.791-4.218 0-.929.322-1.698.854-2.296-.083-.214-.375-1.09.083-2.265 0 0 .698-.224 2.292.876a7.576 7.576 0 0 1 2.083-.288c.709 0 1.417.096 2.084.288 1.593-1.11 2.291-.875 2.291-.875.459 1.174.167 2.05.084 2.263.53.599.854 1.357.854 2.297 0 3.278-1.948 4.005-3.802 4.219.302.266.563.78.563 1.58 0 1.143-.011 2.061-.011 2.35 0 .224.156.491.573.405a8.365 8.365 0 0 0 4.11-3.116 8.707 8.707 0 0 0 1.567-4.99c0-4.721-3.73-8.545-8.334-8.545Z"
       />
     </svg>
-  )
+  );
 }
 
 export function DiscordIcon(props: IconProps) {
@@ -99,7 +99,7 @@ export function DiscordIcon(props: IconProps) {
     <svg viewBox="0 0 20 20" aria-hidden="true" {...props}>
       <path d="M16.238 4.515a14.842 14.842 0 0 0-3.664-1.136.055.055 0 0 0-.059.027 10.35 10.35 0 0 0-.456.938 13.702 13.702 0 0 0-4.115 0 9.479 9.479 0 0 0-.464-.938.058.058 0 0 0-.058-.027c-1.266.218-2.497.6-3.664 1.136a.052.052 0 0 0-.024.02C1.4 8.023.76 11.424 1.074 14.782a.062.062 0 0 0 .024.042 14.923 14.923 0 0 0 4.494 2.272.058.058 0 0 0 .064-.02c.346-.473.654-.972.92-1.496a.057.057 0 0 0-.032-.08 9.83 9.83 0 0 1-1.404-.669.058.058 0 0 1-.029-.046.058.058 0 0 1 .023-.05c.094-.07.189-.144.279-.218a.056.056 0 0 1 .058-.008c2.946 1.345 6.135 1.345 9.046 0a.056.056 0 0 1 .059.007c.09.074.184.149.28.22a.058.058 0 0 1 .023.049.059.059 0 0 1-.028.046 9.224 9.224 0 0 1-1.405.669.058.058 0 0 0-.033.033.056.056 0 0 0 .002.047c.27.523.58 1.022.92 1.495a.056.056 0 0 0 .062.021 14.878 14.878 0 0 0 4.502-2.272.055.055 0 0 0 .016-.018.056.056 0 0 0 .008-.023c.375-3.883-.63-7.256-2.662-10.246a.046.046 0 0 0-.023-.021Zm-9.223 8.221c-.887 0-1.618-.814-1.618-1.814s.717-1.814 1.618-1.814c.908 0 1.632.821 1.618 1.814 0 1-.717 1.814-1.618 1.814Zm5.981 0c-.887 0-1.618-.814-1.618-1.814s.717-1.814 1.618-1.814c.908 0 1.632.821 1.618 1.814 0 1-.71 1.814-1.618 1.814Z" />
     </svg>
-  )
+  );
 }
 
 export function AstroIcon(props: IconProps) {
@@ -136,7 +136,7 @@ export function AstroIcon(props: IconProps) {
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }
 
 export function ExpressIcon(props: IconProps) {
@@ -149,7 +149,7 @@ export function ExpressIcon(props: IconProps) {
     >
       <path d="M32 24.795c-1.164.296-1.884.013-2.53-.957l-4.594-6.356-.664-.88-5.365 7.257c-.613.873-1.256 1.253-2.4.944l6.87-9.222-6.396-8.33c1.1-.214 1.86-.105 2.535.88l4.765 6.435 4.8-6.4c.615-.873 1.276-1.205 2.38-.883l-2.48 3.288-3.36 4.375c-.4.5-.345.842.023 1.325L32 24.795zM.008 15.427l.562-2.764C2.1 7.193 8.37 4.92 12.694 8.3c2.527 1.988 3.155 4.8 3.03 7.95H1.48c-.214 5.67 3.867 9.092 9.07 7.346 1.825-.613 2.9-2.042 3.438-3.83.273-.896.725-1.036 1.567-.78-.43 2.236-1.4 4.104-3.45 5.273-3.063 1.75-7.435 1.184-9.735-1.248C1 21.6.434 19.812.18 17.9c-.04-.316-.12-.617-.18-.92q.008-.776.008-1.552zm1.498-.38h12.872c-.084-4.1-2.637-7.012-6.126-7.037-3.83-.03-6.58 2.813-6.746 7.037z" />
     </svg>
-  )
+  );
 }
 
 export function FastifyIcon(props: IconProps) {
@@ -163,7 +163,7 @@ export function FastifyIcon(props: IconProps) {
     >
       <path d="M247.942 23.314 256 2.444l-.35-1.293-79.717 21.003C184.433 9.86 181.513 0 181.513 0s-25.457 16.257-44.709 15.832c-19.251-.426-25.457-5.564-54.977 3.853-29.52 9.41-37.86 38.295-46.419 44.5S0 90.603 0 90.603l.058.359 24.207-7.707S17.625 89.51 3.52 108.52l-.659-.609.025.134s11.336 17.324 22.463 14.121c1.118-.325 2.377-.859 3.753-1.56 4.48 2.495 10.327 4.947 16.783 5.622 0 0-4.37-5.08-8.016-10.86.984-.634 1.994-1.293 3.02-1.96l-.476.334 9.217 3.386-1.017-8.666c.033-.017.058-.042.091-.059l9.059 3.328-1.126-7.882a76.868 76.868 0 0 1 3.436-1.693l9.443-35.717 39.045-26.634-3.103 7.808c-7.916 19.468-22.78 24.064-22.78 24.064l-6.206 2.352c-4.612 5.455-6.556 6.798-8.14 25.107 3.72-.934 7.273-1.16 10.492-.292 16.683 4.496 22.463 24.599 17.967 30.162-1.126 1.393-3.803 3.77-7.181 6.565h-6.773l-.092 5.488c-.234.184-.467.359-.693.542h-6.89l-.083 5.355c-.609.468-1.218.918-1.801 1.36-6.473.133-14.673-5.514-14.673-5.514 0 5.139 4.28 13.046 4.28 13.046s.283-.133.758-.367c-.417.309-.65.476-.65.476s17.324 11.552 28.235 7.273c9.7-3.804 34.816-23.606 56.495-32.981l65.603-17.283 8.65-22.413-49.997 13.17V83.597l58.664-15.457 8.65-22.413-67.297 17.734V43.324z" />
     </svg>
-  )
+  );
 }
 
 export function H3Icon(props: IconProps) {
@@ -187,7 +187,7 @@ export function H3Icon(props: IconProps) {
         fill="#FFE567"
       />
     </svg>
-  )
+  );
 }
 
 export function JavaScriptIcon(props: IconProps) {
@@ -204,7 +204,7 @@ export function JavaScriptIcon(props: IconProps) {
         fill="#323330"
       />
     </svg>
-  )
+  );
 }
 
 export function NextJsIcon(props: IconProps) {
@@ -217,7 +217,7 @@ export function NextJsIcon(props: IconProps) {
     >
       <mask
         id="mask0_408_139"
-        style={{ maskType: 'alpha' }}
+        style={{ maskType: "alpha" }}
         maskUnits="userSpaceOnUse"
         x="0"
         y="0"
@@ -272,7 +272,7 @@ export function NextJsIcon(props: IconProps) {
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }
 
 export function NuxtIcon(props: IconProps) {
@@ -288,7 +288,7 @@ export function NuxtIcon(props: IconProps) {
         d="M143.618 167.029h95.166c3.023 0 5.992-.771 8.61-2.237a16.963 16.963 0 0 0 6.302-6.115 16.324 16.324 0 0 0 2.304-8.352c0-2.932-.799-5.811-2.312-8.35L189.778 34.6a16.966 16.966 0 0 0-6.301-6.113 17.626 17.626 0 0 0-8.608-2.238c-3.023 0-5.991.772-8.609 2.238a16.964 16.964 0 0 0-6.3 6.113l-16.342 27.473-31.95-53.724a16.973 16.973 0 0 0-6.304-6.112A17.638 17.638 0 0 0 96.754 0c-3.022 0-5.992.772-8.61 2.237a16.973 16.973 0 0 0-6.303 6.112L2.31 141.975A16.302 16.302 0 0 0 0 150.325c0 2.932.793 5.813 2.304 8.352a16.964 16.964 0 0 0 6.302 6.115 17.628 17.628 0 0 0 8.61 2.237h59.737c23.669 0 41.123-10.084 53.134-29.758l29.159-48.983 15.618-26.215 46.874 78.742h-62.492l-15.628 26.214Zm-67.64-26.24-41.688-.01L96.782 35.796l31.181 52.492-20.877 35.084c-7.976 12.765-17.037 17.416-31.107 17.416Z"
       />
     </svg>
-  )
+  );
 }
 
 export function ReactIcon(props: IconProps) {
@@ -304,7 +304,7 @@ export function ReactIcon(props: IconProps) {
         fill="#00D8FF"
       />
     </svg>
-  )
+  );
 }
 
 export function SolidJsIcon(props: IconProps) {
@@ -388,7 +388,7 @@ export function SolidJsIcon(props: IconProps) {
         fill="url(#d)"
       />
     </svg>
-  )
+  );
 }
 
 export function SolidStartIcon(props: IconProps) {
@@ -404,7 +404,7 @@ export function SolidStartIcon(props: IconProps) {
     >
       <mask
         id="mask0_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="246"
         y="369"
@@ -424,7 +424,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask1_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="77"
         y="241"
@@ -444,7 +444,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask2_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="375"
         y="167"
@@ -464,7 +464,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask3_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="199"
         y="35"
@@ -484,7 +484,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask4_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="32"
         y="245"
@@ -504,7 +504,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask5_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="154"
         y="39"
@@ -524,7 +524,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask6_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="118"
         y="106"
@@ -544,7 +544,7 @@ export function SolidStartIcon(props: IconProps) {
       </g>
       <mask
         id="mask7_0_3"
-        style={{ maskType: 'luminance' }}
+        style={{ maskType: "luminance" }}
         maskUnits="userSpaceOnUse"
         x="108"
         y="110"
@@ -653,7 +653,7 @@ export function SolidStartIcon(props: IconProps) {
         </linearGradient>
       </defs>
     </svg>
-  )
+  );
 }
 
 export function SvelteIcon(props: IconProps) {
@@ -673,7 +673,7 @@ export function SvelteIcon(props: IconProps) {
         fill="#FFF"
       />
     </svg>
-  )
+  );
 }
 
 export function VueIcon(props: IconProps) {
@@ -697,7 +697,7 @@ export function VueIcon(props: IconProps) {
         fill="#35495E"
       />
     </svg>
-  )
+  );
 }
 
 export function WinterCGIcon(props: IconProps) {
@@ -725,5 +725,5 @@ export function WinterCGIcon(props: IconProps) {
         strokeWidth={5}
       />
     </svg>
-  )
+  );
 }

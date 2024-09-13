@@ -1,21 +1,20 @@
-import { type Metadata } from 'next'
+import { type Metadata } from "next";
+import { Providers } from "@/app/providers";
+import { ViewTransitions } from "next-view-transitions";
 
-import { Providers } from '@/app/providers'
-import { ViewTransitions } from 'next-view-transitions'
-
-import '@/styles/tailwind.css'
+import "@/styles/tailwind.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://uploadthing-docs-twui.vercel.app'),
+  metadataBase: new URL("https://uploadthing-docs-twui.vercel.app"),
   title: {
-    template: '%s - UploadThing Docs',
-    default: 'UploadThing Docs',
+    template: "%s - UploadThing Docs",
+    default: "UploadThing Docs",
   },
-}
+};
 
 export default function RootLayout(
   props: Readonly<{
-    children: React.ReactNode
+    children: React.ReactNode;
   }>,
 ) {
   return (
@@ -26,5 +25,5 @@ export default function RootLayout(
         </body>
       </html>
     </ViewTransitions>
-  )
+  );
 }

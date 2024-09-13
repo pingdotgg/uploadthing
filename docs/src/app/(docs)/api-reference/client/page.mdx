@@ -1,41 +1,44 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'uploadthing/client',
+  title: "uploadthing/client",
   description:
-    'The UploadThing Client module provides utilities for working files in your application and communicating with your backend file router.',
-  category: 'API Reference',
-})
+    "The UploadThing Client module provides utilities for working files in your application and communicating with your backend file router.",
+  category: "API Reference",
+});
 
 # uploadthing/client
 
-The UploadThing Client module provides utilities for working files in your application
-and communicating with your backend file router.
+The UploadThing Client module provides utilities for working files in your
+application and communicating with your backend file router.
 
 ## `uploadFiles` {{ tag: 'function', since: '5.0' }}
 
-This function is used to perform [client side uploads](/uploading-files#client-side-uploads)
-by requesting presigned URLs from your backend file router, and then uploading the files to
+This function is used to perform
+[client side uploads](/uploading-files#client-side-uploads) by requesting
+presigned URLs from your backend file router, and then uploading the files to
 the storage provider.
 
-Use the `genUploader` factory function to generate a typed function that matches the signature
-of your file router, which will allow autocompletion and type checking on endpoint, route
-input and callback data types.
+Use the `genUploader` factory function to generate a typed function that matches
+the signature of your file router, which will allow autocompletion and type
+checking on endpoint, route input and callback data types.
 
 ```ts
-import { genUploader } from 'uploadthing/client'
-import type { UploadRouter } from '~/server/uploadthing'
+import { genUploader } from "uploadthing/client";
 
-export const { uploadFiles } = genUploader<UploadRouter>()
+import type { UploadRouter } from "~/server/uploadthing";
 
-const response = await uploadFiles('routeEndpoint', {
+export const { uploadFiles } = genUploader<UploadRouter>();
+
+const response = await uploadFiles("routeEndpoint", {
   files: [],
-})
+});
 ```
 
 ### Parameters
 
-The first parameter is the route endpoint to upload to, and the second parameter is an options object:
+The first parameter is the route endpoint to upload to, and the second parameter
+is an options object:
 
 <Properties>
   <Property name="files" type="File[]" required since="5.0">
@@ -98,37 +101,40 @@ The function returns a `Promise` that resolves to an array of objects:
 ## `createUpload` {{ tag: 'function', since: '7.0' }}
 
 Create a resumable upload. Resumable uploads allows you to start an upload,
-pause it, and then resume it at a later time. As long as the presigned URL is valid,
-you can continue the upload from where it left off.
+pause it, and then resume it at a later time. As long as the presigned URL is
+valid, you can continue the upload from where it left off.
 
-As for `uploadFiles`, use the `genUploader` factory function to generate a typed function that matches the signature
-of your file router, which will allow autocompletion and type checking on endpoint, route
-input and callback data types.
+As for `uploadFiles`, use the `genUploader` factory function to generate a typed
+function that matches the signature of your file router, which will allow
+autocompletion and type checking on endpoint, route input and callback data
+types.
 
 ```ts
-import { genUploader } from 'uploadthing/client'
-import type { UploadRouter } from '~/server/uploadthing'
+import { genUploader } from "uploadthing/client";
 
-export const { createUpload } = genUploader<UploadRouter>()
+import type { UploadRouter } from "~/server/uploadthing";
+
+export const { createUpload } = genUploader<UploadRouter>();
 
 // Create the upload. The files will start uploading immediately.
-const { pauseUpload, resumeUpload, done } = createUpload('routeEndpoint', {
+const { pauseUpload, resumeUpload, done } = createUpload("routeEndpoint", {
   files: [],
-})
+});
 
 // Pause the upload of a file
-pauseUpload(file)
+pauseUpload(file);
 
 // Resume the upload of a file
-resumeUpload(file)
+resumeUpload(file);
 
 // Await the completion of all files
-const files = await done()
+const files = await done();
 ```
 
 ### Parameters
 
-The first parameter is the route endpoint to upload to, and the second parameter is an options object:
+The first parameter is the route endpoint to upload to, and the second parameter
+is an options object:
 
 <Properties>
   <Property name="files" type="File[]" required since="7.0">
@@ -173,7 +179,8 @@ The first parameter is the route endpoint to upload to, and the second parameter
 
 ## `generateClientDropzoneAccept` {{ tag: 'function', since: '6.0' }}
 
-Generate an accepted object that can be passed to the `accept` prop of a `useDropzone` hook or `Dropzone` component.
+Generate an accepted object that can be passed to the `accept` prop of a
+`useDropzone` hook or `Dropzone` component.
 
 ### Parameters
 
@@ -228,7 +235,8 @@ Utility function to generate accept props for a `<input type="file">` element.
 
 ## `isValidSize` {{ tag: 'function', since: '6.11' }}
 
-This function is used to validate that a file is of a valid size given a route config.
+This function is used to validate that a file is of a valid size given a route
+config.
 
 ### Parameters
 
@@ -247,7 +255,8 @@ This function is used to validate that a file is of a valid size given a route c
 
 ## `isValidType` {{ tag: 'function', since: '6.11' }}
 
-This function is used to validate that a file is of a valid type given a route config.
+This function is used to validate that a file is of a valid type given a route
+config.
 
 ### Parameters
 

@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'H3',
-  description: 'Adapter to integrate UploadThing into your H3 application',
-  category: 'Backend Adapters',
-})
+  title: "H3",
+  description: "Adapter to integrate UploadThing into your H3 application",
+  category: "Backend Adapters",
+});
 
 # Getting started with H3
 
@@ -51,22 +51,22 @@ To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
 ```ts {{ title: "src/uploadthing.ts" }}
-import { createUploadthing, type FileRouter } from 'uploadthing/h3'
+import { createUploadthing, type FileRouter } from "uploadthing/h3";
 
-const f = createUploadthing()
+const f = createUploadthing();
 
 export const uploadRouter = {
   imageUploader: f({
     image: {
-      maxFileSize: '4MB',
+      maxFileSize: "4MB",
       maxFileCount: 4,
     },
   }).onUploadComplete((data) => {
-    console.log('upload completed', data)
+    console.log("upload completed", data);
   }),
-} satisfies FileRouter
+} satisfies FileRouter;
 
-export type OurFileRouter = typeof uploadRouter
+export type OurFileRouter = typeof uploadRouter;
 ```
 
 ### Create the H3 event handlers
@@ -118,11 +118,11 @@ when using a separate backend server. You'll need to set the URL of your server
 when you generate the components and helpers.
 
 ```tsx
-import { generateUploadButton } from '@uploadthing/react'
+import { generateUploadButton } from "@uploadthing/react";
 
 export const UploadButton = generateUploadButton({
-  url: 'https://your-server.com/api/uploadthing',
-})
+  url: "https://your-server.com/api/uploadthing",
+});
 // ...
 ```
 

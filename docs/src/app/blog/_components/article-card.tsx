@@ -1,9 +1,9 @@
-import { Card } from '@/components/Card'
-import { ArticleWithSlug } from '@/lib/articles'
-import { formatDate } from '@/lib/utils'
-import Image from 'next/image'
-import { Tag } from '@/components/Tag'
-import { Avatar } from '@/components/Avatar'
+import Image from "next/image";
+import { Avatar } from "@/components/Avatar";
+import { Card } from "@/components/Card";
+import { Tag } from "@/components/Tag";
+import { ArticleWithSlug } from "@/lib/articles";
+import { formatDate } from "@/lib/utils";
 
 export function ArticleCard({ article }: { article: ArticleWithSlug }) {
   return (
@@ -29,10 +29,10 @@ export function ArticleCard({ article }: { article: ArticleWithSlug }) {
         {formatDate(article.date)}
       </Card.Eyebrow>
     </article>
-  )
+  );
 }
 
-function ArticleAuthors({ authors }: { authors: ArticleWithSlug['authors'] }) {
+function ArticleAuthors({ authors }: { authors: ArticleWithSlug["authors"] }) {
   return authors.length === 1 ? (
     <div className="flex items-center gap-2">
       <Avatar
@@ -62,7 +62,7 @@ function ArticleAuthors({ authors }: { authors: ArticleWithSlug['authors'] }) {
         Multiple authors
       </span>
     </div>
-  )
+  );
 }
 
 export function FeaturedArticle({ article }: { article: ArticleWithSlug }) {
@@ -104,5 +104,5 @@ export function FeaturedArticle({ article }: { article: ArticleWithSlug }) {
         </div>
       </Card>
     </article>
-  )
+  );
 }

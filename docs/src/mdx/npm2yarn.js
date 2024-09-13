@@ -1,8 +1,8 @@
 // @ts-nocheck
-import convert from 'npm-to-yarn'
-import { visit } from 'unist-util-visit'
+import convert from "npm-to-yarn";
+import { visit } from "unist-util-visit";
 
-const PACKAGE_MANAGERS = /** @type {const} */ (['npm', 'pnpm', 'yarn', 'bun'])
+const PACKAGE_MANAGERS = /** @type {const} */ (["npm", "pnpm", "yarn", "bun"]);
 
 /**
  * Small little plugin to convert installation commands
@@ -15,18 +15,18 @@ const PACKAGE_MANAGERS = /** @type {const} */ (['npm', 'pnpm', 'yarn', 'bun'])
  */
 export const remarkNpm2Yarn = () => {
   return (ast, _file, done) => {
-    visit(ast, 'code', (node, index, parent) => {
-      if (!node.meta?.includes('npm2yarn')) return
-      if (!parent || typeof index !== 'number') return
+    visit(ast, "code", (node, index, parent) => {
+      if (!node.meta?.includes("npm2yarn")) return;
+      if (!parent || typeof index !== "number") return;
 
       parent.children[index] = {
-        type: 'mdxJsxFlowElement',
-        name: 'CodeGroup',
+        type: "mdxJsxFlowElement",
+        name: "CodeGroup",
         attributes: [
           {
-            type: 'mdxJsxAttribute',
-            name: 'storageKey',
-            value: 'preferedPkgMgr',
+            type: "mdxJsxAttribute",
+            name: "storageKey",
+            value: "preferedPkgMgr",
           },
         ],
         children: PACKAGE_MANAGERS.map((value) => ({
@@ -36,9 +36,9 @@ export const remarkNpm2Yarn = () => {
           value: convert(node.value, value),
           data: { hProperties: { annotation: `{ title: '${value}' }` } },
         })),
-      }
-    })
+      };
+    });
 
-    done()
-  }
-}
+    done();
+  };
+};

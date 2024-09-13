@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Nuxt Setup',
-  description: 'Learn how to set up a Nuxt project with UploadThing',
-  category: 'Getting Started',
-})
+  title: "Nuxt Setup",
+  description: "Learn how to set up a Nuxt project with UploadThing",
+  category: "Getting Started",
+});
 
 # Getting Started using Nuxt
 
@@ -47,15 +47,15 @@ Add the `@uploadthing/nuxt` module to your `nuxt.config.ts` file:
 
 ```ts {{ title: "nuxt.config.ts" }}
 export default {
-  modules: ['@uploadthing/nuxt'],
+  modules: ["@uploadthing/nuxt"],
   uploadthing: {
     /**
      * Path to your router definition file
      * @default `~/server/uploadthing.ts`
      */
-    routerPath: '',
+    routerPath: "",
   },
-}
+};
 ```
 
 You can set some module options in the `uploadthing` property of your
@@ -71,8 +71,8 @@ export type ModuleOptions = RouteHandlerConfig & {
    * Path to your router definition file
    * @default `~/server/uploadthing.ts`
    */
-  routerPath?: string
-}
+  routerPath?: string;
+};
 ```
 
 ## Set Up A FileRouter
@@ -95,39 +95,39 @@ the [File Router API](/file-routes).
 </Note>
 
 ```ts {{ title: "src/lib/server/uploadthing.ts" }}
-import type { H3Event } from 'h3'
+import type { H3Event } from "h3";
 
-import { createUploadthing } from 'uploadthing/h3'
-import type { FileRouter } from 'uploadthing/h3'
+import { createUploadthing } from "uploadthing/h3";
+import type { FileRouter } from "uploadthing/h3";
 
-const f = createUploadthing()
+const f = createUploadthing();
 
-const auth = (ev: H3Event) => ({ id: 'fakeId' }) // Fake auth function
+const auth = (ev: H3Event) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const uploadRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUploader: f({ image: { maxFileSize: '4MB' } })
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ event }) => {
       // This code runs on your server before upload
-      const user = await auth(event)
+      const user = await auth(event);
 
       // If you throw, the user will not be able to upload
-      if (!user) throw new Error('Unauthorized')
+      if (!user) throw new Error("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id }
+      return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log('Upload complete for userId:', metadata.userId)
+      console.log("Upload complete for userId:", metadata.userId);
 
-      console.log('file url', file.url)
+      console.log("file url", file.url);
     }),
-} satisfies FileRouter
+} satisfies FileRouter;
 
-export type UploadRouter = typeof uploadRouter
+export type UploadRouter = typeof uploadRouter;
 ```
 
 ## Upload some files!
@@ -137,8 +137,8 @@ Just mount one of our components in your app and start uploading files!
 ```vue {{ title: "pages/index.vue" }}
 <script setup lang="ts">
 const alert = (msg: string) => {
-  window.alert(msg)
-}
+  window.alert(msg);
+};
 </script>
 
 <template>
@@ -147,12 +147,12 @@ const alert = (msg: string) => {
       :config="{
         endpoint: 'imageUploader',
         onClientUploadComplete: (file) => {
-          console.log('uploaded', file)
-          alert('Upload complete')
+          console.log('uploaded', file);
+          alert('Upload complete');
         },
         onUploadError: (error) => {
-          console.error(error, error.cause)
-          alert('Upload failed')
+          console.error(error, error.cause);
+          alert('Upload failed');
         },
       }"
     />
@@ -160,12 +160,12 @@ const alert = (msg: string) => {
       :config="{
         endpoint: 'imageUploader',
         onClientUploadComplete: (file) => {
-          console.log('uploaded', file)
-          alert('Upload complete')
+          console.log('uploaded', file);
+          alert('Upload complete');
         },
         onUploadError: (error) => {
-          console.error(error, error.cause)
-          alert('Upload failed')
+          console.error(error, error.cause);
+          alert('Upload failed');
         },
       }"
     />
@@ -186,15 +186,15 @@ to create your own custom components.
 ```vue {{ title: "pages/index.vue" }}
 <script setup lang="ts">
 const alert = (msg: string) => {
-  window.alert(msg)
-}
+  window.alert(msg);
+};
 
-const { startUpload } = useUploadThing('videoAndImage', {
+const { startUpload } = useUploadThing("videoAndImage", {
   onClientUploadComplete(res) {
-    console.log(`onClientUploadComplete`, res)
-    alert('Upload Completed')
+    console.log(`onClientUploadComplete`, res);
+    alert("Upload Completed");
   },
-})
+});
 </script>
 
 <template>
@@ -203,14 +203,14 @@ const { startUpload } = useUploadThing('videoAndImage', {
       type="file"
       @change="
         async (e) => {
-          console.log(`e`, e)
-          const file = (e.target as HTMLInputElement).files?.[0]
-          if (!file) return
+          console.log(`e`, e);
+          const file = (e.target as HTMLInputElement).files?.[0];
+          if (!file) return;
 
           // Do something with files
 
           // Then start the upload
-          await startUpload([file])
+          await startUpload([file]);
         }
       "
     />

@@ -1,81 +1,87 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'File Routes',
+  title: "File Routes",
   description:
-    'File Routes is a core concept of UploadThing that defines what your users can upload',
-  category: 'API Reference',
-})
+    "File Routes is a core concept of UploadThing that defines what your users can upload",
+  category: "API Reference",
+});
 
 # File Routes
 
 File Routes are the routes you create with the helper instantiated by
-[`createUploadthing`](/api-reference/server#create-uploadthing).
-Think of them as the "endpoints" for what your users can upload.
-An object with file routes constructs a file router where the keys (slugs) in the object are the names of your endpoints.
-You can name your routes whatever you want, preferably something that explains what the route does, e.g. `profilePicture`, `resume`, `messageAttachment`, etc.
+[`createUploadthing`](/api-reference/server#create-uploadthing). Think of them
+as the "endpoints" for what your users can upload. An object with file routes
+constructs a file router where the keys (slugs) in the object are the names of
+your endpoints. You can name your routes whatever you want, preferably something
+that explains what the route does, e.g. `profilePicture`, `resume`,
+`messageAttachment`, etc.
 
 Below you can see an example file router with a few routes:
 
 ```ts
-import { createUploadthing, type FileRouter } from 'uploadthing/server'
+import { createUploadthing, type FileRouter } from "uploadthing/server";
 
-const f = createUploadthing()
+const f = createUploadthing();
 
 export const uploadRouter = {
   // Example "profile picture upload" route - these can be named whatever you want!
-  profilePicture: f(['image'])
+  profilePicture: f(["image"])
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log('file', data)),
+    .onUploadComplete((data) => console.log("file", data)),
 
   // This route takes an attached image OR video
-  messageAttachment: f(['image', 'video'])
+  messageAttachment: f(["image", "video"])
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log('file', data)),
+    .onUploadComplete((data) => console.log("file", data)),
 
   // Takes exactly ONE image up to 2MB
   strictImageAttachment: f({
-    image: { maxFileSize: '2MB', maxFileCount: 1, minFileCount: 1 },
+    image: { maxFileSize: "2MB", maxFileCount: 1, minFileCount: 1 },
   })
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log('file', data)),
+    .onUploadComplete((data) => console.log("file", data)),
 
   // Takes up to 4 2mb images and/or 1 256mb video
   mediaPost: f({
-    image: { maxFileSize: '2MB', maxFileCount: 4 },
-    video: { maxFileSize: '256MB', maxFileCount: 1 },
+    image: { maxFileSize: "2MB", maxFileCount: 4 },
+    video: { maxFileSize: "256MB", maxFileCount: 1 },
   })
     .middleware(({ req }) => auth(req))
-    .onUploadComplete((data) => console.log('file', data)),
+    .onUploadComplete((data) => console.log("file", data)),
 
   // Takes up to 4 2mb images, and the client will not resolve
   // the upload until the `onUploadComplete` resolved.
   withAwaitedServerData: f(
-    { image: { maxFileSize: '2MB', maxFileCount: 4 } },
+    { image: { maxFileSize: "2MB", maxFileCount: 4 } },
     { awaitServerData: true },
   )
     .middleware(({ req }) => auth(req))
     .onUploadComplete((data) => {
-      return { foo: 'bar' as const }
+      return { foo: "bar" as const };
     }),
-} satisfies FileRouter
+} satisfies FileRouter;
 
-export type UploadRouter = typeof uploadRouter
+export type UploadRouter = typeof uploadRouter;
 ```
 
 ## Route Config {{ since: '5.0' }}
 
-The `f` function takes two arguments. The first can be an array of `FileType`, or a record mapping each `FileType` with a route config.
-The route config allow more granular control, for example what files can be uploaded and how many of them can be uploaded for a given upload.
-The array syntax will fallback to applying the [defaults](#defaults) to all file types.
+The `f` function takes two arguments. The first can be an array of `FileType`,
+or a record mapping each `FileType` with a route config. The route config allow
+more granular control, for example what files can be uploaded and how many of
+them can be uploaded for a given upload. The array syntax will fallback to
+applying the [defaults](#defaults) to all file types.
 
-A `FileType` can be any valid [web MIME type]((https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_Types).
+A `FileType` can be any valid [web
+MIME
+type]((https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_Types).
 For example: use `application/json` to only allow JSON files to be uploaded.
 
-Additionally, you may pass any of the following custom types:
-`image`, `video`, `audio`, `pdf` or `text`. These are shorthands that allows you to
-specify the type of file without specifying the exact MIME type.
-Lastly, there's `blob` which allows any file type.
+Additionally, you may pass any of the following custom types: `image`, `video`,
+`audio`, `pdf` or `text`. These are shorthands that allows you to specify the
+type of file without specifying the exact MIME type. Lastly, there's `blob`
+which allows any file type.
 
 A route config can have the following properties:
 
@@ -147,29 +153,29 @@ will apply to the entire route.
 
 <span className="h-8" />
 
-The `f` function returns a builder object that allows you to chain methods
-that will run during the upload process.
+The `f` function returns a builder object that allows you to chain methods that
+will run during the upload process.
 
 ```ts
-import { z } from 'zod'
+import { z } from "zod";
 
-f(['image'])
+f(["image"])
   .input(z.object({ foo: z.string() }))
   .middleware(async ({ req, input }) => {
-    input
+    input;
     // ^? { foo: string }
-    return {}
+    return {};
   })
   .onUploadError(({ error, fileKey }) => {})
-  .onUploadComplete(async (opts) => {})
+  .onUploadComplete(async (opts) => {});
 ```
 
 ## `input` {{ since: '5.0' }}
 
-You can pass a [Zod](https://github.com/colinhacks/zod) schema to validate user input from the client.
-This data comes from the client when the upload starts. If validation here fails, an error
-will be thrown and none of your `middleware` n'or `onUploadComplete` functions
-will be executed.
+You can pass a [Zod](https://github.com/colinhacks/zod) schema to validate user
+input from the client. This data comes from the client when the upload starts.
+If validation here fails, an error will be thrown and none of your `middleware`
+n'or `onUploadComplete` functions will be executed.
 
 The input is validated on **your** server and only leaves your server if you
 pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
@@ -182,26 +188,26 @@ This is the function where you authorize a user to do an upload. You can also
 tag the upload with metadata here. Example using Clerk:
 
 ```ts
-import { currentUser } from '@clerk/nextjs'
+import { currentUser } from "@clerk/nextjs";
 
-import { UploadThingError } from 'uploadthing/server'
+import { UploadThingError } from "uploadthing/server";
 
-f(['image'])
+f(["image"])
   .middleware(async ({ req, res }) => {
-    const user = await currentUser()
+    const user = await currentUser();
 
     // Throw if user isn't signed in
     if (!user)
       throw new UploadThingError(
-        'You must be logged in to upload a profile picture',
-      )
+        "You must be logged in to upload a profile picture",
+      );
 
     // Return userId to be used in onUploadComplete
-    return { userId: user.id }
+    return { userId: user.id };
   })
   .onUploadComplete(async ({ metadata }) => {
-    console.log('Uploaded by user', metadata.userId)
-  })
+    console.log("Uploaded by user", metadata.userId);
+  });
 ```
 
 <Note>
@@ -216,31 +222,32 @@ override the uploaded files attributes. This can be used to either rename the
 file, or set a custom identifer for the file:
 
 ```ts
-import { UTFiles } from 'uploadthing/server'
+import { UTFiles } from "uploadthing/server";
 
-f(['image'])
+f(["image"])
   .middleware(async ({ req, files }) => {
     const fileOverrides = files.map((file) => {
-      const newName = sluggify(file.name)
-      const myIdentifier = generateId()
-      return { ...file, name: newName, customId: myIdentifier }
-    })
+      const newName = sluggify(file.name);
+      const myIdentifier = generateId();
+      return { ...file, name: newName, customId: myIdentifier };
+    });
 
     // Return userId to be used in onUploadComplete
-    return { foo: 'bar' as const, [UTFiles]: fileOverrides }
+    return { foo: "bar" as const, [UTFiles]: fileOverrides };
   })
   .onUploadComplete(async ({ metadata, file }) => {
     // The UTFIles symbol is stripped from the metadata
-    metadata // { foo: "bar" }
-    file.customId // myIdentifier
-  })
+    metadata; // { foo: "bar" }
+    file.customId; // myIdentifier
+  });
 ```
 
 ## `onUploadError` {{ since: '5.5' }}
 
 Called when an error occurs during the upload process.
 
-The function is called with a single object argument with the following properties:
+The function is called with a single object argument with the following
+properties:
 
 <Properties>
   <Property name="error" since="5.5" type="UploadThingError">
@@ -261,7 +268,8 @@ each route must have one and it must be the last method in the builder chain.
 As of v6.0, you can return JSON serializable data from this function, which will
 be passed to the clientside `onClientUploadComplete` callback.
 
-The function is called with a single object argument with the following properties:
+The function is called with a single object argument with the following
+properties:
 
 <Properties>
   <Property name="metadata" since="5.0" type="Generic">

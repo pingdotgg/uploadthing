@@ -1,11 +1,11 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Working with Files',
+  title: "Working with Files",
   description:
-    'After your files have been uploaded, you will most likely want to do something with them. This page shows how to work with your uploaded files.',
-  category: 'Concepts',
-})
+    "After your files have been uploaded, you will most likely want to do something with them. This page shows how to work with your uploaded files.",
+  category: "Concepts",
+});
 
 # Working with Files
 
@@ -42,13 +42,13 @@ export default {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'utfs.io',
-        pathname: '/a/<APP_ID>/*',
+        protocol: "https",
+        hostname: "utfs.io",
+        pathname: "/a/<APP_ID>/*",
       },
     ],
   },
-}
+};
 ```
 
 <Note>
@@ -58,10 +58,10 @@ export default {
 ## Accessing Private Files
 
 If your files are protected with
-[access controls](/concepts/regions-acl#access-controls), you will need to request a
-short-lived presigned URL from the API to access the file. You can request one
-using [`UTApi.getSignedUrl`](/api-reference/ut-api#get-signed-url), or from the
-`/requestFileAccess` API endpoint (see
+[access controls](/concepts/regions-acl#access-controls), you will need to
+request a short-lived presigned URL from the API to access the file. You can
+request one using [`UTApi.getSignedUrl`](/api-reference/ut-api#get-signed-url),
+or from the `/requestFileAccess` API endpoint (see
 [OpenAPI Specification](/api-reference/openapi-spec)).
 
 Presigned URL follows the same patterns as above, with additional query

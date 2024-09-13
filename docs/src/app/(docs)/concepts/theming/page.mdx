@@ -1,17 +1,18 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Theming',
+  title: "Theming",
   description:
-    'Customize the look and feel of your UploadThing components using our theming system',
-  category: 'Concepts',
-})
+    "Customize the look and feel of your UploadThing components using our theming system",
+  category: "Concepts",
+});
 
-import * as d from './demos'
+import * as d from "./demos";
 
 # Theming
 
-Our prebuilt components are customizable so you can make them fit with the theme of your application.
+Our prebuilt components are customizable so you can make them fit with the theme
+of your application.
 
 ## UploadButton Anatomy
 
@@ -103,46 +104,46 @@ for the `appearance` prop for `UploadButton` and `UploadDropzone` are:
 type StyleField =
   | string
   | CSSProperties
-  | ((args: CallbackArguments) => string | CSSProperties)
+  | ((args: CallbackArguments) => string | CSSProperties);
 
 type UploadButtonProps = {
   /* rest of props */
   appearance?: {
-    container?: StyleField
-    button?: StyleField
-    allowedContent?: StyleField
-  }
-}
+    container?: StyleField;
+    button?: StyleField;
+    allowedContent?: StyleField;
+  };
+};
 
 type UploadDropzoneProps = {
   /* rest of props */
   appearance?: {
-    container?: StyleField
-    uploadIcon?: StyleField
-    label?: StyleField
-    allowedContent?: StyleField
-    button?: StyleField
-  }
-}
+    container?: StyleField;
+    uploadIcon?: StyleField;
+    label?: StyleField;
+    allowedContent?: StyleField;
+    button?: StyleField;
+  };
+};
 ```
 
 where the `CallbackArguments` is defined as (depending on the component):
 
 ```ts
 type ButtonCallbackArguments = {
-  ready: boolean
-  isUploading: boolean
-  uploadProgress: number
-  fileTypes: string[]
-}
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+};
 
 type DropzoneCallbackArguments = {
-  ready: boolean
-  isUploading: boolean
-  uploadProgress: number
-  fileTypes: string[]
-  isDragActive: boolean
-}
+  ready: boolean;
+  isUploading: boolean;
+  uploadProgress: number;
+  fileTypes: string[];
+  isDragActive: boolean;
+};
 ```
 
 <Note>
@@ -190,20 +191,20 @@ to import the default stylesheet to make the components look right.
 <CodeGroup>
 
 ```ts {{title: "tailwind.config.ts" }}
-import { withUt } from 'uploadthing/tw'
+import { withUt } from "uploadthing/tw";
 
 export default withUt({
   // your config goes here
-})
+});
 ```
 
 ```js {{title: "tailwind.config.js" }}
 // @ts-check
-const { withUt } = require('uploadthing/tw')
+const { withUt } = require("uploadthing/tw");
 
 module.exports = withUt({
   // your config goes here
-})
+});
 ```
 
 </CodeGroup>
@@ -213,7 +214,7 @@ module.exports = withUt({
   stylesheet into your app. Otherwise, components will not look right.
 
 ```ts
-import '@uploadthing/react/styles.css'
+import "@uploadthing/react/styles.css";
 
 // ...
 ```
@@ -281,10 +282,10 @@ component.
 <UploadButton
   appearance={{
     button:
-      'ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400',
-    container: 'w-max flex-row rounded-md border-cyan-300 bg-slate-800',
+      "ut-ready:bg-green-500 ut-uploading:cursor-not-allowed rounded-r-none bg-red-500 bg-none after:bg-orange-400",
+    container: "w-max flex-row rounded-md border-cyan-300 bg-slate-800",
     allowedContent:
-      'flex h-8 flex-col items-center justify-center px-2 text-white',
+      "flex h-8 flex-col items-center justify-center px-2 text-white",
   }}
 />
 ```
@@ -311,28 +312,28 @@ specific elements of components.
 }
 
 /* applied to button */
-.custom-class > *[data-ut-element='button'] {
+.custom-class > *[data-ut-element="button"] {
   font-size: 1.6rem;
   color: rgb(0 0 0 / 1);
   background-color: rgb(239 68 68 / 1);
 }
 
 /* applied to button when uploading */
-.custom-class > *[data-ut-element='button'][data-state='readying'] {
+.custom-class > *[data-ut-element="button"][data-state="readying"] {
   background-color: rgb(239 68 68 / 0.5);
   color: rgb(0 0 0 / 0.5);
   cursor: not-allowed;
 }
 
 /* applied to the button when uploading */
-.custom-class > *[data-ut-element='button'][data-state='uploading'] {
+.custom-class > *[data-ut-element="button"][data-state="uploading"] {
   background-color: rgb(239 68 68 / 0.5);
   color: rgb(0 0 0 / 0.5);
   cursor: not-allowed;
 }
 
 /* applied to the upload indicator when uploading */
-.custom-class > *[data-ut-element='button'][data-state='uploading']::after {
+.custom-class > *[data-ut-element="button"][data-state="uploading"]::after {
   background-color: rgb(234 88 12 / 1);
 }
 ```
@@ -352,11 +353,11 @@ and will return a string
   appearance={{
     button({ ready, isUploading }) {
       return `custom-button ${
-        ready ? 'custom-button-ready' : 'custom-button-not-ready'
-      } ${isUploading ? 'custom-button-uploading' : ''}`
+        ready ? "custom-button-ready" : "custom-button-not-ready"
+      } ${isUploading ? "custom-button-uploading" : ""}`;
     },
-    container: 'custom-container',
-    allowedContent: 'custom-allowed-content',
+    container: "custom-container",
+    allowedContent: "custom-allowed-content",
   }}
 />
 ```
@@ -369,7 +370,7 @@ and will return a string
 }
 
 /* applied to container when readying */
-.custom-container[data-state='readying'] {
+.custom-container[data-state="readying"] {
   background-color: none;
 }
 
@@ -421,17 +422,17 @@ the component and will return a `CSSProperties` object
   appearance={{
     button({ ready, isUploading }) {
       return {
-        fontSize: '1.6rem',
-        color: 'black',
-        ...(ready && { color: '#ecfdf5' }),
-        ...(isUploading && { color: '#d1d5db' }),
-      }
+        fontSize: "1.6rem",
+        color: "black",
+        ...(ready && { color: "#ecfdf5" }),
+        ...(isUploading && { color: "#d1d5db" }),
+      };
     },
     container: {
-      marginTop: '1rem',
+      marginTop: "1rem",
     },
     allowedContent: {
-      color: '#a1a1aa',
+      color: "#a1a1aa",
     },
   }}
 />
@@ -450,25 +451,25 @@ To customize the content of `UploadButton` and `UploadDropzone`, you can use the
 > the framework you use, e.g. `JSX.Element` in Solid.js.
 
 ```ts
-type ContentField = ReactNode | ((args: CallbackArguments) => ReactNode)
+type ContentField = ReactNode | ((args: CallbackArguments) => ReactNode);
 
 type UploadButtonProps = {
   /* rest of props */
   content?: {
-    button?: ContentField
-    allowedContent?: ContentField
-  }
-}
+    button?: ContentField;
+    allowedContent?: ContentField;
+  };
+};
 
 type UploadDropzoneProps = {
   /* rest of props */
   content?: {
-    uploadIcon?: ContentField
-    label?: ContentField
-    allowedContent?: ContentField
-    button?: ContentField
-  }
-}
+    uploadIcon?: ContentField;
+    label?: ContentField;
+    allowedContent?: ContentField;
+    button?: ContentField;
+  };
+};
 ```
 
 <Note>
@@ -490,14 +491,14 @@ type UploadDropzoneProps = {
   endpoint="mockRoute"
   content={{
     button({ ready }) {
-      if (ready) return <div>Upload stuff</div>
+      if (ready) return <div>Upload stuff</div>;
 
-      return 'Getting ready...'
+      return "Getting ready...";
     },
     allowedContent({ ready, fileTypes, isUploading }) {
-      if (!ready) return 'Checking what you allow'
-      if (isUploading) return 'Seems like stuff is uploading'
-      return `Stuff you can upload: ${fileTypes.join(', ')}`
+      if (!ready) return "Checking what you allow";
+      if (isUploading) return "Seems like stuff is uploading";
+      return `Stuff you can upload: ${fileTypes.join(", ")}`;
     },
   }}
 />

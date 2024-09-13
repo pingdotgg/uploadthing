@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'UTApi',
-  description: 'TypeScript SDK for consuming the UploadThing REST API.',
-  category: 'API Reference',
-})
+  title: "UTApi",
+  description: "TypeScript SDK for consuming the UploadThing REST API.",
+  category: "API Reference",
+});
 
 # UTApi
 
@@ -30,9 +30,9 @@ API but better.
 To get started, initialize an instance of `UTApi`.
 
 ```ts {{ title: "~/server/uploadthing.ts" }}
-import { UTApi } from 'uploadthing/server'
+import { UTApi } from "uploadthing/server";
 
-export const utapi = new UTApi()
+export const utapi = new UTApi();
 ```
 
 ### Options
@@ -100,12 +100,12 @@ Upload files directly from your server **without** using the file router. Useful
 for server-side file processing, uploading from a server action, and much more.
 
 ```tsx
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
 async function uploadFiles(formData: FormData) {
-  'use server'
-  const files = formData.getAll('files')
-  const response = await utapi.uploadFiles(files)
+  "use server";
+  const files = formData.getAll("files");
+  const response = await utapi.uploadFiles(files);
   //    ^? UploadedFileResponse[]
 }
 
@@ -115,7 +115,7 @@ function MyForm() {
       <input name="files" type="file" multiple />
       <button type="submit">Upload</button>
     </form>
-  )
+  );
 }
 ```
 
@@ -168,25 +168,26 @@ uploaded to the storage provider.
 
 ### Returns
 
-Returns an `Option` of `UploadedFileResponse`. If the `files` argument is an array, the returned value will also be an array.
+Returns an `Option` of `UploadedFileResponse`. If the `files` argument is an
+array, the returned value will also be an array.
 
 ```ts
 type UploadFileResponse =
   | { data: UploadData; error: null }
-  | { data: null; error: UploadError }
+  | { data: null; error: UploadError };
 
 type UploadData = {
-  key: string
-  url: string
-  name: string
-  size: number
-}
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
 
 type UploadError = {
-  code: string
-  message: string
-  data: any
-}
+  code: string;
+  message: string;
+  data: any;
+};
 ```
 
 ## `uploadFilesFromUrl` {{ tag: 'method', since: '5.3'}}
@@ -201,21 +202,22 @@ function you're looking for.
 </Warning>
 
 ```tsx
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
-const fileUrl = 'https://test.com/some.png'
-const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl)
+const fileUrl = "https://test.com/some.png";
+const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
 //    ^? UploadedFileResponse
 
-const fileUrls = ['https://test.com/some.png', 'https://test.com/some2.png']
-const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls)
+const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
+const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
 //    ^? UploadedFileResponse[]
 ```
 
 ### Parameters
 
-The first argument are the URLs of the files you want to upload. They may also be an object with a `url` property in case you
-want to override the `name`, or set a `customId` for the files. The function also takes some optional options:
+The first argument are the URLs of the files you want to upload. They may also
+be an object with a `url` property in case you want to override the `name`, or
+set a `customId` for the files. The function also takes some optional options:
 
 <Properties>
   <Property name="urls" type="MaybeArray<MaybeURL | URLWithOverrides>" since="5.3" required>
@@ -259,19 +261,20 @@ Same as [`uploadFiles`](#upload-files)
 the server.
 
 ```ts
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
-await utapi.deleteFiles('2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg')
+await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
 await utapi.deleteFiles([
-  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-  '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
-])
-await deleteFiles('myCustomIdentifier', { keyType: 'customId' })
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
+await deleteFiles("myCustomIdentifier", { keyType: "customId" });
 ```
 
 ### Parameters
 
-Pass in the key(s) you want to delete as the first argument. Additionally, you may pass some options as a second argument:
+Pass in the key(s) you want to delete as the first argument. Additionally, you
+may pass some options as a second argument:
 
 <Properties>
   <Property name="keys" type="MaybeArray<string>" required>
@@ -303,20 +306,21 @@ access them.
 </Warning>
 
 ```ts
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
 const oneUrl = await utapi.getFileUrls(
-  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-)
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+);
 const multipleUrls = await utapi.getFileUrls([
-  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-  '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
-])
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
 ```
 
 ### Parameters
 
-Pass in the key(s) you want to get the URLs for as the first argument. Additionally, you may pass some options as a second argument:
+Pass in the key(s) you want to get the URLs for as the first argument.
+Additionally, you may pass some options as a second argument:
 
 <Properties>
   <Property name="keys" type="MaybeArray<string>" required>
@@ -338,13 +342,14 @@ Pass in the key(s) you want to get the URLs for as the first argument. Additiona
 
 ## `listFiles` {{ tag: 'method', since: '5.3'}}
 
-`listFiles` returns a paginated list of objects containing file ids and keys for all
-files that have been uploaded to the application your API key corresponds to.
+`listFiles` returns a paginated list of objects containing file ids and keys for
+all files that have been uploaded to the application your API key corresponds
+to.
 
 ```ts
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
-const files = await utapi.listFiles()
+const files = await utapi.listFiles();
 ```
 
 ### Parameters
@@ -364,30 +369,31 @@ const files = await utapi.listFiles()
 
 ## `renameFiles` {{ tag: 'method', since: '5.3'}}
 
-Rename a file or a list of files. You may specify either a file key or a custom id.
+Rename a file or a list of files. You may specify either a file key or a custom
+id.
 
 ```ts
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
 await utapi.renameFiles({
-  key: '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-  newName: 'myImage.jpg',
-})
+  key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  newName: "myImage.jpg",
+});
 await utapi.renameFiles({
-  customId: 'my-identifier',
-  newName: 'myImage.jpg',
-})
+  customId: "my-identifier",
+  newName: "myImage.jpg",
+});
 
 await utapi.renameFiles([
   {
-    key: '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-    newName: 'myImage.jpg',
+    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    newName: "myImage.jpg",
   },
   {
-    key: '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
-    newName: 'myOtherImage.jpg',
+    key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+    newName: "myOtherImage.jpg",
   },
-])
+]);
 ```
 
 ### Returns
@@ -396,18 +402,19 @@ await utapi.renameFiles([
 
 ## `getSignedURL` {{ tag: 'method', since: '6.2'}}
 
-Retrieve a [signed URL](/concepts/regions-acl#access-controls) for a private file.
+Retrieve a [signed URL](/concepts/regions-acl#access-controls) for a private
+file.
 
 ```ts
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
-const fileKey = '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg'
+const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
 const url = await utapi.getSignedURL(fileKey, {
   expiresIn: 60 * 60, // 1 hour
   // expiresIn: '1 hour',
   // expiresIn: '3d',
   // expiresIn: '7 days',
-})
+});
 ```
 
 <Note>
@@ -446,25 +453,26 @@ const url = await utapi.getSignedURL(fileKey, {
 
 ## `updateACL` {{ tag: 'method', since: '6.8'}}
 
-Update the [ACL](/concepts/regions-acl#access-controls) of a file or a list of files.
+Update the [ACL](/concepts/regions-acl#access-controls) of a file or a list of
+files.
 
 ```ts
-import { utapi } from '~/server/uploadthing.ts'
+import { utapi } from "~/server/uploadthing.ts";
 
 // Make a single file public
 await utapi.updateACL(
-  '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-  'public-read',
-)
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "public-read",
+);
 
 // Make multiple files private
 await utapi.updateACL(
   [
-    '2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg',
-    '1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg',
+    "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
   ],
-  'private',
-)
+  "private",
+);
 ```
 
 <Properties>

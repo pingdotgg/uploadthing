@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Next.js App Router Setup',
-  description: 'Learn how to set up a Next.js app router with UploadThing',
-  category: 'Getting Started',
-})
+  title: "Next.js App Router Setup",
+  description: "Learn how to set up a Next.js app router with UploadThing",
+  category: "Getting Started",
+});
 
 # Next.js App Router Setup
 
@@ -48,40 +48,40 @@ To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
 ```ts {{ title: 'app/api/uploadthing/core.ts' }}
-import { createUploadthing, type FileRouter } from 'uploadthing/next'
-import { UploadThingError } from 'uploadthing/server'
+import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { UploadThingError } from "uploadthing/server";
 
-const f = createUploadthing()
+const f = createUploadthing();
 
-const auth = (req: Request) => ({ id: 'fakeId' }) // Fake auth function
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
-  imageUploader: f({ image: { maxFileSize: '4MB' } })
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
     // Set permissions and file types for this FileRoute
     .middleware(async ({ req }) => {
       // This code runs on your server before upload
-      const user = await auth(req)
+      const user = await auth(req);
 
       // If you throw, the user will not be able to upload
-      if (!user) throw new UploadThingError('Unauthorized')
+      if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
-      return { userId: user.id }
+      return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log('Upload complete for userId:', metadata.userId)
+      console.log("Upload complete for userId:", metadata.userId);
 
-      console.log('file url', file.url)
+      console.log("file url", file.url);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
-      return { uploadedBy: metadata.userId }
+      return { uploadedBy: metadata.userId };
     }),
-} satisfies FileRouter
+} satisfies FileRouter;
 
-export type OurFileRouter = typeof ourFileRouter
+export type OurFileRouter = typeof ourFileRouter;
 ```
 
 ### Create a Next.js API route using the FileRouter
@@ -92,9 +92,9 @@ export type OurFileRouter = typeof ourFileRouter
 </Note>
 
 ```ts {{ title: 'app/api/uploadthing/route.ts' }}
-import { createRouteHandler } from 'uploadthing/next'
+import { createRouteHandler } from "uploadthing/next";
 
-import { ourFileRouter } from './core'
+import { ourFileRouter } from "./core";
 
 // Export routes for Next App Router
 export const { GET, POST } = createRouteHandler({
@@ -102,7 +102,7 @@ export const { GET, POST } = createRouteHandler({
 
   // Apply an (optional) custom config:
   // config: { ... },
-})
+});
 ```
 
 > See configuration options in
@@ -118,12 +118,12 @@ individually from `@uploadthing/react` instead.
 import {
   generateUploadButton,
   generateUploadDropzone,
-} from '@uploadthing/react'
+} from "@uploadthing/react";
 
-import type { OurFileRouter } from '~/app/api/uploadthing/core'
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
-export const UploadButton = generateUploadButton<OurFileRouter>()
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>()
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Add UploadThing's Styles
@@ -163,9 +163,9 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>()
 </Warning>
 
 ```tsx {{ title: "app/example-uploader/page.tsx" }}
-'use client'
+"use client";
 
-import { UploadButton } from '~/utils/uploadthing'
+import { UploadButton } from "~/utils/uploadthing";
 
 export default function Home() {
   return (
@@ -174,16 +174,16 @@ export default function Home() {
         endpoint="imageUploader"
         onClientUploadComplete={(res) => {
           // Do something with the response
-          console.log('Files: ', res)
-          alert('Upload Completed')
+          console.log("Files: ", res);
+          alert("Upload Completed");
         }}
         onUploadError={(error: Error) => {
           // Do something with the error.
-          alert(`ERROR! ${error.message}`)
+          alert(`ERROR! ${error.message}`);
         }}
       />
     </main>
-  )
+  );
 }
 ```
 
@@ -192,7 +192,7 @@ export default function Home() {
 UploadThing needs to get info from your server to get permissions info. Normally
 this means a loading state. We built an optional plugin to prevent that
 
-import { WithoutSSR, WithSSR } from '@/components/SSRDiff'
+import { WithoutSSR, WithSSR } from "@/components/SSRDiff";
 
 <div className="mt-6 flex items-center justify-center gap-8">
   <WithoutSSR />
@@ -204,15 +204,15 @@ To add SSR hydration and avoid that loading state, simply render the
 the children.
 
 ```tsx {{title: "app/layout.tsx" }}
-import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
-import { extractRouterConfig } from 'uploadthing/server'
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
 
-import { ourFileRouter } from '~/app/api/uploadthing/core'
+import { ourFileRouter } from "~/app/api/uploadthing/core";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -229,7 +229,7 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }
 ```
 
@@ -237,7 +237,8 @@ export default function RootLayout({
 
 ### 🎉 You're Done!
 
-Want to customize the components? Check out the ["Theming" page](/concepts/theming)
+Want to customize the components? Check out the
+["Theming" page](/concepts/theming)
 
 Want to make your own components? Check out our
 [useUploadThing hook](/api-reference/react#use-upload-thing)

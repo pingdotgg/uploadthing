@@ -1,11 +1,11 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Fetch / Edge Runtimes',
+  title: "Fetch / Edge Runtimes",
   description:
-    'UploadThing adheres to web standards and can be used with any server implementing the Fetch API',
-  category: 'Backend Adapters',
-})
+    "UploadThing adheres to web standards and can be used with any server implementing the Fetch API",
+  category: "Backend Adapters",
+});
 
 # Getting started with Fetch / Edge Runtimes
 
@@ -49,22 +49,22 @@ To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
 ```ts
-import { createUploadthing, type FileRouter } from 'uploadthing/server'
+import { createUploadthing, type FileRouter } from "uploadthing/server";
 
-const f = createUploadthing()
+const f = createUploadthing();
 
 export const uploadRouter = {
   imageUploader: f({
     image: {
-      maxFileSize: '4MB',
+      maxFileSize: "4MB",
       maxFileCount: 4,
     },
   }).onUploadComplete((data) => {
-    console.log('upload completed', data)
+    console.log("upload completed", data);
   }),
-} satisfies FileRouter
+} satisfies FileRouter;
 
-export type OurFileRouter = typeof uploadRouter
+export type OurFileRouter = typeof uploadRouter;
 ```
 
 ## Runtimes-specific setup
@@ -141,9 +141,9 @@ export default app;
 </Note>
 
 ```ts
-import { createRouteHandler } from 'uploadthing/server'
+import { createRouteHandler } from "uploadthing/server";
 
-import { uploadRouter } from './uploadthing.ts'
+import { uploadRouter } from "./uploadthing.ts";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext) {
@@ -155,14 +155,14 @@ export default {
          * secret and isDev flag manually.
          */
         token: env.UPLOADTHING_TOKEN,
-        isDev: env.ENVIRONMENT === 'development',
+        isDev: env.ENVIRONMENT === "development",
         /*
          * Cloudflare Workers doesn't support the cache option
          * so we need to remove it from the request init.
          */
         fetch: (url, init) => {
-          if (init && 'cache' in init) delete init.cache
-          return fetch(url, init)
+          if (init && "cache" in init) delete init.cache;
+          return fetch(url, init);
         },
         /**
          * UploadThing dev server leaves some promises hanging around that we
@@ -170,22 +170,22 @@ export default {
          */
         handleDaemonPromise: (promise) => ctx.waitUntil(promise),
       },
-    })
+    });
 
     // World's simplest router. Handle GET/POST requests to /api/uploadthing
     switch (new URL(request.url).pathname) {
-      case '/api/uploadthing': {
-        if (request.method !== 'POST' && request.method !== 'GET') {
-          return new Response('Method not allowed', { status: 405 })
+      case "/api/uploadthing": {
+        if (request.method !== "POST" && request.method !== "GET") {
+          return new Response("Method not allowed", { status: 405 });
         }
-        return await handlers[request.method](request)
+        return await handlers[request.method](request);
       }
       default: {
-        return new Response('Not found', { status: 404 })
+        return new Response("Not found", { status: 404 });
       }
     }
   },
-}
+};
 ```
 
 ## Use the FileRouter in your app
@@ -195,11 +195,11 @@ when using a separate backend server. You'll need to set the URL of your server
 when you generate the components and helpers.
 
 ```tsx
-import { generateUploadButton } from '@uploadthing/react'
+import { generateUploadButton } from "@uploadthing/react";
 
 export const UploadButton = generateUploadButton({
-  url: 'https://your-server.com/api/uploadthing',
-})
+  url: "https://your-server.com/api/uploadthing",
+});
 // ...
 ```
 

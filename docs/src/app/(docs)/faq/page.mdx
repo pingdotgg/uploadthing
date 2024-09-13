@@ -1,12 +1,12 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'Frequently Asked Questions',
-  description: 'Browse common questions and answers about UploadThing',
-  category: 'FAQ',
-})
+  title: "Frequently Asked Questions",
+  description: "Browse common questions and answers about UploadThing",
+  category: "FAQ",
+});
 
-import Image from 'next/image'
+import Image from "next/image";
 
 ### The UploadThing components look all weird, what's going on?
 
@@ -15,7 +15,7 @@ from the React package. Don't forget to add the following to your root
 `layout.tsx` or `_app.tsx`:
 
 ```tsx
-import '@uploadthing/react/styles.css'
+import "@uploadthing/react/styles.css";
 ```
 
 ### Some of my other components look weird now... what's up with that?
@@ -24,8 +24,8 @@ You may need to check the order of imports. Making sure that the uploadthing
 component styles are imported before others usually does the trick
 
 ```tsx
-import '@uploadthing/react/styles.css'
-import '../styles/globals.css'
+import "@uploadthing/react/styles.css";
+import "../styles/globals.css";
 ```
 
 ### When I upload files, I get the error `Failed to simulate callback for file. Is your webhook configured correctly?`
@@ -48,7 +48,7 @@ or use the node runtime instead:
 
 ```ts
 // src/app/api/uploadthing/route.ts
-export const runtime = 'nodejs'
+export const runtime = "nodejs";
 ```
 
 <Note>
@@ -66,17 +66,17 @@ it is not recommended as you have to provide the generics yourself in order to
 get full typesafety.
 
 ```tsx
-import { UploadButton } from '@uploadthing/react'
+import { UploadButton } from "@uploadthing/react";
 
-import type { OurFileRouter } from '~/app/api/uploadthing/core'
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
 
 function MyComponent() {
   return (
-    <UploadButton<OurFileRouter, 'myFileRoute'> // <--
+    <UploadButton<OurFileRouter, "myFileRoute"> // <--
       endpoint="myFileRoute" // <-- note how you have to double-pass the endpoint
       // ...
     />
-  )
+  );
 }
 ```
 

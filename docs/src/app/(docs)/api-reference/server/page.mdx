@@ -1,10 +1,10 @@
-import { docsMetadata } from '@/lib/utils'
+import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: 'uploadthing/server',
-  description: 'Server bindings for UploadThing.',
-  category: 'API Reference',
-})
+  title: "uploadthing/server",
+  description: "Server bindings for UploadThing.",
+  category: "API Reference",
+});
 
 # UploadThing Server
 
@@ -13,8 +13,9 @@ Server bindings for UploadThing.
 ## createUploadthing {{ tag: 'function', since: '5.0' }}
 
 The helper function to create an UploadThing instance. MAKE SURE YOU IMPORT IT
-FROM THE RIGHT PLACE. The export name ensures your file routes' [`middleware`](/api-reference/file-routes#middleware)
-functions are typed correctly.
+FROM THE RIGHT PLACE. The export name ensures your file routes'
+[`middleware`](/api-reference/file-routes#middleware) functions are typed
+correctly.
 
 <Tabs tabs={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
   <Tab>
@@ -274,9 +275,12 @@ See [UTApi](/api-reference/ut-api)
 
 ## `UTFile` {{ tag: 'class', since: '6.4' }}
 
-A helper class to construct [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) in environments that don't support it natively.
+A helper class to construct
+[`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) in environments
+that don't support it natively.
 
-Also accepts a `customId` property to set a custom identifier for the file to be uploaded using [UTApi.uploadFiles](/api-reference/ut-api#upload-files).
+Also accepts a `customId` property to set a custom identifier for the file to be
+uploaded using [UTApi.uploadFiles](/api-reference/ut-api#upload-files).
 
 ### Constructor
 
@@ -302,10 +306,10 @@ Also accepts a `customId` property to set a custom identifier for the file to be
 ### Example
 
 ```ts
-import { UTFile, UTApi } from 'uploadthing/server'
+import { UTApi, UTFile } from "uploadthing/server";
 
-const utapi = new UTApi()
+const utapi = new UTApi();
 
-const file = new UTFile(['foo'], 'foo.txt', { customId: 'foo' })
-const response = await utapi.uploadFiles([file])
+const file = new UTFile(["foo"], "foo.txt", { customId: "foo" });
+const response = await utapi.uploadFiles([file]);
 ```
