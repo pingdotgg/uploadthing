@@ -29,6 +29,7 @@ export const navigation: Array<NavGroup> = [
       { title: "Expo", href: "/getting-started/expo" },
       { title: "Next.js App Router", href: "/getting-started/appdir" },
       { title: "Next.js Pages Router", href: "/getting-started/pagedir" },
+      { title: "Remix", href: "/getting-started/remix" },
       { title: "SolidStart", href: "/getting-started/solid" },
       { title: "SvelteKit", href: "/getting-started/svelte" },
       { title: "Vue with Nuxt", href: "/getting-started/nuxt" },
