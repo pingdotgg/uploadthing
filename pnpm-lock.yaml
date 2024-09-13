@@ -140,8 +140,8 @@ importers:
         specifier: ^0.20.0
         version: 0.20.0
       '@uploadthing/react':
-        specifier: workspace:*
-        version: link:../packages/react
+        specifier: 6.7.3-canary.7cbef70
+        version: 6.7.3-canary.7cbef70(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.8.16)(svelte@4.2.15)(uploadthing@6.13.3-canary.7cbef70(express@4.19.2)(fastify@4.26.2)(h3@1.11.1)(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.3))(vue@3.4.25(typescript@5.5.2))
       acorn:
         specifier: ^8.12.1
         version: 8.12.1
@@ -227,8 +227,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       uploadthing:
-        specifier: workspace:*
-        version: link:../packages/uploadthing
+        specifier: 6.13.3-canary.7cbef70
+        version: 6.13.3-canary.7cbef70(express@4.19.2)(fastify@4.26.2)(h3@1.11.1)(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.3)
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -2871,11 +2871,22 @@ packages:
       '@effect/platform': ^0.63.2
       effect: ^3.7.2
 
+  '@effect/platform@0.58.21':
+    resolution: {integrity: sha512-q6NSWisGbQO/qcP+ce4axnuaYOgZPrzG7V3joaNGZqxuF55A0dRpErmpzrlOq/7qsMV5G5/2zBGxN9abK5Z4VA==}
+    peerDependencies:
+      '@effect/schema': ^0.68.18
+      effect: ^3.4.8
+
   '@effect/platform@0.63.2':
     resolution: {integrity: sha512-b39pVFw0NGo/tXjGShW7Yg0M+kG7bRrFR6+dQ3aIu99ePTkTp6bGb/kDB7n+dXsFFdIqHsQGYESeYcOQngxdFQ==}
     peerDependencies:
       '@effect/schema': ^0.72.2
       effect: ^3.7.2
+
+  '@effect/schema@0.68.18':
+    resolution: {integrity: sha512-+knLs36muKsyqIvQTB0itGp5Lwy+5jgEC0G5P8wSsrB6EWGFirS87QjbaFYGbg32l/P51RM+9cPMiAEyICwN6g==}
+    peerDependencies:
+      effect: ^3.4.8
 
   '@effect/schema@0.72.2':
     resolution: {integrity: sha512-/x1BIA2pqcUidNrOMmwYe6Z58KtSgHSc5iJu7bNwIxi2LHMVuUao1BvpI5x6i7T/zkoi4dd1S6qasZzJIYDjdw==}
@@ -6515,6 +6526,39 @@ packages:
     peerDependencies:
       vue: '>=2.7 || >=3'
 
+  '@uploadthing/dropzone@0.4.2-canary.7cbef70':
+    resolution: {integrity: sha512-cf/C1PWZ00SYwyx9d4/J6g6ZPv4VXKZ3wGFxc38hcfNSf/NRAEReWPTGz0PmbqJYK4jB/xwcyqfukKzP0CCW4A==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      solid-js: ^1.7.11
+      svelte: ^4.2.12
+      vue: ^3.4.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      solid-js:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+
+  '@uploadthing/mime-types@0.2.11-canary.7cbef70':
+    resolution: {integrity: sha512-nH0BpVSLaOGBmjf2ayKL4HWQbK3XgwbbLQ/df0WQNX/cVgXCbniYo/rSPOVBv2sh8WDyJCfurFItPsbjCR2Awg==}
+
+  '@uploadthing/react@6.7.3-canary.7cbef70':
+    resolution: {integrity: sha512-K75LHqseeMdvY/bw2fkNbi3BBdwt/Xt8b1rg9cXjkcyUrlTwHHkbW3+oRqUz0WR6dT6W9y4m50gpHirlnryeBA==}
+    peerDependencies:
+      next: '*'
+      react: ^17.0.2 || ^18.0.0
+      uploadthing: 6.13.3-canary.7cbef70
+    peerDependenciesMeta:
+      next:
+        optional: true
+
+  '@uploadthing/shared@6.7.9-canary.7cbef70':
+    resolution: {integrity: sha512-jXsdPppYfKMbnkgpbU/itXZb9f/4+RefHq0UszJpgFnjgaaTUs37IFcViXmaRQ7CvqifuOVd+v0HE9NwkBVNsw==}
+
   '@urql/core@2.3.6':
     resolution: {integrity: sha512-PUxhtBh7/8167HJK6WqBv6Z0piuiaZHQGYbhwpNL9aIQmLROPEdaUYkY4wh45wPQXcTpnd11l0q3Pw+TI11pdw==}
     peerDependencies:
@@ -8399,10 +8443,18 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
+  effect-log@0.31.8:
+    resolution: {integrity: sha512-1SNGmdLvUU20sQr3HN8s/279PKmwkjjjhwM3/pZo7ZtlotIz+j1TqN9viAr4ggnY0W7LwAfzMJkFOLJEv0eJ9w==}
+    peerDependencies:
+      effect: ^3.6.0
+
   effect-log@0.32.0:
     resolution: {integrity: sha512-zlh4S+zBkHeDhiV5IAAXwecqxASVJk9tYNJUb12EuJqgtRGGyhrXYNn8zz5Gk/w7PmnNLTl9Vb6bQo2BFn+J/Q==}
     peerDependencies:
       effect: ^3.7.0
+
+  effect@3.4.8:
+    resolution: {integrity: sha512-qOQNrSSN3ITuAtARtN2Ldq6E5f42splY9VV18LqpKOXMwQCCEWkXdns4by3D2CJnDXQD2KCE0iGcRR2KowiQIA==}
 
   effect@3.7.2:
     resolution: {integrity: sha512-pV7l1+LSZFvVObj4zuy4nYiBaC7qZOfrKV6s/Ef4p3KueiQwZFgamazklwyZ+x7Nyj2etRDFvHE/xkThTfQD1w==}
@@ -14747,6 +14799,27 @@ packages:
     peerDependencies:
       browserslist: '>= 4.21.0'
 
+  uploadthing@6.13.3-canary.7cbef70:
+    resolution: {integrity: sha512-3dCzjz0anpyMxewzJ1f+mik+ZVgZkzHrVhFQk+QA3ZQkR68RNRrRMAgzBse/EfetlAPf0t3nZ/ZRgh98+fHXgA==}
+    engines: {node: '>=18.13.0'}
+    peerDependencies:
+      express: '*'
+      fastify: '*'
+      h3: '*'
+      next: '*'
+      tailwindcss: '*'
+    peerDependenciesMeta:
+      express:
+        optional: true
+      fastify:
+        optional: true
+      h3:
+        optional: true
+      next:
+        optional: true
+      tailwindcss:
+        optional: true
+
   uqr@0.1.2:
     resolution: {integrity: sha512-MJu7ypHq6QasgF5YRTjqscSzQp/W11zoUk6kvmlH+fmWEs63Y0Eib13hYFwAzagRJcVY8WVnlV+eBDUGMJ5IbA==}
 
@@ -17003,12 +17076,25 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  '@effect/platform@0.58.21(@effect/schema@0.68.18(effect@3.4.8))(effect@3.4.8)':
+    dependencies:
+      '@effect/schema': 0.68.18(effect@3.4.8)
+      effect: 3.4.8
+      find-my-way-ts: 0.1.5
+      multipasta: 0.2.5
+      path-browserify: 1.0.1
+
   '@effect/platform@0.63.2(@effect/schema@0.72.2(effect@3.7.2))(effect@3.7.2)':
     dependencies:
       '@effect/schema': 0.72.2(effect@3.7.2)
       effect: 3.7.2
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
+
+  '@effect/schema@0.68.18(effect@3.4.8)':
+    dependencies:
+      effect: 3.4.8
+      fast-check: 3.22.0
 
   '@effect/schema@0.72.2(effect@3.7.2)':
     dependencies:
@@ -22058,6 +22144,37 @@ snapshots:
       unhead: 1.9.7
       vue: 3.4.25(typescript@5.5.2)
 
+  '@uploadthing/dropzone@0.4.2-canary.7cbef70(react@18.3.1)(solid-js@1.8.16)(svelte@4.2.15)(vue@3.4.25(typescript@5.5.2))':
+    dependencies:
+      file-selector: 0.6.0
+    optionalDependencies:
+      react: 18.3.1
+      solid-js: 1.8.16
+      svelte: 4.2.15
+      vue: 3.4.25(typescript@5.5.2)
+
+  '@uploadthing/mime-types@0.2.11-canary.7cbef70': {}
+
+  '@uploadthing/react@6.7.3-canary.7cbef70(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.8.16)(svelte@4.2.15)(uploadthing@6.13.3-canary.7cbef70(express@4.19.2)(fastify@4.26.2)(h3@1.11.1)(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.3))(vue@3.4.25(typescript@5.5.2))':
+    dependencies:
+      '@uploadthing/dropzone': 0.4.2-canary.7cbef70(react@18.3.1)(solid-js@1.8.16)(svelte@4.2.15)(vue@3.4.25(typescript@5.5.2))
+      '@uploadthing/shared': 6.7.9-canary.7cbef70
+      file-selector: 0.6.0
+      react: 18.3.1
+      tailwind-merge: 2.3.0
+      uploadthing: 6.13.3-canary.7cbef70(express@4.19.2)(fastify@4.26.2)(h3@1.11.1)(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.3)
+    optionalDependencies:
+      next: 14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    transitivePeerDependencies:
+      - solid-js
+      - svelte
+      - vue
+
+  '@uploadthing/shared@6.7.9-canary.7cbef70':
+    dependencies:
+      '@uploadthing/mime-types': 0.2.11-canary.7cbef70
+      effect: 3.4.8
+
   '@urql/core@2.3.6(graphql@15.8.0)':
     dependencies:
       '@graphql-typed-document-node/core': 3.2.0(graphql@15.8.0)
@@ -24334,9 +24451,15 @@ snapshots:
 
   ee-first@1.1.1: {}
 
+  effect-log@0.31.8(effect@3.4.8):
+    dependencies:
+      effect: 3.4.8
+
   effect-log@0.32.0(effect@3.7.2):
     dependencies:
       effect: 3.7.2
+
+  effect@3.4.8: {}
 
   effect@3.7.2: {}
 
@@ -32787,6 +32910,21 @@ snapshots:
       browserslist: 4.23.0
       escalade: 3.1.1
       picocolors: 1.0.1
+
+  uploadthing@6.13.3-canary.7cbef70(express@4.19.2)(fastify@4.26.2)(h3@1.11.1)(next@14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.3):
+    dependencies:
+      '@effect/platform': 0.58.21(@effect/schema@0.68.18(effect@3.4.8))(effect@3.4.8)
+      '@effect/schema': 0.68.18(effect@3.4.8)
+      '@uploadthing/mime-types': 0.2.11-canary.7cbef70
+      '@uploadthing/shared': 6.7.9-canary.7cbef70
+      effect: 3.4.8
+      effect-log: 0.31.8(effect@3.4.8)
+    optionalDependencies:
+      express: 4.19.2
+      fastify: 4.26.2
+      h3: 1.11.1
+      next: 14.2.11(@babel/core@7.24.4)(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwindcss: 3.4.3
 
   uqr@0.1.2: {}
 
