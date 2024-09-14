@@ -4,6 +4,7 @@ export {
   Uploader,
   generateUploadButton,
   generateUploadDropzone,
+  generateUploadPrimitives,
   generateUploader,
 } from "./components";
 

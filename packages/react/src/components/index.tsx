@@ -14,6 +14,8 @@ import type { UploadButtonProps } from "./button";
 import { UploadButton } from "./button";
 import type { UploadDropzoneProps } from "./dropzone";
 import { UploadDropzone } from "./dropzone";
+import * as primitives from "./primitive";
+import { RootPrimitiveComponentProps } from "./primitive/root";
 import { Uploader } from "./uploader";
 
 export { UploadButton, UploadDropzone, Uploader };
@@ -70,6 +72,20 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
     />
   );
   return TypedDropzone;
+};
+
+export const generateUploadPrimitives = <TRouter extends FileRouter>(
+  opts?: GenerateTypedHelpersOptions,
+) => {
+  const url = resolveMaybeUrlArg(opts?.url);
+
+  const TypedUploadRoot = <TEndpoint extends keyof TRouter>(
+    props: Omit<
+      RootPrimitiveComponentProps<TRouter, TEndpoint>,
+      keyof GenerateTypedHelpersOptions
+    >,
+  ) => <primitives.Root<TRouter, TEndpoint> {...(props as any)} url={url} />;
+  return { ...primitives, Root: TypedUploadRoot };
 };
 
 export const generateUploader = <TRouter extends FileRouter>(
