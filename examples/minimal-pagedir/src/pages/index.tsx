@@ -2,6 +2,7 @@ import {
   UploadButton,
   UploadDropzone,
   useUploadThing,
+  UT,
 } from "~/utils/uploadthing";
 
 export default function Home() {
@@ -54,6 +55,19 @@ export default function Home() {
           await startUpload([file]);
         }}
       />
+      <UT.Root endpoint="videoAndImage">
+        <UT.Dropzone>
+          {({ dropzone, isUploading }) => (
+            <>
+              <UT.Button>{isUploading ? "Uploading" : "Upload file"}</UT.Button>
+              <div>
+                <UT.AllowedContent />
+              </div>
+              {dropzone?.isDragActive && <span>Dragging</span>}
+            </>
+          )}
+        </UT.Dropzone>
+      </UT.Root>
     </main>
   );
 }

@@ -2,7 +2,7 @@
 
 import { SignIn, useAuth } from "@clerk/nextjs";
 
-import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
+import { UploadButton, UploadDropzone, UT } from "~/utils/uploadthing";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
@@ -35,6 +35,19 @@ export default function Home() {
           console.log("upload begin");
         }}
       />
+      <UT.Root endpoint="videoAndImage">
+        <UT.Dropzone>
+          {({ dropzone, isUploading }) => (
+            <>
+              <UT.Button>{isUploading ? "Uploading" : "Upload file"}</UT.Button>
+              <div>
+                <UT.AllowedContent />
+              </div>
+              {dropzone?.isDragActive && <span>Dragging</span>}
+            </>
+          )}
+        </UT.Dropzone>
+      </UT.Root>
       {!isSignedIn ? (
         <div
           style={{
