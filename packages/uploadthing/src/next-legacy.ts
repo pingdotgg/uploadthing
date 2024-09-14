@@ -34,10 +34,9 @@ export const createRouteHandler = <TRouter extends FileRouter>(
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const response = await handler(req, res);
-    res.status(response.status);
     for (const [name, value] of response.headers) {
       res.setHeader(name, value);
     }
-    return res.json(response.body);
+    return res.json(await response.json());
   };
 };
