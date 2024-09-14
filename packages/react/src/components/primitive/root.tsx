@@ -25,6 +25,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../../types";
 import { INTERNAL_uploadthingHookGen } from "../../useUploadThing";
+import { useControllableState } from "../../utils/useControllableState";
 import { usePaste } from "../../utils/usePaste";
 
 type PrimitiveContextValues = {
@@ -155,6 +156,8 @@ export type RootPrimitiveComponentProps<
 > = UploadthingComponentProps<TRouter, TEndpoint> & {
   // TODO: add @see comment for docs
   children?: PrimitiveComponentChildren;
+  files?: File[];
+  onFilesChange?: (_: File[]) => void;
 };
 
 export function Root<
@@ -187,7 +190,11 @@ export function Root<
   const [uploadProgress, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useControllableState<File[]>({
+    prop: $props.files,
+    onChange: $props.onFilesChange,
+    defaultProp: [],
+  });
 
   const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
