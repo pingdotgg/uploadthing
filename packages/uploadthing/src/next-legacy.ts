@@ -37,6 +37,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     for (const [name, value] of response.headers) {
       res.setHeader(name, value);
     }
+    // FIXME: Should be able to just forward it instead of consuming it first
     return res.json(await response.json());
   };
 };
