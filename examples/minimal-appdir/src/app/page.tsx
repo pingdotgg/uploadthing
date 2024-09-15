@@ -40,7 +40,6 @@ export default function Home() {
         onUploadBegin={() => {
           console.log("upload begin");
         }}
-        onUploadProgress={console.log}
         config={{ appendOnPaste: true, mode: "manual" }}
       />
       <UploadDropzone
