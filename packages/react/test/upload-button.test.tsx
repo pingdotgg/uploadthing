@@ -216,18 +216,20 @@ describe("UploadButton - lifecycle hooks", () => {
   it("onUploadBegin runs before uploading", async () => {
     const onUploadBegin = vi.fn();
     const utils = render(
-      <UploadButton endpoint="image" onUploadBegin={onUploadBegin} />,
+      <UploadButton endpoint="multi" onUploadBegin={onUploadBegin} />,
     );
     await waitFor(() => {
-      expect(utils.getByText("Choose File")).toBeInTheDocument();
+      expect(utils.getByText("Choose File(s)")).toBeInTheDocument();
     });
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File([""], "foo.png")] },
+    fireEvent.change(utils.getByLabelText("Choose File(s)"), {
+      target: { files: [new File([""], "foo.png"), new File([""], "bar.png")] },
     });
     await waitFor(() => {
-      expect(onUploadBegin).toHaveBeenCalledWith("foo.png");
+      expect(onUploadBegin).toHaveBeenCalledTimes(2);
     });
+    expect(onUploadBegin).toHaveBeenCalledWith("foo.png");
+    expect(onUploadBegin).toHaveBeenCalledWith("bar.png");
   });
 });
 
