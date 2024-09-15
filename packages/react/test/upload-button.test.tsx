@@ -213,7 +213,7 @@ describe("UploadButton - lifecycle hooks", () => {
     });
   });
 
-  it.only("onUploadBegin runs before uploading", async () => {
+  it("onUploadBegin runs before uploading", async () => {
     const onUploadBegin = vi.fn();
     const utils = render(
       <UploadButton endpoint="image" onUploadBegin={onUploadBegin} />,
