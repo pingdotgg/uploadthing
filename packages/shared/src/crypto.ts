@@ -102,7 +102,7 @@ export const generateKey = (
       ],
     );
 
-    // Hash and Encode the parts and apiKey as sqids
+    // Hash and Encode the parts and appId as sqids
     const alphabet = shuffle(defaultOptions.alphabet, appId);
     const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
       Math.abs(Hash.string(hashParts)),
@@ -115,12 +115,12 @@ export const generateKey = (
     return encodedAppId + encodedFileSeed;
   }).pipe(Micro.withTrace("generateKey"));
 
-// Verify that the key was generated with the same apiKey
-export const verifyKey = (key: string, apiKey: string) =>
+// Verify that the key was generated with the same appId
+export const verifyKey = (key: string, appId: string) =>
   Micro.sync(() => {
-    const alphabet = shuffle(defaultOptions.alphabet, apiKey);
+    const alphabet = shuffle(defaultOptions.alphabet, appId);
     const expectedPrefix = new SQIds({ alphabet, minLength: 12 }).encode([
-      Math.abs(Hash.string(apiKey)),
+      Math.abs(Hash.string(appId)),
     ]);
 
     return key.startsWith(expectedPrefix);
