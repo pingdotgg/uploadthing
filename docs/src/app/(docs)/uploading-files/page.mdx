@@ -100,15 +100,21 @@ need to generate presigned URLs. First, generate some file keys for the files to
 be uploaded.
 
 To generate a file key, generate a sha256 hex digest of a file seed of your
-choice, as well as of your API key. Concatenate the API key and the file seed
-with a `:` separator and encode the result as a base64 string.
+choice, as well as of your appId. Concatenate the hashed appId and seed with a
+`:` separator and encode the result as a base64 string.
+
+The file seed can be anything you want, but it should be unique for each file.
+For simplicity in this toy example, we'll use the file name and size, but you
+probably want to do something more complex. To check out how we do it by
+default, check out the
+[implmentation here](https://github.com/pingdotgg/uploadthing/blob/a48e1b56ac5f28ce5e13f9ba9a65f5a6fea498be/packages/shared/src/crypto.ts#L85)
 
 ```ts
 const fileSeed = `${file.name}${file.size}`; // can be anything
 const seedHash = sha256Hex(fileSeed);
-const apiKeyHash = sha256Hex(apiKey);
+const appIdHash = sha256Hex(appId);
 
-const fileKey = encodeBase64(`${apiKeyHash}:${seedHash}`);
+const fileKey = encodeBase64(`${appIdHash}:${seedHash}`);
 ```
 
 The URL, to which you will upload the file, will depend on your app's region.
