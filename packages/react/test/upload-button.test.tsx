@@ -31,7 +31,13 @@ const testRouter = {
   pdf: f({ "application/pdf": {} }).onUploadComplete(noop),
   multi: f({ image: { maxFileCount: 4 } }).onUploadComplete(noop),
 };
-const routeHandler = createRouteHandler({ router: testRouter });
+const routeHandler = createRouteHandler({
+  router: testRouter,
+  config: {
+    token:
+      "eyJhcHBJZCI6ImFwcC0xIiwiYXBpS2V5Ijoic2tfZm9vIiwicmVnaW9ucyI6WyJmcmExIl19",
+  },
+});
 const UploadButton = generateUploadButton<typeof testRouter>();
 
 const utGet = vi.fn<(req: Request) => void>();
@@ -44,13 +50,16 @@ const server = setupServer(
     return routeHandler(request);
   }),
   http.post("/api/uploadthing", async ({ request }) => {
-    const body = await request.json();
+    const body = await request.clone().json();
     utPost({ request, body });
-    return HttpResponse.json([
-      // empty array, we're not testing the upload endpoint here
-      // we have other tests for that...
-    ]);
+    return routeHandler(request);
   }),
+  http.all<{ key: string }>(
+    "https://fra1.ingest.uploadthing.com/:key",
+    ({ request, params }) => {
+      return HttpResponse.json({ url: "https://utfs.io/f/" + params.key });
+    },
+  ),
 );
 
 beforeAll(() => server.listen());
@@ -202,6 +211,25 @@ describe("UploadButton - lifecycle hooks", () => {
         }),
       );
     });
+  });
+
+  it("onUploadBegin runs before uploading", async () => {
+    const onUploadBegin = vi.fn();
+    const utils = render(
+      <UploadButton endpoint="multi" onUploadBegin={onUploadBegin} />,
+    );
+    await waitFor(() => {
+      expect(utils.getByText("Choose File(s)")).toBeInTheDocument();
+    });
+
+    fireEvent.change(utils.getByLabelText("Choose File(s)"), {
+      target: { files: [new File([""], "foo.png"), new File([""], "bar.png")] },
+    });
+    await waitFor(() => {
+      expect(onUploadBegin).toHaveBeenCalledTimes(2);
+    });
+    expect(onUploadBegin).toHaveBeenCalledWith("foo.png");
+    expect(onUploadBegin).toHaveBeenCalledWith("bar.png");
   });
 });
 

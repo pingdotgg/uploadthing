@@ -146,22 +146,32 @@ export const uploadFilesInternal = <
       Micro.forEach(
         presigneds,
         (presigned, i) =>
-          uploadFile<TRouter, TEndpoint, TServerOutput>(
-            opts.files[i],
-            presigned,
-            {
-              onUploadProgress: (ev) => {
-                totalLoaded += ev.delta;
-                opts.onUploadProgress?.({
-                  file: opts.files[i],
-                  progress: Math.round((ev.loaded / opts.files[i].size) * 100),
-                  loaded: ev.loaded,
-                  delta: ev.delta,
-                  totalLoaded,
-                  totalProgress: Math.round((totalLoaded / totalSize) * 100),
-                });
-              },
-            },
+          Micro.flatMap(
+            Micro.sync(() =>
+              opts.onUploadBegin?.({ file: opts.files[i].name }),
+            ),
+            () =>
+              uploadFile<TRouter, TEndpoint, TServerOutput>(
+                opts.files[i],
+                presigned,
+                {
+                  onUploadProgress: (ev) => {
+                    totalLoaded += ev.delta;
+                    opts.onUploadProgress?.({
+                      file: opts.files[i],
+                      progress: Math.round(
+                        (ev.loaded / opts.files[i].size) * 100,
+                      ),
+                      loaded: ev.loaded,
+                      delta: ev.delta,
+                      totalLoaded,
+                      totalProgress: Math.round(
+                        (totalLoaded / totalSize) * 100,
+                      ),
+                    });
+                  },
+                },
+              ),
           ),
         { concurrency: 6 },
       ),
