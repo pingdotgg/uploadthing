@@ -99,11 +99,11 @@ Once your backend adapter has received and validated the request, you will next
 need to generate presigned URLs. First, generate some file keys for the files to
 be uploaded.
 
-To generate a file key, generate a [Sqids](https://sqids.org/) id of a file seed
-of your choice, as well as of your appId. Concatenate the two Sqids to form the
-final key.
-
-The file seed can be anything you want, but it should be unique for each file.
+To generate a file key, generate a [Sqids](https://sqids.org/) of your appId
+with `{ minLength: 12 }`, then concatenate this with a file seed of your choice.
+The file seed can be anything you want, but it should be unique for each file,
+as well as url safe. In this example, we include a base64 encoding to ensure the
+file seed is url safe, but you can do this however you want.
 
 ```ts
 import SQIds, { defaultOptions } from "sqids";
@@ -126,33 +126,21 @@ function shuffle(str: string, seed: string) {
 }
 
 function generateKey(
-  file: FileProperties,
   appId: string,
+  fileSeed: string,
 ) =>
-  // Get the parts of which we should hash to constuct the file seed
-  // This allows the user to customize the hashing algorithm
-  // If they for example want to generate the same key for the
-  // same file whenever it was uploaded
-  const hashParts = JSON.stringify(
-    [
-      file.name,
-      file.size,
-      file.type,
-      file.lastModified,
-      Date.now(),
-    ],
-  );
-
   // Hash and Encode the parts and apiKey as sqids
   const alphabet = shuffle(defaultOptions.alphabet, appId);
-  const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
-    Math.abs(Hash.string(hashParts)),
-  ]);
-  const encodedApiKey = new SQIds({ alphabet, minLength: 12 }).encode([
+
+  const encodedAppId = new SQIds({ alphabet, minLength: 12 }).encode([
     Math.abs(Hash.string(appId)),
   ]);
 
-  return `${appIdHash}:${seedHash}`;
+  // We use a base64 encoding here to ensure the file seed is url safe, but
+  // you can do this however you want
+  const encodedFileSeed = encodeBase64(fileSeed);
+
+  return `${encodedAppId}${encodedFileSeed}`;
 }
 ```
 
