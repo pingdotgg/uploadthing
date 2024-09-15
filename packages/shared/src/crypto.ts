@@ -107,12 +107,12 @@ export const generateKey = (
     const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
       Math.abs(Hash.string(hashParts)),
     ]);
-    const encodedApiKey = new SQIds({ alphabet, minLength: 12 }).encode([
+    const encodedAppId = new SQIds({ alphabet, minLength: 12 }).encode([
       Math.abs(Hash.string(appId)),
     ]);
 
-    // Concatenate them and encode as base64
-    return encodedApiKey + encodedFileSeed;
+    // Concatenate them
+    return encodedAppId + encodedFileSeed;
   }).pipe(Micro.withTrace("generateKey"));
 
 // Verify that the key was generated with the same apiKey

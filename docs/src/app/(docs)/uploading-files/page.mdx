@@ -99,22 +99,61 @@ Once your backend adapter has received and validated the request, you will next
 need to generate presigned URLs. First, generate some file keys for the files to
 be uploaded.
 
-To generate a file key, generate a sha256 hex digest of a file seed of your
-choice, as well as of your appId. Concatenate the hashed appId and seed with a
-`:` separator and encode the result as a base64 string.
+To generate a file key, generate a [Sqids](https://sqids.org/) id of a file seed
+of your choice, as well as of your appId. Concatenate the two Sqids to form the
+final key.
 
 The file seed can be anything you want, but it should be unique for each file.
-For simplicity in this toy example, we'll use the file name and size, but you
-probably want to do something more complex. To check out how we do it by
-default, check out the
-[implmentation here](https://github.com/pingdotgg/uploadthing/blob/a48e1b56ac5f28ce5e13f9ba9a65f5a6fea498be/packages/shared/src/crypto.ts#L85)
 
 ```ts
-const fileSeed = `${file.name}${file.size}`; // can be anything
-const seedHash = sha256Hex(fileSeed);
-const appIdHash = sha256Hex(appId);
+import SQIds, { defaultOptions } from "sqids";
 
-const fileKey = encodeBase64(`${appIdHash}:${seedHash}`);
+// A simple function to shuffle the alphabet for the Sqids
+function shuffle(str: string, seed: string) {
+  const chars = str.split("");
+  const seedNum = Hash.string(seed);
+
+  let temp: string;
+  let j: number;
+  for (let i = 0; i < chars.length; i++) {
+    j = ((seedNum % (i + 1)) + i) % chars.length;
+    temp = chars[i];
+    chars[i] = chars[j];
+    chars[j] = temp;
+  }
+
+  return chars.join("");
+}
+
+function generateKey(
+  file: FileProperties,
+  appId: string,
+) =>
+  // Get the parts of which we should hash to constuct the file seed
+  // This allows the user to customize the hashing algorithm
+  // If they for example want to generate the same key for the
+  // same file whenever it was uploaded
+  const hashParts = JSON.stringify(
+    [
+      file.name,
+      file.size,
+      file.type,
+      file.lastModified,
+      Date.now(),
+    ],
+  );
+
+  // Hash and Encode the parts and apiKey as sqids
+  const alphabet = shuffle(defaultOptions.alphabet, appId);
+  const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
+    Math.abs(Hash.string(hashParts)),
+  ]);
+  const encodedApiKey = new SQIds({ alphabet, minLength: 12 }).encode([
+    Math.abs(Hash.string(appId)),
+  ]);
+
+  return `${appIdHash}:${seedHash}`;
+}
 ```
 
 The URL, to which you will upload the file, will depend on your app's region.
