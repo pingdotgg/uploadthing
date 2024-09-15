@@ -2,4 +2,4 @@
 "@uploadthing/shared": patch
 ---
 
-correct variable names to accurately reflect that they are
+correct variable names to accurately reflect what they are
