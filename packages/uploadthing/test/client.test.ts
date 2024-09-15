@@ -2,7 +2,7 @@
 
 import type { AddressInfo } from "node:net";
 import express from "express";
-import { describe, expect, expectTypeOf, it as rawIt } from "vitest";
+import { describe, expect, expectTypeOf, it as rawIt, vi } from "vitest";
 
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
@@ -28,6 +28,13 @@ export const setupUTServer = async () => {
   });
   const router = {
     foo: f({ text: { maxFileSize: "16MB" } })
+      .middleware((opts) => {
+        middlewareMock(opts);
+        return {};
+      })
+      .onUploadError(onErrorMock)
+      .onUploadComplete(uploadCompleteMock),
+    multi: f({ text: { maxFileSize: "16MB", maxFileCount: 2 } })
       .middleware((opts) => {
         middlewareMock(opts);
         return {};
@@ -264,6 +271,21 @@ describe("uploadFiles", () => {
     await close();
   });
 
+  it("handles too many files errors", async ({ db }) => {
+    const { uploadFiles, close } = await setupUTServer();
+
+    const file1 = new File(["foo"], "foo.txt", { type: "text/plain" });
+    const file2 = new File(["bar"], "bar.txt", { type: "text/plain" });
+
+    await expect(
+      uploadFiles("foo", { files: [file1, file2] }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: Invalid config: FileCountMismatch]`,
+    );
+
+    await close();
+  });
+
   it("handles invalid file type errors", async ({ db }) => {
     const { uploadFiles, close } = await setupUTServer();
 
@@ -274,6 +296,40 @@ describe("uploadFiles", () => {
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: InvalidFileType]`,
     );
+
+    await close();
+  });
+
+  it("runs onUploadBegin before uploading (single file)", async () => {
+    const { uploadFiles, close } = await setupUTServer();
+
+    const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+    const onUploadBegin = vi.fn();
+
+    await uploadFiles("foo", {
+      files: [file],
+      onUploadBegin,
+    });
+
+    expect(onUploadBegin).toHaveBeenCalledWith({ file: "foo.txt" });
+
+    await close();
+  });
+
+  it("runs onUploadBegin before uploading (multi file)", async () => {
+    const { uploadFiles, close } = await setupUTServer();
+
+    const file1 = new File(["foo"], "foo.txt", { type: "text/plain" });
+    const file2 = new File(["bar"], "bar.txt", { type: "text/plain" });
+    const onUploadBegin = vi.fn();
+
+    await uploadFiles("multi", {
+      files: [file1, file2],
+      onUploadBegin,
+    });
+
+    expect(onUploadBegin).toHaveBeenCalledWith({ file: "foo.txt" });
+    expect(onUploadBegin).toHaveBeenCalledWith({ file: "bar.txt" });
 
     await close();
   });

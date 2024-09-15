@@ -265,8 +265,8 @@ export const OurUploadButton = () => (
     e.g. rename or resize the files.
   </Property>
   <Property name="onUploadBegin" type="function" since="5.4">
-    Callback function called after the presigned URLs have been retrieved, just
-    before the files are uploaded to the storage provider.
+    Callback function called after the presigned URLs have been retrieved, just before 
+    the file is uploaded. Called once per file.
   </Property>
   <Property name="disabled" type="boolean" since="6.7" defaultValue="false">
     Disables the button.
@@ -406,8 +406,8 @@ export const OurUploadDropzone = () => (
     e.g. rename or resize the files.
   </Property>
   <Property name="onUploadBegin" type="function" since="5.4">
-    Callback function called after the presigned URLs have been retrieved, just
-    before the files are uploaded to the storage provider.
+    Callback function called after the presigned URLs have been retrieved, just before 
+    the file is uploaded. Called once per file.
   </Property>
   <Property name="disabled" type="boolean" since="6.7" defaultValue="false">
     Disables the button.
@@ -565,8 +565,8 @@ export function MultiUploader() {
     onUploadError: () => {
       alert("error occurred while uploading");
     },
-    onUploadBegin: () => {
-      alert("upload has begun");
+    onUploadBegin: ({ file }) => {
+      alert("upload has begun for", file);
     },
   });
 

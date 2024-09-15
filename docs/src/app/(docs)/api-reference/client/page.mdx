@@ -57,7 +57,7 @@ is an options object:
   </Property>
   <Property name="onUploadBegin" type="({ file }) => void" since="5.4">
     Callback function called after the presigned URLs have been retrieved, just before 
-    the files are uploaded to the storage provider.
+    the file is uploaded. Called once per file.
   </Property>
   <Property
     name="onUploadProgress"
