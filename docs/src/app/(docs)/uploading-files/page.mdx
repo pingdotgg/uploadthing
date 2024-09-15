@@ -103,6 +103,7 @@ as well as url safe. In this example, we include a base64 encoding to ensure the
 file seed is url safe, but you can do this however you want.
 
 ```ts
+import * as Hash from "effect/Hash";
 import SQIds, { defaultOptions } from "sqids";
 
 // A simple function to shuffle the alphabet for the Sqids
