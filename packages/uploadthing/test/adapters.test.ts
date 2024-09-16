@@ -45,6 +45,28 @@ describe("adapters:h3", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
+  it("returns router config on GET requests", async ({ db }) => {
+    const eventHandler = createRouteHandler({
+      router,
+      config: { token: testToken.encoded },
+    });
+
+    const res = await toWebHandler(createApp().use(eventHandler))(
+      new Request("http://localhost:3000"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/json");
+
+    const json = await res.json();
+    expect(json).toEqual([
+      {
+        slug: "middleware",
+        config: expect.objectContaining({ blob: expect.objectContaining({}) }),
+      },
+    ]);
+  });
+
   it("gets H3Event in middleware args", async ({ db }) => {
     const eventHandler = createRouteHandler({
       router,
@@ -134,6 +156,26 @@ describe("adapters:server", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
+  it("returns router config on GET requests", async ({ db }) => {
+    const eventHandler = createRouteHandler({
+      router,
+      config: { token: testToken.encoded },
+    });
+
+    const res = await eventHandler(new Request("http://localhost:3000"));
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/json");
+
+    const json = await res.json();
+    expect(json).toEqual([
+      {
+        slug: "middleware",
+        config: expect.objectContaining({ blob: expect.objectContaining({}) }),
+      },
+    ]);
+  });
+
   it("gets Request in middleware args", async ({ db }) => {
     const handler = createRouteHandler({
       router,
@@ -210,6 +252,28 @@ describe("adapters:next", async () => {
       })
       .onUploadComplete(uploadCompleteMock),
   };
+
+  it("returns router config on GET requests", async ({ db }) => {
+    const eventHandler = createRouteHandler({
+      router,
+      config: { token: testToken.encoded },
+    });
+
+    const res = await eventHandler.GET(
+      new NextRequest("http://localhost:3000"),
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/json");
+
+    const json = await res.json();
+    expect(json).toEqual([
+      {
+        slug: "middleware",
+        config: expect.objectContaining({ blob: expect.objectContaining({}) }),
+      },
+    ]);
+  });
 
   it("gets NextRequest in middleware args", async ({ db }) => {
     const handlers = createRouteHandler({
@@ -291,7 +355,7 @@ describe("adapters:next-legacy", async () => {
   };
 
   function mockReq(opts: {
-    query: Record<string, any>;
+    query?: Record<string, any>;
     method: string;
     body?: unknown;
     headers?: Record<string, string>;
@@ -323,6 +387,30 @@ describe("adapters:next-legacy", async () => {
 
     return { res, json, setHeader, status };
   }
+
+  it("returns router config on GET requests", async ({ db }) => {
+    const eventHandler = createRouteHandler({
+      router,
+      config: { token: testToken.encoded },
+    });
+
+    const { req } = mockReq({
+      method: "GET",
+    });
+    const { res, json, status } = mockRes();
+
+    await eventHandler(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+
+    const resJson = (json.mock.calls[0] as any[])[0];
+    expect(resJson).toEqual([
+      {
+        slug: "middleware",
+        config: expect.objectContaining({ blob: expect.objectContaining({}) }),
+      },
+    ]);
+  });
 
   it("gets NextApiRequest and NextApiResponse in middleware args", async ({
     db,
@@ -424,6 +512,24 @@ describe("adapters:express", async () => {
 
     return { url, close: () => server.close() };
   };
+
+  it("returns router config on GET requests", async ({ db }) => {
+    const server = startServer();
+
+    const url = `${server.url}/api/uploadthing/`;
+    const res = await fetch(url);
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/json");
+
+    const json = await res.json();
+    expect(json).toEqual([
+      {
+        slug: "middleware",
+        config: expect.objectContaining({ blob: expect.objectContaining({}) }),
+      },
+    ]);
+  });
 
   it("gets express.Request and express.Response in middleware args", async ({
     db,
@@ -563,6 +669,24 @@ describe("adapters:fastify", async () => {
     return { url, close: () => app.close() };
   };
 
+  it("returns router config on GET requests", async ({ db }) => {
+    const server = await startServer();
+
+    const url = `${server.url}api/uploadthing`;
+    const res = await fetch(url);
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toBe("application/json");
+
+    const json = await res.json();
+    expect(json).toEqual([
+      {
+        slug: "middleware",
+        config: expect.objectContaining({ blob: expect.objectContaining({}) }),
+      },
+    ]);
+  });
+
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
     db,
   }) => {
@@ -647,6 +771,40 @@ describe("adapters:effect-platform", async () => {
       })
       .onUploadComplete(uploadCompleteMock),
   };
+
+  it.effect("returns router config on GET requests", () =>
+    Effect.gen(function* () {
+      const eventHandler = createRouteHandler({
+        router,
+        config: { token: testToken.encoded },
+      }).pipe(Effect.provide(HttpClient.layer));
+
+      const serverRequest = HttpServerRequest.fromWeb(
+        new Request("http://localhost:3000"),
+      );
+      const response = yield* eventHandler.pipe(
+        Effect.provideService(
+          HttpServerRequest.HttpServerRequest,
+          serverRequest,
+        ),
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers["content-type"]).toBe("application/json");
+
+      const json = yield* Effect.promise(() =>
+        HttpServerResponse.toWeb(response).json(),
+      );
+
+      expect(json).toEqual([
+        {
+          slug: "middleware",
+          config: expect.objectContaining({
+            blob: expect.objectContaining({}),
+          }),
+        },
+      ]);
+    }),
+  );
 
   it.effect("gets HttpServerRequest in middleware args", () =>
     Effect.gen(function* () {
