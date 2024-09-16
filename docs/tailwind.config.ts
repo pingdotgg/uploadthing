@@ -8,6 +8,9 @@ import typographyStyles from "./typography";
 export default withUt({
   content: [
     "./src/**/*.{js,mjs,jsx,ts,tsx,mdx}",
+    // TODO: Investigate why resolution doesn't work in workspace.
+    // It works fine in other monorepos (e.g. create-t3-turbo) so appears
+    // to be some local workspace issue, making pnpm fail to resolve `@uploadthing/react`
     "./node_modules/@uploadthing/react/dist/**/*.js",
   ],
   darkMode: "selector",
