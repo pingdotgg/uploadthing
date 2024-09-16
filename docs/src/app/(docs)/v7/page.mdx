@@ -225,6 +225,31 @@ The following we're previously deprecated and have now been removed:
     createRouteHandler, // [!code ++]
     createUploadthingExpressHandler, // [!code --]
   } from "uploadthing/express";
+
+  import {
+    createUploadthingFastifyHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/fastify";
+
+  import {
+    createH3EventHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/h3";
+
+  import {
+    createNextPageApiHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/next-legacy";
+
+  import {
+    createNextRouteHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/next";
+
+  import {
+    createServerHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/server";
   ```
 
 ## Remove dependency `tailwind-merge` {{ tag: 'BREAKING' }}
