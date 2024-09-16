@@ -356,18 +356,7 @@ describe("adapters:next-legacy", async () => {
 
     // Should proceed to generate a signed URL
     const resJson = (json.mock.calls[0] as any[])[0];
-    const reader = (resJson as ReadableStream).getReader();
-    let data = "";
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      data += new TextDecoder().decode(value);
-    }
-    const jsonData = JSON.parse(data);
-    expect(jsonData).toEqual([
+    expect(resJson).toEqual([
       {
         customId: null,
         key: expect.stringMatching(/.+/),
@@ -382,7 +371,7 @@ describe("adapters:next-legacy", async () => {
       body: {
         isDev: false,
         awaitServerData: true,
-        fileKeys: [jsonData[0]?.key],
+        fileKeys: [resJson[0]?.key],
         metadata: {},
         callbackUrl: "http://localhost:3000/",
         callbackSlug: "middleware",
