@@ -54,13 +54,18 @@ const parseURL = (req: IncomingMessageLike): Effect.Effect<URL, InvalidURL> => {
   );
 };
 
+const METHODS_WITH_ALLOWED_BODY = ["POST", "PUT", "PATCH"];
+
 export const getPostBody = <TBody = unknown>(opts: {
   req: IncomingMessageLike & {
     on: (event: string, listener: (data: any) => void) => void;
   };
 }) =>
-  Effect.async<TBody, UploadThingError>((resume) => {
+  Effect.async<TBody | null, UploadThingError>((resume) => {
     const { req } = opts;
+    if (!req.method || !METHODS_WITH_ALLOWED_BODY.includes(req.method)) {
+      return resume(Effect.succeed(null));
+    }
     const contentType = req.headers?.["content-type"];
 
     if ("body" in req) {
