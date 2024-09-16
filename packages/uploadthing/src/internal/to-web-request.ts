@@ -62,10 +62,10 @@ export const getPostBody = <TBody = unknown>(opts: {
     on: (event: string, listener: (data: any) => void) => void;
   };
 }) =>
-  Effect.async<TBody | null, UploadThingError>((resume) => {
+  Effect.async<TBody | undefined, UploadThingError>((resume) => {
     const { req } = opts;
     if (!req.method || !isBodyAllowed(req.method)) {
-      return resume(Effect.succeed(null));
+      return resume(Effect.succeed(undefined));
     }
     const contentType = req.headers?.["content-type"];
 
