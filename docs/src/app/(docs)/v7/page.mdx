@@ -186,7 +186,7 @@ export const uploadRouter = {
 
 ## Deprecations have been removed {{ tag: 'BREAKING' }}
 
-The following we're previously deprecated and have now been removed:
+The following were previously deprecated and have now been removed:
 
 - `@uploadthing/react` no longer exports `generateComponent`. Use
   `generateUploadButton` and `generateUploadDropzone` instead.
@@ -225,6 +225,41 @@ The following we're previously deprecated and have now been removed:
     createRouteHandler, // [!code ++]
     createUploadthingExpressHandler, // [!code --]
   } from "uploadthing/express";
+  ```
+
+  ```ts
+  import {
+    createRouteHandler, // [!code ++]
+    createUploadthingFastifyHandler, // [!code --]
+  } from "uploadthing/fastify";
+  ```
+
+  ```ts
+  import {
+    createH3EventHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/h3";
+  ```
+
+  ```ts
+  import {
+    createNextPageApiHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/next-legacy";
+  ```
+
+  ```ts
+  import {
+    createNextRouteHandler, // [!code --]
+    createRouteHandler, // [!code ++]
+  } from "uploadthing/next";
+  ```
+
+  ```ts
+  import {
+    createRouteHandler, // [!code ++]
+    createServerHandler, // [!code --]
+  } from "uploadthing/server";
   ```
 
 ## Remove dependency `tailwind-merge` {{ tag: 'BREAKING' }}
