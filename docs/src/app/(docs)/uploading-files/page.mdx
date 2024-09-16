@@ -138,7 +138,7 @@ function generateKey(
   // you can do this however you want
   const encodedFileSeed = encodeBase64(fileSeed);
 
-  return `${encodedAppId}:${encodedFileSeed}`;
+  return `${encodedAppId}${encodedFileSeed}`;
 }
 ```
 
