@@ -222,13 +222,9 @@ The following we're previously deprecated and have now been removed:
 
   ```ts
   import {
-    createRouteHandler,
-    createUploadthingExpressHandler,
+    createRouteHandler, // [!code ++]
+    createUploadthingExpressHandler, // [!code --]
   } from "uploadthing/express";
-
-  // [!code --]
-
-  // [!code ++]
   ```
 
 ## Remove dependency `tailwind-merge` {{ tag: 'BREAKING' }}
