@@ -6,7 +6,10 @@ import { withUt } from "uploadthing/tw";
 import typographyStyles from "./typography";
 
 export default withUt({
-  content: ["./src/**/*.{js,mjs,jsx,ts,tsx,mdx}"],
+  content: [
+    "./src/**/*.{js,mjs,jsx,ts,tsx,mdx}",
+    "./node_modules/@uploadthing/react/dist/**/*.js",
+  ],
   darkMode: "selector",
   theme: {
     fontSize: {
