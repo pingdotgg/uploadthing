@@ -330,7 +330,9 @@ export function UploadDropzone<
       >
         <input className="sr-only" {...getInputProps()} />
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready ? `Choose files or drag and drop` : `Loading...`)}
+          (ready
+            ? `Choose ${multiple ? "file(s)" : "a file"} or drag and drop`
+            : `Loading...`)}
       </label>
       <div
         className={cn(
