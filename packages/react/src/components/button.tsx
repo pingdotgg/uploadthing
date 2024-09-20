@@ -1,18 +1,10 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
-
 import {
-  allowedContentTextLabelGenerator,
   contentFieldToContent,
   defaultClassListMerger,
-  generateMimeTypes,
-  generatePermittedFileTypes,
-  getFilesFromClipboardEvent,
-  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -22,8 +14,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { usePaste } from "../utils/usePaste";
+import * as Primitive from "./primitive";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
@@ -65,13 +56,6 @@ export type UploadButtonProps<
   content?: ButtonContent;
 };
 
-/** These are some internal stuff we use to test the component and for forcing a state in docs */
-type UploadThingInternalProps = {
-  __internal_state?: "readying" | "ready" | "uploading";
-  __internal_upload_progress?: number;
-  __internal_button_disabled?: boolean;
-};
-
 /**
  * @remarks It is not recommended using this directly as it requires manually binding generics. Instead, use `createUploadButton`.
  * @example
@@ -91,247 +75,119 @@ export function UploadButton<
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> &
-    UploadThingInternalProps;
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
+  const { className, content, appearance, ...$props } =
+    props as unknown as UploadButtonProps<TRouter, TEndpoint>;
 
-  const {
-    mode = "auto",
-    appendOnPaste = false,
-    cn = defaultClassListMerger,
-  } = $props.config ?? {};
-  const acRef = useRef(new AbortController());
-
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const labelRef = useRef<HTMLLabelElement>(null);
-  const [uploadProgress, setUploadProgress] = useState(
-    $props.__internal_upload_progress ?? 0,
-  );
-  const [files, setFiles] = useState<File[]>([]);
-
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
-    $props.endpoint,
-    {
-      signal: acRef.current.signal,
-      headers: $props.headers,
-      onClientUploadComplete: (res) => {
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        setFiles([]);
-        void $props.onClientUploadComplete?.(res);
-        setUploadProgress(0);
-      },
-      onUploadProgress: (p) => {
-        setUploadProgress(p);
-        $props.onUploadProgress?.(p);
-      },
-      onUploadError: $props.onUploadError,
-      onUploadBegin: $props.onUploadBegin,
-      onBeforeUploadBegin: $props.onBeforeUploadBegin,
-    },
-  );
-
-  const uploadFiles = useCallback(
-    (files: File[]) => {
-      startUpload(files, fileRouteInput).catch((e) => {
-        if (e instanceof UploadAbortedError) {
-          void $props.onUploadAborted?.();
-        } else {
-          throw e;
-        }
-      });
-    },
-    [$props, startUpload, fileRouteInput],
-  );
-
-  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
-
-  const inputProps = useMemo(
-    () => ({
-      type: "file",
-      ref: fileInputRef,
-      multiple,
-      accept: generateMimeTypes(fileTypes).join(", "),
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.files) return;
-        const selectedFiles = Array.from(e.target.files);
-
-        $props.onChange?.(selectedFiles);
-
-        if (mode === "manual") {
-          setFiles(selectedFiles);
-          return;
-        }
-
-        void uploadFiles(selectedFiles);
-      },
-      disabled: fileTypes.length === 0,
-      tabIndex: fileTypes.length === 0 ? -1 : 0,
-    }),
-    [$props, fileTypes, mode, multiple, uploadFiles],
-  );
-
-  if ($props.__internal_button_disabled) inputProps.disabled = true;
-  if ($props.disabled) inputProps.disabled = true;
-
-  const state = (() => {
-    if ($props.__internal_state) return $props.__internal_state;
-    if (inputProps.disabled) return "disabled";
-    if (!inputProps.disabled && !isUploading) return "ready";
-    return "uploading";
-  })();
-
-  usePaste((event) => {
-    if (!appendOnPaste) return;
-    if (document.activeElement !== fileInputRef.current) return;
-
-    const pastedFiles = getFilesFromClipboardEvent(event);
-    if (!pastedFiles) return;
-
-    let filesToUpload = pastedFiles;
-    setFiles((prev) => {
-      filesToUpload = [...prev, ...pastedFiles];
-
-      $props.onChange?.(filesToUpload);
-
-      return filesToUpload;
-    });
-
-    if (mode === "auto") void uploadFiles(files);
-  });
-
-  const styleFieldArg = {
-    ready: state !== "readying",
-    isUploading: state === "uploading",
-    uploadProgress,
-    fileTypes,
-  } as ButtonStyleFieldCallbackArgs;
-
-  const renderButton = () => {
-    const customContent = contentFieldToContent(
-      $props.content?.button,
-      styleFieldArg,
-    );
-    if (customContent) return customContent;
-
-    switch (state) {
-      case "readying": {
-        return "Loading...";
-      }
-      case "uploading": {
-        if (uploadProgress === 100) return <Spinner />;
-        return (
-          <span className="z-50">
-            <span className="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel cn={cn} className="hidden size-4 group-hover:block" />
-          </span>
-        );
-      }
-      case "disabled":
-      case "ready":
-      default: {
-        if (mode === "manual" && files.length > 0) {
-          return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-        }
-        return `Choose File${inputProps.multiple ? `(s)` : ``}`;
-      }
-    }
-  };
-
-  const renderClearButton = () => (
-    <button
-      onClick={() => {
-        setFiles([]);
-
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-
-        $props.onChange?.([]);
-      }}
-      className={cn(
-        "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
-        styleFieldToClassName($props.appearance?.clearBtn, styleFieldArg),
-      )}
-      style={styleFieldToCssObject($props.appearance?.clearBtn, styleFieldArg)}
-      data-state={state}
-      data-ut-element="clear-btn"
-    >
-      {contentFieldToContent($props.content?.clearBtn, styleFieldArg) ??
-        "Clear"}
-    </button>
-  );
-
-  const renderAllowedContent = () => (
-    <div
-      className={cn(
-        "h-[1.25rem] text-xs leading-5 text-gray-600",
-        styleFieldToClassName($props.appearance?.allowedContent, styleFieldArg),
-      )}
-      style={styleFieldToCssObject(
-        $props.appearance?.allowedContent,
-        styleFieldArg,
-      )}
-      data-state={state}
-      data-ut-element="allowed-content"
-    >
-      {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-        allowedContentTextLabelGenerator(routeConfig)}
-    </div>
-  );
+  const cn = defaultClassListMerger ?? $props.config ?? {};
 
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center justify-center gap-1",
-        $props.className,
-        styleFieldToClassName($props.appearance?.container, styleFieldArg),
-      )}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
-      data-state={state}
-    >
-      <label
-        className={cn(
-          "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state === "disabled" && "cursor-not-allowed bg-blue-400",
-          state === "readying" && "cursor-not-allowed bg-blue-400",
-          state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-          state === "ready" && "bg-blue-600",
-          styleFieldToClassName($props.appearance?.button, styleFieldArg),
-        )}
-        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
-        data-state={state}
-        data-ut-element="button"
-        ref={labelRef}
-        onClick={(e) => {
-          if (state === "uploading") {
-            e.preventDefault();
-            e.stopPropagation();
+    <Primitive.Root<TRouter, TEndpoint> {...($props as any)}>
+      {({ state, uploadProgress, fileTypes, files, options }) => {
+        const styleFieldArg = {
+          ready: state !== "readying",
+          isUploading: state === "uploading",
+          uploadProgress: uploadProgress,
+          fileTypes: fileTypes,
+        } as ButtonStyleFieldCallbackArgs;
 
-            acRef.current.abort();
-            acRef.current = new AbortController();
-            return;
-          }
-          if (mode === "manual" && files.length > 0) {
-            e.preventDefault();
-            e.stopPropagation();
+        const renderAllowedContent = () => (
+          <div
+            className={cn(
+              "h-[1.25rem] text-xs leading-5 text-gray-600",
+              styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
+            )}
+            style={styleFieldToCssObject(
+              appearance?.allowedContent,
+              styleFieldArg,
+            )}
+            data-state={state}
+            data-ut-element="allowed-content"
+          >
+            <Primitive.AllowedContent>
+              {contentFieldToContent(content?.allowedContent, styleFieldArg)}
+            </Primitive.AllowedContent>
+          </div>
+        );
 
-            uploadFiles(files);
+        const renderClearButton = () => (
+          <Primitive.ClearButton
+            className={cn(
+              "h-[1.25rem] cursor-pointer rounded border-none bg-transparent text-gray-500 transition-colors hover:bg-slate-200 hover:text-gray-600",
+              styleFieldToClassName(appearance?.clearBtn, styleFieldArg),
+            )}
+            style={styleFieldToCssObject(appearance?.clearBtn, styleFieldArg)}
+            data-state={state}
+            data-ut-element="clear-btn"
+          >
+            {contentFieldToContent(content?.clearBtn, styleFieldArg)}
+          </Primitive.ClearButton>
+        );
+
+        const renderButton = () => {
+          const customContent = contentFieldToContent(
+            content?.button,
+            styleFieldArg,
+          );
+          if (customContent) return customContent;
+
+          switch (state) {
+            case "readying": {
+              return "Loading...";
+            }
+            case "uploading": {
+              if (uploadProgress === 100) return <Spinner />;
+              return (
+                <span className="z-50">
+                  <span className="block group-hover:hidden">
+                    {uploadProgress}%
+                  </span>
+                  <Cancel cn={cn} className="hidden size-4 group-hover:block" />
+                </span>
+              );
+            }
+            case "disabled":
+            case "ready":
+            default: {
+              if (options.mode === "manual" && files.length > 0) {
+                return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+              }
+              return `Choose File${options.multiple ? `(s)` : ``}`;
+            }
           }
-        }}
-      >
-        <input {...inputProps} className="sr-only" />
-        {renderButton()}
-      </label>
-      {mode === "manual" && files.length > 0
-        ? renderClearButton()
-        : renderAllowedContent()}
-    </div>
+        };
+
+        return (
+          <div
+            className={cn(
+              "flex flex-col items-center justify-center gap-1",
+              className,
+              styleFieldToClassName(appearance?.container, styleFieldArg),
+            )}
+            style={styleFieldToCssObject(appearance?.container, styleFieldArg)}
+            data-state={state}
+          >
+            <Primitive.Button
+              className={cn(
+                "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+                state === "disabled" && "cursor-not-allowed bg-blue-400",
+                state === "readying" && "cursor-not-allowed bg-blue-400",
+                state === "uploading" &&
+                  `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
+                state === "ready" && "bg-blue-600",
+                styleFieldToClassName(appearance?.button, styleFieldArg),
+              )}
+              style={styleFieldToCssObject(appearance?.button, styleFieldArg)}
+              data-state={state}
+              data-ut-element="button"
+            >
+              {renderButton()}
+            </Primitive.Button>
+            {options.mode === "manual" && files.length > 0
+              ? renderClearButton()
+              : renderAllowedContent()}
+          </div>
+        );
+      }}
+    </Primitive.Root>
   );
 }
