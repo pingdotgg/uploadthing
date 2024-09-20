@@ -99,7 +99,7 @@ export function PrimitiveContextMergeProvider({
 export function usePrimitiveValues(componentName?: string) {
   const values = useContext(PrimitiveContext);
   if (values === null) {
-    const name = componentName ? "usePrimitiveValues" : `<UT.${componentName}>`;
+    const name = componentName ? `<UT.${componentName}>` : "usePrimitiveValues";
     throw new Error(`${name} must be used within a <UT.Root>`);
   }
   return values;
