@@ -47,7 +47,7 @@ of a FileRoute similar to an endpoint, it has:
 To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
-```tsx {{ title: "routes/api.uploadthing.ts" }}
+```tsx {{ title: "app/routes/api.uploadthing.ts" }}
 import type { ActionFunctionArgs } from "@remix-run/node"; // or cloudflare/deno
 
 import { createUploadthing, type FileRouter } from "uploadthing/remix";
@@ -97,7 +97,7 @@ exporting the action and loader functions.
   serving it from `/api/uploadthing`.
 </Note>
 
-```ts {{ title: "routes/api.uploadthing.ts" }}
+```ts {{ title: "app/routes/api.uploadthing.ts" }}
 import { createRouteHandler } from "uploadthing/remix";
 
 const uploadRouter = {
@@ -117,7 +117,7 @@ export const { action, loader } = createRouteHandler({
 
 ## Create The UploadThing Components
 
-```ts {{ title: "src/utils/uploadthing.ts" }}
+```ts {{ title: "app/utils/uploadthing.ts" }}
 import {
   generateUploadButton,
   generateUploadDropzone,
@@ -125,8 +125,8 @@ import {
 
 import type { UploadRouter } from "~/routes/api.uploadthing";
 
-export const UploadButton = generateUploadButton<OurFileRouter>();
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
+export const UploadButton = generateUploadButton<UploadRouter>();
+export const UploadDropzone = generateUploadDropzone<UploadRouter>();
 ```
 
 ### Add UploadThing's Styles
