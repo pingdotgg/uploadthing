@@ -105,15 +105,6 @@ export function usePrimitiveValues(componentName?: string) {
   return values;
 }
 
-export function usePrimitiveChildren(
-  children: PrimitiveComponentChildren,
-  componentName: string,
-) {
-  return typeof children === "function"
-    ? children?.(usePrimitiveValues(componentName))
-    : children;
-}
-
 export function PrimitiveSlot({
   children,
   componentName,
