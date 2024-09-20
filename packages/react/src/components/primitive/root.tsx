@@ -265,10 +265,11 @@ export function Root<
       setFiles(files);
       $props.onChange?.(files);
 
-      if (mode === "manual") {
-        setFiles(files);
+      if (files.length <= 0) {
+        if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
+      if (mode === "manual") return;
 
       void uploadFiles(files);
     },
