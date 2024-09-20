@@ -54,13 +54,19 @@ const parseURL = (req: IncomingMessageLike): Effect.Effect<URL, InvalidURL> => {
   );
 };
 
+const isBodyAllowed = (method: string) =>
+  ["POST", "PUT", "PATCH"].includes(method);
+
 export const getPostBody = <TBody = unknown>(opts: {
   req: IncomingMessageLike & {
     on: (event: string, listener: (data: any) => void) => void;
   };
 }) =>
-  Effect.async<TBody, UploadThingError>((resume) => {
+  Effect.async<TBody | undefined, UploadThingError>((resume) => {
     const { req } = opts;
+    if (!req.method || !isBodyAllowed(req.method)) {
+      return resume(Effect.succeed(undefined));
+    }
     const contentType = req.headers?.["content-type"];
 
     if ("body" in req) {
@@ -118,7 +124,7 @@ export const toWebRequest = (
   body ??= req.body;
   const bodyStr = typeof body === "string" ? body : JSON.stringify(body);
   const method = req.method ?? "GET";
-  const allowsBody = ["POST", "PUT", "PATCH"].includes(method);
+  const allowsBody = isBodyAllowed(method);
 
   const headers = new Headers();
   for (const [key, value] of Object.entries(req.headers ?? [])) {

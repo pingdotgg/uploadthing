@@ -1,5 +1,18 @@
 # uploadthing
 
+## 7.0.2
+
+### Patch Changes
+
+- [`a948109`](https://github.com/pingdotgg/uploadthing/commit/a948109756aba65935bb378e39d43056af2bc8bb) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix express adapter checking content type on GET requests
+
+- [#946](https://github.com/pingdotgg/uploadthing/pull/946) [`5156179`](https://github.com/pingdotgg/uploadthing/commit/51561797fe8856cd004f37a5e662691566f8a369) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: nextjs pages adapter response body regression
+
+- [#952](https://github.com/pingdotgg/uploadthing/pull/952) [`6236ad2`](https://github.com/pingdotgg/uploadthing/commit/6236ad24b8720bfb53a1c5c30bc5d1410edb2c1c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: run `onUploadBegin`
+
+- Updated dependencies [[`a07817e`](https://github.com/pingdotgg/uploadthing/commit/a07817e6240898ab80fbb01b352501aab31ba6bc)]:
+  - @uploadthing/shared@7.0.2
+
 ## 7.0.1
 
 ### Patch Changes

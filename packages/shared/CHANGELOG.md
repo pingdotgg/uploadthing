@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 7.0.2
+
+### Patch Changes
+
+- [#950](https://github.com/pingdotgg/uploadthing/pull/950) [`a07817e`](https://github.com/pingdotgg/uploadthing/commit/a07817e6240898ab80fbb01b352501aab31ba6bc) Thanks [@markflorkowski](https://github.com/markflorkowski)! - correct variable names to accurately reflect what they are
+
 ## 7.0.1
 
 ### Patch Changes

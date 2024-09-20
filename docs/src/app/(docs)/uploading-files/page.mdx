@@ -10,8 +10,6 @@ export const metadata = docsMetadata({
 
 # Uploading Files
 
-<Warning>This is outdated and must be updated to v7 and ingest server.</Warning>
-
 Uploading files is the first step in the process of uploading files to
 UploadThing. This page explains the general process of uploading files and how
 you can use the UploadThing API to upload files. There are two ways to upload
@@ -21,9 +19,9 @@ files to UploadThing:
 
 The most common approach to uploading files is to use client-side uploads. With
 client side uploads, you do not have to pay ingress / egress fees for
-transferring the files binary data through your server. Your server instead acts
-as a proxy for requesting presigned URLs from the UploadThing API that the
-client will then use to upload the files to UploadThing.
+transferring the files binary data through your server. Your server instead will
+generate presigned URLs which the client will then use to upload the files to
+UploadThing.
 
 ![Client Side Uploads Diagram](./client-uploads.svg)
 
@@ -57,9 +55,8 @@ using:
 | SvelteKit            | [Getting Started with SvelteKit](/getting-started/svelte)                                                                                | [minimal-sveltekit](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-sveltekit)                             |
 | Nuxt                 | [Getting Started with Nuxt](/getting-started/nuxt)                                                                                       | [minimal-nuxt](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-nuxt)                                       |
 
-If none of the above suits your needs, you can also use the
-[OpenAPI specification](/api-reference/openapi-spec) to build your own SDKs. In
-the following sections, we will describe how to do just that.
+If none of the above suits your needs, you can also build your own SDKs. In the
+following sections, we will describe how to do just that.
 
 ### Building the backend adapter
 
@@ -99,16 +96,50 @@ Once your backend adapter has received and validated the request, you will next
 need to generate presigned URLs. First, generate some file keys for the files to
 be uploaded.
 
-To generate a file key, generate a sha256 hex digest of a file seed of your
-choice, as well as of your API key. Concatenate the API key and the file seed
-with a `:` separator and encode the result as a base64 string.
+To generate a file key, generate a [Sqids](https://sqids.org/) of your appId
+with `{ minLength: 12 }`, then concatenate this with a file seed of your choice.
+The file seed can be anything you want, but it should be unique for each file,
+as well as url safe. In this example, we include a base64 encoding to ensure the
+file seed is url safe, but you can do this however you want.
 
 ```ts
-const fileSeed = `${file.name}${file.size}`; // can be anything
-const seedHash = sha256Hex(fileSeed);
-const apiKeyHash = sha256Hex(apiKey);
+import * as Hash from "effect/Hash";
+import SQIds, { defaultOptions } from "sqids";
 
-const fileKey = encodeBase64(`${apiKeyHash}:${seedHash}`);
+// A simple function to shuffle the alphabet for the Sqids
+function shuffle(str: string, seed: string) {
+  const chars = str.split("");
+  const seedNum = Hash.string(seed);
+
+  let temp: string;
+  let j: number;
+  for (let i = 0; i < chars.length; i++) {
+    j = ((seedNum % (i + 1)) + i) % chars.length;
+    temp = chars[i];
+    chars[i] = chars[j];
+    chars[j] = temp;
+  }
+
+  return chars.join("");
+}
+
+function generateKey(
+  appId: string,
+  fileSeed: string,
+) =>
+  // Hash and Encode the parts and apiKey as sqids
+  const alphabet = shuffle(defaultOptions.alphabet, appId);
+
+  const encodedAppId = new SQIds({ alphabet, minLength: 12 }).encode([
+    Math.abs(Hash.string(appId)),
+  ]);
+
+  // We use a base64 encoding here to ensure the file seed is url safe, but
+  // you can do this however you want
+  const encodedFileSeed = encodeBase64(fileSeed);
+
+  return `${encodedAppId}${encodedFileSeed}`;
+}
 ```
 
 The URL, to which you will upload the file, will depend on your app's region.

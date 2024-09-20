@@ -264,9 +264,9 @@ export const OurUploadButton = () => (
     returned are the files that will be uploaded, meaning you can use this to
     e.g. rename or resize the files.
   </Property>
-  <Property name="onUploadBegin" type="function" since="5.4">
-    Callback function called after the presigned URLs have been retrieved, just
-    before the files are uploaded to the storage provider.
+  <Property name="onUploadBegin" type="({ file: string }) => void" since="5.4">
+    Callback function called after the presigned URLs have been retrieved, just before 
+    the file is uploaded. Called once per file.
   </Property>
   <Property name="disabled" type="boolean" since="6.7" defaultValue="false">
     Disables the button.
@@ -405,9 +405,9 @@ export const OurUploadDropzone = () => (
     returned are the files that will be uploaded, meaning you can use this to
     e.g. rename or resize the files.
   </Property>
-  <Property name="onUploadBegin" type="function" since="5.4">
-    Callback function called after the presigned URLs have been retrieved, just
-    before the files are uploaded to the storage provider.
+  <Property name="onUploadBegin" type="({ file: string }) => void" since="5.4">
+    Callback function called after the presigned URLs have been retrieved, just before 
+    the file is uploaded. Called once per file.
   </Property>
   <Property name="disabled" type="boolean" since="6.7" defaultValue="false">
     Disables the button.
@@ -512,7 +512,7 @@ is an options object:
     Callback function that gets continuously called as the file is uploaded to
     the storage provider.
   </Property>
-  <Property name="onUploadBegin" type="function" since="5.4">
+  <Property name="onUploadBegin" type="({ file: string }) => void" since="5.4">
     Callback function called after the presigned URLs have been retrieved, just
     before the files are uploaded to the storage provider.
   </Property>
@@ -547,7 +547,7 @@ and `useUploadThing` hooks. For a more complete example, take a look at
 [our prebuilt components](https://github.com/pingdotgg/uploadthing/tree/main/packages/react/src/components).
 
 ```tsx {{ title: "app/example-custom-uploader.tsx" }}
-// import { useDropzone } from "@uploadthing/react";
+import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";
@@ -565,8 +565,8 @@ export function MultiUploader() {
     onUploadError: () => {
       alert("error occurred while uploading");
     },
-    onUploadBegin: () => {
-      alert("upload has begun");
+    onUploadBegin: ({ file }) => {
+      console.log("upload has begun for", file);
     },
   });
 
