@@ -32,6 +32,7 @@ export const navigation: Array<NavGroup> = [
       { title: "Remix", href: "/getting-started/remix" },
       { title: "SolidStart", href: "/getting-started/solid" },
       { title: "SvelteKit", href: "/getting-started/svelte" },
+      { title: "Tanstack/Start", href: "/getting-started/tanstack-start" },
       { title: "Vue with Nuxt", href: "/getting-started/nuxt" },
     ],
   },
