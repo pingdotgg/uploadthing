@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import * as S from "@effect/schema/Schema";
 import type { StrictRequest } from "msw";
 import { http, HttpResponse } from "msw";
@@ -119,6 +120,9 @@ export const it = itBase.extend({
             url: `${UTFS_IO_URL}/f/${params.key}`,
             appUrl: `${UTFS_IO_URL}/a/${appId}/${params.key}`,
             serverData: null,
+            hash: createHash("md5")
+              .update(new Uint8Array(await request.arrayBuffer()))
+              .digest("hex"),
           });
         },
       ),
