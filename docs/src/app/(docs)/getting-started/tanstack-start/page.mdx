@@ -122,10 +122,8 @@ import {
 
 import type { OurFileRouter } from "~/api/uploadthing";
 
-const UploadButton = generateUploadButton<OurFileRouter>();
-const UploadDropzone = generateUploadDropzone<OurFileRouter>();
-
-export default UploadButton;
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Add UploadThing's Styles
@@ -161,7 +159,7 @@ export default UploadButton;
 ```tsx {{ title: "app/routes/index.tsx" }}
 import { createFileRoute } from "@tanstack/react-router";
 
-import UploadButton from "~/utils/uploadThing";
+import { UploadButton } from "~/utils/uploadthing";
 
 export const Route = createFileRoute("/")({
   component: Home,
