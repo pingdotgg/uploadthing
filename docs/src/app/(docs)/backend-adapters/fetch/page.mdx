@@ -99,15 +99,15 @@ import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "./uploadthing.ts";
 
-const handler = createRouteHandler({
+const handlers = createRouteHandler({
   router: uploadRouter,
   config: { ... },
 });
 
 new Elysia()
   .get("/api", () => "Hello from Elysia!")
-  .get("/api/uploadthing", (ev) => handler(ev.request))
-  .post("/api/uploadthing", (ev) => handler(ev.request))
+  .get("/api/uploadthing", (ev) => handlers(ev.request))
+  .post("/api/uploadthing", (ev) => handlers(ev.request))
   .listen(3000, (server) => {
     console.log(`Server listening on port ${server.port}`);
   });
