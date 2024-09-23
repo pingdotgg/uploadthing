@@ -98,10 +98,7 @@ import { createRouteHandler } from "uploadthing/server";
 
 import { ourFileRouter } from "~/api/uploadthing";
 
-const handlers = createRouteHandler({
-  router: ourFileRouter,
-  config: { token: process.env.UPLOADTHING_TOKEN },
-});
+const handlers = createRouteHandler({ router: ourFileRouter });
 
 export const Route = createAPIFileRoute("/api/uploadthing")({
   GET: handlers,
