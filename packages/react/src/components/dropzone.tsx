@@ -214,9 +214,7 @@ export function UploadDropzone<
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
 
-  const onUploadClick = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
+  const onUploadClick = async (e: React.MouseEvent) => {
     if (state === "uploading") {
       e.preventDefault();
       e.stopPropagation();
@@ -391,7 +389,7 @@ export function UploadDropzone<
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
-        onClick={onUploadClick as any}
+        onClick={onUploadClick}
         data-ut-element="button"
         data-state={state}
         type="button"
