@@ -1,10 +1,3 @@
-/**
- * This is a forked version of the react-dropzone package, that's been minified
- * to suit UploadThing's needs and be easily portable to other frameworks than React.
- * See original source here: https://github.com/react-dropzone/react-dropzone
- * The original package is licensed under the MIT license.
- */
-
 import { fromEvent } from "file-selector";
 import {
   createEffect,
