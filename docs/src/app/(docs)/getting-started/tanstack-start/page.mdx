@@ -122,10 +122,8 @@ import {
 
 import type { OurFileRouter } from "~/api/uploadthing";
 
-const UploadButton = generateUploadButton<OurFileRouter>();
-const UploadDropzone = generateUploadDropzone<OurFileRouter>();
-
-export default UploadButton;
+export const UploadButton = generateUploadButton<OurFileRouter>();
+export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```
 
 ### Add UploadThing's Styles
