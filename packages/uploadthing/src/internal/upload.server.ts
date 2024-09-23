@@ -33,7 +33,9 @@ export const uploadWithoutProgress = (
       ),
       HttpClientResponse.json,
 
-      Effect.andThen(unsafeCoerce<unknown, { url: string; appUrl: string }>),
+      Effect.andThen(
+        unsafeCoerce<unknown, { url: string; appUrl: string; hash: string }>,
+      ),
     );
 
     yield* Effect.logDebug(`File ${file.name} uploaded successfully`).pipe(

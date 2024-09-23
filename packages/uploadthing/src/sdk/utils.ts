@@ -178,7 +178,7 @@ const uploadFile = (
   Effect.gen(function* () {
     const { file, presigned } = input;
 
-    const { url, appUrl } = yield* uploadWithoutProgress(file, presigned);
+    const { url, appUrl, hash } = yield* uploadWithoutProgress(file, presigned);
 
     return {
       key: presigned.key,
@@ -189,5 +189,6 @@ const uploadFile = (
       size: file.size,
       type: file.type,
       customId: file.customId ?? null,
+      hash,
     };
   }).pipe(Effect.withLogSpan("uploadFile"));

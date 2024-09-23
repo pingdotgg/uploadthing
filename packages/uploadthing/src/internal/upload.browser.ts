@@ -95,7 +95,12 @@ export const uploadFile = <
     Micro.map(
       unsafeCoerce<
         unknown,
-        { url: string; appUrl: string; serverData: TServerOutput }
+        {
+          url: string;
+          appUrl: string;
+          serverData: TServerOutput;
+          hash: string;
+        }
       >,
     ),
     Micro.map((uploadResponse) => ({
@@ -108,6 +113,7 @@ export const uploadFile = <
       appUrl: uploadResponse.appUrl,
       customId: presigned.customId,
       type: file.type,
+      hash: uploadResponse.hash,
     })),
   );
 
