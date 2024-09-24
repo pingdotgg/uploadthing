@@ -2,9 +2,10 @@ import {
   generateSolidHelpers,
   generateUploadButton,
   generateUploadDropzone,
+  generateUploader,
 } from "@uploadthing/solid";
 
-import { OurFileRouter } from "~/server/uploadthing";
+import { UploadRouter } from "~/server/uploadthing";
 
 const initOpts = {
   /**
@@ -13,7 +14,8 @@ const initOpts = {
   url: "http://localhost:3000",
 };
 
-export const UploadButton = generateUploadButton<OurFileRouter>(initOpts);
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>(initOpts);
+export const UploadButton = generateUploadButton<UploadRouter>(initOpts);
+export const UploadDropzone = generateUploadDropzone<UploadRouter>(initOpts);
+export const Uploader = generateUploader<UploadRouter>(initOpts);
 export const { createUploadThing } =
-  generateSolidHelpers<OurFileRouter>(initOpts);
+  generateSolidHelpers<UploadRouter>(initOpts);
