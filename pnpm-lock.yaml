@@ -659,21 +659,18 @@ importers:
         specifier: 7.0.2
         version: link:../../packages/uploadthing
       vinxi:
-        specifier: ^0.4.1
+        specifier: ^0.4.3
         version: 0.4.3(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.5)(terser@5.32.0)(webpack-sources@3.2.3)
     devDependencies:
-      '@types/node':
-        specifier: ^20.14.0
-        version: 20.14.0
+      autoprefixer:
+        specifier: ^10.4.19
+        version: 10.4.19(postcss@8.4.38)
       postcss:
         specifier: 8.4.38
         version: 8.4.38
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.3
-      typescript:
-        specifier: ^5.5.2
-        version: 5.5.2
 
   examples/minimal-sveltekit:
     dependencies:
@@ -13585,21 +13582,11 @@ packages:
   serialize-javascript@6.0.1:
     resolution: {integrity: sha512-owoXEFjWRllis8/M1Q+Cw5k8ZH40e3zhp/ovX+Xr/vi1qj6QesbyXXViFbpNvWvPNAD62SutwEXavefrLJWj7w==}
 
-  seroval-plugins@1.0.5:
-    resolution: {integrity: sha512-8+pDC1vOedPXjKG7oz8o+iiHrtF2WswaMQJ7CKFpccvSYfrzmvKY9zOJWCg+881722wIHfwkdnRmiiDm9ym+zQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      seroval: ^1.0
-
   seroval-plugins@1.1.1:
     resolution: {integrity: sha512-qNSy1+nUj7hsCOon7AO4wdAIo9P0jrzAMp18XhiOzA6/uO5TKtP7ScozVJ8T293oRIvi5wyCHSM4TrJo/c/GJA==}
     engines: {node: '>=10'}
     peerDependencies:
       seroval: ^1.0
-
-  seroval@1.0.5:
-    resolution: {integrity: sha512-TM+Z11tHHvQVQKeNlOUonOWnsNM+2IBwZ4vwoi4j3zKzIpc5IDw8WPwCfcc8F17wy6cBcJGbZbFOR0UCuTZHQA==}
-    engines: {node: '>=10'}
 
   seroval@1.1.1:
     resolution: {integrity: sha512-rqEO6FZk8mv7Hyv4UCj3FD3b6Waqft605TLfsCe/BiaylRpyyMC0b+uA5TJKawX3KzMrdi3wsLbCaLplrQmBvQ==}
@@ -20916,8 +20903,8 @@ snapshots:
       glob: 10.4.5
       html-to-image: 1.11.11
       radix3: 1.1.2
-      seroval: 1.0.5
-      seroval-plugins: 1.0.5(seroval@1.0.5)
+      seroval: 1.1.1
+      seroval-plugins: 1.1.1(seroval@1.1.1)
       shikiji: 0.9.19
       source-map-js: 1.2.0
       terracotta: 1.0.5(solid-js@1.8.23)
@@ -31151,15 +31138,9 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
 
-  seroval-plugins@1.0.5(seroval@1.0.5):
-    dependencies:
-      seroval: 1.0.5
-
   seroval-plugins@1.1.1(seroval@1.1.1):
     dependencies:
       seroval: 1.1.1
-
-  seroval@1.0.5: {}
 
   seroval@1.1.1: {}
 
