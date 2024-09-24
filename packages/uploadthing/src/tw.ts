@@ -10,7 +10,10 @@ const PACKAGES = ["react", "solid", "svelte", "vue"];
 export function withUt(twConfig: Config) {
   const contentPaths = PACKAGES.map((pkg) => {
     try {
-      const resolved = require.resolve(`@uploadthing/${pkg}`);
+      const resolved = require.resolve(`@uploadthing/${pkg}`, {
+        paths: [...module.paths, process.cwd()],
+      });
+
       return resolved.split(sep).slice(0, -1).join(sep) + `${sep}**`;
     } catch {
       return null;
