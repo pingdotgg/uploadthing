@@ -107,7 +107,6 @@ export function UploadButton<
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const labelRef = useRef<HTMLLabelElement>(null);
   const [uploadProgress, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
@@ -168,7 +167,7 @@ export function UploadButton<
           return;
         }
 
-        void uploadFiles(selectedFiles);
+        uploadFiles(selectedFiles);
       },
       disabled: fileTypes.length === 0,
       tabIndex: fileTypes.length === 0 ? -1 : 0,
@@ -308,7 +307,6 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
-        ref={labelRef}
         onClick={(e) => {
           if (state === "uploading") {
             e.preventDefault();

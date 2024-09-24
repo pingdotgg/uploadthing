@@ -52,14 +52,21 @@
   export let onChange: ((files: File[]) => void) | undefined = undefined;
   export let disabled = false;
 
-  let uploadProgress = 0;
-  let fileInputRef: HTMLInputElement;
-  let files: File[] = [];
+  $: ({
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = uploader.config ?? {});
   let acRef = new AbortController();
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
+
+  let fileInputRef: HTMLInputElement;
+  let uploadProgress = 0;
+  let files: File[] = [];
+
   const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,
     {
@@ -68,7 +75,7 @@
       onClientUploadComplete: (res) => {
         fileInputRef.value = "";
         files = [];
-        uploader.onClientUploadComplete?.(res);
+        void uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
       },
       onUploadProgress: (p) => {
@@ -81,28 +88,6 @@
     },
   );
 
-  $: ({
-    mode = "auto",
-    appendOnPaste = false,
-    cn = defaultClassListMerger,
-  } = uploader.config ?? {});
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
-  $: className = ($$props.class as string) ?? "";
-
-  $: styleFieldArg = {
-    __runtime: "svelte",
-    ready: state !== "readying",
-    isUploading: state === "uploading",
-    uploadProgress,
-    fileTypes,
-  } satisfies ButtonStyleFieldCallbackArgs;
-
-  $: state = (() => {
-    if (disabled) return "disabled";
-    if (!disabled && !$isUploading) return "ready";
-    return "uploading";
-  })();
-
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
     startUpload(files, input).catch((e) => {
@@ -114,29 +99,43 @@
     });
   };
 
-  const handlePaste = (event: ClipboardEvent) => {
-    if (!appendOnPaste) return;
-    // eslint-disable-next-line no-undef
-    if (document.activeElement !== fileInputRef) return;
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
+  $: className = ($$props.class as string) ?? "";
 
-    const pastedFiles = getFilesFromClipboardEvent(event);
-    if (!pastedFiles) return;
-
-    files = [...files, ...pastedFiles];
-
-    onChange?.(files);
-
-    if (mode === "auto") void uploadFiles(files);
-  };
+  $: state = (() => {
+    if (disabled) return "disabled";
+    if (!disabled && !$isUploading) return "ready";
+    return "uploading";
+  })();
 
   onMount(() => {
+    const handlePaste = (event: ClipboardEvent) => {
+      if (!appendOnPaste) return;
+      // eslint-disable-next-line no-undef
+      if (document.activeElement !== fileInputRef) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
+
+      files = [...files, ...pastedFiles];
+
+      onChange?.(files);
+
+      if (mode === "auto") void uploadFiles(files);
+    };
     // eslint-disable-next-line no-undef
     document.addEventListener("paste", handlePaste);
-    return () => {
-      // eslint-disable-next-line no-undef
-      document.removeEventListener("paste", handlePaste);
-    };
+
+    // eslint-disable-next-line no-undef
+    return () => document.removeEventListener("paste", handlePaste);
   });
+
+  $: styleFieldArg = {
+    ready: state !== "readying",
+    isUploading: state === "uploading",
+    uploadProgress,
+    fileTypes,
+  } as ButtonStyleFieldCallbackArgs;
 </script>
 
 <!--
@@ -159,7 +158,7 @@ Example:
   <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
   <label
     class={cn(
-      "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
+      "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
       state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
@@ -194,6 +193,7 @@ Example:
       accept={generateMimeTypes(fileTypes).join(", ")}
       {disabled}
       {multiple}
+      tabindex={fileTypes.length === 0 ? -1 : 0}
       on:change={(e) => {
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
@@ -209,8 +209,10 @@ Example:
       }}
     />
     <slot name="button-content" state={styleFieldArg}>
-      {#if state === "uploading"}
-        {#if uploadProgress === 100}
+      {#if state === "readying"}
+        {`Loading...`}
+      {:else if state === "uploading"}
+        {#if uploadProgress >= 100}
           <Spinner />
         {:else}
           <span class="z-50">
@@ -240,7 +242,9 @@ Example:
       data-state={state}
       data-ut-element="clear-btn"
     >
-      <slot name="clear-btn" state={styleFieldArg}>Clear</slot>
+      <slot name="clear-btn" state={styleFieldArg}>
+        {`Clear`}
+      </slot>
     </button>
   {:else}
     <div

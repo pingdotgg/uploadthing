@@ -40,12 +40,12 @@ export const INTERNAL_createUploadThingGen = <
     url: initOpts.url,
     package: "@uploadthing/svelte",
   });
+
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = writable(false);
-
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
@@ -88,7 +88,8 @@ export const INTERNAL_createUploadThingGen = <
           // @ts-expect-error - input may not be defined on the type
           input,
         });
-        opts?.onClientUploadComplete?.(res);
+
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         /**
@@ -107,7 +108,7 @@ export const INTERNAL_createUploadThingGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
       } finally {
         isUploading.set(false);
         fileProgress = new Map();
