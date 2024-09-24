@@ -96,7 +96,7 @@ import { createAPIFileRoute } from "@tanstack/start/api";
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { ourFileRouter } from "~/api/uploadthing";
+import { ourFileRouter } from "../../server/uploadthing";
 
 const handlers = createRouteHandler({ router: ourFileRouter });
 
@@ -120,7 +120,7 @@ import {
   generateUploadDropzone,
 } from "@uploadthing/react";
 
-import type { OurFileRouter } from "~/api/uploadthing";
+import type { OurFileRouter } from "../server/uploadthing";
 
 export const UploadButton = generateUploadButton<OurFileRouter>();
 export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
@@ -159,7 +159,7 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 ```tsx {{ title: "app/routes/index.tsx" }}
 import { createFileRoute } from "@tanstack/react-router";
 
-import { UploadButton } from "~/utils/uploadthing";
+import { UploadButton } from "../utils/uploadthing";
 
 export const Route = createFileRoute("/")({
   component: Home,
