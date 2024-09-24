@@ -99,7 +99,7 @@ import { createAPIFileRoute } from "@tanstack/start/api";
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { uploadRouter } from "~/api/uploadthing";
+import { uploadRouter } from "../../server/uploadthing";
 
 const handlers = createRouteHandler({ router: uploadRouter });
 
@@ -125,7 +125,7 @@ import {
   generateUploadDropzone,
 } from "@uploadthing/react";
 
-import type { UploadRouter } from "~/api/uploadthing";
+import type { UploadRouter } from "../server/uploadthing";
 
 export const UploadButton = generateUploadButton<UploadRouter>();
 export const UploadDropzone = generateUploadDropzone<UploadRouter>();
@@ -141,25 +141,31 @@ export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 
 <Tabs tabs={["Tailwind", "Not Tailwind"]}>
   <Tab>
-      Wrap your Tailwind config with the `withUt` helper. You can learn more about our
-      Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+    Wrap your Tailwind config with the `withUt` helper. You can learn more about our
+    Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
 
-      ```tsx
-      import { withUt } from "uploadthing/tw";
+    ```tsx
+    import { withUt } from "uploadthing/tw";
 
-      export default withUt({
-        // Your existing Tailwind config
-        content: ["./src/**/*.{ts,tsx,mdx}"],
-        ...
-      });
-      ```
+    export default withUt({
+      // Your existing Tailwind config
+      content: ["./src/**/*.{ts,tsx,mdx}"],
+      ...
+    });
+    ```
 
   </Tab>
   <Tab>
-    Include our CSS file in the root layout to make sure the components look right!
+    Include our CSS in your root route to make sure the components look right!
 
-    ```tsx
-    import "@uploadthing/react/styles.css";
+    ```tsx {{ title: "app/routes/__root.tsx" }}
+    // @ts-expect-error
+    import uploadthingCss from "@uploadthing/react/styles.css?url";
+
+    export const Route = createRootRoute({
+      component: RootComponent,
+      links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+    });
     ```
 
   </Tab>
@@ -170,7 +176,7 @@ export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 ```tsx {{ title: "app/routes/index.tsx" }}
 import { createFileRoute } from "@tanstack/react-router";
 
-import { UploadButton } from "~/utils/uploadthing";
+import { UploadButton } from "../utils/uploadthing";
 
 export const Route = createFileRoute("/")({
   component: Home,
