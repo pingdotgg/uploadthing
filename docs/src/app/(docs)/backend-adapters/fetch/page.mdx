@@ -104,11 +104,13 @@ const handlers = createRouteHandler({
   config: { ... },
 });
 
-const app = new Elysia().get("/", () => "Hello Elysia");
-
-app.all("/api/uploadthing", handlers);
-
-app.listen(3000);
+new Elysia()
+  .get("/api", () => "Hello from Elysia!")
+  .get("/api/uploadthing", (ev) => handlers(ev.request))
+  .post("/api/uploadthing", (ev) => handlers(ev.request))
+  .listen(3000, (server) => {
+    console.log(`Server listening on port ${server.port}`);
+  });
 ```
 
 ### Hono
