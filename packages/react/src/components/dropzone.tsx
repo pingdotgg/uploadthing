@@ -654,11 +654,10 @@ export function useDropzone({
   const onBlur = useCallback(() => dispatch({ type: "blur" }), []);
 
   const onClick = useCallback(() => {
-    console.log("staet", state.isFileDialogActive);
     // In IE11/Edge the file-browser dialog is blocking, therefore,
     // use setTimeout() to ensure React can handle state changes
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
-  }, [openFileDialog, state.isFileDialogActive]);
+  }, [openFileDialog]);
 
   const getRootProps = useMemo(
     () => (): HTMLProps<HTMLDivElement> => ({
