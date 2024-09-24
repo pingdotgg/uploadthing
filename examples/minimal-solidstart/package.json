@@ -15,7 +15,7 @@
     "@uploadthing/solid": "7.0.2",
     "solid-js": "^1.8.15",
     "uploadthing": "7.0.2",
-    "vinxi": "0.3.11"
+    "vinxi": "0.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
