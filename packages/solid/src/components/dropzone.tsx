@@ -156,7 +156,7 @@ export const UploadDropzone = <
     setFiles(acceptedFiles);
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") void uploadFiles(acceptedFiles);
+    if (mode === "auto") uploadFiles(acceptedFiles);
   };
   const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
@@ -201,7 +201,7 @@ export const UploadDropzone = <
 
       $props.onChange?.(files());
 
-      if (mode === "auto") void uploadFiles(files());
+      if (mode === "auto") uploadFiles(files());
     };
     document?.addEventListener("paste", pasteHandler);
 

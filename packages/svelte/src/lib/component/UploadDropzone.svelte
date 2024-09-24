@@ -120,7 +120,7 @@
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") void uploadFiles(files);
+    if (mode === "auto") uploadFiles(files);
   };
 
   $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
@@ -170,7 +170,7 @@
 
       onChange?.(files);
 
-      if (mode === "auto") void uploadFiles(files);
+      if (mode === "auto") uploadFiles(files);
     };
     // eslint-disable-next-line no-undef
     document.addEventListener("paste", handlePaste);

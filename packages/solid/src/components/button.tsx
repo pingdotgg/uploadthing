@@ -170,7 +170,7 @@ export function UploadButton<
 
       $props.onChange?.(files());
 
-      if (mode === "auto") void uploadFiles(files());
+      if (mode === "auto") uploadFiles(files());
     };
     document?.addEventListener("paste", pasteHandler);
 

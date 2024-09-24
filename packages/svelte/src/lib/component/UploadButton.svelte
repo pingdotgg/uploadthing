@@ -121,7 +121,7 @@
 
       onChange?.(files);
 
-      if (mode === "auto") void uploadFiles(files);
+      if (mode === "auto") uploadFiles(files);
     };
     // eslint-disable-next-line no-undef
     document.addEventListener("paste", handlePaste);
