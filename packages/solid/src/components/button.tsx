@@ -21,7 +21,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { progressWidths, Spinner } from "./shared";
+import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -193,19 +193,7 @@ export function UploadButton<
     return (
       <span class="z-50">
         <span class="block group-hover:hidden">{uploadProgress()}%</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class={cn(
-            "fill-none stroke-current stroke-2",
-            "hidden size-4 group-hover:block",
-          )}
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="m4.9 4.9 14.2 14.2" />
-        </svg>
+        <Cancel cn={cn} class="hidden size-4 group-hover:block" />
       </span>
     );
   };
@@ -222,7 +210,7 @@ export function UploadButton<
     >
       <label
         class={cn(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state() === "readying" && "cursor-not-allowed bg-blue-400",
           state() === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${

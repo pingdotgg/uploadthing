@@ -142,12 +142,10 @@ export function UploadDropzone<
   });
 
   const [files, setFiles] = useState<File[]>([]);
-
-  const [uploadProgressState, setUploadProgress] = useState(
+  const [uploadProgress, setUploadProgress] = useState(
     $props.__internal_upload_progress ?? 0,
   );
-  const uploadProgress =
-    $props.__internal_upload_progress ?? uploadProgressState;
+
   const { startUpload, isUploading, routeConfig } = useUploadThing(
     $props.endpoint,
     {
@@ -181,8 +179,6 @@ export function UploadDropzone<
     [$props, startUpload, fileRouteInput],
   );
 
-  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
-
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       $props.onDrop?.(acceptedFiles);
@@ -195,6 +191,8 @@ export function UploadDropzone<
     },
     [$props, mode, uploadFiles],
   );
+
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const isDisabled = (() => {
     if ($props.__internal_dropzone_disabled) return true;
@@ -656,10 +654,11 @@ export function useDropzone({
   const onBlur = useCallback(() => dispatch({ type: "blur" }), []);
 
   const onClick = useCallback(() => {
+    console.log("staet", state.isFileDialogActive);
     // In IE11/Edge the file-browser dialog is blocking, therefore,
     // use setTimeout() to ensure React can handle state changes
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
-  }, [openFileDialog]);
+  }, [openFileDialog, state.isFileDialogActive]);
 
   const getRootProps = useMemo(
     () => (): HTMLProps<HTMLDivElement> => ({

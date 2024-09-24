@@ -3,9 +3,11 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  Match,
   mergeProps,
   onCleanup,
-  onMount,
+  Show,
+  Switch,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 
@@ -42,7 +44,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { progressWidths, Spinner } from "./shared";
+import { Cancel, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -101,7 +103,6 @@ export const UploadDropzone = <
     ? ErrorMessage<"You forgot to pass the generic">
     : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
-  const [uploadProgress, setUploadProgress] = createSignal(0);
   const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
 
   const {
@@ -116,6 +117,10 @@ export const UploadDropzone = <
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
+
+  const [files, setFiles] = createSignal<File[]>([]);
+  const [uploadProgress, setUploadProgress] = createSignal(0);
+
   const uploadThing = createUploadThing($props.endpoint, {
     signal: acRef.signal,
     headers: $props.headers,
@@ -132,8 +137,6 @@ export const UploadDropzone = <
     onUploadBegin: $props.onUploadBegin,
     onBeforeUploadBegin: $props.onBeforeUploadBegin,
   });
-
-  const [files, setFiles] = createSignal<File[]>([]);
 
   const uploadFiles = async (files: File[]) => {
     const input = "input" in $props ? $props.input : undefined;
@@ -162,13 +165,51 @@ export const UploadDropzone = <
     onDrop,
     multiple: fileInfo().multiple,
     get accept() {
-      return fileInfo().fileTypes
-        ? generateClientDropzoneAccept(fileInfo()?.fileTypes ?? [])
-        : undefined;
+      const types = fileInfo().fileTypes;
+      return types ? generateClientDropzoneAccept(types) : undefined;
     },
+    disabled: $props.disabled,
   });
 
   const ready = () => fileInfo().fileTypes.length > 0;
+
+  const onUploadClick = async (e: MouseEvent) => {
+    if (state() === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      acRef.abort();
+      acRef = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files().length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      await uploadFiles(files());
+    }
+  };
+
+  createEffect(() => {
+    const pasteHandler = (e: ClipboardEvent) => {
+      if (!appendOnPaste) return;
+      if (document.activeElement !== rootRef) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(e);
+      if (!pastedFiles) return;
+
+      setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
+
+      $props.onChange?.(files());
+
+      if (mode === "auto") void uploadFiles(files());
+    };
+    document?.addEventListener("paste", pasteHandler);
+
+    onCleanup(() => {
+      document?.removeEventListener("paste", pasteHandler);
+    });
+  });
 
   const styleFieldArg = {
     ready: ready,
@@ -179,41 +220,13 @@ export const UploadDropzone = <
   } as DropzoneStyleFieldCallbackArgs;
 
   const state = () => {
+    if ($props.disabled) return "disabled";
     if (!ready()) return "readying";
     if (ready() && !uploadThing.isUploading()) return "ready";
 
     return "uploading";
   };
 
-  const pasteHandler = (e: ClipboardEvent) => {
-    if (!appendOnPaste) return;
-    if (document.activeElement !== rootRef) return;
-
-    const pastedFiles = getFilesFromClipboardEvent(e);
-    if (!pastedFiles) return;
-
-    setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
-
-    $props.onChange?.(files());
-
-    if (mode === "auto") void uploadFiles(files());
-  };
-
-  // onMount will only be called client side, so it guarantees DOM APIs exist.
-  onMount(() => {
-    try {
-      document?.addEventListener("paste", pasteHandler);
-    } catch {
-      // noop - we're not in a browser
-    }
-  });
-  onCleanup(() => {
-    try {
-      document?.removeEventListener("paste", pasteHandler);
-    } catch {
-      // noop - we're not in a browser
-    }
-  });
   return (
     <div
       class={cn(
@@ -262,7 +275,9 @@ export const UploadDropzone = <
       >
         <input class="sr-only" {...getInputProps()} />
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready() ? `Choose files or drag and drop` : `Loading...`)}
+          (ready()
+            ? `Choose ${fileInfo().multiple ? "file(s)" : "a file"} or drag and drop`
+            : `Loading...`)}
       </label>
       <div
         class={cn(
@@ -282,46 +297,52 @@ export const UploadDropzone = <
         {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
           allowedContentTextLabelGenerator(uploadThing.routeConfig())}
       </div>
-      {files().length > 0 && (
-        <button
-          class={cn(
-            "relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500",
-            state() === "uploading"
-              ? `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-                  progressWidths[uploadProgress()]
-                }`
-              : "bg-blue-600",
-            styleFieldToClassName($props.appearance?.button, styleFieldArg),
-          )}
-          style={styleFieldToCssObject(
-            $props.appearance?.button,
-            styleFieldArg,
-          )}
-          onClick={async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            if (state() === "uploading") {
-              acRef.abort();
-              acRef = new AbortController();
 
-              return;
+      <button
+        class={cn(
+          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          state() === "disabled" && "cursor-not-allowed bg-blue-400",
+          state() === "readying" && "cursor-not-allowed bg-blue-400",
+          state() === "uploading" &&
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
+              progressWidths[uploadProgress()]
+            }`,
+          state() === "ready" && "bg-blue-600",
+          "disabled:pointer-events-none",
+          styleFieldToClassName($props.appearance?.button, styleFieldArg),
+        )}
+        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        onClick={onUploadClick}
+        data-ut-element="button"
+        data-state={state()}
+        type="button"
+        disabled={files().length === 0 || state() === "disabled"}
+      >
+        {contentFieldToContent($props.content?.button, styleFieldArg) ?? (
+          <Switch
+            fallback={
+              <Show
+                when={mode === "manual" && files().length > 0}
+                fallback={<>Choose File{fileInfo().multiple ? "(s)" : ""}</>}
+              >
+                Upload {files().length} file{files().length === 1 ? "" : "s"}
+              </Show>
             }
-            if (!files()) return;
-            await uploadFiles(files());
-          }}
-          data-ut-element="button"
-          data-state={state()}
-          type="button"
-          disabled={state() === "uploading"}
-        >
-          {contentFieldToContent($props.content?.button, styleFieldArg) ??
-            (state() === "uploading" ? (
-              <Spinner />
-            ) : (
-              `Upload ${files().length} file${files().length === 1 ? "" : "s"}`
-            ))}
-        </button>
-      )}
+          >
+            <Match when={state() === "readying"}>Loading...</Match>
+            <Match when={state() === "uploading"}>
+              <Show when={uploadProgress() < 100} fallback={<Spinner />}>
+                <span class="z-50">
+                  <span class="block group-hover:hidden">
+                    {uploadProgress()}%
+                  </span>
+                  <Cancel cn={cn} class="hidden size-4 group-hover:block" />
+                </span>
+              </Show>
+            </Match>
+          </Switch>
+        )}
+      </button>
     </div>
   );
 };
@@ -357,7 +378,7 @@ export function createDropzone(_props: DropzoneOptions) {
             const { files } = input;
 
             if (!files?.length) {
-              setState("isFileDialogActive", false);
+              setState({ isFileDialogActive: false });
             }
           }
         }, 300);
@@ -485,6 +506,7 @@ export function createDropzone(_props: DropzoneOptions) {
 
     setState({
       acceptedFiles,
+      isFileDialogActive: false,
     });
 
     props.onDrop?.(acceptedFiles);
@@ -512,9 +534,9 @@ export function createDropzone(_props: DropzoneOptions) {
   const openFileDialog = () => {
     const input = inputRef();
     if (input) {
-      setState("isFileDialogActive", true);
       input.value = "";
       input.click();
+      setState({ isFileDialogActive: true });
     }
   };
 
@@ -532,11 +554,15 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onInputElementClick = (event: MouseEvent) => {
     event.stopPropagation();
+    if (state.isFileDialogActive) {
+      event.preventDefault();
+    }
   };
 
   const onFocus = () => setState("isFocused", true);
   const onBlur = () => setState("isFocused", false);
-  const onClick = () => () => {
+  const onClick = () => {
+    console.log("staet", state.isFileDialogActive);
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
