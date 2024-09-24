@@ -245,7 +245,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
               styleFieldArg.value,
             )}
             data-ut-element="upload-icon"
-            data-state={state}
+            data-state={state.value}
           >
             <path
               fill="currentColor"
@@ -264,7 +264,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         );
         if (customContent) return customContent;
 
-        return `Choose files or drag and drop`;
+        return `Choose ${dropzoneOptions.multiple ? "file(s)" : "a file"} or drag and drop`;
       });
 
       const renderAllowedContent = () => {
@@ -351,11 +351,12 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
       const buttonClass = computed(() =>
         cn(
-          "relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
           state.value === "ready" && "bg-blue-600",
+          "disabled:pointer-events-none",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
       );
@@ -423,6 +424,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
               }}
               data-ut-element="button"
               data-state={state.value}
+              type="button"
               disabled={files.value.length === 0 || state.value === "uploading"}
             >
               {renderButton()}
@@ -627,9 +629,9 @@ export function useDropzone(options: DropzoneOptions) {
 
   const openFileDialog = () => {
     if (inputRef.value) {
-      state.isFileDialogActive = true;
       inputRef.value.value = "";
       inputRef.value.click();
+      state.isFileDialogActive = true;
     }
   };
 
@@ -647,11 +649,16 @@ export function useDropzone(options: DropzoneOptions) {
 
   const onInputElementClick = (event: MouseEvent) => {
     event.stopPropagation();
+    console.log("onInputElementClick", state.isFileDialogActive);
+    if (state.isFileDialogActive) {
+      event.preventDefault();
+    }
   };
 
   const onFocus = () => (state.isFocused = true);
   const onBlur = () => (state.isFocused = false);
   const onClick = () => {
+    console.log("onClick");
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450

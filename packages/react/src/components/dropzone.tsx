@@ -393,7 +393,7 @@ export function UploadDropzone<
         data-ut-element="button"
         data-state={state}
         type="button"
-        disabled={$props.__internal_button_disabled ?? !files.length}
+        disabled={files.length === 0 || state === "disabled"}
       >
         {getUploadButtonContents()}
       </button>
