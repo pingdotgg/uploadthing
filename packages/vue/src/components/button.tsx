@@ -22,7 +22,7 @@ import type {
   UseUploadthingProps,
 } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner, usePaste } from "./shared";
+import { Cancel, progressWidths, Spinner, usePaste } from "./shared";
 
 export type ButtonStyleFieldCallbackArgs = {
   __runtime: "vue";
@@ -81,10 +81,10 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         appendOnPaste = false,
         cn = defaultClassListMerger,
       } = $props.config ?? {};
-
-      const fileInputRef = ref<HTMLInputElement | null>(null);
       const acRef = ref(new AbortController());
 
+      const fileInputRef = ref<HTMLInputElement | null>(null);
+      const labelRef = ref<HTMLLabelElement | null>(null);
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
@@ -109,19 +109,14 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           onBeforeUploadBegin: $props.onBeforeUploadBegin,
         });
 
-      const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+      const { startUpload, isUploading, routeConfig } = useUploadThing(
         $props.endpoint,
         useUploadthingProps,
       );
 
-      const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(permittedFileInfo.value?.config),
-      );
-
-      const uploadFiles = async (files: File[]) => {
+      const uploadFiles = (files: File[]) => {
         const input = "input" in $props ? $props.input : undefined;
-
-        await startUpload(files, input).catch((e) => {
+        startUpload(files, input).catch((e) => {
           if (e instanceof UploadAbortedError) {
             void $props.onUploadAborted?.();
           } else {
@@ -129,6 +124,10 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           }
         });
       };
+
+      const permittedFileTypes = computed(() =>
+        generatePermittedFileTypes(routeConfig.value),
+      );
 
       const inputProps = computed(() => ({
         type: "file",
@@ -194,30 +193,15 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         if (customContent) return customContent;
 
         if (state.value === "uploading") {
-          if (uploadProgress.value === 100) {
-            return <Spinner />;
-          } else {
-            return (
-              <span class="z-50">
-                <span class="block group-hover:hidden">
-                  {uploadProgress.value}%
-                </span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class={cn(
-                    "fill-none stroke-current stroke-2",
-                    "hidden size-4 group-hover:block",
-                  )}
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="m4.9 4.9 14.2 14.2" />
-                </svg>
+          if (uploadProgress.value >= 100) return <Spinner />;
+          return (
+            <span class="z-50">
+              <span class="block group-hover:hidden">
+                {uploadProgress.value}%
               </span>
-            );
-          }
+              <Cancel cn={cn} class="hidden size-4 group-hover:block" />
+            </span>
+          );
         } else {
           // Default case: "ready" or "disabled" state
           if (mode === "manual" && files.value.length > 0) {
@@ -250,7 +234,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             $props.appearance?.clearBtn,
             styleFieldArg.value,
           )}
-          data-state={state}
+          data-state={state.value}
           data-ut-element="clear-btn"
         >
           {contentFieldToContent(
@@ -279,14 +263,13 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           {contentFieldToContent(
             $props.content?.allowedContent,
             styleFieldArg.value,
-          ) ??
-            allowedContentTextLabelGenerator(permittedFileInfo.value?.config)}
+          ) ?? allowedContentTextLabelGenerator(routeConfig.value)}
         </div>
       );
 
       const labelClass = computed(() =>
         cn(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state.value === "disabled" && "cursor-not-allowed bg-blue-400",
           state.value === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
@@ -327,8 +310,11 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
-              onClick={async (e) => {
+              onClick={(e) => {
                 if (state.value === "uploading") {
+                  e.preventDefault();
+                  e.stopPropagation();
+
                   acRef.value.abort();
                   acRef.value = new AbortController();
                   return;
@@ -336,7 +322,8 @@ export const generateUploadButton = <TRouter extends FileRouter>(
                 if (mode === "manual" && files.value.length > 0) {
                   e.preventDefault();
                   e.stopPropagation();
-                  await uploadFiles(files.value);
+
+                  uploadFiles(files.value);
                 }
               }}
             >

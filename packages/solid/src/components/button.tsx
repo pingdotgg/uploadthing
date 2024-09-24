@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 
 import {
   allowedContentTextLabelGenerator,
@@ -141,34 +141,23 @@ export function UploadButton<
     });
   };
 
-  const pasteHandler = (e: ClipboardEvent) => {
-    if (!appendOnPaste) return;
-    if (document?.activeElement !== inputRef) return;
+  createEffect(() => {
+    const pasteHandler = (e: ClipboardEvent) => {
+      if (!appendOnPaste) return;
+      if (document?.activeElement !== inputRef) return;
 
-    const pastedFiles = getFilesFromClipboardEvent(e);
-    if (!pastedFiles) return;
+      const pastedFiles = getFilesFromClipboardEvent(e);
+      if (!pastedFiles) return;
 
-    setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
+      setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
 
-    $props.onChange?.(files());
+      $props.onChange?.(files());
 
-    if (mode === "auto") void uploadFiles(files());
-  };
+      if (mode === "auto") void uploadFiles(files());
+    };
+    document?.addEventListener("paste", pasteHandler);
 
-  // onMount will only be called client side, so it guarantees DOM APIs exist.
-  onMount(() => {
-    try {
-      document?.addEventListener("paste", pasteHandler);
-    } catch {
-      // noop - we're not in a browser
-    }
-  });
-  onCleanup(() => {
-    try {
-      document?.removeEventListener("paste", pasteHandler);
-    } catch {
-      // noop - we're not in a browser
-    }
+    onCleanup(() => document?.removeEventListener("paste", pasteHandler));
   });
 
   const getButtonContent = () => {
@@ -276,7 +265,7 @@ export function UploadButton<
             $props.appearance?.clearBtn,
             styleFieldArg,
           )}
-          data-state={state}
+          data-state={state()}
           data-ut-element="clear-btn"
         >
           {contentFieldToContent($props.content?.clearBtn, styleFieldArg) ??

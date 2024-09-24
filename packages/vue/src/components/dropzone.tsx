@@ -40,7 +40,7 @@ import type {
   UseUploadthingProps,
 } from "../types";
 import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
-import { progressWidths, Spinner, usePaste } from "./shared";
+import { Cancel, progressWidths, Spinner, usePaste } from "./shared";
 
 export type DropzoneStyleFieldCallbackArgs = {
   __runtime: "vue";
@@ -116,6 +116,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
       const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
         reactive({
+          signal: acRef.value.signal,
           headers: $props.headers,
           onClientUploadComplete: (res) => {
             files.value = [];
@@ -130,13 +131,28 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
           onUploadBegin: $props.onUploadBegin,
           onBeforeUploadBegin: $props.onBeforeUploadBegin,
         });
-      const { startUpload, isUploading, permittedFileInfo } = useUploadThing(
+      const { startUpload, isUploading, routeConfig } = useUploadThing(
         $props.endpoint,
         useUploadthingProps,
       );
 
+      const uploadFiles = async (files: File[]) => {
+        const input = "input" in $props ? $props.input : undefined;
+
+        await startUpload(files, input).catch((e) => {
+          if (e instanceof UploadAbortedError) {
+            void $props.onUploadAborted?.();
+          } else {
+            throw e;
+          }
+        });
+      };
+
       const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(permittedFileInfo.value?.config),
+        generatePermittedFileTypes(routeConfig.value),
+      );
+      const ready = computed(
+        () => permittedFileTypes.value.fileTypes.length > 0,
       );
       const acceptedFileTypes = computed(() =>
         generateClientDropzoneAccept(permittedFileTypes.value.fileTypes),
@@ -179,22 +195,21 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const { getRootProps, getInputProps, isDragActive, rootRef } =
         useDropzone(dropzoneOptions);
 
-      const state = computed(() => {
-        if (dropzoneOptions.disabled) return "disabled";
-        if (!dropzoneOptions.disabled && !isUploading.value) return "ready";
-        return "uploading";
-      });
+      const onUploadClick = async (e: MouseEvent) => {
+        if (state.value === "uploading") {
+          e.preventDefault();
+          e.stopPropagation();
 
-      const uploadFiles = async (files: File[]) => {
-        const input = "input" in $props ? $props.input : undefined;
+          acRef.value.abort();
+          acRef.value = new AbortController();
+          return;
+        }
+        if (mode === "manual" && files.value.length > 0) {
+          e.preventDefault();
+          e.stopPropagation();
 
-        await startUpload(files, input).catch((e) => {
-          if (e instanceof UploadAbortedError) {
-            void $props.onUploadAborted?.();
-          } else {
-            throw e;
-          }
-        });
+          await uploadFiles(files.value);
+        }
       };
 
       usePaste((event) => {
@@ -221,6 +236,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             isDragActive: isDragActive.value,
           }) as DropzoneStyleFieldCallbackArgs,
       );
+
+      const state = computed(() => {
+        if (dropzoneOptions.disabled) return "disabled";
+        if (!ready.value) return "readying";
+        if (ready.value && !isUploading.value) return "ready";
+        return "uploading";
+      });
 
       const renderUploadIcon = () => {
         const customContent = contentFieldToContent(
@@ -275,8 +297,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         if (customContent) return customContent;
 
         return (
-          allowedContentTextLabelGenerator(permittedFileInfo.value?.config) ||
-          " " // ensure no empty string
+          allowedContentTextLabelGenerator(routeConfig.value) || " " // ensure no empty string
         );
       };
 
@@ -296,19 +317,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
                 <span class="block group-hover:hidden">
                   {uploadProgress.value}%
                 </span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class={cn(
-                    "fill-none stroke-current stroke-2",
-                    "hidden size-4 group-hover:block",
-                  )}
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="m4.9 4.9 14.2 14.2" />
-                </svg>
+                <Cancel cn={cn} class="hidden size-4 group-hover:block" />
               </span>
             );
           }
@@ -410,22 +419,11 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             <button
               class={buttonClass.value}
               style={buttonStyle.value}
-              onClick={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (!files.value) return;
-                if (state.value === "uploading") {
-                  acRef.value.abort();
-                  acRef.value = new AbortController();
-                  return;
-                }
-
-                await uploadFiles(files.value);
-              }}
+              onClick={onUploadClick}
               data-ut-element="button"
               data-state={state.value}
               type="button"
-              disabled={files.value.length === 0 || state.value === "uploading"}
+              disabled={files.value.length === 0 || state.value === "disabled"}
             >
               {renderButton()}
             </button>
@@ -605,6 +603,7 @@ export function useDropzone(options: DropzoneOptions) {
     }
 
     state.acceptedFiles = acceptedFiles;
+    state.isFileDialogActive = false;
     optionsRef.value.onDrop?.(acceptedFiles);
   };
 
