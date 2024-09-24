@@ -23,6 +23,8 @@ This repository contains the packages, docs and examples for uploadthing
   A simple example using the Next.js pages directory
 - [SolidStart SSR](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-solidstart) -
   A simple example using SSR with SolidStart
+- [Tanstack/Start](https://github.com/pingdotgg/uploadthing/tree/main/examples/minimal-tanstack-start) -
+  A simple example using Tanstack/Start
 - [Docs Site](https://github.com/pingdotgg/uploadthing/tree/main/docs) - Source
   for docs.uploadthing.com
 - [React Package](https://github.com/pingdotgg/uploadthing/tree/main/packages/react) -
