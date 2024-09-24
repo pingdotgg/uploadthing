@@ -84,7 +84,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const acRef = ref(new AbortController());
 
       const fileInputRef = ref<HTMLInputElement | null>(null);
-      const labelRef = ref<HTMLLabelElement | null>(null);
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
