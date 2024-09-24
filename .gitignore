@@ -55,6 +55,7 @@ packages/*/*/
 !packages/*/playground/
 
 dist
+tsup.config.bundled_*
 
 .svelte-kit
 .solid
