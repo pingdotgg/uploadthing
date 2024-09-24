@@ -194,7 +194,7 @@ Example:
       accept={generateMimeTypes(fileTypes).join(", ")}
       {disabled}
       {multiple}
-      on:change={async (e) => {
+      on:change={(e) => {
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
 
@@ -205,7 +205,7 @@ Example:
           return;
         }
 
-        await uploadFiles(selectedFiles);
+        uploadFiles(selectedFiles);
       }}
     />
     <slot name="button-content" state={styleFieldArg}>
@@ -215,7 +215,7 @@ Example:
         {:else}
           <span class="z-50">
             <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel {cn} class="hidden size-4 group-hover:block" />
+            <Cancel {cn} className="hidden size-4 group-hover:block" />
           </span>
         {/if}
       {:else if mode === "manual" && files.length > 0}

@@ -28,6 +28,7 @@
 
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
+  import Cancel from "./Cancel.svelte";
   import { createDropzone } from "./create-dropzone";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
@@ -86,7 +87,7 @@
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,
     {
       signal: acRef.signal,
@@ -111,9 +112,7 @@
     cn = defaultClassListMerger,
   } = uploader.config ?? {});
   $: uploadProgress = __internal_upload_progress ?? uploadProgress;
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes(
-    $permittedFileInfo?.config,
-  ));
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
   $: ready =
     __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
   $: className = ($$props.class as string) ?? "";
@@ -275,7 +274,7 @@
     data-state={state}
   >
     <slot name="allowed-content" state={styleFieldArg}>
-      {allowedContentTextLabelGenerator($permittedFileInfo?.config)}
+      {allowedContentTextLabelGenerator($routeConfig)}
     </slot>
   </div>
   <button
@@ -302,19 +301,7 @@
         {:else}
           <span class="z-50">
             <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class={cn(
-                "fill-none stroke-current stroke-2",
-                "hidden size-4 group-hover:block",
-              )}
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="m4.9 4.9 14.2 14.2" />
-            </svg>
+            <Cancel {cn} className="hidden size-4 group-hover:block" />
           </span>
         {/if}
       {:else if mode === "manual" && files.length > 0}
