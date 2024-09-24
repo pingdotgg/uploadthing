@@ -110,8 +110,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:*",
-    "@uploadthing/shared": "workspace:*"
+    "@uploadthing/shared": "workspace:*",
+    "file-selector": "0.6.0"
   },
   "devDependencies": {
     "postcss": "8.4.38",

@@ -13,7 +13,7 @@
 >
   import { onMount } from "svelte";
 
-  import { createDropzone } from "@uploadthing/dropzone/svelte";
+  import { createDropzone } from "./create-dropzone";
   import {
     allowedContentTextLabelGenerator,
     defaultClassListMerger,
