@@ -1,3 +1,4 @@
+import { createRequire } from "module";
 import { sep } from "node:path";
 import type { Config } from "tailwindcss";
 import plugin from "tailwindcss/plugin";
@@ -8,6 +9,8 @@ import plugin from "tailwindcss/plugin";
 const PACKAGES = ["react", "solid", "svelte", "vue"];
 
 export function withUt(twConfig: Config) {
+  const require = createRequire(import.meta.url);
+
   const contentPaths = PACKAGES.map((pkg) => {
     try {
       const resolved = require.resolve(`@uploadthing/${pkg}`);
