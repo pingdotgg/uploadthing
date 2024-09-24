@@ -338,5 +338,6 @@ export function createDropzone(_props: DropzoneOptions) {
     dropzoneRoot,
     dropzoneInput,
     rootRef,
+    inputRef: get(inputRef),
   };
 }

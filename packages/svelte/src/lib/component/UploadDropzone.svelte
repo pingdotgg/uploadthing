@@ -13,7 +13,6 @@
 >
   import { onMount } from "svelte";
 
-  import { createDropzone } from "./create-dropzone";
   import {
     allowedContentTextLabelGenerator,
     defaultClassListMerger,
@@ -29,6 +28,7 @@
 
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
+  import { createDropzone } from "./create-dropzone";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -128,6 +128,23 @@
         throw e;
       }
     });
+  };
+
+  const onUploadClick = async (e: MouseEvent) => {
+    if (state === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      acRef.abort();
+      acRef = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      await uploadFiles(files);
+    }
   };
 
   const onDropCallback = (acceptedFiles: File[]) => {
@@ -243,7 +260,9 @@
   >
     <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
     <slot name="label" state={styleFieldArg}>
-      {ready ? `Choose files or drag and drop` : `Loading...`}
+      {ready
+        ? `Choose ${multiple ? "file(s)" : "a file"} or drag and drop`
+        : `Loading...`}
     </slot>
   </label>
   <div
@@ -267,29 +286,14 @@
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
       state === "ready" && "bg-blue-600",
+      "disabled:pointer-events-none",
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-ut-element="button"
     data-state={state}
-    disabled={__internal_dropzone_disabled ?? state === "disabled"}
-    on:click={async (e) => {
-      if (state === "uploading") {
-        e.preventDefault();
-        e.stopPropagation();
-
-        acRef.abort();
-        acRef = new AbortController();
-        return;
-      }
-      if (mode === "manual" && files.length > 0) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        await uploadFiles(files);
-      }
-      console.log("Passing click event through");
-    }}
+    disabled={files.length === 0 || state === "disabled"}
+    on:click={onUploadClick}
   >
     <slot name="button-content" state={styleFieldArg}>
       {#if state === "uploading"}
