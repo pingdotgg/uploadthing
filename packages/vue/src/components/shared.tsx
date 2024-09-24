@@ -30,7 +30,6 @@ export const Spinner = Vue.defineComponent(() => () => {
 
 export const Cancel = Vue.defineComponent(
   (props: { cn: ClassListMerger }) => () => {
-    console.log("props", props);
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"

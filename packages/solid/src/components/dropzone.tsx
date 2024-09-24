@@ -562,7 +562,6 @@ export function createDropzone(_props: DropzoneOptions) {
   const onFocus = () => setState("isFocused", true);
   const onBlur = () => setState("isFocused", false);
   const onClick = () => {
-    console.log("staet", state.isFileDialogActive);
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
