@@ -45,7 +45,7 @@ To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
 ```ts {{ title: "app/server/uploadthing.ts" }}
-import { createUploadthing } from "uploadthing/server";
+import { createUploadthing, UploadThingError } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
 
 const f = createUploadthing();
@@ -53,7 +53,7 @@ const f = createUploadthing();
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 // FileRouter for your app, can contain multiple FileRoutes
-export const ourFileRouter = {
+export const uploadRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({ image: { maxFileSize: "4MB" } })
     // Set permissions and file types for this FileRoute
@@ -62,7 +62,7 @@ export const ourFileRouter = {
       const user = await auth(req);
 
       // If you throw, the user will not be able to upload
-      if (!user) throw new Error("Unauthorized");
+      if (!user) throw new UploadThingError("Unauthorized");
 
       // Whatever is returned here is accessible in onUploadComplete as `metadata`
       return { userId: user.id };
@@ -72,10 +72,13 @@ export const ourFileRouter = {
       console.log("Upload complete for userId:", metadata.userId);
 
       console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
 
-export type OurFileRouter = typeof ourFileRouter;
+export type UploadRouter = typeof uploadRouter;
 ```
 
 ### Create an API route using the FileRouter
@@ -96,9 +99,9 @@ import { createAPIFileRoute } from "@tanstack/start/api";
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { ourFileRouter } from "../../server/uploadthing";
+import { uploadRouter } from "../../server/uploadthing";
 
-const handlers = createRouteHandler({ router: ourFileRouter });
+const handlers = createRouteHandler({ router: uploadRouter });
 
 export const Route = createAPIFileRoute("/api/uploadthing")({
   GET: handlers,
@@ -109,22 +112,30 @@ export const Route = createAPIFileRoute("/api/uploadthing")({
 > See configuration options in
 > [server API reference](/api-reference/server#create-route-handler)
 
-## Creating the UploadThing Helpers
+## Create The UploadThing Components
 
-Generating the `createUploadThing` helper function lets you create your own
-components, with full type safety:
+We provide components to make uploading easier. We highly recommend re-exporting
+them with the types assigned, but you CAN import the components individually
+from `@uploadthing/react` instead.
 
 ```ts {{ title: "app/utils/uploadthing.ts" }}
 import {
+  generateReactHelpers,
   generateUploadButton,
   generateUploadDropzone,
 } from "@uploadthing/react";
 
-import type { OurFileRouter } from "../server/uploadthing";
+import type { UploadRouter } from "../server/uploadthing";
 
-export const UploadButton = generateUploadButton<OurFileRouter>();
-export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
+export const UploadButton = generateUploadButton<UploadRouter>();
+export const UploadDropzone = generateUploadDropzone<UploadRouter>();
+export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 ```
+
+<Note>
+  To learn more about the components, check out the [react API
+  reference](/api-reference/react).
+</Note>
 
 ### Add UploadThing's Styles
 
