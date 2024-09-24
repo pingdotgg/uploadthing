@@ -641,9 +641,15 @@ export function useDropzone({
     [openFileDialog],
   );
 
-  const onInputElementClick = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-  }, []);
+  const onInputElementClick = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      if (state.isFileDialogActive) {
+        e.preventDefault();
+      }
+    },
+    [state.isFileDialogActive],
+  );
 
   // Update focus state for the dropzone
   const onFocus = useCallback(() => dispatch({ type: "focus" }), []);
