@@ -736,8 +736,8 @@ importers:
         specifier: 7.0.2
         version: link:../../packages/uploadthing
       vinxi:
-        specifier: 0.3.11
-        version: 0.3.11(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.5)(terser@5.32.0)(webpack-sources@3.2.3)
+        specifier: 0.4.3
+        version: 0.4.3(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.5)(terser@5.32.0)(webpack-sources@3.2.3)
     devDependencies:
       '@types/react':
         specifier: 18.3.3
@@ -17409,6 +17409,11 @@ snapshots:
       '@babel/core': 7.25.2
       '@babel/helper-plugin-utils': 7.24.6
 
+  '@babel/plugin-syntax-jsx@7.24.7(@babel/core@7.24.4)':
+    dependencies:
+      '@babel/core': 7.24.4
+      '@babel/helper-plugin-utils': 7.24.8
+
   '@babel/plugin-syntax-jsx@7.24.7(@babel/core@7.25.2)':
     dependencies:
       '@babel/core': 7.25.2
@@ -17499,10 +17504,10 @@ snapshots:
       '@babel/core': 7.24.4
       '@babel/helper-plugin-utils': 7.24.6
 
-  '@babel/plugin-syntax-typescript@7.24.1(@babel/core@7.25.2)':
+  '@babel/plugin-syntax-typescript@7.25.4(@babel/core@7.24.4)':
     dependencies:
-      '@babel/core': 7.25.2
-      '@babel/helper-plugin-utils': 7.24.6
+      '@babel/core': 7.24.4
+      '@babel/helper-plugin-utils': 7.24.8
 
   '@babel/plugin-syntax-typescript@7.25.4(@babel/core@7.25.2)':
     dependencies:
@@ -18186,7 +18191,7 @@ snapshots:
       '@babel/helper-annotate-as-pure': 7.24.6
       '@babel/helper-create-class-features-plugin': 7.24.6(@babel/core@7.24.4)
       '@babel/helper-plugin-utils': 7.24.6
-      '@babel/plugin-syntax-typescript': 7.24.1(@babel/core@7.24.4)
+      '@babel/plugin-syntax-typescript': 7.25.4(@babel/core@7.24.4)
 
   '@babel/plugin-transform-typescript@7.24.4(@babel/core@7.25.2)':
     dependencies:
@@ -18194,7 +18199,7 @@ snapshots:
       '@babel/helper-annotate-as-pure': 7.24.6
       '@babel/helper-create-class-features-plugin': 7.24.6(@babel/core@7.25.2)
       '@babel/helper-plugin-utils': 7.24.6
-      '@babel/plugin-syntax-typescript': 7.24.1(@babel/core@7.25.2)
+      '@babel/plugin-syntax-typescript': 7.25.4(@babel/core@7.25.2)
 
   '@babel/plugin-transform-unicode-escapes@7.24.6(@babel/core@7.24.4)':
     dependencies:
@@ -24980,7 +24985,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.25.2
       '@babel/helper-module-imports': 7.24.6
-      '@babel/plugin-syntax-jsx': 7.24.6(@babel/core@7.25.2)
+      '@babel/plugin-syntax-jsx': 7.24.7(@babel/core@7.25.2)
       '@babel/template': 7.24.6
       '@babel/traverse': 7.24.1
       '@babel/types': 7.25.6
@@ -25746,7 +25751,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.24.4
       '@babel/helper-module-imports': 7.18.6
-      '@babel/plugin-syntax-jsx': 7.24.6(@babel/core@7.24.4)
+      '@babel/plugin-syntax-jsx': 7.24.7(@babel/core@7.24.4)
       '@babel/types': 7.25.6
       html-entities: 2.3.3
       validate-html-nesting: 1.2.2
@@ -36433,9 +36438,9 @@ snapshots:
 
   vinxi@0.4.3(@types/node@20.14.0)(encoding@0.1.13)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.5)(terser@5.32.0)(webpack-sources@3.2.3):
     dependencies:
-      '@babel/core': 7.24.4
-      '@babel/plugin-syntax-jsx': 7.24.6(@babel/core@7.24.4)
-      '@babel/plugin-syntax-typescript': 7.24.1(@babel/core@7.24.4)
+      '@babel/core': 7.25.2
+      '@babel/plugin-syntax-jsx': 7.24.7(@babel/core@7.25.2)
+      '@babel/plugin-syntax-typescript': 7.25.4(@babel/core@7.25.2)
       '@types/micromatch': 4.0.7
       '@vinxi/listhen': 1.5.6
       boxen: 7.1.1
