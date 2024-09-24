@@ -1522,8 +1522,8 @@ importers:
         specifier: 8.4.38
         version: 8.4.38
       solid-js:
-        specifier: ^1.8.15
-        version: 1.8.16
+        specifier: ^1.8.23
+        version: 1.8.23
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.3
@@ -1532,7 +1532,7 @@ importers:
         version: 8.0.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(postcss@8.4.38)(typescript@5.5.2)
       tsup-preset-solid:
         specifier: 2.2.0
-        version: 2.2.0(esbuild@0.19.12)(solid-js@1.8.16)(tsup@8.0.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(postcss@8.4.38)(typescript@5.5.2))
+        version: 2.2.0(esbuild@0.19.12)(solid-js@1.8.23)(tsup@8.0.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(postcss@8.4.38)(typescript@5.5.2))
       typescript:
         specifier: ^5.5.2
         version: 5.5.2
@@ -1662,8 +1662,8 @@ importers:
         specifier: ^3.11.2
         version: 3.11.2(@parcel/watcher@2.4.1)(@types/node@20.14.0)(encoding@0.1.13)(eslint@8.57.0)(ioredis@5.3.2)(lightningcss@1.24.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@4.18.0)(terser@5.32.0)(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.32.0))(vue-tsc@2.0.14(typescript@5.5.2))
       solid-js:
-        specifier: ^1.8.15
-        version: 1.8.16
+        specifier: ^1.8.23
+        version: 1.8.23
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.3
@@ -25344,13 +25344,13 @@ snapshots:
       es6-iterator: 2.0.3
       es6-symbol: 3.1.4
 
-  esbuild-plugin-solid@0.5.0(esbuild@0.19.12)(solid-js@1.8.16):
+  esbuild-plugin-solid@0.5.0(esbuild@0.19.12)(solid-js@1.8.23):
     dependencies:
       '@babel/core': 7.24.4
       '@babel/preset-typescript': 7.24.1(@babel/core@7.24.4)
       babel-preset-solid: 1.8.16(@babel/core@7.24.4)
       esbuild: 0.19.12
-      solid-js: 1.8.16
+      solid-js: 1.8.23
     transitivePeerDependencies:
       - supports-color
 
@@ -33419,9 +33419,9 @@ snapshots:
 
   tslib@2.6.2: {}
 
-  tsup-preset-solid@2.2.0(esbuild@0.19.12)(solid-js@1.8.16)(tsup@8.0.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(postcss@8.4.38)(typescript@5.5.2)):
+  tsup-preset-solid@2.2.0(esbuild@0.19.12)(solid-js@1.8.23)(tsup@8.0.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(postcss@8.4.38)(typescript@5.5.2)):
     dependencies:
-      esbuild-plugin-solid: 0.5.0(esbuild@0.19.12)(solid-js@1.8.16)
+      esbuild-plugin-solid: 0.5.0(esbuild@0.19.12)(solid-js@1.8.23)
       tsup: 8.0.2(@swc/core@1.5.29(@swc/helpers@0.5.11))(postcss@8.4.38)(typescript@5.5.2)
     transitivePeerDependencies:
       - esbuild
