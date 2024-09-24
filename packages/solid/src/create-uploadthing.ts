@@ -20,7 +20,7 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const useRouteConfig = (url: URL, endpoint: string) => {
+const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint)?.config;
 };
@@ -117,7 +117,7 @@ export const INTERNAL_createUploadThingGen = <
       }
     };
 
-    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+    const routeConfig = createRouteConfig(initOpts.url, endpoint as string);
 
     return {
       startUpload,

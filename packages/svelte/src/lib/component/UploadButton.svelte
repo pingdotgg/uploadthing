@@ -28,6 +28,7 @@
 
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
+  import Cancel from "./Cancel.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -48,18 +49,7 @@
 
   export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
   export let appearance: UploadButtonAppearance = {};
-  // Allow to set internal state for testing
-  export let __internal_state: "readying" | "ready" | "uploading" | undefined =
-    undefined;
-  // Allow to set upload progress for testing
-  export let __internal_upload_progress: number | undefined = undefined;
-  // Allow to set ready explicitly and independently of internal state
-  export let __internal_ready: boolean | undefined = undefined;
-  // Allow to disable the button
-  export let __internal_button_disabled: boolean | undefined = undefined;
-
   export let onChange: ((files: File[]) => void) | undefined = undefined;
-
   export let disabled = false;
 
   let uploadProgress = 0;
@@ -70,10 +60,11 @@
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,
     {
       signal: acRef.signal,
+      headers: uploader.headers,
       onClientUploadComplete: (res) => {
         fileInputRef.value = "";
         files = [];
@@ -95,35 +86,26 @@
     appendOnPaste = false,
     cn = defaultClassListMerger,
   } = uploader.config ?? {});
-  $: uploadProgress = __internal_upload_progress ?? uploadProgress;
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes(
-    $permittedFileInfo?.config,
-  ));
-  $: ready =
-    __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
   $: className = ($$props.class as string) ?? "";
 
   $: styleFieldArg = {
     __runtime: "svelte",
-    ready: ready,
-    isUploading: __internal_state === "uploading" || $isUploading,
+    ready: state !== "readying",
+    isUploading: state === "uploading",
     uploadProgress,
     fileTypes,
   } satisfies ButtonStyleFieldCallbackArgs;
 
   $: state = (() => {
-    if (__internal_state) return __internal_state;
     if (disabled) return "disabled";
-    if (!ready) return "readying";
-    if (ready && !$isUploading) return "ready";
-
+    if (!disabled && !$isUploading) return "ready";
     return "uploading";
   })();
 
-  const uploadFiles = async (files: File[]) => {
+  const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
-
-    await startUpload(files, input).catch((e) => {
+    startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {
@@ -188,7 +170,7 @@ Example:
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
     data-state={state}
     data-ut-element="button"
-    on:click={async (e) => {
+    on:click={(e) => {
       if (state === "uploading") {
         e.preventDefault();
         e.stopPropagation();
@@ -201,7 +183,7 @@ Example:
         e.preventDefault();
         e.stopPropagation();
 
-        await uploadFiles(files);
+        uploadFiles(files);
       }
     }}
   >
@@ -210,7 +192,7 @@ Example:
       class="sr-only"
       type="file"
       accept={generateMimeTypes(fileTypes).join(", ")}
-      disabled={__internal_button_disabled ?? disabled ?? !ready}
+      {disabled}
       {multiple}
       on:change={async (e) => {
         if (!e.currentTarget?.files) return;
@@ -233,19 +215,7 @@ Example:
         {:else}
           <span class="z-50">
             <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class={cn(
-                "fill-none stroke-current stroke-2",
-                "hidden size-4 group-hover:block",
-              )}
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="m4.9 4.9 14.2 14.2" />
-            </svg>
+            <Cancel {cn} class="hidden size-4 group-hover:block" />
           </span>
         {/if}
       {:else if mode === "manual" && files.length > 0}
@@ -275,7 +245,7 @@ Example:
   {:else}
     <div
       class={cn(
-        "h-[1.25rem]  text-xs leading-5 text-gray-600",
+        "h-[1.25rem] text-xs leading-5 text-gray-600",
         styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
       )}
       style={styleFieldToClassName(appearance?.allowedContent, styleFieldArg)}
@@ -283,7 +253,7 @@ Example:
       data-ut-element="allowed-content"
     >
       <slot name="allowed-content" state={styleFieldArg}>
-        {allowedContentTextLabelGenerator($permittedFileInfo?.config)}
+        {allowedContentTextLabelGenerator($routeConfig)}
       </slot>
     </div>
   {/if}

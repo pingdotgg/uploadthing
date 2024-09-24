@@ -4,6 +4,7 @@ import type { EndpointMetadata } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import { genUploader } from "uploadthing/client";
@@ -17,10 +18,11 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const createEndpointMetadata = (url: URL, endpoint: string) => {
+const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
-  return derived(dataGetter, ($data) =>
-    $data.data?.find((x) => x.slug === endpoint),
+  return derived(
+    dataGetter,
+    ($data) => $data.data?.find((x) => x.slug === endpoint)?.config,
   );
 };
 
@@ -43,10 +45,7 @@ export const INTERNAL_createUploadThingGen = <
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = writable(false);
-    const permittedFileInfo = createEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
@@ -58,11 +57,14 @@ export const INTERNAL_createUploadThingGen = <
     const startUpload = async (...args: FuncInput) => {
       const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
       const input = args[1];
+
       isUploading.set(true);
       opts?.onUploadProgress?.(0);
       files.forEach((f) => fileProgress.set(f, 0));
       try {
         const res = await uploadFiles(endpoint, {
+          signal: opts?.signal,
+          headers: opts?.headers,
           files,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
@@ -89,6 +91,12 @@ export const INTERNAL_createUploadThingGen = <
         opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        /**
+         * This is the only way to introduce this as a non-breaking change
+         * TODO: Consider refactoring API in the next major version
+         */
+        if (e instanceof UploadAbortedError) throw e;
+
         let error: UploadThingError<inferErrorShape<TRouter>>;
         if (e instanceof UploadThingError) {
           error = e as UploadThingError<inferErrorShape<TRouter>>;
@@ -106,10 +114,19 @@ export const INTERNAL_createUploadThingGen = <
         uploadProgress = 0;
       }
     };
+
+    const routeConfig = createRouteConfig(initOpts.url, endpoint as string);
+
     return {
       startUpload,
       isUploading: readonly(isUploading),
-      permittedFileInfo,
+      routeConfig,
+      /**
+       * @deprecated Use `routeConfig` instead
+       */
+      permittedFileInfo: routeConfig
+        ? { slug: endpoint, config: readonly(routeConfig) }
+        : undefined,
     } as const;
   };
   return useUploadThing;

@@ -72,6 +72,11 @@ export type UseUploadthingProps<
    */
   onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
   /**
+   * Set custom headers that'll get sent with requests
+   * to your server
+   */
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+  /**
    * An AbortSignal to cancel the upload
    * Calling `abort()` on the parent AbortController will cause the
    * upload to throw an `UploadAbortedError`. In a future version
@@ -124,6 +129,12 @@ export type UploadthingComponentProps<
     cn?: ClassListMerger;
   };
   disabled?: boolean;
+  /**
+   * Callback called when files are selected or pasted.
+   *
+   * @param files - The files that were accepted.
+   */
+  onChange?: (files: File[]) => void;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {
