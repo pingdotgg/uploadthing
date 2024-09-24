@@ -4,23 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development vinxi dev",
-    "clean": "git clean -xdf .solid node_modules",
     "build": "vinxi build",
-    "start": "vinxi start"
+    "start": "vinxi start",
+    "version": "vinxi version",
+    "clean": "git clean -xdf .solid node_modules"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.29.3",
-    "@solidjs/router": "^0.12.4",
-    "@solidjs/start": "^0.6.0",
-    "@uploadthing/solid": "7.0.2",
-    "solid-js": "^1.8.15",
-    "uploadthing": "7.0.2",
-    "vinxi": "0.3.11"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.0",
-    "postcss": "8.4.38",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.5.2"
+    "@solidjs/meta": "^0.29.4",
+    "@solidjs/router": "^0.14.5",
+    "@solidjs/start": "^1.0.6",
+    "@uploadthing/solid": "^7.0.2",
+    "solid-js": "^1.8.23",
+    "uploadthing": "^7.0.2",
+    "vinxi": "^0.4.3"
   }
 }
