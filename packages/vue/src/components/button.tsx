@@ -96,7 +96,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               fileInputRef.value.value = "";
             }
             files.value = [];
-            $props.onClientUploadComplete?.(res);
+            void $props.onClientUploadComplete?.(res);
             uploadProgress.value = 0;
           },
           onUploadProgress: (p) => {
@@ -122,6 +122,23 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             throw e;
           }
         });
+      };
+
+      const onUploadClick = (e: MouseEvent) => {
+        if (state.value === "uploading") {
+          e.preventDefault();
+          e.stopPropagation();
+
+          acRef.value.abort();
+          acRef.value = new AbortController();
+          return;
+        }
+        if (mode === "manual" && files.value.length > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          uploadFiles(files.value);
+        }
       };
 
       const permittedFileTypes = computed(() =>
@@ -150,7 +167,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             return;
           }
 
-          void uploadFiles(Array.from(selectedFiles));
+          uploadFiles(Array.from(selectedFiles));
         },
       }));
 
@@ -171,7 +188,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         $props.onChange?.(files.value);
 
-        if (mode === "auto") void uploadFiles(files.value);
+        if (mode === "auto") uploadFiles(files.value);
       });
 
       const styleFieldArg = computed(
@@ -309,22 +326,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
               style={labelStyle.value ?? {}}
               data-state={state.value}
               data-ut-element="button"
-              onClick={(e) => {
-                if (state.value === "uploading") {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  acRef.value.abort();
-                  acRef.value = new AbortController();
-                  return;
-                }
-                if (mode === "manual" && files.value.length > 0) {
-                  e.preventDefault();
-                  e.stopPropagation();
-
-                  uploadFiles(files.value);
-                }
-              }}
+              onClick={onUploadClick}
             >
               <input class="sr-only" {...inputProps.value} />
               {renderButton()}

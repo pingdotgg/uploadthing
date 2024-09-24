@@ -167,8 +167,8 @@ export function UploadDropzone<
   );
 
   const uploadFiles = useCallback(
-    async (files: File[]) => {
-      await startUpload(files, fileRouteInput).catch((e) => {
+    (files: File[]) => {
+      startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
@@ -187,7 +187,7 @@ export function UploadDropzone<
       setFiles(acceptedFiles);
 
       // If mode is auto, start upload immediately
-      if (mode === "auto") void uploadFiles(acceptedFiles);
+      if (mode === "auto") uploadFiles(acceptedFiles);
     },
     [$props, mode, uploadFiles],
   );
@@ -196,9 +196,7 @@ export function UploadDropzone<
 
   const isDisabled = (() => {
     if ($props.__internal_dropzone_disabled) return true;
-    if ($props.disabled) return true;
-
-    return false;
+    return !!$props.disabled;
   })();
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
@@ -212,7 +210,7 @@ export function UploadDropzone<
     $props.__internal_ready ??
     ($props.__internal_state === "ready" || fileTypes.length > 0);
 
-  const onUploadClick = async (e: React.MouseEvent) => {
+  const onUploadClick = (e: React.MouseEvent) => {
     if (state === "uploading") {
       e.preventDefault();
       e.stopPropagation();
@@ -225,7 +223,7 @@ export function UploadDropzone<
       e.preventDefault();
       e.stopPropagation();
 
-      await uploadFiles(files);
+      uploadFiles(files);
     }
   };
 
@@ -248,7 +246,7 @@ export function UploadDropzone<
 
       $props.onChange?.(filesToUpload);
 
-      if (mode === "auto") void uploadFiles(filesToUpload);
+      if (mode === "auto") uploadFiles(filesToUpload);
     };
 
     window.addEventListener("paste", handlePaste);
@@ -269,7 +267,7 @@ export function UploadDropzone<
         return "Loading...";
       }
       case "uploading": {
-        if (uploadProgress === 100) return <Spinner />;
+        if (uploadProgress >= 100) return <Spinner />;
         return (
           <span className="z-50">
             <span className="block group-hover:hidden">{uploadProgress}%</span>
@@ -301,7 +299,6 @@ export function UploadDropzone<
     if (isDisabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !isUploading) return "ready";
-
     return "uploading";
   })();
 

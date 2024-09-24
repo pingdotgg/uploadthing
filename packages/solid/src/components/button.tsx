@@ -101,7 +101,7 @@ export function UploadButton<
     onClientUploadComplete: (res) => {
       setFiles([]);
       inputRef.value = "";
-      $props.onClientUploadComplete?.(res);
+      void $props.onClientUploadComplete?.(res);
       setUploadProgress(0);
     },
     onUploadProgress: (p) => {
@@ -131,14 +131,31 @@ export function UploadButton<
     return "uploading";
   };
 
-  const uploadFiles = async (files: File[]) => {
-    await uploadThing.startUpload(files, fileRouteInput).catch((e) => {
+  const uploadFiles = (files: File[]) => {
+    uploadThing.startUpload(files, fileRouteInput).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {
         throw e;
       }
     });
+  };
+
+  const onUploadClick = (e: MouseEvent) => {
+    if (state() === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      acRef.abort();
+      acRef = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files().length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      uploadFiles(files());
+    }
   };
 
   createEffect(() => {
@@ -211,22 +228,7 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state()}
         data-ut-element="button"
-        onClick={async (e) => {
-          if (state() === "uploading") {
-            e.preventDefault();
-            e.stopPropagation();
-
-            acRef.abort();
-            acRef = new AbortController();
-            return;
-          }
-          if (mode === "manual" && files().length > 0) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            await uploadFiles(files());
-          }
-        }}
+        onClick={onUploadClick}
       >
         <input
           ref={(el) => (inputRef = el)}
@@ -234,7 +236,7 @@ export function UploadButton<
           type="file"
           multiple={fileInfo().multiple}
           accept={generateMimeTypes(fileInfo().fileTypes).join(", ")}
-          onChange={async (e) => {
+          onChange={(e) => {
             if (!e.target.files) return;
             const selectedFiles = Array.from(e.target.files);
 
@@ -245,7 +247,7 @@ export function UploadButton<
               return;
             }
 
-            await uploadFiles(selectedFiles);
+            uploadFiles(selectedFiles);
           }}
         />
         {getButtonContent()}

@@ -99,7 +99,7 @@ export const INTERNAL_uploadthingHookGen = <
           input,
         });
 
-        opts?.onClientUploadComplete?.(res);
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         /**
@@ -118,7 +118,7 @@ export const INTERNAL_uploadthingHookGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
       } finally {
         isUploading.value = false;
         fileProgress.value = new Map();

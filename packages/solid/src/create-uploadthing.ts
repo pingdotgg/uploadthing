@@ -45,7 +45,6 @@ export const INTERNAL_createUploadThingGen = <
     opts?: CreateUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
-
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
@@ -89,7 +88,7 @@ export const INTERNAL_createUploadThingGen = <
           input,
         });
 
-        opts?.onClientUploadComplete?.(res);
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         /**
@@ -108,7 +107,7 @@ export const INTERNAL_createUploadThingGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
         return;
       } finally {
         setUploading(false);

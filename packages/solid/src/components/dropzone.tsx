@@ -126,7 +126,7 @@ export const UploadDropzone = <
     headers: $props.headers,
     onClientUploadComplete: (res) => {
       setFiles([]);
-      $props.onClientUploadComplete?.(res);
+      void $props.onClientUploadComplete?.(res);
       setUploadProgress(0);
     },
     onUploadProgress: (p) => {
@@ -138,10 +138,9 @@ export const UploadDropzone = <
     onBeforeUploadBegin: $props.onBeforeUploadBegin,
   });
 
-  const uploadFiles = async (files: File[]) => {
+  const uploadFiles = (files: File[]) => {
     const input = "input" in $props ? $props.input : undefined;
-
-    await uploadThing.startUpload(files, input).catch((e) => {
+    uploadThing.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {
@@ -173,7 +172,7 @@ export const UploadDropzone = <
 
   const ready = () => fileInfo().fileTypes.length > 0;
 
-  const onUploadClick = async (e: MouseEvent) => {
+  const onUploadClick = (e: MouseEvent) => {
     if (state() === "uploading") {
       e.preventDefault();
       e.stopPropagation();
@@ -186,7 +185,7 @@ export const UploadDropzone = <
       e.preventDefault();
       e.stopPropagation();
 
-      await uploadFiles(files());
+      uploadFiles(files());
     }
   };
 

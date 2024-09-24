@@ -148,6 +148,23 @@ export function UploadButton<
     [$props, startUpload, fileRouteInput],
   );
 
+  const onUploadClick = (e: React.MouseEvent) => {
+    if (state === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
+
+      acRef.current.abort();
+      acRef.current = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      uploadFiles(files);
+    }
+  };
+
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const inputProps = useMemo(
@@ -201,7 +218,7 @@ export function UploadButton<
       return filesToUpload;
     });
 
-    if (mode === "auto") void uploadFiles(files);
+    if (mode === "auto") uploadFiles(files);
   });
 
   const styleFieldArg = {
@@ -307,22 +324,7 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state}
         data-ut-element="button"
-        onClick={(e) => {
-          if (state === "uploading") {
-            e.preventDefault();
-            e.stopPropagation();
-
-            acRef.current.abort();
-            acRef.current = new AbortController();
-            return;
-          }
-          if (mode === "manual" && files.length > 0) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            uploadFiles(files);
-          }
-        }}
+        onClick={onUploadClick}
       >
         <input {...inputProps} className="sr-only" />
         {renderButton()}
