@@ -145,10 +145,16 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
   </Tab>
   <Tab>
-    Include our CSS file in the root layout to make sure the components look right!
+    Include our CSS in your root route to make sure the components look right!
 
-    ```tsx
-    import "@uploadthing/react/styles.css";
+    ```tsx {{ title: "app/routes/__root.tsx" }}
+    // @ts-expect-error
+    import uploadthingCss from "@uploadthing/react/styles.css?url";
+
+    export const Route = createRootRoute({
+      component: RootComponent,
+      links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+    });
     ```
 
   </Tab>
