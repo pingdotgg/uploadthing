@@ -104,19 +104,17 @@ export const UploadDropzone = <
     : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
   const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
+  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
+    url: resolveMaybeUrlArg($props.url),
+  });
 
   const {
     mode = "manual",
     appendOnPaste = false,
     cn = defaultClassListMerger,
   } = $props.config ?? {};
-
-  let rootRef: HTMLElement;
   let acRef = new AbortController();
-
-  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
+  let rootRef: HTMLElement;
 
   const [files, setFiles] = createSignal<File[]>([]);
   const [uploadProgress, setUploadProgress] = createSignal(0);
@@ -137,6 +135,16 @@ export const UploadDropzone = <
     onUploadBegin: $props.onUploadBegin,
     onBeforeUploadBegin: $props.onBeforeUploadBegin,
   });
+  const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
+
+  const state = () => {
+    const ready = fileInfo().fileTypes.length > 0;
+
+    if ($props.disabled) return "disabled";
+    if (!ready) return "readying";
+    if (ready && !uploadThing.isUploading()) return "ready";
+    return "uploading";
+  };
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in $props ? $props.input : undefined;
@@ -148,29 +156,6 @@ export const UploadDropzone = <
       }
     });
   };
-
-  const onDrop = (acceptedFiles: File[]) => {
-    $props.onDrop?.(acceptedFiles);
-    $props.onChange?.(acceptedFiles);
-
-    setFiles(acceptedFiles);
-
-    // If mode is auto, start upload immediately
-    if (mode === "auto") uploadFiles(acceptedFiles);
-  };
-  const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
-
-  const { getRootProps, getInputProps, isDragActive } = createDropzone({
-    onDrop,
-    multiple: fileInfo().multiple,
-    get accept() {
-      const types = fileInfo().fileTypes;
-      return types ? generateClientDropzoneAccept(types) : undefined;
-    },
-    disabled: $props.disabled,
-  });
-
-  const ready = () => fileInfo().fileTypes.length > 0;
 
   const onUploadClick = (e: MouseEvent) => {
     if (state() === "uploading") {
@@ -189,9 +174,30 @@ export const UploadDropzone = <
     }
   };
 
+  const onDrop = (acceptedFiles: File[]) => {
+    $props.onDrop?.(acceptedFiles);
+    $props.onChange?.(acceptedFiles);
+
+    setFiles(acceptedFiles);
+
+    // If mode is auto, start upload immediately
+    if (mode === "auto") uploadFiles(acceptedFiles);
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = createDropzone({
+    onDrop,
+    multiple: fileInfo().multiple,
+    get accept() {
+      const types = fileInfo().fileTypes;
+      return types ? generateClientDropzoneAccept(types) : undefined;
+    },
+    disabled: $props.disabled,
+  });
+
   createEffect(() => {
+    if (!appendOnPaste) return;
+    
     const pasteHandler = (e: ClipboardEvent) => {
-      if (!appendOnPaste) return;
       if (document.activeElement !== rootRef) return;
 
       const pastedFiles = getFilesFromClipboardEvent(e);
@@ -211,20 +217,12 @@ export const UploadDropzone = <
   });
 
   const styleFieldArg = {
-    ready: ready,
+    ready: () => state() !== "readying",
     isUploading: uploadThing.isUploading,
     uploadProgress: uploadProgress,
     fileTypes: () => fileInfo().fileTypes,
     isDragActive: () => isDragActive,
   } as DropzoneStyleFieldCallbackArgs;
-
-  const state = () => {
-    if ($props.disabled) return "disabled";
-    if (!ready()) return "readying";
-    if (ready() && !uploadThing.isUploading()) return "ready";
-
-    return "uploading";
-  };
 
   return (
     <div
@@ -265,7 +263,7 @@ export const UploadDropzone = <
       <label
         class={cn(
           "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-          ready() ? "text-blue-600" : "text-gray-500",
+          state() === "ready" ? "text-blue-600" : "text-gray-500",
           styleFieldToClassName($props.appearance?.label, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
@@ -274,7 +272,7 @@ export const UploadDropzone = <
       >
         <input class="sr-only" {...getInputProps()} />
         {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready()
+          (state() === "ready"
             ? `Choose ${fileInfo().multiple ? "file(s)" : "a file"} or drag and drop`
             : `Loading...`)}
       </label>

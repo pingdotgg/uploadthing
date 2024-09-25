@@ -136,6 +136,22 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         useUploadthingProps,
       );
 
+      const permittedFileTypes = computed(() =>
+        generatePermittedFileTypes(routeConfig.value),
+      );
+      const acceptedFileTypes = computed(() =>
+        generateClientDropzoneAccept(permittedFileTypes.value.fileTypes),
+      );
+
+      const state = computed(() => {
+        const ready = permittedFileTypes.value.fileTypes.length > 0;
+
+        if (dropzoneOptions.disabled) return "disabled";
+        if (!ready) return "readying";
+        if (ready && !isUploading.value) return "ready";
+        return "uploading";
+      });
+
       const uploadFiles = (files: File[]) => {
         const input = "input" in $props ? $props.input : undefined;
         startUpload(files, input).catch((e) => {
@@ -147,10 +163,24 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         });
       };
 
-      const onDrop = (acceptedFiles: File[]) => {
-        // don't trigger onChange if no files are accepted
-        if (acceptedFiles.length === 0) return;
+      const onUploadClick = (e: MouseEvent) => {
+        if (state.value === "uploading") {
+          e.preventDefault();
+          e.stopPropagation();
 
+          acRef.value.abort();
+          acRef.value = new AbortController();
+          return;
+        }
+        if (mode === "manual" && files.value.length > 0) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          uploadFiles(files.value);
+        }
+      };
+
+      const onDrop = (acceptedFiles: File[]) => {
         $props.onDrop?.(acceptedFiles);
         $props.onChange?.(acceptedFiles);
 
@@ -159,16 +189,6 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         // If mode is auto, start upload immediately.
         if (mode === "auto") uploadFiles(acceptedFiles);
       };
-
-      const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(routeConfig.value),
-      );
-      const ready = computed(
-        () => permittedFileTypes.value.fileTypes.length > 0,
-      );
-      const acceptedFileTypes = computed(() =>
-        generateClientDropzoneAccept(permittedFileTypes.value.fileTypes),
-      );
 
       const dropzoneOptions: DropzoneOptions = reactive({
         onDrop: onDrop,
@@ -194,23 +214,6 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const { getRootProps, getInputProps, isDragActive, rootRef } =
         useDropzone(dropzoneOptions);
 
-      const onUploadClick = (e: MouseEvent) => {
-        if (state.value === "uploading") {
-          e.preventDefault();
-          e.stopPropagation();
-
-          acRef.value.abort();
-          acRef.value = new AbortController();
-          return;
-        }
-        if (mode === "manual" && files.value.length > 0) {
-          e.preventDefault();
-          e.stopPropagation();
-
-          uploadFiles(files.value);
-        }
-      };
-
       usePaste((event) => {
         if (!appendOnPaste) return;
         if (document.activeElement !== rootRef.value) return;
@@ -228,20 +231,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const styleFieldArg = computed(
         () =>
           ({
-            ready: state.value === "ready",
+            ready: state.value !== "readying",
             isUploading: state.value === "uploading",
             uploadProgress: uploadProgress.value,
             fileTypes: permittedFileTypes.value.fileTypes,
             isDragActive: isDragActive.value,
           }) as DropzoneStyleFieldCallbackArgs,
       );
-
-      const state = computed(() => {
-        if (dropzoneOptions.disabled) return "disabled";
-        if (!ready.value) return "readying";
-        if (ready.value && !isUploading.value) return "ready";
-        return "uploading";
-      });
 
       const renderUploadIcon = () => {
         const customContent = contentFieldToContent(

@@ -112,6 +112,18 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         $props.endpoint,
         useUploadthingProps,
       );
+      const permittedFileTypes = computed(() =>
+        generatePermittedFileTypes(routeConfig.value),
+      );
+
+      const state = computed(() => {
+        const ready = permittedFileTypes.value.fileTypes.length > 0;
+
+        if (inputProps.value.disabled) return "disabled";
+        if (!ready) return "readying";
+        if (ready && !isUploading.value) return "ready";
+        return "uploading";
+      });
 
       const uploadFiles = (files: File[]) => {
         const input = "input" in $props ? $props.input : undefined;
@@ -141,10 +153,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         }
       };
 
-      const permittedFileTypes = computed(() =>
-        generatePermittedFileTypes(routeConfig.value),
-      );
-
       const inputProps = computed(() => ({
         type: "file",
         ref: fileInputRef,
@@ -156,26 +164,19 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           $props.disabled ?? permittedFileTypes.value.fileTypes.length === 0,
         tabindex: permittedFileTypes.value.fileTypes.length === 0 ? -1 : 0,
         onChange: (e: Event) => {
-          if (!e.target) return;
-          const { files: selectedFiles } = e.target as HTMLInputElement;
-          if (!selectedFiles) return;
+          if (!e.target || !("files" in e.target)) return;
+          const selectedFiles = Array.from(e.target.files as FileList);
 
-          $props.onChange?.(Array.from(selectedFiles));
+          $props.onChange?.(selectedFiles);
 
           if (mode === "manual") {
-            files.value = Array.from(selectedFiles);
+            files.value = selectedFiles;
             return;
           }
 
-          uploadFiles(Array.from(selectedFiles));
+          uploadFiles(selectedFiles);
         },
       }));
-
-      const state = computed(() => {
-        if (inputProps.value.disabled) return "disabled";
-        if (!inputProps.value.disabled && !isUploading.value) return "ready";
-        return "uploading";
-      });
 
       usePaste((event) => {
         if (!appendOnPaste) return;
@@ -194,7 +195,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const styleFieldArg = computed(
         () =>
           ({
-            ready: state.value === "ready",
+            ready: state.value !== "readying",
             isUploading: state.value === "uploading",
             uploadProgress: uploadProgress.value,
             fileTypes: permittedFileTypes.value.fileTypes,

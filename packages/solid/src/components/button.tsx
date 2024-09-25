@@ -77,23 +77,21 @@ export function UploadButton<
     ? ErrorMessage<"You forgot to pass the generic">
     : UploadButtonProps<TRouter, TEndpoint>,
 ) {
-  const [uploadProgress, setUploadProgress] = createSignal(0);
-  const [files, setFiles] = createSignal<File[]>([]);
-
-  let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint>;
-
-  const { cn = defaultClassListMerger } = $props.config ?? {};
-
-  let acRef = new AbortController();
-
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
-
-  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
-
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
+
+  const {
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
+  let acRef = new AbortController();
+
+  let inputRef: HTMLInputElement;
+  const [uploadProgress, setUploadProgress] = createSignal(0);
+  const [files, setFiles] = createSignal<File[]>([]);
 
   const uploadThing = createUploadThing($props.endpoint, {
     signal: acRef.signal,
@@ -115,24 +113,18 @@ export function UploadButton<
 
   const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
-  const ready = () => fileInfo().fileTypes.length > 0;
-
-  const styleFieldArg = {
-    ready: ready,
-    isUploading: uploadThing.isUploading,
-    uploadProgress: uploadProgress,
-    fileTypes: () => fileInfo().fileTypes,
-  } as ButtonStyleFieldCallbackArgs;
-
   const state = () => {
-    if (!ready()) return "readying";
-    if (ready() && !uploadThing.isUploading()) return "ready";
+    const ready = fileInfo().fileTypes.length > 0;
 
+    if ($props.disabled) return "disabled";
+    if (!ready) return "readying";
+    if (ready && !uploadThing.isUploading()) return "ready";
     return "uploading";
   };
 
   const uploadFiles = (files: File[]) => {
-    uploadThing.startUpload(files, fileRouteInput).catch((e) => {
+    const input = "input" in $props ? $props.input : undefined;
+    uploadThing.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {
@@ -159,8 +151,9 @@ export function UploadButton<
   };
 
   createEffect(() => {
+    if (!appendOnPaste) return;
+
     const pasteHandler = (e: ClipboardEvent) => {
-      if (!appendOnPaste) return;
       if (document?.activeElement !== inputRef) return;
 
       const pastedFiles = getFilesFromClipboardEvent(e);
@@ -176,6 +169,13 @@ export function UploadButton<
 
     onCleanup(() => document?.removeEventListener("paste", pasteHandler));
   });
+
+  const styleFieldArg = {
+    ready: () => state() !== "readying",
+    isUploading: uploadThing.isUploading,
+    uploadProgress: uploadProgress,
+    fileTypes: () => fileInfo().fileTypes,
+  } as ButtonStyleFieldCallbackArgs;
 
   const getButtonContent = () => {
     const customContent = contentFieldToContent(

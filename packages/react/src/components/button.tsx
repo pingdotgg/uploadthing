@@ -93,7 +93,9 @@ export function UploadButton<
   // since the ErrorMessage messes it up otherwise
   const $props = props as unknown as UploadButtonProps<TRouter, TEndpoint> &
     UploadThingInternalProps;
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
+  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
+    url: resolveMaybeUrlArg($props.url),
+  });
 
   const {
     mode = "auto",
@@ -101,10 +103,6 @@ export function UploadButton<
     cn = defaultClassListMerger,
   } = $props.config ?? {};
   const acRef = useRef(new AbortController());
-
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState(
@@ -134,10 +132,23 @@ export function UploadButton<
       onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
   );
+  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
+
+  const disabled = !!($props.__internal_button_disabled ?? $props.disabled);
+  const state = (() => {
+    const ready = $props.__internal_state === "ready" || fileTypes.length > 0;
+
+    if ($props.__internal_state) return $props.__internal_state;
+    if (disabled) return "disabled";
+    if (!ready) return "readying";
+    if (ready && !isUploading) return "ready";
+    return "uploading";
+  })();
 
   const uploadFiles = useCallback(
     (files: File[]) => {
-      startUpload(files, fileRouteInput).catch((e) => {
+      const input = "input" in $props ? $props.input : undefined;
+      startUpload(files, input).catch((e) => {
         if (e instanceof UploadAbortedError) {
           void $props.onUploadAborted?.();
         } else {
@@ -145,7 +156,7 @@ export function UploadButton<
         }
       });
     },
-    [$props, startUpload, fileRouteInput],
+    [$props, startUpload],
   );
 
   const onUploadClick = (e: React.MouseEvent) => {
@@ -164,8 +175,6 @@ export function UploadButton<
       uploadFiles(files);
     }
   };
-
-  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   const inputProps = useMemo(
     () => ({
@@ -186,21 +195,11 @@ export function UploadButton<
 
         uploadFiles(selectedFiles);
       },
-      disabled: fileTypes.length === 0,
-      tabIndex: fileTypes.length === 0 ? -1 : 0,
+      disabled,
+      tabIndex: disabled ? -1 : 0,
     }),
-    [$props, fileTypes, mode, multiple, uploadFiles],
+    [$props, disabled, fileTypes, mode, multiple, uploadFiles],
   );
-
-  if ($props.__internal_button_disabled) inputProps.disabled = true;
-  if ($props.disabled) inputProps.disabled = true;
-
-  const state = (() => {
-    if ($props.__internal_state) return $props.__internal_state;
-    if (inputProps.disabled) return "disabled";
-    if (!inputProps.disabled && !isUploading) return "ready";
-    return "uploading";
-  })();
 
   usePaste((event) => {
     if (!appendOnPaste) return;
