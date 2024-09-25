@@ -9,7 +9,11 @@ export default function Home() {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
-    onClientUploadComplete: () => {
+    onUploadBegin: (fileName) => {
+      console.log("onUploadBegin", fileName);
+    },
+    onClientUploadComplete: (res) => {
+      console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");
     },
   });
@@ -21,12 +25,15 @@ export default function Home() {
          * @see https://docs.uploadthing.com/api-reference/react#uploadbutton
          */
         endpoint="videoAndImage"
+        onUploadBegin={(fileName) => {
+          console.log("onUploadBegin", fileName);
+        }}
+        onUploadAborted={() => {
+          alert("Upload Aborted");
+        }}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
-        }}
-        onUploadBegin={() => {
-          console.log("upload begin");
         }}
       />
       <UploadDropzone
@@ -34,12 +41,15 @@ export default function Home() {
          * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
          */
         endpoint="videoAndImage"
+        onUploadBegin={(fileName) => {
+          console.log("onUploadBegin", fileName);
+        }}
+        onUploadAborted={() => {
+          alert("Upload Aborted");
+        }}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
-        }}
-        onUploadBegin={() => {
-          console.log("upload begin");
         }}
       />
       <input
