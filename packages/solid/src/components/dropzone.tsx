@@ -196,7 +196,7 @@ export const UploadDropzone = <
 
   createEffect(() => {
     if (!appendOnPaste) return;
-    
+
     const pasteHandler = (e: ClipboardEvent) => {
       if (document.activeElement !== rootRef) return;
 
