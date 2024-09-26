@@ -1,16 +1,26 @@
 "use client";
 
+import { ElementType, Ref } from "react";
+
+import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
 import {
+  HasDisplayName,
   PrimitiveComponentProps,
   PrimitiveSlot,
+  RefProp,
   usePrimitiveValues,
 } from "./root";
 
-export function Button({
-  children,
-  onClick,
-  ...props
-}: PrimitiveComponentProps<"label">) {
+const DEFAULT_BUTTON_TAG = "label" as const;
+
+export type PrimitiveButtonProps<
+  Tag extends ElementType = typeof DEFAULT_BUTTON_TAG,
+> = PrimitiveComponentProps<Tag>;
+
+function ButtonFn<Tag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+  { children, onClick, as, ...props }: PrimitiveButtonProps<Tag>,
+  ref: Ref<HTMLLabelElement>,
+) {
   const {
     refs,
     disabled,
@@ -24,8 +34,10 @@ export function Button({
     uploadFiles,
   } = usePrimitiveValues("Button");
 
+  const Comp = as ?? DEFAULT_BUTTON_TAG;
+
   return (
-    <label
+    <Comp
       {...props}
       data-state={state}
       onClick={(e) => {
@@ -43,6 +55,7 @@ export function Button({
           uploadFiles();
         }
       }}
+      ref={ref}
     >
       <PrimitiveSlot>{children}</PrimitiveSlot>
       {!dropzone && (
@@ -60,6 +73,14 @@ export function Button({
           className="sr-only"
         />
       )}
-    </label>
+    </Comp>
   );
 }
+
+type _internal_ComponentButton = HasDisplayName & {
+  <Tag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+    props: PrimitiveButtonProps<Tag> & RefProp<typeof ButtonFn>,
+  ): JSX.Element;
+};
+
+export const Button = forwardRefWithAs(ButtonFn) as _internal_ComponentButton;
