@@ -78,7 +78,7 @@ export function UploadButton<
   const { className, content, appearance, ...$props } =
     props as unknown as UploadButtonProps<TRouter, TEndpoint>;
 
-  const cn = defaultClassListMerger ?? $props.config ?? {};
+  const cn = $props.config?.cn ?? defaultClassListMerger;
 
   return (
     <Primitive.Root<TRouter, TEndpoint> {...($props as any)}>

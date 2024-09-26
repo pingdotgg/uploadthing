@@ -95,7 +95,7 @@ export function UploadDropzone<
     props as unknown as UploadDropzoneProps<TRouter, TEndpoint> &
       UploadThingInternalProps;
 
-  const cn = defaultClassListMerger ?? rootProps.config ?? {};
+  const cn = rootProps.config?.cn ?? defaultClassListMerger;
 
   return (
     <Primitive.Root<TRouter, TEndpoint> {...(rootProps as any)}>
@@ -253,4 +253,3 @@ export function UploadDropzone<
     </Primitive.Root>
   );
 }
-
