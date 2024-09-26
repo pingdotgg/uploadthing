@@ -75,13 +75,13 @@ export function UploadButton<
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const { className, content, appearance, ...$props } =
+  const { className, content, appearance, ...rootProps } =
     props as unknown as UploadButtonProps<TRouter, TEndpoint>;
 
-  const cn = $props.config?.cn ?? defaultClassListMerger;
+  const cn = rootProps.config?.cn ?? defaultClassListMerger;
 
   return (
-    <Primitive.Root<TRouter, TEndpoint> {...($props as any)}>
+    <Primitive.Root<TRouter, TEndpoint> {...(rootProps as any)}>
       {({ state, uploadProgress, fileTypes, files, options }) => {
         const styleFieldArg = {
           ready: state !== "readying",
