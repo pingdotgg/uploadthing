@@ -684,7 +684,10 @@ const handleUploadAction = (opts: {
                         )
                       : Effect.logError(
                           "Failed to forward callback request from dev stream",
-                        ).pipe(Effect.annotateLogs("error", err)),
+                        ).pipe(
+                          Effect.annotateLogs("error", err),
+                          Effect.annotateLogs("cause", err.cause),
+                        ),
                 }),
                 Effect.ignoreLogged,
               ),

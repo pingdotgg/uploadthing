@@ -24,7 +24,6 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     (req) => Effect.succeed({ req, res: undefined, event: undefined }),
     (req) => Effect.succeed(req),
     opts,
-
     "nextjs-app",
   );
   return { POST: handler, GET: handler };
