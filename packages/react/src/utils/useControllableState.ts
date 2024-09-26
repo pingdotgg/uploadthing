@@ -39,7 +39,7 @@ const useUncontrolledState = <T>({
   const handleChange = useCallbackRef(onChange);
 
   React.useEffect(() => {
-    if (!value) return;
+    if (value === undefined) return;
     if (prevValueRef.current !== value) {
       handleChange(value);
       prevValueRef.current = value;
