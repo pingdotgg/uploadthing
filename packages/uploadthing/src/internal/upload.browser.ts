@@ -11,6 +11,7 @@ import type {
   NewPresignedUrl,
   UploadFilesOptions,
 } from "../types";
+import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
 const uploadWithProgress = (
@@ -92,17 +93,7 @@ export const uploadFile = <
         }),
       ),
     ),
-    Micro.map(
-      unsafeCoerce<
-        unknown,
-        {
-          url: string;
-          appUrl: string;
-          serverData: TServerOutput;
-          hash: string;
-        }
-      >,
-    ),
+    Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
     Micro.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
@@ -113,7 +104,7 @@ export const uploadFile = <
       appUrl: uploadResponse.appUrl,
       customId: presigned.customId,
       type: file.type,
-      hash: uploadResponse.hash,
+      fileHash: uploadResponse.fileHash,
     })),
   );
 

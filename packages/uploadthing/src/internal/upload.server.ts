@@ -9,6 +9,7 @@ import { unsafeCoerce } from "effect/Function";
 import { UploadThingError } from "@uploadthing/shared";
 
 import type { FileEsque } from "../sdk/types";
+import type { UploadPutResult } from "./types";
 
 export const uploadWithoutProgress = (
   file: FileEsque,
@@ -32,10 +33,7 @@ export const uploadWithoutProgress = (
           }),
       ),
       HttpClientResponse.json,
-
-      Effect.andThen(
-        unsafeCoerce<unknown, { url: string; appUrl: string; hash: string }>,
-      ),
+      Effect.andThen(unsafeCoerce<unknown, UploadPutResult>),
     );
 
     yield* Effect.logDebug(`File ${file.name} uploaded successfully`).pipe(
