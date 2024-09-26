@@ -1,19 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-
-import { useDropzone } from "@uploadthing/dropzone/react";
 import {
-  allowedContentTextLabelGenerator,
   contentFieldToContent,
   defaultClassListMerger,
-  generateClientDropzoneAccept,
-  generatePermittedFileTypes,
-  getFilesFromClipboardEvent,
-  resolveMaybeUrlArg,
   styleFieldToClassName,
   styleFieldToCssObject,
-  UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
   ContentField,
@@ -23,7 +14,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import * as Primitive from "./primitive";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
@@ -100,279 +91,165 @@ export function UploadDropzone<
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as UploadDropzoneProps<TRouter, TEndpoint> &
-    UploadThingInternalProps;
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
+  const { className, content, appearance, ...rootProps } =
+    props as unknown as UploadDropzoneProps<TRouter, TEndpoint> &
+      UploadThingInternalProps;
 
-  const {
-    mode = "manual",
-    appendOnPaste = false,
-    cn = defaultClassListMerger,
-  } = $props.config ?? {};
-  const acRef = useRef(new AbortController());
-
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
-
-  const [files, setFiles] = useState<File[]>([]);
-
-  const [uploadProgressState, setUploadProgress] = useState(
-    $props.__internal_upload_progress ?? 0,
-  );
-  const uploadProgress =
-    $props.__internal_upload_progress ?? uploadProgressState;
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
-    $props.endpoint,
-    {
-      signal: acRef.current.signal,
-      headers: $props.headers,
-      onClientUploadComplete: (res) => {
-        setFiles([]);
-        void $props.onClientUploadComplete?.(res);
-        setUploadProgress(0);
-      },
-      onUploadProgress: (p) => {
-        setUploadProgress(p);
-        $props.onUploadProgress?.(p);
-      },
-      onUploadError: $props.onUploadError,
-      onUploadBegin: $props.onUploadBegin,
-      onBeforeUploadBegin: $props.onBeforeUploadBegin,
-    },
-  );
-
-  const uploadFiles = useCallback(
-    async (files: File[]) => {
-      await startUpload(files, fileRouteInput).catch((e) => {
-        if (e instanceof UploadAbortedError) {
-          void $props.onUploadAborted?.();
-        } else {
-          throw e;
-        }
-      });
-    },
-    [$props, startUpload, fileRouteInput],
-  );
-
-  const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      $props.onDrop?.(acceptedFiles);
-      $props.onChange?.(acceptedFiles);
-
-      setFiles(acceptedFiles);
-
-      // If mode is auto, start upload immediately
-      if (mode === "auto") void uploadFiles(acceptedFiles);
-    },
-    [$props, mode, uploadFiles],
-  );
-
-  const isDisabled = (() => {
-    if ($props.__internal_dropzone_disabled) return true;
-    if ($props.disabled) return true;
-
-    return false;
-  })();
-
-  const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
-    onDrop,
-    multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: isDisabled,
-  });
-
-  const ready =
-    $props.__internal_ready ??
-    ($props.__internal_state === "ready" || fileTypes.length > 0);
-
-  const onUploadClick = async (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
-    if (state === "uploading") {
-      e.preventDefault();
-      e.stopPropagation();
-
-      acRef.current.abort();
-      acRef.current = new AbortController();
-      return;
-    }
-    if (mode === "manual" && files.length > 0) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      await uploadFiles(files);
-    }
-  };
-
-  useEffect(() => {
-    const handlePaste = (event: ClipboardEvent) => {
-      if (!appendOnPaste) return;
-      if (document.activeElement !== rootRef.current) return;
-
-      const pastedFiles = getFilesFromClipboardEvent(event);
-      if (!pastedFiles?.length) return;
-
-      let filesToUpload = pastedFiles;
-      setFiles((prev) => {
-        filesToUpload = [...prev, ...pastedFiles];
-
-        $props.onChange?.(filesToUpload);
-
-        return filesToUpload;
-      });
-
-      $props.onChange?.(filesToUpload);
-
-      if (mode === "auto") void uploadFiles(filesToUpload);
-    };
-
-    window.addEventListener("paste", handlePaste);
-    return () => {
-      window.removeEventListener("paste", handlePaste);
-    };
-  }, [uploadFiles, $props, appendOnPaste, mode, fileTypes, rootRef, files]);
-
-  const getUploadButtonContents = () => {
-    const customContent = contentFieldToContent(
-      $props.content?.button,
-      styleFieldArg,
-    );
-    if (customContent) return customContent;
-
-    switch (state) {
-      case "readying": {
-        return "Loading...";
-      }
-      case "uploading": {
-        if (uploadProgress === 100) return <Spinner />;
-        return (
-          <span className="z-50">
-            <span className="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel cn={cn} className="hidden size-4 group-hover:block" />
-          </span>
-        );
-      }
-      case "disabled":
-      case "ready":
-      default: {
-        if (mode === "manual" && files.length > 0) {
-          return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
-        }
-        return `Choose File${multiple ? `(s)` : ``}`;
-      }
-    }
-  };
-
-  const styleFieldArg = {
-    fileTypes,
-    isDragActive,
-    isUploading,
-    ready,
-    uploadProgress,
-  } as DropzoneStyleFieldCallbackArgs;
-
-  const state = (() => {
-    if ($props.__internal_state) return $props.__internal_state;
-    if (isDisabled) return "disabled";
-    if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
-
-    return "uploading";
-  })();
+  const cn = defaultClassListMerger ?? rootProps.config ?? {};
 
   return (
-    <div
-      className={cn(
-        "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-        isDragActive && "bg-blue-600/10",
-        $props.className,
-        styleFieldToClassName($props.appearance?.container, styleFieldArg),
-      )}
-      {...getRootProps()}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
-      data-state={state}
-    >
-      {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) ?? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          className={cn(
-            "mx-auto block h-12 w-12 align-middle text-gray-400",
-            styleFieldToClassName($props.appearance?.uploadIcon, styleFieldArg),
-          )}
-          style={styleFieldToCssObject(
-            $props.appearance?.uploadIcon,
-            styleFieldArg,
-          )}
-          data-ut-element="upload-icon"
-          data-state={state}
-        >
-          <path
-            fill="currentColor"
-            fillRule="evenodd"
-            d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
-            clipRule="evenodd"
-          ></path>
-        </svg>
-      )}
-      <label
-        className={cn(
-          "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-          ready ? "text-blue-600" : "text-gray-500",
-          styleFieldToClassName($props.appearance?.label, styleFieldArg),
-        )}
-        style={styleFieldToCssObject($props.appearance?.label, styleFieldArg)}
-        data-ut-element="label"
-        data-state={state}
-      >
-        <input className="sr-only" {...getInputProps()} />
-        {contentFieldToContent($props.content?.label, styleFieldArg) ??
-          (ready
-            ? `Choose ${multiple ? "file(s)" : "a file"} or drag and drop`
-            : `Loading...`)}
-      </label>
-      <div
-        className={cn(
-          "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
-          styleFieldToClassName(
-            $props.appearance?.allowedContent,
-            styleFieldArg,
-          ),
-        )}
-        style={styleFieldToCssObject(
-          $props.appearance?.allowedContent,
-          styleFieldArg,
-        )}
-        data-ut-element="allowed-content"
-        data-state={state}
-      >
-        {contentFieldToContent($props.content?.allowedContent, styleFieldArg) ??
-          allowedContentTextLabelGenerator(routeConfig)}
-      </div>
+    <Primitive.Root<TRouter, TEndpoint> {...(rootProps as any)}>
+      <Primitive.Dropzone>
+        {({
+          files,
+          fileTypes,
+          dropzone,
+          isUploading,
+          ready,
+          uploadProgress,
+          state,
+          options,
+        }) => {
+          const styleFieldArg = {
+            fileTypes,
+            isDragActive: !!dropzone?.isDragActive,
+            isUploading,
+            ready,
+            uploadProgress,
+          } as DropzoneStyleFieldCallbackArgs;
 
-      <button
-        className={cn(
-          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state === "disabled" && "cursor-not-allowed bg-blue-400",
-          state === "readying" && "cursor-not-allowed bg-blue-400",
-          state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-          state === "ready" && "bg-blue-600",
-          "disabled:pointer-events-none",
-          styleFieldToClassName($props.appearance?.button, styleFieldArg),
-        )}
-        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
-        onClick={onUploadClick}
-        data-ut-element="button"
-        data-state={state}
-        type="button"
-        disabled={$props.__internal_button_disabled ?? !files.length}
-      >
-        {getUploadButtonContents()}
-      </button>
-    </div>
+          const getUploadButtonContents = () => {
+            const customContent = contentFieldToContent(
+              content?.button,
+              styleFieldArg,
+            );
+            if (customContent) return customContent;
+
+            switch (state) {
+              case "readying": {
+                return "Loading...";
+              }
+              case "uploading": {
+                if (uploadProgress === 100) return <Spinner />;
+                return (
+                  <span className="z-50">
+                    <span className="block group-hover:hidden">
+                      {uploadProgress}%
+                    </span>
+                    <Cancel
+                      cn={cn}
+                      className="hidden size-4 group-hover:block"
+                    />
+                  </span>
+                );
+              }
+              case "disabled":
+              case "ready":
+              default: {
+                if (options.mode === "manual" && files.length > 0) {
+                  return `Upload ${files.length} file${files.length === 1 ? "" : "s"}`;
+                }
+                return `Choose File${options.multiple ? `(s)` : ``}`;
+              }
+            }
+          };
+
+          return (
+            <div
+              className={cn(
+                "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
+                dropzone?.isDragActive && "bg-blue-600/10",
+                className,
+                styleFieldToClassName(appearance?.container, styleFieldArg),
+              )}
+              style={styleFieldToCssObject(
+                appearance?.container,
+                styleFieldArg,
+              )}
+              data-state={state}
+            >
+              {contentFieldToContent(content?.uploadIcon, styleFieldArg) ?? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  className={cn(
+                    "mx-auto block h-12 w-12 align-middle text-gray-400",
+                    styleFieldToClassName(
+                      appearance?.uploadIcon,
+                      styleFieldArg,
+                    ),
+                  )}
+                  style={styleFieldToCssObject(
+                    appearance?.uploadIcon,
+                    styleFieldArg,
+                  )}
+                  data-ut-element="upload-icon"
+                  data-state={state}
+                >
+                  <path
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    d="M5.5 17a4.5 4.5 0 0 1-1.44-8.765a4.5 4.5 0 0 1 8.302-3.046a3.5 3.5 0 0 1 4.504 4.272A4 4 0 0 1 15 17H5.5Zm3.75-2.75a.75.75 0 0 0 1.5 0V9.66l1.95 2.1a.75.75 0 1 0 1.1-1.02l-3.25-3.5a.75.75 0 0 0-1.1 0l-3.25 3.5a.75.75 0 1 0 1.1 1.02l1.95-2.1v4.59Z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              )}
+
+              <label
+                className={cn(
+                  "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+                  ready ? "text-blue-600" : "text-gray-500",
+                  styleFieldToClassName(appearance?.label, styleFieldArg),
+                )}
+                style={styleFieldToCssObject(appearance?.label, styleFieldArg)}
+                data-ut-element="label"
+                data-state={state}
+              >
+                {contentFieldToContent(content?.label, styleFieldArg) ??
+                  (ready
+                    ? `Choose ${options.multiple ? "file(s)" : "a file"} or drag and drop`
+                    : `Loading...`)}
+              </label>
+
+              <Primitive.AllowedContent
+                className={cn(
+                  "m-0 h-[1.25rem] text-xs leading-5 text-gray-600",
+                  styleFieldToClassName(
+                    appearance?.allowedContent,
+                    styleFieldArg,
+                  ),
+                )}
+                style={styleFieldToCssObject(
+                  appearance?.allowedContent,
+                  styleFieldArg,
+                )}
+                data-ut-element="allowed-content"
+              >
+                {contentFieldToContent(content?.allowedContent, styleFieldArg)}
+              </Primitive.AllowedContent>
+
+              <Primitive.Button
+                as="button"
+                className={cn(
+                  "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+                  state === "disabled" && "cursor-not-allowed bg-blue-400",
+                  state === "readying" && "cursor-not-allowed bg-blue-400",
+                  state === "uploading" &&
+                    `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
+                  state === "ready" && "bg-blue-600",
+                  "disabled:pointer-events-none",
+                  styleFieldToClassName(appearance?.button, styleFieldArg),
+                )}
+                style={styleFieldToCssObject(appearance?.button, styleFieldArg)}
+                data-ut-element="button"
+                disabled={rootProps.__internal_button_disabled ?? !files.length}
+              >
+                {getUploadButtonContents()}
+              </Primitive.Button>
+            </div>
+          );
+        }}
+      </Primitive.Dropzone>
+    </Primitive.Root>
   );
 }
