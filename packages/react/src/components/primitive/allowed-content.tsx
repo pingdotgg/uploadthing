@@ -1,17 +1,12 @@
 "use client";
 
-import { ElementType, Ref } from "react";
+import type { ElementType, Ref } from "react";
 
 import { allowedContentTextLabelGenerator } from "@uploadthing/shared";
 
 import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
-import {
-  HasDisplayName,
-  PrimitiveComponentProps,
-  PrimitiveSlot,
-  RefProp,
-  usePrimitiveValues,
-} from "./root";
+import { PrimitiveSlot, usePrimitiveValues } from "./root";
+import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
 const DEFAULT_ALLOWED_CONTENT_TAG = "div" as const;
 

@@ -1,20 +1,14 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef,
-  type ElementType,
-  type Ref,
-} from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import type {
   ChangeEvent,
   DragEvent,
+  ElementType,
   HTMLProps,
   KeyboardEvent,
   MouseEvent,
+  Ref,
 } from "react";
 import { fromEvent } from "file-selector";
 
@@ -39,10 +33,8 @@ import {
   PrimitiveContextMergeProvider,
   PrimitiveSlot,
   usePrimitiveValues,
-  type HasDisplayName,
-  type PrimitiveComponentProps,
-  type RefProp,
 } from "./root";
+import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
 const DEFAULT_DROPZONE_TAG = "div" as const;
 

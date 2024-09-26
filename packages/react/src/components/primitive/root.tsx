@@ -2,15 +2,12 @@
 
 import {
   createContext,
-  ElementType,
-  ProviderProps,
-  Ref,
-  RefObject,
   useCallback,
   useContext,
   useRef,
   useState,
 } from "react";
+import type { ElementType, ProviderProps, Ref, RefObject } from "react";
 
 import {
   generateMimeTypes,
