@@ -56,15 +56,31 @@ export default function Home() {
         }}
       />
       <UT.Root endpoint="videoAndImage">
-        <UT.Dropzone>
+        <UT.Dropzone style={{ marginTop: 24 }}>
           {({ dropzone, isUploading }) => (
-            <>
-              <UT.Button>{isUploading ? "Uploading" : "Upload file"}</UT.Button>
-              <div>
-                <UT.AllowedContent />
-              </div>
-              {dropzone?.isDragActive && <span>Dragging</span>}
-            </>
+            <div
+              style={{
+                borderWidth: 2,
+                borderStyle: "dashed",
+                borderColor: dropzone?.isDragActive ? "#2563f5" : "#11182725",
+                padding: 16,
+              }}
+            >
+              <p
+                style={{
+                  width: "fit-content",
+                }}
+              >
+                Drag and drop
+              </p>
+              <UT.Button as="button">
+                {isUploading ? "Uploading" : "Upload file"}
+              </UT.Button>
+              <UT.AllowedContent
+                as="p"
+                style={{ fontSize: 12, width: "fit-content" }}
+              />
+            </div>
           )}
         </UT.Dropzone>
       </UT.Root>
