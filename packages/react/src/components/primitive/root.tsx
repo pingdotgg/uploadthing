@@ -2,6 +2,7 @@ import {
   createContext,
   ElementType,
   ProviderProps,
+  Ref,
   RefObject,
   useCallback,
   useContext,
@@ -120,11 +121,24 @@ export function PrimitiveSlot({
     : children;
 }
 
-export type PrimitiveComponentProps<T extends ElementType = "div"> = Omit<
-  React.ComponentPropsWithRef<T>,
+export type HasDisplayName = {
+  displayName: string;
+};
+
+export type RefProp<T extends Function> = T extends (
+  props: any,
+  ref: Ref<infer RefType>,
+) => any
+  ? { ref?: Ref<RefType> }
+  : never;
+
+export type PrimitiveComponentProps<Tag extends ElementType = "div"> = Omit<
+  React.ComponentPropsWithoutRef<Tag>,
   "children"
 > &
-  PrimitiveComponentChildrenProp;
+  PrimitiveComponentChildrenProp & {
+    as?: Tag;
+  };
 
 export type PrimitiveComponentChildrenProp = {
   children?: PrimitiveComponentChildren;
