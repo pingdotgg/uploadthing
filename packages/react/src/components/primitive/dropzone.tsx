@@ -16,11 +16,11 @@ import {
 const DEFAULT_DROPZONE_TAG = "div" as const;
 
 export type PrimitiveDropzoneProps<
-  Tag extends ElementType = typeof DEFAULT_DROPZONE_TAG,
-> = PrimitiveComponentProps<Tag>;
+  TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG,
+> = PrimitiveComponentProps<TTag>;
 
-function DropzoneFn<Tag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
-  { children, as, ...props }: PrimitiveDropzoneProps<Tag>,
+function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
+  { children, as, ...props }: PrimitiveDropzoneProps<TTag>,
   ref: Ref<HTMLDivElement>,
 ) {
   const { setFiles, options, fileTypes, disabled, state, refs } =
@@ -54,8 +54,8 @@ function DropzoneFn<Tag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
 }
 
 type _internal_ComponentDropzone = HasDisplayName & {
-  <Tag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
-    props: PrimitiveDropzoneProps<Tag> & RefProp<typeof DropzoneFn>,
+  <TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
+    props: PrimitiveDropzoneProps<TTag> & RefProp<typeof DropzoneFn>,
   ): JSX.Element;
 };
 

@@ -14,13 +14,13 @@ import {
 const DEFAULT_ALLOWED_CONTENT_TAG = "div" as const;
 
 export type PrimitiveAllowedContentProps<
-  Tag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG,
-> = PrimitiveComponentProps<Tag>;
+  TTag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG,
+> = PrimitiveComponentProps<TTag>;
 
 export function AllowedContentFn<
-  Tag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG,
+  TTag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG,
 >(
-  { children, as, ...props }: PrimitiveAllowedContentProps<Tag>,
+  { children, as, ...props }: PrimitiveAllowedContentProps<TTag>,
   ref: Ref<HTMLDivElement>,
 ) {
   const { routeConfig, state } = usePrimitiveValues("AllowedContent");
@@ -38,8 +38,9 @@ export function AllowedContentFn<
 }
 
 type _internal_ComponentAllowedContent = HasDisplayName & {
-  <Tag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG>(
-    props: PrimitiveAllowedContentProps<Tag> & RefProp<typeof AllowedContentFn>,
+  <TTag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG>(
+    props: PrimitiveAllowedContentProps<TTag> &
+      RefProp<typeof AllowedContentFn>,
   ): JSX.Element;
 };
 
