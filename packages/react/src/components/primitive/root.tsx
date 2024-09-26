@@ -223,17 +223,18 @@ export function Root<
     },
   );
 
+  const { onUploadAborted } = $props;
   const uploadFiles = useCallback(
     (files: File[]) => {
       startUpload(files, fileRouteInput).catch((e) => {
         if (e instanceof UploadAbortedError) {
-          void $props.onUploadAborted?.();
+          void onUploadAborted?.();
         } else {
           throw e;
         }
       });
     },
-    [$props, startUpload, fileRouteInput],
+    [onUploadAborted, startUpload, fileRouteInput],
   );
 
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
