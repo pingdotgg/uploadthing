@@ -8,7 +8,6 @@ import {
 } from "@uploadthing/shared";
 import type {
   ContentField,
-  DropzoneOptions,
   ErrorMessage,
   StyleField,
 } from "@uploadthing/shared";
@@ -254,3 +253,4 @@ export function UploadDropzone<
     </Primitive.Root>
   );
 }
+
