@@ -1,15 +1,10 @@
 "use client";
 
-import { ElementType, Ref } from "react";
+import type { ElementType, Ref } from "react";
 
 import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
-import {
-  HasDisplayName,
-  PrimitiveComponentProps,
-  PrimitiveSlot,
-  RefProp,
-  usePrimitiveValues,
-} from "./root";
+import { PrimitiveSlot, usePrimitiveValues } from "./root";
+import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
 const DEFAULT_CLEAR_BUTTON_TAG = "label" as const;
 
