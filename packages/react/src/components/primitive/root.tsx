@@ -124,7 +124,7 @@ export type HasDisplayName = {
   displayName: string;
 };
 
-export type RefProp<T extends Function> = T extends (
+export type RefProp<T extends (...args: any[]) => any> = T extends (
   props: any,
   ref: Ref<infer RefType>,
 ) => any
