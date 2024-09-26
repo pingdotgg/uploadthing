@@ -35,6 +35,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     <Comp
       {...props}
       data-state={state}
+      aria-disabled={disabled}
       onClick={(e) => {
         onClick?.(e);
         if (state === "uploading") {
