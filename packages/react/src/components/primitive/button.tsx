@@ -14,11 +14,11 @@ import {
 const DEFAULT_BUTTON_TAG = "label" as const;
 
 export type PrimitiveButtonProps<
-  Tag extends ElementType = typeof DEFAULT_BUTTON_TAG,
-> = PrimitiveComponentProps<Tag>;
+  TTag extends ElementType = typeof DEFAULT_BUTTON_TAG,
+> = PrimitiveComponentProps<TTag>;
 
-function ButtonFn<Tag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-  { children, onClick, as, ...props }: PrimitiveButtonProps<Tag>,
+function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+  { children, onClick, as, ...props }: PrimitiveButtonProps<TTag>,
   ref: Ref<HTMLLabelElement>,
 ) {
   const {
@@ -78,8 +78,8 @@ function ButtonFn<Tag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 }
 
 type _internal_ComponentButton = HasDisplayName & {
-  <Tag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
-    props: PrimitiveButtonProps<Tag> & RefProp<typeof ButtonFn>,
+  <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+    props: PrimitiveButtonProps<TTag> & RefProp<typeof ButtonFn>,
   ): JSX.Element;
 };
 

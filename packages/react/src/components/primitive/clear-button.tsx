@@ -14,13 +14,13 @@ import {
 const DEFAULT_CLEAR_BUTTON_TAG = "label" as const;
 
 export type PrimitiveClearButtonProps<
-  Tag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG,
-> = PrimitiveComponentProps<Tag>;
+  TTag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG,
+> = PrimitiveComponentProps<TTag>;
 
 function ClearButtonFn<
-  Tag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG,
+  TTag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG,
 >(
-  { children, onClick, as, ...props }: PrimitiveClearButtonProps<Tag>,
+  { children, onClick, as, ...props }: PrimitiveClearButtonProps<TTag>,
   ref: Ref<HTMLLabelElement>,
 ) {
   const { setFiles, state } = usePrimitiveValues("ClearButton");
@@ -42,8 +42,8 @@ function ClearButtonFn<
 }
 
 type _internal_ComponentClearButton = HasDisplayName & {
-  <Tag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG>(
-    props: PrimitiveClearButtonProps<Tag> & RefProp<typeof ClearButtonFn>,
+  <TTag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG>(
+    props: PrimitiveClearButtonProps<TTag> & RefProp<typeof ClearButtonFn>,
   ): JSX.Element;
 };
 

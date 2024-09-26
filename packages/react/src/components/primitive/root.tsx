@@ -132,12 +132,12 @@ export type RefProp<T extends Function> = T extends (
   ? { ref?: Ref<RefType> }
   : never;
 
-export type PrimitiveComponentProps<Tag extends ElementType = "div"> = Omit<
-  React.ComponentPropsWithoutRef<Tag>,
+export type PrimitiveComponentProps<TTag extends ElementType = "div"> = Omit<
+  React.ComponentPropsWithoutRef<TTag>,
   "children"
 > &
   PrimitiveComponentChildrenProp & {
-    as?: Tag;
+    as?: TTag;
   };
 
 export type PrimitiveComponentChildrenProp = {
