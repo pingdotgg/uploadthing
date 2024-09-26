@@ -35,7 +35,16 @@ export default function Home() {
           console.log("upload begin");
         }}
       />
-      <UT.Root endpoint="videoAndImage">
+      <UT.Root
+        endpoint="videoAndImage"
+        onClientUploadComplete={(res) => {
+          console.log(`onClientUploadComplete`, res);
+          alert("Upload Completed");
+        }}
+        onUploadBegin={() => {
+          console.log("upload begin");
+        }}
+      >
         <UT.Dropzone style={{ marginTop: 24 }}>
           {({ dropzone, isUploading }) => (
             <div
