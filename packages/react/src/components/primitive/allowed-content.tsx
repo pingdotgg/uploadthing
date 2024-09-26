@@ -1,3 +1,5 @@
+"use client";
+
 import { ElementType, Ref } from "react";
 
 import { allowedContentTextLabelGenerator } from "@uploadthing/shared";

@@ -1,3 +1,5 @@
+"use client";
+
 import { ElementType, Ref } from "react";
 
 import { useDropzone } from "@uploadthing/dropzone/react";

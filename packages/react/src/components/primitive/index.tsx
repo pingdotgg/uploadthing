@@ -1,3 +1,5 @@
+"use client";
+
 export { Root } from "./root";
 export { Button } from "./button";
 export { Dropzone } from "./dropzone";
