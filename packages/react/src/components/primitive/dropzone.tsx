@@ -1,16 +1,17 @@
 "use client";
 
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import type {
   ChangeEvent,
   DragEvent,
   ElementType,
   HTMLProps,
+  KeyboardEvent,
+  MouseEvent,
   Ref,
 } from "react";
-import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { fromEvent } from "file-selector";
 
-import type { DropzoneOptions } from "@uploadthing/shared";
 import {
   acceptPropAsAcceptAttr,
   allFilesAccepted,
@@ -25,14 +26,15 @@ import {
   noop,
   reducer,
 } from "@uploadthing/shared";
+import type { DropzoneOptions } from "@uploadthing/shared";
 
 import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
-import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 import {
   PrimitiveContextMergeProvider,
   PrimitiveSlot,
   usePrimitiveValues,
 } from "./root";
+import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
 const DEFAULT_DROPZONE_TAG = "div";
 
