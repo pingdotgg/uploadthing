@@ -1,11 +1,23 @@
-/**
- * This is a forked version of the react-dropzone package, that's been minified
- * to suit UploadThing's needs and be easily portable to other frameworks than React.
- * See original source here: https://github.com/react-dropzone/react-dropzone
- * The original package is licensed under the MIT license.
- */
+export type AcceptProp = Record<string, string[]>;
 
-import type { AcceptProp, DropzoneState } from "./types";
+export type DropzoneOptions = {
+  multiple?: boolean;
+  accept?: AcceptProp | undefined;
+  minSize?: number;
+  maxSize?: number;
+  maxFiles?: number;
+  disabled?: boolean | undefined;
+  onDrop: <T extends File>(acceptedFiles: T[]) => void;
+};
+
+export type DropzoneState = {
+  isFocused: boolean;
+  isDragActive: boolean;
+  isDragAccept: boolean;
+  isDragReject: boolean;
+  isFileDialogActive: boolean;
+  acceptedFiles: File[];
+};
 
 /**
  * Copyright (c) (MIT License) 2015 Andrey Okonetchnikov

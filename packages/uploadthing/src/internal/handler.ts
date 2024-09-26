@@ -656,11 +656,36 @@ const handleUploadAction = (opts: {
                   HttpBody.text(payload, "application/json"),
                 ),
                 httpClient,
+
                 HttpClientResponse.arrayBuffer,
                 Effect.asVoid,
-                Effect.tap(
-                  Effect.log(`Successfully simulated '${hook}' event`),
-                ),
+                Effect.tapBoth({
+                  onSuccess: (res) =>
+                    Effect.logDebug(
+                      "Successfully forwarded callback request from dev stream",
+                    ).pipe(
+                      Effect.annotateLogs("response", res),
+                      Effect.annotateLogs("hook", hook),
+                      Effect.annotateLogs("signature", signature),
+                      Effect.annotateLogs("payload", payload),
+                    ),
+                  onFailure: (err) =>
+                    err._tag === "ResponseError"
+                      ? Effect.flatMap(err.response.json, (json) =>
+                          Effect.logError(
+                            `Failed to forward callback request from dev stream (${err.response.status})`,
+                          ).pipe(
+                            Effect.annotateLogs("response", err.response),
+                            Effect.annotateLogs("json", json),
+                            Effect.annotateLogs("hook", hook),
+                            Effect.annotateLogs("signature", signature),
+                            Effect.annotateLogs("payload", payload),
+                          ),
+                        )
+                      : Effect.logError(
+                          "Failed to forward callback request from dev stream",
+                        ).pipe(Effect.annotateLogs("error", err)),
+                }),
                 Effect.ignoreLogged,
               ),
           ),

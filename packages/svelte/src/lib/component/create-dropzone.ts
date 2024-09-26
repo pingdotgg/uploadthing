@@ -16,10 +16,8 @@ import {
   isValidSize,
   noop,
   reducer,
-} from "./core";
-import type { DropzoneOptions } from "./types";
-
-export type * from "./types";
+} from "@uploadthing/shared";
+import type { DropzoneOptions } from "@uploadthing/shared";
 
 export type DropEvent = InputEvent | DragEvent | Event;
 
@@ -305,7 +303,7 @@ export function createDropzone(_props: DropzoneOptions) {
   // This is a svelte action, it should be used as "use:dropzoneInput"
   const dropzoneInput: Action<HTMLInputElement, DropzoneOptions> = (
     node,
-    options,
+    options: DropzoneOptions,
   ) => {
     inputRef.set(node);
     node.style.display = "none";

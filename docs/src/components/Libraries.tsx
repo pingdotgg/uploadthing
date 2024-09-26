@@ -129,7 +129,7 @@ export function Frameworks() {
       </Heading>
       <Prose as="p">
         Using a fullstack framework makes integrating UploadThing a breeze. No
-        matter what framework you use, there's a good change we have a first
+        matter what framework you use, there's a good chance we have a first
         party adapter for it.
       </Prose>
       <div className="not-prose mt-4 grid grid-cols-1 gap-x-6 gap-y-10 border-t border-zinc-900/5 pt-10 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 dark:border-white/5">
