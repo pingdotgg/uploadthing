@@ -7,9 +7,9 @@ import type {
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
-  semverLite,
   UploadAbortedError,
   UploadThingError,
+  warnIfInvalidPeerDependency,
 } from "@uploadthing/shared";
 import {
   genUploader,
@@ -47,7 +47,7 @@ const useRouteConfig = (
  * The actual hook we export for public usage is generated from `generateReactHelpers`
  * which has the URL and FileRouter generic pre-bound.
  */
-export function __useUploadThing<
+export function __useUploadThingInternal<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 >(
@@ -143,11 +143,11 @@ export function __useUploadThing<
 export const generateReactHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
-    console.error(
-      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
-    );
-  }
+  warnIfInvalidPeerDependency(
+    "@uploadthing/react",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
 
   const url = resolveMaybeUrlArg(initOpts?.url);
 
@@ -155,10 +155,10 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) {
-    return __useUploadThing(url, endpoint, opts);
+    return __useUploadThingInternal(url, endpoint, opts);
   }
 
-  const getRouteConfig = (endpoint: keyof TRouter) => {
+  function getRouteConfig(endpoint: keyof TRouter) {
     const maybeServerData = globalThis.__UPLOADTHING;
     const config = maybeServerData?.find((x) => x.slug === endpoint)?.config;
     if (!config) {
@@ -167,7 +167,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
       );
     }
     return config;
-  };
+  }
 
   return {
     useUploadThing,

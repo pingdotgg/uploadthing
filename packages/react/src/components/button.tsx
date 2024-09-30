@@ -22,7 +22,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { __useUploadThing } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -109,7 +109,7 @@ export function UploadButton<
   );
   const [files, setFiles] = useState<File[]>([]);
 
-  const { startUpload, isUploading, routeConfig } = __useUploadThing(
+  const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
     resolveMaybeUrlArg($props.url),
     $props.endpoint,
     {
