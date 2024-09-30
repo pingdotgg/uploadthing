@@ -74,6 +74,7 @@ export const assertFilesMeetConfig = (
       const type = yield* getTypeFromFileName(
         file.name,
         objectKeys(routeConfig),
+        file.type,
       );
       counts[type] = (counts[type] ?? 0) + 1;
 

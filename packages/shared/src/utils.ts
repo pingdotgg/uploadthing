@@ -38,6 +38,15 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
   return "4MB";
 }
 
+export function getDefaultRouteConfigValues(type: FileRouterInputKey) {
+  return {
+    maxFileSize: getDefaultSizeForType(type),
+    maxFileCount: 1,
+    minFileCount: 1,
+    contentDisposition: "inline" as const,
+  };
+}
+
 /**
  * This function takes in the user's input and "upscales" it to a full config
  * Additionally, it replaces numbers with "safe" equivalents
@@ -55,13 +64,7 @@ export const fillInputRouteConfig = (
   if (isRouteArray(routeConfig)) {
     return Micro.succeed(
       routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
-        acc[fileType] = {
-          // Apply defaults
-          maxFileSize: getDefaultSizeForType(fileType),
-          maxFileCount: 1,
-          minFileCount: 1,
-          contentDisposition: "inline" as const,
-        };
+        acc[fileType] = getDefaultRouteConfigValues(fileType);
         return acc;
       }, {}),
     );
@@ -72,15 +75,7 @@ export const fillInputRouteConfig = (
   for (const key of objectKeys(routeConfig)) {
     const value = routeConfig[key];
     if (!value) return Micro.fail(new InvalidRouteConfigError(key));
-
-    const defaultValues = {
-      maxFileSize: getDefaultSizeForType(key),
-      maxFileCount: 1,
-      minFileCount: 1,
-      contentDisposition: "inline" as const,
-    };
-
-    newConfig[key] = { ...defaultValues, ...value };
+    newConfig[key] = { ...getDefaultRouteConfigValues(key), ...value };
   }
 
   // we know that the config is valid, so we can stringify it and parse it back
@@ -95,11 +90,12 @@ export const fillInputRouteConfig = (
 export const getTypeFromFileName = (
   fileName: string,
   allowedTypes: FileRouterInputKey[],
+  fallbackType?: string,
 ): Micro.Micro<
   FileRouterInputKey,
   UnknownFileTypeError | InvalidFileTypeError
 > => {
-  const mimeType = lookup(fileName);
+  const mimeType = lookup(fileName) || fallbackType;
   if (!mimeType) {
     if (allowedTypes.includes("blob")) return Micro.succeed("blob");
     return Micro.fail(new UnknownFileTypeError(fileName));
