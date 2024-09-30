@@ -260,7 +260,7 @@
   </div>
   <button
     class={cn(
-      "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 cursor-pointer",
+      "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
       state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
