@@ -220,9 +220,9 @@ export function createDropzone(_props: DropzoneOptions) {
   const openFileDialog = () => {
     const input = get(inputRef);
     if (input) {
-      dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
+      dispatch({ type: "openDialog" });
     }
   };
 
@@ -238,7 +238,6 @@ export function createDropzone(_props: DropzoneOptions) {
   };
 
   const onInputElementClick = (event: MouseEvent) => {
-    console.log("onInputElementClick", get(state).isFileDialogActive);
     event.stopPropagation();
     if (get(state).isFileDialogActive) {
       event.preventDefault();
@@ -248,7 +247,6 @@ export function createDropzone(_props: DropzoneOptions) {
   const onFocus = () => dispatch({ type: "focus" });
   const onBlur = () => dispatch({ type: "blur" });
   const onClick = () => {
-    console.log("onClick");
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
@@ -287,6 +285,18 @@ export function createDropzone(_props: DropzoneOptions) {
     };
   };
 
+  const safeSetAttribute = (
+    node: HTMLElement,
+    name: string,
+    value: string | boolean | undefined,
+  ) => {
+    if (value) {
+      node.setAttribute(name, String(value));
+    } else {
+      node.removeAttribute(name);
+    }
+  };
+
   // This is a svelte action, it should be used as "use:dropzoneInput"
   const dropzoneInput: Action<HTMLInputElement, DropzoneOptions> = (
     node,
@@ -295,11 +305,11 @@ export function createDropzone(_props: DropzoneOptions) {
     inputRef.set(node);
     node.style.display = "none";
     node.setAttribute("type", "file");
-    node.setAttribute("multiple", String(options.multiple));
-    node.setAttribute("disabled", String(options.disabled));
-    node.setAttribute("tabIndex", "-1");
+    node.setAttribute("tabindex", "-1");
+    safeSetAttribute(node, "multiple", options.multiple);
+    safeSetAttribute(node, "disabled", options.disabled);
     const acceptAttrUnsub = acceptAttr.subscribe((accept) => {
-      node.setAttribute("accept", accept!);
+      safeSetAttribute(node, "accept", accept);
     });
 
     node.addEventListener("change", onDropCb);
@@ -308,8 +318,8 @@ export function createDropzone(_props: DropzoneOptions) {
     return {
       update(options: DropzoneOptions) {
         props.update(($props) => ({ ...$props, ...options }));
-        node.setAttribute("multiple", String(options.multiple));
-        node.setAttribute("disabled", String(options.disabled));
+        safeSetAttribute(node, "multiple", options.multiple);
+        safeSetAttribute(node, "disabled", options.disabled);
       },
       destroy() {
         inputRef.set(null);

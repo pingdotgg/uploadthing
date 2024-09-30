@@ -76,7 +76,7 @@
   let acRef = new AbortController();
 
   let files: File[] = [];
-  let uploadProgress = 0;
+  $: uploadProgress = 0;
   let rootRef: HTMLElement;
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
@@ -140,26 +140,10 @@
 
   $: ready = fileTypes.length > 0;
 
-  const onUploadClick = (e: MouseEvent) => {
-    if (state === "uploading") {
-      e.preventDefault();
-      e.stopPropagation();
-
-      acRef.abort();
-      acRef = new AbortController();
-      return;
-    }
-    if (mode === "manual" && files.length > 0) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      uploadFiles(files);
-    }
-  };
-
   onMount(() => {
+    if (!appendOnPaste) return;
+
     const handlePaste = (event: ClipboardEvent) => {
-      if (!appendOnPaste) return;
       // eslint-disable-next-line no-undef
       if (document.activeElement !== rootRef) return;
 
@@ -270,7 +254,22 @@
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
-    on:click={onUploadClick}
+    on:click={(e) => {
+      if (state === "uploading") {
+        e.preventDefault();
+        e.stopPropagation();
+
+        acRef.abort();
+        acRef = new AbortController();
+        return;
+      }
+      if (mode === "manual" && files.length > 0) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        uploadFiles(files);
+      }
+    }}
     data-ut-element="button"
     data-state={state}
     type="button"
