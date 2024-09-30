@@ -4,7 +4,7 @@ export {
    */
   generateReactHelpers,
   /**
-   * @internal - if you're using @uploadthing/react, import this from the main entrypoint instead
+   * @deprecated - This is an internal function.
    */
-  INTERNAL_uploadthingHookGen,
+  __useUploadThing,
 } from "./useUploadThing";

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import * as DocumentPicker from "expo-document-picker";
 
 import type { UseUploadthingProps } from "@uploadthing/react";
-import { INTERNAL_uploadthingHookGen } from "@uploadthing/react/native";
+import { __useUploadThing } from "@uploadthing/react/native";
 import { generatePermittedFileTypes } from "@uploadthing/shared";
 import type { ExpandedRouteConfig, ExtendObjectIf } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
@@ -34,15 +34,12 @@ export const GENERATE_useDocumentUploader = <
 >(initOpts: {
   url: URL;
 }) => {
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: initOpts.url,
-  });
-
   const useDocumentUploader = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
-    const { routeConfig, startUpload, isUploading } = useUploadThing(
+    const { routeConfig, startUpload, isUploading } = __useUploadThing(
+      initOpts.url,
       endpoint,
       opts,
     );

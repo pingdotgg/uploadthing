@@ -42,7 +42,10 @@ const useRouteConfig = (
   return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
 };
 
-function __useUploadThing<
+/**
+ * @internal - This is an internal function. Use `generateReactHelpers` instead.
+ */
+export function __useUploadThing<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 >(
@@ -135,36 +138,23 @@ function __useUploadThing<
   } as const;
 }
 
-export const INTERNAL_uploadthingHookGen = <
-  TRouter extends FileRouter,
->(initOpts: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { http://localhost:3000/api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   */
-  url: URL;
-}) => {
+export const generateReactHelpers = <TRouter extends FileRouter>(
+  initOpts?: GenerateTypedHelpersOptions,
+) => {
   if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
     console.error(
       `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
     );
   }
 
+  const url = resolveMaybeUrlArg(initOpts?.url);
+
   function useUploadThing<TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) {
-    return __useUploadThing(initOpts.url, endpoint, opts);
+    return __useUploadThing(url, endpoint, opts);
   }
-
-  return useUploadThing;
-};
-
-export const generateReactHelpers = <TRouter extends FileRouter>(
-  initOpts?: GenerateTypedHelpersOptions,
-) => {
-  const url = resolveMaybeUrlArg(initOpts?.url);
 
   const getRouteConfig = (endpoint: keyof TRouter) => {
     const maybeServerData = globalThis.__UPLOADTHING;
@@ -176,8 +166,6 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     }
     return config;
   };
-
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({ url });
 
   return {
     useUploadThing,
