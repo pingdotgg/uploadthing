@@ -140,6 +140,21 @@
 
   $: ready = fileTypes.length > 0;
 
+  const onUploadClick = (e: MouseEvent) => {
+    if (state === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
+      acRef.abort();
+      acRef = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadFiles(files);
+    }
+  };
+
   onMount(() => {
     if (!appendOnPaste) return;
 
@@ -254,22 +269,7 @@
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
-    on:click={(e) => {
-      if (state === "uploading") {
-        e.preventDefault();
-        e.stopPropagation();
-
-        acRef.abort();
-        acRef = new AbortController();
-        return;
-      }
-      if (mode === "manual" && files.length > 0) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        uploadFiles(files);
-      }
-    }}
+    on:click={onUploadClick}
     data-ut-element="button"
     data-state={state}
     type="button"
