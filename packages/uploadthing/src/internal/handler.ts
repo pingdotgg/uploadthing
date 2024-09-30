@@ -534,7 +534,7 @@ const handleUploadAction = (opts: {
           (type) => ({
             name: file.name,
             size: file.size,
-            type: file.type,
+            type: file.type || type,
             lastModified: file.lastModified,
             customId: file.customId,
             contentDisposition:

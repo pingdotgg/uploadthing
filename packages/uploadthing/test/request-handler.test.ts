@@ -200,6 +200,61 @@ describe("file route config", () => {
       message: "Invalid config: FileCountMismatch",
     });
   });
+
+  it("uses file name to look up mime type", async ({ db }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.png", size: 48, type: "" }], // mimic browser unrecognized type
+        }),
+      }),
+    );
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo.png", size: 48, type: "" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo.png",
+        url: expect.stringContaining("x-ut-file-type=image"),
+      },
+    ]);
+  });
+
+  it("falls back to browser-recognized type when there's no file extension", async ({
+    db,
+  }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+    expect(res.status).toBe(200);
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo", size: 48, type: "image/png" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo",
+        url: expect.stringContaining("x-ut-file-type=image%252Fpng"),
+      },
+    ]);
+  });
 });
 
 describe(".input()", () => {
