@@ -44,6 +44,8 @@ const useRouteConfig = (
 
 /**
  * @internal - This is an internal function. Use `generateReactHelpers` instead.
+ * The actual hook we export for public usage is generated from `generateReactHelpers`
+ * which has the URL and FileRouter generic pre-bound.
  */
 export function __useUploadThing<
   TRouter extends FileRouter,
