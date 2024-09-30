@@ -51,7 +51,7 @@ export const isValidFileType = (
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
   Micro.runSync(
-    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+    getTypeFromFileName(file.name, objectKeys(routeConfig), file.type).pipe(
       Micro.map((type) => file.type.includes(type)),
       Micro.orElseSucceed(() => false),
     ),
@@ -66,7 +66,7 @@ export const isValidFileSize = (
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
   Micro.runSync(
-    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+    getTypeFromFileName(file.name, objectKeys(routeConfig), file.type).pipe(
       Micro.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
       Micro.map((maxFileSize) => file.size <= maxFileSize),
       Micro.orElseSucceed(() => false),

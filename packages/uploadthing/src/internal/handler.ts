@@ -530,7 +530,7 @@ const handleUploadAction = (opts: {
       filesWithCustomIds,
       (file) =>
         Effect.map(
-          getTypeFromFileName(file.name, objectKeys(parsedConfig)),
+          getTypeFromFileName(file.name, objectKeys(parsedConfig), file.type),
           (type) => ({
             name: file.name,
             size: file.size,
