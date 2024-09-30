@@ -253,6 +253,18 @@ export function createDropzone(_props: DropzoneOptions) {
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
   };
 
+  const safeSetAttribute = (
+    node: HTMLElement,
+    name: string,
+    value: string | boolean | undefined,
+  ) => {
+    if (value) {
+      node.setAttribute(name, String(value));
+    } else {
+      node.removeAttribute(name);
+    }
+  };
+
   // This is a svelte action, it should be used as "use:dropzoneRoot"
   // We should be able to refactor this when svelte 5 is released to bring it more inline
   // with the rest of the dropzone implementations
@@ -283,18 +295,6 @@ export function createDropzone(_props: DropzoneOptions) {
         node.removeEventListener("drop", onDropCb);
       },
     };
-  };
-
-  const safeSetAttribute = (
-    node: HTMLElement,
-    name: string,
-    value: string | boolean | undefined,
-  ) => {
-    if (value) {
-      node.setAttribute(name, String(value));
-    } else {
-      node.removeAttribute(name);
-    }
   };
 
   // This is a svelte action, it should be used as "use:dropzoneInput"
