@@ -337,7 +337,7 @@ describe(".onUploadComplete()", () => {
         size: 48,
         type: "image/png",
         customId: null,
-        hash: "some-md5-hash",
+        fileHash: "some-md5-hash",
       }),
     });
     const signature = await Effect.runPromise(
@@ -367,7 +367,7 @@ describe(".onUploadComplete()", () => {
         type: "image/png",
         url: "https://utfs.io/f/some-random-key.png",
         appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
-        hash: "some-md5-hash",
+        fileHash: "some-md5-hash",
       },
       metadata: {},
     });
@@ -385,7 +385,7 @@ describe(".onUploadComplete()", () => {
         size: 48,
         type: "image/png",
         customId: null,
-        hash: "some-md5-hash",
+        fileHash: "some-md5-hash",
       }),
     });
 
@@ -418,7 +418,7 @@ describe(".onUploadComplete()", () => {
         size: 48,
         type: "image/png",
         customId: null,
-        hash: "some-md5-hash",
+        fileHash: "some-md5-hash",
       }),
     });
     const signature = await Effect.runPromise(
