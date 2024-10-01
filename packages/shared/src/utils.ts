@@ -13,6 +13,7 @@ import {
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
+  FileProperties,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
@@ -87,18 +88,22 @@ export const fillInputRouteConfig = (
   );
 };
 
-export const getTypeFromFileName = (
-  fileName: string,
+/**
+ * Match the file's type for a given allow list e.g. `image/png => image`
+ * Prefers the file's type, then falls back to a extension-based lookup
+ */
+export const matchFileType = (
+  file: FileProperties,
   allowedTypes: FileRouterInputKey[],
-  fallbackType?: string,
 ): Micro.Micro<
   FileRouterInputKey,
   UnknownFileTypeError | InvalidFileTypeError
 > => {
-  const mimeType = lookup(fileName) || fallbackType;
+  // Type might be "" if the browser doesn't recognize the mime type
+  const mimeType = file.type || lookup(file.name);
   if (!mimeType) {
     if (allowedTypes.includes("blob")) return Micro.succeed("blob");
-    return Micro.fail(new UnknownFileTypeError(fileName));
+    return Micro.fail(new UnknownFileTypeError(file.name));
   }
 
   // If the user has specified a specific mime type, use that
@@ -120,7 +125,7 @@ export const getTypeFromFileName = (
     if (allowedTypes.includes("blob")) {
       return Micro.succeed("blob");
     } else {
-      return Micro.fail(new InvalidFileTypeError(type, fileName));
+      return Micro.fail(new InvalidFileTypeError(type, file.name));
     }
   }
 

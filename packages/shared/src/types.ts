@@ -30,7 +30,7 @@ export interface FileProperties {
   name: string;
   size: number;
   type: string;
-  lastModified?: number;
+  lastModified?: number | undefined;
 }
 
 export type ExtractHashPartsFn = (

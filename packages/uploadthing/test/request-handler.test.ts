@@ -201,7 +201,35 @@ describe("file route config", () => {
     });
   });
 
-  it("uses file name to look up mime type", async ({ db }) => {
+  it("uses file type to match mime type with router config", async ({ db }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo", size: 48, type: "image/png" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo",
+        url: expect.stringContaining("x-ut-file-type=image"),
+      },
+    ]);
+  });
+
+  it("falls back to filename lookup type when there's no recognized mime type", async ({
+    db,
+  }) => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -211,6 +239,7 @@ describe("file route config", () => {
         }),
       }),
     );
+    expect(res.status).toBe(200);
 
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -223,35 +252,6 @@ describe("file route config", () => {
       {
         name: "foo.png",
         url: expect.stringContaining("x-ut-file-type=image"),
-      },
-    ]);
-  });
-
-  it("falls back to browser-recognized type when there's no file extension", async ({
-    db,
-  }) => {
-    const res = await handler(
-      new Request(createApiUrl("imageUploader", "upload"), {
-        method: "POST",
-        headers: baseHeaders,
-        body: JSON.stringify({
-          files: [{ name: "foo", size: 48, type: "image/png" }],
-        }),
-      }),
-    );
-    expect(res.status).toBe(200);
-
-    expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        files: [{ name: "foo", size: 48, type: "image/png" }],
-      }),
-    );
-
-    expect(res.status).toBe(200);
-    await expect(res.json()).resolves.toMatchObject([
-      {
-        name: "foo",
-        url: expect.stringContaining("x-ut-file-type=image%252Fpng"),
       },
     ]);
   });
