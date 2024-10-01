@@ -49,7 +49,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -129,9 +129,6 @@ export function UploadDropzone<
   // since the ErrorMessage messes it up otherwise
   const $props = props as unknown as UploadDropzoneProps<TRouter, TEndpoint> &
     UploadThingInternalProps;
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
 
   const {
     mode = "manual",
@@ -145,7 +142,8 @@ export function UploadDropzone<
     $props.__internal_upload_progress ?? 0,
   );
 
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
+    resolveMaybeUrlArg($props.url),
     $props.endpoint,
     {
       signal: acRef.current.signal,

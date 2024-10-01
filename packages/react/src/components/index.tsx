@@ -1,6 +1,11 @@
-import { resolveMaybeUrlArg } from "@uploadthing/shared";
+import {
+  resolveMaybeUrlArg,
+  warnIfInvalidPeerDependency,
+} from "@uploadthing/shared";
+import { version as uploadthingClientVersion } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/types";
 
+import { peerDependencies } from "../../package.json";
 import type {
   GenerateTypedHelpersOptions,
   UploadthingComponentProps,
@@ -16,6 +21,12 @@ export { UploadButton, UploadDropzone, Uploader };
 export const generateUploadButton = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
+  warnIfInvalidPeerDependency(
+    "@uploadthing/react",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
+
   const url = resolveMaybeUrlArg(opts?.url);
 
   const TypedButton = <TEndpoint extends keyof TRouter>(
@@ -30,6 +41,12 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 export const generateUploadDropzone = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
+  warnIfInvalidPeerDependency(
+    "@uploadthing/react",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
+
   const url = resolveMaybeUrlArg(opts?.url);
 
   const TypedDropzone = <TEndpoint extends keyof TRouter>(
@@ -44,6 +61,12 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 export const generateUploader = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
+  warnIfInvalidPeerDependency(
+    "@uploadthing/react",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
+
   const url = resolveMaybeUrlArg(opts?.url);
 
   const TypedUploader = <TEndpoint extends keyof TRouter>(
