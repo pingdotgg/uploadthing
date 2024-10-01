@@ -1,19 +1,19 @@
 import { docsMetadata } from "@/lib/utils";
 
 export const metadata = docsMetadata({
-  title: "SolidStart Setup",
-  description: "Learn how to set up SolidStart with UploadThing",
+  title: "Tanstack/Start Setup",
+  description: "Learn how to set up a Tanstack/Start project with UploadThing",
   category: "Getting Started",
 });
 
-# Getting Started with SolidStart
+# Getting Started with Tanstack/Start
 
 ## Package Setup
 
 ### Install the packages
 
 ```bash npm2yarn
-npm install uploadthing @uploadthing/solid
+npm install uploadthing @uploadthing/react
 ```
 
 ### Add env variables
@@ -22,11 +22,11 @@ npm install uploadthing @uploadthing/solid
 UPLOADTHING_TOKEN=... # A token for interacting with the SDK
 ```
 
-<Note>
+<Warning>
   If you don't already have a uploadthing token, [sign
   up](https://uploadthing.com/sign-in) and create one from the
   [dashboard!](https://uploadthing.com/dashboard)
-</Note>
+</Warning>
 
 ## Set Up A FileRouter
 
@@ -44,7 +44,7 @@ of a FileRoute similar to an endpoint, it has:
 To get full insight into what you can do with the FileRoutes, please refer to
 the [File Router API](/file-routes).
 
-```ts {{ title: "src/server/uploadthing.ts" }}
+```ts {{ title: "app/server/uploadthing.ts" }}
 import { createUploadthing, UploadThingError } from "uploadthing/server";
 import type { FileRouter } from "uploadthing/server";
 
@@ -52,6 +52,7 @@ const f = createUploadthing();
 
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
+// FileRouter for your app, can contain multiple FileRoutes
 export const uploadRouter = {
   // Define as many FileRoutes as you like, each with a unique routeSlug
   imageUploader: f({ image: { maxFileSize: "4MB" } })
@@ -87,19 +88,25 @@ export type UploadRouter = typeof uploadRouter;
   serving it from `/api/uploadthing`.
 </Note>
 
-```ts {{ title: "src/routes/api/uploadthing.ts" }}
-import type { APIEvent } from "@solidjs/start/server";
+<Warning>
+  Make sure to configure API entry handler in `app/api.ts`. For more
+  information, please refer to the [@tanstack/start
+  docs](https://tanstack.com/router/latest/docs/framework/react/start/api-routes#setting-up-the-entry-handler).
+</Warning>
+
+```ts {{ title: "app/routes/api/uploadthing.ts" }}
+import { createAPIFileRoute } from "@tanstack/start/api";
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { uploadRouter } from "~/server/uploadthing";
+import { uploadRouter } from "../../server/uploadthing";
 
-const handler = createRouteHandler({
-  router: uploadRouter,
+const handlers = createRouteHandler({ router: uploadRouter });
+
+export const Route = createAPIFileRoute("/api/uploadthing")({
+  GET: handlers,
+  POST: handlers,
 });
-
-export const GET = (event: APIEvent) => handler(event.request);
-export const POST = (event: APIEvent) => handler(event.request);
 ```
 
 > See configuration options in
@@ -109,56 +116,56 @@ export const POST = (event: APIEvent) => handler(event.request);
 
 We provide components to make uploading easier. We highly recommend re-exporting
 them with the types assigned, but you CAN import the components individually
-from `@uploadthing/solid` instead.
+from `@uploadthing/react` instead.
 
-```ts {{ title: "src/utils/uploadthing.ts" }}
+```ts {{ title: "app/utils/uploadthing.ts" }}
 import {
-  generateSolidHelpers,
+  generateReactHelpers,
   generateUploadButton,
   generateUploadDropzone,
-} from "@uploadthing/solid";
+} from "@uploadthing/react";
 
-import type { UploadRouter } from "~/server/uploadthing";
+import type { UploadRouter } from "../server/uploadthing";
 
-// URL is only needed for server side rendering, or when your router
-// is deployed on a different path than `/api/uploadthing`
-const url = `http://localhost:${process.env.PORT ?? 3000}`;
-
-export const UploadButton = generateUploadButton<UploadRouter>({ url });
-export const UploadDropzone = generateUploadDropzone<UploadRouter>({ url });
-export const { createUploadThing } = generateSolidHelpers<UploadRouter>({
-  url,
-});
+export const UploadButton = generateUploadButton<UploadRouter>();
+export const UploadDropzone = generateUploadDropzone<UploadRouter>();
+export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 ```
 
 <Note>
-  To learn more about the components, check out the [solid API
-  Reference](/api-reference/solid).
+  To learn more about the components, check out the [react API
+  reference](/api-reference/react).
 </Note>
 
 ### Add UploadThing's Styles
 
 <Tabs tabs={["Tailwind", "Not Tailwind"]}>
   <Tab>
-      Wrap your Tailwind config with the `withUt` helper. You can learn more about our
-      Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+    Wrap your Tailwind config with the `withUt` helper. You can learn more about our
+    Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
 
-      ```tsx
-      import { withUt } from "uploadthing/tw";
+    ```tsx
+    import { withUt } from "uploadthing/tw";
 
-      export default withUt({
-        // Your existing Tailwind config
-        content: ["./src/**/*.{ts,tsx,mdx}"],
-        ...
-      });
-      ```
+    export default withUt({
+      // Your existing Tailwind config
+      content: ["./src/**/*.{ts,tsx,mdx}"],
+      ...
+    });
+    ```
 
   </Tab>
   <Tab>
-    Include our CSS file in the root layout to make sure the components look right!
+    Include our CSS in your root route to make sure the components look right!
 
-    ```tsx {{ title: "src/app.tsx"}}
-    import "@uploadthing/solid/styles.css";
+    ```tsx {{ title: "app/routes/__root.tsx" }}
+    // @ts-expect-error
+    import uploadthingCss from "@uploadthing/react/styles.css?url";
+
+    export const Route = createRootRoute({
+      component: RootComponent,
+      links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+    });
     ```
 
   </Tab>
@@ -166,10 +173,16 @@ export const { createUploadThing } = generateSolidHelpers<UploadRouter>({
 
 ## Mount A Button And Upload!
 
-```tsx {{ title: "src/routes/index.tsx" }}
-import { UploadButton } from "~/utils/uploadthing";
+```tsx {{ title: "app/routes/index.tsx" }}
+import { createFileRoute } from "@tanstack/react-router";
 
-export default function Home() {
+import { UploadButton } from "../utils/uploadthing";
+
+export const Route = createFileRoute("/")({
+  component: Home,
+});
+
+function Home() {
   return <UploadButton endpoint="imageUploader" />;
 }
 ```

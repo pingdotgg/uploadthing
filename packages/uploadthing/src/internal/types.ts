@@ -6,6 +6,7 @@ import type {
   FetchEsque,
   FileRouterInputConfig,
   Json,
+  JsonObject,
   MaybePromise,
   RouteOptions,
   Simplify,
@@ -86,9 +87,10 @@ type MiddlewareFn<
   },
 ) => MaybePromise<TOutput>;
 
-type ResolverFn<TOutput extends Json | void, TParams extends AnyParams> = (
-  opts: ResolverOptions<TParams>,
-) => MaybePromise<TOutput>;
+type ResolverFn<
+  TOutput extends JsonObject | void,
+  TParams extends AnyParams,
+> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
 
 type UploadErrorFn = (input: {
   error: UploadThingError;
@@ -122,7 +124,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
-  onUploadComplete: <TOutput extends Json | void>(
+  onUploadComplete: <TOutput extends JsonObject | void>(
     fn: ResolverFn<TOutput, TParams>,
   ) => Uploader<{
     _routeOptions: TParams["_routeOptions"];

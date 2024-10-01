@@ -11,5 +11,5 @@ export { generateReactHelpers } from "./useUploadThing";
 
 export type * from "./types";
 
-export { useDropzone } from "@uploadthing/dropzone/react";
-export type * from "@uploadthing/dropzone/react";
+export { useDropzone } from "./components/dropzone";
+export type * from "./components/dropzone";
