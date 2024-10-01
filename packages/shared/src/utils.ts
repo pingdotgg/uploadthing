@@ -253,6 +253,18 @@ export function semverLite(required: string, toCheck: string) {
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
 }
 
+export function warnIfInvalidPeerDependency(
+  pkg: string,
+  required: string,
+  toCheck: string,
+) {
+  if (!semverLite(required, toCheck)) {
+    console.warn(
+      `!!!WARNING::: ${pkg} requires "uploadthing@${required}", but version "${toCheck}" is installed`,
+    );
+  }
+}
+
 export const getRequestUrl = (req: Request) =>
   Micro.gen(function* () {
     const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
