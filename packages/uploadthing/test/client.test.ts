@@ -132,7 +132,7 @@ describe("uploadFiles", () => {
         key: expect.stringMatching(/.+/),
         url: expect.stringMatching(fileUrlPattern),
         appUrl: expect.stringMatching(appUrlPattern()),
-        hash: expect.any(String),
+        fileHash: expect.any(String),
       },
     ]);
 
@@ -178,7 +178,7 @@ describe("uploadFiles", () => {
         key: expect.stringMatching(/.+/),
         url: expect.stringMatching(fileUrlPattern),
         appUrl: expect.stringMatching(appUrlPattern()),
-        hash: expect.any(String),
+        fileHash: expect.any(String),
       },
     ]);
 
@@ -213,7 +213,7 @@ describe("uploadFiles", () => {
         key: expect.stringMatching(/.+/),
         url: expect.stringMatching(fileUrlPattern),
         appUrl: expect.stringMatching(appUrlPattern()),
-        hash: expect.any(String),
+        fileHash: expect.any(String),
       },
     ]);
 

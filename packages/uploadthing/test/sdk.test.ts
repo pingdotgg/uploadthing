@@ -54,7 +54,7 @@ describe("uploadFiles", () => {
         appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
         customId: null,
         type: "text/plain",
-        hash: expect.any(String),
+        fileHash: expect.any(String),
       },
       error: null,
     });
@@ -137,7 +137,7 @@ describe("uploadFilesFromUrl", () => {
         appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
         customId: null,
         type: "text/plain",
-        hash: expect.any(String),
+        fileHash: expect.any(String),
       },
       error: null,
     });
@@ -237,7 +237,7 @@ describe("uploadFilesFromUrl", () => {
           type: "text/plain",
           url: `${UTFS_IO_URL}/f/${key1}`,
           appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       },
@@ -260,7 +260,7 @@ describe("uploadFilesFromUrl", () => {
           type: "text/plain",
           url: `${UTFS_IO_URL}/f/${key2}`,
           appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key2}`,
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       },
@@ -477,7 +477,7 @@ describe.runIf(shouldRun)(
           type: "text/plain",
           url: expect.stringMatching(fileUrlPattern),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       });
@@ -513,7 +513,7 @@ describe.runIf(shouldRun)(
           type: "text/plain",
           url: expect.stringMatching(fileUrlPattern),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       });
@@ -544,7 +544,7 @@ describe.runIf(shouldRun)(
           type: "image/vnd.microsoft.icon",
           url: expect.stringMatching(fileUrlPattern),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       });
@@ -570,7 +570,7 @@ describe.runIf(shouldRun)(
           type: "text/plain",
           url: expect.stringMatching(fileUrlPattern),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       });
@@ -613,7 +613,7 @@ describe.runIf(shouldRun)(
           type: "text/plain",
           url: expect.stringMatching(fileUrlPattern),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       });
@@ -654,7 +654,7 @@ describe.runIf(shouldRun)(
           type: "text/plain",
           url: expect.stringMatching(fileUrlPattern),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
-          hash: expect.any(String),
+          fileHash: expect.any(String),
         },
         error: null,
       });
