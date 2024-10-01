@@ -21,14 +21,11 @@ const f = createUploadthing({
 export const uploadRouter = {
   videoAndImage: f({
     image: {
-      maxFileSize: "1GB",
+      maxFileSize: "4MB",
       maxFileCount: 4,
     },
     video: {
       maxFileSize: "16MB",
-    },
-    blob: {
-      maxFileSize: "16GB",
     },
   })
     .middleware(({ req }) => {
