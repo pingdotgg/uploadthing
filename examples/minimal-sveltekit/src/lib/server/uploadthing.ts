@@ -30,9 +30,6 @@ export const uploadRouter = {
     video: {
       maxFileSize: "16MB",
     },
-    blob: {
-      maxFileSize: "16GB",
-    },
   })
     .middleware(({ req, files }) => {
       // Check some condition based on the incoming requrest
