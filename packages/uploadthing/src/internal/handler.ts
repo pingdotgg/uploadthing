@@ -16,6 +16,7 @@ import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Match from "effect/Match";
+import * as Redacted from "effect/Redacted";
 
 import {
   fillInputRouteConfig,
@@ -373,7 +374,7 @@ const handleCallbackRequest = (opts: {
       yield* HttpClientRequest.post(`/callback-result`).pipe(
         HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.setHeaders({
-          "x-uploadthing-api-key": apiKey,
+          "x-uploadthing-api-key": Redacted.value(apiKey),
           "x-uploadthing-version": pkgJson.version,
           "x-uploadthing-be-adapter": beAdapter,
           "x-uploadthing-fe-package": fePackage,
@@ -602,7 +603,7 @@ const handleUploadAction = (opts: {
     const metadataRequest = HttpClientRequest.post("/route-metadata").pipe(
       HttpClientRequest.prependUrl(ingestUrl),
       HttpClientRequest.setHeaders({
-        "x-uploadthing-api-key": apiKey,
+        "x-uploadthing-api-key": Redacted.value(apiKey),
         "x-uploadthing-version": pkgJson.version,
         "x-uploadthing-be-adapter": beAdapter,
         "x-uploadthing-fe-package": fePackage,

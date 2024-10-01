@@ -1,6 +1,6 @@
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
-import * as Exit from "effect/Exit";
+import * as Redacted from "effect/Redacted";
 import { describe, expect } from "vitest";
 
 import {
@@ -14,7 +14,7 @@ import {
 describe("crypto sign / verify", () => {
   it.effect("signs and verifies a payload", () =>
     Effect.gen(function* () {
-      const secret = "foo-123";
+      const secret = Redacted.make("foo-123");
       const payload = "hello world";
 
       const sig = yield* signPayload(payload, secret);
@@ -26,7 +26,7 @@ describe("crypto sign / verify", () => {
 
   it.effect("doesn't verify a payload with a bad signature", () =>
     Effect.gen(function* () {
-      const secret = "foo-123";
+      const secret = Redacted.make("foo-123");
       const payload = "hello world";
 
       const sig = yield* signPayload(payload, secret);
@@ -38,11 +38,15 @@ describe("crypto sign / verify", () => {
 
   it.effect("doesn't verify a payload with a bad secret", () =>
     Effect.gen(function* () {
-      const secret = "foo-123";
+      const secret = Redacted.make("foo-123");
       const payload = "hello world";
 
       const sig = yield* signPayload(payload, secret);
-      const verified = yield* verifySignature(payload, sig, "bad");
+      const verified = yield* verifySignature(
+        payload,
+        sig,
+        Redacted.make("bad"),
+      );
 
       expect(verified).toBe(false);
     }),
@@ -51,7 +55,7 @@ describe("crypto sign / verify", () => {
   it.effect("generates a signed URL", () =>
     Effect.gen(function* () {
       const url = "https://example.com";
-      const secret = "foo-123";
+      const secret = Redacted.make("foo-123");
 
       const signedURL = yield* generateSignedURL(url, secret, {
         ttlInSeconds: 60 * 60,
@@ -67,7 +71,7 @@ describe("crypto sign / verify", () => {
   it.effect("generates and verifies a signed URL", () =>
     Effect.gen(function* () {
       const url = "https://example.com";
-      const secret = "foo-123";
+      const secret = Redacted.make("foo-123");
 
       const signedURL = yield* generateSignedURL(url, secret, {
         ttlInSeconds: 60 * 60,

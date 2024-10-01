@@ -9,6 +9,7 @@ import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 import * as Predicate from "effect/Predicate";
+import * as Redacted from "effect/Redacted";
 
 import type {
   ACL,
@@ -75,7 +76,7 @@ export class UTApi {
         HttpClientRequest.setHeaders({
           "x-uploadthing-version": UPLOADTHING_VERSION,
           "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-api-key": apiKey,
+          "x-uploadthing-api-key": Redacted.value(apiKey),
         }),
         HttpClient.filterStatusOk(httpClient),
         Effect.tapBoth({

@@ -4,6 +4,7 @@ import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
+import * as Redacted from "effect/Redacted";
 import { afterEach, beforeEach, describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
@@ -12,12 +13,12 @@ import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { ParsedToken, UploadThingToken } from "./shared-schemas";
 
 const app1TokenData = {
-  apiKey: "sk_foo",
+  apiKey: Redacted.make("sk_foo"),
   appId: "app-1",
   regions: ["fra1"] as const,
 };
 const app2TokenData = {
-  apiKey: "sk_bar",
+  apiKey: Redacted.make("sk_bar"),
   appId: "app-2",
   regions: ["dub1"] as const,
 };
