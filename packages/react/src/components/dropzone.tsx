@@ -49,7 +49,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
@@ -137,10 +137,6 @@ export function UploadDropzone<
   } = $props.config ?? {};
   const acRef = useRef(new AbortController());
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
-
   const [files, setFiles] = useState<File[]>([]);
 
   const [uploadProgressState, setUploadProgress] = useState(
@@ -148,7 +144,8 @@ export function UploadDropzone<
   );
   const uploadProgress =
     $props.__internal_upload_progress ?? uploadProgressState;
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
+    resolveMaybeUrlArg($props.url),
     $props.endpoint,
     {
       signal: acRef.current.signal,

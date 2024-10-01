@@ -22,7 +22,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -102,10 +102,6 @@ export function UploadButton<
   } = $props.config ?? {};
   const acRef = useRef(new AbortController());
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
-
   const fileInputRef = useRef<HTMLInputElement>(null);
   const labelRef = useRef<HTMLLabelElement>(null);
   const [uploadProgress, setUploadProgress] = useState(
@@ -113,7 +109,8 @@ export function UploadButton<
   );
   const [files, setFiles] = useState<File[]>([]);
 
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
+    resolveMaybeUrlArg($props.url),
     $props.endpoint,
     {
       signal: acRef.current.signal,
