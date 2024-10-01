@@ -227,6 +227,32 @@ describe("file route config", () => {
     ]);
   });
 
+  it("prefers file.type over file.name extension", async ({ db }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo.txt", size: 48, type: "image/png" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo.txt",
+        url: expect.stringContaining("x-ut-file-type=image"),
+      },
+    ]);
+  });
+
   it("falls back to filename lookup type when there's no recognized mime type", async ({
     db,
   }) => {
