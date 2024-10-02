@@ -167,57 +167,54 @@ export type RootPrimitiveComponentProps<
 export function Root<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
->(props: RootPrimitiveComponentProps<TRouter, TEndpoint>) {
-  props;
-    TRouter,
-    TEndpoint
-  > &
-    UploadThingInternalProps;
+>(
+  props: RootPrimitiveComponentProps<TRouter, TEndpoint> &
+    UploadThingInternalProps,
+) {
+  const fileRouteInput = "input" in props ? props.input : undefined;
 
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
-
-  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
+  const { mode = "auto", appendOnPaste = false } = props.config ?? {};
   const acRef = useRef(new AbortController());
 
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
+    url: resolveMaybeUrlArg(props.url),
   });
 
   const focusElementRef = useRef<HTMLElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState(
-    $props.__internal_upload_progress ?? 0,
+    props.__internal_upload_progress ?? 0,
   );
   const [files, setFiles] = useControllableState<File[]>({
-    prop: $props.files,
-    onChange: $props.onFilesChange,
+    prop: props.files,
+    onChange: props.onFilesChange,
     defaultProp: [],
   });
 
   const { startUpload, isUploading, routeConfig } = useUploadThing(
-    $props.endpoint,
+    props.endpoint,
     {
       signal: acRef.current.signal,
-      headers: $props.headers,
+      headers: props.headers,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
         }
         setFiles([]);
-        void $props.onClientUploadComplete?.(res);
+        void props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
       onUploadProgress: (p) => {
         setUploadProgress(p);
-        $props.onUploadProgress?.(p);
+        props.onUploadProgress?.(p);
       },
-      onUploadError: $props.onUploadError,
-      onUploadBegin: $props.onUploadBegin,
-      onBeforeUploadBegin: $props.onBeforeUploadBegin,
+      onUploadError: props.onUploadError,
+      onUploadBegin: props.onUploadBegin,
+      onBeforeUploadBegin: props.onBeforeUploadBegin,
     },
   );
 
-  const { onUploadAborted } = $props;
+  const { onUploadAborted } = props;
   const uploadFiles = useCallback(
     (files: File[]) => {
       startUpload(files, fileRouteInput).catch((e) => {
@@ -234,13 +231,13 @@ export function Root<
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
   let disabled = fileTypes.length === 0;
-  if ($props.disabled) disabled = true;
-  if ($props.__internal_button_disabled) disabled = true;
+  if (props.disabled) disabled = true;
+  if (props.__internal_button_disabled) disabled = true;
 
   const accept = generateMimeTypes(fileTypes).join(", ");
 
   const state = (() => {
-    if ($props.__internal_state) return $props.__internal_state;
+    if (props.__internal_state) return props.__internal_state;
     if (disabled) return "disabled";
     if (!disabled && !isUploading) return "ready";
     return "uploading";
@@ -259,7 +256,7 @@ export function Root<
     setFiles((prev) => {
       filesToUpload = [...prev, ...pastedFiles];
 
-      $props.onChange?.(filesToUpload);
+      props.onChange?.(filesToUpload);
 
       return filesToUpload;
     });
@@ -271,7 +268,7 @@ export function Root<
     files,
     setFiles: (files) => {
       setFiles(files);
-      $props.onChange?.(files);
+      props.onChange?.(files);
 
       if (files.length <= 0) {
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -303,7 +300,7 @@ export function Root<
 
   return (
     <PrimitiveContext.Provider value={primitiveValues}>
-      <PrimitiveSlot>{$props.children}</PrimitiveSlot>
+      <PrimitiveSlot>{props.children}</PrimitiveSlot>
     </PrimitiveContext.Provider>
   );
 }
