@@ -37,6 +37,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       data-state={state}
       aria-disabled={disabled}
       onClick={(e) => {
+        if (disabled) return;
+
         onClick?.(e);
         if (state === "uploading") {
           e.preventDefault();
