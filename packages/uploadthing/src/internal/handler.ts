@@ -9,11 +9,11 @@ import {
   HttpServerResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Match from "effect/Match";
 import * as Redacted from "effect/Redacted";
@@ -70,7 +70,7 @@ export const makeAdapterHandler = <Args extends any[]>(
 ): ((...args: Args) => Promise<Response>) => {
   const layer = Layer.provide(
     Layer.mergeAll(
-      PrettyLogger.layer({ showFiberId: false }),
+      Logger.pretty,
       withMinimalLogLevel,
       HttpClient.layer,
       Layer.succeed(
@@ -657,7 +657,6 @@ const handleUploadAction = (opts: {
                   HttpBody.text(payload, "application/json"),
                 ),
                 httpClient,
-
                 HttpClientResponse.arrayBuffer,
                 Effect.asVoid,
                 Effect.tapBoth({
