@@ -167,14 +167,8 @@ export type RootPrimitiveComponentProps<
 export function Root<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
->(
-  props: FileRouter extends TRouter
-    ? ErrorMessage<"You forgot to pass the generic">
-    : RootPrimitiveComponentProps<TRouter, TEndpoint>,
-) {
-  // Cast back to UploadthingComponentProps<TRouter> to get the correct type
-  // since the ErrorMessage messes it up otherwise
-  const $props = props as unknown as RootPrimitiveComponentProps<
+>(props: RootPrimitiveComponentProps<TRouter, TEndpoint>) {
+  props;
     TRouter,
     TEndpoint
   > &
