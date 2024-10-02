@@ -96,6 +96,7 @@ export function UploadDropzone<
     className,
     content,
     appearance,
+    onDrop,
     __internal_dropzone_disabled,
     __internal_button_disabled,
     ...rootProps
@@ -106,7 +107,10 @@ export function UploadDropzone<
 
   return (
     <Primitive.Root<TRouter, TEndpoint> {...(rootProps as any)}>
-      <Primitive.Dropzone disabled={__internal_dropzone_disabled}>
+      <Primitive.Dropzone
+        onFilesDropped={onDrop}
+        disabled={__internal_dropzone_disabled}
+      >
         {({
           files,
           fileTypes,
