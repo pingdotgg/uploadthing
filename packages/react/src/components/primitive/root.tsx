@@ -261,7 +261,7 @@ export function Root<
       return filesToUpload;
     });
 
-    if (mode === "auto") void uploadFiles(files);
+    if (mode === "auto") void uploadFiles(filesToUpload);
   });
 
   const ready =
