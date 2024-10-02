@@ -17,7 +17,6 @@ import {
   UploadAbortedError,
 } from "@uploadthing/shared";
 import type {
-  ErrorMessage,
   ExpandedRouteConfig,
   FileRouterInputKey,
 } from "@uploadthing/shared";
