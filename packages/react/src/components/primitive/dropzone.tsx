@@ -40,20 +40,31 @@ const DEFAULT_DROPZONE_TAG = "div" as const;
 
 export type PrimitiveDropzoneProps<
   TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG,
-> = PrimitiveComponentProps<TTag>;
+> = PrimitiveComponentProps<TTag> & { disabled?: boolean };
 
 function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
-  { children, as, ...props }: PrimitiveDropzoneProps<TTag>,
+  {
+    children,
+    as,
+    disabled: componentDisabled,
+    ...props
+  }: PrimitiveDropzoneProps<TTag>,
   ref: Ref<HTMLDivElement>,
 ) {
-  const { setFiles, options, fileTypes, disabled, state, refs } =
-    usePrimitiveValues("Dropzone");
+  const {
+    setFiles,
+    options,
+    fileTypes,
+    disabled: rootDisabled,
+    state,
+    refs,
+  } = usePrimitiveValues("Dropzone");
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop: setFiles,
     multiple: options.multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled,
+    disabled: rootDisabled || componentDisabled,
   });
 
   const Comp = as ?? DEFAULT_DROPZONE_TAG;
