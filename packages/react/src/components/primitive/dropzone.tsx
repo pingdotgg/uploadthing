@@ -40,12 +40,22 @@ const DEFAULT_DROPZONE_TAG = "div" as const;
 
 export type PrimitiveDropzoneProps<
   TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG,
-> = PrimitiveComponentProps<TTag> & { disabled?: boolean | undefined };
+> = PrimitiveComponentProps<TTag> & {
+  disabled?: boolean | undefined;
+  /**
+   * Callback called when files are dropped.
+   *
+   * @param acceptedFiles - The files that were accepted.
+   * @deprecated Use `onFilesChange` in `<UT.Root>`
+   */
+  onFilesDropped?: ((acceptedFiles: File[]) => void) | undefined;
+};
 
 function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
   {
     children,
     as,
+    onDrop,
     disabled: componentDisabled,
     ...props
   }: PrimitiveDropzoneProps<TTag>,
@@ -60,8 +70,16 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
     refs,
   } = usePrimitiveValues("Dropzone");
 
+  const onDropCallback = useCallback(
+    (acceptedFiles: File[]) => {
+      onDrop?.(acceptedFiles);
+      setFiles(acceptedFiles);
+    },
+    [setFiles, onDrop],
+  );
+
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
-    onDrop: setFiles,
+    onDrop: onDropCallback,
     multiple: options.multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled: rootDisabled || componentDisabled,
