@@ -40,7 +40,7 @@ const DEFAULT_DROPZONE_TAG = "div" as const;
 
 export type PrimitiveDropzoneProps<
   TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG,
-> = PrimitiveComponentProps<TTag> & { disabled?: boolean };
+> = PrimitiveComponentProps<TTag> & { disabled?: boolean | undefined };
 
 function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
   {
