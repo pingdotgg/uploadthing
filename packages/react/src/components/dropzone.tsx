@@ -73,8 +73,6 @@ type UploadThingInternalProps = {
   __internal_upload_progress?: number;
   // Allow to set ready explicitly and independently of internal state
   __internal_ready?: boolean;
-  // Allow to show the button even if no files were added
-  __internal_show_button?: boolean;
   // Allow to disable the button
   __internal_button_disabled?: boolean;
   // Allow to disable the dropzone
@@ -91,15 +89,21 @@ export function UploadDropzone<
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const { className, content, appearance, ...rootProps } =
-    props as unknown as UploadDropzoneProps<TRouter, TEndpoint> &
-      UploadThingInternalProps;
+  const {
+    className,
+    content,
+    appearance,
+    __internal_dropzone_disabled,
+    __internal_button_disabled,
+    ...rootProps
+  } = props as unknown as UploadDropzoneProps<TRouter, TEndpoint> &
+    UploadThingInternalProps;
 
   const cn = rootProps.config?.cn ?? defaultClassListMerger;
 
   return (
     <Primitive.Root<TRouter, TEndpoint> {...(rootProps as any)}>
-      <Primitive.Dropzone>
+      <Primitive.Dropzone disabled={__internal_dropzone_disabled}>
         {({
           files,
           fileTypes,
@@ -242,7 +246,7 @@ export function UploadDropzone<
                 )}
                 style={styleFieldToCssObject(appearance?.button, styleFieldArg)}
                 data-ut-element="button"
-                disabled={rootProps.__internal_button_disabled ?? !files.length}
+                disabled={__internal_button_disabled ?? !files.length}
               >
                 {getUploadButtonContents()}
               </Primitive.Button>

@@ -56,6 +56,13 @@ export type UploadButtonProps<
   content?: ButtonContent;
 };
 
+/** These are some internal stuff we use to test the component and for forcing a state in docs */
+type UploadThingInternalProps = {
+  __internal_state?: "readying" | "ready" | "uploading";
+  __internal_upload_progress?: number;
+  __internal_button_disabled?: boolean;
+};
+
 /**
  * @remarks It is not recommended using this directly as it requires manually binding generics. Instead, use `createUploadButton`.
  * @example
@@ -75,13 +82,22 @@ export function UploadButton<
 ) {
   // Cast back to UploadthingComponentProps<TRouter> to get the correct type
   // since the ErrorMessage messes it up otherwise
-  const { className, content, appearance, ...rootProps } =
-    props as unknown as UploadButtonProps<TRouter, TEndpoint>;
+  const {
+    className,
+    content,
+    appearance,
+    __internal_button_disabled,
+    ...rootProps
+  } = props as unknown as UploadButtonProps<TRouter, TEndpoint> &
+    UploadThingInternalProps;
 
   const cn = rootProps.config?.cn ?? defaultClassListMerger;
 
   return (
-    <Primitive.Root<TRouter, TEndpoint> {...(rootProps as any)}>
+    <Primitive.Root<TRouter, TEndpoint>
+      {...(rootProps as any)}
+      disabled={__internal_button_disabled}
+    >
       {({ state, uploadProgress, fileTypes, files, options }) => {
         const styleFieldArg = {
           ready: state !== "readying",

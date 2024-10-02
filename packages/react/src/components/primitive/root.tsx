@@ -150,8 +150,10 @@ export type PrimitiveComponentChildren =
 /** These are some internal stuff we use to test the component and for forcing a state in docs */
 type UploadThingInternalProps = {
   __internal_state?: "readying" | "ready" | "uploading";
+  // Allow to set upload progress for testing
   __internal_upload_progress?: number;
-  __internal_button_disabled?: boolean;
+  // Allow to set ready explicitly and independently of internal state
+  __internal_ready?: boolean;
 };
 
 export type RootPrimitiveComponentProps<
@@ -230,9 +232,7 @@ export function Root<
 
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
-  let disabled = fileTypes.length === 0;
-  if (props.disabled) disabled = true;
-  if (props.__internal_button_disabled) disabled = true;
+  const disabled = fileTypes.length === 0 || !!props.disabled;
 
   const accept = generateMimeTypes(fileTypes).join(", ");
 
@@ -263,6 +263,10 @@ export function Root<
 
     if (mode === "auto") void uploadFiles(files);
   });
+
+  const ready =
+    props.__internal_ready ??
+    (props.__internal_state === "ready" || fileTypes.length > 0);
 
   const primitiveValues: PrimitiveContextValues = {
     files,
@@ -295,7 +299,7 @@ export function Root<
     },
     routeConfig,
     isUploading: state === "uploading",
-    ready: state === "ready",
+    ready,
   };
 
   return (
