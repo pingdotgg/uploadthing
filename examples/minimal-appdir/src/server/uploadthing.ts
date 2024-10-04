@@ -21,19 +21,22 @@ const f = createUploadthing({
  * @see https://docs.uploadthing.com/api-reference/server#file-routes
  */
 export const uploadRouter = {
-  videoAndImage: f({
-    image: {
-      maxFileSize: "32MB",
-      maxFileCount: 4,
-      acl: "public-read",
+  videoAndImage: f(
+    {
+      image: {
+        maxFileSize: "32MB",
+        maxFileCount: 4,
+        acl: "public-read",
+      },
+      video: {
+        maxFileSize: "16MB",
+      },
+      blob: {
+        maxFileSize: "8GB",
+      },
     },
-    video: {
-      maxFileSize: "16MB",
-    },
-    blob: {
-      maxFileSize: "8GB",
-    },
-  })
+    { awaitServerData: false },
+  )
     .middleware(({ req, files }) => {
       // Check some condition based on the incoming requrest
       console.log("Request", req);

@@ -9,11 +9,11 @@ import {
   HttpServerResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Match from "effect/Match";
 
@@ -67,15 +67,13 @@ export const makeAdapterHandler = <Args extends any[]>(
   opts: RouteHandlerOptions<FileRouter>,
   beAdapter: string,
 ): ((...args: Args) => Promise<Response>) => {
-  const layer = Layer.provide(
-    Layer.mergeAll(
-      PrettyLogger.layer({ showFiberId: false }),
-      withMinimalLogLevel,
-      HttpClient.layer,
-      Layer.succeed(
-        HttpClient.Fetch,
-        opts.config?.fetch as typeof globalThis.fetch,
-      ),
+  const layer = Layer.mergeAll(
+    Logger.pretty,
+    withMinimalLogLevel,
+    HttpClient.layer,
+    Layer.succeed(
+      HttpClient.Fetch,
+      opts.config?.fetch as typeof globalThis.fetch,
     ),
     Layer.setConfigProvider(configProvider(opts.config)),
   );

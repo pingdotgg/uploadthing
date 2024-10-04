@@ -4,10 +4,10 @@ import {
   HttpClientResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
+import * as Logger from "effect/Logger";
 import * as Predicate from "effect/Predicate";
 
 import type {
@@ -96,17 +96,16 @@ export class UTApi {
     program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
     signal?: AbortSignal,
   ) => {
+    const layer = Layer.mergeAll(
+      Logger.pretty,
+      withMinimalLogLevel,
+      HttpClient.layer,
+      Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
+      Layer.setConfigProvider(configProvider(this.opts)),
+    );
+
     return program.pipe(
-      Effect.provide(PrettyLogger.layer({ showFiberId: false })),
-      Effect.provide(withMinimalLogLevel),
-      Effect.provide(HttpClient.layer),
-      Effect.provide(
-        Layer.effect(
-          HttpClient.Fetch,
-          Effect.succeed(this.fetch as typeof globalThis.fetch),
-        ),
-      ),
-      Effect.provide(Layer.setConfigProvider(configProvider(this.opts))),
+      Effect.provide(layer),
       Effect.withLogSpan("utapi.#executeAsync"),
       (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );
