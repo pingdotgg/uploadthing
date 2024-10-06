@@ -67,13 +67,15 @@ export const makeAdapterHandler = <Args extends any[]>(
   opts: RouteHandlerOptions<FileRouter>,
   beAdapter: string,
 ): ((...args: Args) => Promise<Response>) => {
-  const layer = Layer.mergeAll(
-    Logger.pretty,
-    withMinimalLogLevel,
-    HttpClient.layer,
-    Layer.succeed(
-      HttpClient.Fetch,
-      opts.config?.fetch as typeof globalThis.fetch,
+  const layer = Layer.provide(
+    Layer.mergeAll(
+      Logger.pretty,
+      withMinimalLogLevel,
+      HttpClient.layer,
+      Layer.succeed(
+        HttpClient.Fetch,
+        opts.config?.fetch as typeof globalThis.fetch,
+      ),
     ),
     Layer.setConfigProvider(configProvider(opts.config)),
   );

@@ -96,11 +96,13 @@ export class UTApi {
     program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
     signal?: AbortSignal,
   ) => {
-    const layer = Layer.mergeAll(
-      Logger.pretty,
-      withMinimalLogLevel,
-      HttpClient.layer,
-      Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
+    const layer = Layer.provide(
+      Layer.mergeAll(
+        Logger.pretty,
+        withMinimalLogLevel,
+        HttpClient.layer,
+        Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
+      ),
       Layer.setConfigProvider(configProvider(this.opts)),
     );
 
