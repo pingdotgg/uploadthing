@@ -1,4 +1,5 @@
 import type { Schema } from "@effect/schema/Schema";
+import type * as Config from "effect/Config";
 import type * as LogLevel from "effect/LogLevel";
 
 import type {
@@ -13,6 +14,7 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { LogFormat } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
   FileUploadDataWithCustomId,
@@ -173,6 +175,12 @@ export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
 
 export type RouteHandlerConfig = {
   logLevel?: LogLevel.Literal;
+  /**
+   * What format log entries should be in
+   * @default "pretty" in development, else "json"
+   * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
+   */
+  logFormat?: Config.Config.Success<typeof LogFormat>;
   callbackUrl?: string;
   token?: string;
   /**

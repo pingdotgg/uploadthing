@@ -7,7 +7,6 @@ import * as S from "@effect/schema/Schema";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Logger from "effect/Logger";
 import * as Predicate from "effect/Predicate";
 
 import type {
@@ -28,7 +27,7 @@ import {
   UPLOADTHING_VERSION,
   UTToken,
 } from "../internal/config";
-import { withMinimalLogLevel } from "../internal/logger";
+import { withLogFormat, withMinimalLogLevel } from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -98,7 +97,7 @@ export class UTApi {
   ) => {
     const layer = Layer.provide(
       Layer.mergeAll(
-        Logger.pretty,
+        withLogFormat,
         withMinimalLogLevel,
         HttpClient.layer,
         Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
