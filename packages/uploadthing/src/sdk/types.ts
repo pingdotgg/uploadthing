@@ -2,6 +2,7 @@
 
 import type { Blob as NodeBlob } from "buffer";
 import type * as LogLevel from "effect/LogLevel";
+import type * as Config from "effect/Config";
 
 import type {
   ACL,
@@ -14,6 +15,7 @@ import type {
 } from "@uploadthing/shared";
 
 import type { UploadedFileData } from "../types";
+import type { LogFormat } from "../internal/logger";
 
 export interface UTApiOptions {
   /**
@@ -30,6 +32,12 @@ export interface UTApiOptions {
    * @default "info"
    */
   logLevel?: LogLevel.Literal;
+    /**
+   * What format log entries should be in
+   * @default "pretty" in development, else "json"
+   * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
+   */
+    logFormat?: Config.Config.Success<typeof LogFormat>;
   /**
    * Set the default key type for file operations. Allows you to set your preferred filter
    * for file keys or custom identifiers without needing to specify it on every call.
