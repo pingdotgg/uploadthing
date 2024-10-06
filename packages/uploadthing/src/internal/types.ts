@@ -236,3 +236,13 @@ export type UTEvents = {
     out: ReadonlyArray<NewPresignedUrl>;
   };
 };
+
+/**
+ * Result from the PUT request to the UploadThing Ingest server
+ */
+export type UploadPutResult<TServerOutput = unknown> = {
+  url: string;
+  appUrl: string;
+  fileHash: string;
+  serverData: TServerOutput;
+};
