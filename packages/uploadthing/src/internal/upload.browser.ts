@@ -4,6 +4,7 @@ import * as Micro from "effect/Micro";
 import type { FetchError } from "@uploadthing/shared";
 import { FetchContext, fetchEff, UploadThingError } from "@uploadthing/shared";
 
+import { version } from "../../package.json";
 import type {
   ClientUploadedFileData,
   FileRouter,
@@ -26,6 +27,7 @@ const uploadWithProgress = (
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
+    xhr.setRequestHeader("x-uploadthing-version", version);
     xhr.responseType = "json";
 
     let previousLoaded = 0;
