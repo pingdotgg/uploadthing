@@ -1,4 +1,5 @@
 import {
+  FetchHttpClient,
   HttpClient,
   HttpClientRequest,
   HttpClientResponse,
@@ -67,17 +68,19 @@ export class UTApi {
     Effect.gen(this, function* () {
       const { apiKey } = yield* UTToken;
       const baseUrl = yield* ApiUrl;
-      const httpClient = yield* HttpClient.HttpClient;
+      const httpClient = (yield* HttpClient.HttpClient).pipe(
+        HttpClient.filterStatusOk,
+      );
 
       return yield* HttpClientRequest.post(pathname).pipe(
         HttpClientRequest.prependUrl(baseUrl),
-        HttpClientRequest.unsafeJsonBody(body),
+        HttpClientRequest.bodyUnsafeJson(body),
         HttpClientRequest.setHeaders({
           "x-uploadthing-version": UPLOADTHING_VERSION,
           "x-uploadthing-be-adapter": "server-sdk",
           "x-uploadthing-api-key": apiKey,
         }),
-        HttpClient.filterStatusOk(httpClient),
+        httpClient.execute,
         Effect.tapBoth({
           onSuccess: (res) =>
             Effect.logDebug(`UT Response`).pipe(
@@ -88,22 +91,26 @@ export class UTApi {
               Effect.annotateLogs("error", err),
             ),
         }),
-        HttpClientResponse.schemaBodyJsonScoped(responseSchema),
+        Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
+        Effect.scoped,
       );
     }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
 
   private executeAsync = <A, E>(
-    program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
+    program: Effect.Effect<A, E, HttpClient.HttpClient.Service>,
     signal?: AbortSignal,
   ) => {
     return program.pipe(
       Effect.provide(PrettyLogger.layer({ showFiberId: false })),
       Effect.provide(withMinimalLogLevel),
-      Effect.provide(HttpClient.layer),
       Effect.provide(
-        Layer.effect(
-          HttpClient.Fetch,
-          Effect.succeed(this.fetch as typeof globalThis.fetch),
+        FetchHttpClient.layer.pipe(
+          Layer.provide(
+            Layer.succeed(
+              FetchHttpClient.Fetch,
+              this.fetch as typeof globalThis.fetch,
+            ),
+          ),
         ),
       ),
       Effect.provide(Layer.setConfigProvider(configProvider(this.opts))),

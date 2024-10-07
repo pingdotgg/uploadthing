@@ -1,4 +1,5 @@
 import {
+  FetchHttpClient,
   HttpApp,
   HttpBody,
   HttpClient,
@@ -71,10 +72,13 @@ export const makeAdapterHandler = <Args extends any[]>(
     Layer.mergeAll(
       PrettyLogger.layer({ showFiberId: false }),
       withMinimalLogLevel,
-      HttpClient.layer,
-      Layer.succeed(
-        HttpClient.Fetch,
-        opts.config?.fetch as typeof globalThis.fetch,
+      FetchHttpClient.layer.pipe(
+        Layer.provide(
+          Layer.succeed(
+            FetchHttpClient.Fetch,
+            opts.config?.fetch as typeof globalThis.fetch,
+          ),
+        ),
       ),
     ),
     Layer.setConfigProvider(configProvider(opts.config)),
@@ -369,7 +373,9 @@ const handleCallbackRequest = (opts: {
       ).pipe(Effect.annotateLogs("callbackData", payload));
 
       const baseUrl = yield* IngestUrl;
-      const httpClient = yield* HttpClient.HttpClient;
+      const httpClient = (yield* HttpClient.HttpClient).pipe(
+        HttpClient.filterStatusOk,
+      );
       yield* HttpClientRequest.post(`/callback-result`).pipe(
         HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.setHeaders({
@@ -378,8 +384,8 @@ const handleCallbackRequest = (opts: {
           "x-uploadthing-be-adapter": beAdapter,
           "x-uploadthing-fe-package": fePackage,
         }),
-        HttpClientRequest.jsonBody(payload),
-        Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
+        HttpClientRequest.bodyJson(payload),
+        Effect.flatMap(httpClient.execute),
         Effect.tapErrorTag("ResponseError", ({ response: res }) =>
           Effect.flatMap(res.json, (json) =>
             Effect.logError(
@@ -387,8 +393,11 @@ const handleCallbackRequest = (opts: {
             ).pipe(Effect.annotateLogs("error", json)),
           ),
         ),
-        HttpClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
+        Effect.flatMap(
+          HttpClientResponse.schemaBodyJson(CallbackResultResponse),
+        ),
         Effect.tap(Effect.log("Sent callback result to UploadThing")),
+        Effect.scoped,
       );
     }).pipe(Effect.ignoreLogged, Effect.forkDaemon);
 
@@ -463,7 +472,9 @@ const handleUploadAction = (opts: {
   slug: string;
 }) =>
   Effect.gen(function* () {
-    const httpClient = yield* HttpClient.HttpClient;
+    const httpClient = (yield* HttpClient.HttpClient).pipe(
+      HttpClient.filterStatusOk,
+    );
     const { uploadable, fePackage, beAdapter, slug } = opts;
     const json = yield* HttpServerRequest.schemaBodyJson(UploadActionPayload);
     yield* Effect.logDebug("Handling upload request").pipe(
@@ -607,7 +618,7 @@ const handleUploadAction = (opts: {
         "x-uploadthing-be-adapter": beAdapter,
         "x-uploadthing-fe-package": fePackage,
       }),
-      HttpClientRequest.jsonBody({
+      HttpClientRequest.bodyJson({
         fileKeys: presignedUrls.map(({ key }) => key),
         metadata: metadata,
         isDev,
@@ -615,7 +626,7 @@ const handleUploadAction = (opts: {
         callbackSlug: slug,
         awaitServerData: routeOptions.awaitServerData ?? true,
       }),
-      Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
+      Effect.flatMap(httpClient.execute),
       Effect.tapBoth({
         onSuccess: (res) =>
           Effect.logDebug("Registerred metadata").pipe(
@@ -655,9 +666,8 @@ const handleUploadAction = (opts: {
                 HttpClientRequest.setBody(
                   HttpBody.text(payload, "application/json"),
                 ),
-                httpClient,
-
-                HttpClientResponse.arrayBuffer,
+                httpClient.execute,
+                Effect.flatMap((_) => _.arrayBuffer),
                 Effect.asVoid,
                 Effect.tapBoth({
                   onSuccess: (res) =>
@@ -687,12 +697,16 @@ const handleUploadAction = (opts: {
                         ).pipe(Effect.annotateLogs("error", err)),
                 }),
                 Effect.ignoreLogged,
+                Effect.scoped,
               ),
           ),
         ),
       onFalse: () =>
         metadataRequest.pipe(
-          HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
+          Effect.flatMap(
+            HttpClientResponse.schemaBodyJson(MetadataFetchResponse),
+          ),
+          Effect.scoped,
         ),
     }).pipe(Effect.forkDaemon);
 
