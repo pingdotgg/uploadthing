@@ -31,7 +31,11 @@ import * as pkgJson from "../../package.json";
 import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
-import { withLogFormat, withMinimalLogLevel } from "./logger";
+import {
+  logHttpClientError,
+  withLogFormat,
+  withMinimalLogLevel,
+} from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
 import {
@@ -379,12 +383,8 @@ const handleCallbackRequest = (opts: {
         }),
         HttpClientRequest.jsonBody(payload),
         Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
-        Effect.tapErrorTag("ResponseError", (err) =>
-          Effect.flatMap(err.response.json, () =>
-            Effect.logError(
-              `Failed to register callback result (${err.response.status})`,
-            ).pipe(Effect.annotateLogs("response", err.response)),
-          ),
+        Effect.tapError(
+          logHttpClientError("Failed to register callback result"),
         ),
         HttpClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
         Effect.tap(Effect.log("Sent callback result to UploadThing")),
@@ -617,16 +617,7 @@ const handleUploadAction = (opts: {
           Effect.logDebug("Registerred metadata").pipe(
             Effect.annotateLogs("response", res),
           ),
-        onFailure: (err) =>
-          err._tag === "ResponseError"
-            ? Effect.flatMap(err.response.json, () =>
-                Effect.logError(
-                  `Failed to register metadata (${err.response.status})`,
-                ).pipe(Effect.annotateLogs("response", err.response)),
-              )
-            : Effect.logError("Failed to register metadata").pipe(
-                Effect.annotateLogs("error", err),
-              ),
+        onFailure: logHttpClientError("Failed to register metadata"),
       }),
     );
 
@@ -663,20 +654,13 @@ const handleUploadAction = (opts: {
                       Effect.annotateLogs("payload", payload),
                     ),
                   onFailure: (err) =>
-                    err._tag === "ResponseError"
-                      ? Effect.flatMap(err.response.json, () =>
-                          Effect.logError(
-                            `Failed to forward callback request from dev stream (${err.response.status})`,
-                          ).pipe(
-                            Effect.annotateLogs("response", err.response),
-                            Effect.annotateLogs("hook", hook),
-                            Effect.annotateLogs("signature", signature),
-                            Effect.annotateLogs("payload", payload),
-                          ),
-                        )
-                      : Effect.logError(
-                          "Failed to forward callback request from dev stream",
-                        ).pipe(Effect.annotateLogs("error", err)),
+                    logHttpClientError(
+                      "Failed to forward callback request from dev stream",
+                    )(err).pipe(
+                      Effect.annotateLogs("hook", hook),
+                      Effect.annotateLogs("signature", signature),
+                      Effect.annotateLogs("payload", payload),
+                    ),
                 }),
                 Effect.ignoreLogged,
               ),

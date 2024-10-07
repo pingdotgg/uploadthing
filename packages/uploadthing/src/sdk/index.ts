@@ -27,7 +27,11 @@ import {
   UPLOADTHING_VERSION,
   UTToken,
 } from "../internal/config";
-import { withLogFormat, withMinimalLogLevel } from "../internal/logger";
+import {
+  logHttpClientError,
+  withLogFormat,
+  withMinimalLogLevel,
+} from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -79,20 +83,11 @@ export class UTApi {
         HttpClient.filterStatusOk(httpClient),
         Effect.tapBoth({
           onSuccess: (res) =>
-            Effect.logDebug(`UT Response`).pipe(
-              Effect.annotateLogs("res", res),
+            Effect.logDebug(`UploadThing API Response`).pipe(
+              Effect.annotateLogs("response", res),
             ),
 
-          onFailure: (err) =>
-            err._tag === "ResponseError"
-              ? Effect.flatMap(err.response.json, () =>
-                  Effect.logError(
-                    `Failed to request UploadThing API (${err.response.status})`,
-                  ).pipe(Effect.annotateLogs("response", err.response)),
-                )
-              : Effect.logError("Failed to request UploadThing API").pipe(
-                  Effect.annotateLogs("error", err),
-                ),
+          onFailure: logHttpClientError("Failed to request UploadThing API"),
         }),
         HttpClientResponse.schemaBodyJsonScoped(responseSchema),
       );

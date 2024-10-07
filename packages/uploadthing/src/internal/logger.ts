@@ -1,3 +1,4 @@
+import type { HttpBody, HttpClientError } from "@effect/platform";
 import * as Config from "effect/Config";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -51,3 +52,14 @@ export const withLogFormat = Effect.gen(function* () {
   ),
   Layer.unwrapEffect,
 );
+
+export const logHttpClientError =
+  (message: string) =>
+  (err: HttpClientError.HttpClientError | HttpBody.HttpBodyError) =>
+    err._tag === "ResponseError"
+      ? Effect.flatMap(err.response.json, () =>
+          Effect.logError(`${message} (${err.response.status})`).pipe(
+            Effect.annotateLogs("response", err.response),
+          ),
+        )
+      : Effect.logError(message).pipe(Effect.annotateLogs("error", err));
