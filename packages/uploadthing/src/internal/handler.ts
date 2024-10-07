@@ -33,6 +33,7 @@ import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
 import {
   logHttpClientError,
+  logHttpClientResponse,
   withLogFormat,
   withMinimalLogLevel,
 } from "./logger";
@@ -612,13 +613,6 @@ const handleUploadAction = (opts: {
         awaitServerData: routeOptions.awaitServerData ?? true,
       }),
       Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
-      Effect.tapBoth({
-        onSuccess: (res) =>
-          Effect.logDebug("Registerred metadata").pipe(
-            Effect.annotateLogs("response", res),
-          ),
-        onFailure: logHttpClientError("Failed to register metadata"),
-      }),
     );
 
     // Send metadata to UT server (non blocking as a daemon)
@@ -627,47 +621,44 @@ const handleUploadAction = (opts: {
     const fiber = yield* Effect.if(isDev, {
       onTrue: () =>
         metadataRequest.pipe(
+          Effect.tapBoth({
+            onSuccess: logHttpClientResponse("Registerred metadata", {
+              mixin: "None", // We're reading the stream so can't call a body mixin
+            }),
+            onFailure: logHttpClientError("Failed to register metadata"),
+          }),
           HttpClientResponse.stream,
-          handleJsonLineStream(
-            MetadataFetchStreamPart,
-            ({ payload, signature, hook }) =>
-              devHookRequest.pipe(
-                HttpClientRequest.setHeaders({
-                  "uploadthing-hook": hook,
-                  "x-uploadthing-signature": signature,
-                }),
-                HttpClientRequest.setBody(
-                  HttpBody.text(payload, "application/json"),
-                ),
-                httpClient,
-
-                HttpClientResponse.arrayBuffer,
-                Effect.asVoid,
-                Effect.tapBoth({
-                  onSuccess: (res) =>
-                    Effect.logDebug(
-                      "Successfully forwarded callback request from dev stream",
-                    ).pipe(
-                      Effect.annotateLogs("response", res),
-                      Effect.annotateLogs("hook", hook),
-                      Effect.annotateLogs("signature", signature),
-                      Effect.annotateLogs("payload", payload),
-                    ),
-                  onFailure: (err) =>
-                    logHttpClientError(
-                      "Failed to forward callback request from dev stream",
-                    )(err).pipe(
-                      Effect.annotateLogs("hook", hook),
-                      Effect.annotateLogs("signature", signature),
-                      Effect.annotateLogs("payload", payload),
-                    ),
-                }),
-                Effect.ignoreLogged,
+          handleJsonLineStream(MetadataFetchStreamPart, (chunk) =>
+            devHookRequest.pipe(
+              HttpClientRequest.setHeaders({
+                "uploadthing-hook": chunk.hook,
+                "x-uploadthing-signature": chunk.signature,
+              }),
+              HttpClientRequest.setBody(
+                HttpBody.text(chunk.payload, "application/json"),
               ),
+              HttpClient.filterStatusOk(httpClient),
+              Effect.tapBoth({
+                onSuccess: logHttpClientResponse(
+                  "Successfully forwarded callback request from dev stream",
+                ),
+                onFailure: logHttpClientError(
+                  "Failed to forward callback request from dev stream",
+                ),
+              }),
+              Effect.annotateLogs(chunk),
+              HttpClientResponse.json,
+              Effect.asVoid,
+              Effect.ignoreLogged,
+            ),
           ),
         ),
       onFalse: () =>
         metadataRequest.pipe(
+          Effect.tapBoth({
+            onSuccess: logHttpClientResponse("Registerred metadata"),
+            onFailure: logHttpClientError("Failed to register metadata"),
+          }),
           HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
         ),
     }).pipe(Effect.forkDaemon);

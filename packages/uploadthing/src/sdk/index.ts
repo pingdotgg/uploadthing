@@ -29,6 +29,7 @@ import {
 } from "../internal/config";
 import {
   logHttpClientError,
+  logHttpClientResponse,
   withLogFormat,
   withMinimalLogLevel,
 } from "../internal/logger";
@@ -82,11 +83,7 @@ export class UTApi {
         }),
         HttpClient.filterStatusOk(httpClient),
         Effect.tapBoth({
-          onSuccess: (res) =>
-            Effect.logDebug(`UploadThing API Response`).pipe(
-              Effect.annotateLogs("response", res),
-            ),
-
+          onSuccess: logHttpClientResponse("UploadThing API Response"),
           onFailure: logHttpClientError("Failed to request UploadThing API"),
         }),
         HttpClientResponse.schemaBodyJsonScoped(responseSchema),
