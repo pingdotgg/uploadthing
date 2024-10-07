@@ -271,6 +271,8 @@ export class UTApi {
    * @example
    * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
    * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
+   *
+   * @deprecated - See https://docs.uploadthing.com/working-with-files#accessing-files for info how to access files
    */
   getFileUrls = async (keys: string[] | string, opts?: GetFileUrlsOptions) => {
     guardServerOnly();
