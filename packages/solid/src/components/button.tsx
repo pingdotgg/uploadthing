@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, onMount } from "solid-js";
+import { createEffect, createSignal, onCleanup } from "solid-js";
 
 import {
   allowedContentTextLabelGenerator,
@@ -21,7 +21,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { progressWidths, Spinner } from "./shared";
+import { Cancel, progressWidths, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -77,23 +77,21 @@ export function UploadButton<
     ? ErrorMessage<"You forgot to pass the generic">
     : UploadButtonProps<TRouter, TEndpoint>,
 ) {
-  const [uploadProgress, setUploadProgress] = createSignal(0);
-  const [files, setFiles] = createSignal<File[]>([]);
-
-  let inputRef: HTMLInputElement;
   const $props = props as UploadButtonProps<TRouter, TEndpoint>;
-
-  const { cn = defaultClassListMerger } = $props.config ?? {};
-
-  let acRef = new AbortController();
-
-  const fileRouteInput = "input" in $props ? $props.input : undefined;
-
-  const { mode = "auto", appendOnPaste = false } = $props.config ?? {};
-
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
   });
+
+  const {
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = $props.config ?? {};
+  let acRef = new AbortController();
+
+  let inputRef: HTMLInputElement;
+  const [uploadProgress, setUploadProgress] = createSignal(0);
+  const [files, setFiles] = createSignal<File[]>([]);
 
   const uploadThing = createUploadThing($props.endpoint, {
     signal: acRef.signal,
@@ -101,7 +99,7 @@ export function UploadButton<
     onClientUploadComplete: (res) => {
       setFiles([]);
       inputRef.value = "";
-      $props.onClientUploadComplete?.(res);
+      void $props.onClientUploadComplete?.(res);
       setUploadProgress(0);
     },
     onUploadProgress: (p) => {
@@ -115,24 +113,18 @@ export function UploadButton<
 
   const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
-  const ready = () => fileInfo().fileTypes.length > 0;
-
-  const styleFieldArg = {
-    ready: ready,
-    isUploading: uploadThing.isUploading,
-    uploadProgress: uploadProgress,
-    fileTypes: () => fileInfo().fileTypes,
-  } as ButtonStyleFieldCallbackArgs;
-
   const state = () => {
-    if (!ready()) return "readying";
-    if (ready() && !uploadThing.isUploading()) return "ready";
+    const ready = fileInfo().fileTypes.length > 0;
 
+    if ($props.disabled) return "disabled";
+    if (!ready) return "readying";
+    if (ready && !uploadThing.isUploading()) return "ready";
     return "uploading";
   };
 
-  const uploadFiles = async (files: File[]) => {
-    await uploadThing.startUpload(files, fileRouteInput).catch((e) => {
+  const uploadFiles = (files: File[]) => {
+    const input = "input" in $props ? $props.input : undefined;
+    uploadThing.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void $props.onUploadAborted?.();
       } else {
@@ -141,35 +133,49 @@ export function UploadButton<
     });
   };
 
-  const pasteHandler = (e: ClipboardEvent) => {
-    if (!appendOnPaste) return;
-    if (document?.activeElement !== inputRef) return;
+  const onUploadClick = (e: MouseEvent) => {
+    if (state() === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const pastedFiles = getFilesFromClipboardEvent(e);
-    if (!pastedFiles) return;
+      acRef.abort();
+      acRef = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files().length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
 
-    setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
-
-    $props.onChange?.(files());
-
-    if (mode === "auto") void uploadFiles(files());
+      uploadFiles(files());
+    }
   };
 
-  // onMount will only be called client side, so it guarantees DOM APIs exist.
-  onMount(() => {
-    try {
-      document?.addEventListener("paste", pasteHandler);
-    } catch {
-      // noop - we're not in a browser
-    }
+  createEffect(() => {
+    if (!appendOnPaste) return;
+
+    const pasteHandler = (e: ClipboardEvent) => {
+      if (document?.activeElement !== inputRef) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(e);
+      if (!pastedFiles) return;
+
+      setFiles((prevFiles) => [...prevFiles, ...pastedFiles]);
+
+      $props.onChange?.(files());
+
+      if (mode === "auto") uploadFiles(files());
+    };
+    document?.addEventListener("paste", pasteHandler);
+
+    onCleanup(() => document?.removeEventListener("paste", pasteHandler));
   });
-  onCleanup(() => {
-    try {
-      document?.removeEventListener("paste", pasteHandler);
-    } catch {
-      // noop - we're not in a browser
-    }
-  });
+
+  const styleFieldArg = {
+    ready: () => state() !== "readying",
+    isUploading: uploadThing.isUploading,
+    uploadProgress: uploadProgress,
+    fileTypes: () => fileInfo().fileTypes,
+  } as ButtonStyleFieldCallbackArgs;
 
   const getButtonContent = () => {
     const customContent = contentFieldToContent(
@@ -193,19 +199,7 @@ export function UploadButton<
     return (
       <span class="z-50">
         <span class="block group-hover:hidden">{uploadProgress()}%</span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class={cn(
-            "fill-none stroke-current stroke-2",
-            "hidden size-4 group-hover:block",
-          )}
-        >
-          <circle cx="12" cy="12" r="10" />
-          <path d="m4.9 4.9 14.2 14.2" />
-        </svg>
+        <Cancel cn={cn} class="hidden size-4 group-hover:block" />
       </span>
     );
   };
@@ -222,7 +216,7 @@ export function UploadButton<
     >
       <label
         class={cn(
-          "relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+          "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           state() === "readying" && "cursor-not-allowed bg-blue-400",
           state() === "uploading" &&
             `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
@@ -234,22 +228,7 @@ export function UploadButton<
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
         data-state={state()}
         data-ut-element="button"
-        onClick={async (e) => {
-          if (state() === "uploading") {
-            e.preventDefault();
-            e.stopPropagation();
-
-            acRef.abort();
-            acRef = new AbortController();
-            return;
-          }
-          if (mode === "manual" && files().length > 0) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            await uploadFiles(files());
-          }
-        }}
+        onClick={onUploadClick}
       >
         <input
           ref={(el) => (inputRef = el)}
@@ -257,7 +236,7 @@ export function UploadButton<
           type="file"
           multiple={fileInfo().multiple}
           accept={generateMimeTypes(fileInfo().fileTypes).join(", ")}
-          onChange={async (e) => {
+          onChange={(e) => {
             if (!e.target.files) return;
             const selectedFiles = Array.from(e.target.files);
 
@@ -268,7 +247,7 @@ export function UploadButton<
               return;
             }
 
-            await uploadFiles(selectedFiles);
+            uploadFiles(selectedFiles);
           }}
         />
         {getButtonContent()}
@@ -288,7 +267,7 @@ export function UploadButton<
             $props.appearance?.clearBtn,
             styleFieldArg,
           )}
-          data-state={state}
+          data-state={state()}
           data-ut-element="clear-btn"
         >
           {contentFieldToContent($props.content?.clearBtn, styleFieldArg) ??
