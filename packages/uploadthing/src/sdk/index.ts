@@ -85,13 +85,10 @@ export class UTApi {
 
           onFailure: (err) =>
             err._tag === "ResponseError"
-              ? Effect.flatMap(err.response.json, (json) =>
+              ? Effect.flatMap(err.response.json, () =>
                   Effect.logError(
                     `Failed to request UploadThing API (${err.response.status})`,
-                  ).pipe(
-                    Effect.annotateLogs("response", err.response),
-                    Effect.annotateLogs("json", json),
-                  ),
+                  ).pipe(Effect.annotateLogs("response", err.response)),
                 )
               : Effect.logError("Failed to request UploadThing API").pipe(
                   Effect.annotateLogs("error", err),

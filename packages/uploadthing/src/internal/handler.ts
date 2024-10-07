@@ -379,11 +379,11 @@ const handleCallbackRequest = (opts: {
         }),
         HttpClientRequest.jsonBody(payload),
         Effect.flatMap(HttpClient.filterStatusOk(httpClient)),
-        Effect.tapErrorTag("ResponseError", ({ response: res }) =>
-          Effect.flatMap(res.json, (json) =>
+        Effect.tapErrorTag("ResponseError", (err) =>
+          Effect.flatMap(err.response.json, () =>
             Effect.logError(
-              `Failed to register callback result (${res.status})`,
-            ).pipe(Effect.annotateLogs("error", json)),
+              `Failed to register callback result (${err.response.status})`,
+            ).pipe(Effect.annotateLogs("response", err.response)),
           ),
         ),
         HttpClientResponse.schemaBodyJsonScoped(CallbackResultResponse),
@@ -619,13 +619,10 @@ const handleUploadAction = (opts: {
           ),
         onFailure: (err) =>
           err._tag === "ResponseError"
-            ? Effect.flatMap(err.response.json, (json) =>
+            ? Effect.flatMap(err.response.json, () =>
                 Effect.logError(
                   `Failed to register metadata (${err.response.status})`,
-                ).pipe(
-                  Effect.annotateLogs("response", err.response),
-                  Effect.annotateLogs("json", json),
-                ),
+                ).pipe(Effect.annotateLogs("response", err.response)),
               )
             : Effect.logError("Failed to register metadata").pipe(
                 Effect.annotateLogs("error", err),
@@ -667,12 +664,11 @@ const handleUploadAction = (opts: {
                     ),
                   onFailure: (err) =>
                     err._tag === "ResponseError"
-                      ? Effect.flatMap(err.response.json, (json) =>
+                      ? Effect.flatMap(err.response.json, () =>
                           Effect.logError(
                             `Failed to forward callback request from dev stream (${err.response.status})`,
                           ).pipe(
                             Effect.annotateLogs("response", err.response),
-                            Effect.annotateLogs("json", json),
                             Effect.annotateLogs("hook", hook),
                             Effect.annotateLogs("signature", signature),
                             Effect.annotateLogs("payload", payload),
