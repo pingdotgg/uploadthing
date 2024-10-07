@@ -82,10 +82,20 @@ export class UTApi {
             Effect.logDebug(`UT Response`).pipe(
               Effect.annotateLogs("res", res),
             ),
+
           onFailure: (err) =>
-            Effect.logError("UploadThing error").pipe(
-              Effect.annotateLogs("error", err),
-            ),
+            err._tag === "ResponseError"
+              ? Effect.flatMap(err.response.json, (json) =>
+                  Effect.logError(
+                    `Failed to request UploadThing API (${err.response.status})`,
+                  ).pipe(
+                    Effect.annotateLogs("response", err.response),
+                    Effect.annotateLogs("json", json),
+                  ),
+                )
+              : Effect.logError("Failed to request UploadThing API").pipe(
+                  Effect.annotateLogs("error", err),
+                ),
         }),
         HttpClientResponse.schemaBodyJsonScoped(responseSchema),
       );
