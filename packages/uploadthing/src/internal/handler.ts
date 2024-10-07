@@ -22,7 +22,7 @@ import {
   generateKey,
   generateSignedURL,
   getStatusCodeFromError,
-  getTypeFromFileName,
+  matchFileType,
   objectKeys,
   UploadThingError,
   verifySignature,
@@ -529,19 +529,16 @@ const handleUploadAction = (opts: {
     const fileUploadRequests = yield* Effect.forEach(
       filesWithCustomIds,
       (file) =>
-        Effect.map(
-          getTypeFromFileName(file.name, objectKeys(parsedConfig)),
-          (type) => ({
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            lastModified: file.lastModified,
-            customId: file.customId,
-            contentDisposition:
-              parsedConfig[type]?.contentDisposition ?? "inline",
-            acl: parsedConfig[type]?.acl,
-          }),
-        ),
+        Effect.map(matchFileType(file, objectKeys(parsedConfig)), (type) => ({
+          name: file.name,
+          size: file.size,
+          type: file.type || type,
+          lastModified: file.lastModified,
+          customId: file.customId,
+          contentDisposition:
+            parsedConfig[type]?.contentDisposition ?? "inline",
+          acl: parsedConfig[type]?.acl,
+        })),
     ).pipe(
       Effect.catchTags({
         /** Shouldn't happen since config is validated above so just dying is fine I think */
