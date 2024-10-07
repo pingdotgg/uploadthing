@@ -24,11 +24,6 @@ import {
   UTFS_IO_URL,
 } from "./__test-helpers";
 
-const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
-
-const utapi = new UTApi({ token: testToken.encoded });
-const result = await utapi.uploadFiles(fooFile);
-
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
