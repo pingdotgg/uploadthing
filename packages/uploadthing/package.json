@@ -154,8 +154,7 @@
     "@effect/schema": "0.72.2",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.7.2",
-    "effect-log": "0.32.0"
+    "effect": "3.7.2"
   },
   "devDependencies": {
     "@remix-run/server-runtime": "^2.12.0",

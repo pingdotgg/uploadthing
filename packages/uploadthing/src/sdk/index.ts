@@ -4,7 +4,6 @@ import {
   HttpClientResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -28,7 +27,7 @@ import {
   UPLOADTHING_VERSION,
   UTToken,
 } from "../internal/config";
-import { withMinimalLogLevel } from "../internal/logger";
+import { withLogFormat, withMinimalLogLevel } from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -96,17 +95,18 @@ export class UTApi {
     program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
     signal?: AbortSignal,
   ) => {
-    return program.pipe(
-      Effect.provide(PrettyLogger.layer({ showFiberId: false })),
-      Effect.provide(withMinimalLogLevel),
-      Effect.provide(HttpClient.layer),
-      Effect.provide(
-        Layer.effect(
-          HttpClient.Fetch,
-          Effect.succeed(this.fetch as typeof globalThis.fetch),
-        ),
+    const layer = Layer.provide(
+      Layer.mergeAll(
+        withLogFormat,
+        withMinimalLogLevel,
+        HttpClient.layer,
+        Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
       ),
-      Effect.provide(Layer.setConfigProvider(configProvider(this.opts))),
+      Layer.setConfigProvider(configProvider(this.opts)),
+    );
+
+    return program.pipe(
+      Effect.provide(layer),
       Effect.withLogSpan("utapi.#executeAsync"),
       (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );

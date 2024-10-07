@@ -9,7 +9,6 @@ import {
   HttpServerResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -32,7 +31,7 @@ import * as pkgJson from "../../package.json";
 import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
-import { withMinimalLogLevel } from "./logger";
+import { withLogFormat, withMinimalLogLevel } from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
 import {
@@ -69,7 +68,7 @@ export const makeAdapterHandler = <Args extends any[]>(
 ): ((...args: Args) => Promise<Response>) => {
   const layer = Layer.provide(
     Layer.mergeAll(
-      PrettyLogger.layer({ showFiberId: false }),
+      withLogFormat,
       withMinimalLogLevel,
       HttpClient.layer,
       Layer.succeed(
