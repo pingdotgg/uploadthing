@@ -291,7 +291,9 @@ export class UTApi {
     return await this.executeAsync(
       this.requestUploadThing(
         "/v6/getFileUrl",
-        keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
+        keyType === "fileKey"
+          ? { fileKeys: asArray(keys) }
+          : { customIds: asArray(keys) },
         GetFileUrlResponse,
       ).pipe(Effect.withLogSpan("getFileUrls")),
     );
