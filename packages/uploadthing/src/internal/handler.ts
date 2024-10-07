@@ -622,7 +622,7 @@ const handleUploadAction = (opts: {
       onTrue: () =>
         metadataRequest.pipe(
           Effect.tapBoth({
-            onSuccess: logHttpClientResponse("Registerred metadata", {
+            onSuccess: logHttpClientResponse("Registered metadata", {
               mixin: "None", // We're reading the stream so can't call a body mixin
             }),
             onFailure: logHttpClientError("Failed to register metadata"),
@@ -656,7 +656,7 @@ const handleUploadAction = (opts: {
       onFalse: () =>
         metadataRequest.pipe(
           Effect.tapBoth({
-            onSuccess: logHttpClientResponse("Registerred metadata"),
+            onSuccess: logHttpClientResponse("Registered metadata"),
             onFailure: logHttpClientError("Failed to register metadata"),
           }),
           HttpClientResponse.schemaBodyJsonScoped(MetadataFetchResponse),
