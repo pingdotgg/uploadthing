@@ -6,7 +6,6 @@ export const { GET, POST } = createRouteHandler({
   router: uploadRouter,
   config: {
     logLevel: "Debug",
-    logFormat: "json",
     // handleDaemonPromise: "await",
   },
 });
