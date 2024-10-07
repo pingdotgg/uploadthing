@@ -18,6 +18,7 @@ import type {
   FileRouterInputKey,
   FileSize,
   ResponseEsque,
+  RouteConfig,
   Time,
   TimeShort,
 } from "./types";
@@ -39,7 +40,9 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
   return "4MB";
 }
 
-export function getDefaultRouteConfigValues(type: FileRouterInputKey) {
+export function getDefaultRouteConfigValues(
+  type: FileRouterInputKey,
+): RouteConfig<Record<string, never>> {
   return {
     maxFileSize: getDefaultSizeForType(type),
     maxFileCount: 1,

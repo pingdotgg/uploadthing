@@ -129,45 +129,46 @@ type ImageProperties = {
 
 type AdditionalProperties<T> = Record<string, unknown> & T;
 
-type RouteConfig<TAdditionalProperties extends Record<string, unknown>> = {
-  /**
-   * Human-readable file size limit
-   * @example "1MB"
-   * @default https://docs.uploadthing.com/api-reference/server#defaults
-   */
-  maxFileSize: FileSize;
-  /**
-   * Maximum number of files allowed to be uploaded of this type
-   * @example 10
-   * @default https://docs.uploadthing.com/api-reference/server#defaults
-   */
-  maxFileCount: number;
-  /**
-   * Minimum number of files allowed to be uploaded of this type
-   * @remarks Must be <= maxFileCount
-   * @example 2
-   * @default 1
-   */
-  minFileCount: number;
-  /**
-   * Specify the [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) of the uploaded file
-   * @example "attachment"
-   * @default "inline"
-   */
-  contentDisposition: ContentDisposition;
-  /**
-   * Specify the [access control list](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) of the uploaded file
-   * @remarks This must be enabled for your app. See https://docs.uploadthing.com/regions-and-acl#access-controls.
-   * @example "private"
-   * @default "public-read"
-   */
-  acl?: ACL;
-  /**
-   * Additional properties to be passed to the client-side `useRouteConfig` hook
-   * @remarks These properties are not validated on the server on upload
-   */
-  additionalProperties?: AdditionalProperties<TAdditionalProperties>;
-};
+export type RouteConfig<TAdditionalProperties extends Record<string, unknown>> =
+  {
+    /**
+     * Human-readable file size limit
+     * @example "1MB"
+     * @default https://docs.uploadthing.com/api-reference/server#defaults
+     */
+    maxFileSize: FileSize;
+    /**
+     * Maximum number of files allowed to be uploaded of this type
+     * @example 10
+     * @default https://docs.uploadthing.com/api-reference/server#defaults
+     */
+    maxFileCount: number;
+    /**
+     * Minimum number of files allowed to be uploaded of this type
+     * @remarks Must be <= maxFileCount
+     * @example 2
+     * @default 1
+     */
+    minFileCount: number;
+    /**
+     * Specify the [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) of the uploaded file
+     * @example "attachment"
+     * @default "inline"
+     */
+    contentDisposition: ContentDisposition;
+    /**
+     * Specify the [access control list](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) of the uploaded file
+     * @remarks This must be enabled for your app. See https://docs.uploadthing.com/regions-and-acl#access-controls.
+     * @example "private"
+     * @default "public-read"
+     */
+    acl?: ACL;
+    /**
+     * Additional properties to be passed to the client-side `useRouteConfig` hook
+     * @remarks These properties are not validated on the server on upload
+     */
+    additionalProperties?: AdditionalProperties<TAdditionalProperties>;
+  };
 
 /**
  * Shared config options for an entire route not bound to any specific file type
