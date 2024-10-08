@@ -64,6 +64,14 @@ it("typeerrors for invalid input", () => {
     })
     // @ts-expect-error - cannot set multiple middlewares
     .middleware(() => {});
+
+  f(["image"])
+    // @ts-expect-error - callback data must be a JSON object
+    .onUploadComplete(() => "foo");
+
+  f(["image"])
+    // @ts-expect-error - callback data must be a JSON object
+    .onUploadComplete(() => 1);
 });
 
 it("uses defaults for not-chained", async () => {

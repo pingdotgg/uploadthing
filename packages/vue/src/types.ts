@@ -67,19 +67,26 @@ export type UseUploadthingProps<
    * called after the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?:
-    | ((res: ClientUploadedFileData<TServerOutput>[]) => void)
+    | ((res: ClientUploadedFileData<TServerOutput>[]) => MaybePromise<void>)
     | undefined;
   /**
    * Called if the upload fails
    */
   onUploadError?:
-    | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
+    | ((e: UploadThingError<inferErrorShape<TRouter>>) => MaybePromise<void>)
     | undefined;
   /**
    * Set custom headers that'll get sent with requests
    * to your server
    */
   headers?: (HeadersInit | (() => MaybePromise<HeadersInit>)) | undefined;
+  /**
+   * An AbortSignal to cancel the upload
+   * Calling `abort()` on the parent AbortController will cause the
+   * upload to throw an `UploadAbortedError`. In a future version
+   * the function will not throw in favor of an `onUploadAborted` callback.
+   */
+  signal?: AbortSignal | undefined;
 };
 
 export type UploadthingComponentProps<

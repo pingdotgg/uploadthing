@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -62,8 +62,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:*",
-    "@uploadthing/shared": "workspace:*"
+    "@uploadthing/shared": "workspace:*",
+    "file-selector": "0.6.0"
   },
   "peerDependencies": {
     "next": "*",

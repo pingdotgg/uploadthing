@@ -1,5 +1,12 @@
 # @uploadthing/nuxt
 
+## 7.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`2afabe5`](https://github.com/pingdotgg/uploadthing/commit/2afabe59a0e6319ec469eba670b1e3e920f596ee), [`e53bc01`](https://github.com/pingdotgg/uploadthing/commit/e53bc0175adff160a2bcaa621f66ed744f327c74)]:
+  - @uploadthing/vue@7.0.3
+
 ## 7.0.2
 
 ### Patch Changes

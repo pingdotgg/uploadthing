@@ -4,7 +4,6 @@ import {
   HttpClientResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
@@ -28,7 +27,12 @@ import {
   UPLOADTHING_VERSION,
   UTToken,
 } from "../internal/config";
-import { withMinimalLogLevel } from "../internal/logger";
+import {
+  logHttpClientError,
+  logHttpClientResponse,
+  withLogFormat,
+  withMinimalLogLevel,
+} from "../internal/logger";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -79,14 +83,8 @@ export class UTApi {
         }),
         HttpClient.filterStatusOk(httpClient),
         Effect.tapBoth({
-          onSuccess: (res) =>
-            Effect.logDebug(`UT Response`).pipe(
-              Effect.annotateLogs("res", res),
-            ),
-          onFailure: (err) =>
-            Effect.logError("UploadThing error").pipe(
-              Effect.annotateLogs("error", err),
-            ),
+          onSuccess: logHttpClientResponse("UploadThing API Response"),
+          onFailure: logHttpClientError("Failed to request UploadThing API"),
         }),
         HttpClientResponse.schemaBodyJsonScoped(responseSchema),
       );
@@ -96,17 +94,18 @@ export class UTApi {
     program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
     signal?: AbortSignal,
   ) => {
-    return program.pipe(
-      Effect.provide(PrettyLogger.layer({ showFiberId: false })),
-      Effect.provide(withMinimalLogLevel),
-      Effect.provide(HttpClient.layer),
-      Effect.provide(
-        Layer.effect(
-          HttpClient.Fetch,
-          Effect.succeed(this.fetch as typeof globalThis.fetch),
-        ),
+    const layer = Layer.provide(
+      Layer.mergeAll(
+        withLogFormat,
+        withMinimalLogLevel,
+        HttpClient.layer,
+        Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
       ),
-      Effect.provide(Layer.setConfigProvider(configProvider(this.opts))),
+      Layer.setConfigProvider(configProvider(this.opts)),
+    );
+
+    return program.pipe(
+      Effect.provide(layer),
       Effect.withLogSpan("utapi.#executeAsync"),
       (e) => Effect.runPromise(e, signal ? { signal } : undefined),
     );
@@ -271,6 +270,8 @@ export class UTApi {
    * @example
    * const data = await getFileUrls(["2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg","1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"])
    * console.log(data) // [{key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg", url: "https://uploadthing.com/f/2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg" },{key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg", url: "https://uploadthing.com/f/1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg"}]
+   *
+   * @deprecated - See https://docs.uploadthing.com/working-with-files#accessing-files for info how to access files
    */
   getFileUrls = async (keys: string[] | string, opts?: GetFileUrlsOptions) => {
     guardServerOnly();
@@ -291,7 +292,9 @@ export class UTApi {
     return await this.executeAsync(
       this.requestUploadThing(
         "/v6/getFileUrl",
-        keyType === "fileKey" ? { fileKeys: keys } : { customIds: keys },
+        keyType === "fileKey"
+          ? { fileKeys: asArray(keys) }
+          : { customIds: asArray(keys) },
         GetFileUrlResponse,
       ).pipe(Effect.withLogSpan("getFileUrls")),
     );

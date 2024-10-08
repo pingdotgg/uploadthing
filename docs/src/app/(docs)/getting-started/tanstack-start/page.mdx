@@ -1,0 +1,198 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "Tanstack/Start Setup",
+  description: "Learn how to set up a Tanstack/Start project with UploadThing",
+  category: "Getting Started",
+});
+
+# Getting Started with Tanstack/Start
+
+## Package Setup
+
+### Install the packages
+
+```bash npm2yarn
+npm install uploadthing @uploadthing/react
+```
+
+### Add env variables
+
+```bash
+UPLOADTHING_TOKEN=... # A token for interacting with the SDK
+```
+
+<Warning>
+  If you don't already have a uploadthing token, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Warning>
+
+## Set Up A FileRouter
+
+### Creating your first FileRoute
+
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/file-routes).
+
+```ts {{ title: "app/server/uploadthing.ts" }}
+import { createUploadthing, UploadThingError } from "uploadthing/server";
+import type { FileRouter } from "uploadthing/server";
+
+const f = createUploadthing();
+
+const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
+
+// FileRouter for your app, can contain multiple FileRoutes
+export const uploadRouter = {
+  // Define as many FileRoutes as you like, each with a unique routeSlug
+  imageUploader: f({ image: { maxFileSize: "4MB" } })
+    // Set permissions and file types for this FileRoute
+    .middleware(async ({ req }) => {
+      // This code runs on your server before upload
+      const user = await auth(req);
+
+      // If you throw, the user will not be able to upload
+      if (!user) throw new UploadThingError("Unauthorized");
+
+      // Whatever is returned here is accessible in onUploadComplete as `metadata`
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      // This code RUNS ON YOUR SERVER after upload
+      console.log("Upload complete for userId:", metadata.userId);
+
+      console.log("file url", file.url);
+
+      // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
+      return { uploadedBy: metadata.userId };
+    }),
+} satisfies FileRouter;
+
+export type UploadRouter = typeof uploadRouter;
+```
+
+### Create an API route using the FileRouter
+
+<Note>
+  File path here doesn't matter, you can serve this from any route. We recommend
+  serving it from `/api/uploadthing`.
+</Note>
+
+<Warning>
+  Make sure to configure API entry handler in `app/api.ts`. For more
+  information, please refer to the [@tanstack/start
+  docs](https://tanstack.com/router/latest/docs/framework/react/start/api-routes#setting-up-the-entry-handler).
+</Warning>
+
+```ts {{ title: "app/routes/api/uploadthing.ts" }}
+import { createAPIFileRoute } from "@tanstack/start/api";
+
+import { createRouteHandler } from "uploadthing/server";
+
+import { uploadRouter } from "../../server/uploadthing";
+
+const handlers = createRouteHandler({ router: uploadRouter });
+
+export const Route = createAPIFileRoute("/api/uploadthing")({
+  GET: handlers,
+  POST: handlers,
+});
+```
+
+> See configuration options in
+> [server API reference](/api-reference/server#create-route-handler)
+
+## Create The UploadThing Components
+
+We provide components to make uploading easier. We highly recommend re-exporting
+them with the types assigned, but you CAN import the components individually
+from `@uploadthing/react` instead.
+
+```ts {{ title: "app/utils/uploadthing.ts" }}
+import {
+  generateReactHelpers,
+  generateUploadButton,
+  generateUploadDropzone,
+} from "@uploadthing/react";
+
+import type { UploadRouter } from "../server/uploadthing";
+
+export const UploadButton = generateUploadButton<UploadRouter>();
+export const UploadDropzone = generateUploadDropzone<UploadRouter>();
+export const { useUploadThing } = generateReactHelpers<UploadRouter>();
+```
+
+<Note>
+  To learn more about the components, check out the [react API
+  reference](/api-reference/react).
+</Note>
+
+### Add UploadThing's Styles
+
+<Tabs tabs={["Tailwind", "Not Tailwind"]}>
+  <Tab>
+    Wrap your Tailwind config with the `withUt` helper. You can learn more about our
+    Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+
+    ```tsx
+    import { withUt } from "uploadthing/tw";
+
+    export default withUt({
+      // Your existing Tailwind config
+      content: ["./src/**/*.{ts,tsx,mdx}"],
+      ...
+    });
+    ```
+
+  </Tab>
+  <Tab>
+    Include our CSS in your root route to make sure the components look right!
+
+    ```tsx {{ title: "app/routes/__root.tsx" }}
+    // @ts-expect-error
+    import uploadthingCss from "@uploadthing/react/styles.css?url";
+
+    export const Route = createRootRoute({
+      component: RootComponent,
+      links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+    });
+    ```
+
+  </Tab>
+</Tabs>
+
+## Mount A Button And Upload!
+
+```tsx {{ title: "app/routes/index.tsx" }}
+import { createFileRoute } from "@tanstack/react-router";
+
+import { UploadButton } from "../utils/uploadthing";
+
+export const Route = createFileRoute("/")({
+  component: Home,
+});
+
+function Home() {
+  return <UploadButton endpoint="imageUploader" />;
+}
+```
+
+---
+
+### 🎉 You're Done!
+
+Want to customize the components? Check out the
+["Theming" page](/concepts/theming)
+
+Want to make your own components? Check out our
+[useUploadThing hook](/api-reference/react#use-upload-thing)

@@ -104,7 +104,7 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
 The `generateReactHelpers` function is used to generate the
 [useUploadThing](/api-reference/react#use-upload-thing) hook and the
-[uploadFiles]/api-reference/client#upload-files) functions you use to interact
+[uploadFiles](/api-reference/client#upload-files) functions you use to interact
 with UploadThing in custom components. It takes your File Router as a generic
 
 ```tsx
@@ -547,7 +547,7 @@ and `useUploadThing` hooks. For a more complete example, take a look at
 [our prebuilt components](https://github.com/pingdotgg/uploadthing/tree/main/packages/react/src/components).
 
 ```tsx {{ title: "app/example-custom-uploader.tsx" }}
-// import { useDropzone } from "@uploadthing/react";
+import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";

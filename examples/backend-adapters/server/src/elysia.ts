@@ -9,8 +9,11 @@ const handler = createRouteHandler({
   router: uploadRouter,
 });
 
-const app = new Elysia().use(cors());
-app.get("/api", () => "Hello from Elysia!");
-app.all("/api/uploadthing", handler);
-
-app.listen(3000);
+new Elysia()
+  .get("/api", () => "Hello from Elysia!")
+  .get("/api/uploadthing", (ev) => handler(ev.request))
+  .post("/api/uploadthing", (ev) => handler(ev.request))
+  .use(cors())
+  .listen(3000, (server) => {
+    console.log(`Server listening on port ${server.port}`);
+  });

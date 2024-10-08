@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/vue",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -40,9 +40,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "@vueuse/core": "^10.9.0"
+    "@vueuse/core": "^10.9.0",
+    "file-selector": "0.6.0"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
