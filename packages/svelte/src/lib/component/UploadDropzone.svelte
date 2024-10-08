@@ -13,7 +13,6 @@
 >
   import { onMount } from "svelte";
 
-  import { createDropzone } from "./create-dropzone";
   import {
     allowedContentTextLabelGenerator,
     defaultClassListMerger,
@@ -29,6 +28,8 @@
 
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
+  import Cancel from "./Cancel.svelte";
+  import { createDropzone } from "./create-dropzone";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -66,34 +67,30 @@
 
   export let disabled = false;
 
-  // Allow to set internal state for testing
-  export let __internal_state: "readying" | "ready" | "uploading" | undefined =
-    undefined;
-  // Allow to set upload progress for testing
-  export let __internal_upload_progress: number | undefined = undefined;
-  // Allow to set ready explicitly and independently of internal state
-  export let __internal_ready: boolean | undefined = undefined;
-  // Allow to show the button even if no files were added
-  // export let __internal_show_button: boolean | undefined = undefined;
-  // Allow to disable the dropzone
-  export let __internal_dropzone_disabled: boolean | undefined = undefined;
+  $: className = ($$props.class as string) ?? "";
+  $: ({
+    mode = "auto",
+    appendOnPaste = false,
+    cn = defaultClassListMerger,
+  } = uploader.config ?? {});
+  let acRef = new AbortController();
 
   let files: File[] = [];
-  let uploadProgress = __internal_upload_progress ?? 0;
+  $: uploadProgress = 0;
   let rootRef: HTMLElement;
-  let acRef = new AbortController();
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, permittedFileInfo } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,
     {
       signal: acRef.signal,
+      headers: uploader.headers,
       onClientUploadComplete: (res) => {
         files = [];
+        void uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
-        uploader.onClientUploadComplete?.(res);
       },
       onUploadProgress: (p) => {
         uploadProgress = p;
@@ -105,23 +102,9 @@
     },
   );
 
-  $: ({
-    mode = "auto",
-    appendOnPaste = false,
-    cn = defaultClassListMerger,
-  } = uploader.config ?? {});
-  $: uploadProgress = __internal_upload_progress ?? uploadProgress;
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes(
-    $permittedFileInfo?.config,
-  ));
-  $: ready =
-    __internal_ready ?? (__internal_state === "ready" || fileTypes.length > 0);
-  $: className = ($$props.class as string) ?? "";
-
-  const uploadFiles = async (files: File[]) => {
+  const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
-
-    await startUpload(files, input).catch((e) => {
+    startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {
@@ -137,14 +120,16 @@
     files = acceptedFiles;
 
     // If mode is auto, start upload immediately
-    if (mode === "auto") void uploadFiles(files);
+    if (mode === "auto") uploadFiles(files);
   };
+
+  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
 
   $: dropzoneOptions = {
     onDrop: onDropCallback,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled: __internal_dropzone_disabled ?? disabled ?? !ready,
+    disabled,
   };
 
   const {
@@ -153,28 +138,44 @@
     dropzoneInput,
   } = createDropzone(dropzoneOptions);
 
-  const handlePaste = (event: ClipboardEvent) => {
-    if (!appendOnPaste) return;
-    // eslint-disable-next-line no-undef
-    if (document.activeElement !== rootRef) return;
+  $: ready = fileTypes.length > 0;
 
-    const pastedFiles = getFilesFromClipboardEvent(event);
-    if (!pastedFiles) return;
-
-    files = [...files, ...pastedFiles];
-
-    onChange?.(files);
-
-    if (mode === "auto") void uploadFiles(files);
+  const onUploadClick = (e: MouseEvent) => {
+    if (state === "uploading") {
+      e.preventDefault();
+      e.stopPropagation();
+      acRef.abort();
+      acRef = new AbortController();
+      return;
+    }
+    if (mode === "manual" && files.length > 0) {
+      e.preventDefault();
+      e.stopPropagation();
+      uploadFiles(files);
+    }
   };
 
   onMount(() => {
+    if (!appendOnPaste) return;
+
+    const handlePaste = (event: ClipboardEvent) => {
+      // eslint-disable-next-line no-undef
+      if (document.activeElement !== rootRef) return;
+
+      const pastedFiles = getFilesFromClipboardEvent(event);
+      if (!pastedFiles) return;
+
+      files = [...files, ...pastedFiles];
+
+      onChange?.(files);
+
+      if (mode === "auto") uploadFiles(files);
+    };
     // eslint-disable-next-line no-undef
     document.addEventListener("paste", handlePaste);
-    return () => {
-      // eslint-disable-next-line no-undef
-      document.removeEventListener("paste", handlePaste);
-    };
+
+    // eslint-disable-next-line no-undef
+    return () => document.removeEventListener("paste", handlePaste);
   });
 
   $: styleFieldArg = {
@@ -187,11 +188,9 @@
   } satisfies DropzoneStyleFieldCallbackArgs;
 
   $: state = (() => {
-    if (__internal_state) return __internal_state;
     if (disabled) return "disabled";
     if (!ready) return "readying";
     if (ready && !$isUploading) return "ready";
-
     return "uploading";
   })();
 </script>
@@ -200,7 +199,6 @@
   use:dropzoneRoot
   class={cn(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-    state === "disabled" && "cursor-not-allowed",
     $dropzoneState.isDragActive && "bg-blue-600/10",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
@@ -231,10 +229,8 @@
   </slot>
   <label
     class={cn(
-      "relative mt-4 flex w-64 items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-      ready && state !== "disabled"
-        ? "text-blue-600 cursor-pointer"
-        : "text-gray-500 hover:text-gray-500 cursor-not-allowed",
+      "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
+      ready ? "text-blue-600" : "text-gray-500",
       styleFieldToClassName(appearance?.label, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.label, styleFieldArg)}
@@ -243,7 +239,9 @@
   >
     <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
     <slot name="label" state={styleFieldArg}>
-      {ready ? `Choose files or drag and drop` : `Loading...`}
+      {ready
+        ? `Choose ${multiple ? "file(s)" : "a file"} or drag and drop`
+        : `Loading...`}
     </slot>
   </label>
   <div
@@ -256,61 +254,37 @@
     data-state={state}
   >
     <slot name="allowed-content" state={styleFieldArg}>
-      {allowedContentTextLabelGenerator($permittedFileInfo?.config)}
+      {allowedContentTextLabelGenerator($routeConfig)}
     </slot>
   </div>
   <button
     class={cn(
-      "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 cursor-pointer",
-      state === "disabled" && "cursor-not-allowed bg-gray-400",
+      "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
+      state === "disabled" && "cursor-not-allowed bg-blue-400",
       state === "readying" && "cursor-not-allowed bg-blue-400",
       state === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
       state === "ready" && "bg-blue-600",
+      "disabled:pointer-events-none",
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
+    on:click={onUploadClick}
     data-ut-element="button"
     data-state={state}
-    disabled={__internal_dropzone_disabled ?? state === "disabled"}
-    on:click={async (e) => {
-      if (state === "uploading") {
-        e.preventDefault();
-        e.stopPropagation();
-
-        acRef.abort();
-        acRef = new AbortController();
-        return;
-      }
-      if (mode === "manual" && files.length > 0) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        await uploadFiles(files);
-      }
-      console.log("Passing click event through");
-    }}
+    type="button"
+    disabled={files.length === 0 || state === "disabled"}
   >
     <slot name="button-content" state={styleFieldArg}>
-      {#if state === "uploading"}
-        {#if uploadProgress === 100}
+      {#if state === "readying"}
+        {`Loading...`}
+      {:else if state === "uploading"}
+        {#if uploadProgress >= 100}
           <Spinner />
         {:else}
           <span class="z-50">
             <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class={cn(
-                "fill-none stroke-current stroke-2",
-                "hidden size-4 group-hover:block",
-              )}
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="m4.9 4.9 14.2 14.2" />
-            </svg>
+            <Cancel {cn} className="hidden size-4 group-hover:block" />
           </span>
         {/if}
       {:else if mode === "manual" && files.length > 0}

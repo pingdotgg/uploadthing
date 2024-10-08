@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import * as S from "@effect/schema/Schema";
 import * as Redacted from "effect/Redacted";
 import type { StrictRequest } from "msw";
@@ -8,6 +9,7 @@ import { afterAll, beforeAll, it as itBase, vi } from "vitest";
 import { UPLOADTHING_VERSION } from "../src/internal/config";
 import { ParsedToken, UploadThingToken } from "../src/internal/shared-schemas";
 import type { ActionType } from "../src/internal/shared-schemas";
+import type { UploadPutResult } from "../src/internal/types";
 
 export const requestSpy = vi.fn<(url: string, req: RequestInit) => void>();
 export const requestsToDomain = (domain: string) =>
@@ -116,10 +118,13 @@ export const it = itBase.extend({
         async ({ request, params }) => {
           await callRequestSpy(request);
           const appId = new URLSearchParams(request.url).get("x-ut-identifier");
-          return HttpResponse.json({
+          return HttpResponse.json<UploadPutResult>({
             url: `${UTFS_IO_URL}/f/${params.key}`,
             appUrl: `${UTFS_IO_URL}/a/${appId}/${params.key}`,
             serverData: null,
+            fileHash: createHash("md5")
+              .update(new Uint8Array(await request.arrayBuffer()))
+              .digest("hex"),
           });
         },
       ),

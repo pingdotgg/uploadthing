@@ -35,15 +35,17 @@ export type UseUploadthingProps<
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
    * Can be used to modify the files before they are uploaded, e.g. renaming them
    */
-  onBeforeUploadBegin?: (files: File[]) => Promise<File[]> | File[];
+  onBeforeUploadBegin?:
+    | ((files: File[]) => Promise<File[]> | File[])
+    | undefined;
   /**
    * Called when presigned URLs have been retrieved and the file upload is about to begin
    */
-  onUploadBegin?: (fileName: string) => void;
+  onUploadBegin?: ((fileName: string) => void) | undefined;
   /**
    * Called continuously as the file is uploaded to the storage provider
    */
-  onUploadProgress?: (p: number) => void;
+  onUploadProgress?: ((p: number) => void) | undefined;
   /**
    * This option has been moved to your serverside route config.
    * Please opt-in by setting `awaitServerData: false` in your route
@@ -64,13 +66,20 @@ export type UseUploadthingProps<
    * @remarks If `RouteOptions.awaitServerData` is `true`, this will be
    * called after the serverside `onUploadComplete` callback has finished
    */
-  onClientUploadComplete?: (
-    res: ClientUploadedFileData<TServerOutput>[],
-  ) => void;
+  onClientUploadComplete?:
+    | ((res: ClientUploadedFileData<TServerOutput>[]) => MaybePromise<void>)
+    | undefined;
   /**
    * Called if the upload fails
    */
-  onUploadError?: (e: UploadThingError<inferErrorShape<TRouter>>) => void;
+  onUploadError?:
+    | ((e: UploadThingError<inferErrorShape<TRouter>>) => MaybePromise<void>)
+    | undefined;
+  /**
+   * Set custom headers that'll get sent with requests
+   * to your server
+   */
+  headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   /**
    * An AbortSignal to cancel the upload
    * Calling `abort()` on the parent AbortController will cause the
@@ -124,6 +133,12 @@ export type UploadthingComponentProps<
     cn?: ClassListMerger;
   };
   disabled?: boolean;
+  /**
+   * Callback called when files are selected or pasted.
+   *
+   * @param files - The files that were accepted.
+   */
+  onChange?: (files: File[]) => void;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {
