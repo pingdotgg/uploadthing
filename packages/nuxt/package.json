@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/nuxt",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "type": "module",
   "license": "MIT",
   "exports": {
