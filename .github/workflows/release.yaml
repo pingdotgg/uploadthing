@@ -12,7 +12,7 @@ jobs:
   release:
     name: Release
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
       - name: Checkout
         uses: actions/checkout@v4
