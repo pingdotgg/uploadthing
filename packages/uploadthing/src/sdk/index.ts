@@ -7,7 +7,6 @@ import * as S from "@effect/schema/Schema";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
-import * as Logger from "effect/Logger";
 import * as Predicate from "effect/Predicate";
 import * as Redacted from "effect/Redacted";
 
