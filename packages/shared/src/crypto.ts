@@ -1,6 +1,7 @@
 import * as Encoding from "effect/Encoding";
 import * as Hash from "effect/Hash";
 import * as Micro from "effect/Micro";
+import * as Redacted from "effect/Redacted";
 import SQIds, { defaultOptions } from "sqids";
 
 import { UploadThingError } from "./error";
@@ -27,13 +28,16 @@ function shuffle(str: string, seed: string) {
   return chars.join("");
 }
 
-export const signPayload = (payload: string, secret: string) =>
+export const signPayload = (
+  payload: string,
+  secret: Redacted.Redacted<string>,
+) =>
   Micro.gen(function* () {
     const signingKey = yield* Micro.tryPromise({
       try: () =>
         crypto.subtle.importKey(
           "raw",
-          encoder.encode(secret),
+          encoder.encode(Redacted.value(secret)),
           algorithm,
           false,
           ["sign"],
@@ -61,13 +65,13 @@ export const signPayload = (payload: string, secret: string) =>
 export const verifySignature = (
   payload: string,
   signature: string | null,
-  secret: string,
+  secret: Redacted.Redacted<string>,
 ) =>
   Micro.gen(function* () {
     const sig = signature?.slice(signaturePrefix.length);
     if (!sig) return false;
 
-    const secretBytes = encoder.encode(secret);
+    const secretBytes = encoder.encode(Redacted.value(secret));
     const signingKey = yield* Micro.promise(() =>
       crypto.subtle.importKey("raw", secretBytes, algorithm, false, ["verify"]),
     );
@@ -131,7 +135,7 @@ export const verifyKey = (key: string, appId: string) =>
 
 export const generateSignedURL = (
   url: string | URL,
-  secretKey: string,
+  secretKey: Redacted.Redacted<string>,
   opts: {
     ttlInSeconds?: Time | undefined;
     data?: Record<string, string | number | boolean | null | undefined>;

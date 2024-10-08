@@ -29641,7 +29641,7 @@ snapshots:
 
   metro-babel-transformer@0.80.9:
     dependencies:
-      '@babel/core': 7.24.4
+      '@babel/core': 7.25.2
       hermes-parser: 0.20.1
       nullthrows: 1.1.1
     transitivePeerDependencies:
@@ -29727,7 +29727,7 @@ snapshots:
 
   metro-transform-plugins@0.80.9:
     dependencies:
-      '@babel/core': 7.24.4
+      '@babel/core': 7.25.2
       '@babel/generator': 7.24.4
       '@babel/template': 7.24.6
       '@babel/traverse': 7.24.1
@@ -29737,7 +29737,7 @@ snapshots:
 
   metro-transform-worker@0.80.9(encoding@0.1.13):
     dependencies:
-      '@babel/core': 7.24.4
+      '@babel/core': 7.25.2
       '@babel/generator': 7.24.4
       '@babel/parser': 7.25.6
       '@babel/types': 7.25.6
