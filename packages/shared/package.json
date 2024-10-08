@@ -47,7 +47,7 @@
     "eslint": "^8.57.0",
     "react": "18.3.1",
     "solid-js": "^1.8.23",
-    "typescript": "^5.5.4",
+    "typescript": "^5.5.2",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0"
   },

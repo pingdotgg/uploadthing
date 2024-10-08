@@ -26,7 +26,7 @@
     "@playwright/test": "1.45.0",
     "@uploadthing/react": "7.0.2",
     "concurrently": "^8.2.2",
-    "typescript": "^5.5.4",
+    "typescript": "^5.5.2",
     "uploadthing": "7.0.2"
   }
 }
