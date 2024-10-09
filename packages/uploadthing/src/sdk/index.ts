@@ -1,5 +1,5 @@
+import type { FetchHttpClient } from "@effect/platform";
 import {
-  FetchHttpClient,
   HttpClient,
   HttpClientRequest,
   HttpClientResponse,
@@ -7,7 +7,7 @@ import {
 import * as S from "@effect/schema/Schema";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
+import type * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Predicate from "effect/Predicate";
 
 import type {
@@ -22,18 +22,9 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import {
-  ApiUrl,
-  configProvider,
-  UPLOADTHING_VERSION,
-  UTToken,
-} from "../internal/config";
-import {
-  logHttpClientError,
-  logHttpClientResponse,
-  withLogFormat,
-  withMinimalLogLevel,
-} from "../internal/logger";
+import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../internal/config";
+import { logHttpClientError, logHttpClientResponse } from "../internal/logger";
+import { makeRuntime } from "../internal/runtime";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -55,13 +46,16 @@ export { UTFile };
 export class UTApi {
   private fetch: FetchEsque;
   private defaultKeyType: "fileKey" | "customId";
-
+  private runtime: ManagedRuntime.ManagedRuntime<
+    HttpClient.HttpClient.Service | FetchHttpClient.Fetch,
+    UploadThingError
+  >;
   constructor(private opts?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
-
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
+    this.runtime = makeRuntime(this.fetch, this.opts);
   }
 
   private requestUploadThing = <T>(
@@ -94,31 +88,17 @@ export class UTApi {
       );
     }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
 
-  private executeAsync = <A, E>(
+  private executeAsync = async <A, E>(
     program: Effect.Effect<A, E, HttpClient.HttpClient.Service>,
     signal?: AbortSignal,
   ) => {
-    const layer = Layer.provide(
-      Layer.mergeAll(
-        withLogFormat,
-        withMinimalLogLevel,
-        FetchHttpClient.layer.pipe(
-          Layer.provide(
-            Layer.succeed(
-              FetchHttpClient.Fetch,
-              this.fetch as typeof globalThis.fetch,
-            ),
-          ),
-        ),
-      ),
-      Layer.setConfigProvider(configProvider(this.opts)),
+    const result = await program.pipe(
+      Effect.withLogSpan("utapi.#executeAsync"),
+      (e) => this.runtime.runPromise(e, signal ? { signal } : undefined),
     );
 
-    return program.pipe(
-      Effect.provide(layer),
-      Effect.withLogSpan("utapi.#executeAsync"),
-      (e) => Effect.runPromise(e, signal ? { signal } : undefined),
-    );
+    await this.runtime.dispose();
+    return result;
   };
 
   /**

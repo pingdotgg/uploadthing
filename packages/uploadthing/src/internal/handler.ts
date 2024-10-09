@@ -1,5 +1,4 @@
 import {
-  FetchHttpClient,
   HttpApp,
   HttpBody,
   HttpClient,
@@ -13,8 +12,6 @@ import * as S from "@effect/schema/Schema";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
-import * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Match from "effect/Match";
 
 import {
@@ -29,17 +26,13 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../../package.json";
-import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
+import { IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
-import {
-  logHttpClientError,
-  logHttpClientResponse,
-  withLogFormat,
-  withMinimalLogLevel,
-} from "./logger";
+import { logHttpClientError, logHttpClientResponse } from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
+import { makeRuntime } from "./runtime";
 import {
   ActionType,
   CallbackResultResponse,
@@ -72,24 +65,10 @@ export const makeAdapterHandler = <Args extends any[]>(
   opts: RouteHandlerOptions<FileRouter>,
   beAdapter: string,
 ): ((...args: Args) => Promise<Response>) => {
-  const layer = Layer.provide(
-    Layer.mergeAll(
-      withLogFormat,
-      withMinimalLogLevel,
-      FetchHttpClient.layer.pipe(
-        Layer.provide(
-          Layer.succeed(
-            FetchHttpClient.Fetch,
-            opts.config?.fetch as typeof globalThis.fetch,
-          ),
-        ),
-      ),
-    ),
-    Layer.setConfigProvider(configProvider(opts.config)),
+  const managed = makeRuntime(
+    opts.config?.fetch as typeof globalThis.fetch,
+    opts.config,
   );
-
-  const managed = ManagedRuntime.make(layer);
-
   const handle = Effect.promise(() =>
     managed.runtime().then(HttpApp.toWebHandlerRuntime),
   );
@@ -105,13 +84,17 @@ export const makeAdapterHandler = <Args extends any[]>(
       ),
     );
 
-  return async (...args: Args) =>
-    await handle.pipe(
+  return async (...args: Args) => {
+    const result = await handle.pipe(
       Effect.ap(app(...args)),
       Effect.ap(toRequest(...args)),
       Effect.withLogSpan("requestHandler"),
       managed.runPromise,
     );
+
+    await managed.dispose();
+    return result;
+  };
 };
 
 export const createRequestHandler = <TRouter extends FileRouter>(
@@ -377,9 +360,9 @@ const handleCallbackRequest = (opts: {
       ).pipe(Effect.annotateLogs("callbackData", payload));
 
       const baseUrl = yield* IngestUrl;
-      const httpClient = (yield* HttpClient.HttpClient).pipe(
-        HttpClient.filterStatusOk,
-      );
+
+      const httpClient = yield* OkHttpClient;
+
       yield* HttpClientRequest.post(`/callback-result`).pipe(
         HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.setHeaders({
@@ -472,9 +455,7 @@ const handleUploadAction = (opts: {
   slug: string;
 }) =>
   Effect.gen(function* () {
-    const httpClient = (yield* HttpClient.HttpClient).pipe(
-      HttpClient.filterStatusOk,
-    );
+    const httpClient = yield* OkHttpClient;
     const { uploadable, fePackage, beAdapter, slug } = opts;
     const json = yield* HttpServerRequest.schemaBodyJson(UploadActionPayload);
     yield* Effect.logDebug("Handling upload request").pipe(
@@ -693,3 +674,7 @@ const handleUploadAction = (opts: {
       fiber,
     };
   }).pipe(Effect.withLogSpan("handleUploadAction"));
+
+const OkHttpClient = HttpClient.HttpClient.pipe(
+  Effect.map(HttpClient.filterStatusOk),
+);
