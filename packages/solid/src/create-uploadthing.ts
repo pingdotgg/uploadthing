@@ -20,7 +20,7 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const useRouteConfig = (url: URL, endpoint: string) => {
+const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint)?.config;
 };
@@ -45,7 +45,6 @@ export const INTERNAL_createUploadThingGen = <
     opts?: CreateUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
-
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
@@ -89,7 +88,7 @@ export const INTERNAL_createUploadThingGen = <
           input,
         });
 
-        opts?.onClientUploadComplete?.(res);
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         /**
@@ -108,7 +107,7 @@ export const INTERNAL_createUploadThingGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
         return;
       } finally {
         setUploading(false);
@@ -117,7 +116,7 @@ export const INTERNAL_createUploadThingGen = <
       }
     };
 
-    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+    const routeConfig = createRouteConfig(initOpts.url, endpoint as string);
 
     return {
       startUpload,

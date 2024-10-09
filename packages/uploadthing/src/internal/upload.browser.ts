@@ -4,6 +4,7 @@ import * as Micro from "effect/Micro";
 import type { FetchError } from "@uploadthing/shared";
 import { FetchContext, fetchEff, UploadThingError } from "@uploadthing/shared";
 
+import { version } from "../../package.json";
 import type {
   ClientUploadedFileData,
   FileRouter,
@@ -11,6 +12,7 @@ import type {
   NewPresignedUrl,
   UploadFilesOptions,
 } from "../types";
+import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
 const uploadWithProgress = (
@@ -25,6 +27,7 @@ const uploadWithProgress = (
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
+    xhr.setRequestHeader("x-uploadthing-version", version);
     xhr.responseType = "json";
 
     let previousLoaded = 0;
@@ -92,12 +95,7 @@ export const uploadFile = <
         }),
       ),
     ),
-    Micro.map(
-      unsafeCoerce<
-        unknown,
-        { url: string; appUrl: string; serverData: TServerOutput }
-      >,
-    ),
+    Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
     Micro.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
@@ -108,6 +106,7 @@ export const uploadFile = <
       appUrl: uploadResponse.appUrl,
       customId: presigned.customId,
       type: file.type,
+      fileHash: uploadResponse.fileHash,
     })),
   );
 

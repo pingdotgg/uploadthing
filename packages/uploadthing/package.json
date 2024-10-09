@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "7.0.2",
+  "version": "7.1.0",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -154,8 +154,7 @@
     "@effect/schema": "0.74.1",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.8.4",
-    "effect-log": "0.32.0"
+    "effect": "3.8.4"
   },
   "devDependencies": {
     "@remix-run/server-runtime": "^2.12.0",

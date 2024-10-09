@@ -10,7 +10,6 @@ import {
   HttpServerResponse,
 } from "@effect/platform";
 import * as S from "@effect/schema/Schema";
-import { PrettyLogger } from "effect-log";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -23,7 +22,7 @@ import {
   generateKey,
   generateSignedURL,
   getStatusCodeFromError,
-  getTypeFromFileName,
+  matchFileType,
   objectKeys,
   UploadThingError,
   verifySignature,
@@ -33,7 +32,12 @@ import * as pkgJson from "../../package.json";
 import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
-import { withMinimalLogLevel } from "./logger";
+import {
+  logHttpClientError,
+  logHttpClientResponse,
+  withLogFormat,
+  withMinimalLogLevel,
+} from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
 import {
@@ -70,7 +74,7 @@ export const makeAdapterHandler = <Args extends any[]>(
 ): ((...args: Args) => Promise<Response>) => {
   const layer = Layer.provide(
     Layer.mergeAll(
-      PrettyLogger.layer({ showFiberId: false }),
+      withLogFormat,
       withMinimalLogLevel,
       FetchHttpClient.layer.pipe(
         Layer.provide(
@@ -386,12 +390,8 @@ const handleCallbackRequest = (opts: {
         }),
         HttpClientRequest.bodyJson(payload),
         Effect.flatMap(httpClient.execute),
-        Effect.tapErrorTag("ResponseError", ({ response: res }) =>
-          Effect.flatMap(res.json, (json) =>
-            Effect.logError(
-              `Failed to register callback result (${res.status})`,
-            ).pipe(Effect.annotateLogs("error", json)),
-          ),
+        Effect.tapError(
+          logHttpClientError("Failed to register callback result"),
         ),
         Effect.flatMap(
           HttpClientResponse.schemaBodyJson(CallbackResultResponse),
@@ -540,19 +540,16 @@ const handleUploadAction = (opts: {
     const fileUploadRequests = yield* Effect.forEach(
       filesWithCustomIds,
       (file) =>
-        Effect.map(
-          getTypeFromFileName(file.name, objectKeys(parsedConfig)),
-          (type) => ({
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            lastModified: file.lastModified,
-            customId: file.customId,
-            contentDisposition:
-              parsedConfig[type]?.contentDisposition ?? "inline",
-            acl: parsedConfig[type]?.acl,
-          }),
-        ),
+        Effect.map(matchFileType(file, objectKeys(parsedConfig)), (type) => ({
+          name: file.name,
+          size: file.size,
+          type: file.type || type,
+          lastModified: file.lastModified,
+          customId: file.customId,
+          contentDisposition:
+            parsedConfig[type]?.contentDisposition ?? "inline",
+          acl: parsedConfig[type]?.acl,
+        })),
     ).pipe(
       Effect.catchTags({
         /** Shouldn't happen since config is validated above so just dying is fine I think */
@@ -627,25 +624,6 @@ const handleUploadAction = (opts: {
         awaitServerData: routeOptions.awaitServerData ?? true,
       }),
       Effect.flatMap(httpClient.execute),
-      Effect.tapBoth({
-        onSuccess: (res) =>
-          Effect.logDebug("Registerred metadata").pipe(
-            Effect.annotateLogs("response", res),
-          ),
-        onFailure: (err) =>
-          err._tag === "ResponseError"
-            ? Effect.flatMap(err.response.json, (json) =>
-                Effect.logError(
-                  `Failed to register metadata (${err.response.status})`,
-                ).pipe(
-                  Effect.annotateLogs("response", err.response),
-                  Effect.annotateLogs("json", json),
-                ),
-              )
-            : Effect.logError("Failed to register metadata").pipe(
-                Effect.annotateLogs("error", err),
-              ),
-      }),
     );
 
     // Send metadata to UT server (non blocking as a daemon)
@@ -654,6 +632,12 @@ const handleUploadAction = (opts: {
     const fiber = yield* Effect.if(isDev, {
       onTrue: () =>
         metadataRequest.pipe(
+          Effect.tapBoth({
+            onSuccess: logHttpClientResponse("Registered metadata", {
+              mixin: "None", // We're reading the stream so can't call a body mixin
+            }),
+            onFailure: logHttpClientError("Failed to register metadata"),
+          }),
           HttpClientResponse.stream,
           handleJsonLineStream(
             MetadataFetchStreamPart,
@@ -667,42 +651,27 @@ const handleUploadAction = (opts: {
                   HttpBody.text(payload, "application/json"),
                 ),
                 httpClient.execute,
-                Effect.flatMap((_) => _.arrayBuffer),
-                Effect.asVoid,
-                Effect.tapBoth({
-                  onSuccess: (res) =>
-                    Effect.logDebug(
-                      "Successfully forwarded callback request from dev stream",
-                    ).pipe(
-                      Effect.annotateLogs("response", res),
-                      Effect.annotateLogs("hook", hook),
-                      Effect.annotateLogs("signature", signature),
-                      Effect.annotateLogs("payload", payload),
-                    ),
-                  onFailure: (err) =>
-                    err._tag === "ResponseError"
-                      ? Effect.flatMap(err.response.json, (json) =>
-                          Effect.logError(
-                            `Failed to forward callback request from dev stream (${err.response.status})`,
-                          ).pipe(
-                            Effect.annotateLogs("response", err.response),
-                            Effect.annotateLogs("json", json),
-                            Effect.annotateLogs("hook", hook),
-                            Effect.annotateLogs("signature", signature),
-                            Effect.annotateLogs("payload", payload),
-                          ),
-                        )
-                      : Effect.logError(
-                          "Failed to forward callback request from dev stream",
-                        ).pipe(Effect.annotateLogs("error", err)),
-                }),
-                Effect.ignoreLogged,
-                Effect.scoped,
-              ),
+              Effect.tapBoth({
+                onSuccess: logHttpClientResponse(
+                  "Successfully forwarded callback request from dev stream",
+                ),
+                onFailure: logHttpClientError(
+                  "Failed to forward callback request from dev stream",
+                ),
+              }),
+              Effect.annotateLogs(chunk),
+              HttpClientResponse.json,
+              Effect.asVoid,
+              Effect.ignoreLogged,
+            ),
           ),
         ),
       onFalse: () =>
         metadataRequest.pipe(
+          Effect.tapBoth({
+            onSuccess: logHttpClientResponse("Registered metadata"),
+            onFailure: logHttpClientError("Failed to register metadata"),
+          }),
           Effect.flatMap(
             HttpClientResponse.schemaBodyJson(MetadataFetchResponse),
           ),

@@ -4,7 +4,9 @@ import { unsafeCoerce } from "effect/Function";
 
 import { UploadThingError } from "@uploadthing/shared";
 
+import { version } from "../../package.json";
 import type { FileEsque } from "../sdk/types";
+import type { UploadPutResult } from "./types";
 
 export const uploadWithoutProgress = (
   file: FileEsque,
@@ -20,6 +22,7 @@ export const uploadWithoutProgress = (
     const json = yield* HttpClientRequest.put(presigned.url).pipe(
       HttpClientRequest.bodyFormData(formData),
       HttpClientRequest.setHeader("Range", "bytes=0-"),
+      HttpClientRequest.setHeader("x-uploadthing-version", version),
       httpClient.execute,
       Effect.mapError(
         (e) =>
@@ -30,7 +33,7 @@ export const uploadWithoutProgress = (
           }),
       ),
       Effect.andThen((_) => _.json),
-      Effect.andThen(unsafeCoerce<unknown, { url: string; appUrl: string }>),
+      Effect.andThen(unsafeCoerce<unknown, UploadPutResult>),
       Effect.scoped,
     );
 
