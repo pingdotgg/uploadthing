@@ -102,7 +102,6 @@ export class UTApi {
       Layer.mergeAll(
         withLogFormat,
         withMinimalLogLevel,
-      Effect.provide(
         FetchHttpClient.layer.pipe(
           Layer.provide(
             Layer.succeed(

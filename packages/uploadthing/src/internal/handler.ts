@@ -639,18 +639,16 @@ const handleUploadAction = (opts: {
             onFailure: logHttpClientError("Failed to register metadata"),
           }),
           HttpClientResponse.stream,
-          handleJsonLineStream(
-            MetadataFetchStreamPart,
-            ({ payload, signature, hook }) =>
-              devHookRequest.pipe(
-                HttpClientRequest.setHeaders({
-                  "uploadthing-hook": hook,
-                  "x-uploadthing-signature": signature,
-                }),
-                HttpClientRequest.setBody(
-                  HttpBody.text(payload, "application/json"),
-                ),
-                httpClient.execute,
+          handleJsonLineStream(MetadataFetchStreamPart, (chunk) =>
+            devHookRequest.pipe(
+              HttpClientRequest.setHeaders({
+                "uploadthing-hook": chunk.hook,
+                "x-uploadthing-signature": chunk.signature,
+              }),
+              HttpClientRequest.setBody(
+                HttpBody.text(chunk.payload, "application/json"),
+              ),
+              httpClient.execute,
               Effect.tapBoth({
                 onSuccess: logHttpClientResponse(
                   "Successfully forwarded callback request from dev stream",
@@ -660,9 +658,9 @@ const handleUploadAction = (opts: {
                 ),
               }),
               Effect.annotateLogs(chunk),
-              HttpClientResponse.json,
               Effect.asVoid,
               Effect.ignoreLogged,
+              Effect.scoped,
             ),
           ),
         ),
