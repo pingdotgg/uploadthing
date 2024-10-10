@@ -361,7 +361,9 @@ const handleCallbackRequest = (opts: {
 
       const baseUrl = yield* IngestUrl;
 
-      const httpClient = yield* OkHttpClient;
+      const httpClient = (yield* HttpClient.HttpClient).pipe(
+        HttpClient.filterStatusOk,
+      );
 
       yield* HttpClientRequest.post(`/callback-result`).pipe(
         HttpClientRequest.prependUrl(baseUrl),
@@ -455,7 +457,9 @@ const handleUploadAction = (opts: {
   slug: string;
 }) =>
   Effect.gen(function* () {
-    const httpClient = yield* OkHttpClient;
+    const httpClient = (yield* HttpClient.HttpClient).pipe(
+      HttpClient.filterStatusOk,
+    );
     const { uploadable, fePackage, beAdapter, slug } = opts;
     const json = yield* HttpServerRequest.schemaBodyJson(UploadActionPayload);
     yield* Effect.logDebug("Handling upload request").pipe(
@@ -674,7 +678,3 @@ const handleUploadAction = (opts: {
       fiber,
     };
   }).pipe(Effect.withLogSpan("handleUploadAction"));
-
-const OkHttpClient = HttpClient.HttpClient.pipe(
-  Effect.map(HttpClient.filterStatusOk),
-);

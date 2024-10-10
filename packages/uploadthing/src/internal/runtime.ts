@@ -4,18 +4,17 @@ import * as ManagedRuntime from "effect/ManagedRuntime";
 
 import type { FetchEsque } from "@uploadthing/shared";
 
-import type { UTApiOptions } from "../types";
 import { configProvider } from "./config";
 import { withLogFormat, withMinimalLogLevel } from "./logger";
 
-export const makeRuntime = (fetch: FetchEsque, opts?: UTApiOptions) => {
+export const makeRuntime = (fetch: FetchEsque, config: unknown) => {
   const fetchHttpClient = Layer.provideMerge(
     FetchHttpClient.layer,
     Layer.succeed(FetchHttpClient.Fetch, fetch as typeof globalThis.fetch),
   );
   const layer = Layer.provide(
     Layer.mergeAll(withLogFormat, withMinimalLogLevel, fetchHttpClient),
-    Layer.setConfigProvider(configProvider(opts)),
+    Layer.setConfigProvider(configProvider(config)),
   );
   return ManagedRuntime.make(layer);
 };
