@@ -351,3 +351,12 @@ export const safeNumberReplacer = (_: string, value: unknown) => {
   if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
   if (Number.isNaN(value)) return 0;
 };
+
+export function noop() {
+  // noop
+}
+
+export const createIdentityProxy = <TObj extends Record<string, unknown>>() =>
+  new Proxy(noop, {
+    get: (_, prop) => prop,
+  }) as unknown as TObj;

@@ -159,3 +159,7 @@ export type GenerateUploaderOptions = {
    */
   package: string;
 };
+
+export type RouteRegistry<TRouter extends FileRouter> = {
+  [k in keyof TRouter]: k;
+};

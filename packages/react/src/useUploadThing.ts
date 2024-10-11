@@ -5,6 +5,7 @@ import type {
   ExpandedRouteConfig,
 } from "@uploadthing/shared";
 import {
+  createIdentityProxy,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
   UploadAbortedError,
@@ -19,6 +20,7 @@ import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
+  RouteRegistry,
 } from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
@@ -169,6 +171,8 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     return config;
   }
 
+  const routeRegistry = createIdentityProxy<RouteRegistry<TRouter>>();
+
   return {
     useUploadThing,
     ...genUploader<TRouter>({
@@ -180,5 +184,11 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
      * @remarks Can only be used if the NextSSRPlugin is used in the app.
      */
     getRouteConfig,
+    /**
+     * Identity object that can be used instead of raw strings
+     * that allows "Go to definition" in your IDE to bring you
+     * to the backend definition of a route.
+     */
+    routeRegistry,
   } as const;
 };
