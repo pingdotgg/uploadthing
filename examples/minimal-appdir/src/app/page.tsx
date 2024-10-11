@@ -8,7 +8,7 @@ import {
 } from "~/utils/uploadthing";
 
 export default function Home() {
-  const { startUpload } = useUploadThing(routeRegistry.videoAndImage, {
+  const { startUpload } = useUploadThing("videoAndImage", {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
@@ -47,7 +47,7 @@ export default function Home() {
         /**
          * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
          */
-        endpoint="videoAndImage"
+        endpoint={(_) => _.videoAndImage}
         onUploadAborted={() => {
           alert("Upload Aborted");
         }}

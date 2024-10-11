@@ -3,6 +3,7 @@ import * as Micro from "effect/Micro";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
   asArray,
+  createIdentityProxy,
   FetchContext,
   fileSizeToBytes,
   matchFileType,
@@ -24,6 +25,7 @@ import type {
   GenerateUploaderOptions,
   inferEndpointInput,
   NewPresignedUrl,
+  RouteRegistry,
   UploadFilesOptions,
 } from "./types";
 
@@ -265,5 +267,16 @@ export const genUploader = <TRouter extends FileRouter>(
         throw Micro.causeSquash(exit.left);
       });
 
-  return { uploadFiles: typedUploadFiles, createUpload: controllableUpload };
+  const routeRegistry = createIdentityProxy<RouteRegistry<TRouter>>();
+
+  return {
+    uploadFiles: typedUploadFiles,
+    createUpload: controllableUpload,
+    /**
+     * Identity object that can be used instead of raw strings
+     * that allows "Go to definition" in your IDE to bring you
+     * to the backend definition of a route.
+     */
+    routeRegistry,
+  };
 };

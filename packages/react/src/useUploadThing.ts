@@ -5,7 +5,6 @@ import type {
   ExpandedRouteConfig,
 } from "@uploadthing/shared";
 import {
-  createIdentityProxy,
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
   UploadAbortedError,
@@ -20,11 +19,14 @@ import type {
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
-  RouteRegistry,
 } from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
-import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
+import type {
+  Endpoint,
+  GenerateTypedHelpersOptions,
+  UseUploadthingProps,
+} from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
 
@@ -54,19 +56,22 @@ export function __useUploadThingInternal<
   TEndpoint extends keyof TRouter,
 >(
   url: URL,
-  endpoint: TEndpoint,
+  endpoint: Endpoint<TRouter, TEndpoint>,
   opts?: UseUploadthingProps<TRouter, TEndpoint>,
 ) {
-  const { uploadFiles } = genUploader<TRouter>({
+  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url,
     package: "@uploadthing/react",
   });
+
+  const _endpoint =
+    typeof endpoint === "function" ? endpoint(routeRegistry) : endpoint;
 
   const [isUploading, setUploading] = useState(false);
   const uploadProgress = useRef(0);
   const fileProgress = useRef<Map<File, number>>(new Map());
 
-  type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+  type InferredInput = inferEndpointInput<TRouter[typeof _endpoint]>;
   type FuncInput = undefined extends InferredInput
     ? [files: File[], input?: undefined]
     : [files: File[], input: InferredInput];
@@ -79,7 +84,7 @@ export function __useUploadThingInternal<
     files.forEach((f) => fileProgress.current.set(f, 0));
     opts?.onUploadProgress?.(0);
     try {
-      const res = await uploadFiles<TEndpoint>(endpoint, {
+      const res = await uploadFiles<TEndpoint>(_endpoint, {
         signal: opts?.signal,
         headers: opts?.headers,
         files,
@@ -154,7 +159,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
   const url = resolveMaybeUrlArg(initOpts?.url);
 
   function useUploadThing<TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    endpoint: Endpoint<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) {
     return __useUploadThingInternal(url, endpoint, opts);
@@ -171,8 +176,6 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     return config;
   }
 
-  const routeRegistry = createIdentityProxy<RouteRegistry<TRouter>>();
-
   return {
     useUploadThing,
     ...genUploader<TRouter>({
@@ -184,11 +187,5 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
      * @remarks Can only be used if the NextSSRPlugin is used in the app.
      */
     getRouteConfig,
-    /**
-     * Identity object that can be used instead of raw strings
-     * that allows "Go to definition" in your IDE to bring you
-     * to the backend definition of a route.
-     */
-    routeRegistry,
   } as const;
 };

@@ -11,6 +11,7 @@ import type {
   inferEndpointInput,
   inferEndpointOutput,
   inferErrorShape,
+  RouteRegistry,
 } from "uploadthing/types";
 
 export interface GenerateTypedHelpersOptions {
@@ -25,6 +26,11 @@ export interface GenerateTypedHelpersOptions {
    */
   url?: string | URL;
 }
+
+export type Endpoint<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = TEndpoint | ((_: RouteRegistry<TRouter>) => TEndpoint);
 
 export type UseUploadthingProps<
   TRouter extends FileRouter,
@@ -110,7 +116,7 @@ export type UploadthingComponentProps<
   /**
    * The endpoint from your FileRouter to use for the upload
    */
-  endpoint: TEndpoint;
+  endpoint: Endpoint<TRouter, TEndpoint>;
   /**
    * URL to the UploadThing API endpoint
    * @example URL { /api/uploadthing }
