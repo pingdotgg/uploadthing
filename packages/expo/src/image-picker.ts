@@ -112,8 +112,6 @@ export const GENERATE_useImageUploader = <
         }),
       );
 
-      console.log("files", files);
-
       // This cast works cause you can append { uri, type, name } as FormData
       return startUpload(
         files as unknown as File[],
