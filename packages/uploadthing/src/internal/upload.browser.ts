@@ -57,8 +57,13 @@ const uploadWithProgress = (
     });
 
     const formData = new FormData();
-    console.log("appending file to FD", file, rangeStart)
-    formData.append("file", file.slice(rangeStart));
+    formData.append(
+      "file",
+      new File([file.slice(rangeStart)], file.name, {
+        lastModified: file.lastModified,
+        type: file.type,
+      }),
+    );
     xhr.send(formData);
 
     return Micro.sync(() => xhr.abort());
