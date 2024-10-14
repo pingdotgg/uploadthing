@@ -117,6 +117,24 @@ describe("UploadButton - basic", () => {
     expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
   });
 
+  it("fetches and displays route config (with callback endpoint arg)", async () => {
+    const utils = render(<UploadButton endpoint={(rr) => rr.image} />);
+    const label = utils.container.querySelector("label");
+
+    if (!label) throw new Error("No label found");
+
+    // Previously, when component was disabled, it would show "Loading..."
+    // expect(label).toHaveTextContent("Loading...");
+
+    // then eventually we load in the data, and we should be in the ready state
+    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    expect(label).toHaveTextContent("Choose File");
+    expect(label).not.toHaveTextContent("(s)");
+
+    expect(utGet).toHaveBeenCalledOnce();
+    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+  });
+
   it("shows plural when maxFileCount is > 1", async () => {
     const utils = render(<UploadButton endpoint="multi" />);
     const label = utils.container.querySelector("label");
