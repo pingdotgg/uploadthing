@@ -92,7 +92,6 @@ export const makeAdapterHandler = <Args extends any[]>(
       managed.runPromise,
     );
 
-    await managed.dispose();
     return result;
   };
 };
