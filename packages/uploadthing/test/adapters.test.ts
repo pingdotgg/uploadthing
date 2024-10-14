@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
 import {
+  FetchHttpClient,
   HttpClient,
   HttpServerRequest,
   HttpServerResponse,
@@ -777,7 +778,7 @@ describe("adapters:effect-platform", async () => {
       const eventHandler = createRouteHandler({
         router,
         config: { token: testToken.encoded },
-      }).pipe(Effect.provide(HttpClient.layer));
+      }).pipe(Effect.provide(FetchHttpClient.layer));
 
       const serverRequest = HttpServerRequest.fromWeb(
         new Request("http://localhost:3000"),
@@ -811,7 +812,7 @@ describe("adapters:effect-platform", async () => {
       const handler = createRouteHandler({
         router,
         config: { token: testToken.encoded },
-      }).pipe(Effect.provide(HttpClient.layer));
+      }).pipe(Effect.provide(FetchHttpClient.layer));
 
       const req = new Request(createApiUrl("middleware", "upload"), {
         method: "POST",
@@ -863,7 +864,7 @@ describe("adapters:effect-platform", async () => {
     Effect.gen(function* () {
       const handler = createRouteHandler({
         router,
-      }).pipe(Effect.provide(HttpClient.layer));
+      }).pipe(Effect.provide(FetchHttpClient.layer));
 
       const req = new Request(createApiUrl("middleware", "upload"), {
         method: "POST",
