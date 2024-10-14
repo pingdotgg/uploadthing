@@ -217,15 +217,15 @@ export const OurUploadButton = () => (
 
     <Note>
 
-    The endpoint arg may be a string literal or a callback function:
+      The endpoint arg may be a string literal or a callback function:
 
-    ```ts
-    await uploadFiles((rr) => rr.routeEndpoint, { ... })
-    ```
+      ```ts
+      await uploadFiles((rr) => rr.routeEndpoint, { ... })
+      ```
 
-    This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
-    your backend file route definition, which is not possible when using a string
-    literal parameter.
+      This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
+      your backend file route definition, which is not possible when using a string
+      literal parameter.
 
     </Note>
 
@@ -368,8 +368,23 @@ export const OurUploadDropzone = () => (
 ### Props
 
 <Properties>
-  <Property name="endpoint" type="keyof FileRouter" required>
+  <Property name="endpoint" type="EndpointArg<FileRouter>" required>
     The name/slug of the [route](/file-routes) you want to upload to upload to
+
+    <Note>
+
+      The endpoint arg may be a string literal or a callback function:
+
+      ```ts
+      await uploadFiles((rr) => rr.routeEndpoint, { ... })
+      ```
+
+      This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
+      your backend file route definition, which is not possible when using a string
+      literal parameter.
+
+    </Note>
+
   </Property>
 <Property name="input" type="TInput" since="5.0"> 
     Input JSON data matching your validator set on the [FileRoute](/file-routes#input)
@@ -484,6 +499,19 @@ counts are allowed by the endpoint.
 
 The first parameter is the route endpoint to upload to, and the second parameter
 is an options object:
+
+<Note>
+  The endpoint arg may be a string literal or a callback function:
+
+```ts
+useUploadThing((rr) => rr.routeEndpoint, { ... })
+```
+
+This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
+your backend file route definition, which is not possible when using a string
+literal parameter.
+
+</Note>
 
 <Properties>
   <Property name="files" type="File[]" required since="5.0">
