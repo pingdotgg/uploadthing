@@ -29,6 +29,7 @@ type ButtonStyleFieldCallbackArgs = {
   isUploading: () => boolean;
   uploadProgress: () => number;
   fileTypes: () => string[];
+  files: () => File[];
 };
 
 type ButtonAppearance = {
@@ -175,6 +176,7 @@ export function UploadButton<
     isUploading: uploadThing.isUploading,
     uploadProgress: uploadProgress,
     fileTypes: () => fileInfo().fileTypes,
+    files,
   } as ButtonStyleFieldCallbackArgs;
 
   const getButtonContent = () => {
