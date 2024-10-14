@@ -71,7 +71,12 @@
     }
   },
   "files": [
-    "dist"
+    "application",
+    "audio",
+    "dist",
+    "image",
+    "text",
+    "video"
   ],
   "scripts": {
     "lint": "eslint src --max-warnings 0",
