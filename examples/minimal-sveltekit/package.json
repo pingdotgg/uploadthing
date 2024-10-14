@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",
-    "@uploadthing/svelte": "7.0.4",
+    "@uploadthing/svelte": "7.0.3",
     "uploadthing": "7.1.0"
   },
   "devDependencies": {

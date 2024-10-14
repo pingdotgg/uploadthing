@@ -678,7 +678,7 @@ importers:
         specifier: ^5.0.17
         version: 5.0.18
       '@uploadthing/svelte':
-        specifier: 7.0.4
+        specifier: 7.0.3
         version: link:../../packages/svelte
       uploadthing:
         specifier: 7.1.0
