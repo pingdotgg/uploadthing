@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/svelte",
-  "version": "7.0.3",
+  "version": "7.0.4",
   "license": "MIT",
   "scripts": {
     "dev": "vite dev",
@@ -29,7 +29,7 @@
     "!dist/**/*.spec.*"
   ],
   "peerDependencies": {
-    "svelte": "^4.0.0",
+    "svelte": "^4.0.0 || ^5.0.0-next.0",
     "uploadthing": "^7.0.0"
   },
   "dependencies": {
