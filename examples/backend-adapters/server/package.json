@@ -12,8 +12,8 @@
     "dev:effect": "NODE_ENV=development PORT=3003 tsx watch src/effect-platform.ts"
   },
   "dependencies": {
-    "@effect/platform": "0.68.4",
-    "@effect/platform-node": "0.63.4",
+    "@effect/platform": "0.68.5",
+    "@effect/platform-node": "0.63.5",
     "@effect/schema": "0.75.4",
     "@elysiajs/cors": "^1.1.1",
     "@fastify/cors": "^9.0.1",
