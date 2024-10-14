@@ -26,8 +26,8 @@ importers:
         specifier: ^2.27.1
         version: 2.27.1
       '@effect/vitest':
-        specifier: 0.10.5
-        version: 0.10.5(effect@3.9.2)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))
+        specifier: 0.12.1
+        version: 0.12.1(effect@3.9.2)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(@vue/compiler-sfc@3.5.11)(prettier@3.3.2)
@@ -345,11 +345,11 @@ importers:
   examples/backend-adapters/server:
     dependencies:
       '@effect/platform':
-        specifier: 0.68.4
-        version: 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
+        specifier: 0.68.5
+        version: 0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
       '@effect/platform-node':
-        specifier: 0.63.4
-        version: 0.63.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)
+        specifier: 0.63.5
+        version: 0.63.5(@effect/platform@0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)
       '@effect/schema':
         specifier: 0.75.4
         version: 0.75.4(effect@3.9.2)
@@ -1608,8 +1608,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/platform':
-        specifier: 0.68.4
-        version: 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
+        specifier: 0.68.5
+        version: 0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
       '@effect/schema':
         specifier: 0.75.4
         version: 0.75.4(effect@3.9.2)
@@ -3339,20 +3339,20 @@ packages:
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
 
-  '@effect/platform-node-shared@0.18.4':
-    resolution: {integrity: sha512-pxNaJ88sV8XftDPzvlv+I2NAdEpgtD7IL+TDHDInFlruGUH1s5pmhVXRdYWrUccI1nU1cXKOWUSGD7/rwCSV3w==}
+  '@effect/platform-node-shared@0.18.5':
+    resolution: {integrity: sha512-7x+ixL7x/q2xcY1WA2e6TED0PQrjk04NbvPuNbP9rmlJmrYRrJWTiHJ+mBLCmShBqjs645qwe7bUX0MdXtI8dg==}
     peerDependencies:
-      '@effect/platform': ^0.68.4
+      '@effect/platform': ^0.68.5
       effect: ^3.9.2
 
-  '@effect/platform-node@0.63.4':
-    resolution: {integrity: sha512-OKvzMrXwJxmtrArUVsG8/mpNSYKKlT94xMRANqX48KEfWBeMYg+ZAD+vZvNZIx8iJ/wNdSIfCVI99RvIIV/hag==}
+  '@effect/platform-node@0.63.5':
+    resolution: {integrity: sha512-sSd37p613YEsJuvG8IOa+vGBZFKdV6IpWlxzs0/S5nDar3fj8zmq4lrdtyX0JgqLdluNnuoaxrNjirjp9ye29w==}
     peerDependencies:
-      '@effect/platform': ^0.68.4
+      '@effect/platform': ^0.68.5
       effect: ^3.9.2
 
-  '@effect/platform@0.68.4':
-    resolution: {integrity: sha512-2E54usiSiF4KTD+wAzpHnc27HucUQ2kO+jp4D2rkgvmgAEUFHTvV2gD8YMtOFxhHVv++sPhL6MM8K1+UlWR6RA==}
+  '@effect/platform@0.68.5':
+    resolution: {integrity: sha512-r3W8c9aTlVDHz/7L+mll8ivM/sO1JXWW3GrJGsZvL6X2jdkCBUuaAtJzOw085eVRye916dUP+uiLjlLid9mMuw==}
     peerDependencies:
       '@effect/schema': ^0.75.4
       effect: ^3.9.2
@@ -3362,10 +3362,10 @@ packages:
     peerDependencies:
       effect: ^3.9.2
 
-  '@effect/vitest@0.10.5':
-    resolution: {integrity: sha512-rIzYdFRwF/caf3pjbnsdtEjG0HfZSWH8jFsmkDVkQBkTPVYtk41PEMNQCdotK8Gynv7YKpI2fybjDO3LVBPk5A==}
+  '@effect/vitest@0.12.1':
+    resolution: {integrity: sha512-dUzg1CVgro8aeAVYeCEEMQlnx60CXxbztxH9KDG6/oLRZ/YixHWNytA9PGsC9UPYSgHAahjsn446HgQAnCpX4Q==}
     peerDependencies:
-      effect: ^3.8.4
+      effect: ^3.9.2
       vitest: ^2.0.5
 
   '@egjs/agent@2.4.3':
@@ -19843,17 +19843,17 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect/platform-node-shared@0.18.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)':
+  '@effect/platform-node-shared@0.18.5(@effect/platform@0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)':
     dependencies:
-      '@effect/platform': 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
+      '@effect/platform': 0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
       '@parcel/watcher': 2.4.1
       effect: 3.9.2
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.63.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)':
+  '@effect/platform-node@0.63.5(@effect/platform@0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)':
     dependencies:
-      '@effect/platform': 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
-      '@effect/platform-node-shared': 0.18.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)
+      '@effect/platform': 0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
+      '@effect/platform-node-shared': 0.18.5(@effect/platform@0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)
       effect: 3.9.2
       mime: 3.0.0
       undici: 6.19.8
@@ -19862,7 +19862,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)':
+  '@effect/platform@0.68.5(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)':
     dependencies:
       '@effect/schema': 0.75.4(effect@3.9.2)
       effect: 3.9.2
@@ -19874,7 +19874,7 @@ snapshots:
       effect: 3.9.2
       fast-check: 3.22.0
 
-  '@effect/vitest@0.10.5(effect@3.9.2)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))':
+  '@effect/vitest@0.12.1(effect@3.9.2)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))':
     dependencies:
       effect: 3.9.2
       vitest: 2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2(@vitest/spy@2.1.2)(typescript@5.6.2)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vitest@2.1.2))(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1)
