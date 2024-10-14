@@ -1,4 +1,4 @@
-import { expectTypeOf, it } from "vitest";
+import { describe, expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";
@@ -147,5 +147,19 @@ it("infers output properly", () => {
     });
     const res = await startUpload(files, { bar: 1 });
     expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
+  });
+});
+
+it("gets go-to-definition proxy as endpoint arg", () => {
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing((rr) => rr.withFooInput);
+    type _Input = Parameters<typeof startUpload>[1];
+    expectTypeOf<_Input>().toEqualTypeOf<{ foo: string }>();
+  });
+
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing((rr) => rr.exampleRoute);
+    const res = await startUpload(files);
+    expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[] | undefined>(res);
   });
 });

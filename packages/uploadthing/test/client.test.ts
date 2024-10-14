@@ -121,7 +121,9 @@ describe("uploadFiles", () => {
     const { uploadFiles, close } = await setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
-    await expect(uploadFiles("foo", { files: [file] })).resolves.toEqual([
+    await expect(
+      uploadFiles((rr) => rr.foo, { files: [file] }),
+    ).resolves.toEqual([
       {
         name: "foo.txt",
         size: 3,
@@ -161,7 +163,7 @@ describe("uploadFiles", () => {
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
-      uploadFiles("foo", {
+      uploadFiles((rr) => rr.foo, {
         files: [file],
         headers: {
           authorization: "Bearer my-auth-token",

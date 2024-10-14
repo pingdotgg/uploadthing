@@ -16,17 +16,14 @@ import {
   version as uploadthingClientVersion,
 } from "uploadthing/client";
 import type {
+  EndpointArg,
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
 } from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
-import type {
-  Endpoint,
-  GenerateTypedHelpersOptions,
-  UseUploadthingProps,
-} from "./types";
+import type { GenerateTypedHelpersOptions, UseUploadthingProps } from "./types";
 import { useEvent } from "./utils/useEvent";
 import useFetch from "./utils/useFetch";
 
@@ -56,22 +53,19 @@ export function __useUploadThingInternal<
   TEndpoint extends keyof TRouter,
 >(
   url: URL,
-  endpoint: Endpoint<TRouter, TEndpoint>,
+  endpoint: EndpointArg<TRouter, TEndpoint>,
   opts?: UseUploadthingProps<TRouter, TEndpoint>,
 ) {
-  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url,
     package: "@uploadthing/react",
   });
-
-  const _endpoint =
-    typeof endpoint === "function" ? endpoint(routeRegistry) : endpoint;
 
   const [isUploading, setUploading] = useState(false);
   const uploadProgress = useRef(0);
   const fileProgress = useRef<Map<File, number>>(new Map());
 
-  type InferredInput = inferEndpointInput<TRouter[typeof _endpoint]>;
+  type InferredInput = inferEndpointInput<TRouter[TEndpoint]>;
   type FuncInput = undefined extends InferredInput
     ? [files: File[], input?: undefined]
     : [files: File[], input: InferredInput];
@@ -84,7 +78,7 @@ export function __useUploadThingInternal<
     files.forEach((f) => fileProgress.current.set(f, 0));
     opts?.onUploadProgress?.(0);
     try {
-      const res = await uploadFiles<TEndpoint>(_endpoint, {
+      const res = await uploadFiles<TEndpoint>(endpoint, {
         signal: opts?.signal,
         headers: opts?.headers,
         files,
@@ -159,7 +153,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
   const url = resolveMaybeUrlArg(initOpts?.url);
 
   function useUploadThing<TEndpoint extends keyof TRouter>(
-    endpoint: Endpoint<TRouter, TEndpoint>,
+    endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) {
     return __useUploadThingInternal(url, endpoint, opts);
