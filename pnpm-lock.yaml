@@ -27,7 +27,7 @@ importers:
         version: 2.27.1
       '@effect/vitest':
         specifier: 0.10.5
-        version: 0.10.5(effect@3.8.4)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))
+        version: 0.10.5(effect@3.9.2)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(@vue/compiler-sfc@3.5.11)(prettier@3.3.2)
@@ -345,14 +345,14 @@ importers:
   examples/backend-adapters/server:
     dependencies:
       '@effect/platform':
-        specifier: 0.66.2
-        version: 0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4)
+        specifier: 0.68.4
+        version: 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
       '@effect/platform-node':
-        specifier: 0.61.3
-        version: 0.61.3(@effect/platform@0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4))(effect@3.8.4)
+        specifier: 0.63.4
+        version: 0.63.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)
       '@effect/schema':
-        specifier: 0.74.1
-        version: 0.74.1(effect@3.8.4)
+        specifier: 0.75.4
+        version: 0.75.4(effect@3.9.2)
       '@elysiajs/cors':
         specifier: ^1.1.1
         version: 1.1.1(elysia@1.1.16(@sinclair/typebox@0.27.8)(openapi-types@12.1.3)(typescript@5.6.2))
@@ -369,8 +369,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: 3.8.4
-        version: 3.8.4
+        specifier: 3.9.2
+        version: 3.9.2
       elysia:
         specifier: ^1.1.16
         version: 1.1.16(@sinclair/typebox@0.27.8)(openapi-types@12.1.3)(typescript@5.6.2)
@@ -1392,7 +1392,7 @@ importers:
     devDependencies:
       '@nuxt/devtools':
         specifier: latest
-        version: 1.5.2(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vue@3.4.25(typescript@5.6.2))(webpack-sources@3.2.3)
+        version: 1.6.0(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vue@3.4.25(typescript@5.6.2))(webpack-sources@3.2.3)
       '@nuxt/module-builder':
         specifier: ^0.5.5
         version: 0.5.5(@nuxt/kit@3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3))(nuxi@3.11.1)(typescript@5.6.2)
@@ -1482,8 +1482,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: 3.8.4
-        version: 3.8.4
+        specifier: 3.9.2
+        version: 3.9.2
       sqids:
         specifier: ^0.3.0
         version: 0.3.0
@@ -1608,11 +1608,11 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/platform':
-        specifier: 0.66.2
-        version: 0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4)
+        specifier: 0.68.4
+        version: 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
       '@effect/schema':
-        specifier: 0.74.1
-        version: 0.74.1(effect@3.8.4)
+        specifier: 0.75.4
+        version: 0.75.4(effect@3.9.2)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1620,8 +1620,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       effect:
-        specifier: 3.8.4
-        version: 3.8.4
+        specifier: 3.9.2
+        version: 3.9.2
     devDependencies:
       '@remix-run/server-runtime':
         specifier: ^2.12.0
@@ -3339,28 +3339,28 @@ packages:
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
 
-  '@effect/platform-node-shared@0.16.3':
-    resolution: {integrity: sha512-RuOZsFe++CkrUXn63/vGG2ZOmvDam+5Czq/Nf86Wbn1Bby3rDrrAHGTEe63sMlJ0+mXGhd0KwMRAdPz1+gKvQA==}
+  '@effect/platform-node-shared@0.18.4':
+    resolution: {integrity: sha512-pxNaJ88sV8XftDPzvlv+I2NAdEpgtD7IL+TDHDInFlruGUH1s5pmhVXRdYWrUccI1nU1cXKOWUSGD7/rwCSV3w==}
     peerDependencies:
-      '@effect/platform': ^0.66.2
-      effect: ^3.8.4
+      '@effect/platform': ^0.68.4
+      effect: ^3.9.2
 
-  '@effect/platform-node@0.61.3':
-    resolution: {integrity: sha512-bgI8OVllrX58pAZOUqxzjZxm6ZB4AA7j6/kvHnRDIeTUW0Bk1JLyEnsyVmvm2GkTsMyn5fXRDdlnINP35MmIiw==}
+  '@effect/platform-node@0.63.4':
+    resolution: {integrity: sha512-OKvzMrXwJxmtrArUVsG8/mpNSYKKlT94xMRANqX48KEfWBeMYg+ZAD+vZvNZIx8iJ/wNdSIfCVI99RvIIV/hag==}
     peerDependencies:
-      '@effect/platform': ^0.66.2
-      effect: ^3.8.4
+      '@effect/platform': ^0.68.4
+      effect: ^3.9.2
 
-  '@effect/platform@0.66.2':
-    resolution: {integrity: sha512-Gqr+C8GhjC9Ix1JdakDVaWbJcy9qISN8wNz6OdLjiWL1aR3glAscEgICTuB3TOH7F6e3M/PK3RYhsuwVgo63QA==}
+  '@effect/platform@0.68.4':
+    resolution: {integrity: sha512-2E54usiSiF4KTD+wAzpHnc27HucUQ2kO+jp4D2rkgvmgAEUFHTvV2gD8YMtOFxhHVv++sPhL6MM8K1+UlWR6RA==}
     peerDependencies:
-      '@effect/schema': ^0.74.1
-      effect: ^3.8.4
+      '@effect/schema': ^0.75.4
+      effect: ^3.9.2
 
-  '@effect/schema@0.74.1':
-    resolution: {integrity: sha512-koTi0M1MYUjEDawLmksXBROROLx0BEG2ErwVGLVawmwuBwVbw1MTEd0QlG2+jds5avYXCJp67rHS7cuIxmnBwg==}
+  '@effect/schema@0.75.4':
+    resolution: {integrity: sha512-qpFOkkoCFgQz/r6FIeO2w3CxAD1O/K1n2ELA69VHHy9VDUskBnX+4zzYOGCi5yKAtgg61zueDIwouRwQ3dlhqw==}
     peerDependencies:
-      effect: ^3.8.4
+      effect: ^3.9.2
 
   '@effect/vitest@0.10.5':
     resolution: {integrity: sha512-rIzYdFRwF/caf3pjbnsdtEjG0HfZSWH8jFsmkDVkQBkTPVYtk41PEMNQCdotK8Gynv7YKpI2fybjDO3LVBPk5A==}
@@ -4973,8 +4973,8 @@ packages:
     peerDependencies:
       vite: '*'
 
-  '@nuxt/devtools-kit@1.5.2':
-    resolution: {integrity: sha512-IMbwflL/JLuK1JcM5yWKa+T5JGjwnCACZJw218/8bUTt/uTVgtkMueE+1/p9rhCWxvGQiT3xnCIXKhEg7xP58Q==}
+  '@nuxt/devtools-kit@1.6.0':
+    resolution: {integrity: sha512-kJ8mVKwTSN3tdEVNy7mxKCiQk9wsG5t3oOrRMWk6IEbTSov+5sOULqQSM/+OWxWsEDmDfA7QlS5sM3Ti9uMRqQ==}
     peerDependencies:
       vite: '*'
 
@@ -4982,8 +4982,8 @@ packages:
     resolution: {integrity: sha512-09VqUYnL8dh31GK85g9+L1xZCXCmieOBWsV9H5a3ZA7wNepDjbrmaRFr/KSA6fsI7AZoqzkNuRsGUzEksEDxpg==}
     hasBin: true
 
-  '@nuxt/devtools-wizard@1.5.2':
-    resolution: {integrity: sha512-wZhouI3drb7HL7KYezYb9ksK0EeSVbHDPPKdLQePVrr+7SphThqiHoWmovBB3e/D4jtO3VC07+ILZcXUnat6HQ==}
+  '@nuxt/devtools-wizard@1.6.0':
+    resolution: {integrity: sha512-n+mzz5NwnKZim0tq1oBi+x1nNXb21fp7QeBl7bYKyDT1eJ0XCxFkVTr/kB/ddkkLYZ+o8TykpeNPa74cN+xAyQ==}
     hasBin: true
 
   '@nuxt/devtools@1.5.1':
@@ -4992,8 +4992,8 @@ packages:
     peerDependencies:
       vite: '*'
 
-  '@nuxt/devtools@1.5.2':
-    resolution: {integrity: sha512-E0bqGjAEpzVu7K8soiiDOqjAQ1FaRZPqSSU0OidmRL0HNM9kIaBNr78R494OLSop0Hh0d2Uha7Yt9IEADHtgyw==}
+  '@nuxt/devtools@1.6.0':
+    resolution: {integrity: sha512-xNorMapzpM8HaW7NnAsEEO38OrmrYBzGvkkqfBU5nNh5XEymmIfCbQc7IA/GIOH9pXOV4gRutCjHCWXHYbOl3A==}
     hasBin: true
     peerDependencies:
       vite: '*'
@@ -9321,8 +9321,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.8.4:
-    resolution: {integrity: sha512-rOZ1XAi+Fb+fAHoUJ5FnJPSPZEBxVbCl5QWtOWFTgOeFHx0QpbK3pezWvq9OIxQPdwvSkPOw926qrs4xdD9dLA==}
+  effect@3.9.2:
+    resolution: {integrity: sha512-1sx/v1HTWHTodXfzWxAFg+SCF+ACgpJVruaAMIh/NmDVvrUsf0x9PzpXvkgJUbQ1fMdmKYK//FqxeHSQ+Zxv/Q==}
 
   electron-to-chromium@1.4.746:
     resolution: {integrity: sha512-jeWaIta2rIG2FzHaYIhSuVWqC6KJYo7oSBX4Jv7g+aVujKztfvdpf+n6MGwZdC5hQXbax4nntykLH2juIQrfPg==}
@@ -19843,18 +19843,18 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect/platform-node-shared@0.16.3(@effect/platform@0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4))(effect@3.8.4)':
+  '@effect/platform-node-shared@0.18.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)':
     dependencies:
-      '@effect/platform': 0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4)
+      '@effect/platform': 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
       '@parcel/watcher': 2.4.1
-      effect: 3.8.4
+      effect: 3.9.2
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.61.3(@effect/platform@0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4))(effect@3.8.4)':
+  '@effect/platform-node@0.63.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)':
     dependencies:
-      '@effect/platform': 0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4)
-      '@effect/platform-node-shared': 0.16.3(@effect/platform@0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4))(effect@3.8.4)
-      effect: 3.8.4
+      '@effect/platform': 0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)
+      '@effect/platform-node-shared': 0.18.4(@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2))(effect@3.9.2)
+      effect: 3.9.2
       mime: 3.0.0
       undici: 6.19.8
       ws: 8.18.0
@@ -19862,21 +19862,21 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.66.2(@effect/schema@0.74.1(effect@3.8.4))(effect@3.8.4)':
+  '@effect/platform@0.68.4(@effect/schema@0.75.4(effect@3.9.2))(effect@3.9.2)':
     dependencies:
-      '@effect/schema': 0.74.1(effect@3.8.4)
-      effect: 3.8.4
+      '@effect/schema': 0.75.4(effect@3.9.2)
+      effect: 3.9.2
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
 
-  '@effect/schema@0.74.1(effect@3.8.4)':
+  '@effect/schema@0.75.4(effect@3.9.2)':
     dependencies:
-      effect: 3.8.4
+      effect: 3.9.2
       fast-check: 3.22.0
 
-  '@effect/vitest@0.10.5(effect@3.8.4)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))':
+  '@effect/vitest@0.10.5(effect@3.9.2)(vitest@2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))':
     dependencies:
-      effect: 3.8.4
+      effect: 3.9.2
       vitest: 2.1.2(@types/node@20.14.0)(@vitest/browser@2.1.2(@vitest/spy@2.1.2)(typescript@5.6.2)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vitest@2.1.2))(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1)
 
   '@egjs/agent@2.4.3': {}
@@ -21492,7 +21492,7 @@ snapshots:
       - supports-color
       - webpack-sources
 
-  '@nuxt/devtools-kit@1.5.2(magicast@0.3.5)(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(webpack-sources@3.2.3)':
+  '@nuxt/devtools-kit@1.6.0(magicast@0.3.5)(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@nuxt/schema': 3.13.2(rollup@3.29.5)(webpack-sources@3.2.3)
@@ -21517,7 +21517,7 @@ snapshots:
       rc9: 2.1.2
       semver: 7.6.3
 
-  '@nuxt/devtools-wizard@1.5.2':
+  '@nuxt/devtools-wizard@1.6.0':
     dependencies:
       consola: 3.2.3
       diff: 7.0.0
@@ -21674,11 +21674,11 @@ snapshots:
       - vue
       - webpack-sources
 
-  '@nuxt/devtools@1.5.2(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vue@3.4.25(typescript@5.6.2))(webpack-sources@3.2.3)':
+  '@nuxt/devtools@1.6.0(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vue@3.4.25(typescript@5.6.2))(webpack-sources@3.2.3)':
     dependencies:
       '@antfu/utils': 0.7.10
-      '@nuxt/devtools-kit': 1.5.2(magicast@0.3.5)(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(webpack-sources@3.2.3)
-      '@nuxt/devtools-wizard': 1.5.2
+      '@nuxt/devtools-kit': 1.6.0(magicast@0.3.5)(rollup@3.29.5)(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(webpack-sources@3.2.3)
+      '@nuxt/devtools-wizard': 1.6.0
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@vue/devtools-core': 7.4.4(vite@5.4.8(@types/node@20.14.0)(lightningcss@1.24.1)(terser@5.34.1))(vue@3.4.25(typescript@5.6.2))
       '@vue/devtools-kit': 7.4.4
@@ -23051,7 +23051,7 @@ snapshots:
       nocache: 3.0.4
       pretty-format: 26.6.2
       serve-static: 1.15.0
-      ws: 6.2.2
+      ws: 6.2.3
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -28045,7 +28045,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.8.4: {}
+  effect@3.9.2: {}
 
   electron-to-chromium@1.4.746: {}
 
