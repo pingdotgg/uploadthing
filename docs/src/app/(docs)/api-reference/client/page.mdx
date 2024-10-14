@@ -40,6 +40,19 @@ const response = await uploadFiles("routeEndpoint", {
 The first parameter is the route endpoint to upload to, and the second parameter
 is an options object:
 
+<Note>
+  The endpoint arg may be a string literal or a callback function:
+
+```ts
+await uploadFiles((rr) => rr.routeEndpoint, { ... })
+```
+
+This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
+your backend file route definition, which is not possible when using a string
+literal parameter.
+
+</Note>
+
 <Properties>
   <Property name="files" type="File[]" required since="5.0">
     An array of files to upload.

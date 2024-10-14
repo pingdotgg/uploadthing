@@ -9,5 +9,4 @@ import type { OurFileRouter } from "~/server/uploadthing";
 export const UploadButton = generateUploadButton<OurFileRouter>();
 export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
-export const { useUploadThing, routeRegistry } =
-  generateReactHelpers<OurFileRouter>();
+export const { useUploadThing } = generateReactHelpers<OurFileRouter>();

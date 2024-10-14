@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  routeRegistry,
   UploadButton,
   UploadDropzone,
   useUploadThing,
@@ -33,7 +32,7 @@ export default function Home() {
         /**
          * @see https://docs.uploadthing.com/api-reference/react#uploadbutton
          */
-        endpoint={routeRegistry.videoAndImage}
+        endpoint={(_) => _.videoAndImage}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");
