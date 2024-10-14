@@ -150,7 +150,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.68.4",
+    "@effect/platform": "0.68.5",
     "@effect/schema": "0.75.4",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
