@@ -47,7 +47,7 @@ export class UTApi {
   private fetch: FetchEsque;
   private defaultKeyType: "fileKey" | "customId";
   private runtime: ManagedRuntime.ManagedRuntime<
-    HttpClient.HttpClient.Service | FetchHttpClient.Fetch,
+    HttpClient.HttpClient | FetchHttpClient.Fetch,
     UploadThingError
   >;
   constructor(private opts?: UTApiOptions) {
@@ -89,7 +89,7 @@ export class UTApi {
     }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
 
   private executeAsync = async <A, E>(
-    program: Effect.Effect<A, E, HttpClient.HttpClient.Service>,
+    program: Effect.Effect<A, E, HttpClient.HttpClient>,
     signal?: AbortSignal,
   ) => {
     const result = await program.pipe(
