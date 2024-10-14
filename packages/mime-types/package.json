@@ -21,52 +21,52 @@
     },
     "./application": {
       "import": {
-        "types": "./dist/application.d.ts",
-        "default": "./dist/application.js"
+        "types": "./application/index.d.ts",
+        "default": "./application/index.js"
       },
       "require": {
-        "types": "./dist/application.d.cts",
-        "default": "./dist/application.cjs"
+        "types": "./application/index.d.cts",
+        "default": "./application/index.cjs"
       }
     },
     "./audio": {
       "import": {
-        "types": "./dist/audio.d.ts",
-        "default": "./dist/audio.js"
+        "types": "./audio/index.d.ts",
+        "default": "./audio/index.js"
       },
       "require": {
-        "types": "./dist/audio.d.cts",
-        "default": "./dist/audio.cjs"
+        "types": "./audio/index.d.cts",
+        "default": "./audio/index.cjs"
       }
     },
     "./image": {
       "import": {
-        "types": "./dist/image.d.ts",
-        "default": "./dist/image.js"
+        "types": "./image/index.d.ts",
+        "default": "./image/index.js"
       },
       "require": {
-        "types": "./dist/image.d.cts",
-        "default": "./dist/image.cjs"
+        "types": "./image/index.d.cts",
+        "default": "./image/index.cjs"
       }
     },
     "./text": {
       "import": {
-        "types": "./dist/text.d.ts",
-        "default": "./dist/text.js"
+        "types": "./text/index.d.ts",
+        "default": "./text/index.js"
       },
       "require": {
-        "types": "./dist/text.d.cts",
-        "default": "./dist/text.cjs"
+        "types": "./text/index.d.cts",
+        "default": "./text/index.cjs"
       }
     },
     "./video": {
       "import": {
-        "types": "./dist/video.d.ts",
-        "default": "./dist/video.js"
+        "types": "./video/index.d.ts",
+        "default": "./video/index.js"
       },
       "require": {
-        "types": "./dist/video.d.cts",
-        "default": "./dist/video.cjs"
+        "types": "./video/index.d.cts",
+        "default": "./video/index.cjs"
       }
     }
   },

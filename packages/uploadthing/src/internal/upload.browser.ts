@@ -57,6 +57,7 @@ const uploadWithProgress = (
     });
 
     const formData = new FormData();
+    console.log("appending file to FD", file, rangeStart)
     formData.append("file", file.slice(rangeStart));
     xhr.send(formData);
 
