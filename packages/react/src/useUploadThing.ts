@@ -7,6 +7,7 @@ import type {
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  unwrap,
   UploadAbortedError,
   UploadThingError,
   warnIfInvalidPeerDependency,
@@ -56,7 +57,7 @@ export function __useUploadThingInternal<
   endpoint: EndpointArg<TRouter, TEndpoint>,
   opts?: UseUploadthingProps<TRouter, TEndpoint>,
 ) {
-  const { uploadFiles } = genUploader<TRouter>({
+  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url,
     package: "@uploadthing/react",
   });
@@ -132,7 +133,8 @@ export function __useUploadThingInternal<
     }
   });
 
-  const routeConfig = useRouteConfig(url, endpoint as string);
+  const _endpoint = unwrap(endpoint, routeRegistry);
+  const routeConfig = useRouteConfig(url, _endpoint as string);
 
   return {
     startUpload,
@@ -152,6 +154,11 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   const url = resolveMaybeUrlArg(initOpts?.url);
 
+  const clientHelpers = genUploader<TRouter>({
+    url,
+    package: "@uploadthing/react",
+  });
+
   function useUploadThing<TEndpoint extends keyof TRouter>(
     endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
@@ -159,8 +166,9 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     return __useUploadThingInternal(url, endpoint, opts);
   }
 
-  function getRouteConfig(endpoint: keyof TRouter) {
+  function getRouteConfig(slug: EndpointArg<TRouter, keyof TRouter>) {
     const maybeServerData = globalThis.__UPLOADTHING;
+    const endpoint = unwrap(slug, clientHelpers.routeRegistry);
     const config = maybeServerData?.find((x) => x.slug === endpoint)?.config;
     if (!config) {
       throw new Error(
@@ -172,10 +180,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing,
-    ...genUploader<TRouter>({
-      url,
-      package: "@uploadthing/react",
-    }),
+    ...clientHelpers,
     /**
      * Get the config for a given endpoint outside of React context.
      * @remarks Can only be used if the NextSSRPlugin is used in the app.

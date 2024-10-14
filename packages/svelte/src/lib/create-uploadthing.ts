@@ -4,12 +4,17 @@ import type { EndpointMetadata } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  unwrap,
   UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import { genUploader } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
-import type { inferEndpointInput, inferErrorShape } from "uploadthing/types";
+import type {
+  EndpointArg,
+  inferEndpointInput,
+  inferErrorShape,
+} from "uploadthing/types";
 
 import type {
   GenerateTypedHelpersOptions,
@@ -36,20 +41,20 @@ export const INTERNAL_createUploadThingGen = <
    */
   url: URL;
 }) => {
-  const { uploadFiles } = genUploader<TRouter>({
+  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/svelte",
   });
 
   const useUploadThing = <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = writable(false);
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
-    type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+    type InferredInput = inferEndpointInput<TRouter[TEndpoint]>;
     type FuncInput = undefined extends InferredInput
       ? [files: File[], input?: undefined]
       : [files: File[], input: InferredInput];
@@ -116,7 +121,8 @@ export const INTERNAL_createUploadThingGen = <
       }
     };
 
-    const routeConfig = createRouteConfig(initOpts.url, endpoint as string);
+    const _endpoint = unwrap(endpoint, routeRegistry);
+    const routeConfig = createRouteConfig(initOpts.url, _endpoint as string);
 
     return {
       startUpload,
@@ -126,7 +132,7 @@ export const INTERNAL_createUploadThingGen = <
        * @deprecated Use `routeConfig` instead
        */
       permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: readonly(routeConfig) }
+        ? { slug: _endpoint, config: readonly(routeConfig) }
         : undefined,
     } as const;
   };
@@ -135,7 +141,7 @@ export const INTERNAL_createUploadThingGen = <
 
 const generateUploader = <TRouter extends FileRouter>() => {
   return <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    endpoint: EndpointArg<TRouter, TEndpoint>,
     props: Omit<UploadthingComponentProps<TRouter, TEndpoint>, "endpoint">,
   ) => ({ endpoint, ...props });
 };

@@ -7,6 +7,7 @@ import type {
 } from "@uploadthing/shared";
 import type {
   ClientUploadedFileData,
+  EndpointArg,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
@@ -119,7 +120,7 @@ export type UploadthingComponentProps<
   /**
    * The endpoint from your FileRouter to use for the upload
    */
-  endpoint: TEndpoint;
+  endpoint: EndpointArg<TRouter, TEndpoint>;
   /**
    * URL to the UploadThing API endpoint
    * @example "/api/uploadthing"

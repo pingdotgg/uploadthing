@@ -17,6 +17,7 @@ import type {
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  Json,
   ResponseEsque,
   RouteConfig,
   Time,
@@ -356,7 +357,15 @@ export function noop() {
   // noop
 }
 
-export const createIdentityProxy = <TObj extends Record<string, unknown>>() =>
-  new Proxy(noop, {
+export function createIdentityProxy<TObj extends Record<string, unknown>>() {
+  return new Proxy(noop, {
     get: (_, prop) => prop,
   }) as unknown as TObj;
+}
+
+export function unwrap<T extends Json | PropertyKey, Param extends unknown[]>(
+  x: T | ((...args: Param) => T),
+  ...args: Param
+) {
+  return typeof x === "function" ? x(...args) : x;
+}
