@@ -24,7 +24,12 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
   return makeAdapterHandler<[Request | { request: Request }]>(
-    (req) => Effect.succeed({ req, res: undefined, event: undefined }),
+    (ev) =>
+      Effect.succeed({
+        req: "request" in ev ? ev.request : ev,
+        res: undefined,
+        event: undefined,
+      }),
     (ev) => Effect.succeed("request" in ev ? ev.request : ev),
     opts,
     "server",
