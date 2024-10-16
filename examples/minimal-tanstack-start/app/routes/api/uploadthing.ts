@@ -6,6 +6,6 @@ import { uploadRouter } from "../../server/uploadthing";
 
 const handlers = createRouteHandler({ router: uploadRouter });
 export const Route = createAPIFileRoute("/api/uploadthing")({
-  GET: ({ request }) => handlers(request),
-  POST: ({ request }) => handlers(request),
+  GET: handlers,
+  POST: handlers,
 });
