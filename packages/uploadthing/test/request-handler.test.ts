@@ -1,4 +1,5 @@
 import * as Effect from "effect/Effect";
+import * as Redacted from "effect/Redacted";
 import { describe, expect } from "vitest";
 import { z } from "zod";
 
@@ -503,7 +504,7 @@ describe(".onUploadComplete()", () => {
       }),
     });
     const signature = await Effect.runPromise(
-      signPayload(payload, "sk_live_badkey"),
+      signPayload(payload, Redacted.make("sk_live_badkey")),
     );
 
     const res = await handler(
