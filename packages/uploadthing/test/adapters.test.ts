@@ -234,6 +234,64 @@ describe("adapters:server", async () => {
       method: "POST",
     });
   });
+
+  it("accepts object with request in", async ({ db }) => {
+    const handler = createRouteHandler({
+      router,
+      config: { token: testToken.encoded },
+    });
+
+    const req = new Request(createApiUrl("middleware", "upload"), {
+      method: "POST",
+      headers: {
+        ...baseHeaders,
+        host: "localhost:3000",
+        "x-forwarded-proto": "http",
+      },
+      body: JSON.stringify({
+        files: [{ name: "foo.txt", size: 48, type: "text/plain" }],
+      }),
+    });
+    const res = await handler({ request: req });
+    expect(res.status).toBe(200);
+
+    expect(middlewareMock).toHaveBeenCalledOnce();
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({ event: undefined, req, res: undefined }),
+    );
+
+    // Should proceed to generate a signed URL
+    const json = await res.json();
+    expect(json).toEqual([
+      {
+        customId: null,
+        key: expect.stringMatching(/.+/),
+        url: expect.stringMatching(`${INGEST_URL}/.+`),
+        name: "foo.txt",
+      },
+    ]);
+
+    // Should (asynchronously) register metadata at UploadThing
+    await vi.waitUntil(() => requestsToDomain(INGEST_URL).length);
+    expect(requestSpy).toHaveBeenCalledWith(`${INGEST_URL}/route-metadata`, {
+      body: {
+        isDev: false,
+        awaitServerData: true,
+        fileKeys: [json[0].key],
+        metadata: {},
+        callbackUrl: "http://localhost:3000/",
+        callbackSlug: "middleware",
+      },
+      headers: expect.objectContaining({
+        "content-type": "application/json",
+        "x-uploadthing-api-key": "sk_foo",
+        "x-uploadthing-be-adapter": "server",
+        "x-uploadthing-fe-package": "vitest",
+        "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
+      }),
+      method: "POST",
+    });
+  });
 });
 
 describe("adapters:next", async () => {
