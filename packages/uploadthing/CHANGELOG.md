@@ -1,5 +1,16 @@
 # uploadthing
 
+## 7.1.1
+
+### Patch Changes
+
+- [`01b1363`](https://github.com/pingdotgg/uploadthing/commit/01b136310de7d620c3298d16f6cbd255e168c7e5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect dependencies (#1005, #1009)
+
+- [`426b461`](https://github.com/pingdotgg/uploadthing/commit/426b4611ef6613df4a1fefcbe5d0512acced6966) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: server handler not receiving the right middleware args when passed `{ request: Request }` instead of just Request (#1017)
+
+- Updated dependencies [[`01b1363`](https://github.com/pingdotgg/uploadthing/commit/01b136310de7d620c3298d16f6cbd255e168c7e5)]:
+  - @uploadthing/shared@7.0.4
+
 ## 7.1.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @uploadthing/nuxt
 
+## 7.0.4
+
+### Patch Changes
+
+- [#1018](https://github.com/pingdotgg/uploadthing/pull/1018) [`06c6787`](https://github.com/pingdotgg/uploadthing/commit/06c6787aacb7bf52919c1c767bef8b315010725c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: options was not forwarded to uploadthing handler correctly
+
+- Updated dependencies [[`01b1363`](https://github.com/pingdotgg/uploadthing/commit/01b136310de7d620c3298d16f6cbd255e168c7e5)]:
+  - @uploadthing/vue@7.0.4
+
 ## 7.0.3
 
 ### Patch Changes
