@@ -53,6 +53,7 @@ type DropzoneStyleFieldCallbackArgs = {
   uploadProgress: () => number;
   fileTypes: () => string[];
   isDragActive: () => boolean;
+  files: () => File[];
 };
 
 type DropzoneAppearance = {
@@ -222,6 +223,7 @@ export const UploadDropzone = <
     uploadProgress: uploadProgress,
     fileTypes: () => fileInfo().fileTypes,
     isDragActive: () => isDragActive,
+    files,
   } as DropzoneStyleFieldCallbackArgs;
 
   return (

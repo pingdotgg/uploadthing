@@ -38,6 +38,7 @@
     isUploading: boolean;
     uploadProgress: number;
     fileTypes: string[];
+    files: File[];
   };
 
   type UploadButtonAppearance = {
@@ -135,6 +136,7 @@
     isUploading: state === "uploading",
     uploadProgress,
     fileTypes,
+    files,
   } as ButtonStyleFieldCallbackArgs;
 </script>
 

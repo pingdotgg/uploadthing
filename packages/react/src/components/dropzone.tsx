@@ -60,6 +60,7 @@ type DropzoneStyleFieldCallbackArgs = {
   uploadProgress: number;
   fileTypes: string[];
   isDragActive: boolean;
+  files: File[];
 };
 
 type DropzoneAppearance = {
@@ -249,13 +250,18 @@ export function UploadDropzone<
     if (mode === "auto") uploadFiles(filesToUpload);
   });
 
-  const styleFieldArg = {
-    ready: state !== "readying",
-    isUploading: state === "uploading",
-    uploadProgress,
-    fileTypes,
-    isDragActive,
-  } as DropzoneStyleFieldCallbackArgs;
+  const styleFieldArg = useMemo(
+    () =>
+      ({
+        ready: state !== "readying",
+        isUploading: state === "uploading",
+        uploadProgress,
+        fileTypes,
+        files,
+        isDragActive,
+      }) as DropzoneStyleFieldCallbackArgs,
+    [fileTypes, files, state, uploadProgress, isDragActive],
+  );
 
   const getUploadButtonContents = () => {
     const customContent = contentFieldToContent(
