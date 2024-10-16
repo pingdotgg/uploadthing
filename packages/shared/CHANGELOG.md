@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 7.0.4
+
+### Patch Changes
+
+- [`01b1363`](https://github.com/pingdotgg/uploadthing/commit/01b136310de7d620c3298d16f6cbd255e168c7e5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect dependencies (#1005, #1009)
+
 ## 7.0.3
 
 ### Patch Changes
