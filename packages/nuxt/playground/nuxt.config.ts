@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   modules: ["../src/module"],
   uploadthing: {
     logLevel: "Debug",
-    logFormat: "json",
   },
   telemetry: false,
 });
