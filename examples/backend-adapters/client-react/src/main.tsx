@@ -24,7 +24,7 @@ function App() {
           }}
         />
         <UploadDropzone
-          endpoint="videoAndImage"
+          endpoint={(rr) => rr.videoAndImage}
           onClientUploadComplete={(file) => {
             console.log("uploaded", file);
             alert("Upload complete");

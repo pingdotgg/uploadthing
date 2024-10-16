@@ -17,6 +17,7 @@ import type {
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  Json,
   ResponseEsque,
   RouteConfig,
   Time,
@@ -351,3 +352,20 @@ export const safeNumberReplacer = (_: string, value: unknown) => {
   if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
   if (Number.isNaN(value)) return 0;
 };
+
+export function noop() {
+  // noop
+}
+
+export function createIdentityProxy<TObj extends Record<string, unknown>>() {
+  return new Proxy(noop, {
+    get: (_, prop) => prop,
+  }) as unknown as TObj;
+}
+
+export function unwrap<T extends Json | PropertyKey, Param extends unknown[]>(
+  x: T | ((...args: Param) => T),
+  ...args: Param
+) {
+  return typeof x === "function" ? x(...args) : x;
+}

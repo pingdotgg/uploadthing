@@ -5,11 +5,13 @@ import type { EndpointMetadata } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  unwrap,
   UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import { genUploader } from "uploadthing/client";
 import type {
+  EndpointArg,
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
@@ -46,20 +48,20 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const { uploadFiles } = genUploader<TRouter>({
+  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/vue",
   });
 
   const useUploadThing = <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = ref(false);
     const uploadProgress = ref(0);
     const fileProgress = ref(new Map<File, number>());
 
-    type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+    type InferredInput = inferEndpointInput<TRouter[TEndpoint]>;
     type FuncInput = undefined extends InferredInput
       ? [files: File[], input?: undefined]
       : [files: File[], input: InferredInput];
@@ -126,7 +128,8 @@ export const INTERNAL_uploadthingHookGen = <
       }
     });
 
-    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+    const _endpoint = computed(() => unwrap(endpoint, routeRegistry));
+    const routeConfig = useRouteConfig(initOpts.url, _endpoint.value as string);
 
     return {
       startUpload,
@@ -136,7 +139,7 @@ export const INTERNAL_uploadthingHookGen = <
        * @deprecated Use `routeConfig` instead
        */
       permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: routeConfig }
+        ? { slug: _endpoint.value, config: routeConfig }
         : undefined,
     } as const;
   };

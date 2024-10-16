@@ -36,7 +36,7 @@ export const setupResumableUploader = (el: HTMLDivElement) => {
 
     // Create uploads for each file
     const { done, pauseUpload, resumeUpload } = await createUpload(
-      "videoAndImage",
+      (rr) => rr.videoAndImage,
       {
         files,
         onUploadProgress: ({ file, progress }) => {

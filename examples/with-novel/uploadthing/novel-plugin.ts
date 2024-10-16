@@ -27,7 +27,7 @@ export const uploadFn = createImageUpload({
     /**
      * Upload the file to the server and preload the image in the browser
      */
-    const uploadPromise = uploadFiles("imageUploader", {
+    const uploadPromise = uploadFiles((rr) => rr.imageUploader, {
       files: [file],
     });
 
@@ -47,7 +47,7 @@ export const uploadFn = createImageUpload({
     });
   },
   validateFn: (file) => {
-    const config = getRouteConfig("imageUploader");
+    const config = getRouteConfig((rr) => rr.imageUploader);
     if (!isValidFileType(file, config)) {
       toast.error("File type not supported.");
       return false;

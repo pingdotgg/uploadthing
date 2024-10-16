@@ -167,10 +167,6 @@ export function acceptPropAsAcceptAttr(accept?: AcceptProp) {
   return undefined;
 }
 
-export function noop() {
-  // noop
-}
-
 /**
  * ================================================
  *                    Reducer
