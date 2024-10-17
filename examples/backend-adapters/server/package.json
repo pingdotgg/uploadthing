@@ -12,6 +12,7 @@
     "dev:effect": "NODE_ENV=development PORT=3003 tsx watch src/effect-platform.ts"
   },
   "dependencies": {
+    "convex": "^1.16.0",
     "@effect/platform": "0.68.5",
     "@effect/platform-node": "0.63.5",
     "@effect/schema": "0.75.4",
