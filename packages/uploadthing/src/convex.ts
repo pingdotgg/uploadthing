@@ -92,22 +92,3 @@ export const addUploadthingRoutes = <TRouter extends FileRouter>(
     }),
   });
 };
-
-//
-// TEST
-//
-
-const f = createUploadthing();
-const router = {
-  imageUploader: f({ image: { maxFileSize: "4MB" } })
-    .middleware(async ({ event }) => {
-      const identity = await event.auth.getUserIdentity();
-      return { userId: identity?.subject ?? "nothing" };
-    })
-    .onUploadComplete(async (args) => {
-      return { uploadedBy: args.metadata.userId };
-    }),
-} satisfies FileRouter;
-
-const http = httpRouter();
-addUploadthingRoutes(http, { router });
