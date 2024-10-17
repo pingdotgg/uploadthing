@@ -13,6 +13,7 @@
         "internal/**",
         "next/**",
         "next-legacy/**",
+        "remix/**",
         "server/**",
         "tw/**",
         "types/**"

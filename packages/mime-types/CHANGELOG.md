@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.3.0
+
+### Minor Changes
+
+- [#943](https://github.com/pingdotgg/uploadthing/pull/943) [`2efa047`](https://github.com/pingdotgg/uploadthing/commit/2efa047127890bdf50ab5312ff9660662e099162) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump mime-types
+
 ## 0.2.10
 
 ### Patch Changes

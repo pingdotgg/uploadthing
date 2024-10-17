@@ -1,0 +1,137 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "Frequently Asked Questions",
+  description: "Browse common questions and answers about UploadThing",
+  category: "FAQ",
+});
+
+import Image from "next/image";
+
+### The UploadThing components look all weird, what's going on?
+
+If your components appear unstyled, you likely forgot to import our CSS file
+from the React package. Don't forget to add the following to your root
+`layout.tsx` or `_app.tsx`:
+
+```tsx
+import "@uploadthing/react/styles.css";
+```
+
+### Some of my other components look weird now... what's up with that?
+
+You may need to check the order of imports. Making sure that the uploadthing
+component styles are imported before others usually does the trick
+
+```tsx
+import "@uploadthing/react/styles.css";
+import "../styles/globals.css";
+```
+
+### When I upload files, I get the error `Failed to simulate callback for file. Is your webhook configured correctly?`
+
+This error is our catch-all if we were unable to query the `/api/uploadthing`
+endpoint. Almost every time we've seen someone who has this issue, it's because
+their `middleware.ts` is configured incorrectly.
+
+Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
+serves as both a validation endpoint for the client AND a webhook for the
+`onUploadComplete` calls.""
+
+If you are seeing this issue in development, and are using edge runtine, there
+is a limitation in Next.js where it does not allow an edge function to fetch
+itself, which is what the dev hook is doing (in production, the callback request
+comes from Uploadthing's servers, so this is not an issue).
+
+You can either ignore this error as it only affects the development environment,
+or use the node runtime instead:
+
+```ts
+// src/app/api/uploadthing/route.ts
+export const runtime = "nodejs";
+```
+
+<Note>
+  Since `next@14.1.2-canary.38`, this limitation has been fixed and you should
+  safely be able to use the edge runtime in development.
+</Note>
+
+### I'm getting a `Type ... is not assignable to type '"You forgot to pass the generic"'` error
+
+This occurs when you're importing the `UploadButton` or `UploadDropzone`
+components from `@uploadthing/react` or `@uploadthing/solid` directly, and not
+[generating your own typesafe components](/api-reference/react#generate-components)
+using `generateUploadButton` or `generateUploadDropzone`. While you can do this,
+it is not recommended as you have to provide the generics yourself in order to
+get full typesafety.
+
+```tsx
+import { UploadButton } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/app/api/uploadthing/core";
+
+function MyComponent() {
+  return (
+    <UploadButton<OurFileRouter, "myFileRoute"> // <--
+      endpoint="myFileRoute" // <-- note how you have to double-pass the endpoint
+      // ...
+    />
+  );
+}
+```
+
+As you can see, it's quite cumbersome having to provide the generics yourself,
+especially since the `endpoint` prop must be specified twice due to lack of
+partial inference in TypeScript.
+
+### My callback runs in development but not in production
+
+In order for UploadThing to work, our external server must be able to reach your
+application to trigger the callbacks you have set up in your file router. This
+is not possible if your application is running on localhost.
+
+When you're running in development, UploadThing will simulate this callback for
+you so that you can test your application. However, for production, we require
+your application to be reachable over the Internet. The URL we'll attempt to hit
+is automatically inferred based on the request. There are mainly two reasons why
+your app would not be reachable by the callback:
+
+#### You're testing a production build locally.
+
+In this case, you can use a tool like [ngrok](https://ngrok.com/) or
+[Cloudflare Tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/)
+to expose your application to the internet. Start the application with the
+`UPLOADTHING_URL` variable set to the tunneled URL.
+
+#### Your app is running behind a reverse proxy such as Nginx.
+
+The automatic URL inference unfortunately breaks for certain reverse proxy
+setups. In this case, set either the
+[`config.callbackUrl`](/api-reference/server#config) when you're creating the
+server entrypoints or the `UPLOADTHING_URL` environment variable to the public
+URL of your application.
+
+You will get a warning in the console if we detect a localhost URL is being used
+as the callback URL in production.
+
+### My callback runs in development and production, but not in Vercel preview deployments
+
+By default, Vercel projects are configured to require authentication to access
+preview deployments. This means that our external server cannot access your
+application to trigger the callbacks you have set up in your file router.
+
+To fix, this you can either disable this setting in your Vercel project, or you
+can use the
+[`x-vercel-protection-bypass`](https://vercel.com/docs/security/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation)
+header, which will allow uploadthing callbacks to bypass the authentication.
+
+#### Configuring a custom header in the uploadthing dashboard
+
+1. Go to your project's dashboard on uploadthing.com
+2. Navigate to the "Settings" tab
+3. Click on "Advanced Settings"
+4. Click on the "Add Header" button
+5. Enter the header name and value
+6. Click "Save Changes"
+
+![Screenshot of the uploadthing dashboard showing the 'Add Header' button](@/images/add-header-settings.png)

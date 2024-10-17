@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "6.7.8",
+  "version": "7.0.3",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -36,8 +36,8 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.4.8",
-    "std-env": "^3.7.0"
+    "effect": "3.9.2",
+    "sqids": "^0.3.0"
   },
   "devDependencies": {
     "@types/react": "18.3.3",
@@ -46,7 +46,7 @@
     "bunchee": "^5.2.1",
     "eslint": "^8.57.0",
     "react": "18.3.1",
-    "solid-js": "^1.8.15",
+    "solid-js": "^1.8.23",
     "typescript": "^5.5.2",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0"

@@ -26,6 +26,17 @@ export type DeepPartial<T> = T extends object
     }
   : T;
 
+export interface FileProperties {
+  name: string;
+  size: number;
+  type: string;
+  lastModified?: number | undefined;
+}
+
+export type ExtractHashPartsFn = (
+  file: FileProperties,
+) => Array<string | number | undefined | null | boolean>;
+
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
  * @see RequestInit from lib.dom.d.ts
@@ -64,6 +75,7 @@ export interface ResponseEsque {
   json: <T = unknown>() => Promise<T>;
   text: () => Promise<string>;
   blob: () => Promise<Blob>;
+  body: ReadableStream | null;
 
   headers: Headers;
 
@@ -117,44 +129,79 @@ type ImageProperties = {
 
 type AdditionalProperties<T> = Record<string, unknown> & T;
 
-type RouteConfig<TAdditionalProperties extends Record<string, unknown>> = {
+export type RouteConfig<TAdditionalProperties extends Record<string, unknown>> =
+  {
+    /**
+     * Human-readable file size limit
+     * @example "1MB"
+     * @default https://docs.uploadthing.com/api-reference/server#defaults
+     */
+    maxFileSize: FileSize;
+    /**
+     * Maximum number of files allowed to be uploaded of this type
+     * @example 10
+     * @default https://docs.uploadthing.com/api-reference/server#defaults
+     */
+    maxFileCount: number;
+    /**
+     * Minimum number of files allowed to be uploaded of this type
+     * @remarks Must be <= maxFileCount
+     * @example 2
+     * @default 1
+     */
+    minFileCount: number;
+    /**
+     * Specify the [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) of the uploaded file
+     * @example "attachment"
+     * @default "inline"
+     */
+    contentDisposition: ContentDisposition;
+    /**
+     * Specify the [access control list](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) of the uploaded file
+     * @remarks This must be enabled for your app. See https://docs.uploadthing.com/regions-and-acl#access-controls.
+     * @example "private"
+     * @default "public-read"
+     */
+    acl?: ACL;
+    /**
+     * Additional properties to be passed to the client-side `useRouteConfig` hook
+     * @remarks These properties are not validated on the server on upload
+     */
+    additionalProperties?: AdditionalProperties<TAdditionalProperties>;
+  };
+
+/**
+ * Shared config options for an entire route not bound to any specific file type
+ * @example
+ * ```ts
+ * f(
+ *   { image: {} },
+ *   { awaitServerData: true },
+ * )
+ * ```
+ */
+export type RouteOptions = {
   /**
-   * Human-readable file size limit
-   * @example "1MB"
-   * @default https://docs.uploadthing.com/api-reference/server#defaults
+   * Set this to `false` to run the client-side `onClientUploadComplete`
+   * immediately after file has been uploaded without waiting for the
+   * server to return the `onUploadComplete` data.
+   * @default true
    */
-  maxFileSize: FileSize;
+  awaitServerData?: boolean;
   /**
-   * Maximum number of files allowed to be uploaded of this type
-   * @example 10
-   * @default https://docs.uploadthing.com/api-reference/server#defaults
+   * TTL for the presigned URLs generated for the upload
+   * @default `1h`
    */
-  maxFileCount: number;
+  presignedURLTTL?: Time;
   /**
-   * Minimum number of files allowed to be uploaded of this type
-   * @remarks Must be <= maxFileCount
-   * @example 2
-   * @default 1
+   * Function that pulls out the properties of the uploaded file
+   * that you want to be included as part of the presigned URL generation.
+   * By default, we include all properties as well as a timestamp to make
+   * each URL unique. You can for example override this to always return
+   * the same hash for the same file, no matter when it was uploaded.
+   * @default (file) => [file.name, file.size, file.type, file.lastModified,  Date.now()]
    */
-  minFileCount: number;
-  /**
-   * Specify the [content disposition](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition) of the uploaded file
-   * @example "attachment"
-   * @default "inline"
-   */
-  contentDisposition: ContentDisposition;
-  /**
-   * Specify the [access control list](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) of the uploaded file
-   * @remarks This must be enabled for your app. See https://docs.uploadthing.com/regions-and-acl#access-controls.
-   * @example "private"
-   * @default "public-read"
-   */
-  acl?: ACL;
-  /**
-   * Additional properties to be passed to the client-side `useRouteConfig` hook
-   * @remarks These properties are not validated on the server on upload
-   */
-  additionalProperties?: AdditionalProperties<TAdditionalProperties>;
+  getFileHashParts?: ExtractHashPartsFn;
 };
 
 export type FileRouterInputKey = AllowedFileType | MimeType;

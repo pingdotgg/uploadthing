@@ -3,7 +3,7 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
-  "version": "6.5.3",
+  "version": "7.0.3",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",
   "types": "./dist/index.d.ts",
@@ -110,13 +110,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "tailwind-merge": "^2.2.1"
+    "file-selector": "0.6.0"
   },
   "devDependencies": {
     "postcss": "8.4.38",
-    "solid-js": "^1.8.15",
+    "solid-js": "^1.8.23",
     "tailwindcss": "^3.4.1",
     "tsup": "8.0.2",
     "tsup-preset-solid": "2.2.0",
@@ -126,7 +125,7 @@
   },
   "peerDependencies": {
     "solid-js": "^1.5.3",
-    "uploadthing": "^6.10.0"
+    "uploadthing": "^7.0.0"
   },
   "keywords": [
     "SolidJS",

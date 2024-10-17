@@ -1,0 +1,224 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "Fetch / Edge Runtimes",
+  description:
+    "UploadThing adheres to web standards and can be used with any server implementing the Fetch API",
+  category: "Backend Adapters",
+});
+
+# Getting started with Fetch / Edge Runtimes
+
+UploadThing is compatible with any runtime that follow the
+[WinterCG](https://wintercg.org/).
+
+## Common setup
+
+### Package Setup
+
+### Install the package
+
+```sh npm2yarn
+npm install uploadthing
+```
+
+#### Add env variables
+
+<Note>
+  If you don't already have a uploadthing secret key, [sign
+  up](https://uploadthing.com/sign-in) and create one from the
+  [dashboard!](https://uploadthing.com/dashboard)
+</Note>
+
+```bash
+UPLOADTHING_TOKEN=... # A token for interacting with the SDK
+```
+
+### Set Up A FileRouter
+
+All files uploaded to uploadthing are associated with a FileRoute. The following
+is a very minimalistic example, with a single FileRoute "imageUploader". Think
+of a FileRoute similar to an endpoint, it has:
+
+- Permitted types ["image", "video", etc]
+- Max file size
+- (Optional) `middleware` to authenticate and tag requests
+- `onUploadComplete` callback for when uploads are completed
+
+To get full insight into what you can do with the FileRoutes, please refer to
+the [File Router API](/file-routes).
+
+```ts
+import { createUploadthing, type FileRouter } from "uploadthing/server";
+
+const f = createUploadthing();
+
+export const uploadRouter = {
+  imageUploader: f({
+    image: {
+      maxFileSize: "4MB",
+      maxFileCount: 4,
+    },
+  }).onUploadComplete((data) => {
+    console.log("upload completed", data);
+  }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof uploadRouter;
+```
+
+## Runtimes-specific setup
+
+> See configuration options in
+> [server API reference](/api-reference/server#create-route-handler)
+
+### Astro
+
+```ts
+import { createRouteHandler } from "uploadthing/server";
+
+import { uploadRouter } from "../../server/uploadthing";
+
+const handlers = createRouteHandler({
+  router: uploadRouter,
+  config: { ... },
+});
+export { handlers as GET, handlers as POST };
+```
+
+<Note>
+  Read more in our [Getting Started with Astro](/getting-started/astro) guide.
+</Note>
+
+### Elysia
+
+```ts
+import { Elysia } from "elysia";
+
+import { createRouteHandler } from "uploadthing/server";
+
+import { uploadRouter } from "./uploadthing.ts";
+
+const handlers = createRouteHandler({
+  router: uploadRouter,
+  config: { ... },
+});
+
+new Elysia()
+  .get("/api", () => "Hello from Elysia!")
+  .get("/api/uploadthing", (ev) => handlers(ev.request))
+  .post("/api/uploadthing", (ev) => handlers(ev.request))
+  .listen(3000, (server) => {
+    console.log(`Server listening on port ${server.port}`);
+  });
+```
+
+### Hono
+
+```ts
+import { Hono } from "hono";
+
+import { createRouteHandler } from "uploadthing/server";
+
+import { uploadRouter } from "./uploadthing.ts";
+
+const handlers = createRouteHandler({
+  router: uploadRouter,
+  config: { ... },
+});
+
+const app = new Hono();
+
+app.all("/api/uploadthing", (context) => handlers(context.req.raw));
+
+export default app;
+```
+
+### Cloudflare Workers
+
+<Note>
+  Due to Cloudflare's lack of global environment variables and lack of
+  `init.cache` on `fetch`, we need to due some manual setup to make it
+  compatible.
+</Note>
+
+```ts
+import { createRouteHandler } from "uploadthing/server";
+
+import { uploadRouter } from "./uploadthing.ts";
+
+export default {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+    const handlers = createRouteHandler({
+      router: uploadRouter,
+      config: {
+        /**
+         * Since workers doesn't have envs on `process`. We need to pass
+         * secret and isDev flag manually.
+         */
+        token: env.UPLOADTHING_TOKEN,
+        isDev: env.ENVIRONMENT === "development",
+        /*
+         * Cloudflare Workers doesn't support the cache option
+         * so we need to remove it from the request init.
+         */
+        fetch: (url, init) => {
+          if (init && "cache" in init) delete init.cache;
+          return fetch(url, init);
+        },
+        /**
+         * UploadThing dev server leaves some promises hanging around that we
+         * need to wait for to prevent the worker from exiting prematurely.
+         */
+        handleDaemonPromise: (promise) => ctx.waitUntil(promise),
+      },
+    });
+
+    // World's simplest router. Handle GET/POST requests to /api/uploadthing
+    switch (new URL(request.url).pathname) {
+      case "/api/uploadthing": {
+        if (request.method !== "POST" && request.method !== "GET") {
+          return new Response("Method not allowed", { status: 405 });
+        }
+        return await handlers[request.method](request);
+      }
+      default: {
+        return new Response("Not found", { status: 404 });
+      }
+    }
+  },
+};
+```
+
+## Use the FileRouter in your app
+
+Client side usage differs ever so slightly from the fullstack framework setups
+when using a separate backend server. You'll need to set the URL of your server
+when you generate the components and helpers.
+
+```tsx
+import { generateUploadButton } from "@uploadthing/react";
+
+export const UploadButton = generateUploadButton({
+  url: "https://your-server.com/api/uploadthing",
+});
+// ...
+```
+
+<Note>
+  Please note that you might need to setup some CORS rules on your server to
+  allow the client to make requests to the server.
+</Note>
+
+For the remaining usage, please refer to client side examples of the fullstack
+framework guides:
+
+- [Next.js](/getting-started/appdir#create-the-upload-thing-components)
+- [Solid.js](/getting-started/solid#creating-the-upload-thing-components)
+- [Vue](https://github.com/pingdotgg/uploadthing/tree/main/examples/backend-adapters/client-vue)
+- [Svelte](/getting-started/svelte#creating-the-upload-thing-helpers)
+
+or check out the full API reference:
+
+- [`@uploadthing/react`](/api-reference/react)
+- [`uploadthing/client`](/api-reference/client)

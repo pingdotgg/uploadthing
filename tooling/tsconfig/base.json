@@ -4,7 +4,6 @@
   "compilerOptions": {
     "baseUrl": "../..",
     "paths": {
-      "@uploadthing/dropzone/*": ["packages/dropzone/src/*"],
       "@uploadthing/shared": ["packages/shared/src"],
       "@uploadthing/mime-types": ["packages/mime-types/src"],
       "@uploadthing/react": ["packages/react/src"],

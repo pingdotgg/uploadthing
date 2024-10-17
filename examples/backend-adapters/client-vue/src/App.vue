@@ -17,10 +17,12 @@ function alert(message: string) {
             appendOnPaste: true,
           },
           endpoint: 'videoAndImage',
-          skipPolling: true,
           onClientUploadComplete: (file) => {
             console.log('uploaded', file);
             alert('Upload complete');
+          },
+          onUploadAborted: () => {
+            alert('Upload Aborted');
           },
           onUploadError: (error) => {
             console.error(error, error.cause);
@@ -35,10 +37,12 @@ function alert(message: string) {
             appendOnPaste: true,
           },
           endpoint: 'videoAndImage',
-          skipPolling: true,
           onClientUploadComplete: (file) => {
             console.log('uploaded', file);
             alert('Upload complete');
+          },
+          onUploadAborted: () => {
+            alert('Upload Aborted');
           },
           onUploadError: (error) => {
             console.error(error, error.cause);

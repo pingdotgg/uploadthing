@@ -8,14 +8,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/vue": "6.6.3",
-    "uploadthing": "6.13.2",
+    "@uploadthing/vue": "7.0.3",
+    "uploadthing": "7.1.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
     "typescript": "^5.5.2",
-    "vite": "^5.3.1",
+    "vite": "^5.4.8",
     "vue-tsc": "^2.0.6"
   }
 }

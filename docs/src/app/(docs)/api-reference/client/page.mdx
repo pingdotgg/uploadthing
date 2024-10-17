@@ -1,0 +1,274 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "uploadthing/client",
+  description:
+    "The UploadThing Client module provides utilities for working files in your application and communicating with your backend file router.",
+  category: "API Reference",
+});
+
+# uploadthing/client
+
+The UploadThing Client module provides utilities for working files in your
+application and communicating with your backend file router.
+
+## `uploadFiles` {{ tag: 'function', since: '5.0' }}
+
+This function is used to perform
+[client side uploads](/uploading-files#client-side-uploads) by requesting
+presigned URLs from your backend file router, and then uploading the files to
+the storage provider.
+
+Use the `genUploader` factory function to generate a typed function that matches
+the signature of your file router, which will allow autocompletion and type
+checking on endpoint, route input and callback data types.
+
+```ts
+import { genUploader } from "uploadthing/client";
+
+import type { UploadRouter } from "~/server/uploadthing";
+
+export const { uploadFiles } = genUploader<UploadRouter>();
+
+const response = await uploadFiles("routeEndpoint", {
+  files: [],
+});
+```
+
+### Parameters
+
+The first parameter is the route endpoint to upload to, and the second parameter
+is an options object:
+
+<Properties>
+  <Property name="files" type="File[]" required since="5.0">
+    An array of files to upload.
+  </Property>
+  <Property name="input" type="TInput" since="5.0"> 
+    Input JSON data matching your validator set on the [FileRoute](/file-routes#input)
+    to send with the request.
+  </Property>
+  <Property name="headers" type="HeadersInit | () => HeadersInit" since="5.1">
+    Headers to be sent along the request to request the presigned URLs. Useful
+    for authentication outside full-stack framework setups.
+  </Property>
+  <Property name="signal" type="AbortSignal" since="6.7">
+    An abort signal to abort the upload.
+  </Property>
+  <Property name="onUploadBegin" type="({ file: string }) => void" since="5.4">
+    Callback function called after the presigned URLs have been retrieved, just before 
+    the file is uploaded. Called once per file.
+  </Property>
+  <Property
+    name="onUploadProgress"
+    type="({ file, progress }) => void"
+    since="6.4"
+  >
+    Callback function that gets continuously called as the file is uploaded to the storage provider.
+  </Property>
+
+</Properties>
+
+### Returns
+
+The function returns a `Promise` that resolves to an array of objects:
+
+<Properties>
+  <Property name="name" type="string">
+    The name of the file.
+  </Property>
+  <Property name="size" type="number">
+    The size of the file in bytes.
+  </Property>
+  <Property name="type" type="string">
+    The type of the file.
+  </Property>
+  <Property name="key" type="string | null">
+    The file key of the file.
+  </Property>
+  <Property name="url" type="string">
+    The url of the file.
+  </Property>
+  <Property name="customId" type="string | null">
+    The custom id of the file, if provided on upload.
+  </Property>
+  <Property name="serverData" type="Generic">
+    The data returned from the `onUploadComplete` callback on the file route.
+    This will be `null` if `RouteOptions.awaitServerData` isn't enabled.
+  </Property>
+</Properties>
+
+## `createUpload` {{ tag: 'function', since: '7.0' }}
+
+Create a resumable upload. Resumable uploads allows you to start an upload,
+pause it, and then resume it at a later time. As long as the presigned URL is
+valid, you can continue the upload from where it left off.
+
+As for `uploadFiles`, use the `genUploader` factory function to generate a typed
+function that matches the signature of your file router, which will allow
+autocompletion and type checking on endpoint, route input and callback data
+types.
+
+```ts
+import { genUploader } from "uploadthing/client";
+
+import type { UploadRouter } from "~/server/uploadthing";
+
+export const { createUpload } = genUploader<UploadRouter>();
+
+// Create the upload. The files will start uploading immediately.
+const { pauseUpload, resumeUpload, done } = createUpload("routeEndpoint", {
+  files: [],
+});
+
+// Pause the upload of a file
+pauseUpload(file);
+
+// Resume the upload of a file
+resumeUpload(file);
+
+// Await the completion of all files
+const files = await done();
+```
+
+### Parameters
+
+The first parameter is the route endpoint to upload to, and the second parameter
+is an options object:
+
+<Properties>
+  <Property name="files" type="File[]" required since="7.0">
+    An array of files to upload.
+  </Property>
+  <Property name="input" type="TInput" since="7.0">
+    Input JSON data matching your validator set on the
+    [FileRoute](/file-routes#input) to send with the request.
+  </Property>
+  <Property name="headers" type="HeadersInit | () => HeadersInit" since="7.0">
+    Headers to be sent along the request to request the presigned URLs. Useful
+    for authentication outside full-stack framework setups.
+  </Property>
+  <Property name="onUploadProgress" type="(progress) => void" since="7.0">
+    Callback function that gets continuously called as the file is uploaded to
+    the storage provider.
+  </Property>
+</Properties>
+
+### Returns
+
+<Properties>
+  <Property name="pauseUpload" type="(file?: File) => void" since="7.0">
+    Pause the upload of a file. If no file is provided, all files will be
+    paused.
+  </Property>
+  <Property name="resumeUpload" type="(file?: File) => void" since="7.0">
+    Resume the upload of a file. If no file is provided, all files will be
+    resumed.
+  </Property>
+  <Property
+    name="done"
+    type="(file?: File) => Promise<MaybeArray<UploadedFileResponse>>"
+    since="7.0"
+  >
+    Await the completion of the upload of a file. If no file is provided, all
+    files will be awaited. The returned object is the same as the one returned
+    by `uploadFiles`. If a file is provided, the function returns an object,
+    else it returns an array.
+  </Property>
+</Properties>
+
+## `generateClientDropzoneAccept` {{ tag: 'function', since: '6.0' }}
+
+Generate an accepted object that can be passed to the `accept` prop of a
+`useDropzone` hook or `Dropzone` component.
+
+### Parameters
+
+<Properties>
+  <Property name="fileTypes" type="string[]" required>
+    The route config to generate the accept props for.
+  </Property>
+</Properties>
+
+### Returns
+
+`object`
+
+## `generateMimeTypes` {{ tag: 'function', since: '6.0' }}
+
+Generate an array of accepted mime types given a route config.
+
+### Parameters
+
+<Properties>
+  <Property name="config" type="ExpandedRouteConfig" required>
+    The route config to generate the accept props for.
+  </Property>
+</Properties>
+
+### Returns
+
+`string[]`
+
+## `generatePermittedFileTypes` {{ tag: 'function', since: '6.0' }}
+
+Utility function to generate accept props for a `<input type="file">` element.
+
+### Parameters
+
+<Properties>
+  <Property name="config" type="ExpandedRouteConfig" required>
+    The route config to generate the accept props for.
+  </Property>
+</Properties>
+
+### Returns
+
+<Properties>
+  <Property name="fileTypes" type="string[]">
+    The route config to generate the accept props for.
+  </Property>
+  <Property name="multiple" type="boolean">
+    Whether the accept props should be for multiple files.
+  </Property>
+</Properties>
+
+## `isValidSize` {{ tag: 'function', since: '6.11' }}
+
+This function is used to validate that a file is of a valid size given a route
+config.
+
+### Parameters
+
+<Properties>
+  <Property name="file" type="File" required>
+    The size of the file to validate.
+  </Property>
+  <Property name="maxSize" type="number" required>
+    The maximum size of the file to validate.
+  </Property>
+</Properties>
+
+### Returns
+
+`boolean`
+
+## `isValidType` {{ tag: 'function', since: '6.11' }}
+
+This function is used to validate that a file is of a valid type given a route
+config.
+
+### Parameters
+
+<Properties>
+  <Property name="file" type="File" required>
+    The type of the file to validate.
+  </Property>
+  <Property name="allowedTypes" type="string[]" required>
+    The allowed types of the file to validate.
+  </Property>
+</Properties>
+
+### Returns
+
+`boolean`

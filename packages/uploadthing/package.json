@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "6.13.2",
+  "version": "7.1.0",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -109,6 +109,16 @@
         "default": "./convex/index.cjs"
       }
     },
+    "./remix": {
+      "import": {
+        "types": "./remix/index.d.ts",
+        "default": "./remix/index.js"
+      },
+      "require": {
+        "types": "./remix/index.d.cts",
+        "default": "./remix/index.cjs"
+      }
+    },
     "./types": {
       "types": "./types/index.d.ts",
       "default": "./types/index.js"
@@ -134,6 +144,7 @@
     "internal",
     "next",
     "next-legacy",
+    "remix",
     "server",
     "types",
     "tw"
@@ -150,15 +161,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/schema": "0.68.18",
+    "@effect/platform": "0.68.5",
+    "@effect/schema": "0.75.4",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "consola": "^3.2.3",
-    "effect": "3.4.8",
-    "std-env": "^3.7.0"
+    "effect": "3.9.2"
   },
   "devDependencies": {
-    "@effect/platform": "0.58.21",
+    "@remix-run/server-runtime": "^2.12.0",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^4.17.21",
     "@types/express-serve-static-core": "^4.17.43",
@@ -171,9 +181,9 @@
     "express": "^4.18.2",
     "fastify": "^4.26.1",
     "h3": "^1.11.1",
-    "next": "14.2.3",
+    "next": "14.2.11",
     "nuxt": "^3.11.2",
-    "solid-js": "^1.8.15",
+    "solid-js": "^1.8.23",
     "tailwindcss": "^3.4.1",
     "type-fest": "^4.10.3",
     "typescript": "^5.5.2",
@@ -184,7 +194,6 @@
   },
   "peerDependencies": {
     "convex": "*",
-    "@effect/platform": "*",
     "express": "*",
     "fastify": "*",
     "h3": "*",
@@ -192,9 +201,6 @@
     "tailwindcss": "*"
   },
   "peerDependenciesMeta": {
-    "@effect/platform": {
-      "optional": true
-    },
     "next": {
       "optional": true
     },
@@ -226,10 +232,6 @@
         {
           "name": "fetch",
           "message": "fetch should be passed as parameter to support overriding default behaviors"
-        },
-        {
-          "name": "process",
-          "message": "Use `import { process } from 'std-env` instead"
         }
       ],
       "no-restricted-imports": [

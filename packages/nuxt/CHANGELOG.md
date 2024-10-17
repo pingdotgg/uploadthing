@@ -1,5 +1,41 @@
 # @uploadthing/nuxt
 
+## 7.0.3
+
+### Patch Changes
+
+- Updated dependencies [[`2afabe5`](https://github.com/pingdotgg/uploadthing/commit/2afabe59a0e6319ec469eba670b1e3e920f596ee), [`e53bc01`](https://github.com/pingdotgg/uploadthing/commit/e53bc0175adff160a2bcaa621f66ed744f327c74)]:
+  - @uploadthing/vue@7.0.3
+
+## 7.0.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.0.2
+
+## 7.0.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.0.1
+
+## 7.0.0
+
+### Patch Changes
+
+- Updated dependencies [[`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13), [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13), [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13), [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13), [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13)]:
+  - uploadthing@7.0.0
+  - @uploadthing/vue@7.0.0
+
+## 6.5.10
+
+### Patch Changes
+
+- Updated dependencies [[`079b434`](https://github.com/pingdotgg/uploadthing/commit/079b43423793b2c4510bc6058174d8607dd402c4)]:
+  - @uploadthing/vue@6.7.0
+
 ## 6.5.9
 
 ### Patch Changes

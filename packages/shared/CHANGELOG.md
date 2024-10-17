@@ -1,5 +1,52 @@
 # @uploadthing/shared
 
+## 7.0.3
+
+### Patch Changes
+
+- [#977](https://github.com/pingdotgg/uploadthing/pull/977) [`2afabe5`](https://github.com/pingdotgg/uploadthing/commit/2afabe59a0e6319ec469eba670b1e3e920f596ee) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove internal dropzone package to prevent peer dependency conflicts between package managers
+
+- [#989](https://github.com/pingdotgg/uploadthing/pull/989) [`53f4ab6`](https://github.com/pingdotgg/uploadthing/commit/53f4ab6daa5b75b31c78e6ed441e4bf2f836c5d2) Thanks [@juraj98](https://github.com/juraj98)! - fix vite monorepos sometimes complaining about `$RefreshSig$ is not a function`
+
+- [#991](https://github.com/pingdotgg/uploadthing/pull/991) [`fe83f4a`](https://github.com/pingdotgg/uploadthing/commit/fe83f4a342f2e04bf5b069613621e77ec5acbe9e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: prefer browser recognized mime type over file extension lookup when matching file's type to router config
+
+## 7.0.2
+
+### Patch Changes
+
+- [#950](https://github.com/pingdotgg/uploadthing/pull/950) [`a07817e`](https://github.com/pingdotgg/uploadthing/commit/a07817e6240898ab80fbb01b352501aab31ba6bc) Thanks [@markflorkowski](https://github.com/markflorkowski)! - correct variable names to accurately reflect what they are
+
+## 7.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`2efa047`](https://github.com/pingdotgg/uploadthing/commit/2efa047127890bdf50ab5312ff9660662e099162)]:
+  - @uploadthing/mime-types@0.3.0
+
+## 7.0.0
+
+### Major Changes
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: use ingest server
+
+  Multi Part Uplaods hasve been abstracted away and files are now uploaded as a single stream to UploadThing, reducing the manual steps required to upload files and improves performance.
+
+  Polling has been removed in favor of a streaming upload process with instant feedback
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update paths to new api domain
+
+  Previously the SDK version was just sent in the header which made it cumbersome to make large changes on the API without risking breaking older versions. This change improves our flexibility to make changes to the API without needing to do a major bump on the SDK. It should come with some nice performance wins too!
+
+## 6.7.9
+
+### Patch Changes
+
+- [#877](https://github.com/pingdotgg/uploadthing/pull/877) [`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update api paths to skip rewrites
+
+- [#921](https://github.com/pingdotgg/uploadthing/pull/921) [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: number serialization - passing non-serializable numbers in the router config should no longer cause unexpected failures.
+
+- [#922](https://github.com/pingdotgg/uploadthing/pull/922) [`9a69b90`](https://github.com/pingdotgg/uploadthing/commit/9a69b906ed921ac7d2b8aa56445f25935401f20e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: use effect/Encoding over Node.js Buffer
+
 ## 6.7.8
 
 ### Patch Changes

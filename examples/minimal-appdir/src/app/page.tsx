@@ -11,7 +11,6 @@ export default function Home() {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
-    skipPolling: true,
     onBeforeUploadBegin: (files) => {
       console.log("Uploading", files.length, "files");
       return files;

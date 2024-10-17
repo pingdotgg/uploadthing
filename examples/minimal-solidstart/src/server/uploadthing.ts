@@ -30,8 +30,6 @@ export const uploadRouter = {
   })
     .middleware(({ req }) => {
       // Check some condition based on the incoming request
-      req;
-      //^?
       // if (!req.headers.get("x-some-header")) {
       //   throw new Error("x-some-header is required");
       // }
@@ -46,4 +44,4 @@ export const uploadRouter = {
     }),
 } satisfies FileRouter;
 
-export type OurFileRouter = typeof uploadRouter;
+export type UploadRouter = typeof uploadRouter;

@@ -1,5 +1,179 @@
 # uploadthing
 
+## 7.1.0
+
+### Minor Changes
+
+- [#978](https://github.com/pingdotgg/uploadthing/pull/978) [`a3fa6af`](https://github.com/pingdotgg/uploadthing/commit/a3fa6afbd5ec65218a9bdf2f5c1d15bebad2b517) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: return object hash in onUploadComplete
+
+- [#997](https://github.com/pingdotgg/uploadthing/pull/997) [`68d7d31`](https://github.com/pingdotgg/uploadthing/commit/68d7d31a6eb71345f176bc9ed69a1f9201a335f2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: allow different log formats
+
+  You can now set any of the [built-in log formats](https://effect.website/docs/guides/observability/logging#built-in-loggers) by passing in the `logFormat` config option.
+
+### Patch Changes
+
+- [#1002](https://github.com/pingdotgg/uploadthing/pull/1002) [`ab572ac`](https://github.com/pingdotgg/uploadthing/commit/ab572acce9f330a4fb609e60fbb06c3a0ec3f0b1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: deprecate `UTApi.getFileUrls`. 📚 Read [Accessing files](https://docs.uploadthing.com/working-with-files#accessing-files) on how to safely access files without requiring an extra API call
+
+- [#998](https://github.com/pingdotgg/uploadthing/pull/998) [`d4d453d`](https://github.com/pingdotgg/uploadthing/commit/d4d453d7ab63a0c04f618881410a5b082ea73fe2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: send version header when uploading to have accurate version shown on dashboard
+
+- [#987](https://github.com/pingdotgg/uploadthing/pull/987) [`e48abf5`](https://github.com/pingdotgg/uploadthing/commit/e48abf5217f579d7f9ec1d2068941be669204868) Thanks [@juraj98](https://github.com/juraj98)! - Fixed withUt to work in monorepos
+
+- [#968](https://github.com/pingdotgg/uploadthing/pull/968) [`2a918e8`](https://github.com/pingdotgg/uploadthing/commit/2a918e89cf99b6f43520a84d5397d3489d8cc5e0) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: enforce JSONObject return in `onUploadComplete` callback
+
+- [#991](https://github.com/pingdotgg/uploadthing/pull/991) [`fe83f4a`](https://github.com/pingdotgg/uploadthing/commit/fe83f4a342f2e04bf5b069613621e77ec5acbe9e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: prefer browser recognized mime type over file extension lookup when matching file's type to router config
+
+- [#1001](https://github.com/pingdotgg/uploadthing/pull/1001) [`d35ad7e`](https://github.com/pingdotgg/uploadthing/commit/d35ad7edb7b763fb9730b96bb36ffab2be8bdfb0) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: `UTApi.getFileUrls` ensure we're always sending keys as array
+
+- Updated dependencies [[`2afabe5`](https://github.com/pingdotgg/uploadthing/commit/2afabe59a0e6319ec469eba670b1e3e920f596ee), [`53f4ab6`](https://github.com/pingdotgg/uploadthing/commit/53f4ab6daa5b75b31c78e6ed441e4bf2f836c5d2), [`fe83f4a`](https://github.com/pingdotgg/uploadthing/commit/fe83f4a342f2e04bf5b069613621e77ec5acbe9e)]:
+  - @uploadthing/shared@7.0.3
+
+## 7.0.2
+
+### Patch Changes
+
+- [`a948109`](https://github.com/pingdotgg/uploadthing/commit/a948109756aba65935bb378e39d43056af2bc8bb) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix express adapter checking content type on GET requests
+
+- [#946](https://github.com/pingdotgg/uploadthing/pull/946) [`5156179`](https://github.com/pingdotgg/uploadthing/commit/51561797fe8856cd004f37a5e662691566f8a369) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: nextjs pages adapter response body regression
+
+- [#952](https://github.com/pingdotgg/uploadthing/pull/952) [`6236ad2`](https://github.com/pingdotgg/uploadthing/commit/6236ad24b8720bfb53a1c5c30bc5d1410edb2c1c) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: run `onUploadBegin`
+
+- Updated dependencies [[`a07817e`](https://github.com/pingdotgg/uploadthing/commit/a07817e6240898ab80fbb01b352501aab31ba6bc)]:
+  - @uploadthing/shared@7.0.2
+
+## 7.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`2efa047`](https://github.com/pingdotgg/uploadthing/commit/2efa047127890bdf50ab5312ff9660662e099162)]:
+  - @uploadthing/mime-types@0.3.0
+  - @uploadthing/shared@7.0.1
+
+## 7.0.0
+
+### Major Changes
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: reduce bundle size
+
+  We've continued our efforts to reduce the bundle size of the client side javascript. In a previous minor release, we reduced the bundle size by 70%, from 120kB to 40kB. This release continues on that work with a further reduction of 35% down to just over 25kB client side
+  javascript shipped to the browser from the `uploadthing/client` package.
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: change signature of `genUploader` to return an object with 2 functions, `uploadFiles` and `createUpload`
+
+  `createUpload` can be used to create a resumable upload which you can pause and resume as you wish.
+  See example: https://github.com/pingdotgg/uploadthing/blob/v7/examples/backend-adapters/client-vanilla/src/resumable-upload.ts
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat!: use ingest server
+
+  Multi Part Uplaods hasve been abstracted away and files are now uploaded as a single stream to UploadThing, reducing the manual steps required to upload files and improves performance.
+
+  Polling has been removed in favor of a streaming upload process with instant feedback
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update paths to new api domain
+
+  Previously the SDK version was just sent in the header which made it cumbersome to make large changes on the API without risking breaking older versions. This change improves our flexibility to make changes to the API without needing to do a major bump on the SDK. It should come with some nice performance wins too!
+
+- [#866](https://github.com/pingdotgg/uploadthing/pull/866) [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - ## 🚨 Breaking Changes
+
+  ### General
+
+  - Change `UPLOADTHING_API_KEY` to `UPLOADTHING_TOKEN`. The token contains both your API key and some other metadata required by the SDK. You can get a token from the [UploadThing dashboard](https://uploadthing.com/dashboard). All options related to `uploadthingSecret` / `apiKey` has now been removed and replaced with `token`:
+
+  ```diff
+  - createRouteHandler({ router, config: { uploadthingSecret: 'sk_123' } })
+  + createRouteHandler({ router, config: { token: 'MY_TOKEN' } })
+
+  - new UTApi({ apiKey: 'sk_123' })
+  + new UTApi({ token: 'MY_TOKEN' })
+  ```
+
+  - If you relied on the `CUSTOM_INFRA_URL` environment variable override, you will have to change this to `UPLOADTHING_API_URL` or `UPLOADTHING_INGEST_URL` depending on your use case.
+
+  ### `uploadthing/client`
+
+  - Change signature of `genUploader` to return an object instead of a single function.
+
+  ```diff
+  - const uploadFiles = genUploader(opts)
+  + const { uploadFiles } = genUploader(opts)
+  ```
+
+  - Remove `uploadFiles.skipPolling` option in favor of a new server-side RouteOption `awaitServerData`. If you want your client callback to run as soon as the file has been uploaded,
+    without waiting for your server side `onUploadComplete` to run, you can now set `awaitServerData` to `false`.
+
+  ```diff
+    // Client option
+    uploadFiles({
+  -   skipPolling: true
+    })
+    // Server option
+    const router = {
+      myRoute: f(
+        { ... },
+  +     { awaitServerData: false }
+      )
+    }
+  ```
+
+  Read more about the new `RouteOptions` in the [📚 Server API Reference docs](https://docs.uploadthing.com/api-reference/server#route-options)
+
+  ### Adapters
+
+  - Change `config.logLevel` levels. Most are now capitalized to match our new logger. Auto-complete should make migrating trivial.
+
+  ```diff
+  - logLevel: 'info'
+  + logLevel: 'Info'
+  ```
+
+  - `uploadthing/server` adapter now returns a single function instead of individual named functions. The handler accepts a request and will handle routing internally.
+
+  ```diff
+  - const { GET, POST } = createRouteHandler({ router, config })
+  + const handler = createRouteHandler({ router, config })
+  ```
+
+  You can re-export the handler as named functions if your framework requires it.
+
+  ```ts
+  const handler = createRouteHandler({ router, config });
+  export { handler as GET, handler as POST };
+  ```
+
+  ## Features
+
+  ### General
+
+  - Add new configuration provider. All config options (e.g. `UTApi.constructor` options or `createRouteHandler.config` option can now also be set using an environment variable. Setting the option in the constructor is still supported and takes precedence over the environment variable.
+
+  ```ts
+  const api = new UTApi({
+    logLevel: "Info",
+  });
+  // is the same as
+  process.env.UPLOADTHING_LOG_LEVEL = "Info";
+  const api = new UTApi();
+  ```
+
+### Patch Changes
+
+- Updated dependencies [[`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13), [`d69dd6e`](https://github.com/pingdotgg/uploadthing/commit/d69dd6e434281796cc41a3d70610ecffab7c3f13)]:
+  - @uploadthing/shared@7.0.0
+
+## 6.13.3
+
+### Patch Changes
+
+- [#924](https://github.com/pingdotgg/uploadthing/pull/924) [`04c5971`](https://github.com/pingdotgg/uploadthing/commit/04c5971b4285eecc15b82c439666223786b41437) Thanks [@markflorkowski](https://github.com/markflorkowski)! - feat: Add app-scoped urls to types for api returns
+
+- [#877](https://github.com/pingdotgg/uploadthing/pull/877) [`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update api paths to skip rewrites
+
+- [#921](https://github.com/pingdotgg/uploadthing/pull/921) [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: number serialization - passing non-serializable numbers in the router config should no longer cause unexpected failures.
+
+- [#919](https://github.com/pingdotgg/uploadthing/pull/919) [`03ca6f3`](https://github.com/pingdotgg/uploadthing/commit/03ca6f30ef7cb2c1f14b823a2c6a09664962001d) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: types for renameFiles match infra
+
+- Updated dependencies [[`d1a8269`](https://github.com/pingdotgg/uploadthing/commit/d1a8269923a9574dfb812886ae7f73fb0c349195), [`5ff7648`](https://github.com/pingdotgg/uploadthing/commit/5ff7648b7537cac33f60411ae670f2113e97539c), [`9a69b90`](https://github.com/pingdotgg/uploadthing/commit/9a69b906ed921ac7d2b8aa56445f25935401f20e)]:
+  - @uploadthing/shared@6.7.9
+
 ## 6.13.2
 
 ### Patch Changes

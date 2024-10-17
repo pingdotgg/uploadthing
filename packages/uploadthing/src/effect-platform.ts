@@ -1,29 +1,12 @@
-import type { HttpBody } from "@effect/platform";
-import {
-  HttpMiddleware,
-  HttpRouter,
-  HttpServerRequest,
-  HttpServerResponse,
-} from "@effect/platform";
+import { HttpRouter, HttpServerRequest } from "@effect/platform";
 import * as Effect from "effect/Effect";
+import * as Layer from "effect/Layer";
 
 import type { Json } from "@uploadthing/shared";
-import {
-  FetchContext,
-  getStatusCodeFromError,
-  UploadThingError,
-} from "@uploadthing/shared";
 
-import { UPLOADTHING_VERSION } from "./internal/constants";
-import { formatError } from "./internal/error-formatter";
-import {
-  buildPermissionsInfoHandler,
-  buildRequestHandler,
-} from "./internal/handler";
-import { incompatibleNodeGuard } from "./internal/incompat-node-guard";
-import { ConsolaLogger, withMinimalLogLevel } from "./internal/logger";
-import { toWebRequest } from "./internal/to-web-request";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
+import { configProvider } from "./internal/config";
+import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import type { FileRouter, RouteHandlerConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 
@@ -40,77 +23,40 @@ export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
 ) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
 
-export const createRouteHandler = <TRouter extends FileRouter>(
-  opts: RouteHandlerOptions<TRouter>,
-): HttpRouter.HttpRouter<HttpBody.HttpBodyError, never> => {
-  incompatibleNodeGuard();
+export const createRouteHandler = <TRouter extends FileRouter>(opts: {
+  router: TRouter;
+  /**
+   * @remarks In order to obey by Effect conventions, we have omitted the `config.fetch` and `config.logLevel` options.
+   * You can provide these layers on your own if you need to.
+   *
+   * @example
+   * ```ts
+   * import { Effect, Layer, Logger, LogLevel } from "effect";
+   * import { HttpClient } from "@effect/platform";
 
-  const requestHandler = buildRequestHandler<TRouter, MiddlewareArgs>(
-    opts,
-    "effect-platform",
+   * // Set logLevel
+   * Logger.withMinimumLogLevel(LogLevel.Debug)
+   *   
+   * // Override fetch implementation
+   * Layer.succeed(
+   *   HttpClient.Fetch,
+   *   myFetchImplementation,
+   * );
+   * ```
+   */
+  config?: Omit<RouteHandlerConfig, "fetch" | "logLevel">;
+}) => {
+  const router = Effect.runSync(
+    createRequestHandler<TRouter>(opts, "effect-platform"),
   );
-  const getBuildPerms = buildPermissionsInfoHandler<TRouter>(opts);
 
-  const appendUploadThingResponseHeaders = HttpMiddleware.make(
-    Effect.map(
-      HttpServerResponse.setHeader(
-        "x-uploadthing-version",
-        UPLOADTHING_VERSION,
-      ),
-    ),
-  );
-
-  return HttpRouter.empty.pipe(
-    HttpRouter.get("/", HttpServerResponse.json(getBuildPerms())),
-    HttpRouter.post(
-      "/",
-      Effect.flatMap(HttpServerRequest.HttpServerRequest, (req) =>
-        requestHandler({
-          /**
-           * TODO: Redo this to be more cross-platform
-           * This should handle WinterCG and Node.js runtimes,
-           * unsure about others...
-           * Perhaps we can use `Http.request.ServerRequest` internally?
-           */
-          req: Effect.if(req.source instanceof Request, {
-            onTrue: () => Effect.succeed(req.source as Request),
-            onFalse: () =>
-              req.json.pipe(
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                Effect.flatMap((body) => toWebRequest(req.source as any, body)),
-                Effect.catchTags({
-                  RequestError: (error) =>
-                    new UploadThingError({
-                      code: "BAD_REQUEST",
-                      message: "INVALID_JSON",
-                      cause: error,
-                    }),
-                }),
-              ),
-          }),
-          middlewareArgs: { req, res: undefined, event: undefined },
-        }).pipe(
-          withMinimalLogLevel(opts.config?.logLevel),
-          Effect.provide(ConsolaLogger),
-          Effect.provideService(FetchContext, {
-            fetch: opts.config?.fetch ?? globalThis.fetch,
-            baseHeaders: {
-              "x-uploadthing-version": UPLOADTHING_VERSION,
-              // These are filled in later in `parseAndValidateRequest`
-              "x-uploadthing-api-key": undefined,
-              "x-uploadthing-be-adapter": undefined,
-              "x-uploadthing-fe-package": undefined,
-            },
-          }),
-          Effect.andThen((response) => HttpServerResponse.json(response.body)),
-          Effect.catchTag("UploadThingError", (error) =>
-            HttpServerResponse.json(formatError(error, opts.router), {
-              status: getStatusCodeFromError(error),
-            }),
-          ),
-        ),
-      ),
-    ),
-    HttpRouter.use(appendUploadThingResponseHeaders),
-  );
+  return HttpRouter.provideServiceEffect(
+    router,
+    MiddlewareArguments,
+    Effect.map(HttpServerRequest.HttpServerRequest, (serverRequest) => ({
+      req: serverRequest,
+      res: undefined,
+      event: undefined,
+    })),
+  ).pipe(Effect.provide(Layer.setConfigProvider(configProvider(opts.config))));
 };

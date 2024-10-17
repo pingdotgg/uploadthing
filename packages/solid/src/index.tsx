@@ -1,6 +1,6 @@
 import "./styles.css";
 
-export * from "./useUploadThing";
+export * from "./create-uploadthing";
 export {
   UploadButton,
   UploadDropzone,
@@ -8,5 +8,4 @@ export {
   generateUploadButton,
   generateUploadDropzone,
   generateUploader,
-  generateComponents,
 } from "./components";

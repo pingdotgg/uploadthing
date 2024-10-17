@@ -5,6 +5,7 @@ import type { EndpointMetadata } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import { genUploader } from "uploadthing/client";
@@ -22,7 +23,7 @@ export type {
   ExpandedRouteConfig,
 } from "@uploadthing/shared";
 
-const useEndpointMetadata = (url: URL, endpoint: string) => {
+const useRouteConfig = (url: URL, endpoint: string) => {
   // TODO: useState with server-inserted data to skip fetch on client
   const { data } = useFetch<string>(url.href);
   return computed(() => {
@@ -31,7 +32,7 @@ const useEndpointMetadata = (url: URL, endpoint: string) => {
       typeof data.value === "string"
         ? (JSON.parse(data.value) as EndpointMetadata)
         : (data.value as EndpointMetadata);
-    return endpointData?.find((x) => x.slug === endpoint);
+    return endpointData?.find((x) => x.slug === endpoint)?.config;
   });
 };
 
@@ -45,26 +46,18 @@ export const INTERNAL_uploadthingHookGen = <
    */
   url: URL;
 }) => {
-  const uploadFiles = genUploader<TRouter>({
+  const { uploadFiles } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/vue",
   });
 
-  const useUploadThing = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
+  const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const isUploading = ref(false);
     const uploadProgress = ref(0);
-    const fileProgress = ref(new Map<string, number>());
-
-    const permittedFileInfo = useEndpointMetadata(
-      initOpts.url,
-      endpoint as string,
-    );
+    const fileProgress = ref(new Map<File, number>());
 
     type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
     type FuncInput = undefined extends InferredInput
@@ -77,12 +70,12 @@ export const INTERNAL_uploadthingHookGen = <
 
       isUploading.value = true;
       opts?.onUploadProgress?.(0);
-      files.forEach((f) => fileProgress.value.set(f.name, 0));
+      files.forEach((f) => fileProgress.value.set(f, 0));
       try {
         const res = await uploadFiles(endpoint, {
+          signal: opts?.signal,
           headers: opts?.headers,
           files,
-          skipPolling: opts?.skipPolling,
           onUploadProgress: (progress) => {
             if (!opts?.onUploadProgress) return;
             fileProgress.value.set(progress.file, progress.progress);
@@ -106,9 +99,15 @@ export const INTERNAL_uploadthingHookGen = <
           input,
         });
 
-        opts?.onClientUploadComplete?.(res);
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
+        /**
+         * This is the only way to introduce this as a non-breaking change
+         * TODO: Consider refactoring API in the next major version
+         */
+        if (e instanceof UploadAbortedError) throw e;
+
         let error: UploadThingError<inferErrorShape<TRouter>>;
         if (e instanceof UploadThingError) {
           error = e as UploadThingError<inferErrorShape<TRouter>>;
@@ -119,18 +118,26 @@ export const INTERNAL_uploadthingHookGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
       } finally {
         isUploading.value = false;
-        fileProgress.value = new Map<string, number>();
+        fileProgress.value = new Map();
         uploadProgress.value = 0;
       }
     });
 
+    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+
     return {
       startUpload,
       isUploading,
-      permittedFileInfo,
+      routeConfig,
+      /**
+       * @deprecated Use `routeConfig` instead
+       */
+      permittedFileInfo: routeConfig
+        ? { slug: endpoint, config: routeConfig }
+        : undefined,
     } as const;
   };
 
@@ -144,7 +151,7 @@ export const generateVueHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/vue",
     }),

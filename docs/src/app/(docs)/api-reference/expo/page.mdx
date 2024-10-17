@@ -1,0 +1,211 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "@uploadthing/expo",
+  description: "Expo bindings for UploadThing.",
+  category: "API Reference",
+});
+
+# UploadThing Expo
+
+Expo bindings for UploadThing.
+
+## `generateReactNativeHelpers` {{ tag: 'function', since: '6.6' }}
+
+The `generateReactNativeHelpers` function is used to generate the
+useImageUploader and useDocumentUploader hooks you use to interact with
+UploadThing in your app.
+
+```tsx {{ title: "utils/uploadthing.tsx" }}
+import { generateReactNativeHelpers } from "@uploadthing/expo";
+
+import type { UploadRouter } from "~/app/api/uploadthing+api";
+
+export const { useImageUploader, useDocumentUploader } =
+  generateReactNativeHelpers<UploadRouter>({
+    /**
+     * Your server url.
+     * @default process.env.EXPO_PUBLIC_SERVER_URL
+     * @remarks In dev we will also try to use Expo.debuggerHost
+     */
+    url: "https://my-server.com",
+  });
+```
+
+## `useImageUploader` {{ tag: 'hook', since: '6.6' }}
+
+A hook wrapping the native `expo-image-picker` module that allows access to the
+camera and photo library and uploads files to your server. The first time the
+user triggers the picker they will be prompted to grant your app permission to
+access the camera or photo library.
+
+```tsx {{ title: "app/example-uploader.tsx" }}
+import { Alert, Pressable, Text, View } from "react-native";
+
+import { useImageUploader } from "@uploadthing/expo";
+
+export function MultiUploader() {
+  const { openImagePicker, isUploading } = useImageUploader("imageUploader", {
+    /**
+     * Any props here are forwarded to the underlying `useUploadThing` hook.
+     * Refer to the React API reference for more info.
+     */
+    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+    onUploadError: (error) => Alert.alert("Upload Error", error.message),
+  });
+
+  return (
+    <View>
+      <Pressable
+        onPress={() => {
+          openImagePicker({
+            input, // Matches the input schema from the FileRouter endpoint
+            source: "library", // or "camera"
+            onInsufficientPermissions: () => {
+              Alert.alert(
+                "No Permissions",
+                "You need to grant permission to your Photos to use this",
+                [
+                  { text: "Dismiss" },
+                  { text: "Open Settings", onPress: openSettings },
+                ],
+              );
+            },
+          });
+        }}
+      >
+        <Text>Select Image</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
+
+### Parameters
+
+<Properties>
+  <Property name="endpoint" type="keyof UploadRouter" required>
+    The name of the [route](./server#FileRouter) you want this button to upload
+    to
+  </Property>
+  <Property name="opts" type="UseUploadThingProps" since="6.6">
+    Props forwarded to the underlying `useUploadThing` hook from
+    `@uploadthing/react`
+  </Property>
+</Properties>
+
+### Returns
+
+<Properties>
+  <Property
+    name="openImagePicker"
+    type="(opts: OpenImagePickerOptions) => Promise<void>"
+  >
+    Function to open the native image picker and start uploading the selected
+    files.
+
+    ```ts
+    type OpenImagePickerOptions = {
+      input: TInput // Matches the input schema from the FileRouter endpoint
+      source: 'library' | 'camera'
+      /**
+       * Callback to run if the user cancels the picker.
+       */
+      onCancel?: () => void
+      /**
+       * Callback to run if the user hasn't granted your app permission to the camera or photo library.
+       */
+      onInsufficientPermissions: () => void
+    }
+    ```
+
+  </Property>
+  <Property name="isUploading" type="boolean">
+    Flag whether file(s) are currently uploading
+  </Property>
+</Properties>
+
+## `useDocumentUploader` {{ tag: 'hook', since: '6.6' }}
+
+A hook wrapping the native `expo-document-picker` module that allows access to
+the native file system and uploads files to your server.
+
+```tsx {{ title: "app/example-uploader.tsx" }}
+import { Alert, Pressable, Text, View } from "react-native";
+
+import { useDocumentUploader } from "@uploadthing/expo";
+
+export function MultiUploader() {
+  const { openDocumentPicker, isUploading } = useDocumentUploader("document", {
+    /**
+     * Any props here are forwarded to the underlying `useUploadThing` hook.
+     * Refer to the React API reference for more info.
+     */
+    onClientUploadComplete: () => Alert.alert("Upload Completed"),
+    onUploadError: (error) => Alert.alert("Upload Error", error.message),
+  });
+
+  return (
+    <View>
+      <Pressable
+        onPress={() => {
+          openDocumentPicker({
+            input, // Matches the input schema from the FileRouter endpoint
+            onInsufficientPermissions: () => {
+              Alert.alert(
+                "No Permissions",
+                "You need to grant permission to your Photos to use this",
+                [
+                  { text: "Dismiss" },
+                  { text: "Open Settings", onPress: openSettings },
+                ],
+              );
+            },
+          });
+        }}
+      >
+        <Text>Select Document</Text>
+      </Pressable>
+    </View>
+  );
+}
+```
+
+### Paramerers
+
+<Properties>
+  <Property name="endpoint" type="keyof UploadRouter" required>
+    The name of the [route](./server#FileRouter) you want this button to upload
+    to
+  </Property>
+  <Property name="opts" type="UseUploadThingProps" since="6.6">
+    Props forwarded to the underlying `useUploadThing` hook from
+    `@uploadthing/react`
+  </Property>
+</Properties>
+
+### Returns
+
+<Properties>
+  <Property
+    name="openImagePicker"
+    type="(opts: OpenImagePickerOptions) => Promise<void>"
+  >
+    Function to open the native image picker and start uploading the selected
+    files.
+
+    ```ts
+    type OpenImagePickerOptions = {
+      input: TInput // Matches the input schema from the FileRouter endpoint
+      /**
+       * Callback to run if the user cancels the picker.
+       */
+      onCancel?: () => void
+    }
+    ```
+
+  </Property>
+  <Property name="isUploading" type="boolean">
+    Flag whether file(s) are currently uploading
+  </Property>
+</Properties>

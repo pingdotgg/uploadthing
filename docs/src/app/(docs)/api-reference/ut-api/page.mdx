@@ -1,0 +1,506 @@
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "UTApi",
+  description: "TypeScript SDK for consuming the UploadThing REST API.",
+  category: "API Reference",
+});
+
+# UTApi
+
+The UploadThing API Helper, for use ON YOUR SERVER. It's basically just a REST
+API but better.
+
+<Warning>
+  Please note that external API calls will almost always be slower than querying
+  your own database. We recommend storing the file data you need in your own
+  database, either in [`.onUploadComplete()`](/file-routes#on-upload-complete)
+  or after uploading files using
+  [`uploadFiles()`](/api-reference/ut-api#upload-files), instead of relying on
+  the API for your application's core data flow.
+</Warning>
+
+## Constructor {{ since: '5.7' }}
+
+<Note>
+  Prior to `v5.7`, the `UTApi` was exported as an object called `utapi` without
+  any custom intialization support.
+</Note>
+
+To get started, initialize an instance of `UTApi`.
+
+```ts {{ title: "~/server/uploadthing.ts" }}
+import { UTApi } from "uploadthing/server";
+
+export const utapi = new UTApi();
+```
+
+### Options
+
+You can configure the SDK either by passing a config object to the
+`createRouteHandler` function, or by setting them as environment variables.
+Environment variables follows the naming convention of `UPLOADTHING_<NAME>`
+,where `<NAME>` is the name of the config option in constant case, e.g.
+`UPLOADTHING_LOG_LEVEL`. If both are set, the config object takes precedence.
+
+<Properties>
+  <Property
+    name="fetch"
+    type="FetchEsque"
+    default="globalThis.fetch"
+    since="5.7"
+  >
+    Provide a custom fetch function.
+  </Property>
+  <Property
+    name="token"
+    type="string"
+    since="7.0"
+    defaultValue="env.UPLOADTHING_TOKEN"
+  >
+    Your UploadThing token. You can find this on the UploadThing dashboard.
+  </Property>
+  <Property
+    name="logLevel"
+    type="Error | Warning | Info | Debug | Trace"
+    since="7.0"
+    defaultValue="Info"
+  >
+    Enable more verbose logging.
+    <Note>If using an older version of the SDK, levels might vary.</Note>
+  </Property>
+  <Property
+    name="logFormat"
+    type="json | logFmt | structured | pretty"
+    since="7.1"
+    defaultValue="pretty in development, else json"
+  >
+    What format log entries should be in. [Read more about the log formats
+    here](https://effect.website/docs/guides/observability/logging#built-in-loggers).
+  </Property>
+  <Property
+    name="defaultKeyType"
+    type="'fileKey' | 'customId'"
+    default="fileKey"
+    since="6.4"
+  >
+    Set the default key type for file operations. Allows you to set your
+    preferred filter for file keys or custom identifiers without needing to
+    specify it on every call.
+  </Property>
+  <Property name="apiUrl" type="string" since="7.0">
+    The URL of the UploadThing API. Defaults to `https://api.uploadthing.com`.
+    <Note>
+      This option should only be set for self-hosted instances or for testing.
+    </Note>
+  </Property>
+  <Property name="ingestUrl" type="string" since="7.0">
+    The URL of the UploadThing Ingest API. Will be decoded from the `token` if
+    not specified.
+    <Note>
+      This option should only be set for self-hosted instances or for testing.
+    </Note>
+  </Property>
+</Properties>
+
+## `uploadFiles` {{ tag: 'method', since: '5.3'}}
+
+Upload files directly from your server **without** using the file router. Useful
+for server-side file processing, uploading from a server action, and much more.
+
+```tsx
+import { utapi } from "~/server/uploadthing.ts";
+
+async function uploadFiles(formData: FormData) {
+  "use server";
+  const files = formData.getAll("files");
+  const response = await utapi.uploadFiles(files);
+  //    ^? UploadedFileResponse[]
+}
+
+function MyForm() {
+  return (
+    <form action={uploadFiles}>
+      <input name="files" type="file" multiple />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+When uploading files using `uploadFiles`, the files must be present on your
+server. Then presigned URLs are generated on our servers before the files can be
+uploaded to the storage provider.
+
+### Parameters
+
+<Properties>
+  <Property name="files" type="MaybeArray<FileEsque>" since="5.3" required>
+    The files to upload
+    ```ts
+    // FileEsque is a blob with a name:
+    interface FileEsque extends Blob {
+      name: string
+      customId?: string
+    }
+
+    // For Node.js > 20, File is a global Class
+    File;
+
+    // or use UTFile which satisfies the File interface
+    // and allows passing in a customId
+    import { UTFile } from 'uploadthing/server'
+    ```
+
+  </Property>
+  <Property name="opts.metadata" type="Json" since="5.3">
+    Metadata to be added to the uploaded files. This is useful for adding
+    additional information to the files that can be used later.
+  </Property>
+  <Property
+    name="opts.contentDisposition"
+    type="inline | attachment"
+    since="5.3"
+    defaultValue="inline"
+  >
+    The content disposition to set on the storage provider. Content disposition
+    indicates how the file is expected to be displayed in the browser. Read more about content disposition on
+    [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
+  </Property>
+  <Property name="acl" type="public-read | private" since="6.0">
+    What [ACL](/concepts/regions-acl#access-controls) should be set on the
+    storage provider. Default value is is [configured on your app
+    settings](/concepts/regions-acl#access-controls) and can only be used if the
+    app allows per-request overrides.
+  </Property>
+</Properties>
+
+### Returns
+
+Returns an `Option` of `UploadedFileResponse`. If the `files` argument is an
+array, the returned value will also be an array.
+
+```ts
+type UploadFileResponse =
+  | { data: UploadData; error: null }
+  | { data: null; error: UploadError };
+
+type UploadData = {
+  key: string;
+  url: string;
+  name: string;
+  size: number;
+};
+
+type UploadError = {
+  code: string;
+  message: string;
+  data: any;
+};
+```
+
+## `uploadFilesFromUrl` {{ tag: 'method', since: '5.3'}}
+
+Have a file hosted somewhere else you want to upload on UploadThing? This is the
+function you're looking for.
+
+<Warning>
+  When uploading files from URL, the file is first downloaded on **your**
+  server, before presigned URLs are created and the file is uploaded to the
+  storage provider.
+</Warning>
+
+```tsx
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileUrl = "https://test.com/some.png";
+const uploadedFile = await utapi.uploadFilesFromUrl(fileUrl);
+//    ^? UploadedFileResponse
+
+const fileUrls = ["https://test.com/some.png", "https://test.com/some2.png"];
+const uploadedFiles = await utapi.uploadFilesFromUrl(fileUrls);
+//    ^? UploadedFileResponse[]
+```
+
+### Parameters
+
+The first argument are the URLs of the files you want to upload. They may also
+be an object with a `url` property in case you want to override the `name`, or
+set a `customId` for the files. The function also takes some optional options:
+
+<Properties>
+  <Property name="urls" type="MaybeArray<MaybeURL | URLWithOverrides>" since="5.3" required>
+    Metadata to be added to the uploaded files. This is useful for adding
+    additional information to the files that can be used later.
+    ```ts
+    type MaybeURL = string | URL
+    type URLWithOverrides = { url: MaybeURL; name?: string; customId?: string }
+    ```
+
+  </Property>
+  <Property name="opts.metadata" type="Json" since="5.3">
+    Metadata to be added to the uploaded files. This is useful for adding
+    additional information to the files that can be used later.
+  </Property>
+  <Property
+    name="opts.contentDisposition"
+    type="inline | attachment"
+    since="5.3"
+    defaultValue="inline"
+  >
+    The content disposition to set on the storage provider. Content disposition
+    indicates how the file is expected to be displayed in the browser. Read more about content disposition on
+    [MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition).
+  </Property>
+  <Property name="opts.acl" type="public-read | private" since="6.0" defaultValue="inline">
+    What [ACL](/concepts/regions-acl#access-controls) should be set on the
+    storage provider. Default value is is [configured on your app
+    settings](/concepts/regions-acl#access-controls) and can only be used if the
+    app allows per-request overrides.
+  </Property>
+</Properties>
+
+### Returns
+
+Same as [`uploadFiles`](#upload-files)
+
+## `deleteFiles` {{ tag: 'method', since: '4.0'}}
+
+`deleteFiles` takes in a fileKey or an array of fileKeys and deletes them from
+the server.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+await utapi.deleteFiles("2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg");
+await utapi.deleteFiles([
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
+await deleteFiles("myCustomIdentifier", { keyType: "customId" });
+```
+
+### Parameters
+
+Pass in the key(s) you want to delete as the first argument. Additionally, you
+may pass some options as a second argument:
+
+<Properties>
+  <Property name="keys" type="MaybeArray<string>" required>
+    The fileKeys (or customIds) you want to delete
+  </Property>
+  <Property
+    name="opts.keyType"
+    type="fileKey | customId"
+    since="6.4"
+    defaultValue="fileKey"
+  >
+    The type of key you are passing in.
+  </Property>
+</Properties>
+
+### Returns
+
+`object`
+
+## `getFileUrls` {{ tag: 'method', since: '4.0', deprecated: true }}
+
+`getFileUrls` takes in a fileKey or an array of fileKeys and returns the URLs to
+access them.
+
+<Warning>
+  This method is deprecated and will be removed in a future version. Please
+  refer to [Accessing Files](/working-with-files#accessing-files) to learn how
+  to access your files without extra roundtrips for API calls.
+</Warning>
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const oneUrl = await utapi.getFileUrls(
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+);
+const multipleUrls = await utapi.getFileUrls([
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+]);
+```
+
+### Parameters
+
+Pass in the key(s) you want to get the URLs for as the first argument.
+Additionally, you may pass some options as a second argument:
+
+<Properties>
+  <Property name="keys" type="MaybeArray<string>" required>
+    The fileKeys (or customIds) you want to get the URLs for
+  </Property>
+  <Property
+    name="opts.keyType"
+    type="fileKey | customId"
+    since="6.4"
+    defaultValue="fileKey"
+  >
+    The type of key you are passing in.
+  </Property>
+</Properties>
+
+### Returns
+
+`object`
+
+## `listFiles` {{ tag: 'method', since: '5.3'}}
+
+`listFiles` returns a paginated list of objects containing file ids and keys for
+all files that have been uploaded to the application your API key corresponds
+to.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const files = await utapi.listFiles();
+```
+
+### Parameters
+
+<Properties>
+  <Property name="opts.limit" type="number" since="6.1" defaultValue="500">
+    The maximum number of files to return
+  </Property>
+  <Property name="opts.offset" type="number" since="6.1" defaultValue="0">
+    The number of files to skip
+  </Property>
+</Properties>
+
+### Returns
+
+`object`
+
+## `renameFiles` {{ tag: 'method', since: '5.3'}}
+
+Rename a file or a list of files. You may specify either a file key or a custom
+id.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+await utapi.renameFiles({
+  key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  newName: "myImage.jpg",
+});
+await utapi.renameFiles({
+  customId: "my-identifier",
+  newName: "myImage.jpg",
+});
+
+await utapi.renameFiles([
+  {
+    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    newName: "myImage.jpg",
+  },
+  {
+    key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+    newName: "myOtherImage.jpg",
+  },
+]);
+```
+
+### Returns
+
+`object`
+
+## `getSignedURL` {{ tag: 'method', since: '6.2'}}
+
+Retrieve a [signed URL](/concepts/regions-acl#access-controls) for a private
+file.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
+const url = await utapi.getSignedURL(fileKey, {
+  expiresIn: 60 * 60, // 1 hour
+  // expiresIn: '1 hour',
+  // expiresIn: '3d',
+  // expiresIn: '7 days',
+});
+```
+
+<Note>
+  The `expiresIn` option can only be used if you allow overrides in your app
+  settings on the UploadThing dashboard.
+</Note>
+
+### Parameters
+
+<Properties>
+  <Property name="key" type="string" since="6.2" required>
+    The key of the file to get a signed URL for
+  </Property>
+  <Property name="options.expiresIn" type="number | TimeString" since="6.2">
+    Options for the signed URL. The parsed duration cannot exceed 7 days (604
+    800).
+    <Note>
+      `TimeString` refers to a human-readable string that can be parsed as a
+      number, followed by a unit of time. For example, `1s`, `1 second`, `2m`,
+      `2 minutes`, `7 days` etc. If no unit is specified, seconds are assumed.
+    </Note>
+  </Property>
+  <Property
+    name="options.keyType"
+    type="customId | fileKey"
+    since="6.2"
+    defaultValue="fileKey"
+  >
+    The type of key to use for the signed URL.
+  </Property>
+</Properties>
+
+### Returns
+
+`string`
+
+## `updateACL` {{ tag: 'method', since: '6.8'}}
+
+Update the [ACL](/concepts/regions-acl#access-controls) of a file or a list of
+files.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+// Make a single file public
+await utapi.updateACL(
+  "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  "public-read",
+);
+
+// Make multiple files private
+await utapi.updateACL(
+  [
+    "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+  ],
+  "private",
+);
+```
+
+<Properties>
+  <Property name="keys" type="MaybeArray<string>" since="6.8" required>
+    The fileKeys (or customIds) you want to update the ACL for
+  </Property>
+  <Property name="acl" type="public-read | private" since="6.8" required>
+    The ACL to update to.
+  </Property>
+  <Property
+    name="opts.keyType"
+    type="fileKey | customId"
+    since="6.8"
+    defaultValue="fileKey"
+  >
+    The type of key you are passing in.
+  </Property>
+</Properties>
+
+### Returns
+
+`object`

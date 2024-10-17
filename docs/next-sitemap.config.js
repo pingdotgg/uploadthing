@@ -1,5 +1,5 @@
-/** @type {import("next-sitemap").IConfig} */
-module.exports = {
+/** @type {import('next-sitemap').IConfig} */
+export default {
   siteUrl: "https://docs.uploadthing.com",
   generateRobotsTxt: true,
 };

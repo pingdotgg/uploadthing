@@ -1,4 +1,6 @@
 import type {
+  ClassListMerger,
+  ErrorMessage,
   ExtendObjectIf,
   MaybePromise,
   UploadThingError,
@@ -24,13 +26,10 @@ export interface GenerateTypedHelpersOptions {
   url?: string | URL;
 }
 
-export type UseUploadthingProps<
+export type CreateUploadthingProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-  TServerOutput = false extends TSkipPolling
-    ? inferEndpointOutput<TRouter[TEndpoint]>
-    : null,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 > = {
   /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
@@ -48,40 +47,75 @@ export type UseUploadthingProps<
    */
   onUploadProgress?: ((p: number) => void) | undefined;
   /**
-   * Skip polling for server data after upload is complete
-   * Useful if you want faster response times and don't need
-   * any data returned from the server `onUploadComplete` callback
-   * @default false
+   * This option has been moved to your serverside route config.
+   * Please opt-in by setting `awaitServerData: false` in your route
+   * config instead.
+   * ### Example
+   * ```ts
+   * f(
+   *   { image: { maxFileSize: "1MB" } },
+   *   { awaitServerData: false }
+   * ).middleware(...)
+   * ```
+   * @deprecated
+   * @see https://docs.uploadthing.com/api-reference/server#route-options
    */
-  skipPolling?: TSkipPolling | undefined;
+  skipPolling?: ErrorMessage<"This option has been moved to your serverside route config. Please use `awaitServerData` in your route config instead.">;
   /**
    * Called when the file uploads are completed
-   * - If `skipPolling` is `true`, this will be called once
-   *   all the files are uploaded to the storage provider.
-   * - If `skipPolling` is `false`, this will be called after
-   *   the serverside `onUploadComplete` callback has finished
+   * @remarks If `RouteOptions.awaitServerData` is `true`, this will be
+   * called after the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?:
-    | ((res: ClientUploadedFileData<TServerOutput>[]) => void)
+    | ((res: ClientUploadedFileData<TServerOutput>[]) => MaybePromise<void>)
     | undefined;
   /**
    * Called if the upload fails
    */
   onUploadError?:
-    | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
+    | ((e: UploadThingError<inferErrorShape<TRouter>>) => MaybePromise<void>)
     | undefined;
   /**
    * Set custom headers that'll get sent with requests
    * to your server
    */
   headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+  /**
+   * An AbortSignal to cancel the upload
+   * Calling `abort()` on the parent AbortController will cause the
+   * upload to throw an `UploadAbortedError`. In a future version
+   * the function will not throw in favor of an `onUploadAborted` callback.
+   */
+  signal?: AbortSignal | undefined;
 };
+
+/**
+ * @deprecated Use `CreateUploadthingProps` instead
+ */
+export type UseUploadThingProps<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
+> = CreateUploadthingProps<TRouter, TEndpoint, TServerOutput>;
 
 export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
-  TSkipPolling extends boolean = false,
-> = UseUploadthingProps<TRouter, TEndpoint, TSkipPolling> & {
+> = Omit<
+  CreateUploadthingProps<TRouter, TEndpoint>,
+  /**
+   * Signal is omitted, component has its own AbortController
+   * If you need to control the interruption with more granularity,
+   * create your own component and pass your own signal to
+   * `useUploadThing`
+   * @see https://github.com/pingdotgg/uploadthing/pull/838#discussion_r1624189818
+   */
+  "signal"
+> & {
+  /**
+   * Called when the upload is aborted
+   */
+  onUploadAborted?: (() => MaybePromise<void>) | undefined;
   /**
    * The endpoint from your FileRouter to use for the upload
    */
@@ -96,6 +130,24 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  config?: {
+    mode?: "manual" | "auto";
+    appendOnPaste?: boolean;
+    /**
+     * Override the default class name merger, with e.g. tailwind-merge
+     * This may be required if you're customizing the component
+     * appearance with additional TailwindCSS classes to ensure
+     * classes are sorted and applied in the correct order
+     */
+    cn?: ClassListMerger;
+  };
+  disabled?: boolean;
+  /**
+   * Callback called when files are selected or pasted.
+   *
+   * @param files - The files that were accepted.
+   */
+  onChange?: (files: File[]) => void;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

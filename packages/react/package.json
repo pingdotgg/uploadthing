@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "6.7.2",
+  "version": "7.0.3",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -18,16 +18,6 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
-      }
-    },
-    "./hooks": {
-      "import": {
-        "types": "./hooks/index.d.ts",
-        "default": "./hooks/index.js"
-      },
-      "require": {
-        "types": "./hooks/index.d.cts",
-        "default": "./hooks/index.cjs"
       }
     },
     "./native": {
@@ -53,7 +43,6 @@
   },
   "files": [
     "dist",
-    "hooks",
     "native",
     "next-ssr-plugin"
   ],
@@ -73,15 +62,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/dropzone": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "file-selector": "^0.6.0",
-    "tailwind-merge": "^2.2.1"
+    "file-selector": "0.6.0"
   },
   "peerDependencies": {
     "next": "*",
     "react": "^17.0.2 || ^18.0.0",
-    "uploadthing": "^6.10.0"
+    "uploadthing": "^7.0.0"
   },
   "peerDependenciesMeta": {
     "next": {
@@ -94,10 +81,11 @@
     "@types/react-dom": "18.3.0",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
+    "@vitest/browser": "2.1.2",
     "bunchee": "^5.2.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
-    "next": "14.2.3",
+    "next": "14.2.11",
     "react": "18.3.1",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.5.2",

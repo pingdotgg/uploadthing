@@ -7,9 +7,9 @@ import type {
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
-  semverLite,
   UploadAbortedError,
   UploadThingError,
+  warnIfInvalidPeerDependency,
 } from "@uploadthing/shared";
 import {
   genUploader,
@@ -42,130 +42,123 @@ const useRouteConfig = (
   return (maybeServerData ?? data)?.find((x) => x.slug === endpoint)?.config;
 };
 
-export const INTERNAL_uploadthingHookGen = <
+/**
+ * @internal - This is an internal function. Use `generateReactHelpers` instead.
+ * The actual hook we export for public usage is generated from `generateReactHelpers`
+ * which has the URL and FileRouter generic pre-bound.
+ */
+export function __useUploadThingInternal<
   TRouter extends FileRouter,
->(initOpts: {
-  /**
-   * URL to the UploadThing API endpoint
-   * @example URL { http://localhost:3000/api/uploadthing }
-   * @example URL { https://www.example.com/api/uploadthing }
-   */
-  url: URL;
-}) => {
-  if (!semverLite(peerDependencies.uploadthing, uploadthingClientVersion)) {
-    console.error(
-      `!!!WARNING::: @uploadthing/react requires "uploadthing@${peerDependencies.uploadthing}", but version "${uploadthingClientVersion}" is installed`,
-    );
-  }
-  const uploadFiles = genUploader<TRouter>({
-    url: initOpts.url,
+  TEndpoint extends keyof TRouter,
+>(
+  url: URL,
+  endpoint: TEndpoint,
+  opts?: UseUploadthingProps<TRouter, TEndpoint>,
+) {
+  const { uploadFiles } = genUploader<TRouter>({
+    url,
     package: "@uploadthing/react",
   });
 
-  const useUploadThing = <
-    TEndpoint extends keyof TRouter,
-    TSkipPolling extends boolean = false,
-  >(
-    endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint, TSkipPolling>,
-  ) => {
-    const [isUploading, setUploading] = useState(false);
-    const uploadProgress = useRef(0);
-    const fileProgress = useRef<Map<string, number>>(new Map());
+  const [isUploading, setUploading] = useState(false);
+  const uploadProgress = useRef(0);
+  const fileProgress = useRef<Map<File, number>>(new Map());
 
-    type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
-    type FuncInput = undefined extends InferredInput
-      ? [files: File[], input?: undefined]
-      : [files: File[], input: InferredInput];
+  type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+  type FuncInput = undefined extends InferredInput
+    ? [files: File[], input?: undefined]
+    : [files: File[], input: InferredInput];
 
-    const startUpload = useEvent(async (...args: FuncInput) => {
-      const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
-      const input = args[1];
+  const startUpload = useEvent(async (...args: FuncInput) => {
+    const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
+    const input = args[1];
 
-      setUploading(true);
-      files.forEach((f) => fileProgress.current.set(f.name, 0));
-      opts?.onUploadProgress?.(0);
-      try {
-        const res = await uploadFiles<TEndpoint, TSkipPolling>(endpoint, {
-          signal: opts?.signal,
-          headers: opts?.headers,
-          files,
-          skipPolling: opts?.skipPolling,
-          onUploadProgress: (progress) => {
-            if (!opts?.onUploadProgress) return;
-            fileProgress.current.set(progress.file, progress.progress);
-            let sum = 0;
-            fileProgress.current.forEach((p) => {
-              sum += p;
-            });
-            const averageProgress =
-              Math.floor(sum / fileProgress.current.size / 10) * 10;
-            if (averageProgress !== uploadProgress.current) {
-              opts?.onUploadProgress?.(averageProgress);
-              uploadProgress.current = averageProgress;
-            }
-          },
-          onUploadBegin({ file }) {
-            if (!opts?.onUploadBegin) return;
+    setUploading(true);
+    files.forEach((f) => fileProgress.current.set(f, 0));
+    opts?.onUploadProgress?.(0);
+    try {
+      const res = await uploadFiles<TEndpoint>(endpoint, {
+        signal: opts?.signal,
+        headers: opts?.headers,
+        files,
+        onUploadProgress: (progress) => {
+          if (!opts?.onUploadProgress) return;
+          fileProgress.current.set(progress.file, progress.progress);
+          let sum = 0;
+          fileProgress.current.forEach((p) => {
+            sum += p;
+          });
+          const averageProgress =
+            Math.floor(sum / fileProgress.current.size / 10) * 10;
+          if (averageProgress !== uploadProgress.current) {
+            opts?.onUploadProgress?.(averageProgress);
+            uploadProgress.current = averageProgress;
+          }
+        },
+        onUploadBegin({ file }) {
+          if (!opts?.onUploadBegin) return;
 
-            opts.onUploadBegin(file);
-          },
-          // @ts-expect-error - input may not be defined on the type
-          input,
-        });
+          opts.onUploadBegin(file);
+        },
+        // @ts-expect-error - input may not be defined on the type
+        input,
+      });
 
-        await opts?.onClientUploadComplete?.(res);
-        return res;
-      } catch (e) {
-        /**
-         * This is the only way to introduce this as a non-breaking change
-         * TODO: Consider refactoring API in the next major version
-         */
-        if (e instanceof UploadAbortedError) throw e;
-
-        let error: UploadThingError<inferErrorShape<TRouter>>;
-        if (e instanceof UploadThingError) {
-          error = e as UploadThingError<inferErrorShape<TRouter>>;
-        } else {
-          error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
-          console.error(
-            "Something went wrong. Please contact UploadThing and provide the following cause:",
-            error.cause instanceof Error ? error.cause.toString() : error.cause,
-          );
-        }
-        await opts?.onUploadError?.(error);
-      } finally {
-        setUploading(false);
-        fileProgress.current = new Map();
-        uploadProgress.current = 0;
-      }
-    });
-
-    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
-
-    return {
-      startUpload,
-      isUploading,
-      routeConfig,
-
+      await opts?.onClientUploadComplete?.(res);
+      return res;
+    } catch (e) {
       /**
-       * @deprecated Use `routeConfig` instead
+       * This is the only way to introduce this as a non-breaking change
+       * TODO: Consider refactoring API in the next major version
        */
-      permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: routeConfig }
-        : undefined,
-    } as const;
-  };
+      if (e instanceof UploadAbortedError) throw e;
 
-  return useUploadThing;
-};
+      let error: UploadThingError<inferErrorShape<TRouter>>;
+      if (e instanceof UploadThingError) {
+        error = e as UploadThingError<inferErrorShape<TRouter>>;
+      } else {
+        error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+        console.error(
+          "Something went wrong. Please contact UploadThing and provide the following cause:",
+          error.cause instanceof Error ? error.cause.toString() : error.cause,
+        );
+      }
+      await opts?.onUploadError?.(error);
+    } finally {
+      setUploading(false);
+      fileProgress.current = new Map();
+      uploadProgress.current = 0;
+    }
+  });
+
+  const routeConfig = useRouteConfig(url, endpoint as string);
+
+  return {
+    startUpload,
+    isUploading,
+    routeConfig,
+  } as const;
+}
 
 export const generateReactHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
+  warnIfInvalidPeerDependency(
+    "@uploadthing/react",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
+
   const url = resolveMaybeUrlArg(initOpts?.url);
 
-  const getRouteConfig = (endpoint: keyof TRouter) => {
+  function useUploadThing<TEndpoint extends keyof TRouter>(
+    endpoint: TEndpoint,
+    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+  ) {
+    return __useUploadThingInternal(url, endpoint, opts);
+  }
+
+  function getRouteConfig(endpoint: keyof TRouter) {
     const maybeServerData = globalThis.__UPLOADTHING;
     const config = maybeServerData?.find((x) => x.slug === endpoint)?.config;
     if (!config) {
@@ -174,15 +167,14 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
       );
     }
     return config;
-  };
+  }
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
-    uploadFiles: genUploader<TRouter>({
+    useUploadThing,
+    ...genUploader<TRouter>({
       url,
       package: "@uploadthing/react",
     }),
-
     /**
      * Get the config for a given endpoint outside of React context.
      * @remarks Can only be used if the NextSSRPlugin is used in the app.

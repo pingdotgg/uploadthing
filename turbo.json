@@ -5,9 +5,11 @@
   "globalEnv": [
     "CUSTOM_INFRA_URL",
     "UPLOADTHING_URL",
-    "UPLOADTHING_SECRET",
-    "UPLOADTHING_TEST_SECRET",
-    "EXPO_PUBLIC_SERVER_ORIGIN"
+    "UPLOADTHING_TOKEN",
+    "UPLOADTHING_TEST_TOKEN",
+    "EXPO_PUBLIC_SERVER_ORIGIN",
+    "UPLOADTHING_API_URL",
+    "UPLOADTHING_INGEST_URL"
   ],
   "globalPassThroughEnv": [
     "VERCEL_URL",
@@ -30,7 +32,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "interactive": true
     },
     "clean": {
       "cache": false

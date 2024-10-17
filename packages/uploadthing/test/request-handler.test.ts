@@ -1,3 +1,4 @@
+import * as Effect from "effect/Effect";
 import { describe, expect } from "vitest";
 import { z } from "zod";
 
@@ -11,8 +12,8 @@ import {
   it,
   middlewareMock,
   requestSpy,
+  testToken,
   uploadCompleteMock,
-  useBadUTApi,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -67,18 +68,17 @@ const router = {
     .onUploadComplete(uploadCompleteMock),
 };
 
-const handlers = createRouteHandler({
+const handler = createRouteHandler({
   router,
   config: {
-    uploadthingSecret: "sk_live_test123",
-    // @ts-expect-error - annoying to see error logs
-    logLevel: "silent",
+    token: testToken.encoded,
+    logLevel: "Fatal",
   },
 });
 
 describe("errors for invalid request input", () => {
   it("404s for invalid slugs", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("i-dont-exist", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -96,7 +96,7 @@ describe("errors for invalid request input", () => {
   });
 
   it("400s for invalid action type", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       // @ts-expect-error - invalid is not a valid action type
       new Request(createApiUrl("imageUploader", "invalid"), {
         method: "POST",
@@ -110,16 +110,15 @@ describe("errors for invalid request input", () => {
     expect(requestSpy).toHaveBeenCalledTimes(0);
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
-      cause: "Error: Invalid action type invalid",
-      message:
-        'Expected "upload", "failure" or "multipart-complete" but got "invalid"',
+      message: "Invalid input",
+      cause: expect.stringContaining('Expected "upload", actual "invalid"'),
     });
   });
 });
 
 describe("file route config", () => {
   it("blocks unmatched file types", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -138,7 +137,7 @@ describe("file route config", () => {
   });
 
   it("blocks for too big files", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -160,7 +159,7 @@ describe("file route config", () => {
   });
 
   it("blocks for too many files", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -183,7 +182,7 @@ describe("file route config", () => {
   });
 
   it("blocks for too few files", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withMinInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -201,11 +200,92 @@ describe("file route config", () => {
       message: "Invalid config: FileCountMismatch",
     });
   });
+
+  it("uses file type to match mime type with router config", async ({ db }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo", size: 48, type: "image/png" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo",
+        url: expect.stringContaining("x-ut-file-type=image"),
+      },
+    ]);
+  });
+
+  it("prefers file.type over file.name extension", async ({ db }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.txt", size: 48, type: "image/png" }],
+        }),
+      }),
+    );
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo.txt", size: 48, type: "image/png" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo.txt",
+        url: expect.stringContaining("x-ut-file-type=image"),
+      },
+    ]);
+  });
+
+  it("falls back to filename lookup type when there's no recognized mime type", async ({
+    db,
+  }) => {
+    const res = await handler(
+      new Request(createApiUrl("imageUploader", "upload"), {
+        method: "POST",
+        headers: baseHeaders,
+        body: JSON.stringify({
+          files: [{ name: "foo.png", size: 48, type: "" }], // mimic browser unrecognized type
+        }),
+      }),
+    );
+    expect(res.status).toBe(200);
+
+    expect(middlewareMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        files: [{ name: "foo.png", size: 48, type: "" }],
+      }),
+    );
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject([
+      {
+        name: "foo.png",
+        url: expect.stringContaining("x-ut-file-type=image"),
+      },
+    ]);
+  });
 });
 
 describe(".input()", () => {
   it("blocks when input is missing", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -228,7 +308,7 @@ describe(".input()", () => {
   });
 
   it("blocks when input doesn't match schema", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -254,7 +334,7 @@ describe(".input()", () => {
   });
 
   it("forwards input to middleware", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -276,7 +356,7 @@ describe(".input()", () => {
 
 describe(".middleware()", () => {
   it("forwards files to middleware", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -297,7 +377,7 @@ describe(".middleware()", () => {
   });
 
   it("early exits if middleware throws", async ({ db }) => {
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("middlewareThrows", "upload"), {
         method: "POST",
         headers: baseHeaders,
@@ -332,16 +412,20 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
+        fileHash: "some-md5-hash",
       }),
     });
-    const signature = await signPayload(payload, "sk_live_test123");
+    const signature = await Effect.runPromise(
+      signPayload(payload, testToken.decoded.apiKey),
+    );
 
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
@@ -363,6 +447,8 @@ describe(".onUploadComplete()", () => {
         size: 48,
         type: "image/png",
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
+        fileHash: "some-md5-hash",
       },
       metadata: {},
     });
@@ -374,15 +460,17 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
+        fileHash: "some-md5-hash",
       }),
     });
 
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
@@ -405,16 +493,20 @@ describe(".onUploadComplete()", () => {
       metadata: {},
       file: new UploadedFileData({
         url: "https://utfs.io/f/some-random-key.png",
+        appUrl: `https://utfs.io/a/${testToken.decoded.appId}/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
         type: "image/png",
         customId: null,
+        fileHash: "some-md5-hash",
       }),
     });
-    const signature = await signPayload(payload, "sk_live_badkey");
+    const signature = await Effect.runPromise(
+      signPayload(payload, "sk_live_badkey"),
+    );
 
-    const res = await handlers.POST(
+    const res = await handler(
       new Request(createApiUrl("imageUploader"), {
         method: "POST",
         headers: {
@@ -430,31 +522,5 @@ describe(".onUploadComplete()", () => {
       message: "Invalid signature",
     });
     expect(uploadCompleteMock).not.toHaveBeenCalled();
-  });
-});
-
-describe("bad request handling", () => {
-  it("throws a more descriptive error instead of ParseError for bad request", async ({
-    db,
-  }) => {
-    useBadUTApi();
-
-    const res = await handlers.POST(
-      new Request(createApiUrl("imageUploader", "upload"), {
-        method: "POST",
-        headers: baseHeaders,
-        body: JSON.stringify({
-          files: [{ name: "foo.png", size: 48, type: "image/png" }],
-        }),
-      }),
-    );
-    expect(res.status).toBe(500);
-    await expect(res.json()).resolves.toEqual({
-      message:
-        "Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
-      data: { error: "Not found" },
-      cause:
-        "BadRequestError: Request to https://api.uploadthing.com/v6/prepareUpload failed with status 404",
-    });
   });
 });

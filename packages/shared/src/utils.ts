@@ -1,5 +1,4 @@
 import * as Micro from "effect/Micro";
-import { process } from "std-env";
 
 import { lookup } from "@uploadthing/mime-types";
 
@@ -14,10 +13,14 @@ import {
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
+  FileProperties,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
   ResponseEsque,
+  RouteConfig,
+  Time,
+  TimeShort,
 } from "./types";
 
 export function isRouteArray(
@@ -37,8 +40,20 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
   return "4MB";
 }
 
+export function getDefaultRouteConfigValues(
+  type: FileRouterInputKey,
+): RouteConfig<Record<string, never>> {
+  return {
+    maxFileSize: getDefaultSizeForType(type),
+    maxFileCount: 1,
+    minFileCount: 1,
+    contentDisposition: "inline" as const,
+  };
+}
+
 /**
  * This function takes in the user's input and "upscales" it to a full config
+ * Additionally, it replaces numbers with "safe" equivalents
  *
  * Example:
  * ```ts
@@ -53,13 +68,7 @@ export const fillInputRouteConfig = (
   if (isRouteArray(routeConfig)) {
     return Micro.succeed(
       routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
-        acc[fileType] = {
-          // Apply defaults
-          maxFileSize: getDefaultSizeForType(fileType),
-          maxFileCount: 1,
-          minFileCount: 1,
-          contentDisposition: "inline" as const,
-        };
+        acc[fileType] = getDefaultRouteConfigValues(fileType);
         return acc;
       }, {}),
     );
@@ -70,37 +79,40 @@ export const fillInputRouteConfig = (
   for (const key of objectKeys(routeConfig)) {
     const value = routeConfig[key];
     if (!value) return Micro.fail(new InvalidRouteConfigError(key));
-
-    const defaultValues = {
-      maxFileSize: getDefaultSizeForType(key),
-      maxFileCount: 1,
-      minFileCount: 1,
-      contentDisposition: "inline" as const,
-    };
-
-    newConfig[key] = { ...defaultValues, ...value };
+    newConfig[key] = { ...getDefaultRouteConfigValues(key), ...value };
   }
 
-  return Micro.succeed(newConfig);
+  // we know that the config is valid, so we can stringify it and parse it back
+  // this allows us to replace numbers with "safe" equivalents
+  return Micro.succeed(
+    JSON.parse(
+      JSON.stringify(newConfig, safeNumberReplacer),
+    ) as ExpandedRouteConfig,
+  );
 };
 
-export const getTypeFromFileName = (
-  fileName: string,
+/**
+ * Match the file's type for a given allow list e.g. `image/png => image`
+ * Prefers the file's type, then falls back to a extension-based lookup
+ */
+export const matchFileType = (
+  file: FileProperties,
   allowedTypes: FileRouterInputKey[],
 ): Micro.Micro<
   FileRouterInputKey,
   UnknownFileTypeError | InvalidFileTypeError
 > => {
-  const mimeType = lookup(fileName);
+  // Type might be "" if the browser doesn't recognize the mime type
+  const mimeType = file.type || lookup(file.name);
   if (!mimeType) {
     if (allowedTypes.includes("blob")) return Micro.succeed("blob");
-    return Micro.fail(new UnknownFileTypeError(fileName));
+    return Micro.fail(new UnknownFileTypeError(file.name));
   }
 
   // If the user has specified a specific mime type, use that
   if (allowedTypes.some((type) => type.includes("/"))) {
-    if (allowedTypes.includes(mimeType)) {
-      return Micro.succeed(mimeType);
+    if (allowedTypes.includes(mimeType as FileRouterInputKey)) {
+      return Micro.succeed(mimeType as FileRouterInputKey);
     }
   }
 
@@ -116,20 +128,12 @@ export const getTypeFromFileName = (
     if (allowedTypes.includes("blob")) {
       return Micro.succeed("blob");
     } else {
-      return Micro.fail(new InvalidFileTypeError(type, fileName));
+      return Micro.fail(new InvalidFileTypeError(type, file.name));
     }
   }
 
   return Micro.succeed(type);
 };
-
-export function generateUploadThingURL(path: `/${string}`) {
-  let host = "https://api.uploadthing.com";
-  if (process.env.CUSTOM_INFRA_URL) {
-    host = process.env.CUSTOM_INFRA_URL;
-  }
-  return `${host}${path}`;
-}
 
 export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
@@ -199,6 +203,14 @@ export function asArray<T>(val: T | T[]): T[] {
   return Array.isArray(val) ? val : [val];
 }
 
+export function filterDefinedObjectValues<T>(
+  obj: Record<string, T | null | undefined>,
+): Record<string, T> {
+  return Object.fromEntries(
+    Object.entries(obj).filter((pair): pair is [string, T] => pair[1] != null),
+  );
+}
+
 /** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,
@@ -244,6 +256,31 @@ export function semverLite(required: string, toCheck: string) {
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
 }
 
+export function warnIfInvalidPeerDependency(
+  pkg: string,
+  required: string,
+  toCheck: string,
+) {
+  if (!semverLite(required, toCheck)) {
+    console.warn(
+      `!!!WARNING::: ${pkg} requires "uploadthing@${required}", but version "${toCheck}" is installed`,
+    );
+  }
+}
+
+export const getRequestUrl = (req: Request) =>
+  Micro.gen(function* () {
+    const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+    const proto = req.headers.get("x-forwarded-proto") ?? "https";
+    const protocol = proto.endsWith(":") ? proto : `${proto}:`;
+    const url = yield* Micro.try({
+      try: () => new URL(req.url, `${protocol}//${host}`),
+      catch: () => new InvalidURLError(req.url),
+    });
+    url.search = "";
+    return url;
+  });
+
 export const getFullApiUrl = (
   maybeUrl?: string,
 ): Micro.Micro<URL, InvalidURLError> =>
@@ -275,4 +312,42 @@ export const resolveMaybeUrlArg = (maybeUrl: string | URL | undefined): URL => {
   return maybeUrl instanceof URL
     ? maybeUrl
     : Micro.runSync(getFullApiUrl(maybeUrl));
+};
+
+export function parseTimeToSeconds(time: Time) {
+  if (typeof time === "number") return time;
+
+  const match = time.split(/(\d+)/).filter(Boolean);
+  const num = Number(match[0]);
+  const unit = (match[1] ?? "s").trim().slice(0, 1) as TimeShort;
+
+  const multiplier = {
+    s: 1,
+    m: 60,
+    h: 3600,
+    d: 86400,
+  }[unit];
+
+  return num * multiplier;
+}
+
+/**
+ * Replacer for JSON.stringify that will replace numbers that cannot be
+ * serialized to JSON with "reasonable equivalents".
+ *
+ * Infinity and -Infinity are replaced by MAX_SAFE_INTEGER and MIN_SAFE_INTEGER
+ * NaN is replaced by 0
+ *
+ */
+export const safeNumberReplacer = (_: string, value: unknown) => {
+  if (typeof value !== "number") return value;
+  if (
+    Number.isSafeInteger(value) ||
+    (value <= Number.MAX_SAFE_INTEGER && value >= Number.MIN_SAFE_INTEGER)
+  ) {
+    return value;
+  }
+  if (value === Infinity) return Number.MAX_SAFE_INTEGER;
+  if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
+  if (Number.isNaN(value)) return 0;
 };

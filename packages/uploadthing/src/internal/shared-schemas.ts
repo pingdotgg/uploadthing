@@ -1,10 +1,45 @@
 import * as S from "@effect/schema/Schema";
 
-import type { FileRouterInputKey, Json } from "@uploadthing/shared";
+import type { Json } from "@uploadthing/shared";
 import { ValidACLs, ValidContentDispositions } from "@uploadthing/shared";
 
 export const ContentDispositionSchema = S.Literal(...ValidContentDispositions);
 export const ACLSchema = S.Literal(...ValidACLs);
+
+/**
+ * Valid options for the `?actionType` query param
+ */
+export const ActionType = S.Literal("upload");
+
+/**
+ * Valid options for the `uploadthing-hook` header
+ * for requests coming from UT server
+ */
+export const UploadThingHook = S.Literal("callback", "error");
+
+/**
+ * =============================================================================
+ * =========================== Configuration ===================================
+ * =============================================================================
+ */
+const DecodeString = S.transform(S.Uint8ArrayFromSelf, S.String, {
+  decode: (data) => new TextDecoder().decode(data),
+  encode: (data) => new TextEncoder().encode(data),
+});
+
+export const ParsedToken = S.Struct({
+  apiKey: S.String.pipe(S.startsWith("sk_")),
+  appId: S.String,
+  regions: S.NonEmptyArray(S.String),
+  ingestHost: S.String.pipe(
+    S.optionalWith({ default: () => "ingest.uploadthing.com" }),
+  ),
+});
+
+export const UploadThingToken = S.Uint8ArrayFromBase64.pipe(
+  S.compose(DecodeString),
+  S.compose(S.parseJson(ParsedToken)),
+);
 
 /**
  * =============================================================================
@@ -19,6 +54,7 @@ export class FileUploadData extends S.Class<FileUploadData>("FileUploadData")({
   name: S.String,
   size: S.Number,
   type: S.String,
+  lastModified: S.Number.pipe(S.optional),
 }) {}
 
 /**
@@ -31,13 +67,19 @@ export class FileUploadDataWithCustomId extends FileUploadData.extend<FileUpload
 }) {}
 
 /**
- * When files are uploaded, we get back a key and a URL for the file
+ * When files are uploaded, we get back
+ * - a key
+ * - a direct URL for the file
+ * - an app-specific URL for the file (useful for scoping eg. for optimization allowed origins)
+ * - the hash (md5-hex) of the uploaded file's contents
  */
 export class UploadedFileData extends FileUploadDataWithCustomId.extend<UploadedFileData>(
   "UploadedFileData",
 )({
   key: S.String,
   url: S.String,
+  appUrl: S.String,
+  fileHash: S.String,
 }) {}
 
 /**
@@ -56,67 +98,33 @@ export interface ClientUploadedFileData<T> extends UploadedFileData {
  * =============================================================================
  */
 
-export class PresignedBase extends S.Class<PresignedBase>(
-  "PresignedBaseSchema",
-)({
-  key: S.String,
-  fileName: S.String,
-  fileType: S.String as S.Schema<FileRouterInputKey>,
-  fileUrl: S.String,
-  pollingJwt: S.String,
-  pollingUrl: S.String,
-  contentDisposition: ContentDispositionSchema,
-  customId: S.NullOr(S.String),
-}) {}
-
-export class MPUResponse extends PresignedBase.extend<MPUResponse>(
-  "MPUResponseSchema",
-)({
-  urls: S.Array(S.String),
-  uploadId: S.String,
-  chunkSize: S.Number,
-  chunkCount: S.Number,
-}) {}
-
-export class PSPResponse extends PresignedBase.extend<PSPResponse>(
-  "PSPResponseSchema",
+export class NewPresignedUrl extends S.Class<NewPresignedUrl>(
+  "NewPresignedUrl",
 )({
   url: S.String,
-  fields: S.Record(S.String, S.String),
+  key: S.String,
+  customId: S.NullOr(S.String),
+  name: S.String,
 }) {}
 
-export const PresignedURLResponse = S.Array(S.Union(PSPResponse, MPUResponse));
-
-export class PollUploadResponse extends S.Class<PollUploadResponse>(
-  "PollUploadResponse",
+export class MetadataFetchStreamPart extends S.Class<MetadataFetchStreamPart>(
+  "MetadataFetchStreamPart",
 )({
-  status: S.String,
-  fileData: S.optional(
-    S.Struct({
-      fileKey: S.NullOr(S.String),
-      fileName: S.String,
-      fileSize: S.Number,
-      fileType: S.String,
-      metadata: S.NullOr(S.String),
-      customId: S.NullOr(S.String),
-
-      callbackUrl: S.optional(S.String),
-      callbackSlug: S.optional(S.String),
-    }),
-  ),
+  payload: S.String,
+  signature: S.String,
+  hook: UploadThingHook,
 }) {}
 
-export class FailureCallbackResponse extends S.Class<FailureCallbackResponse>(
-  "FailureCallbackResponse",
+export class MetadataFetchResponse extends S.Class<MetadataFetchResponse>(
+  "MetadataFetchResponse",
 )({
-  success: S.Boolean,
-  message: S.optional(S.String),
+  ok: S.Boolean,
 }) {}
 
-export class ServerCallbackPostResponse extends S.Class<ServerCallbackPostResponse>(
-  "ServerCallbackPostResponse",
+export class CallbackResultResponse extends S.Class<CallbackResultResponse>(
+  "CallbackResultResponse",
 )({
-  status: S.String,
+  ok: S.Boolean,
 }) {}
 
 /**
@@ -130,26 +138,4 @@ export class UploadActionPayload extends S.Class<UploadActionPayload>(
 )({
   files: S.Array(FileUploadData),
   input: S.Unknown as S.Schema<Json>,
-}) {}
-
-export class FailureActionPayload extends S.Class<FailureActionPayload>(
-  "FailureActionPayload",
-)({
-  fileKey: S.String,
-  uploadId: S.NullOr(S.String),
-  storageProviderError: S.optional(S.String),
-  fileName: S.String,
-}) {}
-
-export class MultipartCompleteActionPayload extends S.Class<MultipartCompleteActionPayload>(
-  "MultipartCompleteActionPayload",
-)({
-  fileKey: S.String,
-  uploadId: S.String,
-  etags: S.Array(
-    S.Struct({
-      tag: S.String,
-      partNumber: S.Number,
-    }),
-  ),
 }) {}

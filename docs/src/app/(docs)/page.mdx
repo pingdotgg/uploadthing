@@ -1,0 +1,47 @@
+import { HeroPattern } from "@/components/HeroPattern";
+import {
+  BackendAdapters,
+  Frameworks,
+  FrontendLibraries,
+} from "@/components/Libraries";
+import { docsMetadata } from "@/lib/utils";
+
+export const metadata = docsMetadata({
+  title: "UploadThing Docs",
+  description: "Docs for the best file uploader to date",
+  category: "Introduction",
+});
+
+export const sections = [
+  { title: "Frameworks", id: "frameworks" },
+  { title: "Backend Adapters", id: "backend-adapters" },
+  { title: "Frontend Libraries", id: "frontend-libraries" },
+];
+
+<HeroPattern />
+
+# File Uploads For Developers
+
+UploadThing is the easiest way to add file uploads to your full stack TypeScript
+application. Many services have tried to build a "better S3", but in our
+opinion, none found the right compromise of ownership, flexibility and safety.
+
+<div className="not-prose mb-16 mt-6 flex gap-3">
+  <Button href="https://uploadthing.com/dashboard" arrow="right">
+    <>Get Started</>
+  </Button>
+  <Button href="/" variant="outline">
+    <>Learn More</>
+  </Button>
+</div>
+
+## Getting started {{ anchor: false }}
+
+To get started, create a new application on the
+[UploadThing Dashboard](https://uploadthing.com/dashboard/new) and grab an API
+key from the API Keys tab. Then select your framework to learn how to integrate
+UploadThing in your application in minutes. {{ className: 'lead' }}
+
+<Frameworks />
+<BackendAdapters />
+<FrontendLibraries />

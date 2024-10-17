@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.2.10",
+  "version": "0.3.0",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -17,6 +17,56 @@
       "require": {
         "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
+      }
+    },
+    "./application": {
+      "import": {
+        "types": "./dist/application.d.ts",
+        "default": "./dist/application.js"
+      },
+      "require": {
+        "types": "./dist/application.d.cts",
+        "default": "./dist/application.cjs"
+      }
+    },
+    "./audio": {
+      "import": {
+        "types": "./dist/audio.d.ts",
+        "default": "./dist/audio.js"
+      },
+      "require": {
+        "types": "./dist/audio.d.cts",
+        "default": "./dist/audio.cjs"
+      }
+    },
+    "./image": {
+      "import": {
+        "types": "./dist/image.d.ts",
+        "default": "./dist/image.js"
+      },
+      "require": {
+        "types": "./dist/image.d.cts",
+        "default": "./dist/image.cjs"
+      }
+    },
+    "./text": {
+      "import": {
+        "types": "./dist/text.d.ts",
+        "default": "./dist/text.js"
+      },
+      "require": {
+        "types": "./dist/text.d.cts",
+        "default": "./dist/text.cjs"
+      }
+    },
+    "./video": {
+      "import": {
+        "types": "./dist/video.d.ts",
+        "default": "./dist/video.js"
+      },
+      "require": {
+        "types": "./dist/video.d.cts",
+        "default": "./dist/video.cjs"
       }
     }
   },
