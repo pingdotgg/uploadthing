@@ -2,8 +2,8 @@ import "dotenv/config";
 
 import { createServer } from "node:http";
 import {
+  FetchHttpClient,
   Headers,
-  HttpClient,
   HttpMiddleware,
   HttpRouter,
   HttpServer,
@@ -58,7 +58,7 @@ const app = router.pipe(
   cors,
   HttpServer.serve(HttpMiddleware.logger),
   HttpServer.withLogAddress,
-  Layer.provide(HttpClient.layer),
+  Layer.provide(FetchHttpClient.layer),
 );
 
 const Port = Config.integer("PORT").pipe(Config.withDefault(3000));

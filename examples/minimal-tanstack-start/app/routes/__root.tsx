@@ -6,7 +6,6 @@ import {
 } from "@tanstack/react-router";
 import { Body, Head, Html, Meta, Scripts } from "@tanstack/start";
 
-// @ts-expect-error
 import uploadthingCss from "@uploadthing/react/styles.css?url";
 
 export const Route = createRootRoute({

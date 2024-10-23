@@ -3,7 +3,8 @@
 "@uploadthing/shared": patch
 "@uploadthing/solid": patch
 "@uploadthing/svelte": patch
+"uploadthing": patch
 "@uploadthing/vue": patch
 ---
 
-chore: remove internal dropzone package to prevent peer dependency conflicts between package managers
+chore: bump internal effect dependencies (#1005, #1009)

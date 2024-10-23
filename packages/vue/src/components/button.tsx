@@ -30,6 +30,7 @@ export type ButtonStyleFieldCallbackArgs = {
   isUploading: boolean;
   uploadProgress: number;
   fileTypes: string[];
+  files: File[];
 };
 
 export type ButtonAppearance = {
@@ -199,6 +200,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             isUploading: state.value === "uploading",
             uploadProgress: uploadProgress.value,
             fileTypes: permittedFileTypes.value.fileTypes,
+            files: files.value,
           }) as ButtonStyleFieldCallbackArgs,
       );
 

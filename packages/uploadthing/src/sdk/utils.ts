@@ -1,8 +1,4 @@
-import {
-  HttpClient,
-  HttpClientRequest,
-  HttpClientResponse,
-} from "@effect/platform";
+import { HttpClient, HttpClientRequest } from "@effect/platform";
 import * as Effect from "effect/Effect";
 
 import {
@@ -106,11 +102,14 @@ export const downloadFiles = (
           name = url.pathname.split("/").pop() ?? "unknown-filename",
           customId = undefined,
         } = isObject(_url) ? _url : {};
+        const httpClient = (yield* HttpClient.HttpClient).pipe(
+          HttpClient.filterStatusOk,
+        );
 
         const arrayBuffer = yield* HttpClientRequest.get(url).pipe(
           HttpClientRequest.modify({ headers: {} }),
-          HttpClient.filterStatusOk(yield* HttpClient.HttpClient),
-          HttpClientResponse.arrayBuffer,
+          httpClient.execute,
+          Effect.flatMap((_) => _.arrayBuffer),
           Effect.mapError((error) => {
             downloadErrors[idx] = UploadThingError.toObject(
               new UploadThingError({
@@ -121,6 +120,7 @@ export const downloadFiles = (
             );
             return Effect.succeed(undefined);
           }),
+          Effect.scoped,
         );
 
         return new UTFile([arrayBuffer], name, {

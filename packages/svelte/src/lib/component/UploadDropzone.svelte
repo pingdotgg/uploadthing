@@ -40,6 +40,7 @@
     uploadProgress: number;
     fileTypes: string[];
     isDragActive: boolean;
+    files: File[];
   };
 
   type UploadDropzoneAppearance = {
@@ -185,6 +186,7 @@
     isUploading: $isUploading,
     ready,
     uploadProgress,
+    files,
   } satisfies DropzoneStyleFieldCallbackArgs;
 
   $: state = (() => {
