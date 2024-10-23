@@ -32,6 +32,7 @@ type ButtonStyleFieldCallbackArgs = {
   isUploading: boolean;
   uploadProgress: number;
   fileTypes: string[];
+  files: File[];
 };
 
 type ButtonAppearance = {
@@ -218,12 +219,17 @@ export function UploadButton<
     if (mode === "auto") uploadFiles(files);
   });
 
-  const styleFieldArg = {
-    ready: state !== "readying",
-    isUploading: state === "uploading",
-    uploadProgress,
-    fileTypes,
-  } as ButtonStyleFieldCallbackArgs;
+  const styleFieldArg = useMemo(
+    () =>
+      ({
+        ready: state !== "readying",
+        isUploading: state === "uploading",
+        uploadProgress,
+        fileTypes,
+        files,
+      }) as ButtonStyleFieldCallbackArgs,
+    [fileTypes, files, state, uploadProgress],
+  );
 
   const renderButton = () => {
     const customContent = contentFieldToContent(
