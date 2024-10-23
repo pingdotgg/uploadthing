@@ -260,7 +260,7 @@ export function Root<
     if (mode === "auto") void uploadFiles(filesToUpload);
   });
 
-  const primitiveValues: PrimitiveContextValues = {
+  const primitiveValues = useMemo<PrimitiveContextValues>(() => ({
     files,
     setFiles: (files) => {
       setFiles(files);
@@ -289,7 +289,18 @@ export function Root<
       fileInputRef,
     },
     routeConfig,
-  };
+  }), [
+    files,
+    setFiles,
+    uploadFiles,
+    uploadProgress,
+    state,
+    accept,
+    fileTypes,
+    mode,
+    multiple,
+    routeConfig,
+  ]);
 
   return (
     <PrimitiveContext.Provider value={primitiveValues}>
