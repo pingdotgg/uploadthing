@@ -525,6 +525,10 @@ import type { OurFileRouter } from "~/server/uploadthing";
 export const UT = generateUploadPrimitives<OurFileRouter>();
 ```
 
+### Usage
+
+All components accept a child function which allows you to grab any piece of internal state. This includes `files`, `state`, `dropzone` state, and many more.
+
 ### Example of Dropzone
 
 <Note>The `dropzone` parameter will only be defined from within children of the `Dropzone` component.</Note>
@@ -532,7 +536,7 @@ export const UT = generateUploadPrimitives<OurFileRouter>();
 ```jsx
 <UT.Root endpoint="mockRoute">
   <UT.Dropzone>
-    {({ dropzone, state }) => (
+    {({ state }) => (
       <div>
         <p>Drag and drop</p>
         <UT.Button as="button">
