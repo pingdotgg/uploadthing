@@ -24,6 +24,7 @@ type DropzoneStyleFieldCallbackArgs = {
   uploadProgress: number;
   fileTypes: string[];
   isDragActive: boolean;
+  files: File[];
 };
 
 type DropzoneAppearance = {
@@ -108,22 +109,14 @@ export function UploadDropzone<
         onFilesDropped={onDrop}
         disabled={__internal_dropzone_disabled}
       >
-        {({
-          files,
-          fileTypes,
-          dropzone,
-          isUploading,
-          ready,
-          uploadProgress,
-          state,
-          options,
-        }) => {
+        {({ files, fileTypes, dropzone, uploadProgress, state, options }) => {
           const styleFieldArg = {
             fileTypes,
             isDragActive: !!dropzone?.isDragActive,
-            isUploading,
-            ready,
+            isUploading: state === "uploading",
+            ready: state !== "readying",
             uploadProgress,
+            files,
           } as DropzoneStyleFieldCallbackArgs;
 
           const getUploadButtonContents = () => {
@@ -138,7 +131,7 @@ export function UploadDropzone<
                 return "Loading...";
               }
               case "uploading": {
-                if (uploadProgress === 100) return <Spinner />;
+                if (uploadProgress >= 100) return <Spinner />;
                 return (
                   <span className="z-50">
                     <span className="block group-hover:hidden">
@@ -206,7 +199,7 @@ export function UploadDropzone<
               <label
                 className={cn(
                   "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
-                  ready ? "text-blue-600" : "text-gray-500",
+                  state === "ready" ? "text-blue-600" : "text-gray-500",
                   styleFieldToClassName(appearance?.label, styleFieldArg),
                 )}
                 style={styleFieldToCssObject(appearance?.label, styleFieldArg)}
@@ -214,7 +207,7 @@ export function UploadDropzone<
                 data-state={state}
               >
                 {contentFieldToContent(content?.label, styleFieldArg) ??
-                  (ready
+                  (state === "ready"
                     ? `Choose ${options.multiple ? "file(s)" : "a file"} or drag and drop`
                     : `Loading...`)}
               </label>

@@ -63,6 +63,12 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 export const generateUploadPrimitives = <TRouter extends FileRouter>(
   opts?: GenerateTypedHelpersOptions,
 ) => {
+  warnIfInvalidPeerDependency(
+    "@uploadthing/react",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
+
   const url = resolveMaybeUrlArg(opts?.url);
 
   const TypedUploadRoot = <TEndpoint extends keyof TRouter>(

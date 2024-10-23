@@ -23,16 +23,12 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../../types";
-import { INTERNAL_uploadthingHookGen } from "../../useUploadThing";
+import { __useUploadThingInternal } from "../../useUploadThing";
 import { useControllableState } from "../../utils/useControllableState";
 import { usePaste } from "../../utils/usePaste";
 
 type PrimitiveContextValues = {
   state: "readying" | "ready" | "uploading" | "disabled";
-
-  disabled: boolean;
-  isUploading: boolean;
-  ready: boolean;
 
   files: File[];
   fileTypes: FileRouterInputKey[];
@@ -177,10 +173,6 @@ export function Root<
   const { mode = "auto", appendOnPaste = false } = props.config ?? {};
   const acRef = useRef(new AbortController());
 
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg(props.url),
-  });
-
   const focusElementRef = useRef<HTMLElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadProgress, setUploadProgress] = useState(
@@ -192,7 +184,8 @@ export function Root<
     defaultProp: [],
   });
 
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
+  const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
+    resolveMaybeUrlArg(props.url),
     props.endpoint,
     {
       signal: acRef.current.signal,
@@ -231,14 +224,18 @@ export function Root<
 
   const { fileTypes, multiple } = generatePermittedFileTypes(routeConfig);
 
-  const disabled = fileTypes.length === 0 || !!props.disabled;
-
   const accept = generateMimeTypes(fileTypes).join(", ");
 
   const state = (() => {
     if (props.__internal_state) return props.__internal_state;
-    if (disabled) return "disabled";
-    if (!disabled && !isUploading) return "ready";
+
+    const ready =
+      props.__internal_ready ??
+      (props.__internal_state === "ready" || fileTypes.length > 0);
+
+    if (fileTypes.length === 0 || !!props.disabled) return "disabled";
+    if (!ready) return "readying";
+    if (ready && !isUploading) return "ready";
     return "uploading";
   })();
 
@@ -263,10 +260,6 @@ export function Root<
     if (mode === "auto") void uploadFiles(filesToUpload);
   });
 
-  const ready =
-    props.__internal_ready ??
-    (props.__internal_state === "ready" || fileTypes.length > 0);
-
   const primitiveValues: PrimitiveContextValues = {
     files,
     setFiles: (files) => {
@@ -288,7 +281,6 @@ export function Root<
     },
     uploadProgress,
     state,
-    disabled,
     accept,
     fileTypes,
     options: { mode, multiple },
@@ -297,8 +289,6 @@ export function Root<
       fileInputRef,
     },
     routeConfig,
-    isUploading: state === "uploading",
-    ready,
   };
 
   return (
