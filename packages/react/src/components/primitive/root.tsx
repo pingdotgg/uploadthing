@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -260,47 +261,50 @@ export function Root<
     if (mode === "auto") void uploadFiles(filesToUpload);
   });
 
-  const primitiveValues = useMemo<PrimitiveContextValues>(() => ({
-    files,
-    setFiles: (files) => {
-      setFiles(files);
-      props.onChange?.(files);
+  const primitiveValues = useMemo<PrimitiveContextValues>(
+    () => ({
+      files,
+      setFiles: (files) => {
+        setFiles(files);
+        props.onChange?.(files);
 
-      if (files.length <= 0) {
-        if (fileInputRef.current) fileInputRef.current.value = "";
-        return;
-      }
-      if (mode === "manual") return;
+        if (files.length <= 0) {
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          return;
+        }
+        if (mode === "manual") return;
 
-      void uploadFiles(files);
-    },
-    uploadFiles: () => void uploadFiles(files),
-    abortUpload: () => {
-      acRef.current.abort();
-      acRef.current = new AbortController();
-    },
-    uploadProgress,
-    state,
-    accept,
-    fileTypes,
-    options: { mode, multiple },
-    refs: {
-      focusElementRef,
-      fileInputRef,
-    },
-    routeConfig,
-  }), [
-    files,
-    setFiles,
-    uploadFiles,
-    uploadProgress,
-    state,
-    accept,
-    fileTypes,
-    mode,
-    multiple,
-    routeConfig,
-  ]);
+        void uploadFiles(files);
+      },
+      uploadFiles: () => void uploadFiles(files),
+      abortUpload: () => {
+        acRef.current.abort();
+        acRef.current = new AbortController();
+      },
+      uploadProgress,
+      state,
+      accept,
+      fileTypes,
+      options: { mode, multiple },
+      refs: {
+        focusElementRef,
+        fileInputRef,
+      },
+      routeConfig,
+    }),
+    [
+      files,
+      setFiles,
+      uploadFiles,
+      uploadProgress,
+      state,
+      accept,
+      fileTypes,
+      mode,
+      multiple,
+      routeConfig,
+    ],
+  );
 
   return (
     <PrimitiveContext.Provider value={primitiveValues}>
