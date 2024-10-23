@@ -35,6 +35,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       {...props}
       data-state={state}
       aria-disabled={state === "disabled"}
+      disabled={state === "disabled"}
       onClick={(e) => {
         if (state === "disabled") return;
 
