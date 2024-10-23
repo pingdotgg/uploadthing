@@ -528,3 +528,51 @@ type UploadDropzoneProps = {
 <d.CustomContent1 />
 <d.CustomContent2 />
 <d.CustomContent3 />
+
+
+## Unstyled Primitive Components
+
+These components allow you to bring your own styling solution while not having to implement any of the internals. They accept any normal HTML props and can be assigned specific HTML tags through the `as` prop.
+
+### Setup
+
+```ts {{ title: 'src/utils/uploadthing.ts' }}
+import { generateUploadPrimitives } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const UT = generateUploadPrimitives<OurFileRouter>();
+```
+
+### Example of Dropzone
+
+<Note>The `dropzone` parameter will only be defined from within children of the `Dropzone` component.</Note>
+
+```jsx
+<UT.Root endpoint="mockRoute">
+  <UT.Dropzone>
+    {({ dropzone, state }) => (
+      <div>
+        <p>Drag and drop</p>
+        <UT.Button as="button">
+          {state === "uploading" ? "Uploading" : "Upload file"}
+        </UT.Button>
+        <UT.AllowedContent
+          as="p"
+          style={{ fontSize: 12, width: "fit-content" }}
+        />
+      </div>
+    )}
+  </UT.Dropzone>
+</UT.Root>
+```
+
+### Example of Button
+
+```jsx
+<UT.Root endpoint="mockRoute">
+  <UT.Button>
+    {({ state }) => state === "uploading" ? "Uploading" : "Upload file"}
+  </UT.Button>
+</UT.Root>
+```
