@@ -26,7 +26,9 @@ function ClearButtonFn<
       {...props}
       data-state={state}
       aria-disabled={state === "disabled"}
+      disabled={state === "disabled"}
       onClick={(e) => {
+        if (state === "disabled") return;
         onClick?.(e);
         setFiles([]);
       }}
