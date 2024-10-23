@@ -220,12 +220,12 @@ export const OurUploadButton = () => (
       The endpoint arg may be a string literal or a callback function:
 
       ```ts
-      await uploadFiles((rr) => rr.routeEndpoint, { ... })
+      await uploadFiles((routeRegistry) => routeRegistry.routeEndpoint, { ... })
       ```
 
-      This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
-      your backend file route definition, which is not possible when using a string
-      literal parameter.
+      Using a callback function allows `Go to Defintion` on `routeEndpoint` to take
+      you straight to your backend file route definition, which is not possible when
+      using a string literal parameter.
 
     </Note>
 
@@ -376,12 +376,12 @@ export const OurUploadDropzone = () => (
       The endpoint arg may be a string literal or a callback function:
 
       ```ts
-      await uploadFiles((rr) => rr.routeEndpoint, { ... })
+      await uploadFiles((routeRegistry) => routeRegistry.routeEndpoint, { ... })
       ```
 
-      This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
-      your backend file route definition, which is not possible when using a string
-      literal parameter.
+      Using a callback function allows `Go to Defintion` on `routeEndpoint` to take
+      you straight to your backend file route definition, which is not possible when
+      using a string literal parameter.
 
     </Note>
 
@@ -501,15 +501,16 @@ The first parameter is the route endpoint to upload to, and the second parameter
 is an options object:
 
 <Note>
-  The endpoint arg may be a string literal or a callback function:
+
+The endpoint arg may be a string literal or a callback function:
 
 ```ts
-useUploadThing((rr) => rr.routeEndpoint, { ... })
+useUploadThing((routeRegistry) => routeRegistry.routeEndpoint, { ... })
 ```
 
-This way allows `Go to Defintion` on `routeEndpoint` to take you straight to
-your backend file route definition, which is not possible when using a string
-literal parameter.
+Using a callback function allows `Go to Defintion` on `routeEndpoint` to take
+you straight to your backend file route definition, which is not possible when
+using a string literal parameter.
 
 </Note>
 

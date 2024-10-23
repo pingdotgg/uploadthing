@@ -40,7 +40,7 @@ export default function Home() {
         /**
          * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
          */
-        endpoint={(rr) => rr.videoAndImage}
+        endpoint={(routeRegistry) => routeRegistry.videoAndImage}
         onUploadBegin={(fileName) => {
           console.log("onUploadBegin", fileName);
         }}

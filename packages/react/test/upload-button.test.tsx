@@ -118,7 +118,9 @@ describe("UploadButton - basic", () => {
   });
 
   it("fetches and displays route config (with callback endpoint arg)", async () => {
-    const utils = render(<UploadButton endpoint={(rr) => rr.image} />);
+    const utils = render(
+      <UploadButton endpoint={(routeRegistry) => routeRegistry.image} />,
+    );
     const label = utils.container.querySelector("label");
 
     if (!label) throw new Error("No label found");

@@ -16,19 +16,19 @@ All places that accepts the `endpoint` argument now additionally accepts a funct
 ```ts
 // uploadthing/client#uploadFiles
 uploadFiles(
-    (rr) => rr.videoAndImage,
+    (routeRegistry) => routeRegistry.videoAndImage,
     { ... }
 )
 
 // uploadthing/react#useUploadThing
 useUploadThing(
-    (rr) => rr.videoAndImage,
+    (routeRegistry) => routeRegistry.videoAndImage,
     { ... }
 )
 
 // uploadthing/react#UploadButton
 <UploadButton
-    endpoint={(rr) => rr.videoAndImage}
+    endpoint={(routeRegistry) => routeRegistry.videoAndImage}
     { ... }
 />
 ```

@@ -122,7 +122,7 @@ describe("uploadFiles", () => {
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
-      uploadFiles((rr) => rr.foo, { files: [file] }),
+      uploadFiles((routeRegistry) => routeRegistry.foo, { files: [file] }),
     ).resolves.toEqual([
       {
         name: "foo.txt",
@@ -163,7 +163,7 @@ describe("uploadFiles", () => {
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
-      uploadFiles((rr) => rr.foo, {
+      uploadFiles((routeRegistry) => routeRegistry.foo, {
         files: [file],
         headers: {
           authorization: "Bearer my-auth-token",

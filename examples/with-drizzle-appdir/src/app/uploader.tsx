@@ -49,7 +49,7 @@ export function Uploader() {
         /**
          * @see https://docs.uploadthing.com/api-reference/react#uploaddropzone
          */
-        endpoint={(rr) => rr.videoAndImage}
+        endpoint={(routeRegistry) => routeRegistry.videoAndImage}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");

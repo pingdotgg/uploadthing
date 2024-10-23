@@ -152,13 +152,17 @@ it("infers output properly", () => {
 
 it("gets go-to-definition proxy as endpoint arg", () => {
   doNotExecute(async () => {
-    const { startUpload } = useUploadThing((rr) => rr.withFooInput);
+    const { startUpload } = useUploadThing(
+      (routeRegistry) => routeRegistry.withFooInput,
+    );
     type _Input = Parameters<typeof startUpload>[1];
     expectTypeOf<_Input>().toEqualTypeOf<{ foo: string }>();
   });
 
   doNotExecute(async () => {
-    const { startUpload } = useUploadThing((rr) => rr.exampleRoute);
+    const { startUpload } = useUploadThing(
+      (routeRegistry) => routeRegistry.exampleRoute,
+    );
     const res = await startUpload(files);
     expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[] | undefined>(res);
   });
