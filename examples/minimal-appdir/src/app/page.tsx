@@ -82,7 +82,7 @@ export default function Home() {
         }}
       >
         <UT.Dropzone style={{ marginTop: 24 }}>
-          {({ dropzone, isUploading }) => (
+          {({ dropzone, state }) => (
             <div
               style={{
                 borderWidth: 2,
@@ -99,7 +99,7 @@ export default function Home() {
                 Drag and drop
               </p>
               <UT.Button as="button">
-                {isUploading ? "Uploading" : "Upload file"}
+                {state === "uploading" ? "Uploading" : "Upload file"}
               </UT.Button>
               <UT.AllowedContent
                 as="p"
