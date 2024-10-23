@@ -1,6 +1,6 @@
-import type { Schema } from "@effect/schema/Schema";
 import type * as Config from "effect/Config";
 import type * as LogLevel from "effect/LogLevel";
+import type { Schema } from "effect/Schema";
 
 import type {
   ErrorMessage,

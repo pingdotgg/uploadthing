@@ -1,4 +1,4 @@
-import * as S from "@effect/schema/Schema";
+import * as S from "effect/Schema";
 
 import type { Json } from "@uploadthing/shared";
 import { ValidACLs, ValidContentDispositions } from "@uploadthing/shared";

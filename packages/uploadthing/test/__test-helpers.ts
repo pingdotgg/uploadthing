@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
-import * as S from "@effect/schema/Schema";
 import * as Redacted from "effect/Redacted";
+import * as S from "effect/Schema";
 import type { StrictRequest } from "msw";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";

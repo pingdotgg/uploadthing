@@ -8,12 +8,12 @@ import {
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform";
-import * as S from "@effect/schema/Schema";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Match from "effect/Match";
 import * as Redacted from "effect/Redacted";
+import * as S from "effect/Schema";
 
 import {
   fillInputRouteConfig,
