@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "7.0.2",
+  "version": "7.0.3",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -81,7 +81,7 @@
     "@types/react-dom": "18.3.0",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "@vitest/browser": "2.0.5",
+    "@vitest/browser": "2.1.2",
     "bunchee": "^5.2.1",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",

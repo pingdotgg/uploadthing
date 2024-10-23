@@ -1,9 +1,11 @@
 import Constants from "expo-constants";
 
 import { generateReactHelpers } from "@uploadthing/react/native";
-import type * as _TS_FIND_ME_1 from "@uploadthing/shared";
+import { warnIfInvalidPeerDependency } from "@uploadthing/shared";
+import { version as uploadthingClientVersion } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/internal/types";
 
+import { peerDependencies } from "../package.json";
 import { GENERATE_useDocumentUploader } from "./document-picker";
 import { GENERATE_useImageUploader } from "./image-picker";
 
@@ -23,6 +25,12 @@ export interface GenerateTypedHelpersOptions {
 export const generateReactNativeHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
+  warnIfInvalidPeerDependency(
+    "@uploadthing/expo",
+    peerDependencies.uploadthing,
+    uploadthingClientVersion,
+  );
+
   const debuggerHost = Constants.expoConfig?.hostUri;
   let url = new URL("http://localhost:8081/api/uploadthing");
   try {
@@ -30,7 +38,7 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
       initOpts?.url ?? "/api/uploadthing",
       typeof window.location !== "undefined"
         ? window.location.origin
-        : process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`,
+        : (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`),
     );
   } catch (e) {
     // Can't throw since window.location is undefined in Metro pass

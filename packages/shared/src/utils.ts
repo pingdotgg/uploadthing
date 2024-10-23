@@ -13,10 +13,13 @@ import {
 import type {
   ContentDisposition,
   ExpandedRouteConfig,
+  FileProperties,
   FileRouterInputConfig,
   FileRouterInputKey,
   FileSize,
+  Json,
   ResponseEsque,
+  RouteConfig,
   Time,
   TimeShort,
 } from "./types";
@@ -38,6 +41,17 @@ export function getDefaultSizeForType(fileType: FileRouterInputKey): FileSize {
   return "4MB";
 }
 
+export function getDefaultRouteConfigValues(
+  type: FileRouterInputKey,
+): RouteConfig<Record<string, never>> {
+  return {
+    maxFileSize: getDefaultSizeForType(type),
+    maxFileCount: 1,
+    minFileCount: 1,
+    contentDisposition: "inline" as const,
+  };
+}
+
 /**
  * This function takes in the user's input and "upscales" it to a full config
  * Additionally, it replaces numbers with "safe" equivalents
@@ -55,13 +69,7 @@ export const fillInputRouteConfig = (
   if (isRouteArray(routeConfig)) {
     return Micro.succeed(
       routeConfig.reduce<ExpandedRouteConfig>((acc, fileType) => {
-        acc[fileType] = {
-          // Apply defaults
-          maxFileSize: getDefaultSizeForType(fileType),
-          maxFileCount: 1,
-          minFileCount: 1,
-          contentDisposition: "inline" as const,
-        };
+        acc[fileType] = getDefaultRouteConfigValues(fileType);
         return acc;
       }, {}),
     );
@@ -72,15 +80,7 @@ export const fillInputRouteConfig = (
   for (const key of objectKeys(routeConfig)) {
     const value = routeConfig[key];
     if (!value) return Micro.fail(new InvalidRouteConfigError(key));
-
-    const defaultValues = {
-      maxFileSize: getDefaultSizeForType(key),
-      maxFileCount: 1,
-      minFileCount: 1,
-      contentDisposition: "inline" as const,
-    };
-
-    newConfig[key] = { ...defaultValues, ...value };
+    newConfig[key] = { ...getDefaultRouteConfigValues(key), ...value };
   }
 
   // we know that the config is valid, so we can stringify it and parse it back
@@ -92,17 +92,22 @@ export const fillInputRouteConfig = (
   );
 };
 
-export const getTypeFromFileName = (
-  fileName: string,
+/**
+ * Match the file's type for a given allow list e.g. `image/png => image`
+ * Prefers the file's type, then falls back to a extension-based lookup
+ */
+export const matchFileType = (
+  file: FileProperties,
   allowedTypes: FileRouterInputKey[],
 ): Micro.Micro<
   FileRouterInputKey,
   UnknownFileTypeError | InvalidFileTypeError
 > => {
-  const mimeType = lookup(fileName);
+  // Type might be "" if the browser doesn't recognize the mime type
+  const mimeType = file.type || lookup(file.name);
   if (!mimeType) {
     if (allowedTypes.includes("blob")) return Micro.succeed("blob");
-    return Micro.fail(new UnknownFileTypeError(fileName));
+    return Micro.fail(new UnknownFileTypeError(file.name));
   }
 
   // If the user has specified a specific mime type, use that
@@ -124,7 +129,7 @@ export const getTypeFromFileName = (
     if (allowedTypes.includes("blob")) {
       return Micro.succeed("blob");
     } else {
-      return Micro.fail(new InvalidFileTypeError(type, fileName));
+      return Micro.fail(new InvalidFileTypeError(type, file.name));
     }
   }
 
@@ -252,6 +257,18 @@ export function semverLite(required: string, toCheck: string) {
   return rMajor === cMajor && rMinor === cMinor && rPatch === cPatch;
 }
 
+export function warnIfInvalidPeerDependency(
+  pkg: string,
+  required: string,
+  toCheck: string,
+) {
+  if (!semverLite(required, toCheck)) {
+    console.warn(
+      `!!!WARNING::: ${pkg} requires "uploadthing@${required}", but version "${toCheck}" is installed`,
+    );
+  }
+}
+
 export const getRequestUrl = (req: Request) =>
   Micro.gen(function* () {
     const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
@@ -335,3 +352,20 @@ export const safeNumberReplacer = (_: string, value: unknown) => {
   if (value === -Infinity) return Number.MIN_SAFE_INTEGER;
   if (Number.isNaN(value)) return 0;
 };
+
+export function noop() {
+  // noop
+}
+
+export function createIdentityProxy<TObj extends Record<string, unknown>>() {
+  return new Proxy(noop, {
+    get: (_, prop) => prop,
+  }) as unknown as TObj;
+}
+
+export function unwrap<T extends Json | PropertyKey, Param extends unknown[]>(
+  x: T | ((...args: Param) => T),
+  ...args: Param
+) {
+  return typeof x === "function" ? x(...args) : x;
+}

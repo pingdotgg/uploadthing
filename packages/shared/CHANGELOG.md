@@ -1,5 +1,15 @@
 # @uploadthing/shared
 
+## 7.0.3
+
+### Patch Changes
+
+- [#977](https://github.com/pingdotgg/uploadthing/pull/977) [`2afabe5`](https://github.com/pingdotgg/uploadthing/commit/2afabe59a0e6319ec469eba670b1e3e920f596ee) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: remove internal dropzone package to prevent peer dependency conflicts between package managers
+
+- [#989](https://github.com/pingdotgg/uploadthing/pull/989) [`53f4ab6`](https://github.com/pingdotgg/uploadthing/commit/53f4ab6daa5b75b31c78e6ed441e4bf2f836c5d2) Thanks [@juraj98](https://github.com/juraj98)! - fix vite monorepos sometimes complaining about `$RefreshSig$ is not a function`
+
+- [#991](https://github.com/pingdotgg/uploadthing/pull/991) [`fe83f4a`](https://github.com/pingdotgg/uploadthing/commit/fe83f4a342f2e04bf5b069613621e77ec5acbe9e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: prefer browser recognized mime type over file extension lookup when matching file's type to router config
+
 ## 7.0.2
 
 ### Patch Changes

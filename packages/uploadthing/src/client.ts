@@ -3,9 +3,10 @@ import * as Micro from "effect/Micro";
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
   asArray,
+  createIdentityProxy,
   FetchContext,
   fileSizeToBytes,
-  getTypeFromFileName,
+  matchFileType,
   objectKeys,
   resolveMaybeUrlArg,
   UploadAbortedError,
@@ -21,9 +22,11 @@ import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
   CreateUploadOptions,
+  EndpointArg,
   GenerateUploaderOptions,
   inferEndpointInput,
   NewPresignedUrl,
+  RouteRegistry,
   UploadFilesOptions,
 } from "./types";
 
@@ -51,7 +54,7 @@ export const isValidFileType = (
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
   Micro.runSync(
-    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+    matchFileType(file, objectKeys(routeConfig)).pipe(
       Micro.map((type) => file.type.includes(type)),
       Micro.orElseSucceed(() => false),
     ),
@@ -66,7 +69,7 @@ export const isValidFileSize = (
   routeConfig: ExpandedRouteConfig,
 ): boolean =>
   Micro.runSync(
-    getTypeFromFileName(file.name, objectKeys(routeConfig)).pipe(
+    matchFileType(file, objectKeys(routeConfig)).pipe(
       Micro.flatMap((type) => fileSizeToBytes(routeConfig[type]!.maxFileSize)),
       Micro.map((maxFileSize) => file.size <= maxFileSize),
       Micro.orElseSucceed(() => false),
@@ -80,11 +83,13 @@ export const isValidFileSize = (
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
 ) => {
+  const routeRegistry = createIdentityProxy<RouteRegistry<TRouter>>();
+
   const controllableUpload = async <
     TEndpoint extends keyof TRouter,
     TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
   >(
-    slug: TEndpoint,
+    slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
       CreateUploadOptions<TRouter, TEndpoint>,
       keyof GenerateUploaderOptions
@@ -98,8 +103,10 @@ export const genUploader = <TRouter extends FileRouter>(
       }
     >();
 
+    const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
+
     const utReporter = createUTReporter({
-      endpoint: String(slug),
+      endpoint: String(endpoint),
       package: initOpts.package,
       url: resolveMaybeUrlArg(initOpts?.url),
       headers: opts.headers,
@@ -239,13 +246,15 @@ export const genUploader = <TRouter extends FileRouter>(
    * and then uploads the files to UploadThing
    */
   const typedUploadFiles = <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint>,
       keyof GenerateUploaderOptions
     >,
-  ) =>
-    uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
+  ) => {
+    const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
+
+    return uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
       ...opts,
       skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
       url: resolveMaybeUrlArg(initOpts?.url),
@@ -264,6 +273,16 @@ export const genUploader = <TRouter extends FileRouter>(
         }
         throw Micro.causeSquash(exit.left);
       });
+  };
 
-  return { uploadFiles: typedUploadFiles, createUpload: controllableUpload };
+  return {
+    uploadFiles: typedUploadFiles,
+    createUpload: controllableUpload,
+    /**
+     * Identity object that can be used instead of raw strings
+     * that allows "Go to definition" in your IDE to bring you
+     * to the backend definition of a route.
+     */
+    routeRegistry,
+  };
 };

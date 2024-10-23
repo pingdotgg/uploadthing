@@ -7,6 +7,7 @@ import type {
 } from "@uploadthing/shared";
 import type {
   ClientUploadedFileData,
+  EndpointArg,
   FileRouter,
   inferEndpointInput,
   inferEndpointOutput,
@@ -67,13 +68,13 @@ export type CreateUploadthingProps<
    * called after the serverside `onUploadComplete` callback has finished
    */
   onClientUploadComplete?:
-    | ((res: ClientUploadedFileData<TServerOutput>[]) => void)
+    | ((res: ClientUploadedFileData<TServerOutput>[]) => MaybePromise<void>)
     | undefined;
   /**
    * Called if the upload fails
    */
   onUploadError?:
-    | ((e: UploadThingError<inferErrorShape<TRouter>>) => void)
+    | ((e: UploadThingError<inferErrorShape<TRouter>>) => MaybePromise<void>)
     | undefined;
   /**
    * Set custom headers that'll get sent with requests
@@ -119,7 +120,7 @@ export type UploadthingComponentProps<
   /**
    * The endpoint from your FileRouter to use for the upload
    */
-  endpoint: TEndpoint;
+  endpoint: EndpointArg<TRouter, TEndpoint>;
   /**
    * URL to the UploadThing API endpoint
    * @example "/api/uploadthing"

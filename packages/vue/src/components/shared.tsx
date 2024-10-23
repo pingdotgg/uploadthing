@@ -1,6 +1,8 @@
 import * as Vue from "vue";
 import { onMounted, onUnmounted } from "vue";
 
+import type { ClassListMerger } from "@uploadthing/shared";
+
 export const usePaste = (callback: (e: ClipboardEvent) => void) => {
   onMounted(() => {
     document.addEventListener("paste", callback);
@@ -25,6 +27,27 @@ export const Spinner = Vue.defineComponent(() => () => {
     </svg>
   );
 });
+
+export const Cancel = Vue.defineComponent(
+  (props: { cn: ClassListMerger }) => () => {
+    return (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class={props.cn(
+          "fill-none stroke-current stroke-2",
+          "hidden size-4 group-hover:block",
+        )}
+      >
+        <circle cx="12" cy="12" r="10" />
+        <path d="m4.9 4.9 14.2 14.2" />
+      </svg>
+    );
+  },
+  { props: ["cn"] },
+);
 
 export const progressWidths: Record<number, string> = {
   0: "after:w-0",

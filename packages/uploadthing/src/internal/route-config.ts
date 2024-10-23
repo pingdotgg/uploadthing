@@ -14,8 +14,8 @@ import {
   bytesToFileSize,
   fileSizeToBytes,
   fillInputRouteConfig,
-  getTypeFromFileName,
   InvalidRouteConfigError,
+  matchFileType,
   objectKeys,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -71,10 +71,7 @@ export const assertFilesMeetConfig = (
     const counts: Record<string, number> = {};
 
     for (const file of files) {
-      const type = yield* getTypeFromFileName(
-        file.name,
-        objectKeys(routeConfig),
-      );
+      const type = yield* matchFileType(file, objectKeys(routeConfig));
       counts[type] = (counts[type] ?? 0) + 1;
 
       const sizeLimit = routeConfig[type]?.maxFileSize;

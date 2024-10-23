@@ -71,6 +71,7 @@ export class FileUploadDataWithCustomId extends FileUploadData.extend<FileUpload
  * - a key
  * - a direct URL for the file
  * - an app-specific URL for the file (useful for scoping eg. for optimization allowed origins)
+ * - the hash (md5-hex) of the uploaded file's contents
  */
 export class UploadedFileData extends FileUploadDataWithCustomId.extend<UploadedFileData>(
   "UploadedFileData",
@@ -78,6 +79,7 @@ export class UploadedFileData extends FileUploadDataWithCustomId.extend<Uploaded
   key: S.String,
   url: S.String,
   appUrl: S.String,
+  fileHash: S.String,
 }) {}
 
 /**

@@ -66,8 +66,8 @@ export function createDropzone(_props: DropzoneOptions) {
         }, 300);
       }
     };
-
     window.addEventListener("focus", onWindowFocus, false);
+
     return () => {
       window.removeEventListener("focus", onWindowFocus, false);
     };
@@ -134,7 +134,6 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onDragOver = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     const hasFiles = isEventWithFiles(event);
     if (hasFiles && event.dataTransfer) {
@@ -150,7 +149,6 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
-    event.stopPropagation();
 
     const root = get(rootRef);
     // Only deactivate once the dropzone and all children have been left
@@ -164,9 +162,7 @@ export function createDropzone(_props: DropzoneOptions) {
       targets.splice(targetIdx, 1);
     }
     dragTargets = targets;
-    if (targets.length > 0) {
-      return;
-    }
+    if (targets.length > 0) return;
 
     dispatch({
       type: "setDraggedFiles",
@@ -180,23 +176,18 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const setFiles = (files: File[]) => {
     const acceptedFiles: File[] = [];
+    const { minSize, maxSize, multiple, maxFiles, onDrop } = get(props);
 
     files.forEach((file) => {
       const accepted = isFileAccepted(file, get(acceptAttr)!);
-      const sizeMatch = isValidSize(
-        file,
-        get(props).minSize,
-        get(props).maxSize,
-      );
+      const sizeMatch = isValidSize(file, minSize, maxSize);
 
       if (accepted && sizeMatch) {
         acceptedFiles.push(file);
       }
     });
 
-    if (
-      !isValidQuantity(acceptedFiles, get(props).multiple, get(props).maxFiles)
-    ) {
+    if (!isValidQuantity(acceptedFiles, multiple, maxFiles)) {
       acceptedFiles.splice(0);
     }
 
@@ -207,7 +198,7 @@ export function createDropzone(_props: DropzoneOptions) {
       },
     });
 
-    get(props).onDrop(acceptedFiles);
+    onDrop(acceptedFiles);
   };
 
   const onDropCb = (event: DropEvent) => {
@@ -218,36 +209,27 @@ export function createDropzone(_props: DropzoneOptions) {
     if (isEventWithFiles(event)) {
       Promise.resolve(fromEvent(event))
         .then((files) => {
-          if (isPropagationStopped(event)) {
-            return;
-          }
+          if (isPropagationStopped(event)) return;
           setFiles(files as File[]);
         })
         .catch(noop);
     }
-
     dispatch({ type: "reset" });
   };
 
   const openFileDialog = () => {
     const input = get(inputRef);
     if (input) {
-      dispatch({ type: "openDialog" });
       input.value = "";
       input.click();
-    } else {
-      console.warn(
-        "No input element found for file picker. Please make sure to use the `dropzoneInput` action.",
-      );
+      dispatch({ type: "openDialog" });
     }
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
     // Ignore keyboard events bubbling up the DOM tree
     const root = get(rootRef);
-    if (!root?.isEqualNode(event.target as Node)) {
-      return;
-    }
+    if (!root?.isEqualNode(event.target as Node)) return;
 
     if (isEnterOrSpace(event)) {
       event.preventDefault();
@@ -257,6 +239,9 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onInputElementClick = (event: MouseEvent) => {
     event.stopPropagation();
+    if (get(state).isFileDialogActive) {
+      event.preventDefault();
+    }
   };
 
   const onFocus = () => dispatch({ type: "focus" });
@@ -268,6 +253,18 @@ export function createDropzone(_props: DropzoneOptions) {
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
   };
 
+  const safeSetAttribute = (
+    node: HTMLElement,
+    name: string,
+    value: string | boolean | undefined,
+  ) => {
+    if (value) {
+      node.setAttribute(name, String(value));
+    } else {
+      node.removeAttribute(name);
+    }
+  };
+
   // This is a svelte action, it should be used as "use:dropzoneRoot"
   // We should be able to refactor this when svelte 5 is released to bring it more inline
   // with the rest of the dropzone implementations
@@ -275,7 +272,7 @@ export function createDropzone(_props: DropzoneOptions) {
     rootRef.set(node);
     node.setAttribute("role", "presentation");
     if (!get(props).disabled) {
-      node.setAttribute("tabIndex", "0");
+      node.setAttribute("tabindex", "0");
       node.addEventListener("keydown", onKeyDown);
       node.addEventListener("focus", onFocus);
       node.addEventListener("blur", onBlur);
@@ -308,11 +305,11 @@ export function createDropzone(_props: DropzoneOptions) {
     inputRef.set(node);
     node.style.display = "none";
     node.setAttribute("type", "file");
-    node.setAttribute("multiple", String(options.multiple));
-    node.setAttribute("disabled", String(options.disabled));
-    node.setAttribute("tabIndex", "-1");
+    node.setAttribute("tabindex", "-1");
+    safeSetAttribute(node, "multiple", options.multiple);
+    safeSetAttribute(node, "disabled", options.disabled);
     const acceptAttrUnsub = acceptAttr.subscribe((accept) => {
-      node.setAttribute("accept", accept!);
+      safeSetAttribute(node, "accept", accept);
     });
 
     node.addEventListener("change", onDropCb);
@@ -321,8 +318,8 @@ export function createDropzone(_props: DropzoneOptions) {
     return {
       update(options: DropzoneOptions) {
         props.update(($props) => ({ ...$props, ...options }));
-        node.setAttribute("multiple", String(options.multiple));
-        node.setAttribute("disabled", String(options.disabled));
+        safeSetAttribute(node, "multiple", options.multiple);
+        safeSetAttribute(node, "disabled", options.disabled);
       },
       destroy() {
         inputRef.set(null);
@@ -338,5 +335,6 @@ export function createDropzone(_props: DropzoneOptions) {
     dropzoneRoot,
     dropzoneInput,
     rootRef,
+    inputRef: get(inputRef),
   };
 }

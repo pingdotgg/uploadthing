@@ -13,9 +13,9 @@
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.14.5",
     "@solidjs/start": "^1.0.6",
-    "@uploadthing/solid": "7.0.2",
+    "@uploadthing/solid": "7.0.3",
     "solid-js": "^1.8.23",
-    "uploadthing": "7.0.2",
+    "uploadthing": "7.1.0",
     "vinxi": "^0.4.3"
   },
   "engines": {

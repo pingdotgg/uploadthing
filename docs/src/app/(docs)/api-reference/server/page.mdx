@@ -245,6 +245,15 @@ Environment variables follows the naming convention of `UPLOADTHING_<NAME>`
     <Note>If using an older version of the SDK, levels might vary.</Note>
   </Property>
   <Property
+    name="logFormat"
+    type="json | logFmt | structured | pretty"
+    since="7.1"
+    defaultValue="pretty in development, else json"
+  >
+    What format log entries should be in. [Read more about the log formats
+    here](https://effect.website/docs/guides/observability/logging#built-in-loggers).
+  </Property>
+  <Property
     name="isDev"
     type="boolean"
     since="6.3"

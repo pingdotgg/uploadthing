@@ -3,12 +3,14 @@ import { createSignal } from "solid-js";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  unwrap,
   UploadAbortedError,
   UploadThingError,
 } from "@uploadthing/shared";
 import type { EndpointMetadata } from "@uploadthing/shared";
 import { genUploader } from "uploadthing/client";
 import type {
+  EndpointArg,
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
@@ -20,7 +22,7 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const useRouteConfig = (url: URL, endpoint: string) => {
+const createRouteConfig = (url: URL, endpoint: string) => {
   const dataGetter = createFetch<EndpointMetadata>(url.href);
   return () => dataGetter()?.data?.find((x) => x.slug === endpoint)?.config;
 };
@@ -35,21 +37,20 @@ export const INTERNAL_createUploadThingGen = <
    */
   url: URL;
 }) => {
-  const { uploadFiles } = genUploader<TRouter>({
+  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url: initOpts.url,
     package: "@uploadthing/solid",
   });
 
   const createUploadThing = <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: CreateUploadthingProps<TRouter, TEndpoint>,
   ) => {
     const [isUploading, setUploading] = createSignal(false);
-
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
-    type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+    type InferredInput = inferEndpointInput<TRouter[TEndpoint]>;
     type FuncInput = undefined extends InferredInput
       ? [files: File[], input?: undefined]
       : [files: File[], input: InferredInput];
@@ -89,7 +90,7 @@ export const INTERNAL_createUploadThingGen = <
           input,
         });
 
-        opts?.onClientUploadComplete?.(res);
+        await opts?.onClientUploadComplete?.(res);
         return res;
       } catch (e) {
         /**
@@ -108,7 +109,7 @@ export const INTERNAL_createUploadThingGen = <
             error.cause instanceof Error ? error.cause.toString() : error.cause,
           );
         }
-        opts?.onUploadError?.(error);
+        await opts?.onUploadError?.(error);
         return;
       } finally {
         setUploading(false);
@@ -117,7 +118,8 @@ export const INTERNAL_createUploadThingGen = <
       }
     };
 
-    const routeConfig = useRouteConfig(initOpts.url, endpoint as string);
+    const _endpoint = unwrap(endpoint, routeRegistry);
+    const routeConfig = createRouteConfig(initOpts.url, _endpoint as string);
 
     return {
       startUpload,
@@ -127,7 +129,7 @@ export const INTERNAL_createUploadThingGen = <
        * @deprecated Use `routeConfig` instead
        */
       permittedFileInfo: routeConfig
-        ? { slug: endpoint, config: routeConfig }
+        ? { slug: _endpoint, config: routeConfig }
         : undefined,
     } as const;
   };

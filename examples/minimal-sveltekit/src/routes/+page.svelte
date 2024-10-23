@@ -7,6 +7,9 @@
   import "@uploadthing/svelte/styles.css";
 
   const uploader = createUploader("videoAndImage", {
+    onUploadAborted: () => {
+      alert("Upload Aborted");
+    },
     onClientUploadComplete: (res) => {
       console.log(`onClientUploadComplete`, res);
       alert("Upload Completed");

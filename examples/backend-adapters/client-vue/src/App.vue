@@ -21,6 +21,9 @@ function alert(message: string) {
             console.log('uploaded', file);
             alert('Upload complete');
           },
+          onUploadAborted: () => {
+            alert('Upload Aborted');
+          },
           onUploadError: (error) => {
             console.error(error, error.cause);
             alert('Upload failed');
@@ -37,6 +40,9 @@ function alert(message: string) {
           onClientUploadComplete: (file) => {
             console.log('uploaded', file);
             alert('Upload complete');
+          },
+          onUploadAborted: () => {
+            alert('Upload Aborted');
           },
           onUploadError: (error) => {
             console.error(error, error.cause);

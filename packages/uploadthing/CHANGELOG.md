@@ -1,5 +1,32 @@
 # uploadthing
 
+## 7.1.0
+
+### Minor Changes
+
+- [#978](https://github.com/pingdotgg/uploadthing/pull/978) [`a3fa6af`](https://github.com/pingdotgg/uploadthing/commit/a3fa6afbd5ec65218a9bdf2f5c1d15bebad2b517) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: return object hash in onUploadComplete
+
+- [#997](https://github.com/pingdotgg/uploadthing/pull/997) [`68d7d31`](https://github.com/pingdotgg/uploadthing/commit/68d7d31a6eb71345f176bc9ed69a1f9201a335f2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: allow different log formats
+
+  You can now set any of the [built-in log formats](https://effect.website/docs/guides/observability/logging#built-in-loggers) by passing in the `logFormat` config option.
+
+### Patch Changes
+
+- [#1002](https://github.com/pingdotgg/uploadthing/pull/1002) [`ab572ac`](https://github.com/pingdotgg/uploadthing/commit/ab572acce9f330a4fb609e60fbb06c3a0ec3f0b1) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: deprecate `UTApi.getFileUrls`. 📚 Read [Accessing files](https://docs.uploadthing.com/working-with-files#accessing-files) on how to safely access files without requiring an extra API call
+
+- [#998](https://github.com/pingdotgg/uploadthing/pull/998) [`d4d453d`](https://github.com/pingdotgg/uploadthing/commit/d4d453d7ab63a0c04f618881410a5b082ea73fe2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: send version header when uploading to have accurate version shown on dashboard
+
+- [#987](https://github.com/pingdotgg/uploadthing/pull/987) [`e48abf5`](https://github.com/pingdotgg/uploadthing/commit/e48abf5217f579d7f9ec1d2068941be669204868) Thanks [@juraj98](https://github.com/juraj98)! - Fixed withUt to work in monorepos
+
+- [#968](https://github.com/pingdotgg/uploadthing/pull/968) [`2a918e8`](https://github.com/pingdotgg/uploadthing/commit/2a918e89cf99b6f43520a84d5397d3489d8cc5e0) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: enforce JSONObject return in `onUploadComplete` callback
+
+- [#991](https://github.com/pingdotgg/uploadthing/pull/991) [`fe83f4a`](https://github.com/pingdotgg/uploadthing/commit/fe83f4a342f2e04bf5b069613621e77ec5acbe9e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: prefer browser recognized mime type over file extension lookup when matching file's type to router config
+
+- [#1001](https://github.com/pingdotgg/uploadthing/pull/1001) [`d35ad7e`](https://github.com/pingdotgg/uploadthing/commit/d35ad7edb7b763fb9730b96bb36ffab2be8bdfb0) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: `UTApi.getFileUrls` ensure we're always sending keys as array
+
+- Updated dependencies [[`2afabe5`](https://github.com/pingdotgg/uploadthing/commit/2afabe59a0e6319ec469eba670b1e3e920f596ee), [`53f4ab6`](https://github.com/pingdotgg/uploadthing/commit/53f4ab6daa5b75b31c78e6ed441e4bf2f836c5d2), [`fe83f4a`](https://github.com/pingdotgg/uploadthing/commit/fe83f4a342f2e04bf5b069613621e77ec5acbe9e)]:
+  - @uploadthing/shared@7.0.3
+
 ## 7.0.2
 
 ### Patch Changes
