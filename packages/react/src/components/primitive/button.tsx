@@ -18,7 +18,6 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
 ) {
   const {
     refs,
-    disabled,
     setFiles,
     dropzone,
     accept,
@@ -35,9 +34,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     <Comp
       {...props}
       data-state={state}
-      aria-disabled={disabled}
+      aria-disabled={state === "disabled"}
       onClick={(e) => {
-        if (disabled) return;
+        if (state === "disabled") return;
 
         onClick?.(e);
         if (state === "uploading") {
@@ -66,8 +65,8 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
             if (!e.target.files) return;
             setFiles(Array.from(e.target.files));
           }}
-          disabled={disabled}
-          tabIndex={disabled ? -1 : 0}
+          disabled={state === "disabled"}
+          tabIndex={state === "disabled" ? -1 : 0}
           className="sr-only"
         />
       )}

@@ -108,6 +108,7 @@ export function UploadButton<
           isUploading: state === "uploading",
           uploadProgress: uploadProgress,
           fileTypes: fileTypes,
+          files,
         } as ButtonStyleFieldCallbackArgs;
 
         const renderAllowedContent = () => (
@@ -155,7 +156,7 @@ export function UploadButton<
               return "Loading...";
             }
             case "uploading": {
-              if (uploadProgress === 100) return <Spinner />;
+              if (uploadProgress >= 100) return <Spinner />;
               return (
                 <span className="z-50">
                   <span className="block group-hover:hidden">

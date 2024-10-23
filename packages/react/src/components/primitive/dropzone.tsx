@@ -61,14 +61,8 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
   }: PrimitiveDropzoneProps<TTag>,
   ref: Ref<HTMLDivElement>,
 ) {
-  const {
-    setFiles,
-    options,
-    fileTypes,
-    disabled: rootDisabled,
-    state,
-    refs,
-  } = usePrimitiveValues("Dropzone");
+  const { setFiles, options, fileTypes, state, refs } =
+    usePrimitiveValues("Dropzone");
 
   const onDropCallback = useCallback(
     (acceptedFiles: File[]) => {
@@ -82,7 +76,7 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
     onDrop: onDropCallback,
     multiple: options.multiple,
     accept: generateClientDropzoneAccept(fileTypes),
-    disabled: rootDisabled || componentDisabled,
+    disabled: state === "disabled" || componentDisabled,
   });
 
   const Comp = as ?? DEFAULT_DROPZONE_TAG;
@@ -99,7 +93,7 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
         ref={ref}
       >
         <PrimitiveSlot>{children}</PrimitiveSlot>
-        <input type="hidden" {...getInputProps()} />
+        <input {...getInputProps()} />
       </Comp>
     </PrimitiveContextMergeProvider>
   );

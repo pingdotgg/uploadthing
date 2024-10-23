@@ -18,14 +18,14 @@ function ClearButtonFn<
   { children, onClick, as, ...props }: PrimitiveClearButtonProps<TTag>,
   ref: Ref<HTMLLabelElement>,
 ) {
-  const { setFiles, state, disabled } = usePrimitiveValues("ClearButton");
+  const { setFiles, state } = usePrimitiveValues("ClearButton");
   const Comp = as ?? DEFAULT_CLEAR_BUTTON_TAG;
 
   return (
     <Comp
       {...props}
       data-state={state}
-      aria-disabled={disabled}
+      aria-disabled={state === "disabled"}
       onClick={(e) => {
         onClick?.(e);
         setFiles([]);
