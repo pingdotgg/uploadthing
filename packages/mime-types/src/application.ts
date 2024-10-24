@@ -2634,6 +2634,10 @@ export const application = {
     source: "iana",
     extensions: ["mxml", "xhvml", "xvml", "xvm"],
   },
+  "application/yaml": {
+    source: "iana",
+    extensions: ["yaml", "yml"],
+  },
   "application/yang": {
     source: "iana",
     extensions: ["yang"],

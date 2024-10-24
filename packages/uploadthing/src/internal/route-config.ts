@@ -1,6 +1,6 @@
-import type * as S from "@effect/schema/Schema";
 import * as Data from "effect/Data";
 import * as Effect from "effect/Effect";
+import type * as S from "effect/Schema";
 
 import type {
   ExpandedRouteConfig,

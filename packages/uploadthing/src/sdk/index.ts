@@ -4,11 +4,12 @@ import {
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
-import * as S from "@effect/schema/Schema";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
 import type * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Predicate from "effect/Predicate";
+import * as Redacted from "effect/Redacted";
+import * as S from "effect/Schema";
 
 import type {
   ACL,
@@ -76,7 +77,7 @@ export class UTApi {
         HttpClientRequest.setHeaders({
           "x-uploadthing-version": UPLOADTHING_VERSION,
           "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-api-key": apiKey,
+          "x-uploadthing-api-key": Redacted.value(apiKey),
         }),
         httpClient.execute,
         Effect.tapBoth({
