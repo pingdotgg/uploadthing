@@ -15,7 +15,7 @@ import { UploadButton } from "./button";
 import type { UploadDropzoneProps } from "./dropzone";
 import { UploadDropzone } from "./dropzone";
 import * as primitives from "./primitive";
-import { RootPrimitiveComponentProps } from "./primitive/root";
+import type { RootPrimitiveComponentProps } from "./primitive/root";
 import { Uploader } from "./uploader";
 
 export { UploadButton, UploadDropzone, Uploader };
