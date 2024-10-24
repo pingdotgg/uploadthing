@@ -5,6 +5,8 @@
 "@uploadthing/react": minor
 "@uploadthing/solid": minor
 "@uploadthing/vue": minor
+"@uploadthing/nuxt": minor
+"@uploadthing/expo": minor
 ---
 
 feat: add support to specify route endpoint that supports "Go to Definition"
