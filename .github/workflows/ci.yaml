@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     timeout-minutes: 10
 
     steps:
@@ -37,7 +37,7 @@ jobs:
           UPLOADTHING_TEST_TOKEN: ${{ secrets.UPLOADTHING_TEST_TOKEN }}
 
   lint:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     timeout-minutes: 10
 
     steps:
@@ -51,7 +51,7 @@ jobs:
         run: pnpm run lint
 
   format:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     timeout-minutes: 10
 
     steps:
@@ -65,7 +65,7 @@ jobs:
         run: pnpm run format:check
 
   typecheck:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     timeout-minutes: 10
 
     steps:
@@ -80,7 +80,7 @@ jobs:
 
   analyze-bundle:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     timeout-minutes: 10
 
     strategy:
@@ -114,7 +114,7 @@ jobs:
 
   bundle-analyze-result:
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     timeout-minutes: 10
     needs: [analyze-bundle]
 
