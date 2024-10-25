@@ -22,7 +22,7 @@
   import { INTERNAL_createUploadThingGen } from "../create-uploadthing.svelte";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
-  import { createDropzone } from "./create-dropzone";
+  import { createDropzone } from "./create-dropzone.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -85,7 +85,8 @@
 
   let acRef = new AbortController();
 
-  let rootRef: HTMLElement;
+  let rootRef: HTMLElement | undefined = $state();
+  let inputRef: HTMLInputElement | undefined = $state();
   let uploadProgress = $state(0);
   let files: File[] = $state([]);
 
@@ -138,18 +139,18 @@
     generatePermittedFileTypes(routeConfig),
   );
 
-  let dropzoneOptions = $derived({
+  const {
+    state: dropzoneState,
+    rootProps,
+    inputProps,
+  } = $derived(createDropzone({
+    rootRef,
+    inputRef,
     onDrop: onDropCallback,
     multiple,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
     disabled,
-  })
-
-  const {
-    state: dropzoneState,
-    dropzoneRoot,
-    dropzoneInput,
-  } = $derived(createDropzone(dropzoneOptions));
+  }));
 
   let ready = $derived(fileTypes.length > 0);
 
@@ -194,7 +195,7 @@
   let styleFieldArg = $derived({
     __runtime: "svelte",
     fileTypes,
-    isDragActive: $dropzoneState.isDragActive,
+    isDragActive: dropzoneState.isDragActive,
     isUploading: isUploading,
     ready,
     uploadProgress,
@@ -210,16 +211,16 @@
 </script>
 
 <div
-  use:dropzoneRoot
   class={cn(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-    $dropzoneState.isDragActive && "bg-blue-600/10",
+    dropzoneState.isDragActive && "bg-blue-600/10",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
   style={styleFieldToClassName(appearance?.container, styleFieldArg)}
   data-state={uploadState}
   bind:this={rootRef}
+  {...rootProps}
 >
   {#if content?.uploadIcon}
     {@render content.uploadIcon(styleFieldArg)}
@@ -253,7 +254,7 @@
     data-ut-element="label"
     data-state={uploadState}
   >
-    <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
+    <input class="sr-only" bind:this={inputRef} {...inputProps} />
     {#if content?.label}
       {@render content.label(styleFieldArg)}
     {:else}
