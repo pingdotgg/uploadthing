@@ -140,11 +140,10 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       );
 
       if (clientVersion !== pkgJson.version) {
-        const msg = `
-Client version mismatch. Things may not work as expected, please sync your versions to ensure compatibility.
-  Server version: ${pkgJson.version}, Client version: ${clientVersion}
-`;
-        yield* Effect.logWarning(msg);
+        const serverVersion = pkgJson.version;
+        yield* Effect.logWarning(
+          "Client version mismatch. Things may not work as expected, please sync your versions to ensure compatibility.",
+        ).pipe(Effect.annotateLogs({ clientVersion, serverVersion }));
       }
 
       const { slug, actionType } = yield* HttpRouter.schemaParams(
