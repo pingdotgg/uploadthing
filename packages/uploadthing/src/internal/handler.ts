@@ -140,13 +140,11 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       );
 
       if (clientVersion !== pkgJson.version) {
-        const msg = `Server version: ${pkgJson.version}, Client version: ${clientVersion}`;
-        yield* Effect.logError(msg);
-        return yield* new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "Client version mismatch",
-          cause: msg,
-        });
+        const msg = `
+Client version mismatch. Things may not work as expected, please sync your versions to ensure compatibility.
+  Server version: ${pkgJson.version}, Client version: ${clientVersion}
+`;
+        yield* Effect.logWarning(msg);
       }
 
       const { slug, actionType } = yield* HttpRouter.schemaParams(
