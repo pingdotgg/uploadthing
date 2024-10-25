@@ -19,7 +19,7 @@
   } from "uploadthing/client";
   import type { FileRouter } from "uploadthing/server";
 
-  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import { INTERNAL_createUploadThingGen } from "../create-uploadthing.svelte";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
@@ -69,7 +69,7 @@
     mode = "auto",
     appendOnPaste = false,
     cn = defaultClassListMerger,
-  } = uploader.config ?? {};
+  } = $derived(uploader.config ?? {});
 
   let acRef = new AbortController();
 
@@ -114,13 +114,13 @@
   };
 
   let { fileTypes, multiple } = $derived(
-    generatePermittedFileTypes($routeConfig),
+    generatePermittedFileTypes(routeConfig),
   );
 
   // Cannot be called just "state" because the compiler confuses it with the $state rune
   let uploadState = $derived.by(() => {
     if (disabled) return "disabled";
-    if (!disabled && !$isUploading) return "ready";
+    if (!disabled && !isUploading) return "ready";
     return "uploading";
   });
 
@@ -280,7 +280,7 @@ Example:
       {#if content?.allowedContent}
         {@render content.allowedContent(styleFieldArg)}
       {:else}
-        {allowedContentTextLabelGenerator($routeConfig)}
+        {allowedContentTextLabelGenerator(routeConfig)}
       {/if}
     </div>
   {/if}

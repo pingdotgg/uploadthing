@@ -19,7 +19,7 @@
   } from "uploadthing/client";
   import type { FileRouter } from "uploadthing/server";
 
-  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import { INTERNAL_createUploadThingGen } from "../create-uploadthing.svelte";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
   import { createDropzone } from "./create-dropzone";
@@ -81,7 +81,7 @@
     mode = "auto",
     appendOnPaste = false,
     cn = defaultClassListMerger,
-  } = uploader.config ?? {};
+  } = $derived(uploader.config ?? {});
 
   let acRef = new AbortController();
 
@@ -135,7 +135,7 @@
   };
 
   let { fileTypes, multiple } = $derived(
-    generatePermittedFileTypes($routeConfig),
+    generatePermittedFileTypes(routeConfig),
   );
 
   let dropzoneOptions = $derived({
@@ -149,7 +149,7 @@
     state: dropzoneState,
     dropzoneRoot,
     dropzoneInput,
-  } = createDropzone(dropzoneOptions);
+  } = $derived(createDropzone(dropzoneOptions));
 
   let ready = $derived(fileTypes.length > 0);
 
@@ -195,7 +195,7 @@
     __runtime: "svelte",
     fileTypes,
     isDragActive: $dropzoneState.isDragActive,
-    isUploading: $isUploading,
+    isUploading: isUploading,
     ready,
     uploadProgress,
     files,
@@ -204,7 +204,7 @@
   let uploadState = $derived.by(() => {
     if (disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !$isUploading) return "ready";
+    if (ready && !isUploading) return "ready";
     return "uploading";
   });
 </script>
@@ -274,7 +274,7 @@
     {#if content?.allowedContent}
       {@render content.allowedContent(styleFieldArg)}
     {:else}
-      {allowedContentTextLabelGenerator($routeConfig)}
+      {allowedContentTextLabelGenerator(routeConfig)}
     {/if}
   </div>
   <button

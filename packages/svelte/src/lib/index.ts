@@ -1,4 +1,4 @@
-export { generateSvelteHelpers } from "./create-uploadthing";
+export { generateSvelteHelpers } from "./create-uploadthing.svelte";
 export { UploadButton, UploadDropzone, Uploader } from "./component";
 
 export type * from "./types";

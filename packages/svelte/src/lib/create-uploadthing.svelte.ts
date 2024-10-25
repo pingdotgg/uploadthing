@@ -1,5 +1,3 @@
-import { derived, readonly, writable } from "svelte/store";
-
 import type { EndpointMetadata } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
@@ -21,14 +19,11 @@ import type {
   UploadthingComponentProps,
   UseUploadthingProps,
 } from "./types";
-import { createFetch } from "./utils/createFetch";
+import { createFetch } from "./utils/createFetch.svelte";
 
 const createRouteConfig = (url: URL, endpoint: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(url.href);
-  return derived(
-    dataGetter,
-    ($data) => $data.data?.find((x) => x.slug === endpoint)?.config,
-  );
+  const data = createFetch<EndpointMetadata>(url.href);
+  return $derived(data.data?.find((x) => x.slug === endpoint)?.config);
 };
 
 export const INTERNAL_createUploadThingGen = <
@@ -50,7 +45,7 @@ export const INTERNAL_createUploadThingGen = <
     endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter, TEndpoint>,
   ) => {
-    const isUploading = writable(false);
+    let isUploading = $state(false);
     let uploadProgress = 0;
     let fileProgress = new Map<File, number>();
 
@@ -63,7 +58,7 @@ export const INTERNAL_createUploadThingGen = <
       const files = (await opts?.onBeforeUploadBegin?.(args[0])) ?? args[0];
       const input = args[1];
 
-      isUploading.set(true);
+      isUploading = true;
       opts?.onUploadProgress?.(0);
       files.forEach((f) => fileProgress.set(f, 0));
       try {
@@ -115,7 +110,7 @@ export const INTERNAL_createUploadThingGen = <
         }
         await opts?.onUploadError?.(error);
       } finally {
-        isUploading.set(false);
+        isUploading = false;
         fileProgress = new Map();
         uploadProgress = 0;
       }
@@ -126,13 +121,15 @@ export const INTERNAL_createUploadThingGen = <
 
     return {
       startUpload,
-      isUploading: readonly(isUploading),
+      get isUploading() {
+        return isUploading;
+      },
       routeConfig,
       /**
        * @deprecated Use `routeConfig` instead
        */
       permittedFileInfo: routeConfig
-        ? { slug: _endpoint, config: readonly(routeConfig) }
+        ? { slug: _endpoint, config: routeConfig }
         : undefined,
     } as const;
   };
