@@ -43,7 +43,7 @@
     "uploadthing": "workspace:*"
   },
   "peerDependencies": {
-    "uploadthing": "^7.0.0"
+    "uploadthing": "^7.2.0"
   },
   "eslintConfig": {
     "root": true,
