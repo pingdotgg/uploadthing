@@ -1,8 +1,8 @@
+import * as Arr from "effect/Array";
 import * as Micro from "effect/Micro";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
-  asArray,
   createIdentityProxy,
   FetchContext,
   fileSizeToBytes,
@@ -170,7 +170,7 @@ export const genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to pause. Can be omitted to pause all files
      */
     const pauseUpload = (file?: File) => {
-      const files = asArray(file ?? opts.files);
+      const files = Arr.ensure(file ?? opts.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) return;
@@ -189,7 +189,7 @@ export const genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to resume. Can be omitted to resume all files
      */
     const resumeUpload = (file?: File) => {
-      const files = asArray(file ?? opts.files);
+      const files = Arr.ensure(file ?? opts.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
@@ -226,7 +226,7 @@ export const genUploader = <TRouter extends FileRouter>(
     > => {
       const promises = [];
 
-      const files = asArray(file ?? opts.files);
+      const files = Arr.ensure(file ?? opts.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
