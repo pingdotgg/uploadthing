@@ -19,7 +19,7 @@
     },
   });
 
-  const { startUpload } = createUploadThing("videoAndImage", {
+  const ut = createUploadThing("videoAndImage", {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
@@ -42,7 +42,7 @@
       // Do something with files
 
       // Then start the upload
-      await startUpload([file]);
+      await ut.startUpload([file]);
     }}
   />
 </main>
