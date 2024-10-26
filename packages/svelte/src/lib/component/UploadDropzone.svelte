@@ -94,7 +94,8 @@
     url: resolveMaybeUrlArg(uploader.url),
   });
 
-  const { startUpload, isUploading, routeConfig } = createUploadThing(
+  // Cannot destructure when using runes state
+  const ut = createUploadThing(
     uploader.endpoint,
     {
       signal: acRef.signal,
@@ -116,7 +117,7 @@
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
-    startUpload(files, input).catch((e) => {
+    ut.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {
@@ -136,14 +137,11 @@
   };
 
   let { fileTypes, multiple } = $derived(
-    generatePermittedFileTypes(routeConfig),
+    generatePermittedFileTypes(ut.routeConfig),
   );
 
-  const {
-    state: dropzoneState,
-    rootProps,
-    inputProps,
-  } = $derived(createDropzone({
+  // Cannot destructure when using runes state
+  const dropzone = $derived(createDropzone({
     rootRef,
     inputRef,
     onDrop: onDropCallback,
@@ -195,8 +193,8 @@
   let styleFieldArg = $derived({
     __runtime: "svelte",
     fileTypes,
-    isDragActive: dropzoneState.isDragActive,
-    isUploading: isUploading,
+    isDragActive: dropzone.state.isDragActive,
+    isUploading: ut.isUploading,
     ready,
     uploadProgress,
     files,
@@ -205,7 +203,7 @@
   let uploadState = $derived.by(() => {
     if (disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
+    if (ready && !ut.isUploading) return "ready";
     return "uploading";
   });
 </script>
@@ -213,14 +211,14 @@
 <div
   class={cn(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-    dropzoneState.isDragActive && "bg-blue-600/10",
+    dropzone.state.isDragActive && "bg-blue-600/10",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
   style={styleFieldToClassName(appearance?.container, styleFieldArg)}
   data-state={uploadState}
   bind:this={rootRef}
-  {...rootProps}
+  {...dropzone.rootProps}
 >
   {#if content?.uploadIcon}
     {@render content.uploadIcon(styleFieldArg)}
@@ -254,7 +252,7 @@
     data-ut-element="label"
     data-state={uploadState}
   >
-    <input class="sr-only" bind:this={inputRef} {...inputProps} />
+    <input class="sr-only" bind:this={inputRef} {...dropzone.inputProps} />
     {#if content?.label}
       {@render content.label(styleFieldArg)}
     {:else}
@@ -275,7 +273,7 @@
     {#if content?.allowedContent}
       {@render content.allowedContent(styleFieldArg)}
     {:else}
-      {allowedContentTextLabelGenerator(routeConfig)}
+      {allowedContentTextLabelGenerator(ut.routeConfig)}
     {/if}
   </div>
   <button

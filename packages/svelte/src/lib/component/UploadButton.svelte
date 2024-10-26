@@ -81,7 +81,8 @@
   let uploadProgress = $state(0);
   let files: File[] = $state([]);
 
-  const { startUpload, isUploading, routeConfig } = createUploadThing(
+  // Cannot destructure when using runes state
+  const ut = createUploadThing(
     uploader.endpoint,
     {
       signal: acRef.signal,
@@ -104,7 +105,7 @@
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
-    startUpload(files, input).catch((e) => {
+    ut.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {
@@ -114,13 +115,13 @@
   };
 
   let { fileTypes, multiple } = $derived(
-    generatePermittedFileTypes(routeConfig),
+    generatePermittedFileTypes(ut.routeConfig),
   );
 
   // Cannot be called just "state" because the compiler confuses it with the $state rune
   let uploadState = $derived.by(() => {
     if (disabled) return "disabled";
-    if (!disabled && !isUploading) return "ready";
+    if (!disabled && !ut.isUploading) return "ready";
     return "uploading";
   });
 
@@ -280,7 +281,7 @@ Example:
       {#if content?.allowedContent}
         {@render content.allowedContent(styleFieldArg)}
       {:else}
-        {allowedContentTextLabelGenerator(routeConfig)}
+        {allowedContentTextLabelGenerator(ut.routeConfig)}
       {/if}
     </div>
   {/if}

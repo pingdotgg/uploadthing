@@ -23,7 +23,12 @@ import { createFetch } from "./utils/createFetch.svelte";
 
 const createRouteConfig = (url: URL, endpoint: string) => {
   const data = createFetch<EndpointMetadata>(url.href);
-  return $derived(data.data?.find((x) => x.slug === endpoint)?.config);
+  const config = $derived(data.data?.find((x) => x.slug === endpoint)?.config);
+  return {
+    get config() {
+      return config;
+    },
+  };
 };
 
 export const INTERNAL_createUploadThingGen = <
@@ -124,7 +129,9 @@ export const INTERNAL_createUploadThingGen = <
       get isUploading() {
         return isUploading;
       },
-      routeConfig,
+      get routeConfig() {
+        return routeConfig.config;
+      },
       /**
        * @deprecated Use `routeConfig` instead
        */

@@ -1,5 +1,5 @@
 import { fromEvent } from "file-selector";
-import { onMount } from "svelte";
+import { onMount, untrack } from "svelte";
 
 import {
   acceptPropAsAcceptAttr,
@@ -25,7 +25,10 @@ function reducible<State, Actions>(
 ) {
   let state = $state(initialState);
   const dispatch = (action: Actions) => {
-    state = reducer(state, action);
+    state = reducer(
+      untrack(() => state),
+      action,
+    );
   };
   return {
     get state() {
@@ -54,20 +57,21 @@ export function createDropzone({
 
   const acceptAttr = $derived(acceptPropAsAcceptAttr(props.accept));
 
-  let dragTargets: EventTarget[] = [];
+  let dragTargets: EventTarget[] = $state([]);
 
-  const { state, dispatch } = reducible(reducer, initialState);
+  // Cannot destructure when using runes state
+  const dropzoneState = reducible(reducer, initialState);
 
   onMount(() => {
     const onWindowFocus = () => {
-      if (state.isFileDialogActive) {
+      if (dropzoneState.state.isFileDialogActive) {
         setTimeout(() => {
           const input = inputRef;
           if (input) {
             const { files } = input;
 
             if (!files?.length) {
-              dispatch({ type: "closeDialog" });
+              dropzoneState.dispatch({ type: "closeDialog" });
             }
           }
         }, 300);
@@ -126,7 +130,7 @@ export function createDropzone({
             });
           const isDragReject = fileCount > 0 && !isDragAccept;
 
-          dispatch({
+          dropzoneState.dispatch({
             type: "setDraggedFiles",
             payload: {
               isDragAccept,
@@ -171,7 +175,7 @@ export function createDropzone({
     dragTargets = targets;
     if (targets.length > 0) return;
 
-    dispatch({
+    dropzoneState.dispatch({
       type: "setDraggedFiles",
       payload: {
         isDragActive: false,
@@ -198,7 +202,7 @@ export function createDropzone({
       acceptedFiles.splice(0);
     }
 
-    dispatch({
+    dropzoneState.dispatch({
       type: "setFiles",
       payload: {
         acceptedFiles,
@@ -221,7 +225,7 @@ export function createDropzone({
         })
         .catch(noop);
     }
-    dispatch({ type: "reset" });
+    dropzoneState.dispatch({ type: "reset" });
   };
 
   const openFileDialog = () => {
@@ -229,7 +233,7 @@ export function createDropzone({
     if (input) {
       input.value = "";
       input.click();
-      dispatch({ type: "openDialog" });
+      dropzoneState.dispatch({ type: "openDialog" });
     }
   };
 
@@ -246,13 +250,13 @@ export function createDropzone({
 
   const onInputElementClick = (event: MouseEvent) => {
     event.stopPropagation();
-    if (state.isFileDialogActive) {
+    if (dropzoneState.state.isFileDialogActive) {
       event.preventDefault();
     }
   };
 
-  const onFocus = () => dispatch({ type: "focus" });
-  const onBlur = () => dispatch({ type: "blur" });
+  const onFocus = () => dropzoneState.dispatch({ type: "focus" });
+  const onBlur = () => dropzoneState.dispatch({ type: "blur" });
   const onClick = () => {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
@@ -300,14 +304,8 @@ export function createDropzone({
     get inputProps() {
       return inputProps;
     },
-    get rootRef() {
-      return rootRef;
-    },
-    get inputRef() {
-      return inputRef;
-    },
     get state() {
-      return state;
+      return dropzoneState.state;
     },
   };
 }
