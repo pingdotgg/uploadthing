@@ -71,7 +71,7 @@ export default defineNuxtModule<ModuleOptions>({
       filePath: resolver.resolve("./runtime/components/dropzone"),
     });
     // FIXME: Use Tailwind Wrapper if the user has Tailwind installed
-    nuxt.options.css.push("@uploadthing/vue/styles.css");
+    // nuxt.options.css.push("@uploadthing/vue/styles.css");
 
     addImports({
       name: "useUploadThing",
