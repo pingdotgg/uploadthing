@@ -111,6 +111,7 @@ async function injectStyles(
    */
   if (!hasNuxtModule("@nuxtjs/tailwindcss", nuxt)) {
     nuxt.options.css.push("@uploadthing/vue/styles.css");
+    return;
   }
 
   /**
