@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import path, { dirname, resolve } from "node:path";
+import { dirname, resolve, sep } from "node:path";
 import {
   addComponent,
   addImports,
@@ -114,7 +114,7 @@ async function injectStyles(
   }
 
   const vueDist = await resolver.resolvePath("@uploadthing/vue");
-  const contentPath = dirname(vueDist) + path.sep + "**";
+  const contentPath = dirname(vueDist) + sep + "**";
 
   const template = addTemplate({
     filename: "uploadthing.tailwind.config.cjs",
