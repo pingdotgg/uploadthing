@@ -1,9 +1,10 @@
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import path, { dirname, resolve } from "node:path";
 import {
   addComponent,
   addImports,
   addServerHandler,
+  addTemplate,
   createResolver,
   defineNuxtModule,
   hasNuxtModule,
@@ -12,11 +13,10 @@ import {
 } from "@nuxt/kit";
 import type { Resolver } from "@nuxt/kit";
 import type { Nuxt } from "@nuxt/schema";
+import type { ModuleOptions as TailwindModuleOptions } from "@nuxtjs/tailwindcss";
 import defu from "defu";
-import type { Config as TailwindConfig } from "tailwindcss";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";
-import { withUt } from "uploadthing/tw";
 
 // Module options TypeScript interface definition
 export type ModuleOptions = RouteHandlerConfig & {
@@ -85,7 +85,7 @@ export default defineNuxtModule<ModuleOptions>({
       filePath: resolver.resolve("./runtime/components/dropzone"),
     });
 
-    injectStyles(options, nuxt, resolver);
+    await injectStyles(options, nuxt, resolver);
 
     addImports({
       name: "useUploadThing",
@@ -100,7 +100,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
 });
 
-function injectStyles(
+async function injectStyles(
   moduleOptions: ModuleOptions,
   nuxt: Nuxt,
   resolver: Resolver,
@@ -114,9 +114,35 @@ function injectStyles(
     nuxt.options.css.push("@uploadthing/vue/styles.css");
   }
 
-  // Else use our Tailwind plugin
-  // @ts-expect-error - Help pls
-  nuxt.hook("tailwindcss:config", function (tailwindConfig: TailwindConfig) {
-    tailwindConfig = withUt(tailwindConfig);
+  const vueDist = await resolver.resolvePath("@uploadthing/vue");
+  const contentPath = dirname(vueDist) + path.sep + "**";
+
+  const template = addTemplate({
+    filename: "uploadthing.tailwind.config.cjs",
+    write: true,
+    getContents: () => `
+      const { uploadthingPlugin } = require('uploadthing/tw');
+
+      module.exports = {
+        content: [
+          ${JSON.stringify(contentPath)}
+        ],
+        plugins: [
+          require('uploadthing/tw').uploadthingPlugin
+        ]
+      }
+    `,
   });
+
+  // @ts-expect-error - Help pls
+  const twModuleOptions = (nuxt.options.tailwindcss ??=
+    {}) as TailwindModuleOptions;
+  console.log("tw modules", twModuleOptions);
+  if (typeof twModuleOptions.configPath === "string") {
+    twModuleOptions.configPath = [twModuleOptions.configPath, template.dst];
+  } else if (Array.isArray(twModuleOptions.configPath)) {
+    twModuleOptions.configPath.push(template.dst);
+  } else {
+    twModuleOptions.configPath = template.dst;
+  }
 }
