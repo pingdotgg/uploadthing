@@ -250,10 +250,15 @@ function generate_key(string $file_seed, string $appId): string {
   <Tab>
 
 ```go
+import (
+	"math"
+	"github.com/sqids/sqids-go"
+)
+
 func hashString(s string) int32 {
-	h := int32(5381)
+	h := int64(5381)
 	for i := len(s) - 1; i >= 0; i-- {
-		h = (h * 33) ^ int32(s[i])
+		h = (h * 33) ^ int64(s[i])
 		// 32-bit integer overflow
 		h &= 0xFFFFFFFF
 	}
@@ -264,7 +269,7 @@ func hashString(s string) int32 {
 		h -= 0x100000000
 	}
 
-	return h
+	return int32(h)
 }
 
 func shuffle(input string, seed string) string {
@@ -280,10 +285,14 @@ func shuffle(input string, seed string) string {
 }
 
 func generateKey(fileSeed string, appId string) string {
-	alphabet := shuffle(DEFAULT_ALPHABET, appId)
+	alphabet := shuffle("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", appId)
+	s, _ := sqids.New(sqids.Options{
+		MinLength: 12,
+		Alphabet:  alphabet,
+	})
 
-	encodedAppId := Sqids(alphabet, minLength: 12).encode(
-		[abs(hashString(appId))]
+	encodedAppId, _ := s.Encode(
+		[]uint64{uint64(math.Abs(float64(hashString(appId))))},
 	)
 
 	return encodedAppId + fileSeed
