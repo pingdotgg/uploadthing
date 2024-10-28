@@ -30,7 +30,7 @@ export const uploadthingPlugin = plugin(({ addVariant }) => {
 });
 
 /**
- * HOC for Tailwind config that adds the
+ * HOF for Tailwind config that adds the
  * {@link uploadthingPlugin} to the Tailwind config
  * as well as adds content paths to detect the necessary
  * classnames
