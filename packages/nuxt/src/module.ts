@@ -13,7 +13,6 @@ import {
 } from "@nuxt/kit";
 import type { Resolver } from "@nuxt/kit";
 import type { Nuxt } from "@nuxt/schema";
-import type { ModuleOptions as TailwindModuleOptions } from "@nuxtjs/tailwindcss";
 import defu from "defu";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";
@@ -25,8 +24,10 @@ export type ModuleOptions = RouteHandlerConfig & {
    * Injects UploadThing styles into the page
    * If you're using Tailwind, it will inject the
    * UploadThing Tailwind plugin instead.
+   *
+   * @default true
    */
-  injectStyles?: boolean;
+  injectStyles: boolean;
 };
 
 export default defineNuxtModule<ModuleOptions>({
@@ -44,8 +45,6 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const logger = useLogger("uploadthing");
     const resolver = createResolver(import.meta.url);
-
-    console.log("NUXT", nuxt);
 
     nuxt.options.runtimeConfig.uploadthing = defu(
       nuxt.options.runtimeConfig.uploadthing as any,
@@ -135,9 +134,9 @@ async function injectStyles(
   });
 
   // @ts-expect-error - Help pls
-  const twModuleOptions = (nuxt.options.tailwindcss ??=
-    {}) as TailwindModuleOptions;
-  console.log("tw modules", twModuleOptions);
+  const twModuleOptions = (nuxt.options.tailwindcss ??= {}) as {
+    configPath?: string | string[];
+  };
   if (typeof twModuleOptions.configPath === "string") {
     twModuleOptions.configPath = [twModuleOptions.configPath, template.dst];
   } else if (Array.isArray(twModuleOptions.configPath)) {
