@@ -108,10 +108,16 @@ async function injectStyles(
     return;
   }
 
-  // Inject UploadThing stylesheet if no Tailwind is installed
+  /**
+   * Inject UploadThing stylesheet if no Tailwind is installed
+   */
   if (!hasNuxtModule("@nuxtjs/tailwindcss", nuxt)) {
     nuxt.options.css.push("@uploadthing/vue/styles.css");
   }
+
+  /**
+   * Else we install our tailwind plugin
+   */
 
   const vueDist = await resolver.resolvePath("@uploadthing/vue");
   const contentPath = dirname(vueDist) + sep + "**";
