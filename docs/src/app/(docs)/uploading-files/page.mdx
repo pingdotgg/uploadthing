@@ -102,6 +102,20 @@ The file seed can be anything you want, but it should be unique for each file,
 as well as url safe. In this example, we include a base64 encoding to ensure the
 file seed is url safe, but you can do this however you want.
 
+Although we currently only offer a JavaScript SDK, here are some reference
+implementations you can use to generate valid file keys. We also plan on making
+this process easier in the future.
+
+<Note>
+  If you struggle to implement it for your language, you can also request one
+  from the [`/v7/prepareUpload` REST
+  endpoint](/api-reference/openapi-spec#tag/default/POST/v7/prepareUpload). Keep
+  in mind that this adds extra latency to your uploads.
+</Note>
+
+<Tabs tabs={["JavaScript", "Python", "PHP", "Go"]}>
+  <Tab>
+
 ```ts
 import * as Hash from "effect/Hash";
 import SQIds, { defaultOptions } from "sqids";
@@ -123,10 +137,7 @@ function shuffle(str: string, seed: string) {
   return chars.join("");
 }
 
-function generateKey(
-  appId: string,
-  fileSeed: string,
-) =>
+function generateKey(appId: string, fileSeed: string) {
   // Hash and Encode the parts and apiKey as sqids
   const alphabet = shuffle(defaultOptions.alphabet, appId);
 
@@ -141,6 +152,142 @@ function generateKey(
   return `${encodedAppId}${encodedFileSeed}`;
 }
 ```
+
+  </Tab>
+  <Tab>
+
+```py
+import math
+import base64
+from sqids import Sqids
+from sqids.constants import DEFAULT_ALPHABET
+
+def hash_string(s: str) -> int:
+  h = 5381
+  for char in reversed(s):
+      h = (h * 33) ^ ord(char)
+      # 32-bit integer overflow
+      h &= 0xFFFFFFFF
+  h = (h & 0xBFFFFFFF) | ((h >> 1) & 0x40000000)
+
+  # Convert to signed 32-bit integer
+  if h >= 0x80000000:
+      h -= 0x100000000
+
+  return h
+
+
+def shuffle(string: str, seed: str) -> str:
+  chars = list(string)
+  seed_num = hash_string(seed)
+
+  for i in range(len(chars)):
+      j = int(math.fmod(math.fmod(seed_num, i + 1) + i, len(chars)))
+      chars[i], chars[j] = chars[j], chars[i]
+
+  return "".join(chars)
+
+
+def generate_key(file_seed: str, app_id: str) -> str:
+  alphabet = shuffle(constants.DEFAULT_ALPHABET, app_id)
+
+  encoded_app_id = Sqids(alphabet, min_length=12).encode(
+    [abs(hash_string(app_id))]
+  )
+
+  return encoded_app_id + file_seed
+```
+
+  </Tab>
+  <Tab>
+
+```php
+function hashString(string $string): int {
+  $h = 5381;
+  for ($i = strlen($s) - 1; $i >= 0; $i--) {
+      $char = $s[$i];
+      $h = ($h * 33) ^ ord($char);
+      // 32-bit integer overflow
+      $h &= 0xFFFFFFFF;
+  }
+  $h = ($h & 0xBFFFFFFF) | (($h >> 1) & 0x40000000);
+
+  // Convert to signed 32-bit integer
+  if ($h >= 0x80000000) {
+      $h -= 0x100000000;
+  }
+
+  return $h;
+}
+
+function shuffle(string $string, string $seed): string {
+    $chars = str_split($string);
+    $seed_num = hashString($seed);
+
+    for ($i = 0; $i < count($chars); $i++) {
+        $j = (($seed_num % ($i + 1)) + $i) % count($chars);
+        [$chars[$i], $chars[$j]] = [$chars[$j], $chars[$i]];
+    }
+
+    return implode('', $chars);
+}
+
+function generateKey(string $file_seed, string $appId): string {
+  $alphabet = shuffle(DEFAULT_ALPHABET, $appId);
+  $encodedAppId = new Sqids(minLength: 12)->encode(
+    [abs(hashString($appId))]
+  );
+
+  return $encodedAppId . $file_seed;
+}
+```
+
+  </Tab>
+  <Tab>
+
+```go
+func hashString(s string) int32 {
+	h := int32(5381)
+	for i := len(s) - 1; i >= 0; i-- {
+		h = (h * 33) ^ int32(s[i])
+		// 32-bit integer overflow
+		h &= 0xFFFFFFFF
+	}
+	h = (h & 0xBFFFFFFF) | ((h >> 1) & 0x40000000)
+
+	// Convert to signed 32-bit integer
+	if h >= 0x80000000 {
+		h -= 0x100000000
+	}
+
+	return h
+}
+
+func shuffle(input string, seed string) string {
+	chars := []rune(input)
+	seedNum := hashString(seed)
+
+	for i := 0; i < len(chars); i++ {
+		j := (int(seedNum)%(i+1) + i) % len(chars)
+		chars[i], chars[j] = chars[j], chars[i]
+	}
+
+	return string(chars)
+}
+
+func generateKey(fileSeed string, appId string) string {
+	alphabet := shuffle(DEFAULT_ALPHABET, appId)
+
+	encodedAppId := Sqids(alphabet, minLength: 12).encode(
+		[abs(hashString(appId))]
+	)
+
+	return encodedAppId + fileSeed
+}
+```
+
+  </Tab>
+</Tabs>
 
 The URL, to which you will upload the file, will depend on your app's region.
 You can find the list of regions in the
