@@ -15,6 +15,10 @@ export const application = {
     source: "iana",
     extensions: ["atomcat"],
   },
+  "application/x-zip-compressed": {
+    source: "iana",
+    extensions: ["zip"],
+  },
   "application/atomdeleted+xml": {
     source: "iana",
     extensions: ["atomdeleted"],

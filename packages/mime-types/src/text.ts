@@ -35,7 +35,7 @@ export const text = {
   },
   "text/plain": {
     source: "iana",
-    extensions: ["txt", "text", "conf", "def", "list", "log", "in", "ini"],
+    extensions: ["txt", "text", "conf", "def", "list", "log", "in", "ini", "reg"],
   },
   "text/prs.lines.tag": {
     source: "iana",
