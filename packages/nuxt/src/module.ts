@@ -84,7 +84,9 @@ export default defineNuxtModule<ModuleOptions>({
       filePath: resolver.resolve("./runtime/components/dropzone"),
     });
 
-    await injectStyles(options, nuxt, resolver);
+    if (options.injectStyles === true) {
+      await injectStyles(options, nuxt, resolver);
+    }
 
     addImports({
       name: "useUploadThing",
@@ -104,10 +106,6 @@ async function injectStyles(
   nuxt: Nuxt,
   resolver: Resolver,
 ) {
-  if (moduleOptions.injectStyles === false) {
-    return;
-  }
-
   /**
    * Inject UploadThing stylesheet if no Tailwind is installed
    */
