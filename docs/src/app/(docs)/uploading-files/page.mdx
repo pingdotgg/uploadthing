@@ -239,7 +239,7 @@ function generate_key(string $file_seed, string $appId): string {
   $sqids = new Sqids($alphabet, 12);
 
   $encodedAppId = $sqids->encode(
-    [abs(hashString($appId))]
+    [abs(hash_string($appId))]
   );
 
   return $encodedAppId . base64_encode($file_seed);
