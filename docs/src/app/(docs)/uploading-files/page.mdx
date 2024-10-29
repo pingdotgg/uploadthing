@@ -189,7 +189,7 @@ def shuffle(string: str, seed: str) -> str:
 
 
 def generate_key(file_seed: str, app_id: str) -> str:
-  alphabet = shuffle(constants.DEFAULT_ALPHABET, app_id)
+  alphabet = shuffle(DEFAULT_ALPHABET, app_id)
 
   encoded_app_id = Sqids(alphabet, min_length=12).encode(
     [abs(hash_string(app_id))]
