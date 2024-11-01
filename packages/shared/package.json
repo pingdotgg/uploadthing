@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.10.3",
+    "effect": "https://pkg.pr.new/Effect-TS/effect@0ec61cf",
     "sqids": "^0.3.0"
   },
   "devDependencies": {

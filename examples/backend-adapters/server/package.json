@@ -19,7 +19,7 @@
     "@hono/node-server": "^1.8.2",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "effect": "3.10.3",
+    "effect": "https://pkg.pr.new/Effect-TS/effect@0ec61cf",
     "elysia": "^1.1.16",
     "express": "^4.18.2",
     "fastify": "^4.26.1",

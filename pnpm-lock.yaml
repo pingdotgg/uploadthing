@@ -27,7 +27,7 @@ importers:
         version: 2.27.1
       '@effect/vitest':
         specifier: 0.13.3
-        version: 0.13.3(effect@3.10.3)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))
+        version: 0.13.3(effect@3.10.7)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.2.1
         version: 4.2.1(@vue/compiler-sfc@3.5.11)(prettier@3.3.3)
@@ -346,10 +346,10 @@ importers:
     dependencies:
       '@effect/platform':
         specifier: 0.69.8
-        version: 0.69.8(effect@3.10.3)
+        version: 0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)
       '@effect/platform-node':
         specifier: 0.64.9
-        version: 0.64.9(@effect/platform@0.69.8(effect@3.10.3))(effect@3.10.3)
+        version: 0.64.9(@effect/platform@0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf))(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)
       '@elysiajs/cors':
         specifier: ^1.1.1
         version: 1.1.1(elysia@1.1.16(@sinclair/typebox@0.27.8)(openapi-types@12.1.3)(typescript@5.6.2))
@@ -366,8 +366,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: 3.10.3
-        version: 3.10.3
+        specifier: https://pkg.pr.new/Effect-TS/effect@0ec61cf
+        version: https://pkg.pr.new/Effect-TS/effect@0ec61cf
       elysia:
         specifier: ^1.1.16
         version: 1.1.16(@sinclair/typebox@0.27.8)(openapi-types@12.1.3)(typescript@5.6.2)
@@ -1479,8 +1479,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: 3.10.3
-        version: 3.10.3
+        specifier: https://pkg.pr.new/Effect-TS/effect@0ec61cf
+        version: https://pkg.pr.new/Effect-TS/effect@0ec61cf
       sqids:
         specifier: ^0.3.0
         version: 0.3.0
@@ -1606,7 +1606,7 @@ importers:
     dependencies:
       '@effect/platform':
         specifier: 0.69.8
-        version: 0.69.8(effect@3.10.3)
+        version: 0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)
       '@uploadthing/mime-types':
         specifier: workspace:*
         version: link:../mime-types
@@ -1614,8 +1614,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       effect:
-        specifier: 3.10.3
-        version: 3.10.3
+        specifier: https://pkg.pr.new/Effect-TS/effect@0ec61cf
+        version: https://pkg.pr.new/Effect-TS/effect@0ec61cf
     devDependencies:
       '@remix-run/server-runtime':
         specifier: ^2.12.0
@@ -2923,18 +2923,21 @@ packages:
 
   '@effect/platform-node-shared@0.19.8':
     resolution: {integrity: sha512-uQZIx0x2EwEJtsSSSme7R1AQG4OxlLj4W4hZNuUJWm+FwFGpruzT8N+c736zq6cOzUEIlGhWW8JU3TTu2M0oHA==}
+    version: 0.19.8
     peerDependencies:
       '@effect/platform': ^0.69.8
       effect: ^3.10.3
 
   '@effect/platform-node@0.64.9':
     resolution: {integrity: sha512-nMmdZuFCoKm69ZgIEAApo6Z+yAj7AzIp7UqNKhksYwdsYjl918R+0kHCJ7J1rl+9W8vVhCuNmU1Q2+3u1kpq4Q==}
+    version: 0.64.9
     peerDependencies:
       '@effect/platform': ^0.69.8
       effect: ^3.10.3
 
   '@effect/platform@0.69.8':
     resolution: {integrity: sha512-zhBhg0c1MHMMo+grOc/6wC2/3UETLroruwrYNZ89uDtXl6EOcP5alFP+vW3NToKDA2o0hRh22KNqq4aixA7xXg==}
+    version: 0.69.8
     peerDependencies:
       effect: ^3.10.3
 
@@ -7097,6 +7100,7 @@ packages:
   '@xmldom/xmldom@0.7.13':
     resolution: {integrity: sha512-lm2GW5PkosIzccsaZIz7tp8cPADSIlIHWDFTR1N0SzfinhhYgeIQjFMz4rYzanCScr3DqQLeomUDArp6MWKm+g==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version is no longer supported, please update to at least 0.8.*
 
   '@xmldom/xmldom@0.8.10':
     resolution: {integrity: sha512-2WALfTl4xo2SkGCYRt6rDTFfk9R1czmBvUQy12gK2KuRKIpWEhcbbzy8EZXtz/jkRqHX8bFEc6FC1HjX4TUWYw==}
@@ -8722,8 +8726,12 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.10.3:
-    resolution: {integrity: sha512-+Z5bUhzTeqYlfoPsfXMZG1pYadqLBKARD3xwMIoEAESsOhKFOrUsHHNCy2ZZW3/6oa4wokgT01k1zavA4BAQ4w==}
+  effect@3.10.7:
+    resolution: {integrity: sha512-jbiEIJZjYzou+AqeVhWFASshaIiU3g2atbZFEcqAtx56YcChzptTBOEjSLGDWXeWMfz1ra3u52EpxklKU/kTAg==}
+
+  effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf:
+    resolution: {tarball: https://pkg.pr.new/Effect-TS/effect@0ec61cf}
+    version: 3.10.7
 
   electron-to-chromium@1.5.28:
     resolution: {integrity: sha512-VufdJl+rzaKZoYVUijN13QcXVF5dWPZANeFTLNy+OSpHdDL5ynXTF35+60RSBbaQYB1ae723lQXHCrf4pyLsMw==}
@@ -17542,18 +17550,18 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect/platform-node-shared@0.19.8(@effect/platform@0.69.8(effect@3.10.3))(effect@3.10.3)':
+  '@effect/platform-node-shared@0.19.8(@effect/platform@0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf))(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)':
     dependencies:
-      '@effect/platform': 0.69.8(effect@3.10.3)
+      '@effect/platform': 0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)
       '@parcel/watcher': 2.4.1
-      effect: 3.10.3
+      effect: https://pkg.pr.new/Effect-TS/effect@0ec61cf
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.64.9(@effect/platform@0.69.8(effect@3.10.3))(effect@3.10.3)':
+  '@effect/platform-node@0.64.9(@effect/platform@0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf))(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)':
     dependencies:
-      '@effect/platform': 0.69.8(effect@3.10.3)
-      '@effect/platform-node-shared': 0.19.8(@effect/platform@0.69.8(effect@3.10.3))(effect@3.10.3)
-      effect: 3.10.3
+      '@effect/platform': 0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)
+      '@effect/platform-node-shared': 0.19.8(@effect/platform@0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf))(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)
+      effect: https://pkg.pr.new/Effect-TS/effect@0ec61cf
       mime: 3.0.0
       undici: 6.19.8
       ws: 8.18.0
@@ -17561,15 +17569,15 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.69.8(effect@3.10.3)':
+  '@effect/platform@0.69.8(effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf)':
     dependencies:
-      effect: 3.10.3
+      effect: https://pkg.pr.new/Effect-TS/effect@0ec61cf
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
 
-  '@effect/vitest@0.13.3(effect@3.10.3)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))':
+  '@effect/vitest@0.13.3(effect@3.10.7)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1))':
     dependencies:
-      effect: 3.10.3
+      effect: 3.10.7
       vitest: 2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2(@vitest/spy@2.1.2)(typescript@5.6.2)(vite@5.4.8(@types/node@20.16.11)(lightningcss@1.24.1)(terser@5.34.1))(vitest@2.1.2))(happy-dom@13.10.1)(lightningcss@1.24.1)(msw@2.2.13(patch_hash=mpkjv35lscrawpqthnrnago5ai)(typescript@5.6.2))(terser@5.34.1)
 
   '@egjs/agent@2.4.3': {}
@@ -24979,7 +24987,11 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.10.3:
+  effect@3.10.7:
+    dependencies:
+      fast-check: 3.22.0
+
+  effect@https://pkg.pr.new/Effect-TS/effect@0ec61cf:
     dependencies:
       fast-check: 3.22.0
 
