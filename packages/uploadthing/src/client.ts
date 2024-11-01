@@ -152,12 +152,12 @@ export const genUploader = <TRouter extends FileRouter>(
         signal: deferred.ac.signal,
       })
         .then((result) => {
-          if (result._tag === "Right") {
-            return deferred.resolve(result.right);
-          } else if (result.left._tag === "Interrupt") {
+          if (result._tag === "Success") {
+            return deferred.resolve(result.value);
+          } else if (result.cause._tag === "Interrupt") {
             throw new UploadPausedError();
           }
-          throw Micro.causeSquash(result.left);
+          throw Micro.causeSquash(result.cause);
         })
         .catch((err) => {
           if (err instanceof UploadPausedError) return;
@@ -199,12 +199,12 @@ export const genUploader = <TRouter extends FileRouter>(
           signal: upload.deferred.ac.signal,
         })
           .then((result) => {
-            if (result._tag === "Right") {
-              return upload.deferred.resolve(result.right);
-            } else if (result.left._tag === "Interrupt") {
+            if (result._tag === "Success") {
+              return upload.deferred.resolve(result.value);
+            } else if (result.cause._tag === "Interrupt") {
               throw new UploadPausedError();
             }
-            throw Micro.causeSquash(result.left);
+            throw Micro.causeSquash(result.cause);
           })
           .catch((err) => {
             if (err instanceof UploadPausedError) return;
@@ -266,12 +266,12 @@ export const genUploader = <TRouter extends FileRouter>(
         Micro.runPromiseExit(effect, opts.signal && { signal: opts.signal }),
       )
       .then((exit) => {
-        if (exit._tag === "Right") {
-          return exit.right;
-        } else if (exit.left._tag === "Interrupt") {
+        if (exit._tag === "Success") {
+          return exit.value;
+        } else if (exit.cause._tag === "Interrupt") {
           throw new UploadAbortedError();
         }
-        throw Micro.causeSquash(exit.left);
+        throw Micro.causeSquash(exit.cause);
       });
   };
 
