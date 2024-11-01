@@ -62,7 +62,7 @@
   },
   "pnpm": {
     "overrides": {
-      "effect": "https://pkg.pr.new/Effect-TS/effect@186e883"
+      "effect": "https://pkg.pr.new/Effect-TS/effect@cae6c77"
     },
     "patchedDependencies": {
       "msw@2.2.13": "patches/msw@2.2.13.patch",
