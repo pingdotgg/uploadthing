@@ -12,7 +12,8 @@ import {
   useLogger,
 } from "@nuxt/kit";
 import type { Resolver } from "@nuxt/kit";
-import type { Nuxt } from "@nuxt/schema";
+import type { Nuxt, NuxtOptions } from "@nuxt/schema";
+import type { ModuleOptions as TailwindModuleOptions } from "@nuxtjs/tailwindcss";
 import defu from "defu";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";
@@ -29,6 +30,10 @@ export type ModuleOptions = RouteHandlerConfig & {
    */
   injectStyles: boolean;
 };
+
+interface NuxtOptionsWithTailwind extends NuxtOptions {
+  tailwindcss?: Partial<TailwindModuleOptions>;
+}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -138,10 +143,9 @@ async function injectStyles(
     `,
   });
 
-  // @ts-expect-error - Help pls
-  const twModuleOptions = (nuxt.options.tailwindcss ??= {}) as {
-    configPath?: string | string[];
-  };
+  const twModuleOptions = ((
+    nuxt.options as NuxtOptionsWithTailwind
+  ).tailwindcss ??= {});
   if (typeof twModuleOptions.configPath === "string") {
     twModuleOptions.configPath = [twModuleOptions.configPath, template.dst];
   } else if (Array.isArray(twModuleOptions.configPath)) {

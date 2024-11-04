@@ -1399,6 +1399,9 @@ importers:
       '@nuxt/test-utils':
         specifier: ^3.12.0
         version: 3.12.1(@playwright/test@1.45.0)(h3@1.11.1)(happy-dom@13.10.1)(magicast@0.3.5)(playwright-core@1.45.0)(rollup@3.29.5)(vite@5.4.8(@types/node@20.16.11)(lightningcss@1.24.1)(terser@5.34.1))(vitest@1.6.0(@types/node@22.7.5)(@vitest/browser@2.1.2(@vitest/spy@2.1.2)(playwright@1.45.0)(typescript@5.6.2)(vite@5.4.8(@types/node@20.16.11)(lightningcss@1.24.1)(terser@5.34.1))(vitest@2.1.2))(happy-dom@13.10.1)(lightningcss@1.24.1)(terser@5.34.1))(vue-router@4.3.2(vue@3.4.25(typescript@5.6.2)))(vue@3.4.25(typescript@5.6.2))(webpack-sources@3.2.3)
+      '@nuxtjs/tailwindcss':
+        specifier: ^6.12.2
+        version: 6.12.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
       '@uploadthing/eslint-config':
         specifier: workspace:*
         version: link:../../tooling/eslint-config
@@ -19837,6 +19840,29 @@ snapshots:
       - vue-tsc
       - webpack-sources
 
+  '@nuxtjs/tailwindcss@6.12.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)':
+    dependencies:
+      '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@3.29.5)(webpack-sources@3.2.3)
+      autoprefixer: 10.4.20(postcss@8.4.47)
+      consola: 3.2.3
+      defu: 6.1.4
+      h3: 1.13.0
+      klona: 2.0.6
+      pathe: 1.1.2
+      postcss: 8.4.47
+      postcss-nesting: 13.0.1(postcss@8.4.47)
+      tailwind-config-viewer: 2.0.4(tailwindcss@3.4.14)
+      tailwindcss: 3.4.14
+      ufo: 1.5.4
+      unctx: 2.3.1(webpack-sources@3.2.3)
+    transitivePeerDependencies:
+      - magicast
+      - rollup
+      - supports-color
+      - ts-node
+      - uWebSockets.js
+      - webpack-sources
+
   '@nuxtjs/tailwindcss@6.12.2(magicast@0.3.5)(rollup@4.24.0)(webpack-sources@3.2.3)':
     dependencies:
       '@nuxt/kit': 3.13.2(magicast@0.3.5)(rollup@4.24.0)(webpack-sources@3.2.3)
@@ -22346,7 +22372,7 @@ snapshots:
 
   '@types/cross-spawn@6.0.6':
     dependencies:
-      '@types/node': 20.16.11
+      '@types/node': 20.17.3
 
   '@types/debug@4.1.8':
     dependencies:
@@ -27767,7 +27793,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 20.16.11
+      '@types/node': 20.17.3
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
