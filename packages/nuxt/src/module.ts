@@ -1,14 +1,19 @@
 import { existsSync } from "node:fs";
-import { resolve } from "node:path";
+import { dirname, resolve, sep } from "node:path";
 import {
   addComponent,
   addImports,
   addServerHandler,
+  addTemplate,
   createResolver,
   defineNuxtModule,
+  hasNuxtModule,
   resolvePath,
   useLogger,
 } from "@nuxt/kit";
+import type { Resolver } from "@nuxt/kit";
+import type { Nuxt, NuxtOptions } from "@nuxt/schema";
+import type { ModuleOptions as TailwindModuleOptions } from "@nuxtjs/tailwindcss";
 import defu from "defu";
 
 import type { RouteHandlerConfig } from "uploadthing/internal/types";
@@ -16,7 +21,19 @@ import type { RouteHandlerConfig } from "uploadthing/internal/types";
 // Module options TypeScript interface definition
 export type ModuleOptions = RouteHandlerConfig & {
   routerPath: string;
+  /**
+   * Injects UploadThing styles into the page
+   * If you're using Tailwind, it will inject the
+   * UploadThing Tailwind plugin instead.
+   *
+   * @default true
+   */
+  injectStyles: boolean;
 };
+
+interface NuxtOptionsWithTailwind extends NuxtOptions {
+  tailwindcss?: Partial<TailwindModuleOptions>;
+}
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -28,6 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     routerPath: "~/server/uploadthing",
+    injectStyles: true,
   },
   async setup(options, nuxt) {
     const logger = useLogger("uploadthing");
@@ -70,8 +88,10 @@ export default defineNuxtModule<ModuleOptions>({
       name: "UploadDropzone",
       filePath: resolver.resolve("./runtime/components/dropzone"),
     });
-    // FIXME: Use Tailwind Wrapper if the user has Tailwind installed
-    nuxt.options.css.push("@uploadthing/vue/styles.css");
+
+    if (options.injectStyles === true) {
+      await injectStyles(options, nuxt, resolver);
+    }
 
     addImports({
       name: "useUploadThing",
@@ -85,3 +105,52 @@ export default defineNuxtModule<ModuleOptions>({
     });
   },
 });
+
+async function injectStyles(
+  moduleOptions: ModuleOptions,
+  nuxt: Nuxt,
+  resolver: Resolver,
+) {
+  /**
+   * Inject UploadThing stylesheet if no Tailwind is installed
+   */
+  if (!hasNuxtModule("@nuxtjs/tailwindcss", nuxt)) {
+    nuxt.options.css.push("@uploadthing/vue/styles.css");
+    return;
+  }
+
+  /**
+   * Else we install our tailwind plugin
+   */
+
+  const vueDist = await resolver.resolvePath("@uploadthing/vue");
+  const contentPath = dirname(vueDist) + sep + "**";
+
+  const template = addTemplate({
+    filename: "uploadthing.tailwind.config.cjs",
+    write: true,
+    getContents: () => `
+      const { uploadthingPlugin } = require('uploadthing/tw');
+
+      module.exports = {
+        content: [
+          ${JSON.stringify(contentPath)}
+        ],
+        plugins: [
+          require('uploadthing/tw').uploadthingPlugin
+        ]
+      }
+    `,
+  });
+
+  const twModuleOptions = ((
+    nuxt.options as NuxtOptionsWithTailwind
+  ).tailwindcss ??= {});
+  if (typeof twModuleOptions.configPath === "string") {
+    twModuleOptions.configPath = [twModuleOptions.configPath, template.dst];
+  } else if (Array.isArray(twModuleOptions.configPath)) {
+    twModuleOptions.configPath.push(template.dst);
+  } else {
+    twModuleOptions.configPath = template.dst;
+  }
+}
