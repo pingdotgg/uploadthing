@@ -86,7 +86,7 @@ type UploadCompleteFn<TMetadata, TOutput extends JsonObject | void> = (opts: {
 type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
-}) => Promise<void> | void;
+}) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -143,11 +143,13 @@ export interface UploadBuilder<TParams extends AnyParams> {
     >,
   ) => FileRoute<{
     input: TParams["_input"]["in"] extends UnsetMarker
-      ? void
+      ? undefined
       : TParams["_input"]["in"];
     output: TParams["_routeOptions"]["awaitServerData"] extends false
-      ? void
-      : TOutput;
+      ? null
+      : TOutput extends void | undefined // JSON serialization
+        ? null
+        : TOutput;
     errorShape: TParams["_errorShape"];
   }>;
 }

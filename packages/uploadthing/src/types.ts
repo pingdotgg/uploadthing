@@ -33,9 +33,7 @@ export type inferEndpointInput<TFileRoute extends AnyFileRoute> =
   TFileRoute["$types"]["input"];
 
 export type inferEndpointOutput<TFileRoute extends AnyFileRoute> =
-  TFileRoute["$types"]["output"] extends void | undefined
-    ? null
-    : TFileRoute["$types"]["output"];
+  TFileRoute["$types"]["output"];
 
 export type inferErrorShape<TFileRoute extends AnyFileRoute> =
   TFileRoute["$types"]["errorShape"];
