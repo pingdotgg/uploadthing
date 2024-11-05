@@ -56,14 +56,16 @@ const uploadWithProgress = (
       );
     });
 
+    // const sliced = new File([file.slice(rangeStart)], file.name, {
+    //   lastModified: file.lastModified,
+    //   type: file.type,
+    // });
+
+    // console.log("File", file);
+    // console.log(`file.slice(${rangeStart})`, sliced);
+
     const formData = new FormData();
-    formData.append(
-      "file",
-      new File([file.slice(rangeStart)], file.name, {
-        lastModified: file.lastModified,
-        type: file.type,
-      }),
-    );
+    formData.append("file", file);
     xhr.send(formData);
 
     return Micro.sync(() => xhr.abort());
