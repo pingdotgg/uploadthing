@@ -5,7 +5,7 @@ import * as Layer from "effect/Layer";
 import type { Json } from "@uploadthing/shared";
 
 import { configProvider } from "./internal/config";
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { AdapterArguments, createRequestHandler } from "./internal/handler";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 import type { FileRouter, RouteHandlerConfig } from "./types";
@@ -52,7 +52,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(opts: {
 
   return HttpRouter.provideServiceEffect(
     router,
-    MiddlewareArguments,
+    AdapterArguments,
     Effect.map(HttpServerRequest.HttpServerRequest, (serverRequest) => ({
       req: serverRequest,
       res: undefined,

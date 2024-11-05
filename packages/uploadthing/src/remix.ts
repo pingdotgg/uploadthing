@@ -11,7 +11,7 @@ import type { FileRouter, RouteHandlerOptions } from "./types";
 export type { FileRouter };
 export { UTFiles } from "./internal/types";
 
-type MiddlewareArgs = {
+type AdapterArgs = {
   req: undefined;
   res: undefined;
   event: ActionFunctionArgs;
@@ -19,7 +19,7 @@ type MiddlewareArgs = {
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
+) => createBuilder<AdapterArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,

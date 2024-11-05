@@ -13,7 +13,7 @@ import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Match from "effect/Match";
 import * as Redacted from "effect/Redacted";
-import * as S from "effect/Schema";
+import * as Schema from "effect/Schema";
 
 import {
   fillInputRouteConfig,
@@ -45,16 +45,16 @@ import {
   UploadThingHook,
 } from "./shared-schemas";
 import { UTFiles } from "./types";
-import type { AnyFileRoute, MiddlewareFnArgs, UTEvents } from "./types";
+import type { AdapterFnArgs, AnyFileRoute, UTEvents } from "./types";
 
-export class MiddlewareArguments extends Context.Tag(
-  "uploadthing/MiddlewareArguments",
-)<MiddlewareArguments, MiddlewareFnArgs<any, any, any>>() {}
+export class AdapterArguments extends Context.Tag(
+  "uploadthing/AdapterArguments",
+)<AdapterArguments, AdapterFnArgs<any, any, any>>() {}
 
 export const makeAdapterHandler = <Args extends any[]>(
-  makeMiddlewareArgs: (
+  makeAdapterArgs: (
     ...args: Args
-  ) => Effect.Effect<MiddlewareFnArgs<any, any, any>>,
+  ) => Effect.Effect<AdapterFnArgs<any, any, any>>,
   toRequest: (...args: Args) => Effect.Effect<Request>,
   opts: RouteHandlerOptions<FileRouter>,
   beAdapter: string,
@@ -72,10 +72,7 @@ export const makeAdapterHandler = <Args extends any[]>(
       Effect.promise(() =>
         managed.runPromise(createRequestHandler(opts, beAdapter)),
       ),
-      Effect.provideServiceEffect(
-        MiddlewareArguments,
-        makeMiddlewareArgs(...args),
-      ),
+      Effect.provideServiceEffect(AdapterArguments, makeAdapterArgs(...args)),
     );
 
   return async (...args: Args) => {
@@ -121,13 +118,13 @@ export const createRequestHandler = <TRouter extends FileRouter>(
         "x-uploadthing-package": fePackage,
         "x-uploadthing-version": clientVersion,
       } = yield* HttpServerRequest.schemaHeaders(
-        S.Struct({
-          "uploadthing-hook": UploadThingHook.pipe(S.optional),
-          "x-uploadthing-package": S.String.pipe(
-            S.optionalWith({ default: () => "unknown" }),
+        Schema.Struct({
+          "uploadthing-hook": UploadThingHook.pipe(Schema.optional),
+          "x-uploadthing-package": Schema.String.pipe(
+            Schema.optionalWith({ default: () => "unknown" }),
           ),
-          "x-uploadthing-version": S.String.pipe(
-            S.optionalWith({ default: () => pkgJson.version }),
+          "x-uploadthing-version": Schema.String.pipe(
+            Schema.optionalWith({ default: () => pkgJson.version }),
           ),
         }),
       );
@@ -140,9 +137,9 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       }
 
       const { slug, actionType } = yield* HttpRouter.schemaParams(
-        S.Struct({
-          actionType: ActionType.pipe(S.optional),
-          slug: S.String,
+        Schema.Struct({
+          actionType: ActionType.pipe(Schema.optional),
+          slug: Schema.String,
         }),
       );
 
@@ -248,18 +245,20 @@ const handleErrorRequest = (opts: { uploadable: AnyFileRoute }) =>
     }
 
     const requestInput = yield* HttpServerRequest.schemaBodyJson(
-      S.Struct({
-        fileKey: S.String,
-        error: S.String,
+      Schema.Struct({
+        fileKey: Schema.String,
+        error: Schema.String,
       }),
     );
     yield* Effect.logDebug("Handling error callback request with input:").pipe(
       Effect.annotateLogs("json", requestInput),
     );
 
+    const adapterArgs = yield* AdapterArguments;
     const fiber = yield* Effect.tryPromise({
       try: async () =>
         uploadable.onUploadError({
+          ...adapterArgs,
           error: new UploadThingError({
             code: "UPLOAD_FAILED",
             message: `Upload failed for ${requestInput.fileKey}: ${requestInput.error}`,
@@ -312,10 +311,10 @@ const handleCallbackRequest = (opts: {
     }
 
     const requestInput = yield* HttpServerRequest.schemaBodyJson(
-      S.Struct({
-        status: S.String,
+      Schema.Struct({
+        status: Schema.String,
         file: UploadedFileData,
-        metadata: S.Record({ key: S.String, value: S.Unknown }),
+        metadata: Schema.Record({ key: Schema.String, value: Schema.Unknown }),
       }),
     );
     yield* Effect.logDebug("Handling callback request with input:").pipe(
@@ -326,10 +325,12 @@ const handleCallbackRequest = (opts: {
      * Run `.onUploadComplete` as a daemon to prevent the
      * request from UT to potentially timeout.
      */
+    const adapterArgs = yield* AdapterArguments;
     const fiber = yield* Effect.gen(function* () {
       const serverData = yield* Effect.tryPromise({
         try: async () =>
           uploadable.onUploadComplete({
+            ...adapterArgs,
             file: requestInput.file,
             metadata: requestInput.metadata,
           }) as Promise<unknown>,
@@ -384,7 +385,7 @@ const runRouteMiddleware = (opts: {
   uploadable: AnyFileRoute;
 }) =>
   Effect.gen(function* () {
-    const middlewareArgs = yield* MiddlewareArguments;
+    const adapterArgs = yield* AdapterArguments;
     const {
       json: { files, input },
       uploadable,
@@ -394,7 +395,7 @@ const runRouteMiddleware = (opts: {
     const metadata = yield* Effect.tryPromise({
       try: async () =>
         uploadable.middleware({
-          ...middlewareArgs,
+          ...adapterArgs,
           input,
           files,
         }),
