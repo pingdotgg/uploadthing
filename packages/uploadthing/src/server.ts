@@ -14,7 +14,11 @@ export { UTApi } from "./sdk";
 export { UTFile } from "./sdk/ut-file";
 export { UploadThingError, type FileRouter };
 
-type AdapterArgs = { req: Request; res: undefined; event: undefined };
+type AdapterArgs = {
+  req: Request;
+  res: undefined;
+  event: undefined;
+};
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,

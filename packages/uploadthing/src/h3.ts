@@ -12,7 +12,11 @@ import type { FileRouter, RouteHandlerOptions } from "./types";
 export { UTFiles } from "./internal/types";
 export type { FileRouter };
 
-type AdapterArgs = { req: undefined; res: undefined; event: H3Event };
+type AdapterArgs = {
+  req: undefined;
+  res: undefined;
+  event: H3Event;
+};
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
