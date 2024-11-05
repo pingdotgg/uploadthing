@@ -70,7 +70,10 @@ export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
 
 export interface AnyParams {
   _routeOptions: any;
-  _input: any;
+  _input: {
+    in: any;
+    out: any;
+  };
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
   _middlewareArgs: MiddlewareFnArgs<any, any, any>;
   _errorShape: any;
@@ -101,12 +104,12 @@ type UploadErrorFn = (input: {
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
-    parser: TParams["_input"] extends UnsetMarker
+    parser: TParams["_input"]["in"] extends UnsetMarker
       ? TParser
       : ErrorMessage<"input is already set">,
   ) => UploadBuilder<{
     _routeOptions: TParams["_routeOptions"];
-    _input: TParser["_output"];
+    _input: { in: TParser["_input"]; out: TParser["_output"] };
     _metadata: TParams["_metadata"];
     _middlewareArgs: TParams["_middlewareArgs"];
     _errorShape: TParams["_errorShape"];
@@ -115,7 +118,11 @@ export interface UploadBuilder<TParams extends AnyParams> {
   }>;
   middleware: <TOutput extends ValidMiddlewareObject>(
     fn: TParams["_metadata"] extends UnsetMarker
-      ? MiddlewareFn<TParams["_input"], TOutput, TParams["_middlewareArgs"]>
+      ? MiddlewareFn<
+          TParams["_input"]["out"],
+          TOutput,
+          TParams["_middlewareArgs"]
+        >
       : ErrorMessage<"middleware is already set">,
   ) => UploadBuilder<{
     _routeOptions: TParams["_routeOptions"];
@@ -156,8 +163,12 @@ export type UploadBuilderDef<TParams extends AnyParams> = {
   routerConfig: FileRouterInputConfig;
   routeOptions: RouteOptions;
   inputParser: JsonParser;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  middleware: MiddlewareFn<TParams["_input"], {}, TParams["_middlewareArgs"]>;
+  middleware: MiddlewareFn<
+    TParams["_input"]["out"],
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    {},
+    TParams["_middlewareArgs"]
+  >;
   errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
   onUploadError: UploadErrorFn;
 };
@@ -220,9 +231,9 @@ export type RouteHandlerOptions<TRouter extends FileRouter> = {
 };
 
 export type inferEndpointInput<TUploader extends Uploader<any>> =
-  TUploader["_def"]["_input"] extends UnsetMarker
+  TUploader["_def"]["_input"]["in"] extends UnsetMarker
     ? undefined
-    : TUploader["_def"]["_input"];
+    : TUploader["_def"]["_input"]["in"];
 
 export type inferEndpointOutput<TUploader extends AnyUploader> =
   TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
