@@ -23,7 +23,7 @@ function internalCreateBuilder<
   initDef: Partial<UploadBuilderDef<any>> = {},
 ): UploadBuilder<{
   _routeOptions: TRouteOptions;
-  _input: UnsetMarker;
+  _input: { in: UnsetMarker; out: UnsetMarker };
   _metadata: UnsetMarker;
   _middlewareArgs: TMiddlewareArgs;
   _errorShape: TErrorShape;
@@ -99,7 +99,7 @@ export function createBuilder<
     config?: TRouteOptions,
   ): UploadBuilder<{
     _routeOptions: TRouteOptions;
-    _input: UnsetMarker;
+    _input: { in: UnsetMarker; out: UnsetMarker };
     _metadata: UnsetMarker;
     _middlewareArgs: TMiddlewareArgs;
     _errorShape: TErrorShape;
