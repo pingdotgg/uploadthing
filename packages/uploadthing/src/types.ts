@@ -1,17 +1,15 @@
+import type * as Config from "effect/Config";
+import type * as LogLevel from "effect/LogLevel";
+
 import type {
   ErrorMessage,
   ExtendObjectIf,
+  FetchEsque,
   MaybePromise,
 } from "@uploadthing/shared";
 
-import type { FileRouter, inferEndpointInput } from "./internal/types";
-
-export type {
-  inferEndpointInput,
-  inferEndpointOutput,
-  inferErrorShape,
-  FileRouter,
-} from "./internal/types";
+import type { LogFormat } from "./internal/logger";
+import type { AnyUploader } from "./internal/types";
 
 export * from "./sdk/types";
 
@@ -27,6 +25,65 @@ export type {
   ClientUploadedFileData,
   NewPresignedUrl,
 } from "./internal/shared-schemas";
+
+export type FileRouter = Record<string, AnyUploader>;
+
+export type inferEndpointInput<TUploader extends AnyUploader> =
+  TUploader["$types"]["input"];
+
+export type inferEndpointOutput<TUploader extends AnyUploader> =
+  TUploader["$types"]["output"] extends void | undefined
+    ? null
+    : TUploader["$types"]["output"];
+
+export type inferErrorShape<TRouter extends FileRouter> =
+  TRouter[keyof TRouter]["$types"]["errorShape"];
+
+export type RouteHandlerConfig = {
+  logLevel?: LogLevel.Literal;
+  /**
+   * What format log entries should be in
+   * @default "pretty" in development, else "json"
+   * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
+   */
+  logFormat?: Config.Config.Success<typeof LogFormat>;
+  callbackUrl?: string;
+  token?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+  /**
+   * Set how UploadThing should handle the daemon promise before returning a response to the client.
+   * You can also provide a synchronous function that will be called before returning a response to
+   * the client. This can be useful for things like:
+   * -  [`@vercel/functions.waitUntil`](https://vercel.com/docs/functions/functions-api-reference#waituntil)
+   * - [`next/after`](https://nextjs.org/blog/next-15-rc#executing-code-after-a-response-with-nextafter-experimental)
+   * - or equivalent function from your serverless infrastructure provider that allows asynchronous streaming
+   * If deployed on a stateful server, you most likely want "void" to run the daemon in the background.
+   * @remarks - `"await"` is not allowed in development environments
+   * @default isDev === true ? "void" : "await"
+   */
+  handleDaemonPromise?:
+    | "void"
+    | "await"
+    | ((promise: Promise<unknown>) => void);
+  /**
+   * URL override for the ingest server
+   */
+  ingestUrl?: string;
+};
+
+export type RouteHandlerOptions<TRouter extends FileRouter> = {
+  router: TRouter;
+  config?: RouteHandlerConfig;
+};
 
 export type UploadFilesOptions<
   TRouter extends FileRouter,

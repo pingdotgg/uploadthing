@@ -16,7 +16,7 @@ import type { Nuxt, NuxtOptions } from "@nuxt/schema";
 import type { ModuleOptions as TailwindModuleOptions } from "@nuxtjs/tailwindcss";
 import defu from "defu";
 
-import type { RouteHandlerConfig } from "uploadthing/internal/types";
+import type { RouteHandlerConfig } from "uploadthing/types";
 
 // Module options TypeScript interface definition
 export type ModuleOptions = RouteHandlerConfig & {

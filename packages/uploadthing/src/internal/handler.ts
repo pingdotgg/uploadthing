@@ -27,6 +27,7 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../../package.json";
+import type { FileRouter, RouteHandlerOptions } from "../types";
 import { IngestUrl, IsDevelopment, UTToken } from "./config";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
@@ -44,13 +45,7 @@ import {
   UploadThingHook,
 } from "./shared-schemas";
 import { UTFiles } from "./types";
-import type {
-  AnyUploader,
-  FileRouter,
-  MiddlewareFnArgs,
-  RouteHandlerOptions,
-  UTEvents,
-} from "./types";
+import type { AnyUploader, MiddlewareFnArgs, UTEvents } from "./types";
 
 export class MiddlewareArguments extends Context.Tag(
   "uploadthing/MiddlewareArguments",

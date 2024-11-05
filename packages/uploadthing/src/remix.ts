@@ -4,9 +4,9 @@ import * as Effect from "effect/Effect";
 import type { Json } from "@uploadthing/shared";
 
 import { makeAdapterHandler } from "./internal/handler";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import type { FileRouter, RouteHandlerOptions } from "./types";
 
 export type { FileRouter };
 export { UTFiles } from "./internal/types";

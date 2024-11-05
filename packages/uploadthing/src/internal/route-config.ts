@@ -20,8 +20,8 @@ import {
   UploadThingError,
 } from "@uploadthing/shared";
 
+import type { FileRouter } from "../types";
 import type { UploadActionPayload } from "./shared-schemas";
-import type { FileRouter } from "./types";
 
 class FileSizeMismatch extends Data.Error<{
   reason: string;

@@ -7,8 +7,8 @@ import type {
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
+  AnyBuiltUploaderTypes,
   AnyUploader,
-  BuiltUploaderTypes,
   MiddlewareFnArgs,
   UnsetMarker,
   UploadBuilder,
@@ -31,7 +31,7 @@ function internalCreateBuilder<
   _output: UnsetMarker;
 }> {
   const _def: AnyUploader = {
-    $types: {} as BuiltUploaderTypes,
+    $types: {} as AnyBuiltUploaderTypes,
     // Default router config
     routerConfig: {
       image: {

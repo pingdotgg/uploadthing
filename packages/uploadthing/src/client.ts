@@ -16,15 +16,16 @@ import {
 import * as pkgJson from "../package.json";
 import type { Deferred } from "./internal/deferred";
 import { createDeferred } from "./internal/deferred";
-import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import { uploadFile, uploadFilesInternal } from "./internal/upload.browser";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
   CreateUploadOptions,
   EndpointArg,
+  FileRouter,
   GenerateUploaderOptions,
   inferEndpointInput,
+  inferEndpointOutput,
   NewPresignedUrl,
   RouteRegistry,
   UploadFilesOptions,
