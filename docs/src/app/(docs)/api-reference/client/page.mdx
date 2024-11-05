@@ -123,6 +123,11 @@ function that matches the signature of your file router, which will allow
 autocompletion and type checking on endpoint, route input and callback data
 types.
 
+<Warning>
+  Due to difficulties integrating with React Native's `Blob` implementation,
+  resumable uploads are currently not supported on React Native.
+</Warning>
+
 ```ts
 import { genUploader } from "uploadthing/client";
 
