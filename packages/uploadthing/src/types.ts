@@ -1,4 +1,3 @@
-import type * as Config from "effect/Config";
 import type * as LogLevel from "effect/LogLevel";
 
 import type {
@@ -45,7 +44,7 @@ export type RouteHandlerConfig = {
    * @default "pretty" in development, else "json"
    * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
    */
-  logFormat?: Config.Config.Success<typeof LogFormat>;
+  logFormat?: LogFormat;
   callbackUrl?: string;
   token?: string;
   /**
