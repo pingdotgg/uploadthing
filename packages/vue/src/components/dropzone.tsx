@@ -115,7 +115,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const files = ref<File[]>([]);
       const uploadProgress = ref(0);
 
-      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+      const useUploadthingProps: UseUploadthingProps<TRouter[TEndpoint]> =
         reactive({
           signal: acRef.value.signal,
           headers: $props.headers,

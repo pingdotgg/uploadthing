@@ -8,11 +8,10 @@ import type {
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
   AnyBuiltUploaderTypes,
-  AnyUploader,
+  AnyFileRoute,
   MiddlewareFnArgs,
   UnsetMarker,
   UploadBuilder,
-  Uploader,
 } from "./types";
 
 function internalCreateBuilder<
@@ -20,7 +19,7 @@ function internalCreateBuilder<
   TRouteOptions extends RouteOptions,
   TErrorShape extends Json = { message: string },
 >(
-  initDef: Partial<AnyUploader> = {},
+  initDef: Partial<AnyFileRoute> = {},
 ): UploadBuilder<{
   _routeOptions: TRouteOptions;
   _input: { in: UnsetMarker; out: UnsetMarker };
@@ -30,7 +29,7 @@ function internalCreateBuilder<
   _errorFn: UnsetMarker;
   _output: UnsetMarker;
 }> {
-  const _def: AnyUploader = {
+  const _def: AnyFileRoute = {
     $types: {} as AnyBuiltUploaderTypes,
     // Default router config
     routerConfig: {
@@ -77,7 +76,7 @@ function internalCreateBuilder<
       return {
         ..._def,
         onUploadComplete: userUploadComplete,
-      } as Uploader<any>;
+      } as AnyFileRoute;
     },
     onUploadError(userOnUploadError) {
       return internalCreateBuilder({

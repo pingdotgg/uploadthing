@@ -45,7 +45,7 @@ import {
   UploadThingHook,
 } from "./shared-schemas";
 import { UTFiles } from "./types";
-import type { AnyUploader, MiddlewareFnArgs, UTEvents } from "./types";
+import type { AnyFileRoute, MiddlewareFnArgs, UTEvents } from "./types";
 
 export class MiddlewareArguments extends Context.Tag(
   "uploadthing/MiddlewareArguments",
@@ -228,7 +228,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
     );
   }).pipe(Effect.withLogSpan("createRequestHandler"));
 
-const handleErrorRequest = (opts: { uploadable: AnyUploader }) =>
+const handleErrorRequest = (opts: { uploadable: AnyFileRoute }) =>
   Effect.gen(function* () {
     const { uploadable } = opts;
     const request = yield* HttpServerRequest.HttpServerRequest;
@@ -289,7 +289,7 @@ const handleErrorRequest = (opts: { uploadable: AnyUploader }) =>
   }).pipe(Effect.withLogSpan("handleErrorRequest"));
 
 const handleCallbackRequest = (opts: {
-  uploadable: AnyUploader;
+  uploadable: AnyFileRoute;
   fePackage: string;
   beAdapter: string;
 }) =>
@@ -381,7 +381,7 @@ const handleCallbackRequest = (opts: {
 
 const runRouteMiddleware = (opts: {
   json: typeof UploadActionPayload.Type;
-  uploadable: AnyUploader;
+  uploadable: AnyFileRoute;
 }) =>
   Effect.gen(function* () {
     const middlewareArgs = yield* MiddlewareArguments;
@@ -441,7 +441,7 @@ const runRouteMiddleware = (opts: {
   }).pipe(Effect.withLogSpan("runRouteMiddleware"));
 
 const handleUploadAction = (opts: {
-  uploadable: AnyUploader;
+  uploadable: AnyFileRoute;
   fePackage: string;
   beAdapter: string;
   slug: string;

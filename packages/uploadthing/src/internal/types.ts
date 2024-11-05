@@ -141,7 +141,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       >,
       TOutput
     >,
-  ) => Uploader<{
+  ) => FileRoute<{
     input: TParams["_input"]["in"] extends UnsetMarker
       ? void
       : TParams["_input"]["in"];
@@ -158,7 +158,7 @@ export type AnyBuiltUploaderTypes = {
   errorShape: any;
 };
 
-export interface Uploader<TTypes extends AnyBuiltUploaderTypes> {
+export interface FileRoute<TTypes extends AnyBuiltUploaderTypes> {
   $types: TTypes;
   routerConfig: FileRouterInputConfig;
   routeOptions: RouteOptions;
@@ -168,7 +168,7 @@ export interface Uploader<TTypes extends AnyBuiltUploaderTypes> {
   errorFormatter: (err: UploadThingError) => any;
   onUploadComplete: UploadCompleteFn<any, any>;
 }
-export type AnyUploader = Uploader<AnyBuiltUploaderTypes>;
+export type AnyFileRoute = FileRoute<AnyBuiltUploaderTypes>;
 
 /**
  * Map actionType to the required payload for that action

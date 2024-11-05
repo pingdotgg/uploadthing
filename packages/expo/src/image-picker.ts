@@ -28,7 +28,7 @@ export const GENERATE_useImageUploader = <
 }) => {
   const useImageUploader = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter[TEndpoint]>,
   ) => {
     const { routeConfig, startUpload, isUploading } = __useUploadThingInternal(
       initOpts.url,

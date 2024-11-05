@@ -92,7 +92,7 @@ export const genUploader = <TRouter extends FileRouter>(
   >(
     slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
-      CreateUploadOptions<TRouter, TEndpoint>,
+      CreateUploadOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
     >,
   ) => {
@@ -249,7 +249,7 @@ export const genUploader = <TRouter extends FileRouter>(
   const typedUploadFiles = <TEndpoint extends keyof TRouter>(
     slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
-      UploadFilesOptions<TRouter, TEndpoint>,
+      UploadFilesOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
     >,
   ) => {
