@@ -118,8 +118,8 @@ export const extractRouterConfig = <TRouter extends FileRouter>(
   router: TRouter,
 ) =>
   Effect.forEach(objectKeys(router), (slug) =>
-    Effect.map(
-      fillInputRouteConfig(router[slug]._def.routerConfig),
-      (config) => ({ slug, config }),
-    ),
+    Effect.map(fillInputRouteConfig(router[slug].routerConfig), (config) => ({
+      slug,
+      config,
+    })),
   );

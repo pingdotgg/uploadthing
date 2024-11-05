@@ -7,11 +7,11 @@ import type {
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
-  AnyParams,
+  AnyUploader,
+  BuiltUploaderTypes,
   MiddlewareFnArgs,
   UnsetMarker,
   UploadBuilder,
-  UploadBuilderDef,
   Uploader,
 } from "./types";
 
@@ -20,7 +20,7 @@ function internalCreateBuilder<
   TRouteOptions extends RouteOptions,
   TErrorShape extends Json = { message: string },
 >(
-  initDef: Partial<UploadBuilderDef<any>> = {},
+  initDef: Partial<AnyUploader> = {},
 ): UploadBuilder<{
   _routeOptions: TRouteOptions;
   _input: { in: UnsetMarker; out: UnsetMarker };
@@ -30,7 +30,8 @@ function internalCreateBuilder<
   _errorFn: UnsetMarker;
   _output: UnsetMarker;
 }> {
-  const _def: UploadBuilderDef<AnyParams> = {
+  const _def: AnyUploader = {
+    $types: {} as BuiltUploaderTypes,
     // Default router config
     routerConfig: {
       image: {
@@ -51,6 +52,7 @@ function internalCreateBuilder<
     onUploadError: () => {
       // noop
     },
+    onUploadComplete: () => undefined,
 
     errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 
@@ -73,8 +75,8 @@ function internalCreateBuilder<
     },
     onUploadComplete(userUploadComplete) {
       return {
-        _def,
-        resolver: userUploadComplete,
+        ..._def,
+        onUploadComplete: userUploadComplete,
       } as Uploader<any>;
     },
     onUploadError(userOnUploadError) {

@@ -13,8 +13,7 @@ export function formatError<TRouter extends FileRouter>(
   router: TRouter,
 ): inferErrorShape<TRouter> {
   const errorFormatter =
-    router[Object.keys(router)[0]]?._def.errorFormatter ??
-    defaultErrorFormatter;
+    router[Object.keys(router)[0]]?.errorFormatter ?? defaultErrorFormatter;
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return errorFormatter(error);

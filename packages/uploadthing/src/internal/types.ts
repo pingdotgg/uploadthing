@@ -49,13 +49,8 @@ export type ValidMiddlewareObject = {
   [key: string]: unknown;
 };
 
-type ResolverOptions<TParams extends AnyParams> = {
-  metadata: Simplify<
-    TParams["_metadata"] extends UnsetMarker
-      ? undefined
-      : Omit<TParams["_metadata"], typeof UTFiles>
-  >;
-
+type ResolverOptions<TMetadata> = {
+  metadata: TMetadata;
   file: UploadedFileData;
 };
 
@@ -92,10 +87,9 @@ type MiddlewareFn<
   },
 ) => MaybePromise<TOutput>;
 
-type ResolverFn<
-  TOutput extends JsonObject | void,
-  TParams extends AnyParams,
-> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
+type UploadCompleteFn<TMetadata, TOutput extends JsonObject | void> = (
+  opts: ResolverOptions<TMetadata>,
+) => MaybePromise<TOutput>;
 
 type UploadErrorFn = (input: {
   error: UploadThingError;
@@ -133,17 +127,6 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
-  onUploadComplete: <TOutput extends JsonObject | void>(
-    fn: ResolverFn<TOutput, TParams>,
-  ) => Uploader<{
-    _routeOptions: TParams["_routeOptions"];
-    _input: TParams["_input"];
-    _metadata: TParams["_metadata"];
-    _middlewareArgs: TParams["_middlewareArgs"];
-    _errorShape: TParams["_errorShape"];
-    _errorFn: TParams["_errorFn"];
-    _output: TOutput;
-  }>;
   onUploadError: (
     fn: TParams["_errorFn"] extends UnsetMarker
       ? UploadErrorFn
@@ -157,32 +140,45 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: UploadErrorFn;
     _output: UnsetMarker;
   }>;
+  onUploadComplete: <TOutput extends JsonObject | void>(
+    fn: UploadCompleteFn<
+      Simplify<
+        TParams["_metadata"] extends UnsetMarker
+          ? undefined
+          : Omit<TParams["_metadata"], typeof UTFiles>
+      >,
+      TOutput
+    >,
+  ) => Uploader<{
+    input: TParams["_input"]["in"] extends UnsetMarker
+      ? void
+      : TParams["_input"]["in"];
+    output: TParams["_routeOptions"]["awaitServerData"] extends false
+      ? void
+      : TOutput;
+    errorShape: TParams["_errorShape"];
+  }>;
 }
 
-export type UploadBuilderDef<TParams extends AnyParams> = {
+export type BuiltUploaderTypes = {
+  input: any;
+  output: any;
+  errorShape: any;
+};
+
+export interface Uploader<TTypes extends BuiltUploaderTypes> {
+  $types: TTypes;
   routerConfig: FileRouterInputConfig;
   routeOptions: RouteOptions;
   inputParser: JsonParser;
-  middleware: MiddlewareFn<
-    TParams["_input"]["out"],
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    {},
-    TParams["_middlewareArgs"]
-  >;
-  errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
+  middleware: MiddlewareFn<any, ValidMiddlewareObject, any>;
   onUploadError: UploadErrorFn;
-};
-
-export interface Uploader<TParams extends AnyParams> {
-  _def: TParams & UploadBuilderDef<TParams>;
-  resolver: ResolverFn<TParams["_output"], TParams>;
+  errorFormatter: (err: UploadThingError) => any;
+  onUploadComplete: UploadCompleteFn<any, any>;
 }
-export type AnyUploader = Uploader<AnyParams>;
+export type AnyUploader = Uploader<BuiltUploaderTypes>;
 
-export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
-  string,
-  Uploader<TParams>
->;
+export type FileRouter = Record<string, AnyUploader>;
 
 export type RouteHandlerConfig = {
   logLevel?: LogLevel.Literal;
@@ -230,20 +226,16 @@ export type RouteHandlerOptions<TRouter extends FileRouter> = {
   config?: RouteHandlerConfig;
 };
 
-export type inferEndpointInput<TUploader extends Uploader<any>> =
-  TUploader["_def"]["_input"]["in"] extends UnsetMarker
-    ? undefined
-    : TUploader["_def"]["_input"]["in"];
+export type inferEndpointInput<TUploader extends AnyUploader> =
+  TUploader["$types"]["input"];
 
 export type inferEndpointOutput<TUploader extends AnyUploader> =
-  TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
+  TUploader["$types"]["output"] extends UnsetMarker | void | undefined
     ? null
-    : TUploader["_def"]["_routeOptions"]["awaitServerData"] extends false
-      ? null
-      : TUploader["_def"]["_output"];
+    : TUploader["$types"]["output"];
 
 export type inferErrorShape<TRouter extends FileRouter> =
-  TRouter[keyof TRouter]["_def"]["_errorShape"];
+  TRouter[keyof TRouter]["$types"]["errorShape"];
 
 /**
  * Map actionType to the required payload for that action

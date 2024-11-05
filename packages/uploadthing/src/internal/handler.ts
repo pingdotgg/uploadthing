@@ -45,13 +45,11 @@ import {
 } from "./shared-schemas";
 import { UTFiles } from "./types";
 import type {
-  AnyParams,
+  AnyUploader,
   FileRouter,
   MiddlewareFnArgs,
   RouteHandlerOptions,
-  Uploader,
   UTEvents,
-  ValidMiddlewareObject,
 } from "./types";
 
 export class MiddlewareArguments extends Context.Tag(
@@ -235,7 +233,7 @@ export const createRequestHandler = <TRouter extends FileRouter>(
     );
   }).pipe(Effect.withLogSpan("createRequestHandler"));
 
-const handleErrorRequest = (opts: { uploadable: Uploader<AnyParams> }) =>
+const handleErrorRequest = (opts: { uploadable: AnyUploader }) =>
   Effect.gen(function* () {
     const { uploadable } = opts;
     const request = yield* HttpServerRequest.HttpServerRequest;
@@ -266,7 +264,7 @@ const handleErrorRequest = (opts: { uploadable: Uploader<AnyParams> }) =>
 
     const fiber = yield* Effect.tryPromise({
       try: async () =>
-        uploadable._def.onUploadError({
+        uploadable.onUploadError({
           error: new UploadThingError({
             code: "UPLOAD_FAILED",
             message: `Upload failed for ${requestInput.fileKey}: ${requestInput.error}`,
@@ -296,7 +294,7 @@ const handleErrorRequest = (opts: { uploadable: Uploader<AnyParams> }) =>
   }).pipe(Effect.withLogSpan("handleErrorRequest"));
 
 const handleCallbackRequest = (opts: {
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
   fePackage: string;
   beAdapter: string;
 }) =>
@@ -336,7 +334,7 @@ const handleCallbackRequest = (opts: {
     const fiber = yield* Effect.gen(function* () {
       const serverData = yield* Effect.tryPromise({
         try: async () =>
-          uploadable.resolver({
+          uploadable.onUploadComplete({
             file: requestInput.file,
             metadata: requestInput.metadata,
           }) as Promise<unknown>,
@@ -388,7 +386,7 @@ const handleCallbackRequest = (opts: {
 
 const runRouteMiddleware = (opts: {
   json: typeof UploadActionPayload.Type;
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
 }) =>
   Effect.gen(function* () {
     const middlewareArgs = yield* MiddlewareArguments;
@@ -400,11 +398,11 @@ const runRouteMiddleware = (opts: {
     yield* Effect.logDebug("Running middleware");
     const metadata = yield* Effect.tryPromise({
       try: async () =>
-        uploadable._def.middleware({
+        uploadable.middleware({
           ...middlewareArgs,
           input,
           files,
-        }) as Promise<ValidMiddlewareObject>,
+        }),
       catch: (error) =>
         error instanceof UploadThingError
           ? error
@@ -448,7 +446,7 @@ const runRouteMiddleware = (opts: {
   }).pipe(Effect.withLogSpan("runRouteMiddleware"));
 
 const handleUploadAction = (opts: {
-  uploadable: Uploader<AnyParams>;
+  uploadable: AnyUploader;
   fePackage: string;
   beAdapter: string;
   slug: string;
@@ -465,9 +463,8 @@ const handleUploadAction = (opts: {
 
     // validate the input
     yield* Effect.logDebug("Parsing user input");
-    const inputParser = uploadable._def.inputParser;
     const parsedInput = yield* Effect.tryPromise({
-      try: async () => getParseFn(inputParser)(json.input),
+      try: async () => getParseFn(uploadable.inputParser)(json.input),
       catch: (error) =>
         new UploadThingError({
           code: "BAD_REQUEST",
@@ -485,10 +482,10 @@ const handleUploadAction = (opts: {
     });
 
     yield* Effect.logDebug("Parsing route config").pipe(
-      Effect.annotateLogs("routerConfig", uploadable._def.routerConfig),
+      Effect.annotateLogs("routerConfig", uploadable.routerConfig),
     );
     const parsedConfig = yield* fillInputRouteConfig(
-      uploadable._def.routerConfig,
+      uploadable.routerConfig,
     ).pipe(
       Effect.catchTag(
         "InvalidRouteConfig",
@@ -540,7 +537,7 @@ const handleUploadAction = (opts: {
       }),
     );
 
-    const routeOptions = uploadable._def.routeOptions;
+    const routeOptions = uploadable.routeOptions;
     const { apiKey, appId } = yield* UTToken;
     const ingestUrl = yield* IngestUrl;
     const isDev = yield* IsDevelopment;
