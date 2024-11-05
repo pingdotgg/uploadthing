@@ -159,3 +159,12 @@ export type GenerateUploaderOptions = {
    */
   package: string;
 };
+
+export type EndpointArg<
+  TRouter extends FileRouter,
+  TEndpoint extends keyof TRouter,
+> = TEndpoint | ((_: RouteRegistry<TRouter>) => TEndpoint);
+
+export type RouteRegistry<TRouter extends FileRouter> = {
+  [k in keyof TRouter]: k;
+};

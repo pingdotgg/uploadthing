@@ -32,28 +32,18 @@ export const uploadRouter = {
       maxFileSize: "8GB",
     },
   })
-    .middleware(({ req, files }) => {
-      // Check some condition based on the incoming requrest
-      console.log("Request", req);
-      //^?
+    .middleware(({ req }) => {
+      // Check some condition based on the incoming request
       // if (!req.headers.get("x-some-header")) {
       //   throw new Error("x-some-header is required");
       // }
 
-      // (Optional) Label your files with a custom identifier
-      const filesWithMyIds = files.map((file, idx) => ({
-        ...file,
-        customId: `${idx}-HELLO`,
-      }));
-
       // Return some metadata to be stored with the file
-      return { foo: "bar" as const, [UTFiles]: filesWithMyIds };
+      return { foo: "bar" as const };
     })
     .onUploadComplete(({ file, metadata }) => {
       metadata;
       // ^?
-      file.customId;
-      //   ^?
       console.log("upload completed", file);
     }),
 } satisfies FileRouter;

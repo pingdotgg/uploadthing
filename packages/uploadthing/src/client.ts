@@ -1,8 +1,9 @@
+import * as Arr from "effect/Array";
 import * as Micro from "effect/Micro";
 
 import type { ExpandedRouteConfig } from "@uploadthing/shared";
 import {
-  asArray,
+  createIdentityProxy,
   FetchContext,
   fileSizeToBytes,
   matchFileType,
@@ -21,9 +22,11 @@ import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
   CreateUploadOptions,
+  EndpointArg,
   GenerateUploaderOptions,
   inferEndpointInput,
   NewPresignedUrl,
+  RouteRegistry,
   UploadFilesOptions,
 } from "./types";
 
@@ -80,11 +83,13 @@ export const isValidFileSize = (
 export const genUploader = <TRouter extends FileRouter>(
   initOpts: GenerateUploaderOptions,
 ) => {
+  const routeRegistry = createIdentityProxy<RouteRegistry<TRouter>>();
+
   const controllableUpload = async <
     TEndpoint extends keyof TRouter,
     TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
   >(
-    slug: TEndpoint,
+    slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
       CreateUploadOptions<TRouter, TEndpoint>,
       keyof GenerateUploaderOptions
@@ -98,8 +103,10 @@ export const genUploader = <TRouter extends FileRouter>(
       }
     >();
 
+    const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
+
     const utReporter = createUTReporter({
-      endpoint: String(slug),
+      endpoint: String(endpoint),
       package: initOpts.package,
       url: resolveMaybeUrlArg(initOpts?.url),
       headers: opts.headers,
@@ -163,7 +170,7 @@ export const genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to pause. Can be omitted to pause all files
      */
     const pauseUpload = (file?: File) => {
-      const files = asArray(file ?? opts.files);
+      const files = Arr.ensure(file ?? opts.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) return;
@@ -182,7 +189,7 @@ export const genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to resume. Can be omitted to resume all files
      */
     const resumeUpload = (file?: File) => {
-      const files = asArray(file ?? opts.files);
+      const files = Arr.ensure(file ?? opts.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
@@ -219,7 +226,7 @@ export const genUploader = <TRouter extends FileRouter>(
     > => {
       const promises = [];
 
-      const files = asArray(file ?? opts.files);
+      const files = Arr.ensure(file ?? opts.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
@@ -239,13 +246,15 @@ export const genUploader = <TRouter extends FileRouter>(
    * and then uploads the files to UploadThing
    */
   const typedUploadFiles = <TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
+    slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
       UploadFilesOptions<TRouter, TEndpoint>,
       keyof GenerateUploaderOptions
     >,
-  ) =>
-    uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
+  ) => {
+    const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
+
+    return uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
       ...opts,
       skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
       url: resolveMaybeUrlArg(initOpts?.url),
@@ -264,6 +273,16 @@ export const genUploader = <TRouter extends FileRouter>(
         }
         throw Micro.causeSquash(exit.left);
       });
+  };
 
-  return { uploadFiles: typedUploadFiles, createUpload: controllableUpload };
+  return {
+    uploadFiles: typedUploadFiles,
+    createUpload: controllableUpload,
+    /**
+     * Identity object that can be used instead of raw strings
+     * that allows "Go to definition" in your IDE to bring you
+     * to the backend definition of a route.
+     */
+    routeRegistry,
+  };
 };

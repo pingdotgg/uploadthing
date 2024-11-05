@@ -8,11 +8,12 @@ import {
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform";
-import * as S from "@effect/schema/Schema";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
 import * as Match from "effect/Match";
+import * as Redacted from "effect/Redacted";
+import * as S from "effect/Schema";
 
 import {
   fillInputRouteConfig,
@@ -139,13 +140,10 @@ export const createRequestHandler = <TRouter extends FileRouter>(
       );
 
       if (clientVersion !== pkgJson.version) {
-        const msg = `Server version: ${pkgJson.version}, Client version: ${clientVersion}`;
-        yield* Effect.logError(msg);
-        return yield* new UploadThingError({
-          code: "BAD_REQUEST",
-          message: "Client version mismatch",
-          cause: msg,
-        });
+        const serverVersion = pkgJson.version;
+        yield* Effect.logWarning(
+          "Client version mismatch. Things may not work as expected, please sync your versions to ensure compatibility.",
+        ).pipe(Effect.annotateLogs({ clientVersion, serverVersion }));
       }
 
       const { slug, actionType } = yield* HttpRouter.schemaParams(
@@ -367,7 +365,7 @@ const handleCallbackRequest = (opts: {
       yield* HttpClientRequest.post(`/callback-result`).pipe(
         HttpClientRequest.prependUrl(baseUrl),
         HttpClientRequest.setHeaders({
-          "x-uploadthing-api-key": apiKey,
+          "x-uploadthing-api-key": Redacted.value(apiKey),
           "x-uploadthing-version": pkgJson.version,
           "x-uploadthing-be-adapter": beAdapter,
           "x-uploadthing-fe-package": fePackage,
@@ -594,7 +592,7 @@ const handleUploadAction = (opts: {
     const metadataRequest = HttpClientRequest.post("/route-metadata").pipe(
       HttpClientRequest.prependUrl(ingestUrl),
       HttpClientRequest.setHeaders({
-        "x-uploadthing-api-key": apiKey,
+        "x-uploadthing-api-key": Redacted.value(apiKey),
         "x-uploadthing-version": pkgJson.version,
         "x-uploadthing-be-adapter": beAdapter,
         "x-uploadthing-fe-package": fePackage,
