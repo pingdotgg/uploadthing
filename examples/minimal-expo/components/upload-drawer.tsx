@@ -8,7 +8,6 @@ import {
 import { openSettings } from "expo-linking";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
 
 import { trpc } from "~/lib/trpc";
 import { useDocumentUploader, useImageUploader } from "~/lib/uploadthing";
@@ -65,20 +64,16 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
   return (
     <BottomSheetModalProvider>
       {/* Trigger */}
-      {props.showTrigger && (
-        <Animated.View entering={FadeIn.duration(500)}>
-          <Pressable
-            className={[
-              "absolute bottom-12 right-12 flex items-center justify-center rounded-full bg-blue-600 p-3 active:bg-blue-700",
-              // props.showTrigger ? "z-0 opacity-100" : "-z-50 opacity-0",
-              "transition-opacity duration-300",
-            ].join(" ")}
-            onPress={() => bottomSheetModalRef.current?.present()}
-          >
-            <FeatherIcon name="plus" size={36} className="text-zinc-100" />
-          </Pressable>
-        </Animated.View>
-      )}
+      <Pressable
+        className={[
+          "absolute bottom-12 right-12 flex items-center justify-center rounded-full bg-blue-600 p-3 active:bg-blue-700",
+          props.showTrigger ? "z-0 opacity-100" : "-z-50 opacity-0",
+          "transition-opacity duration-300",
+        ].join(" ")}
+        onPress={() => bottomSheetModalRef.current?.present()}
+      >
+        <FeatherIcon name="plus" size={36} className="text-zinc-100" />
+      </Pressable>
 
       {/* Sheet Content */}
       <BottomSheetModal
