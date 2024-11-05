@@ -316,7 +316,7 @@ the URL:
 ```ts
 const searchParams = new URLSearchParams({
   // Required
-  expires: Date.now() + (60 * 60 * 1000), // 1 hour from now (you choose)
+  expires: Math.floor(Date.now() / 1000) + 3600, // 1 hour from now (you choose)
   "x-ut-identifier": "MY_APP_ID",
   "x-ut-file-name": "my-file.png",
   "x-ut-file-size": 131072,
