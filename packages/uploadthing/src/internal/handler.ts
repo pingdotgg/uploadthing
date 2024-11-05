@@ -325,8 +325,8 @@ const handleCallbackRequest = (opts: {
      * Run `.onUploadComplete` as a daemon to prevent the
      * request from UT to potentially timeout.
      */
-    const adapterArgs = yield* AdapterArguments;
     const fiber = yield* Effect.gen(function* () {
+      const adapterArgs = yield* AdapterArguments;
       const serverData = yield* Effect.tryPromise({
         try: async () =>
           uploadable.onUploadComplete({
@@ -385,13 +385,13 @@ const runRouteMiddleware = (opts: {
   uploadable: AnyFileRoute;
 }) =>
   Effect.gen(function* () {
-    const adapterArgs = yield* AdapterArguments;
     const {
       json: { files, input },
       uploadable,
     } = opts;
 
     yield* Effect.logDebug("Running middleware");
+    const adapterArgs = yield* AdapterArguments;
     const metadata = yield* Effect.tryPromise({
       try: async () =>
         uploadable.middleware({
