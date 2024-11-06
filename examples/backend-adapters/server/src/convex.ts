@@ -2,7 +2,12 @@
 // up HTTP routes for UploadThing.
 
 import { httpRouter } from "convex/server";
-import { addUploadthingRoutes, createUploadthing, FileRouter } from "uploadthing/convex"
+
+import {
+  addUploadthingRoutes,
+  createUploadthing,
+  FileRouter,
+} from "uploadthing/convex";
 
 // In a real app, you can wire up `cereateUploadthing` to your Convex
 // schema for increased type safety.
@@ -18,8 +23,9 @@ const router = {
       const identity = await event.auth.getUserIdentity();
       return { userId: identity?.subject ?? "nothing" };
     })
-    .onUploadComplete((args) => {
-      return { uploadedBy: args.metadata.userId };
+    .onUploadComplete(({ metadata, event }) => {
+      console.log("Upload complete!", metadata);
+      return { uploadedBy: metadata.userId };
     }),
 } satisfies FileRouter;
 

@@ -3,7 +3,14 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", "db/**"]
+      "outputs": [
+        "application/**",
+        "audio/**",
+        "dist/**",
+        "image/**",
+        "text/**",
+        "video/**"
+      ]
     }
   }
 }

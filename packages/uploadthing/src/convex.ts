@@ -5,19 +5,19 @@ import type {
   HttpRouter,
   SchemaDefinition,
 } from "convex/server";
-import { httpActionGeneric, httpRouter } from "convex/server";
+import { httpActionGeneric } from "convex/server";
 import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
 
 import { makeAdapterHandler } from "./internal/handler";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import { createBuilder } from "./internal/upload-builder";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
+import type { FileRouter, RouteHandlerOptions } from "./types";
 
 export type { FileRouter };
 
-type MiddlewareArgs<DataModel extends GenericDataModel> = {
+type AdapterArgs<DataModel extends GenericDataModel> = {
   req: Request;
   res: undefined;
   event: GenericActionCtx<DataModel>;
@@ -37,7 +37,7 @@ export const createUploadthing = <
   opts?: ConvexBuilderOptions<TErrorShape, SchemaDef>,
 ) =>
   createBuilder<
-    MiddlewareArgs<DataModelFromSchemaDefinition<SchemaDef>>,
+    AdapterArgs<DataModelFromSchemaDefinition<SchemaDef>>,
     TErrorShape
   >(opts);
 

@@ -37,13 +37,16 @@ export const setupUploader = (el: HTMLDivElement) => {
 
     // 👇👇👇 THIS IS THE ACTUAL UPLOAD  👇👇👇
     try {
-      const res = await uploadFiles("videoAndImage", {
-        files,
-        signal: ac.signal,
-        onUploadProgress: ({ totalProgress }) => {
-          progressBar.value = totalProgress;
+      const res = await uploadFiles(
+        (routeRegistry) => routeRegistry.videoAndImage,
+        {
+          files,
+          signal: ac.signal,
+          onUploadProgress: ({ totalProgress }) => {
+            progressBar.value = totalProgress;
+          },
         },
-      });
+      );
       console.log("Upload complete:", res);
       setTimeout(() => alert(`Upload complete! ${res.length} files uploaded`));
     } catch (error) {

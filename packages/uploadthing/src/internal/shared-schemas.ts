@@ -1,4 +1,4 @@
-import * as S from "@effect/schema/Schema";
+import * as S from "effect/Schema";
 
 import type { Json } from "@uploadthing/shared";
 import { ValidACLs, ValidContentDispositions } from "@uploadthing/shared";
@@ -28,7 +28,7 @@ const DecodeString = S.transform(S.Uint8ArrayFromSelf, S.String, {
 });
 
 export const ParsedToken = S.Struct({
-  apiKey: S.String.pipe(S.startsWith("sk_")),
+  apiKey: S.Redacted(S.String.pipe(S.startsWith("sk_"))),
   appId: S.String,
   regions: S.NonEmptyArray(S.String),
   ingestHost: S.String.pipe(

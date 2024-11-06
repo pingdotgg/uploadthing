@@ -1,7 +1,7 @@
-import * as S from "@effect/schema/Schema";
 import * as Config from "effect/Config";
 import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
+import * as S from "effect/Schema";
 
 import {
   filterDefinedObjectValues,

@@ -40,6 +40,20 @@ const response = await uploadFiles("routeEndpoint", {
 The first parameter is the route endpoint to upload to, and the second parameter
 is an options object:
 
+<Note>
+  
+  The endpoint arg may be a string literal or a callback function:
+
+```ts
+await uploadFiles((routeRegistry) => routeRegistry.routeEndpoint, { ... })
+```
+
+Using a callback function allows `Go to Defintion` on `routeEndpoint` to take
+you straight to your backend file route definition, which is not possible when
+using a string literal parameter.
+
+</Note>
+
 <Properties>
   <Property name="files" type="File[]" required since="5.0">
     An array of files to upload.
@@ -108,6 +122,11 @@ As for `uploadFiles`, use the `genUploader` factory function to generate a typed
 function that matches the signature of your file router, which will allow
 autocompletion and type checking on endpoint, route input and callback data
 types.
+
+<Warning>
+  Due to difficulties integrating with React Native's `Blob` implementation,
+  resumable uploads are currently not supported on React Native.
+</Warning>
 
 ```ts
 import { genUploader } from "uploadthing/client";

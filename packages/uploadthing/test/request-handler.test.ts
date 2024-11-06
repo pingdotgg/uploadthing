@@ -1,4 +1,5 @@
 import * as Effect from "effect/Effect";
+import * as Redacted from "effect/Redacted";
 import { describe, expect } from "vitest";
 import { z } from "zod";
 
@@ -425,21 +426,23 @@ describe(".onUploadComplete()", () => {
       signPayload(payload, testToken.decoded.apiKey),
     );
 
-    const res = await handler(
-      new Request(createApiUrl("imageUploader"), {
-        method: "POST",
-        headers: {
-          "uploadthing-hook": "callback",
-          "x-uploadthing-signature": signature,
-        },
-        body: payload,
-      }),
-    );
+    const request = new Request(createApiUrl("imageUploader"), {
+      method: "POST",
+      headers: {
+        "uploadthing-hook": "callback",
+        "x-uploadthing-signature": signature,
+      },
+      body: payload,
+    });
+    const res = await handler(request);
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toBe(null);
     expect(uploadCompleteMock).toHaveBeenCalledOnce();
     expect(uploadCompleteMock).toHaveBeenCalledWith({
+      event: undefined,
+      res: undefined,
+      req: request,
       file: {
         customId: null,
         key: "some-random-key.png",
@@ -503,7 +506,7 @@ describe(".onUploadComplete()", () => {
       }),
     });
     const signature = await Effect.runPromise(
-      signPayload(payload, "sk_live_badkey"),
+      signPayload(payload, Redacted.make("sk_live_badkey")),
     );
 
     const res = await handler(

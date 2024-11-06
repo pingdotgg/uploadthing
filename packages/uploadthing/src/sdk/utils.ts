@@ -1,10 +1,10 @@
 import { HttpClient, HttpClientRequest } from "@effect/platform";
 import * as Effect from "effect/Effect";
+import * as Predicate from "effect/Predicate";
 
 import {
   generateKey,
   generateSignedURL,
-  isObject,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
@@ -81,7 +81,7 @@ export const downloadFiles = (
     urls,
     (_url, idx) =>
       Effect.gen(function* () {
-        let url = isObject(_url) ? _url.url : _url;
+        let url = Predicate.isRecord(_url) ? _url.url : _url;
         if (typeof url === "string") {
           // since dataurls will result in name being too long, tell the user
           // to use uploadFiles instead.
@@ -101,7 +101,7 @@ export const downloadFiles = (
         const {
           name = url.pathname.split("/").pop() ?? "unknown-filename",
           customId = undefined,
-        } = isObject(_url) ? _url : {};
+        } = Predicate.isRecord(_url) ? _url : {};
         const httpClient = (yield* HttpClient.HttpClient).pipe(
           HttpClient.filterStatusOk,
         );

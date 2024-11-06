@@ -1,5 +1,5 @@
 <template>
-  <div>Playground</div>
+  <div class="text-lg font-bold">Playground</div>
   <UploadButton
     :config="{
       endpoint: 'videoAndImage',

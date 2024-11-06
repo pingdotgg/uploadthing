@@ -27,7 +27,7 @@ export default function Home() {
       />
       <UploadDropzone
         className="ut-label:text-lg ut-allowed-content:ut-uploading:text-red-300 ut-allowed-content:text-white w-full bg-slate-800"
-        endpoint="videoAndImage"
+        endpoint={(routeRegistry) => routeRegistry.videoAndImage}
         onClientUploadComplete={(res) => {
           console.log(`onClientUploadComplete`, res);
           alert("Upload Completed");

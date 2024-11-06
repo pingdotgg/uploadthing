@@ -79,9 +79,9 @@ it("uses defaults for not-chained", async () => {
 
   const uploadable = f(["image"]).onUploadComplete(() => {});
 
-  expect(uploadable._def.routerConfig).toEqual(["image"]);
+  expect(uploadable.routerConfig).toEqual(["image"]);
 
-  const metadata = await uploadable._def.middleware({
+  const metadata = await uploadable.middleware({
     req: new Request("http://localhost", {
       headers: { header1: "woohoo" },
     }),
@@ -91,7 +91,6 @@ it("uses defaults for not-chained", async () => {
     files: [{ name: "test.txt", size: 123456, type: "text/plain" }],
   });
   expect(metadata).toEqual({});
-  expectTypeOf<Record<string, never>>(metadata);
 });
 
 it("allows async middleware", () => {
@@ -166,9 +165,9 @@ it("smoke", async () => {
       }>(metadata);
     });
 
-  expect(uploadable._def.routerConfig).toEqual(["image", "video"]);
+  expect(uploadable.routerConfig).toEqual(["image", "video"]);
 
-  const metadata = await uploadable._def.middleware({
+  const metadata = await uploadable.middleware({
     req: new Request("http://localhost", {
       headers: { header1: "woohoo" },
     }),
