@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.3.2
+
+### Patch Changes
+
+- [#1013](https://github.com/pingdotgg/uploadthing/pull/1013) [`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: support legacy module resolutions to support Expo
+
 ## 0.3.1
 
 ### Patch Changes

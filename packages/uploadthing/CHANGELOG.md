@@ -1,5 +1,25 @@
 # uploadthing
 
+## 7.3.0
+
+### Minor Changes
+
+- [#1045](https://github.com/pingdotgg/uploadthing/pull/1045) [`2d9eb40`](https://github.com/pingdotgg/uploadthing/commit/2d9eb40413fd4a87cfd81ee8fd4624b53f88a393) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: forward request context to `onUploadComplete` and `onUploadError`
+
+### Patch Changes
+
+- [#1044](https://github.com/pingdotgg/uploadthing/pull/1044) [`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: simplify types for built file route
+
+- [#1043](https://github.com/pingdotgg/uploadthing/pull/1043) [`d72a427`](https://github.com/pingdotgg/uploadthing/commit/d72a427d5b304af8f8bff230d0b38c4dad40f24a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: support input transformers
+
+- [#1033](https://github.com/pingdotgg/uploadthing/pull/1033) [`de98bab`](https://github.com/pingdotgg/uploadthing/commit/de98babde74323fca4e376779161d9d22edd1b0a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: dynamically add either stylesheet or tailwind plugin based on whether `@nuxtjs/tailwindcss´ is installed
+
+- [#1013](https://github.com/pingdotgg/uploadthing/pull/1013) [`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: only slice file when necessary for resumability
+
+- Updated dependencies [[`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560)]:
+  - @uploadthing/mime-types@0.3.2
+  - @uploadthing/shared@7.1.1
+
 ## 7.2.0
 
 ### Minor Changes

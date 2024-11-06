@@ -1,5 +1,14 @@
 # @uploadthing/react
 
+## 7.1.1
+
+### Patch Changes
+
+- [#1044](https://github.com/pingdotgg/uploadthing/pull/1044) [`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: simplify types for built file route
+
+- Updated dependencies []:
+  - @uploadthing/shared@7.1.1
+
 ## 7.1.0
 
 ### Minor Changes
