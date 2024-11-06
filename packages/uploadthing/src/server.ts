@@ -14,11 +14,15 @@ export { UTApi } from "./sdk";
 export { UTFile } from "./sdk/ut-file";
 export { UploadThingError, type FileRouter };
 
-type MiddlewareArgs = { req: Request; res: undefined; event: undefined };
+type AdapterArgs = {
+  req: Request;
+  res: undefined;
+  event: undefined;
+};
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
+) => createBuilder<AdapterArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,

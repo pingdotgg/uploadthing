@@ -7,15 +7,15 @@ import type {
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
+  AdapterFnArgs,
   AnyBuiltUploaderTypes,
   AnyFileRoute,
-  MiddlewareFnArgs,
   UnsetMarker,
   UploadBuilder,
 } from "./types";
 
 function internalCreateBuilder<
-  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
+  TAdapterFnArgs extends AdapterFnArgs<any, any, any>,
   TRouteOptions extends RouteOptions,
   TErrorShape extends Json = { message: string },
 >(
@@ -24,7 +24,7 @@ function internalCreateBuilder<
   _routeOptions: TRouteOptions;
   _input: { in: UnsetMarker; out: UnsetMarker };
   _metadata: UnsetMarker;
-  _middlewareArgs: TMiddlewareArgs;
+  _adapterFnArgs: TAdapterFnArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
   _output: UnsetMarker;
@@ -92,7 +92,7 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
 };
 
 export function createBuilder<
-  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
+  TAdapterFnArgs extends AdapterFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
 >(opts?: CreateBuilderOptions<TErrorShape>) {
   return <TRouteOptions extends RouteOptions>(
@@ -102,12 +102,12 @@ export function createBuilder<
     _routeOptions: TRouteOptions;
     _input: { in: UnsetMarker; out: UnsetMarker };
     _metadata: UnsetMarker;
-    _middlewareArgs: TMiddlewareArgs;
+    _adapterFnArgs: TAdapterFnArgs;
     _errorShape: TErrorShape;
     _errorFn: UnsetMarker;
     _output: UnsetMarker;
   }> => {
-    return internalCreateBuilder<TMiddlewareArgs, TRouteOptions, TErrorShape>({
+    return internalCreateBuilder<TAdapterFnArgs, TRouteOptions, TErrorShape>({
       routerConfig: input,
       routeOptions: config ?? {},
       ...opts,

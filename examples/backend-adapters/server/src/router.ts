@@ -61,8 +61,8 @@ export const uploadRouter = {
       console.log("upload error", { message: error.message, fileKey });
       throw error;
     })
-    .onUploadComplete(async (data) => {
-      console.log("upload completed", data);
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("upload completed", metadata, file);
       // await new Promise((r) => setTimeout(r, 15000));
       return { foo: "bar", baz: "qux" };
     }),

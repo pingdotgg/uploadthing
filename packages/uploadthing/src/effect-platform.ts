@@ -5,7 +5,7 @@ import * as Layer from "effect/Layer";
 import type { Json } from "@uploadthing/shared";
 
 import { configProvider } from "./internal/config";
-import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
+import { AdapterArguments, createRequestHandler } from "./internal/handler";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
 import type { FileRouter, RouteHandlerConfig } from "./types";
@@ -13,7 +13,7 @@ import type { FileRouter, RouteHandlerConfig } from "./types";
 export { UTFiles } from "./internal/types";
 export type { FileRouter };
 
-type MiddlewareArgs = {
+type AdapterArgs = {
   req: HttpServerRequest.HttpServerRequest;
   res: undefined;
   event: undefined;
@@ -21,7 +21,7 @@ type MiddlewareArgs = {
 
 export const createUploadthing = <TErrorShape extends Json>(
   opts?: CreateBuilderOptions<TErrorShape>,
-) => createBuilder<MiddlewareArgs, TErrorShape>(opts);
+) => createBuilder<AdapterArgs, TErrorShape>(opts);
 
 export const createRouteHandler = <TRouter extends FileRouter>(opts: {
   router: TRouter;
@@ -52,7 +52,7 @@ export const createRouteHandler = <TRouter extends FileRouter>(opts: {
 
   return HttpRouter.provideServiceEffect(
     router,
-    MiddlewareArguments,
+    AdapterArguments,
     Effect.map(HttpServerRequest.HttpServerRequest, (serverRequest) => ({
       req: serverRequest,
       res: undefined,

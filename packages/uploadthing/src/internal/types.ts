@@ -48,7 +48,7 @@ export type ValidMiddlewareObject = {
 /**
  * Different frameworks have different request and response types
  */
-export type MiddlewareFnArgs<TRequest, TResponse, TEvent> = {
+export type AdapterFnArgs<TRequest, TResponse, TEvent> = {
   req: TRequest;
   res: TResponse;
   event: TEvent;
@@ -61,7 +61,7 @@ export interface AnyParams {
     out: any;
   };
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
-  _middlewareArgs: MiddlewareFnArgs<any, any, any>;
+  _adapterFnArgs: AdapterFnArgs<any, any, any>;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
   _output: any;
@@ -70,7 +70,7 @@ export interface AnyParams {
 type MiddlewareFn<
   TInput extends Json | UnsetMarker,
   TOutput extends ValidMiddlewareObject,
-  TArgs extends MiddlewareFnArgs<any, any, any>,
+  TArgs extends AdapterFnArgs<any, any, any>,
 > = (
   opts: TArgs & {
     files: Schema.Type<typeof UploadActionPayload>["files"];
@@ -78,15 +78,23 @@ type MiddlewareFn<
   },
 ) => MaybePromise<TOutput>;
 
-type UploadCompleteFn<TMetadata, TOutput extends JsonObject | void> = (opts: {
-  metadata: TMetadata;
-  file: UploadedFileData;
-}) => MaybePromise<TOutput>;
+type UploadCompleteFn<
+  TMetadata,
+  TOutput extends JsonObject | void,
+  TArgs extends AdapterFnArgs<any, any, any>,
+> = (
+  opts: TArgs & {
+    metadata: TMetadata;
+    file: UploadedFileData;
+  },
+) => MaybePromise<TOutput>;
 
-type UploadErrorFn = (input: {
-  error: UploadThingError;
-  fileKey: string;
-}) => MaybePromise<void>;
+type UploadErrorFn<TArgs extends AdapterFnArgs<any, any, any>> = (
+  input: TArgs & {
+    error: UploadThingError;
+    fileKey: string;
+  },
+) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -97,7 +105,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _routeOptions: TParams["_routeOptions"];
     _input: { in: TParser["_input"]; out: TParser["_output"] };
     _metadata: TParams["_metadata"];
-    _middlewareArgs: TParams["_middlewareArgs"];
+    _adapterFnArgs: TParams["_adapterFnArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
@@ -107,29 +115,29 @@ export interface UploadBuilder<TParams extends AnyParams> {
       ? MiddlewareFn<
           TParams["_input"]["out"],
           TOutput,
-          TParams["_middlewareArgs"]
+          TParams["_adapterFnArgs"]
         >
       : ErrorMessage<"middleware is already set">,
   ) => UploadBuilder<{
     _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TOutput;
-    _middlewareArgs: TParams["_middlewareArgs"];
+    _adapterFnArgs: TParams["_adapterFnArgs"];
     _errorShape: TParams["_errorShape"];
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
   onUploadError: (
     fn: TParams["_errorFn"] extends UnsetMarker
-      ? UploadErrorFn
+      ? UploadErrorFn<TParams["_adapterFnArgs"]>
       : ErrorMessage<"onUploadError is already set">,
   ) => UploadBuilder<{
     _routeOptions: TParams["_routeOptions"];
     _input: TParams["_input"];
     _metadata: TParams["_metadata"];
-    _middlewareArgs: TParams["_middlewareArgs"];
+    _adapterFnArgs: TParams["_adapterFnArgs"];
     _errorShape: TParams["_errorShape"];
-    _errorFn: UploadErrorFn;
+    _errorFn: UploadErrorFn<TParams["_adapterFnArgs"]>;
     _output: UnsetMarker;
   }>;
   onUploadComplete: <TOutput extends JsonObject | void>(
@@ -139,7 +147,8 @@ export interface UploadBuilder<TParams extends AnyParams> {
           ? undefined
           : Omit<TParams["_metadata"], typeof UTFiles>
       >,
-      TOutput
+      TOutput,
+      TParams["_adapterFnArgs"]
     >,
   ) => FileRoute<{
     input: TParams["_input"]["in"] extends UnsetMarker
@@ -166,9 +175,9 @@ export interface FileRoute<TTypes extends AnyBuiltUploaderTypes> {
   routeOptions: RouteOptions;
   inputParser: JsonParser;
   middleware: MiddlewareFn<any, ValidMiddlewareObject, any>;
-  onUploadError: UploadErrorFn;
+  onUploadError: UploadErrorFn<any>;
   errorFormatter: (err: UploadThingError) => any;
-  onUploadComplete: UploadCompleteFn<any, any>;
+  onUploadComplete: UploadCompleteFn<any, any, any>;
 }
 export type AnyFileRoute = FileRoute<AnyBuiltUploaderTypes>;
 

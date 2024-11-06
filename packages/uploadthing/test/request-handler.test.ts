@@ -426,21 +426,23 @@ describe(".onUploadComplete()", () => {
       signPayload(payload, testToken.decoded.apiKey),
     );
 
-    const res = await handler(
-      new Request(createApiUrl("imageUploader"), {
-        method: "POST",
-        headers: {
-          "uploadthing-hook": "callback",
-          "x-uploadthing-signature": signature,
-        },
-        body: payload,
-      }),
-    );
+    const request = new Request(createApiUrl("imageUploader"), {
+      method: "POST",
+      headers: {
+        "uploadthing-hook": "callback",
+        "x-uploadthing-signature": signature,
+      },
+      body: payload,
+    });
+    const res = await handler(request);
 
     expect(res.status).toBe(200);
     await expect(res.json()).resolves.toBe(null);
     expect(uploadCompleteMock).toHaveBeenCalledOnce();
     expect(uploadCompleteMock).toHaveBeenCalledWith({
+      event: undefined,
+      res: undefined,
+      req: request,
       file: {
         customId: null,
         key: "some-random-key.png",
