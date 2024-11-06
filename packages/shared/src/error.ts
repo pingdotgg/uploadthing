@@ -1,7 +1,7 @@
 import * as Micro from "effect/Micro";
+import * as Predicate from "effect/Predicate";
 
 import type { Json } from "./types";
-import { isObject } from "./utils";
 
 const ERROR_CODES = {
   // Generic
@@ -81,14 +81,14 @@ export class UploadThingError<
     if (opts.cause instanceof Error) {
       this.cause = opts.cause;
     } else if (
-      isObject(opts.cause) &&
-      typeof opts.cause.status === "number" &&
-      typeof opts.cause.statusText === "string"
+      Predicate.isRecord(opts.cause) &&
+      Predicate.isNumber(opts.cause.status) &&
+      Predicate.isString(opts.cause.statusText)
     ) {
       this.cause = new Error(
         `Response ${opts.cause.status} ${opts.cause.statusText}`,
       );
-    } else if (typeof opts.cause === "string") {
+    } else if (Predicate.isString(opts.cause)) {
       this.cause = new Error(opts.cause);
     } else {
       this.cause = opts.cause;

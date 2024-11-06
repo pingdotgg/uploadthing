@@ -7,6 +7,7 @@ import type {
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  unwrap,
   UploadAbortedError,
   UploadThingError,
   warnIfInvalidPeerDependency,
@@ -16,6 +17,7 @@ import {
   version as uploadthingClientVersion,
 } from "uploadthing/client";
 import type {
+  EndpointArg,
   FileRouter,
   inferEndpointInput,
   inferErrorShape,
@@ -52,10 +54,10 @@ export function __useUploadThingInternal<
   TEndpoint extends keyof TRouter,
 >(
   url: URL,
-  endpoint: TEndpoint,
-  opts?: UseUploadthingProps<TRouter, TEndpoint>,
+  endpoint: EndpointArg<TRouter, TEndpoint>,
+  opts?: UseUploadthingProps<TRouter[TEndpoint]>,
 ) {
-  const { uploadFiles } = genUploader<TRouter>({
+  const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url,
     package: "@uploadthing/react",
   });
@@ -64,7 +66,7 @@ export function __useUploadThingInternal<
   const uploadProgress = useRef(0);
   const fileProgress = useRef<Map<File, number>>(new Map());
 
-  type InferredInput = inferEndpointInput<TRouter[typeof endpoint]>;
+  type InferredInput = inferEndpointInput<TRouter[TEndpoint]>;
   type FuncInput = undefined extends InferredInput
     ? [files: File[], input?: undefined]
     : [files: File[], input: InferredInput];
@@ -113,9 +115,9 @@ export function __useUploadThingInternal<
        */
       if (e instanceof UploadAbortedError) throw e;
 
-      let error: UploadThingError<inferErrorShape<TRouter>>;
+      let error: UploadThingError<inferErrorShape<TRouter[TEndpoint]>>;
       if (e instanceof UploadThingError) {
-        error = e as UploadThingError<inferErrorShape<TRouter>>;
+        error = e as UploadThingError<inferErrorShape<TRouter[TEndpoint]>>;
       } else {
         error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
         console.error(
@@ -131,7 +133,8 @@ export function __useUploadThingInternal<
     }
   });
 
-  const routeConfig = useRouteConfig(url, endpoint as string);
+  const _endpoint = unwrap(endpoint, routeRegistry);
+  const routeConfig = useRouteConfig(url, _endpoint as string);
 
   return {
     startUpload,
@@ -151,15 +154,21 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   const url = resolveMaybeUrlArg(initOpts?.url);
 
+  const clientHelpers = genUploader<TRouter>({
+    url,
+    package: "@uploadthing/react",
+  });
+
   function useUploadThing<TEndpoint extends keyof TRouter>(
-    endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    endpoint: EndpointArg<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter[TEndpoint]>,
   ) {
     return __useUploadThingInternal(url, endpoint, opts);
   }
 
-  function getRouteConfig(endpoint: keyof TRouter) {
+  function getRouteConfig(slug: EndpointArg<TRouter, keyof TRouter>) {
     const maybeServerData = globalThis.__UPLOADTHING;
+    const endpoint = unwrap(slug, clientHelpers.routeRegistry);
     const config = maybeServerData?.find((x) => x.slug === endpoint)?.config;
     if (!config) {
       throw new Error(
@@ -171,10 +180,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
 
   return {
     useUploadThing,
-    ...genUploader<TRouter>({
-      url,
-      package: "@uploadthing/react",
-    }),
+    ...clientHelpers,
     /**
      * Get the config for a given endpoint outside of React context.
      * @remarks Can only be used if the NextSSRPlugin is used in the app.

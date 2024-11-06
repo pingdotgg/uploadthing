@@ -1,5 +1,42 @@
 # @uploadthing/solid
 
+## 7.1.0
+
+### Minor Changes
+
+- [#1008](https://github.com/pingdotgg/uploadthing/pull/1008) [`3acc199`](https://github.com/pingdotgg/uploadthing/commit/3acc199821637bda1605cd7130325e8783710908) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add support to specify route endpoint that supports "Go to Definition"
+
+  All places that accept the `endpoint` argument now additionally accept a function that gets a route registry as input and returns the endpoint to use. This allows for "Go to Definition" to go to the backend route definition directly from the component.
+
+  ### Examples
+
+  ```ts
+  // uploadthing/client#uploadFiles
+  uploadFiles(
+      (routeRegistry) => routeRegistry.videoAndImage,
+      { ... }
+  )
+
+  // uploadthing/react#useUploadThing
+  useUploadThing(
+      (routeRegistry) => routeRegistry.videoAndImage,
+      { ... }
+  )
+
+  // uploadthing/react#UploadButton
+  <UploadButton
+      endpoint={(routeRegistry) => routeRegistry.videoAndImage}
+      { ... }
+  />
+  ```
+
+### Patch Changes
+
+- [`01b1363`](https://github.com/pingdotgg/uploadthing/commit/01b136310de7d620c3298d16f6cbd255e168c7e5) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect dependencies (#1005, #1009)
+
+- Updated dependencies [[`01b1363`](https://github.com/pingdotgg/uploadthing/commit/01b136310de7d620c3298d16f6cbd255e168c7e5), [`72ac250`](https://github.com/pingdotgg/uploadthing/commit/72ac25044f14d2c0b5c5b870b9bb4218c766abf2), [`3acc199`](https://github.com/pingdotgg/uploadthing/commit/3acc199821637bda1605cd7130325e8783710908)]:
+  - @uploadthing/shared@7.1.0
+
 ## 7.0.3
 
 ### Patch Changes

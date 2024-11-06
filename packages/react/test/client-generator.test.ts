@@ -1,4 +1,4 @@
-import { expectTypeOf, it } from "vitest";
+import { describe, expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";
@@ -33,6 +33,16 @@ const router = {
   withBarInput: f(["image"], { awaitServerData: false })
     .input(z.object({ bar: z.number() }))
     .middleware((opts) => ({ square: opts.input.bar * opts.input.bar }))
+    .onUploadComplete(({ metadata }) => {
+      console.log(metadata);
+    }),
+
+  withTransformedInput: f(["image"], { awaitServerData: false })
+    .input(z.object({ bar: z.number().transform(String) }))
+    .middleware((opts) => {
+      expectTypeOf(opts.input.bar).toBeString();
+      return { string: opts.input.bar };
+    })
     .onUploadComplete(({ metadata }) => {
       console.log(metadata);
     }),
@@ -100,6 +110,13 @@ it("infers the input correctly", () => {
     expectTypeOf<Input>().toEqualTypeOf<{ bar: number }>();
     void startUpload(files, { bar: 1 });
   });
+
+  doNotExecute(() => {
+    const { startUpload } = useUploadThing("withTransformedInput");
+    type Input = Parameters<typeof startUpload>[1];
+    expectTypeOf<Input>().toEqualTypeOf<{ bar: number }>();
+    void startUpload(files, { bar: 1 });
+  });
 });
 
 it("infers output properly", () => {
@@ -147,5 +164,23 @@ it("infers output properly", () => {
     });
     const res = await startUpload(files, { bar: 1 });
     expectTypeOf<ClientUploadedFileData<null>[] | undefined>(res);
+  });
+});
+
+it("gets go-to-definition proxy as endpoint arg", () => {
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing(
+      (routeRegistry) => routeRegistry.withFooInput,
+    );
+    type _Input = Parameters<typeof startUpload>[1];
+    expectTypeOf<_Input>().toEqualTypeOf<{ foo: string }>();
+  });
+
+  doNotExecute(async () => {
+    const { startUpload } = useUploadThing(
+      (routeRegistry) => routeRegistry.exampleRoute,
+    );
+    const res = await startUpload(files);
+    expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[] | undefined>(res);
   });
 });

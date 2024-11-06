@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-import * as S from "@effect/schema/Schema";
+import * as S from "effect/Schema";
 import {
   afterAll,
   beforeAll,

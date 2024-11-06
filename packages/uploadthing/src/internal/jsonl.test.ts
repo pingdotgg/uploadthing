@@ -1,6 +1,7 @@
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
+import * as Redacted from "effect/Redacted";
 import * as Stream from "effect/Stream";
 import { beforeEach, describe, expect, vi } from "vitest";
 
@@ -13,7 +14,8 @@ const te = new TextEncoder();
 
 const createChunk = (_payload: unknown) => {
   const payload = JSON.stringify(_payload);
-  return Effect.map(signPayload(payload, "sk_123"), (signature) =>
+  const secret = Redacted.make("sk_123");
+  return Effect.map(signPayload(payload, secret), (signature) =>
     JSON.stringify(
       MetadataFetchStreamPart.make({ payload, signature, hook: "callback" }),
     ),

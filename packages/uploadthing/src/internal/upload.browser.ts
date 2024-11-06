@@ -57,7 +57,7 @@ const uploadWithProgress = (
     });
 
     const formData = new FormData();
-    formData.append("file", file.slice(rangeStart));
+    formData.append("file", rangeStart > 0 ? file.slice(rangeStart) : file);
     xhr.send(formData);
 
     return Micro.sync(() => xhr.abort());
@@ -116,7 +116,7 @@ export const uploadFilesInternal = <
   TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
   endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
+  opts: UploadFilesOptions<TRouter[TEndpoint]>,
 ): Micro.Micro<
   ClientUploadedFileData<TServerOutput>[],
   UploadThingError | FetchError

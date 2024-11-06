@@ -30,6 +30,7 @@ export type ButtonStyleFieldCallbackArgs = {
   isUploading: boolean;
   uploadProgress: number;
   fileTypes: string[];
+  files: File[];
 };
 
 export type ButtonAppearance = {
@@ -87,7 +88,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
-      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+      const useUploadthingProps: UseUploadthingProps<TRouter[TEndpoint]> =
         reactive({
           signal: acRef.value.signal,
           headers: $props.headers,
@@ -199,6 +200,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
             isUploading: state.value === "uploading",
             uploadProgress: uploadProgress.value,
             fileTypes: permittedFileTypes.value.fileTypes,
+            files: files.value,
           }) as ButtonStyleFieldCallbackArgs,
       );
 

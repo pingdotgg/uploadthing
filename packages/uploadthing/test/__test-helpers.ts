@@ -1,5 +1,6 @@
 import { createHash } from "crypto";
-import * as S from "@effect/schema/Schema";
+import * as Redacted from "effect/Redacted";
+import * as S from "effect/Schema";
 import type { StrictRequest } from "msw";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
@@ -19,7 +20,7 @@ export const uploadCompleteMock = vi.fn();
 export const onErrorMock = vi.fn();
 
 const tokenData = {
-  apiKey: "sk_foo",
+  apiKey: Redacted.make("sk_foo"),
   appId: "app-1",
   regions: ["fra1"] as const,
 };

@@ -1,13 +1,15 @@
+import type { FetchHttpClient } from "@effect/platform";
 import {
   HttpClient,
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
-import * as S from "@effect/schema/Schema";
 import * as Arr from "effect/Array";
 import * as Effect from "effect/Effect";
-import * as Layer from "effect/Layer";
+import type * as ManagedRuntime from "effect/ManagedRuntime";
 import * as Predicate from "effect/Predicate";
+import * as Redacted from "effect/Redacted";
+import * as S from "effect/Schema";
 
 import type {
   ACL,
@@ -15,24 +17,11 @@ import type {
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
-import {
-  asArray,
-  parseTimeToSeconds,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { parseTimeToSeconds, UploadThingError } from "@uploadthing/shared";
 
-import {
-  ApiUrl,
-  configProvider,
-  UPLOADTHING_VERSION,
-  UTToken,
-} from "../internal/config";
-import {
-  logHttpClientError,
-  logHttpClientResponse,
-  withLogFormat,
-  withMinimalLogLevel,
-} from "../internal/logger";
+import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../internal/config";
+import { logHttpClientError, logHttpClientResponse } from "../internal/logger";
+import { makeRuntime } from "../internal/runtime";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -54,13 +43,16 @@ export { UTFile };
 export class UTApi {
   private fetch: FetchEsque;
   private defaultKeyType: "fileKey" | "customId";
-
+  private runtime: ManagedRuntime.ManagedRuntime<
+    HttpClient.HttpClient | FetchHttpClient.Fetch,
+    UploadThingError
+  >;
   constructor(private opts?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
-
     this.fetch = opts?.fetch ?? globalThis.fetch;
     this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
+    this.runtime = makeRuntime(this.fetch, this.opts);
   }
 
   private requestUploadThing = <T>(
@@ -71,44 +63,39 @@ export class UTApi {
     Effect.gen(this, function* () {
       const { apiKey } = yield* UTToken;
       const baseUrl = yield* ApiUrl;
-      const httpClient = yield* HttpClient.HttpClient;
+      const httpClient = (yield* HttpClient.HttpClient).pipe(
+        HttpClient.filterStatusOk,
+      );
 
       return yield* HttpClientRequest.post(pathname).pipe(
         HttpClientRequest.prependUrl(baseUrl),
-        HttpClientRequest.unsafeJsonBody(body),
+        HttpClientRequest.bodyUnsafeJson(body),
         HttpClientRequest.setHeaders({
           "x-uploadthing-version": UPLOADTHING_VERSION,
           "x-uploadthing-be-adapter": "server-sdk",
-          "x-uploadthing-api-key": apiKey,
+          "x-uploadthing-api-key": Redacted.value(apiKey),
         }),
-        HttpClient.filterStatusOk(httpClient),
+        httpClient.execute,
         Effect.tapBoth({
           onSuccess: logHttpClientResponse("UploadThing API Response"),
           onFailure: logHttpClientError("Failed to request UploadThing API"),
         }),
-        HttpClientResponse.schemaBodyJsonScoped(responseSchema),
+        Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
+        Effect.scoped,
       );
     }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
 
-  private executeAsync = <A, E>(
-    program: Effect.Effect<A, E, HttpClient.HttpClient.Default>,
+  private executeAsync = async <A, E>(
+    program: Effect.Effect<A, E, HttpClient.HttpClient>,
     signal?: AbortSignal,
   ) => {
-    const layer = Layer.provide(
-      Layer.mergeAll(
-        withLogFormat,
-        withMinimalLogLevel,
-        HttpClient.layer,
-        Layer.succeed(HttpClient.Fetch, this.fetch as typeof globalThis.fetch),
-      ),
-      Layer.setConfigProvider(configProvider(this.opts)),
+    const result = await program.pipe(
+      Effect.withLogSpan("utapi.#executeAsync"),
+      (e) => this.runtime.runPromise(e, signal ? { signal } : undefined),
     );
 
-    return program.pipe(
-      Effect.provide(layer),
-      Effect.withLogSpan("utapi.#executeAsync"),
-      (e) => Effect.runPromise(e, signal ? { signal } : undefined),
-    );
+    await this.runtime.dispose();
+    return result;
   };
 
   /**
@@ -140,7 +127,7 @@ export class UTApi {
     const uploads = await this.executeAsync(
       Effect.flatMap(
         uploadFilesInternal({
-          files: asArray(files),
+          files: Arr.ensure(files),
           contentDisposition: opts?.contentDisposition ?? "inline",
           acl: opts?.acl,
         }),
@@ -186,7 +173,7 @@ export class UTApi {
     guardServerOnly();
 
     const downloadErrors: Record<number, SerializedUploadThingError> = {};
-    const arr = asArray(urls);
+    const arr = Arr.ensure(urls);
 
     const program = Effect.gen(function* () {
       const downloadedFiles = yield* downloadFiles(arr, downloadErrors).pipe(
@@ -252,8 +239,8 @@ export class UTApi {
       this.requestUploadThing(
         "/v6/deleteFiles",
         keyType === "fileKey"
-          ? { fileKeys: asArray(keys) }
-          : { customIds: asArray(keys) },
+          ? { fileKeys: Arr.ensure(keys) }
+          : { customIds: Arr.ensure(keys) },
         DeleteFileResponse,
       ).pipe(Effect.withLogSpan("deleteFiles")),
     );
@@ -293,8 +280,8 @@ export class UTApi {
       this.requestUploadThing(
         "/v6/getFileUrl",
         keyType === "fileKey"
-          ? { fileKeys: asArray(keys) }
-          : { customIds: asArray(keys) },
+          ? { fileKeys: Arr.ensure(keys) }
+          : { customIds: Arr.ensure(keys) },
         GetFileUrlResponse,
       ).pipe(Effect.withLogSpan("getFileUrls")),
     );
@@ -354,7 +341,7 @@ export class UTApi {
     return await this.executeAsync(
       this.requestUploadThing(
         "/v6/renameFiles",
-        { updates: asArray(updates) },
+        { updates: Arr.ensure(updates) },
         RenameFileResponse,
       ).pipe(Effect.withLogSpan("renameFiles")),
     );
@@ -445,7 +432,7 @@ export class UTApi {
     guardServerOnly();
 
     const { keyType = this.defaultKeyType } = opts ?? {};
-    const updates = asArray(keys).map((key) => {
+    const updates = Arr.ensure(keys).map((key) => {
       return keyType === "fileKey"
         ? { fileKey: key, acl }
         : { customId: key, acl };

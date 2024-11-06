@@ -4,6 +4,7 @@
     "moduleResolution": "Bundler",
     "module": "ESNext",
     "target": "ES2022",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "strictNullChecks": true
   }
 }

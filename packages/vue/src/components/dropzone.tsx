@@ -49,6 +49,7 @@ export type DropzoneStyleFieldCallbackArgs = {
   uploadProgress: number;
   fileTypes: string[];
   isDragActive: boolean;
+  files: File[];
 };
 
 export type DropzoneAppearance = {
@@ -114,7 +115,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       const files = ref<File[]>([]);
       const uploadProgress = ref(0);
 
-      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+      const useUploadthingProps: UseUploadthingProps<TRouter[TEndpoint]> =
         reactive({
           signal: acRef.value.signal,
           headers: $props.headers,
@@ -236,6 +237,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             uploadProgress: uploadProgress.value,
             fileTypes: permittedFileTypes.value.fileTypes,
             isDragActive: isDragActive.value,
+            files: files.value,
           }) as DropzoneStyleFieldCallbackArgs,
       );
 

@@ -37,6 +37,8 @@ function rehypeShiki() {
         "css",
         "python",
         "diff",
+        "go",
+        "php",
       ],
     });
 
