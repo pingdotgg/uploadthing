@@ -5,9 +5,9 @@ import { UploadThingError } from "@uploadthing/shared";
 
 import { makeAdapterHandler } from "./internal/handler";
 import { extractRouterConfig as extractEffect } from "./internal/route-config";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import type { FileRouter, RouteHandlerOptions } from "./types";
 
 export { UTFiles } from "./internal/types";
 export { UTApi } from "./sdk";

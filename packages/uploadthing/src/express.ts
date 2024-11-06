@@ -10,9 +10,9 @@ import type { Json } from "@uploadthing/shared";
 
 import { makeAdapterHandler } from "./internal/handler";
 import { getPostBody, toWebRequest } from "./internal/to-web-request";
-import type { FileRouter, RouteHandlerOptions } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import type { FileRouter, RouteHandlerOptions } from "./types";
 
 export { UTFiles } from "./internal/types";
 export type { FileRouter };

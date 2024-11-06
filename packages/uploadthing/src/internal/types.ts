@@ -1,10 +1,7 @@
-import type * as Config from "effect/Config";
-import type * as LogLevel from "effect/LogLevel";
 import type { Schema } from "effect/Schema";
 
 import type {
   ErrorMessage,
-  FetchEsque,
   FileRouterInputConfig,
   Json,
   JsonObject,
@@ -14,7 +11,6 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 
-import type { LogFormat } from "./logger";
 import type { JsonParser } from "./parser";
 import type {
   FileUploadDataWithCustomId,
@@ -47,16 +43,6 @@ export type UnsetMarker = typeof unsetMarker;
 export type ValidMiddlewareObject = {
   [UTFiles]?: Partial<FileUploadDataWithCustomId>[];
   [key: string]: unknown;
-};
-
-type ResolverOptions<TParams extends AnyParams> = {
-  metadata: Simplify<
-    TParams["_metadata"] extends UnsetMarker
-      ? undefined
-      : Omit<TParams["_metadata"], typeof UTFiles>
-  >;
-
-  file: UploadedFileData;
 };
 
 /**
@@ -92,15 +78,15 @@ type MiddlewareFn<
   },
 ) => MaybePromise<TOutput>;
 
-type ResolverFn<
-  TOutput extends JsonObject | void,
-  TParams extends AnyParams,
-> = (opts: ResolverOptions<TParams>) => MaybePromise<TOutput>;
+type UploadCompleteFn<TMetadata, TOutput extends JsonObject | void> = (opts: {
+  metadata: TMetadata;
+  file: UploadedFileData;
+}) => MaybePromise<TOutput>;
 
 type UploadErrorFn = (input: {
   error: UploadThingError;
   fileKey: string;
-}) => Promise<void> | void;
+}) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
   input: <TParser extends JsonParser>(
@@ -133,17 +119,6 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: TParams["_errorFn"];
     _output: UnsetMarker;
   }>;
-  onUploadComplete: <TOutput extends JsonObject | void>(
-    fn: ResolverFn<TOutput, TParams>,
-  ) => Uploader<{
-    _routeOptions: TParams["_routeOptions"];
-    _input: TParams["_input"];
-    _metadata: TParams["_metadata"];
-    _middlewareArgs: TParams["_middlewareArgs"];
-    _errorShape: TParams["_errorShape"];
-    _errorFn: TParams["_errorFn"];
-    _output: TOutput;
-  }>;
   onUploadError: (
     fn: TParams["_errorFn"] extends UnsetMarker
       ? UploadErrorFn
@@ -157,93 +132,45 @@ export interface UploadBuilder<TParams extends AnyParams> {
     _errorFn: UploadErrorFn;
     _output: UnsetMarker;
   }>;
+  onUploadComplete: <TOutput extends JsonObject | void>(
+    fn: UploadCompleteFn<
+      Simplify<
+        TParams["_metadata"] extends UnsetMarker
+          ? undefined
+          : Omit<TParams["_metadata"], typeof UTFiles>
+      >,
+      TOutput
+    >,
+  ) => FileRoute<{
+    input: TParams["_input"]["in"] extends UnsetMarker
+      ? undefined
+      : TParams["_input"]["in"];
+    output: TParams["_routeOptions"]["awaitServerData"] extends false
+      ? null
+      : TOutput extends void | undefined // JSON serialization
+        ? null
+        : TOutput;
+    errorShape: TParams["_errorShape"];
+  }>;
 }
 
-export type UploadBuilderDef<TParams extends AnyParams> = {
+export type AnyBuiltUploaderTypes = {
+  input: any;
+  output: any;
+  errorShape: any;
+};
+
+export interface FileRoute<TTypes extends AnyBuiltUploaderTypes> {
+  $types: TTypes;
   routerConfig: FileRouterInputConfig;
   routeOptions: RouteOptions;
   inputParser: JsonParser;
-  middleware: MiddlewareFn<
-    TParams["_input"]["out"],
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    {},
-    TParams["_middlewareArgs"]
-  >;
-  errorFormatter: (err: UploadThingError) => TParams["_errorShape"];
+  middleware: MiddlewareFn<any, ValidMiddlewareObject, any>;
   onUploadError: UploadErrorFn;
-};
-
-export interface Uploader<TParams extends AnyParams> {
-  _def: TParams & UploadBuilderDef<TParams>;
-  resolver: ResolverFn<TParams["_output"], TParams>;
+  errorFormatter: (err: UploadThingError) => any;
+  onUploadComplete: UploadCompleteFn<any, any>;
 }
-export type AnyUploader = Uploader<AnyParams>;
-
-export type FileRouter<TParams extends AnyParams = AnyParams> = Record<
-  string,
-  Uploader<TParams>
->;
-
-export type RouteHandlerConfig = {
-  logLevel?: LogLevel.Literal;
-  /**
-   * What format log entries should be in
-   * @default "pretty" in development, else "json"
-   * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
-   */
-  logFormat?: Config.Config.Success<typeof LogFormat>;
-  callbackUrl?: string;
-  token?: string;
-  /**
-   * Used to determine whether to run dev hook or not
-   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
-   */
-  isDev?: boolean;
-  /**
-   * Used to override the fetch implementation
-   * @default `globalThis.fetch`
-   */
-  fetch?: FetchEsque;
-  /**
-   * Set how UploadThing should handle the daemon promise before returning a response to the client.
-   * You can also provide a synchronous function that will be called before returning a response to
-   * the client. This can be useful for things like:
-   * -  [`@vercel/functions.waitUntil`](https://vercel.com/docs/functions/functions-api-reference#waituntil)
-   * - [`next/after`](https://nextjs.org/blog/next-15-rc#executing-code-after-a-response-with-nextafter-experimental)
-   * - or equivalent function from your serverless infrastructure provider that allows asynchronous streaming
-   * If deployed on a stateful server, you most likely want "void" to run the daemon in the background.
-   * @remarks - `"await"` is not allowed in development environments
-   * @default isDev === true ? "void" : "await"
-   */
-  handleDaemonPromise?:
-    | "void"
-    | "await"
-    | ((promise: Promise<unknown>) => void);
-  /**
-   * URL override for the ingest server
-   */
-  ingestUrl?: string;
-};
-
-export type RouteHandlerOptions<TRouter extends FileRouter> = {
-  router: TRouter;
-  config?: RouteHandlerConfig;
-};
-
-export type inferEndpointInput<TUploader extends Uploader<any>> =
-  TUploader["_def"]["_input"]["in"] extends UnsetMarker
-    ? undefined
-    : TUploader["_def"]["_input"]["in"];
-
-export type inferEndpointOutput<TUploader extends AnyUploader> =
-  TUploader["_def"]["_output"] extends UnsetMarker | void | undefined
-    ? null
-    : TUploader["_def"]["_routeOptions"]["awaitServerData"] extends false
-      ? null
-      : TUploader["_def"]["_output"];
-
-export type inferErrorShape<TRouter extends FileRouter> =
-  TRouter[keyof TRouter]["_def"]["_errorShape"];
+export type AnyFileRoute = FileRoute<AnyBuiltUploaderTypes>;
 
 /**
  * Map actionType to the required payload for that action
@@ -251,7 +178,7 @@ export type inferErrorShape<TRouter extends FileRouter> =
  */
 export type UTEvents = {
   upload: {
-    in: typeof UploadActionPayload.Type;
+    in: UploadActionPayload;
     out: ReadonlyArray<NewPresignedUrl>;
   };
 };

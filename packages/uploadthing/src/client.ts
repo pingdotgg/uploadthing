@@ -16,15 +16,16 @@ import {
 import * as pkgJson from "../package.json";
 import type { Deferred } from "./internal/deferred";
 import { createDeferred } from "./internal/deferred";
-import type { FileRouter, inferEndpointOutput } from "./internal/types";
 import { uploadFile, uploadFilesInternal } from "./internal/upload.browser";
 import { createUTReporter } from "./internal/ut-reporter";
 import type {
   ClientUploadedFileData,
   CreateUploadOptions,
   EndpointArg,
+  FileRouter,
   GenerateUploaderOptions,
   inferEndpointInput,
+  inferEndpointOutput,
   NewPresignedUrl,
   RouteRegistry,
   UploadFilesOptions,
@@ -91,7 +92,7 @@ export const genUploader = <TRouter extends FileRouter>(
   >(
     slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
-      CreateUploadOptions<TRouter, TEndpoint>,
+      CreateUploadOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
     >,
   ) => {
@@ -248,7 +249,7 @@ export const genUploader = <TRouter extends FileRouter>(
   const typedUploadFiles = <TEndpoint extends keyof TRouter>(
     slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
-      UploadFilesOptions<TRouter, TEndpoint>,
+      UploadFilesOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
     >,
   ) => {

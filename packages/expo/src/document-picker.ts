@@ -36,7 +36,7 @@ export const GENERATE_useDocumentUploader = <
 }) => {
   const useDocumentUploader = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter[TEndpoint]>,
   ) => {
     const { routeConfig, startUpload, isUploading } = __useUploadThingInternal(
       initOpts.url,

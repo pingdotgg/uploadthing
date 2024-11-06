@@ -6,6 +6,7 @@ import type {
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
+  AnyFileRoute,
   ClientUploadedFileData,
   EndpointArg,
   FileRouter,
@@ -28,9 +29,8 @@ export interface GenerateTypedHelpersOptions {
 }
 
 export type UseUploadthingProps<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-  TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
+  TFileRoute extends AnyFileRoute,
+  TServerOutput = inferEndpointOutput<TFileRoute>,
 > = {
   /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
@@ -74,7 +74,7 @@ export type UseUploadthingProps<
    * Called if the upload fails
    */
   onUploadError?:
-    | ((e: UploadThingError<inferErrorShape<TRouter>>) => MaybePromise<void>)
+    | ((e: UploadThingError<inferErrorShape<TFileRoute>>) => MaybePromise<void>)
     | undefined;
   /**
    * Set custom headers that'll get sent with requests
@@ -94,7 +94,7 @@ export type UploadthingComponentProps<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 > = Omit<
-  UseUploadthingProps<TRouter, TEndpoint>,
+  UseUploadthingProps<TRouter[TEndpoint]>,
   /**
    * Signal is omitted, component has its own AbortController
    * If you need to control the interruption with more granularity,

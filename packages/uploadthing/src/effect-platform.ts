@@ -6,9 +6,9 @@ import type { Json } from "@uploadthing/shared";
 
 import { configProvider } from "./internal/config";
 import { createRequestHandler, MiddlewareArguments } from "./internal/handler";
-import type { FileRouter, RouteHandlerConfig } from "./internal/types";
 import type { CreateBuilderOptions } from "./internal/upload-builder";
 import { createBuilder } from "./internal/upload-builder";
+import type { FileRouter, RouteHandlerConfig } from "./types";
 
 export { UTFiles } from "./internal/types";
 export type { FileRouter };

@@ -116,7 +116,7 @@ export const uploadFilesInternal = <
   TServerOutput = inferEndpointOutput<TRouter[TEndpoint]>,
 >(
   endpoint: TEndpoint,
-  opts: UploadFilesOptions<TRouter, TEndpoint>,
+  opts: UploadFilesOptions<TRouter[TEndpoint]>,
 ): Micro.Micro<
   ClientUploadedFileData<TServerOutput>[],
   UploadThingError | FetchError
