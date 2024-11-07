@@ -244,9 +244,6 @@ export function warnIfInvalidPeerDependency(
   required: string,
   toCheck: string,
 ) {
-  if (!required || !toCheck || (required + toCheck).includes("workspace:")) {
-    return true;
-  }
   if (!semverLite(required, toCheck)) {
     console.warn(
       `!!!WARNING::: ${pkg} requires "uploadthing@${required}", but version "${toCheck}" is installed`,
