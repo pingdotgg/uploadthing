@@ -16,6 +16,9 @@ export function Uploader() {
     <UTButton
       endpoint={(rr) => rr.anything}
       input={{}}
+      onUploadError={(error) => {
+        window.alert(error.message);
+      }}
       onClientUploadComplete={() => {
         router.refresh();
       }}
