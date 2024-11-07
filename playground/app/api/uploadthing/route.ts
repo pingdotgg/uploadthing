@@ -22,6 +22,8 @@ export const uploadRouter = {
         throw new UploadThingError("Unauthorized");
       }
 
+      console.log("middleware ::", session.sub, opts.input);
+
       return {};
     })
     .onUploadComplete(async (opts) => {

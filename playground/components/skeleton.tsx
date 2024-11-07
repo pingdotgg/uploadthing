@@ -1,4 +1,4 @@
-import React from "react";
+import cx from "clsx";
 
 export function Skeleton({
   className,
@@ -9,14 +9,18 @@ export function Skeleton({
   if (!loading) return children;
 
   return (
-    <div className="relative inline-block">
+    <div className="relative inline-block" role="status">
       <div
-        className={
-          "absolute inset-0 animate-pulse rounded-md bg-gray-300 " + className
-        }
+        className={cx(
+          className,
+          "absolute inset-0 animate-pulse rounded-md bg-gray-300",
+        )}
+        aria-hidden="true"
         {...props}
       />
-      <div className="invisible">{children}</div>
+      <div className="invisible" aria-hidden="true">
+        {children}
+      </div>
     </div>
   );
 }

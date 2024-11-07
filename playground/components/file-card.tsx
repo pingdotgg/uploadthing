@@ -1,11 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
+import cx from "clsx";
 
 import { deleteFile, getFileUrl } from "../lib/actions";
+import { ListedFileInfo } from "../lib/data";
 import { Button } from "./button";
 
-export function FileCard({ file }: { file: any }) {
+export function FileCard({ file }: { file: ListedFileInfo }) {
   const [isOpening, startOpenTransition] = useTransition();
   const [isDeleting, startDeleteTransition] = useTransition();
 
@@ -28,7 +30,11 @@ export function FileCard({ file }: { file: any }) {
             });
           }}
           color={failed ? "lightgray" : "blue"}
-          className={`min-w-16 ${isOpening && "animate-pulse"} ${failed && "font-bold text-red-600"}`}
+          className={cx(
+            "min-w-16",
+            isOpening && "animate-pulse",
+            failed && "font-bold text-red-600",
+          )}
           disabled={file.status !== "Uploaded" || isOpening}
         >
           {isOpening ? "⏳" : file.status === "Uploaded" ? "Open" : file.status}
@@ -40,7 +46,7 @@ export function FileCard({ file }: { file: any }) {
               await deleteFile(file.key);
             });
           }}
-          className={`${isDeleting ? "animate-pulse" : ""} border-red-600`}
+          className={cx(isDeleting && "animate-pulse border-red-600")}
           disabled={isDeleting}
         >
           {isDeleting ? "⏳" : "❌"}

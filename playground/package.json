@@ -1,13 +1,16 @@
 {
-  "name": "playground",
+  "name": "next-playground",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbopack --port 4000"
+    "dev": "next dev --turbopack --port 4000",
+    "lint": "eslint",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@uploadthing/react": "workspace:*",
+    "clsx": "2.1.1",
     "next": "canary",
     "react": "18.3.1",
     "react-dom": "18.3.1",

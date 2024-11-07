@@ -114,7 +114,7 @@ importers:
         version: 14.2.11(@mdx-js/loader@3.0.1(webpack@5.94.0(esbuild@0.21.5)))(@mdx-js/react@3.0.1(@types/react@18.3.3)(react@18.3.1))
       '@scalar/api-reference-react':
         specifier: ^0.3.37
-        version: 0.3.37(@types/bun@1.1.5)(postcss@8.4.38)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))
+        version: 0.3.37(@types/bun@1.1.5)(postcss@8.4.47)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))
       '@sindresorhus/slugify':
         specifier: ^2.1.1
         version: 2.2.1
@@ -147,7 +147,7 @@ importers:
         version: 8.12.1
       autoprefixer:
         specifier: ^10.4.19
-        version: 10.4.19(postcss@8.4.38)
+        version: 10.4.19(postcss@8.4.47)
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
@@ -1744,6 +1744,9 @@ importers:
       '@uploadthing/react':
         specifier: workspace:*
         version: link:../packages/react
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
       next:
         specifier: canary
         version: 15.0.3-canary.9(@playwright/test@1.45.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -8367,6 +8370,10 @@ packages:
 
   clsx@2.1.0:
     resolution: {integrity: sha512-m3iNNWpd9rl3jvvcBnu70ylMdrXt8Vlq4HYadnU5fwcOtvkSQWPmj7amUcDT2qYI7risszBjI5AUIUox9D16pg==}
+    engines: {node: '>=6'}
+
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
 
   cluster-key-slot@1.1.2:
@@ -21332,7 +21339,7 @@ snapshots:
       '@react-aria/utils': 3.25.2(react@18.3.1)
       '@react-types/shared': 3.24.1(react@18.3.1)
       '@swc/helpers': 0.5.11
-      clsx: 2.1.0
+      clsx: 2.1.1
       react: 18.3.1
 
   '@react-aria/interactions@3.22.2(react@18.3.1)':
@@ -21354,7 +21361,7 @@ snapshots:
       '@react-stately/utils': 3.10.3(react@18.3.1)
       '@react-types/shared': 3.24.1(react@18.3.1)
       '@swc/helpers': 0.5.11
-      clsx: 2.1.0
+      clsx: 2.1.1
       react: 18.3.1
 
   '@react-native-community/cli-clean@13.6.6(encoding@0.1.13)':
@@ -22196,9 +22203,9 @@ snapshots:
       - typescript
       - vitest
 
-  '@scalar/api-reference-react@0.3.37(@types/bun@1.1.5)(postcss@8.4.38)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))':
+  '@scalar/api-reference-react@0.3.37(@types/bun@1.1.5)(postcss@8.4.47)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))':
     dependencies:
-      '@scalar/api-reference': 1.24.39(@types/bun@1.1.5)(postcss@8.4.38)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))
+      '@scalar/api-reference': 1.24.39(@types/bun@1.1.5)(postcss@8.4.47)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))
       react: 18.3.1
     transitivePeerDependencies:
       - '@jest/globals'
@@ -22214,7 +22221,7 @@ snapshots:
       - typescript
       - vitest
 
-  '@scalar/api-reference@1.24.39(@types/bun@1.1.5)(postcss@8.4.38)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))':
+  '@scalar/api-reference@1.24.39(@types/bun@1.1.5)(postcss@8.4.47)(storybook@8.2.1(@babel/preset-env@7.25.7(@babel/core@7.25.8)))(tailwindcss@3.4.3)(typescript@5.6.2)(vitest@2.1.2(@types/node@20.16.11)(@vitest/browser@2.1.2)(happy-dom@13.10.1)(lightningcss@1.28.1)(msw@2.4.9(typescript@5.6.2))(terser@5.34.1))':
     dependencies:
       '@floating-ui/vue': 1.1.1(vue@3.4.25(typescript@5.6.2))
       '@headlessui/vue': 1.7.20(vue@3.4.25(typescript@5.6.2))
@@ -22234,7 +22241,7 @@ snapshots:
       github-slugger: 2.0.0
       httpsnippet-lite: 3.0.5
       nanoid: 5.0.7
-      postcss-nested: 6.0.1(postcss@8.4.38)
+      postcss-nested: 6.0.1(postcss@8.4.47)
       unhead: 1.9.15
       unified: 11.0.5
       vue: 3.4.25(typescript@5.6.2)
@@ -25696,6 +25703,8 @@ snapshots:
   clsx@2.0.0: {}
 
   clsx@2.1.0: {}
+
+  clsx@2.1.1: {}
 
   cluster-key-slot@1.1.2: {}
 
@@ -32365,6 +32374,11 @@ snapshots:
   postcss-nested@6.0.1(postcss@8.4.38):
     dependencies:
       postcss: 8.4.38
+      postcss-selector-parser: 6.0.16
+
+  postcss-nested@6.0.1(postcss@8.4.47):
+    dependencies:
+      postcss: 8.4.47
       postcss-selector-parser: 6.0.16
 
   postcss-nesting@13.0.1(postcss@8.4.47):

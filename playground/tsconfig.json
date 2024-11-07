@@ -12,6 +12,6 @@
     "isolatedModules": true,
     "plugins": [{ "name": "next" }]
   },
-  "include": ["**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.js", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

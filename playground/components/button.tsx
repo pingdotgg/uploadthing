@@ -1,3 +1,5 @@
+import cx from "clsx";
+
 const colors = {
   blue: "bg-blue-600 hover:bg-blue-700 text-blue-50",
   red: "bg-red-600 hover:bg-red-700 text-red-50",
@@ -11,11 +13,14 @@ export function Button(
     color?: Color;
   },
 ) {
-  [props.color ?? "blue"];
   return (
     <button
       {...props}
-      className={`${props.className} rounded px-2 py-1 text-sm/6 disabled:pointer-events-none ${colors[props.color ?? "blue"]}`}
+      className={cx(
+        props.className,
+        "rounded px-2 py-1 text-sm/6 disabled:pointer-events-none",
+        colors[props.color ?? "blue"],
+      )}
     />
   );
 }

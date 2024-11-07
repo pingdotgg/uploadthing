@@ -7,19 +7,24 @@ import { redirect } from "next/navigation";
 import { UTApi } from "uploadthing/server";
 
 import { CACHE_TAGS, SESSION_COOKIE_NAME } from "./const";
-import { getSession } from "./data";
+import { getSession, Session } from "./data";
 
 const utapi = new UTApi();
 
 export async function signIn() {
-  const iat = Date.now();
-  const exp = iat + 60 * 60 * 1000;
+  const session: Session = {
+    sub: 123,
+    iat: Date.now(),
+    role: "admin",
+  };
+  const exp = session.iat + 60 * 60 * 1000;
+  const cookie = JSON.stringify(session);
 
-  (await cookies()).set(
-    SESSION_COOKIE_NAME,
-    JSON.stringify({ sub: 123, iat: Date.now(), role: "admin" }),
-    { httpOnly: true, sameSite: "lax", expires: exp },
-  );
+  (await cookies()).set(SESSION_COOKIE_NAME, cookie, {
+    httpOnly: true,
+    sameSite: "lax",
+    expires: exp,
+  });
 }
 
 export async function signOut() {

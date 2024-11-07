@@ -40,7 +40,7 @@ async function UTSSR() {
 function Nav() {
   const token = JSON.parse(
     Buffer.from(process.env.UPLOADTHING_TOKEN!, "base64").toString("utf-8"),
-  );
+  ) as { appId: string; regions: string[]; apiKey: string };
 
   return (
     <nav className="flex w-full flex-col justify-between border-b p-4">
