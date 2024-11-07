@@ -1,5 +1,16 @@
 # @uploadthing/nuxt
 
+## 7.1.1
+
+### Patch Changes
+
+- [#1044](https://github.com/pingdotgg/uploadthing/pull/1044) [`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: simplify types for built file route
+
+- [#1033](https://github.com/pingdotgg/uploadthing/pull/1033) [`de98bab`](https://github.com/pingdotgg/uploadthing/commit/de98babde74323fca4e376779161d9d22edd1b0a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: dynamically add either stylesheet or tailwind plugin based on whether `@nuxtjs/tailwindcss´ is installed
+
+- Updated dependencies [[`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6)]:
+  - @uploadthing/vue@7.1.1
+
 ## 7.1.0
 
 ### Minor Changes

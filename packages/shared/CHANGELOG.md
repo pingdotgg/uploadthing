@@ -1,5 +1,12 @@
 # @uploadthing/shared
 
+## 7.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560)]:
+  - @uploadthing/mime-types@0.3.2
+
 ## 7.1.0
 
 ### Minor Changes
