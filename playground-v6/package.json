@@ -1,0 +1,29 @@
+{
+  "name": "next-playground-v6",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --turbopack --port 4001",
+    "lint": "eslint",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@uploadthing/react": "npm:@uploadthing/react@6",
+    "clsx": "2.1.1",
+    "effect": "3.10.3",
+    "next": "canary",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "uploadthing": "npm:uploadthing@6",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "eslint": "9.14.0",
+    "typescript-eslint": "8.13.0",
+    "typescript": "5.6.3"
+  }
+}

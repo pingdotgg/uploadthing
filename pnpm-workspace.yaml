@@ -6,4 +6,5 @@ packages:
   - "packages/nuxt/playground"
   - "!packages/raycast-extension"
   - "playground"
+  - "playground-v6"
   - "tooling/*"
