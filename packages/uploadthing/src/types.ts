@@ -8,7 +8,7 @@ import type {
 } from "@uploadthing/shared";
 
 import type { LogFormat } from "./internal/logger";
-import type { AnyFileRoute } from "./internal/types";
+import type { AnyFileRoute, FileRoute } from "./internal/types";
 
 export * from "./sdk/types";
 
@@ -25,7 +25,7 @@ export type {
   NewPresignedUrl,
 } from "./internal/shared-schemas";
 
-export type { AnyFileRoute };
+export type { FileRoute, AnyFileRoute };
 export type FileRouter = Record<string, AnyFileRoute>;
 
 export type inferEndpointInput<TFileRoute extends AnyFileRoute> =
