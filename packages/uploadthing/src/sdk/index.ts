@@ -17,11 +17,7 @@ import type {
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
-import {
-  asArray,
-  parseTimeToSeconds,
-  UploadThingError,
-} from "@uploadthing/shared";
+import { parseTimeToSeconds, UploadThingError } from "@uploadthing/shared";
 
 import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../internal/config";
 import { logHttpClientError, logHttpClientResponse } from "../internal/logger";
@@ -131,7 +127,7 @@ export class UTApi {
     const uploads = await this.executeAsync(
       Effect.flatMap(
         uploadFilesInternal({
-          files: asArray(files),
+          files: Arr.ensure(files),
           contentDisposition: opts?.contentDisposition ?? "inline",
           acl: opts?.acl,
         }),
@@ -177,7 +173,7 @@ export class UTApi {
     guardServerOnly();
 
     const downloadErrors: Record<number, SerializedUploadThingError> = {};
-    const arr = asArray(urls);
+    const arr = Arr.ensure(urls);
 
     const program = Effect.gen(function* () {
       const downloadedFiles = yield* downloadFiles(arr, downloadErrors).pipe(
@@ -243,8 +239,8 @@ export class UTApi {
       this.requestUploadThing(
         "/v6/deleteFiles",
         keyType === "fileKey"
-          ? { fileKeys: asArray(keys) }
-          : { customIds: asArray(keys) },
+          ? { fileKeys: Arr.ensure(keys) }
+          : { customIds: Arr.ensure(keys) },
         DeleteFileResponse,
       ).pipe(Effect.withLogSpan("deleteFiles")),
     );
@@ -284,8 +280,8 @@ export class UTApi {
       this.requestUploadThing(
         "/v6/getFileUrl",
         keyType === "fileKey"
-          ? { fileKeys: asArray(keys) }
-          : { customIds: asArray(keys) },
+          ? { fileKeys: Arr.ensure(keys) }
+          : { customIds: Arr.ensure(keys) },
         GetFileUrlResponse,
       ).pipe(Effect.withLogSpan("getFileUrls")),
     );
@@ -345,7 +341,7 @@ export class UTApi {
     return await this.executeAsync(
       this.requestUploadThing(
         "/v6/renameFiles",
-        { updates: asArray(updates) },
+        { updates: Arr.ensure(updates) },
         RenameFileResponse,
       ).pipe(Effect.withLogSpan("renameFiles")),
     );
@@ -436,7 +432,7 @@ export class UTApi {
     guardServerOnly();
 
     const { keyType = this.defaultKeyType } = opts ?? {};
-    const updates = asArray(keys).map((key) => {
+    const updates = Arr.ensure(keys).map((key) => {
       return keyType === "fileKey"
         ? { fileKey: key, acl }
         : { customId: key, acl };

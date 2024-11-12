@@ -1,5 +1,17 @@
 # @uploadthing/mime-types
 
+## 0.3.2
+
+### Patch Changes
+
+- [#1013](https://github.com/pingdotgg/uploadthing/pull/1013) [`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: support legacy module resolutions to support Expo
+
+## 0.3.1
+
+### Patch Changes
+
+- [#1022](https://github.com/pingdotgg/uploadthing/pull/1022) [`e2df2a2`](https://github.com/pingdotgg/uploadthing/commit/e2df2a29a9674ebf62091ebfd87706e084e5046b) Thanks [@christian-bromann](https://github.com/christian-bromann)! - feat(@uploadthing/mime-types) add application/yaml as mime type
+
 ## 0.3.0
 
 ### Minor Changes

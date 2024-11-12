@@ -7,30 +7,30 @@ import type {
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
-  AnyParams,
-  MiddlewareFnArgs,
+  AdapterFnArgs,
+  AnyBuiltUploaderTypes,
+  AnyFileRoute,
   UnsetMarker,
   UploadBuilder,
-  UploadBuilderDef,
-  Uploader,
 } from "./types";
 
 function internalCreateBuilder<
-  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
+  TAdapterFnArgs extends AdapterFnArgs<any, any, any>,
   TRouteOptions extends RouteOptions,
   TErrorShape extends Json = { message: string },
 >(
-  initDef: Partial<UploadBuilderDef<any>> = {},
+  initDef: Partial<AnyFileRoute> = {},
 ): UploadBuilder<{
   _routeOptions: TRouteOptions;
-  _input: UnsetMarker;
+  _input: { in: UnsetMarker; out: UnsetMarker };
   _metadata: UnsetMarker;
-  _middlewareArgs: TMiddlewareArgs;
+  _adapterFnArgs: TAdapterFnArgs;
   _errorShape: TErrorShape;
   _errorFn: UnsetMarker;
   _output: UnsetMarker;
 }> {
-  const _def: UploadBuilderDef<AnyParams> = {
+  const _def: AnyFileRoute = {
+    $types: {} as AnyBuiltUploaderTypes,
     // Default router config
     routerConfig: {
       image: {
@@ -51,6 +51,7 @@ function internalCreateBuilder<
     onUploadError: () => {
       // noop
     },
+    onUploadComplete: () => undefined,
 
     errorFormatter: initDef.errorFormatter ?? defaultErrorFormatter,
 
@@ -73,9 +74,9 @@ function internalCreateBuilder<
     },
     onUploadComplete(userUploadComplete) {
       return {
-        _def,
-        resolver: userUploadComplete,
-      } as Uploader<any>;
+        ..._def,
+        onUploadComplete: userUploadComplete,
+      } as AnyFileRoute;
     },
     onUploadError(userOnUploadError) {
       return internalCreateBuilder({
@@ -91,7 +92,7 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
 };
 
 export function createBuilder<
-  TMiddlewareArgs extends MiddlewareFnArgs<any, any, any>,
+  TAdapterFnArgs extends AdapterFnArgs<any, any, any>,
   TErrorShape extends Json = { message: string },
 >(opts?: CreateBuilderOptions<TErrorShape>) {
   return <TRouteOptions extends RouteOptions>(
@@ -99,14 +100,14 @@ export function createBuilder<
     config?: TRouteOptions,
   ): UploadBuilder<{
     _routeOptions: TRouteOptions;
-    _input: UnsetMarker;
+    _input: { in: UnsetMarker; out: UnsetMarker };
     _metadata: UnsetMarker;
-    _middlewareArgs: TMiddlewareArgs;
+    _adapterFnArgs: TAdapterFnArgs;
     _errorShape: TErrorShape;
     _errorFn: UnsetMarker;
     _output: UnsetMarker;
   }> => {
-    return internalCreateBuilder<TMiddlewareArgs, TRouteOptions, TErrorShape>({
+    return internalCreateBuilder<TAdapterFnArgs, TRouteOptions, TErrorShape>({
       routerConfig: input,
       routeOptions: config ?? {},
       ...opts,

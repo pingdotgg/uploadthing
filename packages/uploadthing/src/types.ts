@@ -1,17 +1,14 @@
+import type * as LogLevel from "effect/LogLevel";
+
 import type {
   ErrorMessage,
   ExtendObjectIf,
+  FetchEsque,
   MaybePromise,
 } from "@uploadthing/shared";
 
-import type { FileRouter, inferEndpointInput } from "./internal/types";
-
-export type {
-  inferEndpointInput,
-  inferEndpointOutput,
-  inferErrorShape,
-  FileRouter,
-} from "./internal/types";
+import type { LogFormat } from "./internal/logger";
+import type { AnyFileRoute } from "./internal/types";
 
 export * from "./sdk/types";
 
@@ -28,10 +25,65 @@ export type {
   NewPresignedUrl,
 } from "./internal/shared-schemas";
 
-export type UploadFilesOptions<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
+export type { AnyFileRoute };
+export type FileRouter = Record<string, AnyFileRoute>;
+
+export type inferEndpointInput<TFileRoute extends AnyFileRoute> =
+  TFileRoute["$types"]["input"];
+
+export type inferEndpointOutput<TFileRoute extends AnyFileRoute> =
+  TFileRoute["$types"]["output"];
+
+export type inferErrorShape<TFileRoute extends AnyFileRoute> =
+  TFileRoute["$types"]["errorShape"];
+
+export type RouteHandlerConfig = {
+  logLevel?: LogLevel.Literal;
+  /**
+   * What format log entries should be in
+   * @default "pretty" in development, else "json"
+   * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
+   */
+  logFormat?: LogFormat;
+  callbackUrl?: string;
+  token?: string;
+  /**
+   * Used to determine whether to run dev hook or not
+   * @default `env.NODE_ENV === "development" || env.NODE_ENV === "dev"`
+   */
+  isDev?: boolean;
+  /**
+   * Used to override the fetch implementation
+   * @default `globalThis.fetch`
+   */
+  fetch?: FetchEsque;
+  /**
+   * Set how UploadThing should handle the daemon promise before returning a response to the client.
+   * You can also provide a synchronous function that will be called before returning a response to
+   * the client. This can be useful for things like:
+   * -  [`@vercel/functions.waitUntil`](https://vercel.com/docs/functions/functions-api-reference#waituntil)
+   * - [`next/after`](https://nextjs.org/blog/next-15-rc#executing-code-after-a-response-with-nextafter-experimental)
+   * - or equivalent function from your serverless infrastructure provider that allows asynchronous streaming
+   * If deployed on a stateful server, you most likely want "void" to run the daemon in the background.
+   * @remarks - `"await"` is not allowed in development environments
+   * @default isDev === true ? "void" : "await"
+   */
+  handleDaemonPromise?:
+    | "void"
+    | "await"
+    | ((promise: Promise<unknown>) => void);
+  /**
+   * URL override for the ingest server
+   */
+  ingestUrl?: string;
+};
+
+export type RouteHandlerOptions<TRouter extends FileRouter> = {
+  router: TRouter;
+  config?: RouteHandlerConfig;
+};
+
+export type UploadFilesOptions<TFileRoute extends AnyFileRoute> = {
   /**
    * The files to upload
    */
@@ -99,14 +151,11 @@ export type UploadFilesOptions<
    */
   package: string;
 } & ExtendObjectIf<
-  inferEndpointInput<TRouter[TEndpoint]>,
-  { input: inferEndpointInput<TRouter[TEndpoint]> }
+  inferEndpointInput<TFileRoute>,
+  { input: inferEndpointInput<TFileRoute> }
 >;
 
-export type CreateUploadOptions<
-  TRouter extends FileRouter,
-  TEndpoint extends keyof TRouter,
-> = {
+export type CreateUploadOptions<TFileRoute extends AnyFileRoute> = {
   /**
    * The files to upload
    */
@@ -136,8 +185,8 @@ export type CreateUploadOptions<
    */
   headers?: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
 } & ExtendObjectIf<
-  inferEndpointInput<TRouter[TEndpoint]>,
-  { input: inferEndpointInput<TRouter[TEndpoint]> }
+  inferEndpointInput<TFileRoute>,
+  { input: inferEndpointInput<TFileRoute> }
 >;
 
 export type GenerateUploaderOptions = {

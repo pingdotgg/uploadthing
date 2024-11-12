@@ -168,17 +168,8 @@ export const bytesToFileSize = (bytes: number) => {
 };
 
 export async function safeParseJSON<T>(
-  input: string | ResponseEsque | Request,
+  input: ResponseEsque,
 ): Promise<T | Error> {
-  if (typeof input === "string") {
-    try {
-      return JSON.parse(input) as T;
-    } catch (err) {
-      console.error(`Error parsing JSON, got '${input}'`);
-      return new Error(`Error parsing JSON, got '${input}'`);
-    }
-  }
-
   const text = await input.text();
   try {
     return JSON.parse(text ?? "null") as T;
@@ -193,15 +184,6 @@ export function objectKeys<T extends Record<string, unknown>>(
   obj: T,
 ): (keyof T)[] {
   return Object.keys(obj) as (keyof T)[];
-}
-
-/** checks if obj is a valid, non-null object */
-export function isObject(obj: unknown): obj is Record<string, unknown> {
-  return typeof obj === "object" && obj !== null && !Array.isArray(obj);
-}
-
-export function asArray<T>(val: T | T[]): T[] {
-  return Array.isArray(val) ? val : [val];
 }
 
 export function filterDefinedObjectValues<T>(

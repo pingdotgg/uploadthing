@@ -37,6 +37,16 @@ const router = {
       console.log(metadata);
     }),
 
+  withTransformedInput: f(["image"], { awaitServerData: false })
+    .input(z.object({ bar: z.number().transform(String) }))
+    .middleware((opts) => {
+      expectTypeOf(opts.input.bar).toBeString();
+      return { string: opts.input.bar };
+    })
+    .onUploadComplete(({ metadata }) => {
+      console.log(metadata);
+    }),
+
   // Should technically block returning undefined but there was
   // so many issues with getting everything to work so we just
   // serialize it as null on the other end...... JSON sucks
@@ -96,6 +106,13 @@ it("infers the input correctly", () => {
 
   doNotExecute(() => {
     const { startUpload } = useUploadThing("withBarInput");
+    type Input = Parameters<typeof startUpload>[1];
+    expectTypeOf<Input>().toEqualTypeOf<{ bar: number }>();
+    void startUpload(files, { bar: 1 });
+  });
+
+  doNotExecute(() => {
+    const { startUpload } = useUploadThing("withTransformedInput");
     type Input = Parameters<typeof startUpload>[1];
     expectTypeOf<Input>().toEqualTypeOf<{ bar: number }>();
     void startUpload(files, { bar: 1 });

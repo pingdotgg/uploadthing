@@ -88,7 +88,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
       const uploadProgress = ref(0);
       const files = ref<File[]>([]);
 
-      const useUploadthingProps: UseUploadthingProps<TRouter, TEndpoint> =
+      const useUploadthingProps: UseUploadthingProps<TRouter[TEndpoint]> =
         reactive({
           signal: acRef.value.signal,
           headers: $props.headers,
