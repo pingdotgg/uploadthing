@@ -9,7 +9,7 @@ import {
   FileRouter,
 } from "uploadthing/convex";
 
-// In a real app, you can wire up `cereateUploadthing` to your Convex
+// In a real app, you can wire up `createUploadthing` to your Convex
 // schema for increased type safety.
 // ```ts
 // import schema from "./schema";
