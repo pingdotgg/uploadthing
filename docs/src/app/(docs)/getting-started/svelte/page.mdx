@@ -228,7 +228,7 @@ First, generate a typed helper using the `generateSvelteHelpers` function from
 <script lang="ts">
   import { createUploadThing } from "$lib/utils/uploadthing";
 
-  const { startUpload } = createUploadThing("imageUploader", {
+  const ut = createUploadThing("imageUploader", {
     onClientUploadComplete: () => {
       alert("Upload Completed");
     },
@@ -237,17 +237,25 @@ First, generate a typed helper using the `generateSvelteHelpers` function from
 
 <input
   type="file"
-  on:change={async (e) => {
+  onchange={async (e) => {
     const file = e.currentTarget.files?.[0];
     if (!file) return;
 
     // Do something with files
 
     // Then start the upload
-    await startUpload([file]);
+    await ut.startUpload([file]);
   }}
 />
 ```
+
+<Warning>
+  Previous versions of `@uploadthing/svelte` used stores as a way to pass state
+  around. New versions use
+  [runes](https://svelte.dev/docs/svelte/what-are-runes) instead, so things like
+  destructuring the object returned by `createUploadThing` is not advised any
+  more as it breaks reactivity.
+</Warning>
 
 ## Theming Svelte components
 
@@ -257,21 +265,21 @@ Check out our [theming guide](/concepts/theming) to know the basics about
 `@uploadthing/svelte`.
 
 However, [content customization](/concepts/theming#content-customization) makes
-use of Svelte's named slots and slot props.
+use of Svelte's snippets.
 
 ### UploadButton content customization
 
 ```svelte
 <UploadButton {uploader}>
-  <span slot="button-content" let:state>
+  {#snippet button(state)}
     {state.isUploading ? "Uploading..." : "Pick a file"}
-  </span>
-  <span slot="clear-btn" let:state>
+  {/snippet}
+  {#snippet clearBtn(state)}
     Clear files
-  </span>
-  <span slot="allowed-content" let:state>
+  {/snippet}
+  {#snippet allowedContent(state)}
     You can choose between {state.fileTypes.join(", ")} files
-  </span>
+  {/snippet}
 </UploadButton>
 ```
 
@@ -279,17 +287,25 @@ use of Svelte's named slots and slot props.
 
 ```svelte
 <UploadDropzone {uploader}>
-  <i slot="upload-icon" let:state>
-    <!-- some custom icon -->
-  </i>
-  <span slot="button-content" let:state>
+  {#snippet uploadIcon(state)}
+    <i>
+      <!-- some custom icon -->
+    </i>
+  {/snippet}
+  {#snippet button(state)}
     {state.isUploading ? "Uploading..." : "Pick a file"}
-  </span>
-  <span slot="label" let:state>
+  {/snippet}
+  {#snippet label(state)}
     {state.ready ? "Ready to upload" : "Loading..."}
-  </span>
-  <span slot="allowed-content" let:state>
+  {/snippet}
+  {#snippet allowedContent(state)}
     You can choose between {state.fileTypes.join(", ")} files
-  </span>
+  {/snippet}
 </UploadDropzone>
 ```
+
+<Warning>
+  Previous versions of `@uploadthing/svelte` used named slots for content
+  customization. New versions use
+  [snippets](https://svelte.dev/docs/svelte/snippet) instead.
+</Warning>
