@@ -35,7 +35,7 @@
   <UploadDropzone {uploader} />
   <input
     type="file"
-    on:change={async (e) => {
+    onchange={async (e) => {
       const file = e.currentTarget.files?.[0];
       if (!file) return;
 

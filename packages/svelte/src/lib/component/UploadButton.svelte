@@ -41,19 +41,15 @@
     clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
   };
 
-  type ButtonContent = {
-    button?: Snippet<[ButtonStyleFieldCallbackArgs]>;
-    allowedContent?: Snippet<[ButtonStyleFieldCallbackArgs]>;
-    clearBtn?: Snippet<[ButtonStyleFieldCallbackArgs]>;
-  };
-
   type Props = {
     uploader: UploadthingComponentProps<TRouter, TEndpoint>;
     onChange?: ((files: File[]) => void) | undefined;
     disabled?: boolean;
     class?: string;
     appearance?: ButtonAppearance;
-    content?: ButtonContent;
+    button?: Snippet<[ButtonStyleFieldCallbackArgs]>;
+    allowedContent?: Snippet<[ButtonStyleFieldCallbackArgs]>;
+    clearBtn?: Snippet<[ButtonStyleFieldCallbackArgs]>;
   };
 
   let {
@@ -62,7 +58,9 @@
     disabled,
     class: className,
     appearance,
-    content
+    button,
+    allowedContent,
+    clearBtn,
   }: Props = $props();
 
   let {
@@ -82,26 +80,23 @@
   let files: File[] = $state([]);
 
   // Cannot destructure when using runes state
-  const ut = createUploadThing(
-    uploader.endpoint,
-    {
-      signal: acRef.signal,
-      headers: uploader.headers,
-      onClientUploadComplete: (res) => {
-        fileInputRef.value = "";
-        files = [];
-        void uploader.onClientUploadComplete?.(res);
-        uploadProgress = 0;
-      },
-      onUploadProgress: (p) => {
-        uploadProgress = p;
-        uploader.onUploadProgress?.(p);
-      },
-      onUploadError: uploader.onUploadError,
-      onUploadBegin: uploader.onUploadBegin,
-      onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  const ut = createUploadThing(uploader.endpoint, {
+    signal: acRef.signal,
+    headers: uploader.headers,
+    onClientUploadComplete: (res) => {
+      fileInputRef.value = "";
+      files = [];
+      void uploader.onClientUploadComplete?.(res);
+      uploadProgress = 0;
     },
-  );
+    onUploadProgress: (p) => {
+      uploadProgress = p;
+      uploader.onUploadProgress?.(p);
+    },
+    onUploadError: uploader.onUploadError,
+    onUploadBegin: uploader.onUploadBegin,
+    onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  });
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
@@ -226,25 +221,23 @@ Example:
         uploadFiles(selectedFiles);
       }}
     />
-    {#if content?.button}
-      {@render content.button(styleFieldArg)}
-    {:else}
-      {#if uploadState === "readying"}
-        {`Loading...`}
-      {:else if uploadState === "uploading"}
-        {#if uploadProgress >= 100}
-          <Spinner />
-        {:else}
-          <span class="z-50">
-            <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel {cn} className="hidden size-4 group-hover:block" />
-          </span>
-        {/if}
-      {:else if mode === "manual" && files.length > 0}
-        {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {#if button}
+      {@render button(styleFieldArg)}
+    {:else if uploadState === "readying"}
+      {`Loading...`}
+    {:else if uploadState === "uploading"}
+      {#if uploadProgress >= 100}
+        <Spinner />
       {:else}
-        {`Choose File${multiple ? `(s)` : ``}`}
+        <span class="z-50">
+          <span class="block group-hover:hidden">{uploadProgress}%</span>
+          <Cancel {cn} className="hidden size-4 group-hover:block" />
+        </span>
       {/if}
+    {:else if mode === "manual" && files.length > 0}
+      {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {:else}
+      {`Choose File${multiple ? `(s)` : ``}`}
     {/if}
   </label>
   {#if mode === "manual" && files.length > 0}
@@ -262,8 +255,8 @@ Example:
       data-state={uploadState}
       data-ut-element="clear-btn"
     >
-      {#if content?.clearBtn}
-        {@render content.clearBtn(styleFieldArg)}
+      {#if clearBtn}
+        {@render clearBtn(styleFieldArg)}
       {:else}
         {`Clear`}
       {/if}
@@ -278,8 +271,8 @@ Example:
       data-state={uploadState}
       data-ut-element="allowed-content"
     >
-      {#if content?.allowedContent}
-        {@render content.allowedContent(styleFieldArg)}
+      {#if allowedContent}
+        {@render allowedContent(styleFieldArg)}
       {:else}
         {allowedContentTextLabelGenerator(ut.routeConfig)}
       {/if}

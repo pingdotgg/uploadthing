@@ -44,13 +44,6 @@
     button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
 
-  type DropzoneContent = {
-    uploadIcon?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
-    label?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
-    allowedContent?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
-    button?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
-  };
-
   type Props = {
     uploader: UploadthingComponentProps<TRouter, TEndpoint>;
     onChange?: ((files: File[]) => void) | undefined;
@@ -64,7 +57,10 @@
     disabled?: boolean;
     class?: string;
     appearance?: DropzoneAppearance;
-    content?: DropzoneContent;
+    uploadIcon?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
+    label?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
+    allowedContent?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
+    button?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
   };
 
   let {
@@ -74,7 +70,10 @@
     disabled,
     class: className,
     appearance,
-    content,
+    uploadIcon,
+    label,
+    allowedContent,
+    button,
   }: Props = $props();
 
   let {
@@ -95,25 +94,22 @@
   });
 
   // Cannot destructure when using runes state
-  const ut = createUploadThing(
-    uploader.endpoint,
-    {
-      signal: acRef.signal,
-      headers: uploader.headers,
-      onClientUploadComplete: (res) => {
-        files = [];
-        void uploader.onClientUploadComplete?.(res);
-        uploadProgress = 0;
-      },
-      onUploadProgress: (p) => {
-        uploadProgress = p;
-        uploader.onUploadProgress?.(p);
-      },
-      onUploadError: uploader.onUploadError,
-      onUploadBegin: uploader.onUploadBegin,
-      onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  const ut = createUploadThing(uploader.endpoint, {
+    signal: acRef.signal,
+    headers: uploader.headers,
+    onClientUploadComplete: (res) => {
+      files = [];
+      void uploader.onClientUploadComplete?.(res);
+      uploadProgress = 0;
     },
-  );
+    onUploadProgress: (p) => {
+      uploadProgress = p;
+      uploader.onUploadProgress?.(p);
+    },
+    onUploadError: uploader.onUploadError,
+    onUploadBegin: uploader.onUploadBegin,
+    onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  });
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
@@ -141,14 +137,16 @@
   );
 
   // Cannot destructure when using runes state
-  const dropzone = $derived(createDropzone({
-    rootRef,
-    inputRef,
-    onDrop: onDropCallback,
-    multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled,
-  }));
+  const dropzone = $derived(
+    createDropzone({
+      rootRef,
+      inputRef,
+      onDrop: onDropCallback,
+      multiple,
+      accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+      disabled,
+    }),
+  );
 
   let ready = $derived(fileTypes.length > 0);
 
@@ -220,8 +218,8 @@
   bind:this={rootRef}
   {...dropzone.rootProps}
 >
-  {#if content?.uploadIcon}
-    {@render content.uploadIcon(styleFieldArg)}
+  {#if uploadIcon}
+    {@render uploadIcon(styleFieldArg)}
   {:else}
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -253,8 +251,8 @@
     data-state={uploadState}
   >
     <input class="sr-only" bind:this={inputRef} {...dropzone.inputProps} />
-    {#if content?.label}
-      {@render content.label(styleFieldArg)}
+    {#if label}
+      {@render label(styleFieldArg)}
     {:else}
       {ready
         ? `Choose ${multiple ? "file(s)" : "a file"} or drag and drop`
@@ -270,8 +268,8 @@
     data-ut-element="allowed-content"
     data-state={uploadState}
   >
-    {#if content?.allowedContent}
-      {@render content.allowedContent(styleFieldArg)}
+    {#if allowedContent}
+      {@render allowedContent(styleFieldArg)}
     {:else}
       {allowedContentTextLabelGenerator(ut.routeConfig)}
     {/if}
@@ -294,25 +292,23 @@
     type="button"
     disabled={files.length === 0 || uploadState === "disabled"}
   >
-    {#if content?.button}
-      {@render content.button(styleFieldArg)}
-    {:else}
-      {#if uploadState === "readying"}
-        {`Loading...`}
-      {:else if uploadState === "uploading"}
-        {#if uploadProgress >= 100}
-          <Spinner />
-        {:else}
-          <span class="z-50">
-            <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel {cn} className="hidden size-4 group-hover:block" />
-          </span>
-        {/if}
-      {:else if mode === "manual" && files.length > 0}
-        {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {#if button}
+      {@render button(styleFieldArg)}
+    {:else if uploadState === "readying"}
+      {`Loading...`}
+    {:else if uploadState === "uploading"}
+      {#if uploadProgress >= 100}
+        <Spinner />
       {:else}
-        {`Choose File${multiple ? `(s)` : ``}`}
+        <span class="z-50">
+          <span class="block group-hover:hidden">{uploadProgress}%</span>
+          <Cancel {cn} className="hidden size-4 group-hover:block" />
+        </span>
       {/if}
+    {:else if mode === "manual" && files.length > 0}
+      {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {:else}
+      {`Choose File${multiple ? `(s)` : ``}`}
     {/if}
   </button>
 </div>
