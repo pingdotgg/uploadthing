@@ -10,7 +10,7 @@
 </p>
 
 <div align="center">
-  <a href="https://uploadthing.com">Home</a> | <a href="https://docs.uploadthing.com">Docs</a> | <a href="https://t3-tools.notion.site/776334c06d814dd08d450975bb983085">Roadmap</a>
+  <a href="https://uploadthing.com">Home</a> | <a href="https://docs.uploadthing.com">Docs</a> | <a href="https://gurubase.io/g/uploadthing">Ask UploadThing Guru</a> | <a href="https://t3-tools.notion.site/776334c06d814dd08d450975bb983085">Roadmap</a>
 </div>
 
 ## Table of Contents
@@ -56,7 +56,3 @@ community.
    required.
 5. Create a changeset for your changes by running `pnpm changeset`.
 6. Open a pull request with your changes and changeset.
-
-<div align="center">
-  <a href="https://gurubase.io/g/uploadthing"><img src="https://img.shields.io/badge/Gurubase-Ask%20UploadThing%20Guru-006BFF" alt="Gurubase"></a>
-</div>
