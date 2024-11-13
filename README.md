@@ -56,3 +56,7 @@ community.
    required.
 5. Create a changeset for your changes by running `pnpm changeset`.
 6. Open a pull request with your changes and changeset.
+
+<div align="center">
+  <a href="https://gurubase.io/g/uploadthing"><img src="https://img.shields.io/badge/Gurubase-Ask%20UploadThing%20Guru-006BFF" alt="Gurubase"></a>
+</div>
