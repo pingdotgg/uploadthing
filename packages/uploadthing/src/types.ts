@@ -24,6 +24,7 @@ export type {
   ClientUploadedFileData,
   NewPresignedUrl,
 } from "./internal/shared-schemas";
+export { UploadThingToken } from "./internal/shared-schemas";
 
 export type { AnyFileRoute };
 export type FileRouter = Record<string, AnyFileRoute>;
