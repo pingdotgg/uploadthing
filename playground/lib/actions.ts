@@ -12,6 +12,9 @@ import { getSession, Session } from "./data";
 const utapi = new UTApi();
 
 export async function signIn() {
+  /**
+   * @note this is just a playground example and provides no real authentication
+   */
   const session: Session = {
     sub: 123,
     iat: Date.now(),

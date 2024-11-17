@@ -1,4 +1,4 @@
-# UploadThing Next.js Playground (current version)
+# UploadThing Next.js Playground (v6)
 
 > [!WARNING]
 >
