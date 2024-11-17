@@ -13,15 +13,15 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",
-    "@uploadthing/svelte": "7.1.1",
+    "@uploadthing/svelte": "7.2.0",
     "uploadthing": "7.3.0"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^3.1.1",
-    "@sveltejs/kit": "^2.5.4",
-    "@sveltejs/vite-plugin-svelte": "^3.1.0",
-    "svelte": "^4.2.12",
-    "svelte-check": "^3.6.7",
+    "@sveltejs/adapter-auto": "^3.3.1",
+    "@sveltejs/kit": "^2.8.0",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "svelte": "^5.1.15",
+    "svelte-check": "^4.0.7",
     "tslib": "^2.6.2",
     "typescript": "^5.5.2",
     "vite": "^5.4.8"

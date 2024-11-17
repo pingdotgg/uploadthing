@@ -1,8 +1,12 @@
 <script lang="ts">
   import type { ClassListMerger } from "@uploadthing/shared";
 
-  export let cn: ClassListMerger;
-  export let className: string;
+  type Props = {
+    cn: ClassListMerger;
+    className: string;
+  };
+
+  let { cn, className }: Props = $props();
 </script>
 
 <svg

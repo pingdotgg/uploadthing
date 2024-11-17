@@ -1,17 +1,9 @@
-<script lang="ts" context="module">
-  // Workaround for eslint-plugin-svelte issue regarding generics:
-  // https://github.com/sveltejs/svelte-eslint-parser/issues/306
-  import type { FileRouter } from "uploadthing/server";
-
-  type TRouter = FileRouter;
-  type TEndpoint = keyof TRouter;
-</script>
-
 <script
   lang="ts"
   generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter"
 >
   import { onMount } from "svelte";
+  import type { Snippet } from "svelte";
 
   import {
     allowedContentTextLabelGenerator,
@@ -25,11 +17,12 @@
     generateClientDropzoneAccept,
     generatePermittedFileTypes,
   } from "uploadthing/client";
+  import type { FileRouter } from "uploadthing/server";
 
-  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import { INTERNAL_createUploadThingGen } from "../create-uploadthing.svelte";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
-  import { createDropzone } from "./create-dropzone";
+  import { createDropzone } from "./create-dropzone.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
   import Spinner from "./Spinner.svelte";
 
@@ -43,7 +36,7 @@
     files: File[];
   };
 
-  type UploadDropzoneAppearance = {
+  type DropzoneAppearance = {
     container?: StyleField<DropzoneStyleFieldCallbackArgs>;
     uploadIcon?: StyleField<DropzoneStyleFieldCallbackArgs>;
     label?: StyleField<DropzoneStyleFieldCallbackArgs>;
@@ -51,61 +44,76 @@
     button?: StyleField<DropzoneStyleFieldCallbackArgs>;
   };
 
-  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
-  export let appearance: UploadDropzoneAppearance = {};
-
-  /**
-   * Callback called when files are dropped or pasted.
-   *
-   * @param acceptedFiles - The files that were accepted.
-   * @deprecated Use `onChange` instead
-   */
-  export let onDrop: (acceptedFiles: File[]) => void = () => {
-    /** no-op */
+  type Props = {
+    uploader: UploadthingComponentProps<TRouter, TEndpoint>;
+    onChange?: ((files: File[]) => void) | undefined;
+    /**
+     * Callback called when files are dropped or pasted.
+     *
+     * @param acceptedFiles - The files that were accepted.
+     * @deprecated Use `onChange` instead
+     */
+    onDrop?: ((acceptedFiles: File[]) => void) | undefined;
+    disabled?: boolean;
+    class?: string;
+    appearance?: DropzoneAppearance;
+    uploadIcon?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
+    label?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
+    allowedContent?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
+    button?: Snippet<[DropzoneStyleFieldCallbackArgs]>;
   };
 
-  export let onChange: ((files: File[]) => void) | undefined = undefined;
+  let {
+    uploader,
+    onChange,
+    onDrop,
+    disabled,
+    class: className,
+    appearance,
+    uploadIcon,
+    label,
+    allowedContent,
+    button,
+  }: Props = $props();
 
-  export let disabled = false;
-
-  $: className = ($$props.class as string) ?? "";
-  $: ({
+  let {
     mode = "auto",
     appendOnPaste = false,
     cn = defaultClassListMerger,
-  } = uploader.config ?? {});
+  } = $derived(uploader.config ?? {});
+
   let acRef = new AbortController();
 
-  let files: File[] = [];
-  $: uploadProgress = 0;
-  let rootRef: HTMLElement;
+  let rootRef: HTMLElement | undefined = $state();
+  let inputRef: HTMLInputElement | undefined = $state();
+  let uploadProgress = $state(0);
+  let files: File[] = $state([]);
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
   });
-  const { startUpload, isUploading, routeConfig } = createUploadThing(
-    uploader.endpoint,
-    {
-      signal: acRef.signal,
-      headers: uploader.headers,
-      onClientUploadComplete: (res) => {
-        files = [];
-        void uploader.onClientUploadComplete?.(res);
-        uploadProgress = 0;
-      },
-      onUploadProgress: (p) => {
-        uploadProgress = p;
-        uploader.onUploadProgress?.(p);
-      },
-      onUploadError: uploader.onUploadError,
-      onUploadBegin: uploader.onUploadBegin,
-      onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+
+  // Cannot destructure when using runes state
+  const ut = createUploadThing(uploader.endpoint, {
+    signal: acRef.signal,
+    headers: uploader.headers,
+    onClientUploadComplete: (res) => {
+      files = [];
+      void uploader.onClientUploadComplete?.(res);
+      uploadProgress = 0;
     },
-  );
+    onUploadProgress: (p) => {
+      uploadProgress = p;
+      uploader.onUploadProgress?.(p);
+    },
+    onUploadError: uploader.onUploadError,
+    onUploadBegin: uploader.onUploadBegin,
+    onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  });
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
-    startUpload(files, input).catch((e) => {
+    ut.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {
@@ -124,25 +132,26 @@
     if (mode === "auto") uploadFiles(files);
   };
 
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
+  let { fileTypes, multiple } = $derived(
+    generatePermittedFileTypes(ut.routeConfig),
+  );
 
-  $: dropzoneOptions = {
-    onDrop: onDropCallback,
-    multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
-    disabled,
-  };
+  // Cannot destructure when using runes state
+  const dropzone = $derived(
+    createDropzone({
+      rootRef,
+      inputRef,
+      onDrop: onDropCallback,
+      multiple,
+      accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+      disabled,
+    }),
+  );
 
-  const {
-    state: dropzoneState,
-    dropzoneRoot,
-    dropzoneInput,
-  } = createDropzone(dropzoneOptions);
-
-  $: ready = fileTypes.length > 0;
+  let ready = $derived(fileTypes.length > 0);
 
   const onUploadClick = (e: MouseEvent) => {
-    if (state === "uploading") {
+    if (uploadState === "uploading") {
       e.preventDefault();
       e.stopPropagation();
       acRef.abort();
@@ -179,37 +188,39 @@
     return () => document.removeEventListener("paste", handlePaste);
   });
 
-  $: styleFieldArg = {
+  let styleFieldArg = $derived({
     __runtime: "svelte",
     fileTypes,
-    isDragActive: $dropzoneState.isDragActive,
-    isUploading: $isUploading,
+    isDragActive: dropzone.state.isDragActive,
+    isUploading: ut.isUploading,
     ready,
     uploadProgress,
     files,
-  } satisfies DropzoneStyleFieldCallbackArgs;
+  }) satisfies DropzoneStyleFieldCallbackArgs;
 
-  $: state = (() => {
+  let uploadState = $derived.by(() => {
     if (disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !$isUploading) return "ready";
+    if (ready && !ut.isUploading) return "ready";
     return "uploading";
-  })();
+  });
 </script>
 
 <div
-  use:dropzoneRoot
   class={cn(
     "mt-2 flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 text-center",
-    $dropzoneState.isDragActive && "bg-blue-600/10",
+    dropzone.state.isDragActive && "bg-blue-600/10",
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
   style={styleFieldToClassName(appearance?.container, styleFieldArg)}
-  data-state={state}
+  data-state={uploadState}
   bind:this={rootRef}
+  {...dropzone.rootProps}
 >
-  <slot name="upload-icon" state={styleFieldArg}>
+  {#if uploadIcon}
+    {@render uploadIcon(styleFieldArg)}
+  {:else}
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
@@ -219,7 +230,7 @@
       )}
       style={styleFieldToClassName(appearance?.uploadIcon, styleFieldArg)}
       data-ut-element="upload-icon"
-      data-state={state}
+      data-state={uploadState}
     >
       <path
         fill="currentColor"
@@ -228,7 +239,7 @@
         clip-rule="evenodd"
       />
     </svg>
-  </slot>
+  {/if}
   <label
     class={cn(
       "relative mt-4 flex w-64 cursor-pointer items-center justify-center text-sm font-semibold leading-6 text-gray-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2 hover:text-blue-500",
@@ -237,14 +248,16 @@
     )}
     style={styleFieldToClassName(appearance?.label, styleFieldArg)}
     data-ut-element="label"
-    data-state={state}
+    data-state={uploadState}
   >
-    <input use:dropzoneInput={dropzoneOptions} class="sr-only" />
-    <slot name="label" state={styleFieldArg}>
+    <input class="sr-only" bind:this={inputRef} {...dropzone.inputProps} />
+    {#if label}
+      {@render label(styleFieldArg)}
+    {:else}
       {ready
         ? `Choose ${multiple ? "file(s)" : "a file"} or drag and drop`
         : `Loading...`}
-    </slot>
+    {/if}
   </label>
   <div
     class={cn(
@@ -253,47 +266,49 @@
     )}
     style={styleFieldToClassName(appearance?.allowedContent, styleFieldArg)}
     data-ut-element="allowed-content"
-    data-state={state}
+    data-state={uploadState}
   >
-    <slot name="allowed-content" state={styleFieldArg}>
-      {allowedContentTextLabelGenerator($routeConfig)}
-    </slot>
+    {#if allowedContent}
+      {@render allowedContent(styleFieldArg)}
+    {:else}
+      {allowedContentTextLabelGenerator(ut.routeConfig)}
+    {/if}
   </div>
   <button
     class={cn(
       "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-      state === "disabled" && "cursor-not-allowed bg-blue-400",
-      state === "readying" && "cursor-not-allowed bg-blue-400",
-      state === "uploading" &&
+      uploadState === "disabled" && "cursor-not-allowed bg-blue-400",
+      uploadState === "readying" && "cursor-not-allowed bg-blue-400",
+      uploadState === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-      state === "ready" && "bg-blue-600",
+      uploadState === "ready" && "bg-blue-600",
       "disabled:pointer-events-none",
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
-    on:click={onUploadClick}
+    onclick={onUploadClick}
     data-ut-element="button"
-    data-state={state}
+    data-state={uploadState}
     type="button"
-    disabled={files.length === 0 || state === "disabled"}
+    disabled={files.length === 0 || uploadState === "disabled"}
   >
-    <slot name="button-content" state={styleFieldArg}>
-      {#if state === "readying"}
-        {`Loading...`}
-      {:else if state === "uploading"}
-        {#if uploadProgress >= 100}
-          <Spinner />
-        {:else}
-          <span class="z-50">
-            <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel {cn} className="hidden size-4 group-hover:block" />
-          </span>
-        {/if}
-      {:else if mode === "manual" && files.length > 0}
-        {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {#if button}
+      {@render button(styleFieldArg)}
+    {:else if uploadState === "readying"}
+      {`Loading...`}
+    {:else if uploadState === "uploading"}
+      {#if uploadProgress >= 100}
+        <Spinner />
       {:else}
-        {`Choose File${multiple ? `(s)` : ``}`}
+        <span class="z-50">
+          <span class="block group-hover:hidden">{uploadProgress}%</span>
+          <Cancel {cn} className="hidden size-4 group-hover:block" />
+        </span>
       {/if}
-    </slot>
+    {:else if mode === "manual" && files.length > 0}
+      {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {:else}
+      {`Choose File${multiple ? `(s)` : ``}`}
+    {/if}
   </button>
 </div>

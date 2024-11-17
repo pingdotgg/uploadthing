@@ -1,17 +1,9 @@
-<script lang="ts" context="module">
-  // Workaround for eslint-plugin-svelte issue regarding generics:
-  // https://github.com/sveltejs/svelte-eslint-parser/issues/306
-  import type { FileRouter } from "uploadthing/server";
-
-  type TRouter = FileRouter;
-  type TEndpoint = keyof TRouter;
-</script>
-
 <script
   lang="ts"
   generics="TRouter extends FileRouter , TEndpoint extends keyof TRouter"
 >
   import { onMount } from "svelte";
+  import type { Snippet } from "svelte";
 
   import {
     allowedContentTextLabelGenerator,
@@ -25,8 +17,9 @@
     generateMimeTypes,
     generatePermittedFileTypes,
   } from "uploadthing/client";
+  import type { FileRouter } from "uploadthing/server";
 
-  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import { INTERNAL_createUploadThingGen } from "../create-uploadthing.svelte";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
@@ -41,23 +34,41 @@
     files: File[];
   };
 
-  type UploadButtonAppearance = {
+  type ButtonAppearance = {
     container?: StyleField<ButtonStyleFieldCallbackArgs>;
     button?: StyleField<ButtonStyleFieldCallbackArgs>;
     allowedContent?: StyleField<ButtonStyleFieldCallbackArgs>;
     clearBtn?: StyleField<ButtonStyleFieldCallbackArgs>;
   };
 
-  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
-  export let appearance: UploadButtonAppearance = {};
-  export let onChange: ((files: File[]) => void) | undefined = undefined;
-  export let disabled = false;
+  type Props = {
+    uploader: UploadthingComponentProps<TRouter, TEndpoint>;
+    onChange?: ((files: File[]) => void) | undefined;
+    disabled?: boolean;
+    class?: string;
+    appearance?: ButtonAppearance;
+    button?: Snippet<[ButtonStyleFieldCallbackArgs]>;
+    allowedContent?: Snippet<[ButtonStyleFieldCallbackArgs]>;
+    clearBtn?: Snippet<[ButtonStyleFieldCallbackArgs]>;
+  };
 
-  $: ({
+  let {
+    uploader,
+    onChange,
+    disabled,
+    class: className,
+    appearance,
+    button,
+    allowedContent,
+    clearBtn,
+  }: Props = $props();
+
+  let {
     mode = "auto",
     appendOnPaste = false,
     cn = defaultClassListMerger,
-  } = uploader.config ?? {});
+  } = $derived(uploader.config ?? {});
+
   let acRef = new AbortController();
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
@@ -65,33 +76,31 @@
   });
 
   let fileInputRef: HTMLInputElement;
-  let uploadProgress = 0;
-  let files: File[] = [];
+  let uploadProgress = $state(0);
+  let files: File[] = $state([]);
 
-  const { startUpload, isUploading, routeConfig } = createUploadThing(
-    uploader.endpoint,
-    {
-      signal: acRef.signal,
-      headers: uploader.headers,
-      onClientUploadComplete: (res) => {
-        fileInputRef.value = "";
-        files = [];
-        void uploader.onClientUploadComplete?.(res);
-        uploadProgress = 0;
-      },
-      onUploadProgress: (p) => {
-        uploadProgress = p;
-        uploader.onUploadProgress?.(p);
-      },
-      onUploadError: uploader.onUploadError,
-      onUploadBegin: uploader.onUploadBegin,
-      onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  // Cannot destructure when using runes state
+  const ut = createUploadThing(uploader.endpoint, {
+    signal: acRef.signal,
+    headers: uploader.headers,
+    onClientUploadComplete: (res) => {
+      fileInputRef.value = "";
+      files = [];
+      void uploader.onClientUploadComplete?.(res);
+      uploadProgress = 0;
     },
-  );
+    onUploadProgress: (p) => {
+      uploadProgress = p;
+      uploader.onUploadProgress?.(p);
+    },
+    onUploadError: uploader.onUploadError,
+    onUploadBegin: uploader.onUploadBegin,
+    onBeforeUploadBegin: uploader.onBeforeUploadBegin,
+  });
 
   const uploadFiles = (files: File[]) => {
     const input = "input" in uploader ? uploader.input : undefined;
-    startUpload(files, input).catch((e) => {
+    ut.startUpload(files, input).catch((e) => {
       if (e instanceof UploadAbortedError) {
         void uploader.onUploadAborted?.();
       } else {
@@ -100,14 +109,16 @@
     });
   };
 
-  $: ({ fileTypes, multiple } = generatePermittedFileTypes($routeConfig));
-  $: className = ($$props.class as string) ?? "";
+  let { fileTypes, multiple } = $derived(
+    generatePermittedFileTypes(ut.routeConfig),
+  );
 
-  $: state = (() => {
+  // Cannot be called just "state" because the compiler confuses it with the $state rune
+  let uploadState = $derived.by(() => {
     if (disabled) return "disabled";
-    if (!disabled && !$isUploading) return "ready";
+    if (!disabled && !ut.isUploading) return "ready";
     return "uploading";
-  })();
+  });
 
   onMount(() => {
     const handlePaste = (event: ClipboardEvent) => {
@@ -131,13 +142,13 @@
     return () => document.removeEventListener("paste", handlePaste);
   });
 
-  $: styleFieldArg = {
-    ready: state !== "readying",
-    isUploading: state === "uploading",
+  let styleFieldArg = $derived({
+    ready: uploadState !== "readying",
+    isUploading: uploadState === "uploading",
     uploadProgress,
     fileTypes,
     files,
-  } as ButtonStyleFieldCallbackArgs;
+  }) as ButtonStyleFieldCallbackArgs;
 </script>
 
 <!--
@@ -154,25 +165,25 @@ Example:
     styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
   style={styleFieldToClassName(appearance?.container, styleFieldArg)}
-  data-state={state}
+  data-state={uploadState}
 >
-  <!-- svelte-ignore a11y-click-events-have-key-events -->
-  <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <label
     class={cn(
       "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-      state === "disabled" && "cursor-not-allowed bg-blue-400",
-      state === "readying" && "cursor-not-allowed bg-blue-400",
-      state === "uploading" &&
+      uploadState === "disabled" && "cursor-not-allowed bg-blue-400",
+      uploadState === "readying" && "cursor-not-allowed bg-blue-400",
+      uploadState === "uploading" &&
         `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
-      state === "ready" && "bg-blue-600",
+      uploadState === "ready" && "bg-blue-600",
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
-    data-state={state}
+    data-state={uploadState}
     data-ut-element="button"
-    on:click={(e) => {
-      if (state === "uploading") {
+    onclick={(e) => {
+      if (uploadState === "uploading") {
         e.preventDefault();
         e.stopPropagation();
 
@@ -196,7 +207,7 @@ Example:
       {disabled}
       {multiple}
       tabindex={fileTypes.length === 0 ? -1 : 0}
-      on:change={(e) => {
+      onchange={(e) => {
         if (!e.currentTarget?.files) return;
         const selectedFiles = Array.from(e.currentTarget.files);
 
@@ -210,28 +221,28 @@ Example:
         uploadFiles(selectedFiles);
       }}
     />
-    <slot name="button-content" state={styleFieldArg}>
-      {#if state === "readying"}
-        {`Loading...`}
-      {:else if state === "uploading"}
-        {#if uploadProgress >= 100}
-          <Spinner />
-        {:else}
-          <span class="z-50">
-            <span class="block group-hover:hidden">{uploadProgress}%</span>
-            <Cancel {cn} className="hidden size-4 group-hover:block" />
-          </span>
-        {/if}
-      {:else if mode === "manual" && files.length > 0}
-        {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {#if button}
+      {@render button(styleFieldArg)}
+    {:else if uploadState === "readying"}
+      {`Loading...`}
+    {:else if uploadState === "uploading"}
+      {#if uploadProgress >= 100}
+        <Spinner />
       {:else}
-        {`Choose File${multiple ? `(s)` : ``}`}
+        <span class="z-50">
+          <span class="block group-hover:hidden">{uploadProgress}%</span>
+          <Cancel {cn} className="hidden size-4 group-hover:block" />
+        </span>
       {/if}
-    </slot>
+    {:else if mode === "manual" && files.length > 0}
+      {`Upload ${files.length} file${files.length === 1 ? "" : "s"}`}
+    {:else}
+      {`Choose File${multiple ? `(s)` : ``}`}
+    {/if}
   </label>
   {#if mode === "manual" && files.length > 0}
     <button
-      on:click={() => {
+      onclick={() => {
         files = [];
         fileInputRef.value = "";
         onChange?.([]);
@@ -241,12 +252,14 @@ Example:
         styleFieldToClassName(appearance?.clearBtn, styleFieldArg),
       )}
       style={styleFieldToClassName(appearance?.clearBtn, styleFieldArg)}
-      data-state={state}
+      data-state={uploadState}
       data-ut-element="clear-btn"
     >
-      <slot name="clear-btn" state={styleFieldArg}>
+      {#if clearBtn}
+        {@render clearBtn(styleFieldArg)}
+      {:else}
         {`Clear`}
-      </slot>
+      {/if}
     </button>
   {:else}
     <div
@@ -255,12 +268,14 @@ Example:
         styleFieldToClassName(appearance?.allowedContent, styleFieldArg),
       )}
       style={styleFieldToClassName(appearance?.allowedContent, styleFieldArg)}
-      data-state={state}
+      data-state={uploadState}
       data-ut-element="allowed-content"
     >
-      <slot name="allowed-content" state={styleFieldArg}>
-        {allowedContentTextLabelGenerator($routeConfig)}
-      </slot>
+      {#if allowedContent}
+        {@render allowedContent(styleFieldArg)}
+      {:else}
+        {allowedContentTextLabelGenerator(ut.routeConfig)}
+      {/if}
     </div>
   {/if}
 </div>

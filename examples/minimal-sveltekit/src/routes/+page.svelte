@@ -19,7 +19,7 @@
     },
   });
 
-  const { startUpload } = createUploadThing("videoAndImage", {
+  const ut = createUploadThing("videoAndImage", {
     /**
      * @see https://docs.uploadthing.com/api-reference/react#useuploadthing
      */
@@ -35,14 +35,14 @@
   <UploadDropzone {uploader} />
   <input
     type="file"
-    on:change={async (e) => {
+    onchange={async (e) => {
       const file = e.currentTarget.files?.[0];
       if (!file) return;
 
       // Do something with files
 
       // Then start the upload
-      await startUpload([file]);
+      await ut.startUpload([file]);
     }}
   />
 </main>

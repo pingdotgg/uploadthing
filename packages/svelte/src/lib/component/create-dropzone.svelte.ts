@@ -1,7 +1,5 @@
 import { fromEvent } from "file-selector";
-import { onMount } from "svelte";
-import type { Action } from "svelte/action";
-import { derived, get, writable } from "svelte/store";
+import { onMount, untrack } from "svelte";
 
 import {
   acceptPropAsAcceptAttr,
@@ -23,16 +21,32 @@ export type DropEvent = InputEvent | DragEvent | Event;
 
 function reducible<State, Actions>(
   reducer: (state: State, action: Actions) => State,
-  state: State,
+  initialState: State,
 ) {
-  const { update, subscribe } = writable(state);
-  const dispatch = (action: Actions) =>
-    update((state) => reducer(state, action));
-  return [{ subscribe }, dispatch] as const;
+  let state = $state(initialState);
+  const dispatch = (action: Actions) => {
+    state = reducer(
+      untrack(() => state),
+      action,
+    );
+  };
+  return {
+    get state() {
+      return state;
+    },
+    dispatch,
+  };
 }
 
-export function createDropzone(_props: DropzoneOptions) {
-  const props = writable({
+export function createDropzone({
+  rootRef,
+  inputRef,
+  ..._props
+}: DropzoneOptions & {
+  rootRef: HTMLElement | undefined;
+  inputRef: HTMLInputElement | undefined;
+}) {
+  const props = $derived({
     disabled: false,
     maxSize: Number.POSITIVE_INFINITY,
     minSize: 0,
@@ -41,26 +55,23 @@ export function createDropzone(_props: DropzoneOptions) {
     ..._props,
   });
 
-  const acceptAttr = derived(props, ($props) =>
-    acceptPropAsAcceptAttr($props.accept),
-  );
+  const acceptAttr = $derived(acceptPropAsAcceptAttr(props.accept));
 
-  const rootRef = writable<HTMLElement | null>();
-  const inputRef = writable<HTMLInputElement | null>();
-  let dragTargets: EventTarget[] = [];
+  let dragTargets: EventTarget[] = $state([]);
 
-  const [state, dispatch] = reducible(reducer, initialState);
+  // Cannot destructure when using runes state
+  const dropzoneState = reducible(reducer, initialState);
 
   onMount(() => {
     const onWindowFocus = () => {
-      if (get(state).isFileDialogActive) {
+      if (dropzoneState.state.isFileDialogActive) {
         setTimeout(() => {
-          const input = get(inputRef);
+          const input = inputRef;
           if (input) {
             const { files } = input;
 
             if (!files?.length) {
-              dispatch({ type: "closeDialog" });
+              dropzoneState.dispatch({ type: "closeDialog" });
             }
           }
         }, 300);
@@ -75,7 +86,7 @@ export function createDropzone(_props: DropzoneOptions) {
 
   onMount(() => {
     const onDocumentDrop = (event: DropEvent) => {
-      const root = get(rootRef);
+      const root = rootRef;
       if (root?.contains(event.target as Node)) {
         // If we intercepted an event for our instance, let it propagate down to the instance's onDrop handler
         return;
@@ -111,15 +122,15 @@ export function createDropzone(_props: DropzoneOptions) {
             fileCount > 0 &&
             allFilesAccepted({
               files: files as File[],
-              accept: get(acceptAttr)!,
-              minSize: get(props).minSize,
-              maxSize: get(props).maxSize,
-              multiple: get(props).multiple,
-              maxFiles: get(props).maxFiles,
+              accept: acceptAttr!,
+              minSize: props.minSize,
+              maxSize: props.maxSize,
+              multiple: props.multiple,
+              maxFiles: props.maxFiles,
             });
           const isDragReject = fileCount > 0 && !isDragAccept;
 
-          dispatch({
+          dropzoneState.dispatch({
             type: "setDraggedFiles",
             payload: {
               isDragAccept,
@@ -150,7 +161,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const onDragLeave = (event: DragEvent) => {
     event.preventDefault();
 
-    const root = get(rootRef);
+    const root = rootRef;
     // Only deactivate once the dropzone and all children have been left
     const targets = dragTargets.filter((target) =>
       root?.contains(target as Node),
@@ -164,7 +175,7 @@ export function createDropzone(_props: DropzoneOptions) {
     dragTargets = targets;
     if (targets.length > 0) return;
 
-    dispatch({
+    dropzoneState.dispatch({
       type: "setDraggedFiles",
       payload: {
         isDragActive: false,
@@ -176,10 +187,10 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const setFiles = (files: File[]) => {
     const acceptedFiles: File[] = [];
-    const { minSize, maxSize, multiple, maxFiles, onDrop } = get(props);
+    const { minSize, maxSize, multiple, maxFiles, onDrop } = props;
 
     files.forEach((file) => {
-      const accepted = isFileAccepted(file, get(acceptAttr)!);
+      const accepted = isFileAccepted(file, acceptAttr!);
       const sizeMatch = isValidSize(file, minSize, maxSize);
 
       if (accepted && sizeMatch) {
@@ -191,7 +202,7 @@ export function createDropzone(_props: DropzoneOptions) {
       acceptedFiles.splice(0);
     }
 
-    dispatch({
+    dropzoneState.dispatch({
       type: "setFiles",
       payload: {
         acceptedFiles,
@@ -214,21 +225,21 @@ export function createDropzone(_props: DropzoneOptions) {
         })
         .catch(noop);
     }
-    dispatch({ type: "reset" });
+    dropzoneState.dispatch({ type: "reset" });
   };
 
   const openFileDialog = () => {
-    const input = get(inputRef);
+    const input = inputRef;
     if (input) {
       input.value = "";
       input.click();
-      dispatch({ type: "openDialog" });
+      dropzoneState.dispatch({ type: "openDialog" });
     }
   };
 
   const onKeyDown = (event: KeyboardEvent) => {
     // Ignore keyboard events bubbling up the DOM tree
-    const root = get(rootRef);
+    const root = rootRef;
     if (!root?.isEqualNode(event.target as Node)) return;
 
     if (isEnterOrSpace(event)) {
@@ -239,13 +250,13 @@ export function createDropzone(_props: DropzoneOptions) {
 
   const onInputElementClick = (event: MouseEvent) => {
     event.stopPropagation();
-    if (get(state).isFileDialogActive) {
+    if (dropzoneState.state.isFileDialogActive) {
       event.preventDefault();
     }
   };
 
-  const onFocus = () => dispatch({ type: "focus" });
-  const onBlur = () => dispatch({ type: "blur" });
+  const onFocus = () => dropzoneState.dispatch({ type: "focus" });
+  const onBlur = () => dropzoneState.dispatch({ type: "blur" });
   const onClick = () => {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
@@ -253,88 +264,48 @@ export function createDropzone(_props: DropzoneOptions) {
     isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
   };
 
-  const safeSetAttribute = (
-    node: HTMLElement,
-    name: string,
-    value: string | boolean | undefined,
-  ) => {
-    if (value) {
-      node.setAttribute(name, String(value));
-    } else {
-      node.removeAttribute(name);
-    }
-  };
+  const rootProps = $derived({
+    role: "presentation",
+    ...(!props.disabled
+      ? {
+          tabindex: 0,
+          onkeydown: onKeyDown,
+          onfocus: onFocus,
+          onblur: onBlur,
+          onclick: onClick,
+          ondragenter: onDragEnter,
+          ondragover: onDragOver,
+          ondragleave: onDragLeave,
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          ondrop: onDropCb as any,
+        }
+      : {}),
+  });
 
-  // This is a svelte action, it should be used as "use:dropzoneRoot"
-  // We should be able to refactor this when svelte 5 is released to bring it more inline
-  // with the rest of the dropzone implementations
-  const dropzoneRoot: Action<HTMLElement> = (node) => {
-    rootRef.set(node);
-    node.setAttribute("role", "presentation");
-    if (!get(props).disabled) {
-      node.setAttribute("tabindex", "0");
-      node.addEventListener("keydown", onKeyDown);
-      node.addEventListener("focus", onFocus);
-      node.addEventListener("blur", onBlur);
-      node.addEventListener("click", onClick);
-      node.addEventListener("dragenter", onDragEnter);
-      node.addEventListener("dragover", onDragOver);
-      node.addEventListener("dragleave", onDragLeave);
-      node.addEventListener("drop", onDropCb);
-    }
-    return {
-      destroy() {
-        rootRef.set(null);
-        node.removeEventListener("keydown", onKeyDown);
-        node.removeEventListener("focus", onFocus);
-        node.removeEventListener("blur", onBlur);
-        node.removeEventListener("click", onClick);
-        node.removeEventListener("dragenter", onDragEnter);
-        node.removeEventListener("dragover", onDragOver);
-        node.removeEventListener("dragleave", onDragLeave);
-        node.removeEventListener("drop", onDropCb);
-      },
-    };
-  };
-
-  // This is a svelte action, it should be used as "use:dropzoneInput"
-  const dropzoneInput: Action<HTMLInputElement, DropzoneOptions> = (
-    node,
-    options: DropzoneOptions,
-  ) => {
-    inputRef.set(node);
-    node.style.display = "none";
-    node.setAttribute("type", "file");
-    node.setAttribute("tabindex", "-1");
-    safeSetAttribute(node, "multiple", options.multiple);
-    safeSetAttribute(node, "disabled", options.disabled);
-    const acceptAttrUnsub = acceptAttr.subscribe((accept) => {
-      safeSetAttribute(node, "accept", accept);
-    });
-
-    node.addEventListener("change", onDropCb);
-    node.addEventListener("click", onInputElementClick);
-
-    return {
-      update(options: DropzoneOptions) {
-        props.update(($props) => ({ ...$props, ...options }));
-        safeSetAttribute(node, "multiple", options.multiple);
-        safeSetAttribute(node, "disabled", options.disabled);
-      },
-      destroy() {
-        inputRef.set(null);
-        acceptAttrUnsub();
-        node.removeEventListener("change", onDropCb);
-        node.removeEventListener("click", onInputElementClick);
-      },
-    };
-  };
+  const inputProps = $derived({
+    type: "file",
+    style: "display: none",
+    accept: acceptAttr,
+    multiple: props.multiple,
+    tabindex: -1,
+    ...(!props.disabled
+      ? {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          onchange: onDropCb as any,
+          onclick: onInputElementClick,
+        }
+      : {}),
+  });
 
   return {
-    state,
-    dropzoneRoot,
-    dropzoneInput,
-    rootRef,
-    inputRef: get(inputRef),
+    get rootProps() {
+      return rootProps;
+    },
+    get inputProps() {
+      return inputProps;
+    },
+    get state() {
+      return dropzoneState.state;
+    },
   };
 }

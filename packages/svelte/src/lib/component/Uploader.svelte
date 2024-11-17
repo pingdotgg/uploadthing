@@ -1,21 +1,18 @@
-<script lang="ts" context="module">
-  // Workaround for eslint-plugin-svelte issue regarding generics:
-  // https://github.com/sveltejs/svelte-eslint-parser/issues/306
-  import type { FileRouter } from "uploadthing/server";
-
-  type TRouter = FileRouter;
-  type TEndpoint = keyof TRouter;
-</script>
-
 <script
   lang="ts"
   generics="TRouter extends FileRouter, TEndpoint extends keyof TRouter"
 >
+  import type { FileRouter } from "uploadthing/server";
+
   import type { UploadthingComponentProps } from "../types";
   import UploadButton from "./UploadButton.svelte";
   import UploadDropzone from "./UploadDropzone.svelte";
 
-  export let uploader: UploadthingComponentProps<TRouter, TEndpoint>;
+  interface Props {
+    uploader: UploadthingComponentProps<TRouter, TEndpoint>;
+  }
+
+  let { uploader }: Props = $props();
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4">
