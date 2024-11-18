@@ -1,8 +1,6 @@
-import type { HttpClientError } from "@effect/platform";
 import { HttpClient, HttpClientRequest } from "@effect/platform";
 import * as Effect from "effect/Effect";
 import * as Predicate from "effect/Predicate";
-import type { Scope } from "effect/Scope";
 
 import {
   generateKey,
@@ -34,11 +32,7 @@ export function guardServerOnly() {
 
 export const downloadFile = (
   _url: MaybeUrl | UrlWithOverrides,
-): Effect.Effect<
-  UTFile,
-  SerializedUploadThingError,
-  HttpClient.HttpClient<HttpClientError.HttpClientError, Scope>
-> =>
+): Effect.Effect<UTFile, SerializedUploadThingError, HttpClient.HttpClient> =>
   Effect.gen(function* () {
     let url = Predicate.isRecord(_url) ? _url.url : _url;
     if (typeof url === "string") {
@@ -118,7 +112,7 @@ export const uploadFile = (
 ): Effect.Effect<
   UploadedFileData,
   SerializedUploadThingError,
-  HttpClient.HttpClient<HttpClientError.HttpClientError, Scope>
+  HttpClient.HttpClient
 > =>
   Effect.gen(function* () {
     const presigned = yield* generatePresignedUrl(
