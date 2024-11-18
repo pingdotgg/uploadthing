@@ -94,7 +94,6 @@ export class UTApi {
       (e) => this.runtime.runPromise(e, signal ? { signal } : undefined),
     );
 
-    await this.runtime.dispose();
     return result;
   };
 
