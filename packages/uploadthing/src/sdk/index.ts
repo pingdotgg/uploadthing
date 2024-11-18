@@ -1,4 +1,4 @@
-import type { FetchHttpClient } from "@effect/platform";
+import type { FetchHttpClient, HttpClientError } from "@effect/platform";
 import {
   HttpClient,
   HttpClientRequest,
@@ -8,6 +8,7 @@ import * as Arr from "effect/Array";
 import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import type { ManagedRuntime } from "effect/ManagedRuntime";
+import type { ParseError } from "effect/ParseResult";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
 
@@ -78,10 +79,26 @@ export class UTApi {
         Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
         Effect.scoped,
       );
-    }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
+    }).pipe(
+      Effect.catchTag(
+        "ConfigError",
+        (e) =>
+          new UploadThingError({
+            code: "INVALID_SERVER_CONFIG",
+            message:
+              "There was an error with the server configuration. More info can be found on this error's `cause` property",
+            cause: e,
+          }),
+      ),
+      Effect.withLogSpan("utapi.#requestUploadThing"),
+    );
 
-  private executeAsync = async <A, E>(
-    program: Effect.Effect<A, E, HttpClient.HttpClient>,
+  private executeAsync = async <A>(
+    program: Effect.Effect<
+      A,
+      UploadThingError | ParseError | HttpClientError.HttpClientError,
+      HttpClient.HttpClient
+    >,
     signal?: AbortSignal,
   ) => {
     const exit = await program.pipe(
