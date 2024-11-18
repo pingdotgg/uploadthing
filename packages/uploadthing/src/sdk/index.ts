@@ -83,13 +83,16 @@ export class UTApi {
     program: Effect.Effect<A, E, HttpClient.HttpClient>,
     signal?: AbortSignal,
   ) => {
-    const result = await program.pipe(
+    const exit = await program.pipe(
       Effect.withLogSpan("utapi.#executeAsync"),
-      (e) => this.runtime.runPromise(e, signal ? { signal } : undefined),
+      (e) => this.runtime.runPromiseExit(e, signal ? { signal } : undefined),
     );
 
-    await this.runtime.dispose();
-    return result;
+    if (exit._tag === "Failure") {
+      throw exit.cause;
+    }
+
+    return exit.value;
   };
 
   /**
