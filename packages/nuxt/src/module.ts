@@ -46,6 +46,13 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: {
     routerPath: "~/server/uploadthing",
     injectStyles: true,
+    // Need to manually set these for static analysis to work, even if they're set to undefined
+    token: undefined,
+    isDev: undefined,
+    logLevel: undefined,
+    logFormat: undefined,
+    ingestUrl: undefined,
+    callbackUrl: undefined,
   },
   async setup(options, nuxt) {
     const logger = useLogger("uploadthing");
