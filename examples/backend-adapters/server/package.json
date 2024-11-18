@@ -17,6 +17,7 @@
     "@elysiajs/cors": "^1.1.1",
     "@fastify/cors": "^9.0.1",
     "@hono/node-server": "^1.8.2",
+    "convex": "^1.16.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "effect": "3.10.3",
