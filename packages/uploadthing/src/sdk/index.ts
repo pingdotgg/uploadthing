@@ -5,6 +5,7 @@ import {
   HttpClientResponse,
 } from "@effect/platform";
 import * as Arr from "effect/Array";
+import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
 import type { ManagedRuntime } from "effect/ManagedRuntime";
 import * as Redacted from "effect/Redacted";
@@ -89,7 +90,7 @@ export class UTApi {
     );
 
     if (exit._tag === "Failure") {
-      throw exit.cause;
+      throw Cause.squash(exit.cause);
     }
 
     return exit.value;
