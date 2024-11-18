@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { UTApi } from "uploadthing/server";
+import { UploadFileResult } from "uploadthing/types";
 
 import { CACHE_TAGS, SESSION_COOKIE_NAME } from "./const";
 import { getSession, Session } from "./data";
@@ -33,6 +34,42 @@ export async function signIn() {
 export async function signOut() {
   (await cookies()).delete(SESSION_COOKIE_NAME);
   redirect("/");
+}
+
+export async function uploadFiles(previousState: unknown, form: FormData) {
+  const session = await getSession();
+  if (!session) {
+    return {
+      success: false as const,
+      error: "Unauthorized",
+    };
+  }
+
+  const files = form.getAll("files") as File[] | string[];
+  let uploadResults: UploadFileResult[];
+  if (files.some((file) => typeof file === "string")) {
+    uploadResults = await utapi.uploadFilesFromUrl(files as string[]);
+  } else {
+    uploadResults = await utapi.uploadFiles(files as File[]);
+  }
+
+  if (uploadResults.every((result) => result.error !== null)) {
+    return {
+      success: false as const,
+      error: "Failed to upload some files",
+    };
+  }
+
+  revalidateTag(CACHE_TAGS.LIST_FILES);
+
+  const uploadedCount = uploadResults.filter(
+    (result) => result.data != null,
+  ).length;
+
+  return {
+    success: uploadedCount === uploadResults.length,
+    uploadedCount,
+  };
 }
 
 export async function getFileUrl(key: string) {
