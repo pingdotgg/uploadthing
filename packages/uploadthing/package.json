@@ -150,10 +150,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.69.8",
+    "@effect/platform": "0.69.24",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.10.3"
+    "effect": "3.10.15"
   },
   "devDependencies": {
     "@remix-run/server-runtime": "^2.12.0",
