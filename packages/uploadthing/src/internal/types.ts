@@ -97,13 +97,13 @@ type UploadErrorFn<TArgs extends AdapterFnArgs<any, any, any>> = (
 ) => MaybePromise<void>;
 
 export interface UploadBuilder<TParams extends AnyParams> {
-  input: <TParser extends JsonParser>(
+  input: <TIn extends Json, TOut extends Json>(
     parser: TParams["_input"]["in"] extends UnsetMarker
-      ? TParser
+      ? JsonParser<TIn, TOut>
       : ErrorMessage<"input is already set">,
   ) => UploadBuilder<{
     _routeOptions: TParams["_routeOptions"];
-    _input: { in: TParser["_input"]; out: TParser["_output"] };
+    _input: { in: TIn; out: TOut };
     _metadata: TParams["_metadata"];
     _adapterFnArgs: TParams["_adapterFnArgs"];
     _errorShape: TParams["_errorShape"];
