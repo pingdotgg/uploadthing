@@ -1,4 +1,4 @@
-import type { v1 } from "@standard-schema/spec";
+import type * as Standard from "@standard-schema/spec";
 import * as Cause from "effect/Cause";
 import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
@@ -16,7 +16,7 @@ export type ParserZodEsque<TInput extends Json, TParsedInput> = {
 // In case we add support for more parsers later
 export type JsonParser<In extends Json, Out = In> =
   | ParserZodEsque<In, Out>
-  | v1.StandardSchema<In, Out>
+  | Standard.v1.StandardSchema<In, Out>
   | Schema.Schema<Out, In>;
 
 export function getParseFn<
