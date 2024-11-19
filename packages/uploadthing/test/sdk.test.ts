@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import * as S from "effect/Schema";
+import { http, HttpResponse } from "msw";
 import {
   afterAll,
   beforeAll,
@@ -215,6 +216,76 @@ describe("uploadFilesFromUrl", () => {
           "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
       },
     });
+  });
+
+  it("gracefully handles download errors", async ({ db }) => {
+    const utapi = new UTApi({ token: testToken.encoded });
+
+    msw.use(
+      http.get("https://cdn.foo.com/does-not-exist.txt", () => {
+        return new HttpResponse("Not found", { status: 404 });
+      }),
+    );
+
+    const result = await utapi.uploadFilesFromUrl(
+      "https://cdn.foo.com/does-not-exist.txt",
+    );
+    expect(result).toEqual({
+      data: null,
+      error: {
+        code: "BAD_REQUEST",
+        data: expect.objectContaining({
+          _tag: "ResponseError",
+          description: "non 2xx status code",
+        }),
+        message:
+          "Failed to download requested file: StatusCode: non 2xx status code (404 GET https://cdn.foo.com/does-not-exist.txt)",
+      },
+    });
+  });
+
+  it("gracefully handles download errors", async ({ db }) => {
+    const utapi = new UTApi({ token: testToken.encoded });
+
+    msw.use(
+      http.get("https://cdn.foo.com/does-not-exist.txt", () => {
+        return new HttpResponse("Not found", { status: 404 });
+      }),
+    );
+
+    const result = await utapi.uploadFilesFromUrl([
+      "https://cdn.foo.com/exists.txt",
+      "https://cdn.foo.com/does-not-exist.txt",
+    ]);
+    const key1 = result[0].data?.key;
+    expect(result).toEqual([
+      {
+        data: {
+          customId: null,
+          fileHash: expect.any(String),
+          key: expect.stringMatching(/.+/),
+          lastModified: expect.any(Number),
+          name: "exists.txt",
+          size: 26,
+          type: "text/plain",
+          url: `${UTFS_IO_URL}/f/${key1}`,
+          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
+        },
+        error: null,
+      },
+      {
+        data: null,
+        error: {
+          code: "BAD_REQUEST",
+          data: expect.objectContaining({
+            _tag: "ResponseError",
+            description: "non 2xx status code",
+          }),
+          message:
+            "Failed to download requested file: StatusCode: non 2xx status code (404 GET https://cdn.foo.com/does-not-exist.txt)",
+        },
+      },
+    ]);
   });
 
   it("preserves order if some download fails", async ({ db }) => {
