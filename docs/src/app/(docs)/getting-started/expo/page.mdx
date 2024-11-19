@@ -69,9 +69,15 @@ const f = createUploadthing();
 const auth = (req: Request) => ({ id: "fakeId" }); // Fake auth function
 
 const uploadRouter = {
-  profileImage: f({
+  // Define as many FileRoutes as you like, each with a unique routeSlug
+  imageUploader: f({
     image: {
+      /**
+       * For full list of options, see the File Route API reference
+       * @see https://docs.uploadthing.com/file-routes#route-config
+       */
       maxFileSize: "4MB",
+      maxFileCount: 1,
     },
   })
     .middleware(async ({ req }) => {
@@ -148,7 +154,7 @@ import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { useImageUploader } from "~/utils/uploadthing";
 
 export default function Home() {
-  const { openImagePicker, isUploading } = useImageUploader({
+  const { openImagePicker, isUploading } = useImageUploader("imageUploader", {
     /**
      * Any props here are forwarded to the underlying `useUploadThing` hook.
      * Refer to the React API reference for more info.
