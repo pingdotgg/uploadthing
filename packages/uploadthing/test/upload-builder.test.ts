@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
+import * as Schema from "effect/Schema";
 import * as v from "valibot";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
@@ -54,6 +55,20 @@ it("typeerrors for invalid input", () => {
   f(["image"])
     // @ts-expect-error - set is not allowed
     .input(z.object({ foo: z.set() }))
+    .middleware(() => {
+      return {};
+    });
+
+  f(["image"])
+    // @ts-expect-error - set is not allowed
+    .input(v.object({ foo: v.set() }))
+    .middleware(() => {
+      return {};
+    });
+
+  f(["image"])
+    // @ts-expect-error - set is not allowed
+    .input(Schema.Struct({ foo: Schema.Set(Schema.String) }))
     .middleware(() => {
       return {};
     });
@@ -124,6 +139,13 @@ it("with input", () => {
       expectTypeOf<{ foo: string }>(opts.input);
       return {};
     });
+
+  f(["image"])
+    .input(Schema.Struct({ foo: Schema.String }))
+    .middleware((opts) => {
+      expectTypeOf<{ readonly foo: string }>(opts.input);
+      return {};
+    });
 });
 
 it("with optional input", () => {
@@ -141,6 +163,14 @@ it("with optional input", () => {
       expectTypeOf<{ foo: string } | undefined>(opts.input);
       return {};
     });
+
+  // FIXME
+  // f(["image"])
+  //   .input(Schema.Struct({ foo: Schema.String }).pipe(Schema.optional))
+  //   .middleware((opts) => {
+  //     expectTypeOf<{ readonly foo: string } | undefined>(opts.input);
+  //     return {};
+  //   });
 });
 
 it("can append a customId", () => {
@@ -205,6 +235,47 @@ it("smoke (valibot)", async () => {
     .middleware((opts) => {
       expect(opts.input).toEqual({ foo: "bar" });
       expectTypeOf<{ foo: string }>(opts.input);
+      expectTypeOf<readonly { name: string; size: number }[]>(opts.files);
+
+      const header1 = opts.req.headers.get("header1");
+
+      return { header1, userId: "123" as const };
+    })
+    .onUploadComplete(({ file, metadata }) => {
+      // expect(file).toEqual({ name: "file", url: "http://localhost" })
+      expectTypeOf<{ name: string; url: string }>(file);
+
+      expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
+      expectTypeOf<{
+        header1: string | null;
+        userId: "123";
+      }>(metadata);
+    });
+
+  expect(uploadable.routerConfig).toEqual(["image", "video"]);
+
+  const parsedInput = await getParseFn(uploadable.inputParser)({ foo: "bar" });
+
+  const metadata = await uploadable.middleware({
+    req: new Request("http://localhost", {
+      headers: { header1: "woohoo" },
+    }),
+    input: parsedInput,
+    res: undefined,
+    event: undefined,
+    files: [{ name: "test.txt", size: 123456, type: "text/plain" }],
+  });
+  expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
+});
+
+it("smoke (effect/Schema)", async () => {
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
+
+  const uploadable = f(["image", "video"])
+    .input(Schema.Struct({ foo: Schema.String }))
+    .middleware((opts) => {
+      expect(opts.input).toEqual({ foo: "bar" });
+      expectTypeOf<{ readonly foo: string }>(opts.input);
       expectTypeOf<readonly { name: string; size: number }[]>(opts.files);
 
       const header1 = opts.req.headers.get("header1");
