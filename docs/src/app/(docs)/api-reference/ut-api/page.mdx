@@ -32,16 +32,18 @@ To get started, initialize an instance of `UTApi`.
 ```ts {{ title: "~/server/uploadthing.ts" }}
 import { UTApi } from "uploadthing/server";
 
-export const utapi = new UTApi();
+export const utapi = new UTApi({
+  // ...options,
+});
 ```
 
 ### Options
 
-You can configure the SDK either by passing a config object to the
-`createRouteHandler` function, or by setting them as environment variables.
-Environment variables follows the naming convention of `UPLOADTHING_<NAME>`
-,where `<NAME>` is the name of the config option in constant case, e.g.
-`UPLOADTHING_LOG_LEVEL`. If both are set, the config object takes precedence.
+You can configure the SDK either by passing them as options to the constructor,
+or by setting them as environment variables. Environment variables follows the
+naming convention of `UPLOADTHING_<NAME>` ,where `<NAME>` is the name of the
+config option in constant case, e.g. `UPLOADTHING_LOG_LEVEL`. If both are set,
+the config object takes precedence.
 
 <Properties>
   <Property
