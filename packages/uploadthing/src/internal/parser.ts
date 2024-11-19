@@ -5,10 +5,6 @@ import * as Schema from "effect/Schema";
 
 import type { Json } from "@uploadthing/shared";
 
-/**
- * TODO: Do we wanna support effect/schema parsers now??
- */
-
 export type ParseFn<TType> = (input: unknown) => Promise<TType>;
 
 export type ParserZodEsque<TInput extends Json, TParsedInput> = {
@@ -23,7 +19,7 @@ export type ParserStandardSchemaEsque<TInput, TParsedInput> = v1.StandardSchema<
 >;
 
 // In case we add support for more parsers later
-export type JsonParser<In extends Json = Json, Out = In> =
+export type JsonParser<In extends Json, Out = In> =
   | ParserZodEsque<In, Out>
   | ParserStandardSchemaEsque<In, Out>
   | Schema.Schema<Out, In>;

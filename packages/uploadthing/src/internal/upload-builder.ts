@@ -6,7 +6,6 @@ import type {
 } from "@uploadthing/shared";
 
 import { defaultErrorFormatter } from "./error-formatter";
-import type { JsonParser } from "./parser";
 import type {
   AdapterFnArgs,
   AnyBuiltUploaderTypes,
@@ -64,7 +63,7 @@ function internalCreateBuilder<
     input(userParser) {
       return internalCreateBuilder({
         ..._def,
-        inputParser: userParser as JsonParser,
+        inputParser: userParser,
       }) as UploadBuilder<any>;
     },
     middleware(userMiddleware) {

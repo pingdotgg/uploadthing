@@ -173,7 +173,7 @@ export interface FileRoute<TTypes extends AnyBuiltUploaderTypes> {
   $types: TTypes;
   routerConfig: FileRouterInputConfig;
   routeOptions: RouteOptions;
-  inputParser: JsonParser;
+  inputParser: JsonParser<any>;
   middleware: MiddlewareFn<any, ValidMiddlewareObject, any>;
   onUploadError: UploadErrorFn<any>;
   errorFormatter: (err: UploadThingError) => any;
