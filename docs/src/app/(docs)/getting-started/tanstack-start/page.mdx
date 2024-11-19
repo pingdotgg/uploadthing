@@ -38,6 +38,8 @@ of a FileRoute similar to an endpoint, it has:
 
 - Permitted types ["image", "video", etc]
 - Max file size
+- How many files are allowed to be uploaded
+- (Optional) `input` validation to validate client-side data sent to the route
 - (Optional) `middleware` to authenticate and tag requests
 - `onUploadComplete` callback for when uploads are completed
 
@@ -58,7 +60,7 @@ export const uploadRouter = {
   imageUploader: f({
     image: {
       /**
-       * For full list of options, see the File Route API reference
+       * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
       maxFileSize: "4MB",
