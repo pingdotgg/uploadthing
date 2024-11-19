@@ -13,15 +13,10 @@ export type ParserZodEsque<TInput extends Json, TParsedInput> = {
   parseAsync: ParseFn<TParsedInput>;
 };
 
-export type ParserStandardSchemaEsque<TInput, TParsedInput> = v1.StandardSchema<
-  TInput,
-  TParsedInput
->;
-
 // In case we add support for more parsers later
 export type JsonParser<In extends Json, Out = In> =
   | ParserZodEsque<In, Out>
-  | ParserStandardSchemaEsque<In, Out>
+  | v1.StandardSchema<In, Out>
   | Schema.Schema<Out, In>;
 
 export function getParseFn<
