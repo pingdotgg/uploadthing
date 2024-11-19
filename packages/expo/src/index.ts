@@ -3,7 +3,7 @@ import Constants from "expo-constants";
 import { generateReactHelpers } from "@uploadthing/react/native";
 import { warnIfInvalidPeerDependency } from "@uploadthing/shared";
 import { version as uploadthingClientVersion } from "uploadthing/client";
-import type { FileRouter } from "uploadthing/internal/types";
+import type { FileRouter } from "uploadthing/types";
 
 import { peerDependencies } from "../package.json";
 import { GENERATE_useDocumentUploader } from "./document-picker";

@@ -7,6 +7,34 @@ import plugin from "tailwindcss/plugin";
  */
 const PACKAGES = ["react", "solid", "svelte", "vue"];
 
+/**
+ * UploadThing Tailwind plugin which injects custom variants
+ * for the built-in UI components
+ * @see https://docs.uploadthing.com/concepts/theming#theming-with-tailwind-css
+ *
+ * When using this, you need to specify `content` manually. For automatic
+ * detection, see {@link withUt}.
+ */
+export const uploadthingPlugin = plugin(({ addVariant }) => {
+  // Variants to select specific underlying element
+  addVariant("ut-button", '&>*[data-ut-element="button"]');
+  addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
+  addVariant("ut-label", '&>*[data-ut-element="label"]');
+  addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+  addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
+
+  // Variants to select specific state
+  addVariant("ut-readying", '&[data-state="readying"]');
+  addVariant("ut-ready", '&[data-state="ready"]');
+  addVariant("ut-uploading", '&[data-state="uploading"]');
+});
+
+/**
+ * HOF for Tailwind config that adds the
+ * {@link uploadthingPlugin} to the Tailwind config
+ * as well as adds content paths to detect the necessary
+ * classnames
+ */
 export function withUt(twConfig: Config) {
   const contentPaths = PACKAGES.map((pkg) => {
     try {
@@ -41,25 +69,11 @@ export function withUt(twConfig: Config) {
     twConfig.content.files.push(...contentPaths);
   }
 
-  const utPlugin = plugin(({ addVariant }) => {
-    // Variants to select specific underlying element
-    addVariant("ut-button", '&>*[data-ut-element="button"]');
-    addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
-    addVariant("ut-label", '&>*[data-ut-element="label"]');
-    addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
-    addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
-
-    // Variants to select specific state
-    addVariant("ut-readying", '&[data-state="readying"]');
-    addVariant("ut-ready", '&[data-state="ready"]');
-    addVariant("ut-uploading", '&[data-state="uploading"]');
-  });
-
   if (!twConfig.plugins) {
     twConfig.plugins = [];
   }
 
-  twConfig.plugins.push(utPlugin);
+  twConfig.plugins.push(uploadthingPlugin);
 
   return twConfig;
 }

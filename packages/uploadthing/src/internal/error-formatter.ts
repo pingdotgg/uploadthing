@@ -1,6 +1,6 @@
 import type { UploadThingError } from "@uploadthing/shared";
 
-import type { FileRouter, inferErrorShape } from "./types";
+import type { FileRouter, inferErrorShape } from "../types";
 
 export function defaultErrorFormatter(error: UploadThingError) {
   return {
@@ -8,14 +8,12 @@ export function defaultErrorFormatter(error: UploadThingError) {
   };
 }
 
-export function formatError<TRouter extends FileRouter>(
+export function formatError(
   error: UploadThingError,
-  router: TRouter,
-): inferErrorShape<TRouter> {
+  router: FileRouter,
+): inferErrorShape<FileRouter[string]> {
   const errorFormatter =
-    router[Object.keys(router)[0]]?._def.errorFormatter ??
-    defaultErrorFormatter;
+    router[Object.keys(router)[0]]?.errorFormatter ?? defaultErrorFormatter;
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return errorFormatter(error);
 }

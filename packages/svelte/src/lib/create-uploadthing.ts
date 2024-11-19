@@ -48,7 +48,7 @@ export const INTERNAL_createUploadThingGen = <
 
   const useUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: EndpointArg<TRouter, TEndpoint>,
-    opts?: UseUploadthingProps<TRouter, TEndpoint>,
+    opts?: UseUploadthingProps<TRouter[TEndpoint]>,
   ) => {
     const isUploading = writable(false);
     let uploadProgress = 0;
@@ -103,9 +103,9 @@ export const INTERNAL_createUploadThingGen = <
          */
         if (e instanceof UploadAbortedError) throw e;
 
-        let error: UploadThingError<inferErrorShape<TRouter>>;
+        let error: UploadThingError<inferErrorShape<TRouter[TEndpoint]>>;
         if (e instanceof UploadThingError) {
-          error = e as UploadThingError<inferErrorShape<TRouter>>;
+          error = e as UploadThingError<inferErrorShape<TRouter[TEndpoint]>>;
         } else {
           error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
           console.error(

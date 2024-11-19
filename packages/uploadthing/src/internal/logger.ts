@@ -37,6 +37,7 @@ export const LogFormat = Config.literal(
   "structured",
   "pretty",
 )("logFormat");
+export type LogFormat = Config.Config.Success<typeof LogFormat>;
 
 export const withLogFormat = Effect.gen(function* () {
   const isDev = yield* IsDevelopment;
