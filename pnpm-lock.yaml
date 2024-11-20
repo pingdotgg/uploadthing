@@ -62,9 +62,6 @@ importers:
       typescript:
         specifier: ^5.5.2
         version: 5.6.2
-      uninstall:
-        specifier: ^0.0.0
-        version: 0.0.0
       uploadthing:
         specifier: workspace:*
         version: link:packages/uploadthing
@@ -16368,9 +16365,6 @@ packages:
   unimport@3.13.2:
     resolution: {integrity: sha512-VKAepeIb6BWLtBl4tmyHY1/7rJgz3ynmZrWf8cU1a+v5Uv/k1gyyAEeGBnYcrwy8bxG5sflxEx4a9VQUqOVHUA==}
 
-  uninstall@0.0.0:
-    resolution: {integrity: sha512-pjP/0+A4gsbDVa8XH/S2GZdT9NPJW8NFMy3GI7HnsWG+NAmFSSj3QidNosXBI9cPtxxNExEDdhKFO6sli8K3mA==}
-
   unique-filename@3.0.0:
     resolution: {integrity: sha512-afXhuC55wkAmZ0P18QsVE6kp8JaxrEokN2HGIoIVv2ijHQd419H0+6EigAFcIzXeMIkcIkNBpB3L/DXB3cTS/g==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -24666,7 +24660,7 @@ snapshots:
       '@storybook/core': 8.2.1
       '@storybook/csf': 0.1.11
       '@types/cross-spawn': 6.0.6
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       globby: 14.0.2
       jscodeshift: 0.15.2(@babel/preset-env@7.25.7(@babel/core@7.26.0))
       lodash: 4.17.21
@@ -37000,7 +36994,7 @@ snapshots:
       '@yarnpkg/libzip': 2.3.0
       chalk: 4.1.2
       commander: 6.2.1
-      cross-spawn: 7.0.3
+      cross-spawn: 7.0.6
       detect-indent: 6.1.0
       envinfo: 7.14.0
       execa: 5.1.1
@@ -38158,8 +38152,6 @@ snapshots:
       unplugin: 1.16.0
     transitivePeerDependencies:
       - rollup
-
-  uninstall@0.0.0: {}
 
   unique-filename@3.0.0:
     dependencies:
