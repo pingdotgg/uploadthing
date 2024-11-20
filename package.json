@@ -61,6 +61,9 @@
     "vitest": "^2.1.2"
   },
   "pnpm": {
+    "overrides": {
+      "effect": "https://pkg.pr.new/Effect-TS/effect@5e23265"
+    },
     "patchedDependencies": {
       "msw@2.2.13": "patches/msw@2.2.13.patch",
       "@mswjs/interceptors@0.26.15": "patches/@mswjs__interceptors@0.26.15.patch"
