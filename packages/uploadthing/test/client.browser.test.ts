@@ -1,5 +1,3 @@
-// @vitest-environment happy-dom
-
 import type { AddressInfo } from "node:net";
 import express from "express";
 import { describe, expect, expectTypeOf, it as rawIt, vi } from "vitest";

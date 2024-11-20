@@ -1,7 +1,3 @@
-// @vitest-environment happy-dom
-/// <reference types="@testing-library/jest-dom/vitest" />
-
-import { cleanup, render, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import {
@@ -13,12 +9,9 @@ import {
   it,
   vi,
 } from "vitest";
+import { cleanup, render } from "vitest-browser-react";
 
-import {
-  createRouteHandler,
-  createUploadthing,
-  extractRouterConfig,
-} from "uploadthing/server";
+import { createRouteHandler, createUploadthing } from "uploadthing/server";
 
 import { generateUploadDropzone } from "../src";
 
@@ -80,7 +73,9 @@ describe("UploadDropzone - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose a file or drag and drop");
     expect(label).not.toHaveTextContent("(s)");
 
@@ -98,7 +93,9 @@ describe("UploadDropzone - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose file(s) or drag and drop");
   });
 });

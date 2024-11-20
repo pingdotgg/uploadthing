@@ -1,7 +1,4 @@
-// @vitest-environment happy-dom
-/// <reference types="@testing-library/jest-dom/vitest" />
-
-import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
+import { userEvent } from "@vitest/browser/context";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import {
@@ -13,6 +10,7 @@ import {
   it,
   vi,
 } from "vitest";
+import { cleanup, render } from "vitest-browser-react";
 
 import {
   createRouteHandler,
@@ -109,7 +107,9 @@ describe("UploadButton - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose File");
     expect(label).not.toHaveTextContent("(s)");
 
@@ -129,7 +129,9 @@ describe("UploadButton - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose File");
     expect(label).not.toHaveTextContent("(s)");
 
@@ -147,7 +149,9 @@ describe("UploadButton - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose File(s)");
   });
 
@@ -164,12 +168,14 @@ describe("UploadButton - basic", () => {
   it("requests URLs when a file is selected", async () => {
     const utils = render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File(["foo"], "foo.txt", { type: "text/plain" })] },
-    });
-    await waitFor(() => {
+    await userEvent.upload(utils.getByLabelText("Choose File"), [
+      new File(["foo"], "foo.txt", { type: "text/plain" }),
+    ]);
+    await vi.waitFor(() => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
@@ -192,15 +198,17 @@ describe("UploadButton - basic", () => {
       <UploadButton endpoint="image" config={{ mode: "manual" }} />,
     );
     const label = utils.container.querySelector("label");
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File([""], "foo.txt")] },
-    });
+    await userEvent.upload(utils.getByLabelText("Choose File"), [
+      new File(["foo"], "foo.txt", { type: "text/plain" }),
+    ]);
     expect(label).toHaveTextContent("Upload 1 file");
 
-    fireEvent.click(label!);
-    await waitFor(() => {
+    await userEvent.click(label!);
+    await vi.waitFor(() => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
@@ -215,7 +223,7 @@ describe("UploadButton - basic", () => {
   it.skip("disabled", async () => {
     const utils = render(<UploadButton endpoint="image" disabled />);
     const label = utils.container.querySelector("label");
-    await waitFor(() => expect(label).toHaveTextContent("Choose File"));
+    await vi.waitFor(() => expect(label).toHaveTextContent("Choose File"));
     expect(label).toHaveAttribute("disabled");
   });
 });
@@ -230,14 +238,14 @@ describe("UploadButton - lifecycle hooks", () => {
         }}
       />,
     );
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(utils.getByText("Choose File")).toBeInTheDocument();
     });
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File([""], "foo.txt")] },
-    });
-    await waitFor(() => {
+    await userEvent.upload(utils.getByLabelText("Choose File"), [
+      new File([""], "foo.txt"),
+    ]);
+    await vi.waitFor(() => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
@@ -253,14 +261,15 @@ describe("UploadButton - lifecycle hooks", () => {
     const utils = render(
       <UploadButton endpoint="multi" onUploadBegin={onUploadBegin} />,
     );
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(utils.getByText("Choose File(s)")).toBeInTheDocument();
     });
 
-    fireEvent.change(utils.getByLabelText("Choose File(s)"), {
-      target: { files: [new File([""], "foo.png"), new File([""], "bar.png")] },
-    });
-    await waitFor(() => {
+    await userEvent.upload(utils.getByLabelText("Choose File(s)"), [
+      new File([""], "foo.png"),
+      new File([""], "bar.png"),
+    ]);
+    await vi.waitFor(() => {
       expect(onUploadBegin).toHaveBeenCalledTimes(2);
     });
     expect(onUploadBegin).toHaveBeenCalledWith("foo.png");
@@ -278,7 +287,7 @@ describe("UploadButton - Theming", () => {
         }}
       />,
     );
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(utils.getByText("Choose File")).toHaveStyle({
         backgroundColor: "red",
       });
@@ -296,7 +305,7 @@ describe("UploadButton - Content Customization", () => {
         }}
       />,
     );
-    await waitFor(() => {
+    await vi.waitFor(() => {
       expect(utils.getByText("Allowed content")).toBeInTheDocument();
     });
   });
