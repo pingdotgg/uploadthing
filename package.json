@@ -55,7 +55,6 @@
     "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.1.5",
-    "vitest-browser-react": "^0.0.3"
+    "vitest": "^2.1.5"
   }
 }
