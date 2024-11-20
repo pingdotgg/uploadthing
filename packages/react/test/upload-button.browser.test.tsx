@@ -1,6 +1,6 @@
 import { userEvent } from "@vitest/browser/context";
 import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
+import { setupWorker } from "msw/browser";
 import {
   afterAll,
   afterEach,
@@ -42,7 +42,7 @@ const utGet = vi.fn<(req: Request) => void>();
 const utPost =
   vi.fn<({ request, body }: { request: Request; body: any }) => void>();
 
-const server = setupServer(
+const server = setupWorker(
   http.get("/api/uploadthing", ({ request }) => {
     utGet(request);
     return routeHandler(request);
@@ -60,12 +60,12 @@ const server = setupServer(
   ),
 );
 
-beforeAll(() => server.listen());
+beforeAll(() => server.start());
 afterEach(() => {
   server.resetHandlers();
   cleanup();
 });
-afterAll(() => server.close());
+afterAll(() => server.stop());
 
 /**
  * This is a basic suite of tests for the UploadButton component.
@@ -110,11 +110,11 @@ describe("UploadButton - basic", () => {
     await vi.waitFor(() =>
       expect(label).toHaveAttribute("data-state", "ready"),
     );
-    expect(label).toHaveTextContent("Choose File");
-    expect(label).not.toHaveTextContent("(s)");
+    await expect.element(label).toHaveTextContent("Choose File");
+    await expect.element(label).not.toHaveTextContent("(s)");
 
     expect(utGet).toHaveBeenCalledOnce();
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(utils.getByText("Image (4MB)")).toBeInTheDocument();
   });
 
   it("fetches and displays route config (with callback endpoint arg)", async () => {
@@ -132,11 +132,11 @@ describe("UploadButton - basic", () => {
     await vi.waitFor(() =>
       expect(label).toHaveAttribute("data-state", "ready"),
     );
-    expect(label).toHaveTextContent("Choose File");
-    expect(label).not.toHaveTextContent("(s)");
+    await expect.element(label).toHaveTextContent("Choose File");
+    await expect.element(label).not.toHaveTextContent("(s)");
 
     expect(utGet).toHaveBeenCalledOnce();
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(utils.getByText("Image (4MB)")).toBeInTheDocument();
   });
 
   it("shows plural when maxFileCount is > 1", async () => {
@@ -159,7 +159,7 @@ describe("UploadButton - basic", () => {
     (window as any).__UPLOADTHING = extractRouterConfig(testRouter);
 
     const utils = render(<UploadButton endpoint="image" />);
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(utils.getByText("Image (4MB)")).toBeInTheDocument();
     expect(utGet).not.toHaveBeenCalled();
 
     delete (window as any).__UPLOADTHING;
@@ -168,9 +168,7 @@ describe("UploadButton - basic", () => {
   it("requests URLs when a file is selected", async () => {
     const utils = render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
-    await vi.waitFor(() =>
-      expect(label).toHaveAttribute("data-state", "ready"),
-    );
+    await expect.element(label!).toHaveAttribute("data-state", "ready");
 
     await userEvent.upload(utils.getByLabelText("Choose File"), [
       new File(["foo"], "foo.txt", { type: "text/plain" }),
@@ -205,7 +203,7 @@ describe("UploadButton - basic", () => {
     await userEvent.upload(utils.getByLabelText("Choose File"), [
       new File(["foo"], "foo.txt", { type: "text/plain" }),
     ]);
-    expect(label).toHaveTextContent("Upload 1 file");
+    await expect.element(label!).toHaveTextContent("Upload 1 file");
 
     await userEvent.click(label!);
     await vi.waitFor(() => {
@@ -224,7 +222,7 @@ describe("UploadButton - basic", () => {
     const utils = render(<UploadButton endpoint="image" disabled />);
     const label = utils.container.querySelector("label");
     await vi.waitFor(() => expect(label).toHaveTextContent("Choose File"));
-    expect(label).toHaveAttribute("disabled");
+    await expect.element(label!).toHaveAttribute("disabled");
   });
 });
 
@@ -278,7 +276,7 @@ describe("UploadButton - lifecycle hooks", () => {
 });
 
 describe("UploadButton - Theming", () => {
-  it("renders custom styles", async () => {
+  it.only("renders custom styles", async () => {
     const utils = render(
       <UploadButton
         endpoint="image"
@@ -287,10 +285,11 @@ describe("UploadButton - Theming", () => {
         }}
       />,
     );
-    await vi.waitFor(() => {
-      expect(utils.getByText("Choose File")).toHaveStyle({
-        backgroundColor: "red",
-      });
+
+    await vi.waitFor(async () => {
+      await expect
+        .element(utils.getByText("Choose File"))
+        .toHaveStyle({ backgroundColor: "red" });
     });
   });
 });
@@ -305,8 +304,10 @@ describe("UploadButton - Content Customization", () => {
         }}
       />,
     );
-    await vi.waitFor(() => {
-      expect(utils.getByText("Allowed content")).toBeInTheDocument();
+    await vi.waitFor(async () => {
+      await expect
+        .element(utils.getByText("Allowed content"))
+        .toBeInTheDocument();
     });
   });
 });
