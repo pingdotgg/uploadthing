@@ -176,15 +176,16 @@ data comes from the client when the upload starts. If validation here fails, an
 error will be thrown and none of your `middleware` n'or `onUploadComplete`
 functions will be executed.
 
-Historically only [Zod](https://github.com/colinhacks/zod) was supported, but
+Historically, only [Zod](https://github.com/colinhacks/zod) was supported, but
 since `uploadthing@7.4` the following validators are supported:
 
 - [Zod >=3](https://github.com/colinhacks/zod)
 - [Effect/Schema >=3.10](https://effect.website/docs/schema/introduction) is
-  partially supported as long as the top-level schema is of type `Schema.Schema`
-  and not wrapped like `optional<Schema.Schema>`/`optionalWith<Schema.Schema>`
-- Any validator that implements the
-  [Standard Schema specification](https://github.com/standard-schema/standard-schema),
+  partially supported with the following limitations:
+  - Top-level schema must be of type `Schema.Schema`
+  - Must not be wrapped (e.g., no `optional<Schema.Schema>` or
+    `optionalWith<Schema.Schema>`)
+- [Standard Schema specification](https://github.com/standard-schema/standard-schema),
   for example [Valibot >=1.0](https://github.com/fabian-hiller/valibot) and
   [ArkType >=2.0](https://github.com/arktypeio/arktype)
 
