@@ -191,8 +191,9 @@ since `uploadthing@7.4` the following validators are supported:
 
 <Note>
   The schema's **input type** must only contain JSON serializable types as
-  UploadThing does no special data transforming to handle non-JSON types. For
-  example, `z.date()` is invalid but `z.string().transform(Date)` is valid.
+  UploadThing does no special data transforming to handle non-JSON types. You
+  may do transformations yourself, for example `z.date()` is invalid but
+  `z.string().transform(Date)` is valid.
 </Note>
 
 The input is validated on **your** server and only leaves your server if you
