@@ -1,5 +1,6 @@
 import type * as Standard from "@standard-schema/spec";
 import * as Cause from "effect/Cause";
+import * as Data from "effect/Data";
 import * as Runtime from "effect/Runtime";
 import * as Schema from "effect/Schema";
 
@@ -19,6 +20,13 @@ export type JsonParser<In extends Json, Out = In> =
   | Standard.v1.StandardSchema<In, Out>
   | Schema.Schema<Out, In>;
 
+export class ParserError extends Data.TaggedError("ParserError")<{
+  cause: unknown;
+}> {
+  message =
+    "Input validation failed. The original error with it's validation issues is in the error cause.";
+}
+
 export function getParseFn<
   TOut extends Json,
   TParser extends JsonParser<any, TOut>,
@@ -30,10 +38,7 @@ export function getParseFn<
     return async (value) => {
       const result = await parser["~standard"].validate(value);
       if (result.issues) {
-        throw new Error(
-          "Input validation failed. See validation issues in the error cause.",
-          { cause: result.issues },
-        );
+        throw new ParserError({ cause: result.issues });
       }
       return result.value;
     };
@@ -42,6 +47,7 @@ export function getParseFn<
   if ("parseAsync" in parser && typeof parser.parseAsync === "function") {
     /**
      * Zod
+     * TODO (next major): Consider wrapping ZodError in ParserError
      */
     return parser.parseAsync;
   }
@@ -54,9 +60,11 @@ export function getParseFn<
       Schema.decodeUnknownPromise(parser as Schema.Schema<any, TOut>)(
         value,
       ).catch((error) => {
-        throw Cause.squash(
-          (error as Runtime.FiberFailure)[Runtime.FiberFailureCauseId],
-        );
+        throw new ParserError({
+          cause: Cause.squash(
+            (error as Runtime.FiberFailure)[Runtime.FiberFailureCauseId],
+          ),
+        });
       });
   }
 

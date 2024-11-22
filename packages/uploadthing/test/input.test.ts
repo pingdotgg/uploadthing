@@ -6,7 +6,7 @@ import * as z from "zod";
 
 import { noop } from "@uploadthing/shared";
 
-import { getParseFn } from "../src/internal/parser";
+import { getParseFn, ParserError } from "../src/internal/parser";
 import { createBuilder } from "../src/internal/upload-builder";
 import type { inferEndpointInput } from "../src/types";
 
@@ -84,13 +84,14 @@ it("validation fails when input is invalid (zod)", async () => {
 it("validation fails when input is invalid (valibot)", async () => {
   const fileRoute = f(["image"]).input(v.string()).onUploadComplete(noop);
   const err = await getParseFn(fileRoute.inputParser)(123).catch((e) => e);
-  expect(err).toBeInstanceOf(Error);
+  expect(err).toBeInstanceOf(ParserError);
   expect(Array.isArray(err.cause)).toBe(true);
 });
 it("validation fails when input is invalid (effect/schema)", async () => {
   const fileRoute = f(["image"]).input(Schema.String).onUploadComplete(noop);
   const err = await getParseFn(fileRoute.inputParser)(123).catch((e) => e);
-  expect(err).toBeInstanceOf(ParseError);
+  expect(err).toBeInstanceOf(ParserError);
+  expect(err.cause).toBeInstanceOf(ParseError);
 });
 
 it("with data transforming (zod)", async () => {
