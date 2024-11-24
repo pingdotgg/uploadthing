@@ -151,6 +151,7 @@
   },
   "dependencies": {
     "@effect/platform": "0.69.24",
+    "@standard-schema/spec": "1.0.0-beta.3",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
     "effect": "3.10.15"
@@ -176,6 +177,7 @@
     "type-fest": "^4.10.3",
     "typescript": "^5.5.2",
     "undici": "^6.6.2",
+    "valibot": "1.0.0-beta.7",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0",
     "zod": "^3.23.8"

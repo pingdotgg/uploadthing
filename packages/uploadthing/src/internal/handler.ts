@@ -460,7 +460,7 @@ const handleUploadAction = (opts: {
     // validate the input
     yield* Effect.logDebug("Parsing user input");
     const parsedInput = yield* Effect.tryPromise({
-      try: async () => getParseFn(uploadable.inputParser)(json.input),
+      try: () => getParseFn(uploadable.inputParser)(json.input),
       catch: (error) =>
         new UploadThingError({
           code: "BAD_REQUEST",
