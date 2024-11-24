@@ -357,6 +357,12 @@ Additionally, you may pass some options as a second argument:
 all files that have been uploaded to the application your API key corresponds
 to.
 
+<Note>
+  We do not recommend using this as your primary data source. Instead, we
+  recommend storing the file metadata (key, url, etc) in your database. This
+  will reduce latency as well as support any query your application might need.
+</Note>
+
 ```ts
 import { utapi } from "~/server/uploadthing.ts";
 
