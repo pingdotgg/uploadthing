@@ -171,10 +171,30 @@ f(["image"])
 
 ## `input` {{ since: '5.0' }}
 
-You can pass a [Zod](https://github.com/colinhacks/zod) schema to validate user
-input from the client. This data comes from the client when the upload starts.
-If validation here fails, an error will be thrown and none of your `middleware`
-n'or `onUploadComplete` functions will be executed.
+You can pass a schema validator to validate user input from the client. This
+data comes from the client when the upload starts. If validation here fails, an
+error will be thrown and none of your `middleware` n'or `onUploadComplete`
+functions will be executed.
+
+Historically, only [Zod](https://github.com/colinhacks/zod) was supported, but
+since `uploadthing@7.4` the following validators are supported:
+
+- [Zod >=3](https://github.com/colinhacks/zod)
+- [Effect/Schema >=3.10](https://effect.website/docs/schema/introduction) is
+  partially supported with the following limitations:
+  - Top-level schema must be of type `Schema.Schema`
+  - Must not be wrapped (e.g., no `optional<Schema.Schema>` or
+    `optionalWith<Schema.Schema>`)
+- [Standard Schema specification](https://github.com/standard-schema/standard-schema),
+  for example [Valibot >=1.0](https://github.com/fabian-hiller/valibot) and
+  [ArkType >=2.0](https://github.com/arktypeio/arktype)
+
+<Note>
+  The schema's **input type** must only contain JSON serializable types as
+  UploadThing does no special data transforming to handle non-JSON types. You
+  may do transformations yourself, for example `z.string().transform(Date)` is
+  valid where as `z.date()` is not.
+</Note>
 
 The input is validated on **your** server and only leaves your server if you
 pass it along from the `.middleware` to the `.onUploadComplete`. If you only use

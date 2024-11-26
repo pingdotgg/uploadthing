@@ -42,7 +42,7 @@ function internalCreateBuilder<
     },
 
     inputParser: {
-      parse: () => undefined,
+      parseAsync: () => Promise.resolve(undefined),
       _input: undefined,
       _output: undefined,
     },

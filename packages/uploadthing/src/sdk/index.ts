@@ -1,22 +1,18 @@
-import type { FetchHttpClient } from "@effect/platform";
+import type { FetchHttpClient, HttpClientError } from "@effect/platform";
 import {
   HttpClient,
   HttpClientRequest,
   HttpClientResponse,
 } from "@effect/platform";
 import * as Arr from "effect/Array";
+import * as Cause from "effect/Cause";
 import * as Effect from "effect/Effect";
-import type * as ManagedRuntime from "effect/ManagedRuntime";
-import * as Predicate from "effect/Predicate";
+import type { ManagedRuntime } from "effect/ManagedRuntime";
+import type { ParseError } from "effect/ParseResult";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
 
-import type {
-  ACL,
-  FetchEsque,
-  MaybeUrl,
-  SerializedUploadThingError,
-} from "@uploadthing/shared";
+import type { ACL, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import { parseTimeToSeconds, UploadThingError } from "@uploadthing/shared";
 
 import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../internal/config";
@@ -36,14 +32,14 @@ import type {
   UTApiOptions,
 } from "./types";
 import { UTFile } from "./ut-file";
-import { downloadFiles, guardServerOnly, uploadFilesInternal } from "./utils";
+import { downloadFile, guardServerOnly, uploadFile } from "./utils";
 
 export { UTFile };
 
 export class UTApi {
   private fetch: FetchEsque;
   private defaultKeyType: "fileKey" | "customId";
-  private runtime: ManagedRuntime.ManagedRuntime<
+  private runtime: ManagedRuntime<
     HttpClient.HttpClient | FetchHttpClient.Fetch,
     UploadThingError
   >;
@@ -83,18 +79,38 @@ export class UTApi {
         Effect.flatMap(HttpClientResponse.schemaBodyJson(responseSchema)),
         Effect.scoped,
       );
-    }).pipe(Effect.withLogSpan("utapi.#requestUploadThing"));
-
-  private executeAsync = async <A, E>(
-    program: Effect.Effect<A, E, HttpClient.HttpClient>,
-    signal?: AbortSignal,
-  ) => {
-    const result = await program.pipe(
-      Effect.withLogSpan("utapi.#executeAsync"),
-      (e) => this.runtime.runPromise(e, signal ? { signal } : undefined),
+    }).pipe(
+      Effect.catchTag(
+        "ConfigError",
+        (e) =>
+          new UploadThingError({
+            code: "INVALID_SERVER_CONFIG",
+            message:
+              "There was an error with the server configuration. More info can be found on this error's `cause` property",
+            cause: e,
+          }),
+      ),
+      Effect.withLogSpan("utapi.#requestUploadThing"),
     );
 
-    return result;
+  private executeAsync = async <A>(
+    program: Effect.Effect<
+      A,
+      UploadThingError | ParseError | HttpClientError.HttpClientError,
+      HttpClient.HttpClient
+    >,
+    signal?: AbortSignal,
+  ) => {
+    const exit = await program.pipe(
+      Effect.withLogSpan("utapi.#executeAsync"),
+      (e) => this.runtime.runPromiseExit(e, signal ? { signal } : undefined),
+    );
+
+    if (exit._tag === "Failure") {
+      throw Cause.squash(exit.cause);
+    }
+
+    return exit.value;
   };
 
   /**
@@ -117,31 +133,34 @@ export class UTApi {
     files: FileEsque[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResult[]>;
-  async uploadFiles(
+  uploadFiles(
     files: FileEsque | FileEsque[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const uploads = await this.executeAsync(
-      Effect.flatMap(
-        uploadFilesInternal({
-          files: Arr.ensure(files),
-          contentDisposition: opts?.contentDisposition ?? "inline",
-          acl: opts?.acl,
+    const program: Effect.Effect<
+      UploadFileResult | UploadFileResult[],
+      never,
+      HttpClient.HttpClient
+    > = Effect.forEach(Arr.ensure(files), (file) =>
+      uploadFile(file, opts ?? {}).pipe(
+        Effect.match({
+          onSuccess: (data) => ({ data, error: null }),
+          onFailure: (error) => ({ data: null, error }),
         }),
-        (ups) => Effect.succeed(Array.isArray(files) ? ups : ups[0]),
-      ).pipe(
-        Effect.tap((res) =>
-          Effect.logDebug("Finished uploading").pipe(
-            Effect.annotateLogs("uploadResult", res),
-          ),
-        ),
-        Effect.withLogSpan("uploadFiles"),
       ),
-      opts?.signal,
+    ).pipe(
+      Effect.map((ups) => (Array.isArray(files) ? ups : ups[0])),
+      Effect.tap((res) =>
+        Effect.logDebug("Finished uploading").pipe(
+          Effect.annotateLogs("uploadResult", res),
+        ),
+      ),
+      Effect.withLogSpan("uploadFiles"),
     );
-    return uploads;
+
+    return this.executeAsync(program, opts?.signal);
   }
 
   /**
@@ -165,49 +184,37 @@ export class UTApi {
     urls: (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResult[]>;
-  async uploadFilesFromUrl(
+  uploadFilesFromUrl(
     urls: MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
     opts?: UploadFilesOptions,
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const downloadErrors: Record<number, SerializedUploadThingError> = {};
-    const arr = Arr.ensure(urls);
+    const program: Effect.Effect<
+      UploadFileResult | UploadFileResult[],
+      never,
+      HttpClient.HttpClient
+    > = Effect.forEach(Arr.ensure(urls), (url) =>
+      downloadFile(url).pipe(
+        Effect.flatMap((file) => uploadFile(file, opts ?? {})),
+        Effect.match({
+          onSuccess: (data) => ({ data, error: null }),
+          onFailure: (error) => ({ data: null, error }),
+        }),
+      ),
+    )
+      .pipe(
+        Effect.map((ups) => (Array.isArray(urls) ? ups : ups[0])),
+        Effect.tap((res) =>
+          Effect.logDebug("Finished uploading").pipe(
+            Effect.annotateLogs("uploadResult", res),
+          ),
+        ),
+        Effect.withLogSpan("uploadFiles"),
+      )
+      .pipe(Effect.withLogSpan("uploadFilesFromUrl"));
 
-    const program = Effect.gen(function* () {
-      const downloadedFiles = yield* downloadFiles(arr, downloadErrors).pipe(
-        Effect.map((files) => Arr.filter(files, Predicate.isNotNullable)),
-      );
-
-      yield* Effect.logDebug(
-        `Downloaded ${downloadedFiles.length}/${arr.length} files`,
-      ).pipe(Effect.annotateLogs("downloadedFiles", downloadedFiles));
-
-      const uploads = yield* uploadFilesInternal({
-        files: downloadedFiles,
-        contentDisposition: opts?.contentDisposition ?? "inline",
-        acl: opts?.acl,
-      });
-
-      /** Put it all back together, preserve the order of files */
-      const responses = arr.map((_, index) => {
-        if (downloadErrors[index]) {
-          return { data: null, error: downloadErrors[index] };
-        }
-        return uploads.shift()!;
-      });
-
-      /** Return single object or array based on input urls */
-      const uploadFileResponse = Array.isArray(urls) ? responses : responses[0];
-      yield* Effect.logDebug("Finished uploading").pipe(
-        Effect.annotateLogs("uploadResult", uploadFileResponse),
-        Effect.withLogSpan("utapi.uploadFilesFromUrl"),
-      );
-
-      return uploadFileResponse;
-    }).pipe(Effect.withLogSpan("uploadFilesFromUrl"));
-
-    return await this.executeAsync(program, opts?.signal);
+    return this.executeAsync(program, opts?.signal);
   }
 
   /**
