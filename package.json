@@ -26,6 +26,7 @@
     "dev:vanilla": "turbo watch dev --filter uploadthing...",
     "dev:expo": "turbo watch dev --filter @uploadthing/expo...",
     "dev:react": "turbo watch dev --filter @uploadthing/react...",
+    "dev:playground": "turbo watch dev --filter next-playground...",
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",
