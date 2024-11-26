@@ -63,7 +63,7 @@ export async function uploadFiles(previousState: unknown, form: FormData) {
   revalidateTag(CACHE_TAGS.LIST_FILES);
 
   const uploadedCount = uploadResults.filter(
-    (result) => result.data != null,
+    (result) => result.data != null
   ).length;
 
   return {

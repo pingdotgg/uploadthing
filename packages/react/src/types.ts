@@ -187,7 +187,7 @@ export type UploadthingComponentProps<
    *
    * @param acceptedFiles - The files that were accepted.
    */
-  onChange?: (files: File[]) => void;
+  onFilesChange?: (_: File[]) => void;
 } & ExtendObjectIf<
     inferEndpointInput<TRouter[TEndpoint]>,
     {

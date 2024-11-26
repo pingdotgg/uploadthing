@@ -24,7 +24,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../../types";
-import { __useUploadThingInternal } from "../../useUploadThing";
+import { __useUploadThingInternal } from "../../use-uploadthing";
 import { useControllableState } from "../../utils/useControllableState";
 import { usePaste } from "../../utils/usePaste";
 
@@ -110,10 +110,9 @@ export function PrimitiveSlot({
   componentName?: string;
   default?: React.ReactNode;
 }) {
+  const values = usePrimitiveValues(componentName);
   if (!children) return defaultChildren;
-  return typeof children === "function"
-    ? children?.(usePrimitiveValues(componentName))
-    : children;
+  return typeof children === "function" ? children(values) : children;
 }
 
 export type HasDisplayName = {
@@ -159,7 +158,6 @@ export type RootPrimitiveComponentProps<
   // TODO: add @see comment for docs
   children?: PrimitiveComponentChildren;
   files?: File[];
-  onFilesChange?: (_: File[]) => void;
 };
 
 export function Root<
@@ -188,6 +186,7 @@ export function Root<
   const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
     resolveMaybeUrlArg(props.url),
     props.endpoint,
+    props.fetch ?? globalThis.fetch.bind(globalThis),
     {
       signal: acRef.current.signal,
       headers: props.headers,
@@ -199,6 +198,7 @@ export function Root<
         void props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
+      uploadProgressGranularity: props.uploadProgressGranularity,
       onUploadProgress: (p) => {
         setUploadProgress(p);
         props.onUploadProgress?.(p);
@@ -209,7 +209,7 @@ export function Root<
     },
   );
 
-  const { onUploadAborted } = props;
+  const { onUploadAborted, onFilesChange } = props;
   const uploadFiles = useCallback(
     (files: File[]) => {
       startUpload(files, fileRouteInput).catch((e) => {
@@ -228,23 +228,17 @@ export function Root<
   const accept = generateMimeTypes(fileTypes).join(", ");
 
   const state = (() => {
+    const ready = props.__internal_state === "ready" || fileTypes.length > 0;
+
     if (props.__internal_state) return props.__internal_state;
-
-    const ready =
-      props.__internal_ready ??
-      (props.__internal_state === "ready" || fileTypes.length > 0);
-
-    if (fileTypes.length === 0 || !!props.disabled) return "disabled";
+    if (props.disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
+    if (!isUploading) return "ready";
     return "uploading";
   })();
 
   usePaste((event) => {
     if (!appendOnPaste) return;
-    const ref = focusElementRef.current || fileInputRef.current;
-
-    if (document.activeElement !== ref) return;
 
     const pastedFiles = getFilesFromClipboardEvent(event);
     if (!pastedFiles) return;
@@ -253,7 +247,7 @@ export function Root<
     setFiles((prev) => {
       filesToUpload = [...prev, ...pastedFiles];
 
-      props.onChange?.(filesToUpload);
+      onFilesChange?.(filesToUpload);
 
       return filesToUpload;
     });
@@ -266,7 +260,7 @@ export function Root<
       files,
       setFiles: (files) => {
         setFiles(files);
-        props.onChange?.(files);
+        onFilesChange?.(files);
 
         if (files.length <= 0) {
           if (fileInputRef.current) fileInputRef.current.value = "";
@@ -293,6 +287,7 @@ export function Root<
       routeConfig,
     }),
     [
+      onFilesChange,
       files,
       setFiles,
       uploadFiles,

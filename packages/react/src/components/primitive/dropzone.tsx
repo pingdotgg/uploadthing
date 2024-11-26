@@ -47,6 +47,7 @@ export type PrimitiveDropzoneProps<
    *
    * @param acceptedFiles - The files that were accepted.
    * @deprecated Use `onFilesChange` in `<UT.Root>`
+   * @internal
    */
   onFilesDropped?: ((acceptedFiles: File[]) => void) | undefined;
 };
@@ -55,7 +56,7 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
   {
     children,
     as,
-    onDrop,
+    onFilesDropped,
     disabled: componentDisabled,
     ...props
   }: PrimitiveDropzoneProps<TTag>,
@@ -66,10 +67,10 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
 
   const onDropCallback = useCallback(
     (acceptedFiles: File[]) => {
-      onDrop?.(acceptedFiles);
+      onFilesDropped?.(acceptedFiles);
       setFiles(acceptedFiles);
     },
-    [setFiles, onDrop],
+    [setFiles, onFilesDropped],
   );
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({

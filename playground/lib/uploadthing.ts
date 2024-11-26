@@ -1,6 +1,11 @@
-import { useState } from "react";
-
 import { useDropzone } from "@uploadthing/react";
+import { useState } from "react";
+import {
+  generateReactHelpers,
+  generateUploadButton,
+  generateUploadPrimitives,
+} from "@uploadthing/react";
+import { UploadRouter } from "../app/api/uploadthing/route";
 import {
   AnyFile,
   future_genUploader,
@@ -10,9 +15,6 @@ import {
   PendingFile,
 } from "uploadthing/client-future";
 import { AnyFileRoute } from "uploadthing/types";
-
-import { UploadRouter } from "../app/api/uploadthing/route";
-import { useUploadThing } from "../components/uploader";
 
 export const {
   uploadFiles: future_uploadFiles,
@@ -69,3 +71,7 @@ export function useUploadThingDropzone<
 
   return { ...dropzone, routeConfig, files, clearFiles, removeFile, setFiles };
 }
+
+export const UT = generateUploadPrimitives<UploadRouter>();
+export const UTButton = generateUploadButton<UploadRouter>();
+export const { useUploadThing } = generateReactHelpers<UploadRouter>();

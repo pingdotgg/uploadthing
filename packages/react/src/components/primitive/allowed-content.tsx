@@ -8,7 +8,7 @@ import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
 import { PrimitiveSlot, usePrimitiveValues } from "./root";
 import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
-const DEFAULT_ALLOWED_CONTENT_TAG = "div" as const;
+const DEFAULT_ALLOWED_CONTENT_TAG = "div";
 
 export type PrimitiveAllowedContentProps<
   TTag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG,
@@ -34,12 +34,11 @@ export function AllowedContentFn<
   );
 }
 
-type _internal_ComponentAllowedContent = HasDisplayName & {
-  <TTag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG>(
+type _internal_ComponentAllowedContent = HasDisplayName &
+  (<TTag extends ElementType = typeof DEFAULT_ALLOWED_CONTENT_TAG>(
     props: PrimitiveAllowedContentProps<TTag> &
       RefProp<typeof AllowedContentFn>,
-  ): JSX.Element;
-};
+  ) => JSX.Element);
 
 export const AllowedContent = forwardRefWithAs(
   AllowedContentFn,
