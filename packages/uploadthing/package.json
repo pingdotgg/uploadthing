@@ -60,13 +60,25 @@
       }
     },
     "./tw": {
-      "import": {
-        "types": "./tw/index.d.ts",
-        "default": "./tw/index.js"
+      "browser": {
+        "import": {
+          "types": "./tw/index.d.ts",
+          "default": "./tw/index.browser.js"
+        },
+        "require": {
+          "types": "./tw/index.d.cts",
+          "default": "./tw/index.browser.cjs"
+        }
       },
-      "require": {
-        "types": "./tw/index.d.cts",
-        "default": "./tw/index.cjs"
+      "default": {
+        "import": {
+          "types": "./tw/index.d.ts",
+          "default": "./tw/index.node.js"
+        },
+        "require": {
+          "types": "./tw/index.d.cts",
+          "default": "./tw/index.node.cjs"
+        }
       }
     },
     "./fastify": {
