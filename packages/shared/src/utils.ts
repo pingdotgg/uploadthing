@@ -210,7 +210,7 @@ export function contentDisposition(
 
   //UTF-8 encode for the extended parameter (RFC 5987)
   const utf8FileName = encodeURIComponent(fileName)
-    .replace(/['()]/g, escape)
+    .replace(/[')(]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
     .replace(/\*/g, "%2A");
 
   return [
