@@ -46,6 +46,12 @@ export type RouteHandlerConfig = {
    * @see https://effect.website/docs/guides/observability/logging#built-in-loggers
    */
   logFormat?: LogFormat;
+  /**
+   * The full, absolute URL to where your route handler is hosted. UploadThing
+   * attempts to automatically detect this value based on the request URL and
+   * headers. You can override this if the automatic detection fails.
+   * @example URL { https://www.example.com/api/uploadthing }
+   */
   callbackUrl?: string;
   token?: string;
   /**
