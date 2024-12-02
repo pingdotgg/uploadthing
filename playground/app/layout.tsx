@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { connection } from "next/server";
 import { Schema } from "effect";
 
@@ -45,24 +46,32 @@ function Nav() {
   );
 
   return (
-    <nav className="flex w-full flex-col justify-between border-b p-4">
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-between">
-            <div className="flex gap-2 text-sm/6">
-              <Skeleton>{".".repeat(100)}</Skeleton>
+    <>
+      <header className="flex w-full flex-col justify-between border-b p-4">
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2 text-sm/6">
+                <Skeleton>{".".repeat(100)}</Skeleton>
+              </div>
+              <Button className="animate-pulse text-transparent">
+                Sign In
+              </Button>
             </div>
-            <Button className="animate-pulse text-transparent">Sign In</Button>
-          </div>
-        }
-      >
-        <SignInOut />
-      </Suspense>
+          }
+        >
+          <SignInOut />
+        </Suspense>
 
-      <code className="text-sm/6">
-        AppId: {token.appId} Region: {token.regions[0]}
-      </code>
-    </nav>
+        <code className="text-sm/6">
+          AppId: {token.appId} Region: {token.regions[0]}
+        </code>
+      </header>
+      <nav className="flex gap-4 bg-zinc-100 p-4">
+        <Link href="/">Home</Link>
+        <Link href="/primitives">Primitives</Link>
+      </nav>
+    </>
   );
 }
 
