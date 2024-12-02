@@ -10,4 +10,6 @@ export function withUt(twConfig: Config) {
   }
 
   twConfig.plugins.push(uploadthingPlugin);
+
+  return twConfig;
 }
