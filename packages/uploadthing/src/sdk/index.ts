@@ -316,12 +316,14 @@ export class UTApi {
           customId: S.NullOr(S.String),
           key: S.String,
           name: S.String,
+          size: S.Number,
           status: S.Literal(
             "Deletion Pending",
             "Failed",
             "Uploaded",
             "Uploading",
           ),
+          uploadedAt: S.Number,
         }),
       ),
     }) {}
