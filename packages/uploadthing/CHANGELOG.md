@@ -1,5 +1,26 @@
 # uploadthing
 
+## 7.4.0
+
+### Minor Changes
+
+- [#1072](https://github.com/pingdotgg/uploadthing/pull/1072) [`5707f02`](https://github.com/pingdotgg/uploadthing/commit/5707f02d4931f97ba11485bc23c49102e920a31f) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add conditional `browser` export to support importing of tailwind config in the browser
+
+- [#1061](https://github.com/pingdotgg/uploadthing/pull/1061) [`65444e5`](https://github.com/pingdotgg/uploadthing/commit/65444e5f046f3df02a480a8d5cc71820edd4e8b3) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support `effect/Schema` and `@standard-schema/spec` input validators
+
+### Patch Changes
+
+- [`2c6a82f`](https://github.com/pingdotgg/uploadthing/commit/2c6a82fe454b66231086e259cf62acbf6a8c2db0) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: return more fields from utapi.listFiles (#1080)
+
+- [#1056](https://github.com/pingdotgg/uploadthing/pull/1056) [`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect version
+
+- [#1058](https://github.com/pingdotgg/uploadthing/pull/1058) [`072fcc3`](https://github.com/pingdotgg/uploadthing/commit/072fcc3c51b9ecec94df1959f06522a7ecfc7268) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: gracefully handle download errors in `utapi.uploadFilesFromUrl`
+
+- [#1048](https://github.com/pingdotgg/uploadthing/pull/1048) [`a9b6559`](https://github.com/pingdotgg/uploadthing/commit/a9b65594977cdf108ace20cf6b0a43a5cd756ac4) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: export generic `FileRoute` type
+
+- Updated dependencies [[`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2), [`03dd9ee`](https://github.com/pingdotgg/uploadthing/commit/03dd9eeea6b7c3396a522140234a711705f52f9c)]:
+  - @uploadthing/shared@7.1.2
+
 ## 7.3.0
 
 ### Minor Changes

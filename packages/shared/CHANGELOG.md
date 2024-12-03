@@ -1,5 +1,13 @@
 # @uploadthing/shared
 
+## 7.1.2
+
+### Patch Changes
+
+- [#1056](https://github.com/pingdotgg/uploadthing/pull/1056) [`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect version
+
+- [#1074](https://github.com/pingdotgg/uploadthing/pull/1074) [`03dd9ee`](https://github.com/pingdotgg/uploadthing/commit/03dd9eeea6b7c3396a522140234a711705f52f9c) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: Construction of content-disposition header - follow RFC6266 spec
+
 ## 7.1.1
 
 ### Patch Changes
