@@ -8,6 +8,7 @@ import {
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform";
+import type { ResponseError } from "@effect/platform/HttpClientError";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -601,6 +602,40 @@ const handleUploadAction = (opts: {
       Effect.flatMap(httpClient.execute),
     );
 
+    const handleDevStreamError = (err: ResponseError, chunk: string) =>
+      Effect.gen(function* () {
+        const {
+          file: { key },
+        } = yield* Schema.decodeUnknown(
+          Schema.parseJson(Schema.Struct({ file: UploadedFileData })),
+        )(chunk);
+
+        yield* Effect.logError(
+          "Failed to forward callback request from dev stream",
+        ).pipe(Effect.annotateLogs({ fileKey: key, error: err.message }));
+
+        const httpResponse = yield* HttpClientRequest.post(
+          "/callback-result",
+        ).pipe(
+          HttpClientRequest.prependUrl(ingestUrl),
+          HttpClientRequest.setHeaders({
+            "x-uploadthing-api-key": Redacted.value(apiKey),
+            "x-uploadthing-version": pkgJson.version,
+            "x-uploadthing-be-adapter": beAdapter,
+            "x-uploadthing-fe-package": fePackage,
+          }),
+          HttpClientRequest.bodyJson({
+            fileKey: key,
+            error: `Failed to forward callback request from dev stream: ${err.message}`,
+          }),
+          Effect.flatMap(httpClient.execute),
+        );
+
+        yield* logHttpClientResponse("Reported callback error to UploadThing")(
+          httpResponse,
+        );
+      });
+
     // Send metadata to UT server (non blocking as a daemon)
     // In dev, keep the stream open and simulate the callback requests as
     // files complete uploading
@@ -624,14 +659,14 @@ const handleUploadAction = (opts: {
                 HttpBody.text(chunk.payload, "application/json"),
               ),
               httpClient.execute,
-              Effect.tapBoth({
-                onSuccess: logHttpClientResponse(
+              Effect.tap(
+                logHttpClientResponse(
                   "Successfully forwarded callback request from dev stream",
                 ),
-                onFailure: logHttpClientError(
-                  "Failed to forward callback request from dev stream",
-                ),
-              }),
+              ),
+              Effect.catchTag("ResponseError", (err) =>
+                handleDevStreamError(err, chunk.payload),
+              ),
               Effect.annotateLogs(chunk),
               Effect.asVoid,
               Effect.ignoreLogged,
