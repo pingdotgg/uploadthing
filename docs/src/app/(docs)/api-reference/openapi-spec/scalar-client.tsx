@@ -6,6 +6,7 @@ import { ApiReferenceReact } from "@scalar/api-reference-react";
 import { useTheme } from "next-themes";
 
 const specUrl = "https://api.uploadthing.com/openapi-spec.json";
+// const specUrl = "https://api.ut-staging.com/openapi-spec.json";
 
 const useMutationObserver = (
   ref: RefObject<HTMLElement>,
