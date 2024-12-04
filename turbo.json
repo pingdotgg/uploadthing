@@ -3,8 +3,6 @@
   "ui": "tui",
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
-    "CUSTOM_INFRA_URL",
-    "UPLOADTHING_URL",
     "UPLOADTHING_TOKEN",
     "UPLOADTHING_TEST_TOKEN",
     "EXPO_PUBLIC_SERVER_ORIGIN",
