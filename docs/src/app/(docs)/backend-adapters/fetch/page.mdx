@@ -170,7 +170,10 @@ export default {
          * so we need to remove it from the request init.
          */
         fetch: (url, init) => {
-          if (init && "cache" in init) delete init.cache;
+          if (init && "cache" in init) {
+            const { cache: _, ...restInit } = init;
+            return fetch(url, restInit);
+          }
           return fetch(url, init);
         },
         /**
