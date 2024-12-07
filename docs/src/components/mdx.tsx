@@ -72,6 +72,7 @@ export const img = function Img(props: ImagePropsWithOptionalAlt) {
         alt=""
         sizes="(min-width: 1280px) 56rem, (min-width: 1024px) 45vw, (min-width: 640px) 32rem, 95vw"
         {...props}
+        src={props.src}
       />
       <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-white/10" />
     </div>

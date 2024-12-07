@@ -30,7 +30,7 @@
     "react-dom": "19.0.0",
     "react-easy-crop": "^5.0.7",
     "server-only": "0.0.1",
-    "sonner": "^1.4.41",
+    "sonner": "^1.7.0",
     "tailwind-merge": "^2.2.1",
     "uploadthing": "^7.0.0",
     "zod": "^3.23.8"
