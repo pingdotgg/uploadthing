@@ -13,7 +13,7 @@
     "@uploadthing/react": "npm:@uploadthing/react@6",
     "clsx": "2.1.1",
     "effect": "3.10.15",
-    "next": "15.0.4",
+    "next": "npm:next@15.0.4-canary.46",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "uploadthing": "npm:uploadthing@6",
