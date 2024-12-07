@@ -83,7 +83,7 @@
     "@uploadthing/tsconfig": "workspace:*",
     "@vitest/browser": "2.1.2",
     "bunchee": "^5.6.2",
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.1.0",
     "eslint": "^8.57.0",
     "next": "15.0.4",
     "react": "19.0.0",
