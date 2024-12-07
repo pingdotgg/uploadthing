@@ -17,7 +17,7 @@
     "uploadthing": "7.4.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
+    "@types/node": "^22.10.1",
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.1",
     "postcss": "8.4.38",
