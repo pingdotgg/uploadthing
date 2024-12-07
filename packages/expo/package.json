@@ -37,7 +37,7 @@
     "@uploadthing/shared": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "18.3.3",
+    "@types/react": "19.0.1",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.6.2",
@@ -45,9 +45,9 @@
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^12.0.1",
     "expo-image-picker": "^15.0.4",
-    "react": "18.3.1",
+    "react": "19.0.0",
     "react-native": "^0.74.1",
-    "typescript": "^5.5.2",
+    "typescript": "^5.7.2",
     "uploadthing": "workspace:*",
     "wait-on": "^7.2.0"
   },
@@ -55,7 +55,7 @@
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^11.0.0 || ^12.0.0",
     "expo-image-picker": "^14.0.0 || ^15.0.0",
-    "react": "^17.0.2 || ^18.0.0",
+    "react": "^19.0.0",
     "react-native": "*",
     "uploadthing": "^7.2.0"
   },

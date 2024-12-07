@@ -43,6 +43,7 @@ yarn-error.log*
 
 # turbo
 .turbo
+.cache
 
 # cf
 .wrangler
