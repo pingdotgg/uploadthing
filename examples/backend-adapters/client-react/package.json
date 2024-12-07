@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "start": "vite preview"
+    "start": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@uploadthing/react": "7.1.2",
