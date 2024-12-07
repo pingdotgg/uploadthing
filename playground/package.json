@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "next build",
+    "clean": "git clean -fdx .cache .next .turbo node_modules",
     "dev": "next dev --turbopack --port 4000",
     "lint": "eslint",
     "typecheck": "tsc"

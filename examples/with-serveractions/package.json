@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "clean": "git clean -xdf .next node_modules",
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit"

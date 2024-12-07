@@ -1,17 +1,33 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "module": "Preserve",
-    "strict": true,
-    "jsx": "preserve",
-    "allowJs": true,
+    /* Base Options: */
     "skipLibCheck": true,
-    "noEmit": true,
-    "incremental": true,
+    "target": "es2022",
+    "allowJs": true,
+    "moduleDetection": "force",
     "isolatedModules": true,
-    "plugins": [{ "name": "next" }]
+
+    /* Strictness */
+    "strict": true,
+    // "noUncheckedIndexedAccess": true,
+    "checkJs": true,
+    "allowImportingTsExtensions": true,
+
+    /* Bundled projects */
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "noEmit": true,
+    "module": "Preserve",
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+    "incremental": true,
+    "tsBuildInfoFile": ".cache/tsbuildinfo.json"
   },
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "*.js",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }
