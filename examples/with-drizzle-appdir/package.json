@@ -1,5 +1,6 @@
 {
   "name": "@example/with-drizzle-appdir",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "pnpm db:push && next build",

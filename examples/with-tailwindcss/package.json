@@ -1,5 +1,6 @@
 {
   "name": "@example/with-tailwindcss",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",

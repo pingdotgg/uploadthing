@@ -1,5 +1,6 @@
 {
   "name": "@example/with-clerk-pagesdir",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "next build",

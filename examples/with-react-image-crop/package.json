@@ -1,5 +1,6 @@
 {
   "name": "@example/image-cropping",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
