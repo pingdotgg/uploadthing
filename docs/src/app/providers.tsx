@@ -5,10 +5,12 @@ import { usePathname } from "next/navigation";
 import { ThemeProvider, useTheme } from "next-themes";
 
 function usePrevious<T>(value: T) {
-  const [previous, setPrevious] = useState<T>(value);
+  const [current, setCurrent] = useState(value);
+  const [previous, setPrevious] = useState(current);
 
-  if (value !== previous) {
-    setPrevious(value);
+  if (value !== current) {
+    setPrevious(current);
+    setCurrent(value);
   }
 
   return previous;
@@ -42,7 +44,7 @@ export const AppContext = createContext<{ previousPathname?: string }>({});
 
 export function Providers({ children }: { children: React.ReactNode }) {
   let pathname = usePathname();
-  let previousPathname = usePrevious(pathname);
+  const previousPathname = usePrevious(pathname);
 
   return (
     <AppContext.Provider value={{ previousPathname }}>
