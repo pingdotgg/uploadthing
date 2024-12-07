@@ -16,7 +16,7 @@
     "uploadthing": "7.4.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "14.2.3",
+    "@next/bundle-analyzer": "15.0.4",
     "@types/node": "^20.14.0",
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.1",

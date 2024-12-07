@@ -17,7 +17,7 @@
     "@heroicons/react": "^2.1.3",
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
-    "@next/mdx": "^14.2.11",
+    "@next/mdx": "^15.0.4",
     "@scalar/api-reference-react": "^0.3.37",
     "@shikijs/transformers": "^1.17.5",
     "@sindresorhus/slugify": "^2.1.1",
