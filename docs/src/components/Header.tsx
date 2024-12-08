@@ -10,7 +10,7 @@ import { MobileSearch, Search } from "@/components/Search";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { socials } from "@/site-config";
 import clsx from "clsx";
-import { motion, MotionValue, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform } from "motion/react";
 import { Link } from "next-view-transitions";
 
 function TopLevelNavItem({

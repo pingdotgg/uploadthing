@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSectionStore } from "@/components/SectionProvider";
 import { Tag, TagColor } from "@/components/Tag";
 import { remToPx } from "@/lib/remToPx";
-import { useInView } from "framer-motion";
+import { useInView } from "motion/react";
 import { Link } from "next-view-transitions";
 
 import { AnchorIcon } from "./icons";
@@ -89,7 +89,7 @@ export function Heading<Level extends 2 | 3>({
 }) {
   level = level ?? (2 as Level);
   let Component = `h${level}` as "h2" | "h3";
-  let ref = useRef<HTMLHeadingElement>(null);
+  let ref = useRef<HTMLHeadingElement | null>(null);
   let registerHeading = useSectionStore((s) => s.registerHeading);
 
   let inView = useInView(ref, {

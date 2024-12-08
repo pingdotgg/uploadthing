@@ -1,9 +1,10 @@
 {
   "name": "@example/with-clerk-appdir",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "next build",
-    "clean": "git clean -xdf .next node_modules",
+    "clean": "git clean -xdf .cache .next .turbo node_modules",
     "dev": "next dev",
     "lint": "SKIP_ENV_VALIDATION=true next lint",
     "start": "next start",
@@ -13,22 +14,22 @@
     "@clerk/nextjs": "^4.29.8",
     "@t3-oss/env-nextjs": "^0.10.1",
     "@uploadthing/react": "7.1.2",
-    "next": "14.2.11",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "next": "15.0.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "uploadthing": "7.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/eslint": "^8.56.4",
-    "@types/node": "^20.14.0",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
+    "@types/node": "^22.10.1",
+    "@types/react": "19.0.1",
+    "@types/react-dom": "19.0.1",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.1",
-    "typescript": "^5.5.2"
+    "eslint-config-next": "^15.0.4",
+    "typescript": "^5.7.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.0"

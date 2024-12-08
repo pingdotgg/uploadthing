@@ -8,6 +8,9 @@ node_modules
 # testing
 coverage
 
+# astro
+.astro
+
 # next.js
 .next/
 out/
@@ -43,6 +46,7 @@ yarn-error.log*
 
 # turbo
 .turbo
+.cache
 
 # cf
 .wrangler

@@ -8,7 +8,7 @@ import { LogoBlob, LogoText } from "@/components/Logo";
 import { Navigation } from "@/components/Navigation";
 import { SectionProvider, type Section } from "@/components/SectionProvider";
 import { XMarkIcon } from "@heroicons/react/20/solid";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Link } from "next-view-transitions";
 
 const PreviewBanner = (props: {

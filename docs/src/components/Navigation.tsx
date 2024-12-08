@@ -8,7 +8,7 @@ import { Tag } from "@/components/Tag";
 import { remToPx } from "@/lib/remToPx";
 import { NavGroup, navigation } from "@/site-config";
 import clsx from "clsx";
-import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent } from "motion/react";
 import { Link } from "next-view-transitions";
 
 function useInitialValue<T>(value: T, condition = true) {
