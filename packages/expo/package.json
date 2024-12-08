@@ -42,27 +42,22 @@
     "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^5.6.2",
     "eslint": "^8.57.0",
-    "expo-constants": "^15.4.5",
-    "expo-document-picker": "^12.0.1",
-    "expo-image-picker": "^15.0.4",
+    "expo-constants": "^17.0.3",
+    "expo-document-picker": "^13.0.1",
+    "expo-image-picker": "^16.0.3",
     "react": "19.0.0",
-    "react-native": "^0.74.1",
+    "react-native": "^0.77.0-rc.1",
     "typescript": "^5.7.2",
     "uploadthing": "workspace:*",
     "wait-on": "^7.2.0"
   },
   "peerDependencies": {
-    "expo-constants": "^15.4.5",
-    "expo-document-picker": "^11.0.0 || ^12.0.0 || ^13.0.0",
-    "expo-image-picker": "^14.0.0 || ^15.0.0 || ^16.0.0",
-    "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
+    "expo-constants": "*",
+    "expo-document-picker": "*",
+    "expo-image-picker": "*",
+    "react": "*",
     "react-native": "*",
     "uploadthing": "^7.2.0"
-  },
-  "peerDependenciesMeta": {
-    "@uploadthing/mime-types": {
-      "optional": true
-    }
   },
   "eslintConfig": {
     "root": true,

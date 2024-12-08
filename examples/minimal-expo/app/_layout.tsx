@@ -6,6 +6,7 @@ import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { cssInterop } from "nativewind";
+import { Text } from "react-native";
 import {
   GestureHandlerRootView,
   RectButton,
@@ -16,19 +17,19 @@ import { TRPCProvider } from "~/lib/trpc";
 export default function RootLayout() {
   return (
     <TRPCProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: "#27272a",
-            },
-            contentStyle: {
-              backgroundColor: "#18181b",
-            },
-            headerTintColor: "#fff",
-          }}
-        ></Stack>
-      </GestureHandlerRootView>
+      {/* <GestureHandlerRootView style={{ flex: 1 }}> */}
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: "#27272a",
+          },
+          contentStyle: {
+            backgroundColor: "#18181b",
+          },
+          headerTintColor: "#fff",
+        }}
+      ></Stack>
+      {/* </GestureHandlerRootView> */}
 
       <StatusBar />
     </TRPCProvider>
