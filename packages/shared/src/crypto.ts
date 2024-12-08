@@ -111,27 +111,10 @@ export const generateKey = (
     const encodedFileSeed = new SQIds({ alphabet, minLength: 36 }).encode([
       Math.abs(Hash.string(hashParts)),
     ]);
-    const encodedAppId = new SQIds({ alphabet, minLength: 12 }).encode([
-      Math.abs(Hash.string(appId)),
-    ]);
 
     // Concatenate them
-    return encodedAppId + encodedFileSeed;
+    return appId + encodedFileSeed;
   }).pipe(Micro.withTrace("generateKey"));
-
-// Verify that the key was generated with the same appId
-export const verifyKey = (key: string, appId: string) =>
-  Micro.sync(() => {
-    const alphabet = shuffle(defaultOptions.alphabet, appId);
-    const expectedPrefix = new SQIds({ alphabet, minLength: 12 }).encode([
-      Math.abs(Hash.string(appId)),
-    ]);
-
-    return key.startsWith(expectedPrefix);
-  }).pipe(
-    Micro.withTrace("verifyKey"),
-    Micro.orElseSucceed(() => false),
-  );
 
 export const generateSignedURL = (
   url: string | URL,
