@@ -136,7 +136,7 @@ export const matchFileType = (
   return Micro.succeed(type);
 };
 
-export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
+export const FILESIZE_UNITS = ["B", "KB", "MB", "GB", "TB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = (
   fileSize: FileSize,
@@ -163,8 +163,8 @@ export const bytesToFileSize = (bytes: number) => {
     return "0B";
   }
 
-  const i = Math.floor(Math.log(bytes) / Math.log(1000));
-  return `${(bytes / Math.pow(1000, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
 };
 
 export async function safeParseJSON<T>(
