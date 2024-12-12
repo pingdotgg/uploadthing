@@ -95,16 +95,6 @@ export const createRequestHandler = <TRouter extends FileRouter>(
     const isDevelopment = yield* IsDevelopment;
     const routerConfig = yield* extractRouterConfig(opts.router);
 
-    // const isDev = yield* Config.boolean("uploadthing.isDev");
-
-    yield* Effect.logDebug("isDev").pipe(
-      Effect.annotateLogs({
-        // raw: isDev,
-        resolved: isDevelopment,
-        nodeEnv: process.env.NODE_ENV,
-      }),
-    );
-
     const handleDaemon = (() => {
       if (opts.config?.handleDaemonPromise) {
         return opts.config.handleDaemonPromise;
