@@ -10,7 +10,9 @@ import { uploadRouter } from "./router";
 
 const app = express();
 app.use(cors());
-app.get("/api", (req, res) => res.send("Hello from Express!"));
+app.get("/api", (req, res) => {
+  res.send("Hello from Express!");
+});
 
 app.use(
   "/api/uploadthing",

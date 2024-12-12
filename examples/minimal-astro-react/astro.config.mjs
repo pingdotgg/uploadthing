@@ -5,7 +5,7 @@ import { defineConfig } from "astro/config";
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
-  output: "hybrid",
+  output: "server",
   adapter: nodejs({
     mode: "middleware",
   }),

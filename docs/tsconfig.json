@@ -19,6 +19,7 @@
     "jsx": "preserve",
     "plugins": [{ "name": "next" }],
     "incremental": true,
+    "tsBuildInfoFile": ".cache/tsbuildinfo.json",
 
     /* Path Aliases */
     "baseUrl": ".",

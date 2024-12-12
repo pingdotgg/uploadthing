@@ -9,7 +9,7 @@ const specUrl = "https://api.uploadthing.com/openapi-spec.json";
 // const specUrl = "https://api.ut-staging.com/openapi-spec.json";
 
 const useMutationObserver = (
-  ref: RefObject<HTMLElement>,
+  ref: RefObject<HTMLElement | null>,
   callback: (...args: Parameters<MutationCallback>) => boolean,
   options = {
     attributes: true,
@@ -49,7 +49,7 @@ export default function ScalarApiRef() {
 
   const [loaded, setLoaded] = useState(false);
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   useMutationObserver(ref, (args) => {
     if (
       args.filter(
