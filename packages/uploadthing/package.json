@@ -151,7 +151,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@effect/experimental": "^0.33.7",
     "@effect/platform": "0.69.24",
+    "@effect/platform-node": "0.64.26",
     "@standard-schema/spec": "1.0.0-beta.3",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",

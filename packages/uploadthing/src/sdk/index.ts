@@ -41,7 +41,7 @@ export class UTApi {
   private defaultKeyType: "fileKey" | "customId";
   private runtime: ManagedRuntime<
     HttpClient.HttpClient | FetchHttpClient.Fetch,
-    UploadThingError
+    UploadThingError | any
   >;
   constructor(private opts?: UTApiOptions) {
     // Assert some stuff

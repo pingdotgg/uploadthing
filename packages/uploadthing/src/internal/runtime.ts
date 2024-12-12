@@ -1,4 +1,6 @@
+import { DevTools } from "@effect/experimental";
 import { FetchHttpClient, Headers } from "@effect/platform";
+import { NodeSocket } from "@effect/platform-node";
 import * as FiberRef from "effect/FiberRef";
 import * as Layer from "effect/Layer";
 import * as ManagedRuntime from "effect/ManagedRuntime";
@@ -20,12 +22,17 @@ export const makeRuntime = (fetch: FetchEsque, config: unknown) => {
     ),
   );
 
+  const DevToolsLive = DevTools.layerSocket.pipe(
+    Layer.provide(NodeSocket.layerNet({ port: 34437 })),
+  );
+
   const layer = Layer.provide(
     Layer.mergeAll(
       withLogFormat,
       withMinimalLogLevel,
       fetchHttpClient,
       withRedactedHeaders,
+      DevToolsLive,
     ),
     Layer.setConfigProvider(configProvider(config)),
   );
