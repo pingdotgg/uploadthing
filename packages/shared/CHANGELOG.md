@@ -1,5 +1,11 @@
 # @uploadthing/shared
 
+## 7.1.3
+
+### Patch Changes
+
+- [#1095](https://github.com/pingdotgg/uploadthing/pull/1095) [`1defbc7`](https://github.com/pingdotgg/uploadthing/commit/1defbc78deb6f4d1c82f45c9e937ec3f73dd2400) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect deps
+
 ## 7.1.2
 
 ### Patch Changes
