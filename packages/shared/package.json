@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "7.1.2",
+  "version": "7.1.3",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.10.15",
+    "effect": "3.11.5",
     "sqids": "^0.3.0"
   },
   "devDependencies": {
