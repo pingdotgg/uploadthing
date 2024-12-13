@@ -1,5 +1,6 @@
 import { unsafeCoerce } from "effect/Function";
 import * as Micro from "effect/Micro";
+import { hasProperty, isRecord } from "effect/Predicate";
 
 import type { FetchError } from "@uploadthing/shared";
 import { FetchContext, fetchEff, UploadThingError } from "@uploadthing/shared";
@@ -37,13 +38,27 @@ const uploadWithProgress = (
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
-      resume(
-        xhr.status >= 200 && xhr.status < 300
-          ? Micro.succeed(xhr.response)
-          : Micro.die(
-              `XHR failed ${xhr.status} ${xhr.statusText} - ${JSON.stringify(xhr.response)}`,
-            ),
-      );
+      if (xhr.status >= 200 && xhr.status < 300 && isRecord(xhr.response)) {
+        if (hasProperty(xhr.response, "error")) {
+          resume(
+            new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: String(xhr.response.error),
+              data: xhr.response as never,
+            }),
+          );
+        } else {
+          resume(Micro.succeed(xhr.response));
+        }
+      } else {
+        resume(
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: `XHR failed ${xhr.status} ${xhr.statusText}`,
+            data: xhr.response as never,
+          }),
+        );
+      }
     });
 
     // Is there a case when the client would throw and
