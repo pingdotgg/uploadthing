@@ -188,7 +188,7 @@
     "fastify": "*",
     "h3": "*",
     "next": "*",
-    "tailwindcss": "3.4.16"
+    "tailwindcss": ""
   },
   "peerDependenciesMeta": {
     "next": {
