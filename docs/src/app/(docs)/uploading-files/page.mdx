@@ -113,7 +113,7 @@ this process easier in the future.
   in mind that this adds extra latency to your uploads.
 </Note>
 
-<Tabs tabs={["JavaScript", "Python", "PHP", "Go"]}>
+<Tabs tabs={["JavaScript", "Python", "PHP", "Go", "Rust"]}>
   <Tab>
 
 ```ts
@@ -305,6 +305,62 @@ func generateKey(fileSeed string, appId string) string {
 
 	return encodedAppId + fileSeed
 }
+```
+
+  </Tab>
+  <Tab>
+
+```rust
+fn djb2_hash(s: &str) -> i32 {
+	let mut h: i64 = 5381;
+	for &byte in s.as_bytes().iter().rev() {
+        	h = (h * 33) ^ (byte as i64);
+            	// Simulate 32-bit integer overflow
+            	h &= 0xFFFFFFFF;
+        }
+        // Convert to signed 32-bit integer with the same bit manipulation
+        h = (h & 0xBFFFFFFF) | ((h >> 1) & 0x40000000);
+        if h >= 0x80000000 {
+        	h -= 0x100000000;
+        }
+	h as i32
+}
+
+fn shuffle(input: &str, seed: &str) -> String {
+	let mut chars: Vec<char> = input.chars().collect();
+        let seed_num = djb2_hash(seed);
+        for i in 0..chars.len() {
+            	let j = ((seed_num % (i as i32 + 1)) + i as i32) as usize % chars.len();
+            	let temp = chars[i];
+            	chars[i] = chars[j];
+            	chars[j] = temp;
+        }
+        chars.iter().collect()
+}
+fn generate_file_key(app_id: String) -> String {
+	let app_hash = djb2_hash(&app_id);
+	let alphabet: Vec<char> = shuffle(sqids::DEFAULT_ALPHABET, &app_id).chars().collect();
+
+	// https://sqids.org/rust
+	let sqids = sqids::Sqids::builder()
+		.alphabet(alphabet)
+		.min_length(12)
+		.build()
+		.expect("Could not create sqid builder");
+        let encoded_app_id = sqids.encode(&vec![app_hash.abs() as u64]).expect("Could not encode sqid");
+
+	// https://github.com/uuid-rs/uuid
+	let file_seed = uuid::Uuid::new_v4().to_string();
+
+	// We use a base64 encoding here to ensure the file seed is url safe, but
+  	// you can do this however you want
+	// https://github.com/marshallpierce/rust-base64
+	use base64::prelude::*;
+        let encoded_file_seed = BASE64_URL_SAFE.encode(file_seed.as_bytes());
+
+	format!("{}{}", encoded_app_id, encoded_file_seed)
+}
+
 ```
 
   </Tab>
