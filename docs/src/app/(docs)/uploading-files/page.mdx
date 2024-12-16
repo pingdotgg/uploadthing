@@ -348,16 +348,16 @@ fn generate_file_key(app_id: String) -> String {
 		.build()
 		.expect("Could not create sqid builder");
         let encoded_app_id = sqids.encode(&vec![app_hash.abs() as u64]).expect("Could not encode sqid");
-        
+
 	// https://github.com/uuid-rs/uuid
 	let file_seed = uuid::Uuid::new_v4().to_string();
-	
+
 	// We use a base64 encoding here to ensure the file seed is url safe, but
   	// you can do this however you want
 	// https://github.com/marshallpierce/rust-base64
 	use base64::prelude::*;
         let encoded_file_seed = BASE64_URL_SAFE.encode(file_seed.as_bytes());
-        
+
 	format!("{}{}", encoded_app_id, encoded_file_seed)
 }
 
