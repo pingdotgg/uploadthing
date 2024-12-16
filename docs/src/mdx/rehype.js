@@ -39,6 +39,7 @@ function rehypeShiki() {
         "diff",
         "go",
         "php",
+        "rust",
       ],
     });
 
