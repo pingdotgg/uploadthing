@@ -225,7 +225,7 @@ export type GenerateUploaderOptions = {
    * }
    * ```
    */
-  fetch?: FetchEsque;
+  fetch?: FetchEsque | undefined;
   /**
    * The uploadthing package that is making this request
    * @example "@uploadthing/react"
