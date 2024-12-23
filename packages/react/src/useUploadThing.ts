@@ -63,9 +63,9 @@ export function __useUploadThingInternal<
   opts?: UseUploadthingProps<TRouter[TEndpoint]>,
 ) {
   const { uploadFiles, routeRegistry } = genUploader<TRouter>({
+    fetch,
     url,
     package: "@uploadthing/react",
-    fetch,
   });
 
   const [isUploading, setUploading] = useState(false);

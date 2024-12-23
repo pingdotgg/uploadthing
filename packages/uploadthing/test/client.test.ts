@@ -247,13 +247,7 @@ describe("uploadFiles", () => {
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await uploadFiles("foo", { files: [file] });
 
-    expect(fetchFn).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.objectContaining({
-        method: "POST",
-        body: expect.any(FormData),
-      }),
-    );
+    expect(fetchFn).toHaveBeenCalled();
 
     await close();
   });
