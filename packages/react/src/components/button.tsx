@@ -111,6 +111,7 @@ export function UploadButton<
   const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
     resolveMaybeUrlArg($props.url),
     $props.endpoint,
+    $props.fetch ?? globalThis.fetch,
     {
       signal: acRef.current.signal,
       headers: $props.headers,

@@ -1,6 +1,7 @@
 import Constants from "expo-constants";
 
 import { generateReactHelpers } from "@uploadthing/react/native";
+import type { FetchEsque } from "@uploadthing/shared";
 import { warnIfInvalidPeerDependency } from "@uploadthing/shared";
 import { version as uploadthingClientVersion } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/types";
@@ -20,6 +21,25 @@ export interface GenerateTypedHelpersOptions {
    * @default (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? ExpoConstants.debuggerHost) + "/api/uploadthing"
    */
   url?: URL | string;
+  /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
 }
 
 export const generateReactNativeHelpers = <TRouter extends FileRouter>(
@@ -48,9 +68,16 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
     );
   }
 
-  const vanillaHelpers = generateReactHelpers<TRouter>({ ...initOpts, url });
-  const useImageUploader = GENERATE_useImageUploader<TRouter>({ url });
-  const useDocumentUploader = GENERATE_useDocumentUploader<TRouter>({ url });
+  const fetch = initOpts?.fetch ?? globalThis.fetch;
+  const opts = {
+    ...initOpts,
+    url,
+    fetch,
+  };
+
+  const vanillaHelpers = generateReactHelpers<TRouter>(opts);
+  const useImageUploader = GENERATE_useImageUploader<TRouter>(opts);
+  const useDocumentUploader = GENERATE_useDocumentUploader<TRouter>(opts);
 
   return { ...vanillaHelpers, useImageUploader, useDocumentUploader };
 };

@@ -1,8 +1,8 @@
 import { unsafeCoerce } from "effect/Function";
 import * as Micro from "effect/Micro";
 
-import type { FetchError } from "@uploadthing/shared";
-import { FetchContext, fetchEff, UploadThingError } from "@uploadthing/shared";
+import type { FetchContext, FetchError } from "@uploadthing/shared";
+import { fetchEff, UploadThingError } from "@uploadthing/shared";
 
 import { version } from "../../package.json";
 import type {
@@ -119,7 +119,8 @@ export const uploadFilesInternal = <
   opts: UploadFilesOptions<TRouter[TEndpoint]>,
 ): Micro.Micro<
   ClientUploadedFileData<TServerOutput>[],
-  UploadThingError | FetchError
+  UploadThingError | FetchError,
+  FetchContext
 > => {
   // classic service right here
   const reportEventToUT = createUTReporter({
@@ -132,16 +133,17 @@ export const uploadFilesInternal = <
   const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
   let totalLoaded = 0;
 
-  return reportEventToUT("upload", {
-    input: "input" in opts ? opts.input : null,
-    files: opts.files.map((f) => ({
-      name: f.name,
-      size: f.size,
-      type: f.type,
-      lastModified: f.lastModified,
-    })),
-  }).pipe(
-    Micro.flatMap((presigneds) =>
+  return Micro.flatMap(
+    reportEventToUT("upload", {
+      input: "input" in opts ? opts.input : null,
+      files: opts.files.map((f) => ({
+        name: f.name,
+        size: f.size,
+        type: f.type,
+        lastModified: f.lastModified,
+      })),
+    }),
+    (presigneds) =>
       Micro.forEach(
         presigneds,
         (presigned, i) =>
@@ -174,7 +176,5 @@ export const uploadFilesInternal = <
           ),
         { concurrency: 6 },
       ),
-    ),
-    Micro.provideService(FetchContext, window.fetch),
   );
 };
