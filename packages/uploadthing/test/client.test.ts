@@ -6,7 +6,10 @@ import { describe, expect, expectTypeOf, it as rawIt, vi } from "vitest";
 
 import { genUploader } from "../src/client";
 import { createRouteHandler, createUploadthing } from "../src/express";
-import type { ClientUploadedFileData } from "../src/types";
+import type {
+  ClientUploadedFileData,
+  GenerateUploaderOptions,
+} from "../src/types";
 import {
   appUrlPattern,
   doNotExecute,
@@ -20,7 +23,9 @@ import {
   UTFS_IO_URL,
 } from "./__test-helpers";
 
-export const setupUTServer = async () => {
+export const setupUTServer = async (
+  clientOpts?: Partial<GenerateUploaderOptions>,
+) => {
   const f = createUploadthing({
     errorFormatter(err) {
       return { message: err.message };
@@ -90,6 +95,7 @@ export const setupUTServer = async () => {
   const { uploadFiles } = genUploader<typeof router>({
     package: "vitest",
     url: `http://localhost:${port}`,
+    ...clientOpts,
   });
 
   return {
@@ -224,6 +230,30 @@ describe("uploadFiles", () => {
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
+
+    await close();
+  });
+
+  it("uses custom fetch implementation if set", async () => {
+    const fetchFn = vi.fn();
+
+    const { uploadFiles, close } = await setupUTServer({
+      fetch: (input, init) => {
+        fetchFn(input, init);
+        return window.fetch(input, init);
+      },
+    });
+
+    const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+    await uploadFiles("foo", { files: [file] });
+
+    expect(fetchFn).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        method: "POST",
+        body: expect.any(FormData),
+      }),
+    );
 
     await close();
   });
