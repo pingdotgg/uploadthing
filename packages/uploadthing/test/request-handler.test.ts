@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { signPayload } from "@uploadthing/shared";
 
-import { UploadedFileData } from "../src/internal/shared-schemas";
+import { UploadedFileData } from "../src/_internal/shared-schemas";
 import { createRouteHandler, createUploadthing } from "../src/server";
 import {
   baseHeaders,

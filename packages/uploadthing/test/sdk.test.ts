@@ -10,7 +10,7 @@ import {
   it as rawIt,
 } from "vitest";
 
-import { UploadThingToken } from "../src/internal/shared-schemas";
+import { UploadThingToken } from "../src/_internal/shared-schemas";
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {

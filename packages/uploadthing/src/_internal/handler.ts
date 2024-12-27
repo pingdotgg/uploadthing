@@ -47,9 +47,11 @@ import {
 import { UTFiles } from "./types";
 import type { AdapterFnArgs, AnyFileRoute, UTEvents } from "./types";
 
-export class AdapterArguments extends Context.Tag(
-  "uploadthing/AdapterArguments",
-)<AdapterArguments, AdapterFnArgs<any, any, any>>() {}
+export class AdapterArguments
+  extends /** #__PURE__ */ Context.Tag("uploadthing/AdapterArguments")<
+    AdapterArguments,
+    AdapterFnArgs<any, any, any>
+  >() {}
 
 export const makeAdapterHandler = <Args extends any[]>(
   makeAdapterArgs: (

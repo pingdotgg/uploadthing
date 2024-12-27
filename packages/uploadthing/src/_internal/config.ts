@@ -19,7 +19,7 @@ export { version as UPLOADTHING_VERSION } from "../../package.json";
  * process.env.UPLOADTHING_TOKEN = "foo"
  * Config.string("token"); // Config<"foo">
  */
-const envProvider = ConfigProvider.fromEnv().pipe(
+const envProvider = /** #__PURE__ */ ConfigProvider.fromEnv().pipe(
   ConfigProvider.orElse(() =>
     ConfigProvider.fromMap(
       new Map(
@@ -50,7 +50,7 @@ export const configProvider = (options: unknown) =>
     ConfigProvider.orElse(() => envProvider),
   );
 
-export const IsDevelopment = Config.boolean("isDev").pipe(
+export const IsDevelopment = /** #__PURE__ */ Config.boolean("isDev").pipe(
   Config.orElse(() =>
     Config.succeed(
       typeof process !== "undefined" ? process.env.NODE_ENV : undefined,
@@ -59,7 +59,10 @@ export const IsDevelopment = Config.boolean("isDev").pipe(
   Config.withDefault(false),
 );
 
-export const UTToken = S.Config("token", UploadThingToken).pipe(
+export const UTToken = /** #__PURE__ */ S.Config(
+  "token",
+  UploadThingToken,
+).pipe(
   Effect.catchTags({
     ConfigError: (e) =>
       new UploadThingError({
@@ -73,13 +76,13 @@ export const UTToken = S.Config("token", UploadThingToken).pipe(
   }),
 );
 
-export const ApiUrl = Config.string("apiUrl").pipe(
+export const ApiUrl = /** #__PURE__ */ Config.string("apiUrl").pipe(
   Config.withDefault("https://api.uploadthing.com"),
   Config.mapAttempt((_) => new URL(_)),
   Config.map((url) => url.href.replace(/\/$/, "")),
 );
 
-export const IngestUrl = Effect.gen(function* () {
+export const IngestUrl = /** #__PURE__ */ Effect.gen(function* () {
   const { regions, ingestHost } = yield* UTToken;
   const region = regions[0]; // Currently only support 1 region per app
 

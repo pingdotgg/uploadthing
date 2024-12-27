@@ -15,7 +15,7 @@ import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
 import { describe, expect, expectTypeOf, vi } from "vitest";
 
-import { configProvider } from "../src/internal/config";
+import { configProvider } from "../src/_internal/config";
 import {
   baseHeaders,
   createApiUrl,

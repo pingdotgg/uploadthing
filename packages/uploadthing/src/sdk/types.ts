@@ -14,7 +14,7 @@ import type {
   Time,
 } from "@uploadthing/shared";
 
-import type { LogFormat } from "../internal/logger";
+import type { LogFormat } from "../_internal/logger";
 import type { UploadedFileData } from "../types";
 
 export interface UTApiOptions {

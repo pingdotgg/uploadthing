@@ -15,8 +15,8 @@ import type {
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 
-import { IngestUrl, UTToken } from "../internal/config";
-import { uploadWithoutProgress } from "../internal/upload.server";
+import { IngestUrl, UTToken } from "../_internal/config";
+import { uploadWithoutProgress } from "../_internal/upload.server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
