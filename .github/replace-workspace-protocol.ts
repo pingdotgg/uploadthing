@@ -34,11 +34,16 @@ await Promise.all(
 const workspacePkg = await Bun.file("package.json").json();
 for (const dep in workspacePkg.dependencies) {
   if (dep in packageVersions) {
-    workspacePkg.dependencies[dep] = packageVersions[dep];
+    if (workspacePkg.dependencies[dep].startsWith("workspace:")) {
+      workspacePkg.dependencies[dep] = packageVersions[dep];
+    }
   }
 }
 for (const dep in workspacePkg.peerDependencies) {
-  if (dep in packageVersions) {
+  if (
+    dep in packageVersions &&
+    workspacePkg.peerDependencies[dep].startsWith("workspace:")
+  ) {
     workspacePkg.peerDependencies[dep] = packageVersions[dep];
   }
 }
