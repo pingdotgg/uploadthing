@@ -65,7 +65,8 @@
   "pnpm": {
     "patchedDependencies": {
       "msw@2.2.13": "patches/msw@2.2.13.patch",
-      "@mswjs/interceptors@0.26.15": "patches/@mswjs__interceptors@0.26.15.patch"
+      "@mswjs/interceptors@0.26.15": "patches/@mswjs__interceptors@0.26.15.patch",
+      "bunchee@6.1.2": "patches/bunchee@6.1.2.patch"
     }
   }
 }

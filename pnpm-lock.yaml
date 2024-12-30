@@ -8,6 +8,9 @@ patchedDependencies:
   '@mswjs/interceptors@0.26.15':
     hash: b4i3mfjisdgapabfrhqgz5r23e
     path: patches/@mswjs__interceptors@0.26.15.patch
+  bunchee@6.1.2:
+    hash: zsxtdggzsv4wyktgrmbmvae3om
+    path: patches/bunchee@6.1.2.patch
   msw@2.2.13:
     hash: mpkjv35lscrawpqthnrnago5ai
     path: patches/msw@2.2.13.patch
@@ -1331,7 +1334,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^6.1.2
-        version: 6.1.2(typescript@5.6.2)
+        version: 6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1370,7 +1373,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^6.1.2
-        version: 6.1.2(typescript@5.6.2)
+        version: 6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1459,7 +1462,7 @@ importers:
         version: 2.1.2(@vitest/spy@2.1.2)(playwright@1.45.0)(typescript@5.6.2)(vite@5.4.8(@types/node@20.16.11)(lightningcss@1.28.1)(terser@5.34.1))(vitest@2.1.2)
       bunchee:
         specifier: ^6.1.2
-        version: 6.1.2(typescript@5.6.2)
+        version: 6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2)
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
@@ -1511,7 +1514,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^6.1.2
-        version: 6.1.2(typescript@5.6.2)
+        version: 6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1661,7 +1664,7 @@ importers:
         version: 1.20.3
       bunchee:
         specifier: ^6.1.2
-        version: 6.1.2(typescript@5.6.2)
+        version: 6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
@@ -1728,7 +1731,7 @@ importers:
         version: link:../../tooling/tsconfig
       bunchee:
         specifier: ^6.1.2
-        version: 6.1.2(typescript@5.6.2)
+        version: 6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2)
       concurrently:
         specifier: ^8.2.2
         version: 8.2.2
@@ -27986,7 +27989,7 @@ snapshots:
       '@types/node': 20.12.14
       '@types/ws': 8.5.10
 
-  bunchee@6.1.2(typescript@5.6.2):
+  bunchee@6.1.2(patch_hash=zsxtdggzsv4wyktgrmbmvae3om)(typescript@5.6.2):
     dependencies:
       '@rollup/plugin-commonjs': 28.0.1(rollup@4.29.1)
       '@rollup/plugin-json': 6.1.0(rollup@4.29.1)
