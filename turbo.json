@@ -3,14 +3,13 @@
   "ui": "tui",
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
-    "NODE_ENV",
     "UPLOADTHING_TOKEN",
     "UPLOADTHING_TEST_TOKEN",
     "EXPO_PUBLIC_SERVER_ORIGIN",
     "UPLOADTHING_API_URL",
     "UPLOADTHING_INGEST_URL"
   ],
-  "globalPassThroughEnv": ["VERCEL_URL", "VERCEL_ENV", "CI"],
+  "globalPassThroughEnv": ["VERCEL_URL", "VERCEL_ENV", "CI", "NODE_ENV"],
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]
