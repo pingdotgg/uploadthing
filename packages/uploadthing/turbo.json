@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "env": ["!NODE_ENV"],
+      "passThroughEnv": ["!NODE_ENV"],
       "outputs": [
         "client/**",
         "effect-platform/**",
