@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@uploadthing/vue": "7.1.4",
-    "uploadthing": "7.4.2",
+    "uploadthing": "7.4.3",
     "vue": "^3.4.21"
   },
   "devDependencies": {
