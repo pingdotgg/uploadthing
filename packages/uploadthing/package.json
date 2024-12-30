@@ -1,6 +1,6 @@
 {
   "name": "uploadthing",
-  "version": "7.4.3",
+  "version": "7.4.4",
   "type": "module",
   "sideEffects": false,
   "engines": {
