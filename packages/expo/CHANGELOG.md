@@ -1,5 +1,15 @@
 # @uploadthing/expo
 
+## 7.1.4
+
+### Patch Changes
+
+- [#1103](https://github.com/pingdotgg/uploadthing/pull/1103) [`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: tidy up ranges for peer dependencies
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/react@7.1.4
+  - @uploadthing/shared@7.1.4
+
 ## 7.1.3
 
 ### Patch Changes

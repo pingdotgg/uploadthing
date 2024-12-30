@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/vue",
-  "version": "7.1.3",
+  "version": "7.1.4",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",

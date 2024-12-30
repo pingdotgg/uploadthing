@@ -1,5 +1,11 @@
 # @uploadthing/mime-types
 
+## 0.3.3
+
+### Patch Changes
+
+- [#1103](https://github.com/pingdotgg/uploadthing/pull/1103) [`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: tidy up ranges for peer dependencies
+
 ## 0.3.2
 
 ### Patch Changes
