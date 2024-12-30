@@ -1,5 +1,14 @@
 # @uploadthing/solid
 
+## 7.1.5
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+- Updated dependencies [[`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595)]:
+  - @uploadthing/shared@7.1.5
+
 ## 7.1.4
 
 ### Patch Changes
