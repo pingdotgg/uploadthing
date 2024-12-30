@@ -273,7 +273,7 @@ importers:
         specifier: ^5.5.2
         version: 5.6.2
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client-react:
@@ -288,7 +288,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -310,7 +310,7 @@ importers:
   examples/backend-adapters/client-vanilla:
     dependencies:
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../../packages/uploadthing
     devDependencies:
       typescript:
@@ -326,7 +326,7 @@ importers:
         specifier: 7.1.4
         version: link:../../../packages/vue
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../../packages/uploadthing
       vue:
         specifier: ^3.4.21
@@ -393,7 +393,7 @@ importers:
         specifier: ^1.7.2
         version: 1.7.2
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../../packages/uploadthing
     devDependencies:
       '@cloudflare/workers-types':
@@ -430,7 +430,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@next/bundle-analyzer':
@@ -470,7 +470,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -570,7 +570,7 @@ importers:
         specifier: ~0.19.12
         version: 0.19.12(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.23.8
@@ -601,7 +601,7 @@ importers:
         specifier: ^3.11.2
         version: 3.11.2(@parcel/watcher@2.4.1)(@types/node@22.7.5)(encoding@0.1.13)(eslint@9.14.0)(ioredis@5.3.2)(lightningcss@1.28.1)(magicast@0.3.5)(optionator@0.9.3)(rollup@4.24.0)(terser@5.34.1)(typescript@5.6.3)(vite@5.4.8(@types/node@22.7.5)(lightningcss@1.28.1)(terser@5.34.1))(vue-tsc@2.0.14(typescript@5.6.3))(webpack-sources@3.2.3)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       vue:
         specifier: ^3.4.21
@@ -625,7 +625,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -659,7 +659,7 @@ importers:
         specifier: ^1.8.23
         version: 1.8.23
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.4.3
@@ -684,7 +684,7 @@ importers:
         specifier: 7.1.4
         version: link:../../packages/svelte
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@sveltejs/adapter-auto':
@@ -730,7 +730,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.4.3
@@ -870,7 +870,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.23.8
@@ -925,7 +925,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.23.8
@@ -986,7 +986,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@remix-run/dev':
@@ -1041,7 +1041,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.23.8
@@ -1105,7 +1105,7 @@ importers:
         specifier: ^2.2.5
         version: 2.2.5(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.23.8
@@ -1190,7 +1190,7 @@ importers:
         specifier: ^2.2.1
         version: 2.3.0
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
       use-debounce:
         specifier: ^9.0.3
@@ -1233,7 +1233,7 @@ importers:
         specifier: ^11.0.5
         version: 11.0.5(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1261,7 +1261,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1292,7 +1292,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.2
+        specifier: 7.4.3
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
