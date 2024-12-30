@@ -13,7 +13,7 @@
     "next": "14.2.11",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "uploadthing": "7.4.2"
+    "uploadthing": "7.4.3"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "14.2.3",

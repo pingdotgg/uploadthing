@@ -1,5 +1,11 @@
 # uploadthing
 
+## 7.4.3
+
+### Patch Changes
+
+- [#1106](https://github.com/pingdotgg/uploadthing/pull/1106) [`15868e3`](https://github.com/pingdotgg/uploadthing/commit/15868e3f75c6c8f32d37d0e38b69a699ca519cb7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix automatic dev mode detection
+
 ## 7.4.2
 
 ### Patch Changes
