@@ -1,5 +1,12 @@
 # @uploadthing/svelte
 
+## 7.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/shared@7.1.4
+
 ## 7.1.3
 
 ### Patch Changes
