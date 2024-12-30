@@ -3,7 +3,6 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "passThroughEnv": ["!NODE_ENV"],
       "outputs": ["dist/**", "native/**", "next-ssr-plugin/**"]
     }
   }
