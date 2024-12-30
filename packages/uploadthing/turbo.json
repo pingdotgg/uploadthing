@@ -4,6 +4,7 @@
   "tasks": {
     "build": {
       "outputs": [
+        "dist/**",
         "client/**",
         "effect-platform/**",
         "express/**",
