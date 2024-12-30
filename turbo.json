@@ -3,6 +3,7 @@
   "ui": "tui",
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
+    "NODE_ENV",
     "UPLOADTHING_TOKEN",
     "UPLOADTHING_TEST_TOKEN",
     "EXPO_PUBLIC_SERVER_ORIGIN",
