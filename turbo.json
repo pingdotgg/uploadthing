@@ -9,13 +9,7 @@
     "UPLOADTHING_API_URL",
     "UPLOADTHING_INGEST_URL"
   ],
-  "globalPassThroughEnv": [
-    "VERCEL_URL",
-    "VERCEL_ENV",
-    "NODE",
-    "NODE_ENV",
-    "CI"
-  ],
+  "globalPassThroughEnv": ["VERCEL_URL", "VERCEL_ENV", "CI"],
   "tasks": {
     "topo": {
       "dependsOn": ["^topo"]

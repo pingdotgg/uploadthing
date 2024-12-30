@@ -53,6 +53,7 @@ export const configProvider = (options: unknown) =>
 export const IsDevelopment = Config.boolean("isDev").pipe(
   Config.orElse(() =>
     Config.succeed(
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
       typeof process !== "undefined" ? process.env.NODE_ENV : undefined,
     ).pipe(Config.map((_) => _ === "development")),
   ),

@@ -277,6 +277,7 @@ describe("IsDevelopment", () => {
   it.effect("is true if NODE_ENV is development", () =>
     Effect.gen(function* () {
       // @ts-expect-error - it says it's readonly but we can mutate it
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
       process.env.NODE_ENV = "development";
 
       const isDev = yield* IsDevelopment.pipe(
