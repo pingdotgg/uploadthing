@@ -205,11 +205,14 @@ export function contentDisposition(
   contentDisposition: ContentDisposition,
   fileName: string,
 ) {
+  // Normalize the filename to composed form (NFC)
+  const normalizedFileName = fileName.normalize("NFC");
+
   // Encode the filename for the legacy parameter
-  const legacyFileName = fileName.replace(/[",\\']/g, "\\$&");
+  const legacyFileName = normalizedFileName.replace(/[",\\']/g, "\\$&");
 
   //UTF-8 encode for the extended parameter (RFC 5987)
-  const utf8FileName = encodeURIComponent(fileName)
+  const utf8FileName = encodeURIComponent(normalizedFileName)
     .replace(/[')(]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
     .replace(/\*/g, "%2A");
 

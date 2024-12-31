@@ -26,4 +26,13 @@ describe("contentDisposition", () => {
       "attachment; filename=\"simple.txt\"; filename*=UTF-8''simple.txt",
     );
   });
+
+  // regresssion: https://x.com/PauloMenzs/status/1874075207436296693
+  it("handles decomposed unicode characters", () => {
+    // "CartaÌƒo" (decomposed) should be normalized to "Cartão" (composed)
+    const result = contentDisposition("attachment", "CartaÌƒo");
+    expect(result).toBe(
+      "attachment; filename=\"Cartão\"; filename*=UTF-8''Cart%C3%A3o",
+    );
+  });
 });
