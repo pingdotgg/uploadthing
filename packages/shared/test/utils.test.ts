@@ -37,15 +37,15 @@ describe("contentDisposition", () => {
     console.log(result);
     // Should be able to pass to fetch
     await expect(
-      fetch("https://example.com", {
+      fetch("https://google.com", {
         headers: {
           "Content-Disposition": result,
         },
       }),
-    ).resolves.not.toBeDefined();
+    ).resolves.toBeDefined();
 
     expect(result).toBe(
-      "attachment; filename=\"C6 - CartaÌƒo - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Cart%C3%A3o%20-%20Novembro.zip.csv",
+      "attachment; filename=\"C6 - Cartão - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Cart%C3%A3o%20-%20Novembro.zip.csv",
     );
   });
 });
