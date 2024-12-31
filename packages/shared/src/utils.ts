@@ -194,13 +194,7 @@ export function filterDefinedObjectValues<T>(
   );
 }
 
-/** construct content-disposition header according to RFC 6266 section 4.1
- * https://www.rfc-editor.org/rfc/rfc6266#section-4.1
- *
- * @example
- * contentDisposition("inline", 'my "special" file,name.pdf');
- * // => "inline; filename="my \"special\" file\,name.pdf"; filename*=UTF-8''my%20%22special%22%20file%2Cname.pdf"
- */
+/** construct content-disposition header */
 export function contentDisposition(
   contentDisposition: ContentDisposition,
   fileName: string,
