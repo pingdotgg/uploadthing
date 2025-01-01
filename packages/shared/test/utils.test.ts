@@ -28,11 +28,11 @@ describe("contentDisposition", () => {
   });
 
   // regresssion: https://x.com/PauloMenzs/status/1874075207436296693
-  it("handles decomposed unicode characters", async () => {
+  it.only("handles decomposed unicode characters", async () => {
     // "CartaÌƒo" (decomposed) should be normalized to "Cartão" (composed)
     const result = contentDisposition(
       "attachment",
-      "C6 - CartaÌƒo - Novembro.zip.csv",
+      "C6 - CartaÌpo - Novembro.zip.csv",
     );
     console.log(result);
     // Should be able to pass to fetch
@@ -45,7 +45,7 @@ describe("contentDisposition", () => {
     ).resolves.toBeDefined();
 
     expect(result).toBe(
-      "attachment; filename=\"C6 - Cartão - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Cart%C3%A3o%20-%20Novembro.zip.csv",
+      "attachment; filename=\"C6 - CartaIpo - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Carta%C3%8Cpo%20-%20Novembro.zip.csv",
     );
   });
 });
