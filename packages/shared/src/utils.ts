@@ -465,9 +465,7 @@ export function contentDisposition(
 
   // Encode the filename for the legacy parameter. MUST use US-ASCII characters only
   const legacyFileName = normalizedFileName
-    .replace(/[^\x20-\x7E]/g, function (a: string) {
-      return diacriticsMap[a] || a;
-    })
+    .replace(/[^\x20-\x7E]/g, (a) => diacriticsMap[a] ?? a)
     .replace(/[",\\']/g, "\\$&");
 
   // UTF-8 encode for the extended parameter (RFC 5987)
