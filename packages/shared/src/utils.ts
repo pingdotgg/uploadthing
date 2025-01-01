@@ -11,7 +11,6 @@ import {
   UnknownFileTypeError,
 } from "./tagged-errors";
 import type {
-  ContentDisposition,
   ExpandedRouteConfig,
   FileProperties,
   FileRouterInputConfig,
@@ -192,32 +191,6 @@ export function filterDefinedObjectValues<T>(
   return Object.fromEntries(
     Object.entries(obj).filter((pair): pair is [string, T] => pair[1] != null),
   );
-}
-
-/** construct content-disposition header according to RFC 6266 section 4.1
- * https://www.rfc-editor.org/rfc/rfc6266#section-4.1
- *
- * @example
- * contentDisposition("inline", 'my "special" file,name.pdf');
- * // => "inline; filename="my \"special\" file\,name.pdf"; filename*=UTF-8''my%20%22special%22%20file%2Cname.pdf"
- */
-export function contentDisposition(
-  contentDisposition: ContentDisposition,
-  fileName: string,
-) {
-  // Encode the filename for the legacy parameter
-  const legacyFileName = fileName.replace(/[",\\']/g, "\\$&");
-
-  //UTF-8 encode for the extended parameter (RFC 5987)
-  const utf8FileName = encodeURIComponent(fileName)
-    .replace(/[')(]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-    .replace(/\*/g, "%2A");
-
-  return [
-    contentDisposition,
-    `filename="${legacyFileName}"`,
-    `filename*=UTF-8''${utf8FileName}`,
-  ].join("; ");
 }
 
 export function semverLite(required: string, toCheck: string) {
