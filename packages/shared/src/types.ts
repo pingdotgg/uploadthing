@@ -1,5 +1,6 @@
 import type { MimeType } from "@uploadthing/mime-types";
 
+import type { ContentDisposition } from "./content-disposition";
 import type { AllowedFileType } from "./file-types";
 
 export type JsonValue = string | number | boolean | null | undefined;
@@ -108,9 +109,6 @@ export type Time =
   | `${AutoCompleteableNumber}${TimeShort}`
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
-
-export const ValidContentDispositions = ["inline", "attachment"] as const;
-export type ContentDisposition = (typeof ValidContentDispositions)[number];
 
 export const ValidACLs = ["public-read", "private"] as const;
 export type ACL = (typeof ValidACLs)[number];

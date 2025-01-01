@@ -11,7 +11,6 @@ import {
   UnknownFileTypeError,
 } from "./tagged-errors";
 import type {
-  ContentDisposition,
   ExpandedRouteConfig,
   FileProperties,
   FileRouterInputConfig,
@@ -192,74 +191,6 @@ export function filterDefinedObjectValues<T>(
   return Object.fromEntries(
     Object.entries(obj).filter((pair): pair is [string, T] => pair[1] != null),
   );
-}
-
-// Helper function to check if a character is in a codepoint range
-const isInRange = (char: string, start: number, end: number) => {
-  const code = char.codePointAt(0);
-  console.log(char, code, start, end);
-  return code != null && code >= start && code <= end;
-};
-
-// Helper function to remove diacritics from a character
-const removeDiacritics = (char: string) => {
-  // Basic Latin letters (no diacritics)
-  if (isInRange(char, 0x0041, 0x005a) || isInRange(char, 0x0061, 0x007a)) {
-    return char;
-  }
-
-  // For any character with diacritics:
-  // 1. Decompose it into base letter + combining marks (NFD)
-  // 2. Take just the base letter
-  // 3. If it's a basic Latin letter, use it
-  const normalized = char.normalize("NFD").charAt(0);
-  console.log("normalized", char, normalized, normalized.codePointAt(0));
-  if (normalized.match(/[A-Za-z]/)) {
-    console.log("returning normalized", normalized);
-    return normalized;
-  }
-
-  console.log("returning unchanged", char);
-
-  // For other characters, return unchanged
-  return char;
-};
-
-/** construct content-disposition header according to RFC 6266 section 4.1
- * https://www.rfc-editor.org/rfc/rfc6266#section-4.1
- *
- * @example
- * contentDisposition("inline", 'my "special" file,name.pdf');
- * // => "inline; filename="my \"special\" file\,name.pdf"; filename*=UTF-8''my%20%22special%22%20file%2Cname.pdf"
- *
- * @example
- * contentDisposition("inline", "CartaÌƒo");
- * // => "inline; filename="CartaIfo"; filename*=UTF-8''Carta%C3%AC%C3%B2o"
- */
-export function contentDisposition(
-  contentDisposition: ContentDisposition,
-  fileName: string,
-) {
-  // Normalize the filename to composed form (NFC)
-  const normalizedFileName = fileName; // .normalize("NFC");
-
-  // Encode the filename for the legacy parameter. MUST use US-ASCII characters only
-  const legacyFileName = normalizedFileName
-    .split("")
-    .map(removeDiacritics)
-    .join("")
-    .replace(/[",\\']/g, "\\$&");
-
-  // UTF-8 encode for the extended parameter (RFC 5987)
-  const utf8FileName = encodeURIComponent(normalizedFileName)
-    .replace(/[')(]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`)
-    .replace(/\*/g, "%2A");
-
-  return [
-    contentDisposition,
-    `filename="${legacyFileName}"`,
-    `filename*=UTF-8''${utf8FileName}`,
-  ].join("; ");
 }
 
 export function semverLite(required: string, toCheck: string) {

@@ -2,7 +2,7 @@ import * as Http from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { contentDisposition } from "../src";
+import { contentDisposition } from "../src/content-disposition";
 
 describe("contentDisposition", () => {
   let assertFetchable: (cd: string) => Promise<void>;
