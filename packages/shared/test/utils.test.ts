@@ -1,16 +1,38 @@
-import { describe, expect, it } from "vitest";
+import * as Http from "node:http";
+import type { AddressInfo } from "node:net";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { contentDisposition } from "../src";
 
 describe("contentDisposition", () => {
-  it("handles filenames with special characters", () => {
+  let testFetch: (cd: string) => Promise<Response>;
+  let server: Http.Server;
+
+  beforeAll(() => {
+    server = Http.createServer((req, res) => {
+      res.end("Hello World");
+    });
+    server.listen(0);
+    testFetch = (cd: string) =>
+      fetch(`http://localhost:${(server.address() as AddressInfo).port}`, {
+        headers: {
+          "Content-Disposition": cd,
+        },
+      });
+  });
+  afterAll(() => {
+    server.close();
+  });
+
+  it("handles filenames with special characters", async () => {
     const result = contentDisposition("inline", 'my "special" file,name.pdf');
     expect(result).toBe(
       'inline; filename="my \\"special\\" file\\,name.pdf"; filename*=UTF-8\'\'my%20%22special%22%20file%2Cname.pdf',
     );
+    await expect(testFetch(result)).resolves.toBeDefined();
   });
 
-  it("handles filenames with unicode characters", () => {
+  it("handles filenames with unicode characters", async () => {
     const result = contentDisposition(
       "attachment",
       "3$ Mù FRANçé_33902_Country_5_202105",
@@ -18,13 +40,15 @@ describe("contentDisposition", () => {
     expect(result).toBe(
       "attachment; filename=\"3$ Mù FRANçé_33902_Country_5_202105\"; filename*=UTF-8''3%24%20M%C3%B9%20FRAN%C3%A7%C3%A9_33902_Country_5_202105",
     );
+    await expect(testFetch(result)).resolves.toBeDefined();
   });
 
-  it("handles simple filenames", () => {
+  it("handles simple filenames", async () => {
     const result = contentDisposition("attachment", "simple.txt");
     expect(result).toBe(
       "attachment; filename=\"simple.txt\"; filename*=UTF-8''simple.txt",
     );
+    await expect(testFetch(result)).resolves.toBeDefined();
   });
 
   // regresssion: https://x.com/PauloMenzs/status/1874075207436296693
@@ -36,13 +60,7 @@ describe("contentDisposition", () => {
     );
     console.log(result);
     // Should be able to pass to fetch
-    await expect(
-      fetch("https://google.com", {
-        headers: {
-          "Content-Disposition": result,
-        },
-      }),
-    ).resolves.toBeDefined();
+    await expect(testFetch(result)).resolves.toBeDefined();
 
     expect(result).toBe(
       "attachment; filename=\"C6 - CartaIfo - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Carta%C3%8C%C6%92o%20-%20Novembro.zip.csv",
