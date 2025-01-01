@@ -38,7 +38,7 @@ describe("contentDisposition", () => {
       "3$ Mù FRANçé_33902_Country_5_202105",
     );
     expect(result).toBe(
-      "attachment; filename=\"3$ Mù FRANçé_33902_Country_5_202105\"; filename*=UTF-8''3%24%20M%C3%B9%20FRAN%C3%A7%C3%A9_33902_Country_5_202105",
+      "attachment; filename=\"3$ Mu FRANce_33902_Country_5_202105\"; filename*=UTF-8''3%24%20M%C3%B9%20FRAN%C3%A7%C3%A9_33902_Country_5_202105",
     );
     await expect(testFetch(result)).resolves.toBeDefined();
   });
@@ -52,7 +52,7 @@ describe("contentDisposition", () => {
   });
 
   // regresssion: https://x.com/PauloMenzs/status/1874075207436296693
-  it.only("handles decomposed unicode characters", async () => {
+  it("handles decomposed unicode characters", async () => {
     // "CartaÌƒo" (decomposed) should be normalized to "Cartão" (composed)
     const result = contentDisposition(
       "attachment",
