@@ -32,7 +32,7 @@ describe("contentDisposition", () => {
     // "CartaÌƒo" (decomposed) should be normalized to "Cartão" (composed)
     const result = contentDisposition(
       "attachment",
-      "C6 - CartaÌpo - Novembro.zip.csv",
+      "C6 - CartaÌƒo - Novembro.zip.csv",
     );
     console.log(result);
     // Should be able to pass to fetch
@@ -45,7 +45,7 @@ describe("contentDisposition", () => {
     ).resolves.toBeDefined();
 
     expect(result).toBe(
-      "attachment; filename=\"C6 - CartaIpo - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Carta%C3%8Cpo%20-%20Novembro.zip.csv",
+      "attachment; filename=\"C6 - CartaIfo - Novembro.zip.csv\"; filename*=UTF-8''C6%20-%20Carta%C3%8C%C6%92o%20-%20Novembro.zip.csv",
     );
   });
 });
