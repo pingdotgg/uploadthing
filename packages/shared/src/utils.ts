@@ -234,7 +234,7 @@ const removeDiacritics = (char: string) => {
  *
  * @example
  * contentDisposition("inline", "CartaÌƒo");
- * // => "inline; filename="Cartao"; filename*=UTF-8''Carta%C3%AC%C3%B2o"
+ * // => "inline; filename="CartaIfo"; filename*=UTF-8''Carta%C3%AC%C3%B2o"
  */
 export function contentDisposition(
   contentDisposition: ContentDisposition,
