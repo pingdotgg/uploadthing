@@ -109,11 +109,11 @@ export type Time =
   | `1 ${TimeLong}`
   | `${AutoCompleteableNumber} ${TimeLong}s`;
 
-export const ValidACLs = ["public-read", "private"] as const;
-export type ACL = (typeof ValidACLs)[number];
-
 export const ValidContentDispositions = ["inline", "attachment"] as const;
 export type ContentDisposition = (typeof ValidContentDispositions)[number];
+
+export const ValidACLs = ["public-read", "private"] as const;
+export type ACL = (typeof ValidACLs)[number];
 
 type ImageProperties = {
   /** Specify the width of the image. */
