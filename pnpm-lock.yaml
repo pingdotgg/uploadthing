@@ -20,9 +20,6 @@ importers:
       '@effect/vitest':
         specifier: 0.16.0
         version: 0.16.0(effect@3.12.0)(vitest@2.1.8(@types/node@20.16.11)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.28.1)(msw@2.7.0(@types/node@20.16.11)(typescript@5.6.2))(terser@5.34.1))
-      '@ianvs/prettier-plugin-sort-imports':
-        specifier: ^4.4.0
-        version: 4.4.0(@vue/compiler-sfc@3.5.11)(prettier@3.4.2)
       '@manypkg/cli':
         specifier: ^0.21.3
         version: 0.21.4
@@ -38,6 +35,9 @@ importers:
       '@uploadthing/eslint-config':
         specifier: workspace:*
         version: link:tooling/eslint-config
+      '@uploadthing/prettier-config':
+        specifier: workspace:*
+        version: link:tooling/prettier-config
       '@vitest/browser':
         specifier: ^2.1.8
         version: 2.1.8(@types/node@20.16.11)(playwright@1.49.1)(typescript@5.6.2)(vite@5.4.8(@types/node@20.16.11)(lightningcss@1.28.1)(terser@5.34.1))(vitest@2.1.8)
@@ -50,12 +50,6 @@ importers:
       playwright:
         specifier: 1.49.1
         version: 1.49.1
-      prettier:
-        specifier: ^3.4.2
-        version: 3.4.2
-      prettier-plugin-tailwindcss:
-        specifier: ^0.6.9
-        version: 0.6.9(@ianvs/prettier-plugin-sort-imports@4.4.0(@vue/compiler-sfc@3.5.11)(prettier@3.4.2))(prettier@3.4.2)
       turbo:
         specifier: 2.3.3
         version: 2.3.3
@@ -1868,6 +1862,18 @@ importers:
       typescript:
         specifier: ^5.5.2
         version: 5.6.2
+
+  tooling/prettier-config:
+    dependencies:
+      '@ianvs/prettier-plugin-sort-imports':
+        specifier: ^4.4.0
+        version: 4.4.0(@vue/compiler-sfc@3.5.11)(prettier@3.4.2)
+      prettier:
+        specifier: ^3.4.2
+        version: 3.4.2
+      prettier-plugin-tailwindcss:
+        specifier: ^0.6.9
+        version: 0.6.9(@ianvs/prettier-plugin-sort-imports@4.4.0(@vue/compiler-sfc@3.5.11)(prettier@3.4.2))(prettier@3.4.2)
 
   tooling/tsconfig: {}
 

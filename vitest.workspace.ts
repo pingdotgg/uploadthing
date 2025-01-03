@@ -1,8 +1,36 @@
-import { defineWorkspace } from "vitest/config";
+import { existsSync, readdirSync } from "node:fs";
+import { defineWorkspace, mergeConfig, ViteUserConfig } from "vitest/config";
+
+const pkgRoot = (pkg: string) =>
+  new URL(`./packages/${pkg}`, import.meta.url).pathname;
+const alias = (pkg: string) => `${pkgRoot(pkg)}/src`;
+
+const aliases = readdirSync(new URL("./packages", import.meta.url).pathname)
+  .filter((dir) => existsSync(pkgRoot(dir) + "/package.json"))
+  .filter((dir) => dir !== "uploadthing")
+  .reduce<Record<string, string>>(
+    (acc, pkg) => {
+      acc[`@uploadthing/${pkg}`] = alias(pkg);
+      return acc;
+    },
+    { uploadthing: alias("uploadthing") },
+  );
+
+const baseConfig: ViteUserConfig = {
+  test: {
+    mockReset: true,
+    coverage: {
+      provider: "v8",
+      include: ["**/src/**"],
+      exclude: ["**/docs/**", "**/examples/**", "**/tooling/**"],
+    },
+  },
+  esbuild: { target: "es2020" },
+  resolve: { alias: aliases },
+};
 
 export default defineWorkspace([
-  {
-    extends: "./vitest.config.ts",
+  mergeConfig(baseConfig, {
     test: {
       include: [
         "**/*.test.{ts,tsx}",
@@ -12,9 +40,8 @@ export default defineWorkspace([
       name: "unit",
       environment: "node",
     },
-  },
-  {
-    extends: "./vitest.config.ts",
+  } satisfies ViteUserConfig),
+  mergeConfig(baseConfig, {
     test: {
       include: ["**/*.browser.test.{ts,tsx}"],
       name: "browser",
@@ -24,5 +51,5 @@ export default defineWorkspace([
         name: "chromium",
       },
     },
-  },
+  } satisfies ViteUserConfig),
 ]);
