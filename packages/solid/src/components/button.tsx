@@ -81,6 +81,7 @@ export function UploadButton<
   const $props = props as UploadButtonProps<TRouter, TEndpoint>;
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
+    fetch: $props.fetch ?? globalThis.fetch,
   });
 
   const {

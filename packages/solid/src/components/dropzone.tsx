@@ -107,6 +107,7 @@ export const UploadDropzone = <
   const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg($props.url),
+    fetch: $props.fetch ?? globalThis.fetch,
   });
 
   const {
