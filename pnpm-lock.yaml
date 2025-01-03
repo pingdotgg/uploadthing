@@ -1849,10 +1849,6 @@ importers:
       '@typescript-eslint/utils':
         specifier: ^7.13.1
         version: 7.13.1(eslint@9.14.0(jiti@2.4.2))(typescript@5.6.3)
-    devDependencies:
-      '@types/eslint':
-        specifier: ^8.56.4
-        version: 8.56.10
 
   tooling/prettier-config:
     dependencies:

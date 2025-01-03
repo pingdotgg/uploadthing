@@ -11,8 +11,5 @@
   "dependencies": {
     "@typescript-eslint/parser": "^7.13.1",
     "@typescript-eslint/utils": "^7.13.1"
-  },
-  "devDependencies": {
-    "@types/eslint": "^8.56.4"
   }
 }
