@@ -149,7 +149,7 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   warnIfInvalidPeerDependency(
-    "@uploadthing/solid",
+    "@uploadthing/svelte",
     peerDependencies.uploadthing,
     uploadthingClientVersion,
   );
