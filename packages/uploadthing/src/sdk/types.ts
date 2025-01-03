@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 import type { Blob as NodeBlob } from "buffer";
 import type * as Config from "effect/Config";
 import type * as LogLevel from "effect/LogLevel";

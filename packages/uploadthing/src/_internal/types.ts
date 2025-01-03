@@ -35,10 +35,9 @@ import type {
  */
 export const UTFiles = Symbol("uploadthing-custom-id-symbol");
 
-const unsetMarker = "unsetMarker" as "unsetMarker" & {
+export type UnsetMarker = "unsetMarker" & {
   __brand: "unsetMarker";
 };
-export type UnsetMarker = typeof unsetMarker;
 
 export type ValidMiddlewareObject = {
   [UTFiles]?: Partial<FileUploadDataWithCustomId>[];

@@ -157,7 +157,7 @@
     "@uploadthing/tsconfig": "workspace:*",
     "body-parser": "^1.20.2",
     "bunchee": "^6.2.0",
-    "eslint": "^8.57.0",
+    "eslint": "9.17.0",
     "express": "^4.18.2",
     "fastify": "^4.26.1",
     "h3": "^1.11.1",
@@ -166,7 +166,7 @@
     "solid-js": "^1.8.23",
     "tailwindcss": "^3.4.16",
     "type-fest": "^4.10.3",
-    "typescript": "^5.5.2",
+    "typescript": "5.7.2",
     "undici": "^6.6.2",
     "valibot": "1.0.0-beta.7",
     "vue": "^3.4.21",
@@ -193,42 +193,6 @@
     },
     "tailwindcss": {
       "optional": true
-    }
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ],
-    "rules": {
-      "no-console": "error",
-      "no-restricted-globals": [
-        "error",
-        {
-          "name": "fetch",
-          "message": "fetch should be passed as parameter to support overriding default behaviors"
-        }
-      ],
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": [
-            {
-              "group": [
-                "uploadthing",
-                "uploadthing/*"
-              ],
-              "message": "Use relative src imports instead"
-            }
-          ],
-          "paths": [
-            {
-              "name": "effect",
-              "message": "Use alias imports instead (import * as X from \"effect/X\")"
-            }
-          ]
-        }
-      ]
     }
   }
 }

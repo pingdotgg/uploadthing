@@ -49,7 +49,6 @@ for (const dep in workspacePkg.peerDependencies) {
 }
 
 // Remove unnecessary fields
-workspacePkg.eslintConfig = undefined;
 workspacePkg.devDependencies = undefined;
 workspacePkg.scripts = undefined;
 

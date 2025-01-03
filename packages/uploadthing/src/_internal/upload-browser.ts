@@ -149,19 +149,19 @@ export const uploadFilesInternal = <
         (presigned, i) =>
           Micro.flatMap(
             Micro.sync(() =>
-              opts.onUploadBegin?.({ file: opts.files[i].name }),
+              opts.onUploadBegin?.({ file: opts.files[i]!.name }),
             ),
             () =>
               uploadFile<TRouter, TEndpoint, TServerOutput>(
-                opts.files[i],
+                opts.files[i]!,
                 presigned,
                 {
                   onUploadProgress: (ev) => {
                     totalLoaded += ev.delta;
                     opts.onUploadProgress?.({
-                      file: opts.files[i],
+                      file: opts.files[i]!,
                       progress: Math.round(
-                        (ev.loaded / opts.files[i].size) * 100,
+                        (ev.loaded / opts.files[i]!.size) * 100,
                       ),
                       loaded: ev.loaded,
                       delta: ev.delta,

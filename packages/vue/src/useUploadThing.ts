@@ -50,7 +50,7 @@ const useRouteConfig = (
       typeof data.value === "string"
         ? (JSON.parse(data.value) as EndpointMetadata)
         : data.value;
-    return endpointData?.find((x) => x.slug === endpoint)?.config;
+    return endpointData.find((x) => x.slug === endpoint)?.config;
   });
 };
 
@@ -147,8 +147,8 @@ export function __useUploadThingInternal<
     /**
      * @deprecated Use `routeConfig` instead
      */
-    permittedFileInfo: routeConfig
-      ? { slug: _endpoint.value, config: routeConfig }
+    permittedFileInfo: routeConfig.value
+      ? { slug: _endpoint.value, config: routeConfig.value }
       : undefined,
   } as const;
 }

@@ -8,16 +8,16 @@ import plugin from "tailwindcss/plugin";
  * When using this, you need to specify `content` manually. For automatic
  * detection, see {@link withUt}.
  */
-export const uploadthingPlugin = plugin(({ addVariant }) => {
+export const uploadthingPlugin = plugin(($) => {
   // Variants to select specific underlying element
-  addVariant("ut-button", '&>*[data-ut-element="button"]');
-  addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
-  addVariant("ut-label", '&>*[data-ut-element="label"]');
-  addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
-  addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
+  $.addVariant("ut-button", '&>*[data-ut-element="button"]');
+  $.addVariant("ut-allowed-content", '&>*[data-ut-element="allowed-content"]');
+  $.addVariant("ut-label", '&>*[data-ut-element="label"]');
+  $.addVariant("ut-upload-icon", '&>*[data-ut-element="upload-icon"]');
+  $.addVariant("ut-clear-btn", '&>*[data-ut-element="clear-btn"]');
 
   // Variants to select specific state
-  addVariant("ut-readying", '&[data-state="readying"]');
-  addVariant("ut-ready", '&[data-state="ready"]');
-  addVariant("ut-uploading", '&[data-state="uploading"]');
+  $.addVariant("ut-readying", '&[data-state="readying"]');
+  $.addVariant("ut-ready", '&[data-state="ready"]');
+  $.addVariant("ut-uploading", '&[data-state="uploading"]');
 });

@@ -121,7 +121,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         if (inputProps.value.disabled) return "disabled";
         if (!ready) return "readying";
-        if (ready && !isUploading.value) return "ready";
+        if (!isUploading.value) return "ready";
         return "uploading";
       });
 
@@ -340,9 +340,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         );
       };
     },
-    {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      props: ["config"] as any,
-    },
+    { props: ["config"] as never },
   );
 };

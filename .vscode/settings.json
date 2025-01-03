@@ -9,7 +9,10 @@
   "eslint.workingDirectories": [
     "docs",
     { "pattern": "./packages/**" },
-    { "pattern": "./examples/**" }
+    { "pattern": "./examples/**" },
+    { "pattern": "./tooling/**" },
+    { "pattern": "./playground/**" },
+    { "pattern": "./playground-v6/**" }
   ],
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
