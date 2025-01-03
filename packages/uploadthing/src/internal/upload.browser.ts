@@ -57,7 +57,28 @@ const uploadWithProgress = (
     });
 
     const formData = new FormData();
-    formData.append("file", rangeStart > 0 ? file.slice(rangeStart) : file);
+    /**
+     * iOS/React Native FormData handling requires special attention:
+     *
+     * Issue: In React Native, iOS crashes with "attempt to insert nil object" when appending File directly
+     * to FormData. This happens because iOS tries to create NSDictionary from the file object and expects
+     * specific structure {uri, type, name}.
+     *
+     *
+     * Note: Don't try to use Blob or modify File object - iOS specifically needs plain object
+     * with these properties to create valid NSDictionary.
+     */
+    if ("uri" in file) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      formData.append("file", {
+        uri: file.uri as string,
+        type: file.type,
+        name: file.name,
+        ...(rangeStart > 0 && { range: rangeStart }),
+      } as any);
+    } else {
+      formData.append("file", rangeStart > 0 ? file.slice(rangeStart) : file);
+    }
     xhr.send(formData);
 
     return Micro.sync(() => xhr.abort());
