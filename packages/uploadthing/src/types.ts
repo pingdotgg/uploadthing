@@ -7,8 +7,8 @@ import type {
   MaybePromise,
 } from "@uploadthing/shared";
 
-import type { LogFormat } from "./internal/logger";
-import type { AnyFileRoute, FileRoute } from "./internal/types";
+import type { LogFormat } from "./_internal/logger";
+import type { AnyFileRoute, FileRoute } from "./_internal/types";
 
 export * from "./sdk/types";
 
@@ -23,8 +23,8 @@ export type {
   UploadedFileData,
   ClientUploadedFileData,
   NewPresignedUrl,
-} from "./internal/shared-schemas";
-export { UploadThingToken } from "./internal/shared-schemas";
+} from "./_internal/shared-schemas";
+export { UploadThingToken } from "./_internal/shared-schemas";
 
 export type { FileRoute, AnyFileRoute };
 export type FileRouter = Record<string, AnyFileRoute>;

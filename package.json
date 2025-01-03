@@ -57,10 +57,5 @@
     "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
     "vitest": "^2.1.8"
-  },
-  "pnpm": {
-    "patchedDependencies": {
-      "bunchee@6.1.2": "patches/bunchee@6.1.2.patch"
-    }
   }
 }

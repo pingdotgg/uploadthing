@@ -1,8 +1,8 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
+import { createBuilder } from "../src/_internal/upload-builder";
 import { genUploader } from "../src/client";
-import { createBuilder } from "../src/internal/upload-builder";
 import type { ClientUploadedFileData, FileRouter } from "../src/types";
 import { doNotExecute } from "./__test-helpers";
 
