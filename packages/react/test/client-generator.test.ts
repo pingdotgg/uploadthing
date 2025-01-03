@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, it } from "vitest";
+import { expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";

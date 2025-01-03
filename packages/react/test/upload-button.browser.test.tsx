@@ -1,18 +1,8 @@
-// @vitest-environment happy-dom
-/// <reference types="@testing-library/jest-dom/vitest" />
-
-import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
+import { page, userEvent } from "@vitest/browser/context";
 import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { setupWorker } from "msw/browser";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
 import {
   createRouteHandler,
@@ -44,7 +34,7 @@ const utGet = vi.fn<(req: Request) => void>();
 const utPost =
   vi.fn<({ request, body }: { request: Request; body: any }) => void>();
 
-const server = setupServer(
+const worker = setupWorker(
   http.get("/api/uploadthing", ({ request }) => {
     utGet(request);
     return routeHandler(request);
@@ -62,12 +52,8 @@ const server = setupServer(
   ),
 );
 
-beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
-  cleanup();
-});
-afterAll(() => server.close());
+beforeAll(() => worker.start());
+afterAll(() => worker.stop());
 
 /**
  * This is a basic suite of tests for the UploadButton component.
@@ -109,12 +95,14 @@ describe("UploadButton - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose File");
     expect(label).not.toHaveTextContent("(s)");
 
     expect(utGet).toHaveBeenCalledOnce();
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(page.getByText("Image (4MB)")).toBeVisible();
   });
 
   it("fetches and displays route config (with callback endpoint arg)", async () => {
@@ -129,12 +117,14 @@ describe("UploadButton - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose File");
     expect(label).not.toHaveTextContent("(s)");
 
     expect(utGet).toHaveBeenCalledOnce();
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(page.getByText("Image (4MB)")).toBeVisible();
   });
 
   it("shows plural when maxFileCount is > 1", async () => {
@@ -147,7 +137,9 @@ describe("UploadButton - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose File(s)");
   });
 
@@ -155,7 +147,7 @@ describe("UploadButton - basic", () => {
     (window as any).__UPLOADTHING = extractRouterConfig(testRouter);
 
     const utils = render(<UploadButton endpoint="image" />);
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(page.getByText("Image (4MB)")).toBeVisible();
     expect(utGet).not.toHaveBeenCalled();
 
     delete (window as any).__UPLOADTHING;
@@ -164,12 +156,14 @@ describe("UploadButton - basic", () => {
   it("requests URLs when a file is selected", async () => {
     const utils = render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File(["foo"], "foo.txt", { type: "text/plain" })] },
-    });
-    await waitFor(() => {
+    await userEvent.upload(utils.getByLabelText("Choose File"), [
+      new File(["foo"], "foo.txt", { type: "text/plain" }),
+    ]);
+    await vi.waitFor(() => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
@@ -177,7 +171,7 @@ describe("UploadButton - basic", () => {
               {
                 name: "foo.txt",
                 type: "text/plain",
-                size: 3,
+                size: 18,
                 lastModified: expect.any(Number),
               },
             ],
@@ -192,15 +186,17 @@ describe("UploadButton - basic", () => {
       <UploadButton endpoint="image" config={{ mode: "manual" }} />,
     );
     const label = utils.container.querySelector("label");
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File([""], "foo.txt")] },
-    });
+    await userEvent.upload(utils.getByLabelText("Choose File"), [
+      new File([""], "foo.txt"),
+    ]);
     expect(label).toHaveTextContent("Upload 1 file");
 
-    fireEvent.click(label!);
-    await waitFor(() => {
+    await userEvent.click(label!);
+    await vi.waitFor(() => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
@@ -215,7 +211,7 @@ describe("UploadButton - basic", () => {
   it.skip("disabled", async () => {
     const utils = render(<UploadButton endpoint="image" disabled />);
     const label = utils.container.querySelector("label");
-    await waitFor(() => expect(label).toHaveTextContent("Choose File"));
+    await vi.waitFor(() => expect(label).toHaveTextContent("Choose File"));
     expect(label).toHaveAttribute("disabled");
   });
 });
@@ -230,14 +226,13 @@ describe("UploadButton - lifecycle hooks", () => {
         }}
       />,
     );
-    await waitFor(() => {
-      expect(utils.getByText("Choose File")).toBeInTheDocument();
-    });
 
-    fireEvent.change(utils.getByLabelText("Choose File"), {
-      target: { files: [new File([""], "foo.txt")] },
-    });
-    await waitFor(() => {
+    await expect.element(page.getByText("Choose File")).toBeVisible();
+
+    await userEvent.upload(utils.getByLabelText("Choose File"), [
+      new File([""], "foo.txt"),
+    ]);
+    await vi.waitFor(() => {
       expect(utPost).toHaveBeenCalledWith(
         expect.objectContaining({
           body: {
@@ -253,14 +248,14 @@ describe("UploadButton - lifecycle hooks", () => {
     const utils = render(
       <UploadButton endpoint="multi" onUploadBegin={onUploadBegin} />,
     );
-    await waitFor(() => {
-      expect(utils.getByText("Choose File(s)")).toBeInTheDocument();
-    });
 
-    fireEvent.change(utils.getByLabelText("Choose File(s)"), {
-      target: { files: [new File([""], "foo.png"), new File([""], "bar.png")] },
-    });
-    await waitFor(() => {
+    await expect.element(page.getByText("Choose File(s)")).toBeVisible();
+
+    await userEvent.upload(utils.getByLabelText("Choose File(s)"), [
+      new File([""], "foo.png"),
+      new File([""], "bar.png"),
+    ]);
+    await vi.waitFor(() => {
       expect(onUploadBegin).toHaveBeenCalledTimes(2);
     });
     expect(onUploadBegin).toHaveBeenCalledWith("foo.png");
@@ -278,17 +273,18 @@ describe("UploadButton - Theming", () => {
         }}
       />,
     );
-    await waitFor(() => {
-      expect(utils.getByText("Choose File")).toHaveStyle({
-        backgroundColor: "red",
-      });
+
+    await vi.waitFor(async () => {
+      await expect
+        .element(page.getByText("Choose File").element())
+        .toHaveStyle("background-color: rgb(255, 0, 0);");
     });
   });
 });
 
 describe("UploadButton - Content Customization", () => {
   it("renders custom content", async () => {
-    const utils = render(
+    render(
       <UploadButton
         endpoint="image"
         content={{
@@ -296,8 +292,6 @@ describe("UploadButton - Content Customization", () => {
         }}
       />,
     );
-    await waitFor(() => {
-      expect(utils.getByText("Allowed content")).toBeInTheDocument();
-    });
+    await expect.element(page.getByText("Allowed content")).toBeVisible();
   });
 });

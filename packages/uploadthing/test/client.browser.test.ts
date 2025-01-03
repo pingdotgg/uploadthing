@@ -1,11 +1,17 @@
-// @vitest-environment happy-dom
-
-import type { AddressInfo } from "node:net";
-import express from "express";
-import { describe, expect, expectTypeOf, it as rawIt, vi } from "vitest";
+import { http } from "msw";
+import { setupWorker } from "msw/browser";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 
 import { genUploader } from "../src/client";
-import { createRouteHandler, createUploadthing } from "../src/express";
+import { createRouteHandler, createUploadthing } from "../src/server";
 import type {
   ClientUploadedFileData,
   GenerateUploaderOptions,
@@ -14,14 +20,17 @@ import {
   appUrlPattern,
   doNotExecute,
   fileUrlPattern,
-  it,
+  handlers,
   middlewareMock,
   onErrorMock,
   requestSpy,
   testToken,
   uploadCompleteMock,
-  UTFS_IO_URL,
 } from "./__test-helpers";
+
+const worker = setupWorker(...handlers);
+beforeAll(() => worker.start({ quiet: true, onUnhandledRequest: "bypass" }));
+afterAll(() => worker.stop());
 
 export const setupUTServer = async (
   clientOpts?: Partial<GenerateUploaderOptions>,
@@ -76,54 +85,49 @@ export const setupUTServer = async (
       }),
   };
 
-  const app = express();
-  app.use(
-    "/api/uploadthing",
-    createRouteHandler({
-      router,
-      config: {
-        token: testToken.encoded,
-        isDev: true,
-      },
-    }),
-  );
+  const handler = createRouteHandler({
+    router,
+    config: {
+      token: testToken.encoded,
+      isDev: true,
+    },
+  });
 
-  const server = app.listen(0);
-  const port = (server.address() as AddressInfo).port;
-  await new Promise((res) => server.once("listening", res));
+  const port = Math.floor(Math.random() * 10000) + 10000;
+  const url = `http://localhost:${port}`;
+  worker.use(...handlers, http.all(`${url}/api/uploadthing`, handler));
 
   const { uploadFiles } = genUploader<typeof router>({
     package: "vitest",
-    url: `http://localhost:${port}`,
+    url,
     ...clientOpts,
   });
 
   return {
     uploadFiles,
-    close: () => new Promise((res) => server.close(res)),
+    close: async () => {
+      worker.use(...handlers);
+    },
   };
 };
 
-rawIt(
-  "propagates awaitServerData config on server to the client `serverData` property",
-  async () => {
-    const { uploadFiles, close } = await setupUTServer();
-    const file = new File(["foo"], "foo.txt", { type: "text/plain" });
+it("propagates awaitServerData config on server to the client `serverData` property", async () => {
+  const { uploadFiles, close } = await setupUTServer();
+  const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
-    doNotExecute(async () => {
-      const res1 = await uploadFiles("withServerData", { files: [file] });
-      expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[]>(res1);
+  doNotExecute(async () => {
+    const res1 = await uploadFiles("withServerData", { files: [file] });
+    expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[]>(res1);
 
-      const res2 = await uploadFiles("noServerData", { files: [file] });
-      expectTypeOf<ClientUploadedFileData<null>[]>(res2);
-    });
+    const res2 = await uploadFiles("noServerData", { files: [file] });
+    expectTypeOf<ClientUploadedFileData<null>[]>(res2);
+  });
 
-    await close();
-  },
-);
+  await close();
+});
 
 describe("uploadFiles", () => {
-  it("uploads file using presigned PUT", async ({ db }) => {
+  it("uploads file using presigned PUT", async () => {
     const { uploadFiles, close } = await setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
@@ -164,7 +168,7 @@ describe("uploadFiles", () => {
     await close();
   });
 
-  it("sends custom headers if set (static object)", async ({ db }) => {
+  it("sends custom headers if set (static object)", async () => {
     const { uploadFiles, close } = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -190,7 +194,9 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(middlewareMock.mock.calls[0][0].req.headers).toMatchObject({
+    expect(
+      Object.fromEntries(middlewareMock.mock.calls[0][0].req.headers),
+    ).toMatchObject({
       authorization: "Bearer my-auth-token",
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -199,7 +205,7 @@ describe("uploadFiles", () => {
     await close();
   });
 
-  it("sends custom headers if set (async function)", async ({ db }) => {
+  it("sends custom headers if set (async function)", async () => {
     const { uploadFiles, close } = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -225,7 +231,9 @@ describe("uploadFiles", () => {
       },
     ]);
 
-    expect(middlewareMock.mock.calls[0][0].req.headers).toMatchObject({
+    expect(
+      Object.fromEntries(middlewareMock.mock.calls[0][0].req.headers),
+    ).toMatchObject({
       authorization: "Bearer my-auth-token",
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
@@ -253,7 +261,7 @@ describe("uploadFiles", () => {
   });
 
   // Should we retry?
-  // it("succeeds after retries", { timeout: 15e3 }, async ({ db }) => {
+  // it("succeeds after retries", { timeout: 15e3 }, async () => {
   //   const { uploadFiles, close } = await setupUTServer();
   //   useHalfBadS3();
 
@@ -280,7 +288,7 @@ describe("uploadFiles", () => {
   //   await close();
   // });
 
-  it("handles too big file size errors", async ({ db }) => {
+  it("handles too big file size errors", async () => {
     const { uploadFiles, close } = await setupUTServer();
 
     const tooBigFile = new File(
@@ -300,7 +308,7 @@ describe("uploadFiles", () => {
     await close();
   });
 
-  it("handles too many files errors", async ({ db }) => {
+  it("handles too many files errors", async () => {
     const { uploadFiles, close } = await setupUTServer();
 
     const file1 = new File(["foo"], "foo.txt", { type: "text/plain" });
@@ -315,7 +323,7 @@ describe("uploadFiles", () => {
     await close();
   });
 
-  it("handles invalid file type errors", async ({ db }) => {
+  it("handles invalid file type errors", async () => {
     const { uploadFiles, close } = await setupUTServer();
 
     const file = new File(["foo"], "foo.png", { type: "image/png" });

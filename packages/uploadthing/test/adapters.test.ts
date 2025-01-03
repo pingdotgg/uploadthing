@@ -3,7 +3,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
 import {
   FetchHttpClient,
-  HttpClient,
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform";
@@ -13,20 +12,32 @@ import * as Layer from "effect/Layer";
 import * as express from "express";
 import * as fastify from "fastify";
 import { createApp, H3Event, toWebHandler } from "h3";
-import { describe, expect, expectTypeOf, vi } from "vitest";
+import { setupServer } from "msw/node";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 
-import { configProvider } from "../src/internal/config";
 import {
   baseHeaders,
   createApiUrl,
+  handlers,
   INGEST_URL,
-  it,
   middlewareMock,
   requestSpy,
   requestsToDomain,
   testToken,
   uploadCompleteMock,
 } from "./__test-helpers";
+
+const server = setupServer(...handlers);
+beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
+afterAll(() => server.close());
 
 describe("adapters:h3", async () => {
   const { createUploadthing, createRouteHandler } = await import("../src/h3");
@@ -46,7 +57,7 @@ describe("adapters:h3", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("returns router config on GET requests", async ({ db }) => {
+  it("returns router config on GET requests", async () => {
     const eventHandler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -68,7 +79,7 @@ describe("adapters:h3", async () => {
     ]);
   });
 
-  it("gets H3Event in middleware args", async ({ db }) => {
+  it("gets H3Event in middleware args", async () => {
     const eventHandler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -157,7 +168,7 @@ describe("adapters:server", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("returns router config on GET requests", async ({ db }) => {
+  it("returns router config on GET requests", async () => {
     const eventHandler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -177,7 +188,7 @@ describe("adapters:server", async () => {
     ]);
   });
 
-  it("gets Request in middleware args", async ({ db }) => {
+  it("gets Request in middleware args", async () => {
     const handler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -235,7 +246,7 @@ describe("adapters:server", async () => {
     });
   });
 
-  it("accepts object with request in", async ({ db }) => {
+  it("accepts object with request in", async () => {
     const handler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -312,7 +323,7 @@ describe("adapters:next", async () => {
       .onUploadComplete(uploadCompleteMock),
   };
 
-  it("returns router config on GET requests", async ({ db }) => {
+  it("returns router config on GET requests", async () => {
     const eventHandler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -334,7 +345,7 @@ describe("adapters:next", async () => {
     ]);
   });
 
-  it("gets NextRequest in middleware args", async ({ db }) => {
+  it("gets NextRequest in middleware args", async () => {
     const handlers = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -447,7 +458,7 @@ describe("adapters:next-legacy", async () => {
     return { res, json, setHeader, status };
   }
 
-  it("returns router config on GET requests", async ({ db }) => {
+  it("returns router config on GET requests", async () => {
     const eventHandler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -471,9 +482,7 @@ describe("adapters:next-legacy", async () => {
     ]);
   });
 
-  it("gets NextApiRequest and NextApiResponse in middleware args", async ({
-    db,
-  }) => {
+  it("gets NextApiRequest and NextApiResponse in middleware args", async () => {
     const handler = createRouteHandler({
       router,
       config: { token: testToken.encoded },
@@ -572,7 +581,7 @@ describe("adapters:express", async () => {
     return { url, close: () => server.close() };
   };
 
-  it("returns router config on GET requests", async ({ db }) => {
+  it("returns router config on GET requests", async () => {
     const server = startServer();
 
     const url = `${server.url}/api/uploadthing/`;
@@ -590,9 +599,7 @@ describe("adapters:express", async () => {
     ]);
   });
 
-  it("gets express.Request and express.Response in middleware args", async ({
-    db,
-  }) => {
+  it("gets express.Request and express.Response in middleware args", async () => {
     const server = startServer();
 
     const url = `${server.url}/api/uploadthing/`;
@@ -652,7 +659,7 @@ describe("adapters:express", async () => {
     server.close();
   });
 
-  it("works with some standard built-in middlewares", async ({ db }) => {
+  it("works with some standard built-in middlewares", async () => {
     const server = startServer((app) => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
@@ -672,7 +679,7 @@ describe("adapters:express", async () => {
     server.close();
   });
 
-  it("works with body-parser middleware", async ({ db }) => {
+  it("works with body-parser middleware", async () => {
     const bodyParser = await import("body-parser");
     const server = startServer((app) => {
       app.use(bodyParser.json());
@@ -728,7 +735,7 @@ describe("adapters:fastify", async () => {
     return { url, close: () => app.close() };
   };
 
-  it("returns router config on GET requests", async ({ db }) => {
+  it("returns router config on GET requests", async () => {
     const server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
@@ -746,9 +753,7 @@ describe("adapters:fastify", async () => {
     ]);
   });
 
-  it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async ({
-    db,
-  }) => {
+  it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async () => {
     const server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
