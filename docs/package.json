@@ -62,10 +62,6 @@
   },
   "devDependencies": {
     "@shikijs/transformers": "^1.17.5",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.1",
-    "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.5",
     "sharp": "0.33.1"
   },
   "packageManager": "pnpm@9.6.0"

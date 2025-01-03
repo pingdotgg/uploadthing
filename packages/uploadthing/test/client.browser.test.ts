@@ -105,34 +105,33 @@ export const setupUTServer = async (
 
   return {
     uploadFiles,
-    close: async () => {
+    [Symbol.dispose]: () => {
+      // Restore to original handlers
       worker.use(...handlers);
     },
   };
 };
 
 it("propagates awaitServerData config on server to the client `serverData` property", async () => {
-  const { uploadFiles, close } = await setupUTServer();
+  using $ = await setupUTServer();
   const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
   doNotExecute(async () => {
-    const res1 = await uploadFiles("withServerData", { files: [file] });
+    const res1 = await $.uploadFiles("withServerData", { files: [file] });
     expectTypeOf<ClientUploadedFileData<{ foo: "bar" }>[]>(res1);
 
-    const res2 = await uploadFiles("noServerData", { files: [file] });
+    const res2 = await $.uploadFiles("noServerData", { files: [file] });
     expectTypeOf<ClientUploadedFileData<null>[]>(res2);
   });
-
-  await close();
 });
 
 describe("uploadFiles", () => {
   it("uploads file using presigned PUT", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
 
     await expect(
-      uploadFiles((routeRegistry) => routeRegistry.foo, { files: [file] }),
+      $.uploadFiles((routeRegistry) => routeRegistry.foo, { files: [file] }),
     ).resolves.toEqual([
       {
         name: "foo.txt",
@@ -164,16 +163,14 @@ describe("uploadFiles", () => {
     // await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
     //   timeout: 5000,
     // });
-
-    await close();
   });
 
   it("sends custom headers if set (static object)", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
-      uploadFiles((routeRegistry) => routeRegistry.foo, {
+      $.uploadFiles((routeRegistry) => routeRegistry.foo, {
         files: [file],
         headers: {
           authorization: "Bearer my-auth-token",
@@ -201,16 +198,14 @@ describe("uploadFiles", () => {
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
-
-    await close();
   });
 
   it("sends custom headers if set (async function)", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     await expect(
-      uploadFiles("foo", {
+      $.uploadFiles("foo", {
         files: [file],
         headers: async () => ({
           authorization: "Bearer my-auth-token",
@@ -238,14 +233,12 @@ describe("uploadFiles", () => {
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });
-
-    await close();
   });
 
   it("uses custom fetch implementation if set", async () => {
     const fetchFn = vi.fn();
 
-    const { uploadFiles, close } = await setupUTServer({
+    using $ = await setupUTServer({
       fetch: (input, init) => {
         fetchFn(input, init);
         return window.fetch(input, init);
@@ -253,23 +246,21 @@ describe("uploadFiles", () => {
     });
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
-    await uploadFiles("foo", { files: [file] });
+    await $.uploadFiles("foo", { files: [file] });
 
     expect(fetchFn).toHaveBeenCalled();
-
-    await close();
   });
 
   // Should we retry?
   // it("succeeds after retries", { timeout: 15e3 }, async () => {
-  //   const { uploadFiles, close } = await setupUTServer();
+  //   using $ = await setupUTServer();
   //   useHalfBadS3();
 
   //   const bigFile = new File([new ArrayBuffer(10 * 1024 * 1024)], "foo.txt", {
   //     type: "text/plain",
   //   });
 
-  //   await expect(uploadFiles("foo", { files: [bigFile] })).resolves.toEqual([
+  //   await expect($.uploadFiles("foo", { files: [bigFile] })).resolves.toEqual([
   //     {
   //       name: "foo.txt",
   //       size: 10485760,
@@ -284,12 +275,10 @@ describe("uploadFiles", () => {
   //   await vi.waitUntil(() => uploadCompleteMock.mock.calls.length > 0, {
   //     timeout: 5000,
   //   });
-
-  //   await close();
   // });
 
   it("handles too big file size errors", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const tooBigFile = new File(
       [new ArrayBuffer(20 * 1024 * 1024)],
@@ -300,74 +289,64 @@ describe("uploadFiles", () => {
     );
 
     await expect(
-      uploadFiles("foo", { files: [tooBigFile] }),
+      $.uploadFiles("foo", { files: [tooBigFile] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: FileSizeMismatch]`,
     );
-
-    await close();
   });
 
   it("handles too many files errors", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const file1 = new File(["foo"], "foo.txt", { type: "text/plain" });
     const file2 = new File(["bar"], "bar.txt", { type: "text/plain" });
 
     await expect(
-      uploadFiles("foo", { files: [file1, file2] }),
+      $.uploadFiles("foo", { files: [file1, file2] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: FileCountMismatch]`,
     );
-
-    await close();
   });
 
   it("handles invalid file type errors", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const file = new File(["foo"], "foo.png", { type: "image/png" });
 
     await expect(
-      uploadFiles("foo", { files: [file] }),
+      $.uploadFiles("foo", { files: [file] }),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
       `[UploadThingError: Invalid config: InvalidFileType]`,
     );
-
-    await close();
   });
 
   it("runs onUploadBegin before uploading (single file)", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const file = new File(["foo"], "foo.txt", { type: "text/plain" });
     const onUploadBegin = vi.fn();
 
-    await uploadFiles("foo", {
+    await $.uploadFiles("foo", {
       files: [file],
       onUploadBegin,
     });
 
     expect(onUploadBegin).toHaveBeenCalledWith({ file: "foo.txt" });
-
-    await close();
   });
 
   it("runs onUploadBegin before uploading (multi file)", async () => {
-    const { uploadFiles, close } = await setupUTServer();
+    using $ = await setupUTServer();
 
     const file1 = new File(["foo"], "foo.txt", { type: "text/plain" });
     const file2 = new File(["bar"], "bar.txt", { type: "text/plain" });
     const onUploadBegin = vi.fn();
 
-    await uploadFiles("multi", {
+    await $.uploadFiles("multi", {
       files: [file1, file2],
       onUploadBegin,
     });
 
     expect(onUploadBegin).toHaveBeenCalledWith({ file: "foo.txt" });
     expect(onUploadBegin).toHaveBeenCalledWith({ file: "bar.txt" });
-
-    await close();
   });
 });

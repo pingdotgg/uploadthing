@@ -578,11 +578,11 @@ describe("adapters:express", async () => {
     const server = app.listen();
     const url = `http://localhost:${(server.address() as { port: number }).port}`;
 
-    return { url, close: () => server.close() };
+    return { url, [Symbol.dispose]: () => server.close() };
   };
 
   it("returns router config on GET requests", async () => {
-    const server = startServer();
+    using server = startServer();
 
     const url = `${server.url}/api/uploadthing/`;
     const res = await fetch(url);
@@ -600,7 +600,7 @@ describe("adapters:express", async () => {
   });
 
   it("gets express.Request and express.Response in middleware args", async () => {
-    const server = startServer();
+    using server = startServer();
 
     const url = `${server.url}/api/uploadthing/`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
@@ -655,12 +655,10 @@ describe("adapters:express", async () => {
       }),
       method: "POST",
     });
-
-    server.close();
   });
 
   it("works with some standard built-in middlewares", async () => {
-    const server = startServer((app) => {
+    using server = startServer((app) => {
       app.use(express.json());
       app.use(express.urlencoded({ extended: true }));
     });
@@ -675,13 +673,11 @@ describe("adapters:express", async () => {
     });
     expect(res.status).toBe(200);
     expect(middlewareMock).toHaveBeenCalledOnce();
-
-    server.close();
   });
 
   it("works with body-parser middleware", async () => {
     const bodyParser = await import("body-parser");
-    const server = startServer((app) => {
+    using server = startServer((app) => {
       app.use(bodyParser.json());
       app.use(bodyParser.urlencoded({ extended: true }));
     });
@@ -696,8 +692,6 @@ describe("adapters:express", async () => {
     });
     expect(res.status).toBe(200);
     expect(middlewareMock).toHaveBeenCalledOnce();
-
-    server.close();
   });
 });
 
@@ -732,11 +726,11 @@ describe("adapters:fastify", async () => {
     const port = addr.split(":").pop();
     const url = `http://localhost:${port}/`;
 
-    return { url, close: () => app.close() };
+    return { url, [Symbol.asyncDispose]: () => app.close() };
   };
 
   it("returns router config on GET requests", async () => {
-    const server = await startServer();
+    await using server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(url);
@@ -754,7 +748,7 @@ describe("adapters:fastify", async () => {
   });
 
   it("gets fastify.FastifyRequest and fastify.FastifyReply in middleware args", async () => {
-    const server = await startServer();
+    await using server = await startServer();
 
     const url = `${server.url}api/uploadthing`;
     const res = await fetch(`${url}?slug=middleware&actionType=upload`, {
@@ -809,8 +803,6 @@ describe("adapters:fastify", async () => {
       }),
       method: "POST",
     });
-
-    await server.close();
   });
 });
 
