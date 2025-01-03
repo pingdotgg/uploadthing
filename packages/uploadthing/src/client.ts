@@ -16,7 +16,7 @@ import {
 import * as pkgJson from "../package.json";
 import type { Deferred } from "./_internal/deferred";
 import { createDeferred } from "./_internal/deferred";
-import { uploadFile, uploadFilesInternal } from "./_internal/upload.browser";
+import { uploadFile, uploadFilesInternal } from "./_internal/upload-browser";
 import { createUTReporter } from "./_internal/ut-reporter";
 import type {
   ClientUploadedFileData,

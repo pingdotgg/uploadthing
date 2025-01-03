@@ -16,7 +16,7 @@ import type {
 } from "@uploadthing/shared";
 
 import { IngestUrl, UTToken } from "../_internal/config";
-import { uploadWithoutProgress } from "../_internal/upload.server";
+import { uploadWithoutProgress } from "../_internal/upload-server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";

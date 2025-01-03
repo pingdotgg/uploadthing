@@ -9,8 +9,13 @@ import { afterEach, beforeEach, describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
-import { ParsedToken, UploadThingToken } from "./shared-schemas";
+import {
+  configProvider,
+  IngestUrl,
+  IsDevelopment,
+  UTToken,
+} from "../src/_internal/config";
+import { ParsedToken, UploadThingToken } from "../src/_internal/shared-schemas";
 
 const app1TokenData = {
   apiKey: Redacted.make("sk_foo"),
