@@ -1,6 +1,6 @@
 import { derived, readonly, writable } from "svelte/store";
 
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type { EndpointMetadata, FetchEsque } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
@@ -23,8 +23,8 @@ import type {
 } from "./types";
 import { createFetch } from "./utils/createFetch";
 
-const createRouteConfig = (url: URL, endpoint: string) => {
-  const dataGetter = createFetch<EndpointMetadata>(url.href);
+const createRouteConfig = (fetch: FetchEsque, url: URL, endpoint: string) => {
+  const dataGetter = createFetch<EndpointMetadata>(fetch, url.href);
   return derived(
     dataGetter,
     ($data) => $data.data?.find((x) => x.slug === endpoint)?.config,
@@ -40,9 +40,11 @@ export const INTERNAL_createUploadThingGen = <
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+  fetch: FetchEsque;
 }) => {
   const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     url: initOpts.url,
+    fetch: initOpts.fetch,
     package: "@uploadthing/svelte",
   });
 
@@ -122,7 +124,11 @@ export const INTERNAL_createUploadThingGen = <
     };
 
     const _endpoint = unwrap(endpoint, routeRegistry);
-    const routeConfig = createRouteConfig(initOpts.url, _endpoint as string);
+    const routeConfig = createRouteConfig(
+      initOpts.fetch,
+      initOpts.url,
+      _endpoint as string,
+    );
 
     return {
       startUpload,
@@ -150,11 +156,13 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const fetch = initOpts?.fetch ?? globalThis.fetch;
 
   return {
-    createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url }),
+    createUploadThing: INTERNAL_createUploadThingGen<TRouter>({ url, fetch }),
     createUploader: generateUploader<TRouter>(),
     ...genUploader<TRouter>({
+      fetch,
       url,
       package: "@uploadthing/svelte",
     }),

@@ -82,6 +82,7 @@
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
+    fetch: uploader.fetch ?? globalThis.fetch,
   });
   const { startUpload, isUploading, routeConfig } = createUploadThing(
     uploader.endpoint,

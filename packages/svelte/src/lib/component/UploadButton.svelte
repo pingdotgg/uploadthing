@@ -62,6 +62,7 @@
 
   const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
     url: resolveMaybeUrlArg(uploader.url),
+    fetch: uploader.fetch ?? globalThis.fetch,
   });
 
   let fileInputRef: HTMLInputElement;

@@ -2,6 +2,7 @@ import type {
   ClassListMerger,
   ErrorMessage,
   ExtendObjectIf,
+  FetchEsque,
   MaybePromise,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -26,6 +27,25 @@ export interface GenerateTypedHelpersOptions {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
 }
 
 export type UseUploadthingProps<
@@ -112,6 +132,35 @@ export type UploadthingComponentProps<
    * The endpoint from your FileRouter to use for the upload
    */
   endpoint: EndpointArg<TRouter, TEndpoint>;
+  /**
+   * URL to the UploadThing API endpoint
+   * @example "/api/uploadthing"
+   * @example "https://www.example.com/api/uploadthing"
+   *
+   * If relative, host will be inferred from either the `VERCEL_URL` environment variable or `window.location.origin`
+   *
+   * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
+   */
+  url?: string | URL;
+  /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
   config?: {
     mode?: "auto" | "manual";
     appendOnPaste?: boolean;

@@ -1,7 +1,7 @@
 import { useFetch } from "@vueuse/core";
 import { computed, ref } from "vue";
 
-import type { EndpointMetadata } from "@uploadthing/shared";
+import type { EndpointMetadata, FetchEsque } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
@@ -25,9 +25,9 @@ export type {
   ExpandedRouteConfig,
 } from "@uploadthing/shared";
 
-const useRouteConfig = (url: URL, endpoint: string) => {
+const useRouteConfig = (fetch: FetchEsque, url: URL, endpoint: string) => {
   // TODO: useState with server-inserted data to skip fetch on client
-  const { data } = useFetch<string>(url.href);
+  const { data } = useFetch<string>(url.href, { fetch: fetch as never });
   return computed(() => {
     if (!data.value) return undefined;
     const endpointData =
@@ -47,8 +47,10 @@ export const INTERNAL_uploadthingHookGen = <
    * @example URL { https://www.example.com/api/uploadthing }
    */
   url: URL;
+  fetch: FetchEsque;
 }) => {
   const { uploadFiles, routeRegistry } = genUploader<TRouter>({
+    fetch: initOpts.fetch,
     url: initOpts.url,
     package: "@uploadthing/vue",
   });
@@ -129,7 +131,11 @@ export const INTERNAL_uploadthingHookGen = <
     });
 
     const _endpoint = computed(() => unwrap(endpoint, routeRegistry));
-    const routeConfig = useRouteConfig(initOpts.url, _endpoint.value as string);
+    const routeConfig = useRouteConfig(
+      initOpts.fetch,
+      initOpts.url,
+      _endpoint.value as string,
+    );
 
     return {
       startUpload,
@@ -151,10 +157,12 @@ export const generateVueHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
   const url = resolveMaybeUrlArg(initOpts?.url);
+  const fetch = initOpts?.fetch ?? globalThis.fetch;
 
   return {
-    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url }),
+    useUploadThing: INTERNAL_uploadthingHookGen<TRouter>({ url, fetch }),
     ...genUploader<TRouter>({
+      fetch,
       url,
       package: "@uploadthing/vue",
     }),

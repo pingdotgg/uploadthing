@@ -97,6 +97,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 ) => {
   const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
     url: resolveMaybeUrlArg(initOpts?.url),
+    fetch: initOpts?.fetch ?? globalThis.fetch,
   });
 
   return Vue.defineComponent(
