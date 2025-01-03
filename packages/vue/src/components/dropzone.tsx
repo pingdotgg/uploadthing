@@ -39,7 +39,7 @@ import type {
   UploadthingComponentProps,
   UseUploadthingProps,
 } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { Cancel, progressWidths, Spinner, usePaste } from "./shared";
 
 export type DropzoneStyleFieldCallbackArgs = {
@@ -95,11 +95,6 @@ export type UploadDropzoneProps<
 export const generateUploadDropzone = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg(initOpts?.url),
-    fetch: initOpts?.fetch ?? globalThis.fetch,
-  });
-
   return Vue.defineComponent(
     <TEndpoint extends keyof TRouter>(props: {
       config: UploadDropzoneProps<TRouter, TEndpoint>;
@@ -133,10 +128,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
           onUploadBegin: $props.onUploadBegin,
           onBeforeUploadBegin: $props.onBeforeUploadBegin,
         });
-      const { startUpload, isUploading, routeConfig } = useUploadThing(
-        $props.endpoint,
-        useUploadthingProps,
-      );
+      const { startUpload, isUploading, routeConfig } =
+        __useUploadThingInternal(
+          resolveMaybeUrlArg($props.url ?? initOpts?.url),
+          $props.endpoint,
+          $props.fetch ?? initOpts?.fetch ?? globalThis.fetch,
+          useUploadthingProps,
+        );
 
       const permittedFileTypes = computed(() =>
         generatePermittedFileTypes(routeConfig.value),

@@ -126,6 +126,7 @@ export function __useUploadThingInternal<
         error = e as UploadThingError<inferErrorShape<TRouter[TEndpoint]>>;
       } else {
         error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+        // eslint-disable-next-line no-console
         console.error(
           "Something went wrong. Please contact UploadThing and provide the following cause:",
           error.cause instanceof Error ? error.cause.toString() : error.cause,
@@ -162,9 +163,9 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
   const url = resolveMaybeUrlArg(initOpts?.url);
 
   const clientHelpers = genUploader<TRouter>({
+    fetch,
     url,
     package: "@uploadthing/react",
-    fetch,
   });
 
   function useUploadThing<TEndpoint extends keyof TRouter>(

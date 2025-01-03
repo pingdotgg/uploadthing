@@ -55,7 +55,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
   );
 
   const url = resolveMaybeUrlArg(opts?.url);
-
+  const fetch = opts?.fetch ?? globalThis.fetch;
   const TypedDropzone = <TEndpoint extends keyof TRouter>(
     props: Omit<
       UploadDropzoneProps<TRouter, TEndpoint>,
@@ -81,6 +81,7 @@ export const generateUploader = <TRouter extends FileRouter>(
   );
 
   const url = resolveMaybeUrlArg(opts?.url);
+  const fetch = opts?.fetch ?? globalThis.fetch;
 
   const TypedUploader = <TEndpoint extends keyof TRouter>(
     props: Omit<

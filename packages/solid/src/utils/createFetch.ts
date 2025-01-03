@@ -1,7 +1,7 @@
 import type { Resource } from "solid-js";
 import { createResource } from "solid-js";
 
-import type { FetchEsque} from "@uploadthing/shared";
+import type { FetchEsque } from "@uploadthing/shared";
 import { safeParseJSON } from "@uploadthing/shared";
 
 interface State<T> {

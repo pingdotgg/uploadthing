@@ -19,7 +19,7 @@ import type {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
-import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+import { __createUploadThingInternal } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -79,10 +79,6 @@ export function UploadButton<
     : UploadButtonProps<TRouter, TEndpoint>,
 ) {
   const $props = props as UploadButtonProps<TRouter, TEndpoint>;
-  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-    fetch: $props.fetch ?? globalThis.fetch,
-  });
 
   const {
     mode = "auto",
@@ -95,23 +91,28 @@ export function UploadButton<
   const [uploadProgress, setUploadProgress] = createSignal(0);
   const [files, setFiles] = createSignal<File[]>([]);
 
-  const uploadThing = createUploadThing($props.endpoint, {
-    signal: acRef.signal,
-    headers: $props.headers,
-    onClientUploadComplete: (res) => {
-      setFiles([]);
-      inputRef.value = "";
-      void $props.onClientUploadComplete?.(res);
-      setUploadProgress(0);
+  const uploadThing = __createUploadThingInternal(
+    resolveMaybeUrlArg($props.url),
+    $props.endpoint,
+    $props.fetch ?? globalThis.fetch,
+    {
+      signal: acRef.signal,
+      headers: $props.headers,
+      onClientUploadComplete: (res) => {
+        setFiles([]);
+        inputRef.value = "";
+        void $props.onClientUploadComplete?.(res);
+        setUploadProgress(0);
+      },
+      onUploadProgress: (p) => {
+        setUploadProgress(p);
+        $props.onUploadProgress?.(p);
+      },
+      onUploadError: $props.onUploadError,
+      onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
-    onUploadProgress: (p) => {
-      setUploadProgress(p);
-      $props.onUploadProgress?.(p);
-    },
-    onUploadError: $props.onUploadError,
-    onUploadBegin: $props.onUploadBegin,
-    onBeforeUploadBegin: $props.onBeforeUploadBegin,
-  });
+  );
 
   const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
