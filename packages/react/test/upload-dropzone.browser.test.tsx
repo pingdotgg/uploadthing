@@ -48,7 +48,7 @@ const worker = setupWorker(
   ),
 );
 
-beforeAll(() => worker.start());
+beforeAll(() => worker.start({ quiet: true }));
 afterAll(() => worker.stop());
 
 describe("UploadDropzone - basic", () => {

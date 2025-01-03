@@ -5,7 +5,7 @@ export default defineWorkspace([
     extends: "./vitest.config.ts",
     test: {
       include: [
-        "**/*.test.ts",
+        "**/*.test.{ts,tsx}",
         "!**/*.browser.test.{ts,tsx}",
         "!**/*.e2e.test.{ts,tsx}",
       ],
