@@ -107,7 +107,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
       const { startUpload, isUploading, routeConfig } =
         __useUploadThingInternal(
-          resolveMaybeUrlArg($props.url ?? initOpts?.url),
+          resolveMaybeUrlArg(initOpts?.url),
           $props.endpoint,
           $props.fetch ?? initOpts?.fetch ?? globalThis.fetch,
           useUploadthingProps,
