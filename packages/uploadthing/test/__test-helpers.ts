@@ -28,11 +28,11 @@ export const testToken = {
 };
 
 export const API_URL =
-  typeof process !== "undefined"
-    ? (process.env.UPLOADTHING_API_URL ?? "https://api.uploadthing.com")
+  typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
+    ? process.env.UPLOADTHING_API_URL
     : "https://api.uploadthing.com";
 export const UTFS_IO_URL =
-  typeof process !== "undefined"
+  typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
     ? "https://staging.utfs.io"
     : "https://utfs.io";
 export const INGEST_URL =
