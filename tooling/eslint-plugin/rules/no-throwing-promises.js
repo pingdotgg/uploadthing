@@ -1,16 +1,20 @@
-import {
-  AST_NODE_TYPES,
-  ESLintUtils,
-  TSESTree,
-} from "@typescript-eslint/utils";
+// @ts-check
+import { AST_NODE_TYPES, ESLintUtils } from "@typescript-eslint/utils";
 import { getParserServices } from "@typescript-eslint/utils/eslint-utils";
+
+/**
+ * @typedef {import("@typescript-eslint/utils").TSESTree.Node} TSESTree.Node
+ */
 
 export default ESLintUtils.RuleCreator.withoutDocs({
   create(context) {
     const services = getParserServices(context);
-    const checker = services.program.getTypeChecker();
 
-    function checkThrowArgument(node: TSESTree.Node): void {
+    /**
+     * @param {TSESTree.Node} node
+     * @returns {void}
+     */
+    function checkThrowArgument(node) {
       if (node.type === AST_NODE_TYPES.AwaitExpression) {
         return;
       }
