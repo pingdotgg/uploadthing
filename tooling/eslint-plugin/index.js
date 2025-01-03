@@ -1,5 +1,6 @@
-import noHardcodedVersion from "./rules/no-hardcoded-version-in-test";
-import noThrowingPromises from "./rules/no-throwing-promises";
+// @ts-check
+import noHardcodedVersion from "./rules/no-hardcoded-version-in-test.js";
+import noThrowingPromises from "./rules/no-throwing-promises.js";
 
 const recommended = {
   plugins: ["@uploadthing"],

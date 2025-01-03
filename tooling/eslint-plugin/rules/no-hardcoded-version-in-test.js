@@ -1,16 +1,21 @@
-import {
-  AST_NODE_TYPES,
-  ESLintUtils,
-  TSESTree,
-} from "@typescript-eslint/utils";
+// @ts-check
+import { AST_NODE_TYPES, ESLintUtils } from "@typescript-eslint/utils";
 import { getParserServices } from "@typescript-eslint/utils/eslint-utils";
 
-// Walks up the AST to find the first node that matches the predicate
-function findUp(
-  node: TSESTree.Node,
-  predicate: (node: TSESTree.Node) => boolean,
-): TSESTree.Node | undefined {
-  let currentNode: TSESTree.Node | undefined = node;
+/**
+ * @typedef {import("@typescript-eslint/utils").TSESTree.Node} TSESTree.Node
+ */
+
+/**
+ * Walks up the AST to find the first node that matches the predicate
+ *
+ * @param {TSESTree.Node} node
+ * @param {(node: TSESTree.Node) => boolean} predicate
+ * @returns {TSESTree.Node | undefined}
+ */
+function findUp(node, predicate) {
+  /** @type {TSESTree.Node | undefined} */
+  let currentNode = node;
   while (currentNode) {
     if (predicate(currentNode)) {
       return currentNode;
@@ -23,7 +28,6 @@ function findUp(
 export default ESLintUtils.RuleCreator.withoutDocs({
   create(context) {
     const services = getParserServices(context);
-    const checker = services.program.getTypeChecker();
 
     return {
       Property(node) {

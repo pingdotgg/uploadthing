@@ -41,21 +41,20 @@
     "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.27.1",
     "@effect/vitest": "0.16.0",
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@manypkg/cli": "^0.21.3",
     "@prettier/sync": "^0.5.2",
     "@types/bun": "^1.1.5",
     "@types/node": "^20.14.0",
     "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/prettier-config": "workspace:*",
     "@vitest/browser": "^2.1.8",
     "@vitest/coverage-v8": "^2.1.8",
     "msw": "2.7.0",
     "playwright": "1.49.1",
-    "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.6.9",
     "turbo": "2.3.3",
     "typescript": "^5.5.2",
     "uploadthing": "workspace:*",
     "vitest": "^2.1.8"
-  }
+  },
+  "prettier": "@uploadthing/prettier-config"
 }
