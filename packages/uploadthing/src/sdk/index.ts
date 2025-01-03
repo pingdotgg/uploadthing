@@ -15,9 +15,9 @@ import * as S from "effect/Schema";
 import type { ACL, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import { parseTimeToSeconds, UploadThingError } from "@uploadthing/shared";
 
-import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../internal/config";
-import { logHttpClientError, logHttpClientResponse } from "../internal/logger";
-import { makeRuntime } from "../internal/runtime";
+import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../_internal/config";
+import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
+import { makeRuntime } from "../_internal/runtime";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,

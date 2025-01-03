@@ -4,10 +4,10 @@ import type { StrictRequest } from "msw";
 import { http, HttpResponse } from "msw";
 import { vi } from "vitest";
 
-import { UPLOADTHING_VERSION } from "../src/internal/config";
-import { ParsedToken, UploadThingToken } from "../src/internal/shared-schemas";
-import type { ActionType } from "../src/internal/shared-schemas";
-import type { UploadPutResult } from "../src/internal/types";
+import { UPLOADTHING_VERSION } from "../src/_internal/config";
+import { ParsedToken, UploadThingToken } from "../src/_internal/shared-schemas";
+import type { ActionType } from "../src/_internal/shared-schemas";
+import type { UploadPutResult } from "../src/_internal/types";
 
 export const requestSpy = vi.fn<(url: string, req: RequestInit) => void>();
 export const requestsToDomain = (domain: string) =>

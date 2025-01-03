@@ -4,12 +4,12 @@ import { defineEventHandler, toWebRequest } from "h3";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeAdapterHandler } from "./internal/handler";
-import type { CreateBuilderOptions } from "./internal/upload-builder";
-import { createBuilder } from "./internal/upload-builder";
+import { makeAdapterHandler } from "./_internal/handler";
+import type { CreateBuilderOptions } from "./_internal/upload-builder";
+import { createBuilder } from "./_internal/upload-builder";
 import type { FileRouter, RouteHandlerOptions } from "./types";
 
-export { UTFiles } from "./internal/types";
+export { UTFiles } from "./_internal/types";
 export type { FileRouter };
 
 type AdapterArgs = {
