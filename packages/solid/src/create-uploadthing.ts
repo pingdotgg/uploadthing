@@ -93,7 +93,7 @@ export function __createUploadThingInternal<
           if (!opts?.onUploadBegin) return;
           opts.onUploadBegin(file);
         },
-        // @ts-expect-error - TODO: fix this
+        // @ts-expect-error - input may not be defined on the type
         input,
       });
 
