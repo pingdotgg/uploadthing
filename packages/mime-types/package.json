@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -89,7 +89,7 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.6.2",
+    "bunchee": "^6.1.2",
     "eslint": "^8.57.0",
     "typescript": "^5.5.2"
   },

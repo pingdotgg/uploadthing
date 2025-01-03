@@ -1,7 +1,5 @@
-/** @typedef  {import("prettier").Config} PrettierConfig */
-
-/** @type { PrettierConfig | SortImportsConfig } */
-const config = {
+/** @type { import("prettier").Config } */
+export default {
   arrowParens: "always",
   printWidth: 80,
   singleQuote: false,
@@ -14,6 +12,7 @@ const config = {
   ],
   // Last version that doesn't squash type and value imports
   importOrderTypeScriptVersion: "4.4.0",
+  importOrderParserPlugins: ["typescript", "jsx", "explicitResourceManagement"],
   importOrder: [
     "^(react/(.*)$)|^(react$)",
     "^(next/(.*)$)|^(next$)",
@@ -27,5 +26,3 @@ const config = {
   ],
   proseWrap: "always", // printWidth line breaks in md/mdx
 };
-
-module.exports = config;

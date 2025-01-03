@@ -1,24 +1,10 @@
-// @vitest-environment happy-dom
-/// <reference types="@testing-library/jest-dom/vitest" />
-
-import { cleanup, render, waitFor } from "@testing-library/react";
+import { page } from "@vitest/browser/context";
 import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
-import {
-  afterAll,
-  afterEach,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { setupWorker } from "msw/browser";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { render } from "vitest-browser-react";
 
-import {
-  createRouteHandler,
-  createUploadthing,
-  extractRouterConfig,
-} from "uploadthing/server";
+import { createRouteHandler, createUploadthing } from "uploadthing/server";
 
 import { generateUploadDropzone } from "../src";
 
@@ -44,7 +30,7 @@ const utGet = vi.fn<(req: Request) => void>();
 const utPost =
   vi.fn<({ request, body }: { request: Request; body: any }) => void>();
 
-const server = setupServer(
+const worker = setupWorker(
   http.get("/api/uploadthing", ({ request }) => {
     utGet(request);
     return routeHandler(request);
@@ -62,12 +48,8 @@ const server = setupServer(
   ),
 );
 
-beforeAll(() => server.listen());
-afterEach(() => {
-  server.resetHandlers();
-  cleanup();
-});
-afterAll(() => server.close());
+beforeAll(() => worker.start({ quiet: true }));
+afterAll(() => worker.stop());
 
 describe("UploadDropzone - basic", () => {
   it("fetches and displays route config", async () => {
@@ -80,12 +62,14 @@ describe("UploadDropzone - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose a file or drag and drop");
     expect(label).not.toHaveTextContent("(s)");
 
     expect(utGet).toHaveBeenCalledOnce();
-    expect(utils.getByText("Image (4MB)")).toBeInTheDocument();
+    await expect.element(page.getByText("Image (4MB)")).toBeVisible();
   });
 
   it("shows plural when maxFileCount is > 1", async () => {
@@ -98,7 +82,9 @@ describe("UploadDropzone - basic", () => {
     // expect(label).toHaveTextContent("Loading...");
 
     // then eventually we load in the data, and we should be in the ready state
-    await waitFor(() => expect(label).toHaveAttribute("data-state", "ready"));
+    await vi.waitFor(() =>
+      expect(label).toHaveAttribute("data-state", "ready"),
+    );
     expect(label).toHaveTextContent("Choose file(s) or drag and drop");
   });
 });
