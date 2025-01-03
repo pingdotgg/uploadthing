@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, it } from "vitest";
+import { expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";
@@ -16,8 +16,6 @@ const router = {
   exampleRoute: f(["image"])
     .middleware(() => ({ foo: "bar" }))
     .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
-
       return { foo: "bar" as const };
     }),
 
@@ -25,8 +23,6 @@ const router = {
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => ({ number: opts.input.foo.length }))
     .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
-
       return { baz: "qux" as const };
     }),
 
@@ -34,7 +30,7 @@ const router = {
     .input(z.object({ bar: z.number() }))
     .middleware((opts) => ({ square: opts.input.bar * opts.input.bar }))
     .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
+      //
     }),
 
   withTransformedInput: f(["image"], { awaitServerData: false })
@@ -44,7 +40,7 @@ const router = {
       return { string: opts.input.bar };
     })
     .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
+      //
     }),
 
   // Should technically block returning undefined but there was

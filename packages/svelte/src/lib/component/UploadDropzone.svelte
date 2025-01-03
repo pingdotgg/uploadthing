@@ -26,7 +26,7 @@
     generatePermittedFileTypes,
   } from "uploadthing/client";
 
-  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import { __createUploadThingInternal } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
   import { createDropzone } from "./create-dropzone";
@@ -80,11 +80,10 @@
   $: uploadProgress = 0;
   let rootRef: HTMLElement;
 
-  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
-    url: resolveMaybeUrlArg(uploader.url),
-  });
-  const { startUpload, isUploading, routeConfig } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = __createUploadThingInternal(
+    resolveMaybeUrlArg(uploader.url),
     uploader.endpoint,
+    uploader.fetch ?? globalThis.fetch,
     {
       signal: acRef.signal,
       headers: uploader.headers,

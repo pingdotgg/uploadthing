@@ -208,6 +208,25 @@ export type GenerateUploaderOptions = {
    */
   url?: string | URL;
   /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
+  /**
    * The uploadthing package that is making this request
    * @example "@uploadthing/react"
    *

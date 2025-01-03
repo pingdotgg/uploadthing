@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import type {
   EndpointMetadata,
   ExpandedRouteConfig,
+  FetchEsque,
 } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
@@ -30,14 +31,17 @@ import useFetch from "./utils/useFetch";
 
 declare const globalThis: {
   __UPLOADTHING?: EndpointMetadata;
+  fetch: FetchEsque;
 };
 
 const useRouteConfig = (
+  fetch: FetchEsque,
   url: URL,
   endpoint: string,
 ): ExpandedRouteConfig | undefined => {
   const maybeServerData = globalThis.__UPLOADTHING;
   const { data } = useFetch<EndpointMetadata>(
+    fetch,
     // Don't fetch if we already have the data
     maybeServerData ? undefined : url.href,
   );
@@ -55,9 +59,11 @@ export function __useUploadThingInternal<
 >(
   url: URL,
   endpoint: EndpointArg<TRouter, TEndpoint>,
+  fetch: FetchEsque,
   opts?: UseUploadthingProps<TRouter[TEndpoint]>,
 ) {
   const { uploadFiles, routeRegistry } = genUploader<TRouter>({
+    fetch,
     url,
     package: "@uploadthing/react",
   });
@@ -120,6 +126,7 @@ export function __useUploadThingInternal<
         error = e as UploadThingError<inferErrorShape<TRouter[TEndpoint]>>;
       } else {
         error = INTERNAL_DO_NOT_USE__fatalClientError(e as Error);
+        // eslint-disable-next-line no-console
         console.error(
           "Something went wrong. Please contact UploadThing and provide the following cause:",
           error.cause instanceof Error ? error.cause.toString() : error.cause,
@@ -134,7 +141,7 @@ export function __useUploadThingInternal<
   });
 
   const _endpoint = unwrap(endpoint, routeRegistry);
-  const routeConfig = useRouteConfig(url, _endpoint as string);
+  const routeConfig = useRouteConfig(fetch, url, _endpoint as string);
 
   return {
     startUpload,
@@ -152,9 +159,11 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     uploadthingClientVersion,
   );
 
+  const fetch = initOpts?.fetch ?? globalThis.fetch;
   const url = resolveMaybeUrlArg(initOpts?.url);
 
   const clientHelpers = genUploader<TRouter>({
+    fetch,
     url,
     package: "@uploadthing/react",
   });
@@ -163,7 +172,7 @@ export const generateReactHelpers = <TRouter extends FileRouter>(
     endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: UseUploadthingProps<TRouter[TEndpoint]>,
   ) {
-    return __useUploadThingInternal(url, endpoint, opts);
+    return __useUploadThingInternal(url, endpoint, fetch, opts);
   }
 
   function getRouteConfig(slug: EndpointArg<TRouter, keyof TRouter>) {
