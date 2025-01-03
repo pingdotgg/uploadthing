@@ -23,8 +23,8 @@ importers:
         specifier: ^2.27.1
         version: 2.27.1
       '@effect/vitest':
-        specifier: 0.15.0
-        version: 0.15.0(effect@3.11.5)(vitest@2.1.8(@types/node@20.16.11)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.28.1)(msw@2.7.0(@types/node@20.16.11)(typescript@5.6.2))(terser@5.34.1))
+        specifier: 0.16.0
+        version: 0.16.0(effect@3.12.0)(vitest@2.1.8(@types/node@20.16.11)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.28.1)(msw@2.7.0(@types/node@20.16.11)(typescript@5.6.2))(terser@5.34.1))
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.4.0
         version: 4.4.0(@vue/compiler-sfc@3.5.11)(prettier@3.4.2)
@@ -317,11 +317,11 @@ importers:
   examples/backend-adapters/server:
     dependencies:
       '@effect/platform':
-        specifier: 0.70.7
-        version: 0.70.7(effect@3.11.5)
+        specifier: 0.72.0
+        version: 0.72.0(effect@3.12.0)
       '@effect/platform-node':
-        specifier: 0.65.7
-        version: 0.65.7(@effect/platform@0.70.7(effect@3.11.5))(effect@3.11.5)
+        specifier: 0.68.0
+        version: 0.68.0(@effect/platform@0.72.0(effect@3.12.0))(effect@3.12.0)
       '@elysiajs/cors':
         specifier: ^1.1.1
         version: 1.1.1(elysia@1.1.16(@sinclair/typebox@0.34.3)(openapi-types@12.1.3)(typescript@5.6.2))
@@ -341,8 +341,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       effect:
-        specifier: 3.11.5
-        version: 3.11.5
+        specifier: 3.12.0
+        version: 3.12.0
       elysia:
         specifier: ^1.1.16
         version: 1.1.16(@sinclair/typebox@0.34.3)(openapi-types@12.1.3)(typescript@5.6.2)
@@ -1466,8 +1466,8 @@ importers:
         specifier: workspace:*
         version: link:../mime-types
       effect:
-        specifier: 3.11.5
-        version: 3.11.5
+        specifier: 3.12.0
+        version: 3.12.0
       sqids:
         specifier: ^0.3.0
         version: 0.3.0
@@ -1592,8 +1592,8 @@ importers:
   packages/uploadthing:
     dependencies:
       '@effect/platform':
-        specifier: 0.70.7
-        version: 0.70.7(effect@3.11.5)
+        specifier: 0.72.0
+        version: 0.72.0(effect@3.12.0)
       '@standard-schema/spec':
         specifier: 1.0.0-beta.3
         version: 1.0.0-beta.3
@@ -1604,8 +1604,8 @@ importers:
         specifier: workspace:*
         version: link:../shared
       effect:
-        specifier: 3.11.5
-        version: 3.11.5
+        specifier: 3.12.0
+        version: 3.12.0
     devDependencies:
       '@remix-run/server-runtime':
         specifier: ^2.12.0
@@ -1729,8 +1729,8 @@ importers:
         specifier: 2.1.1
         version: 2.1.1
       effect:
-        specifier: 3.11.5
-        version: 3.11.5
+        specifier: 3.12.0
+        version: 3.12.0
       next:
         specifier: canary
         version: 15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1770,13 +1770,13 @@ importers:
     dependencies:
       '@uploadthing/react':
         specifier: npm:@uploadthing/react@6
-        version: 6.8.0(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.8.23)(svelte@4.2.15)(uploadthing@6.13.3(@effect/platform@0.70.7(effect@3.11.5))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16))(vue@3.4.25(typescript@5.6.3))
+        version: 6.8.0(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.8.23)(svelte@4.2.15)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16))(vue@3.4.25(typescript@5.6.3))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
       effect:
-        specifier: 3.11.5
-        version: 3.11.5
+        specifier: 3.12.0
+        version: 3.12.0
       next:
         specifier: canary
         version: 15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1788,7 +1788,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       uploadthing:
         specifier: npm:uploadthing@6
-        version: 6.13.3(@effect/platform@0.70.7(effect@3.11.5))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16)
+        version: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16)
       zod:
         specifier: 3.23.8
         version: 3.23.8
@@ -3092,32 +3092,32 @@ packages:
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
 
-  '@effect/platform-node-shared@0.20.7':
-    resolution: {integrity: sha512-WwqXDwp/SUFMOhAgpNd8ReFjofHHtC19mpAus29m7X3bTyv/dLR80KRKGC2eI1Nm8ffg+vnfXx7xekTnom4PCA==}
+  '@effect/platform-node-shared@0.22.0':
+    resolution: {integrity: sha512-v5syfSWbek/v5uqRweEjq1zwtl17FMaOeSIt1OZFzQd4GIclVOgM/8chNVtAmpkdQh7SaKNijFruO0VET54e6w==}
     peerDependencies:
-      '@effect/platform': ^0.70.7
-      effect: ^3.11.5
+      '@effect/platform': ^0.72.0
+      effect: ^3.12.0
 
-  '@effect/platform-node@0.65.7':
-    resolution: {integrity: sha512-wos3sLmKV8mTXh5e5kY48wB+KlKDVNQeKTg6QXxexSOpFxDEpH74Hj6GM9jerTpqKahokUUyVVZ/PU4GdNVn8A==}
+  '@effect/platform-node@0.68.0':
+    resolution: {integrity: sha512-0BkiWEw59+C/54+UCPfCFBNrxkHOAUPa/GJKfWVyL7LOA1pbrLrwdse1S3deLwP4IEPuepMyEOL9BHNsorDhcA==}
     peerDependencies:
-      '@effect/platform': ^0.70.7
-      effect: ^3.11.5
+      '@effect/platform': ^0.72.0
+      effect: ^3.12.0
 
-  '@effect/platform@0.70.7':
-    resolution: {integrity: sha512-TbNwj/mOJhycPygbmicGBS7CNtv5Z8WVheRbLUdP3oPAe/nbSOJVLc8ZPvOejhquF/1vJMKuqY5MWfkcBpvi/g==}
+  '@effect/platform@0.72.0':
+    resolution: {integrity: sha512-uHsW2hlo6AiIW3zpLAVAoNvJngS/JwCZBAM4RSRllm8JTgjjCraef78FJBDNnSXz+2a10Xzzx4qxVsP3s8EV5Q==}
     peerDependencies:
-      effect: ^3.11.5
+      effect: ^3.12.0
 
   '@effect/schema@0.68.18':
     resolution: {integrity: sha512-+knLs36muKsyqIvQTB0itGp5Lwy+5jgEC0G5P8wSsrB6EWGFirS87QjbaFYGbg32l/P51RM+9cPMiAEyICwN6g==}
     peerDependencies:
       effect: ^3.4.8
 
-  '@effect/vitest@0.15.0':
-    resolution: {integrity: sha512-oFJs8wPy0wU+OZRzurKoBV6xwvzagsx4ZTY3Yv2BCJ3nguDn9k70mSj7Eb90RMi86iK7UIlsYGz3oVdzcuLg0w==}
+  '@effect/vitest@0.16.0':
+    resolution: {integrity: sha512-caUXVs8Xsf07XUHRu1pOsHDiww7rE556+0PYZHIg+X6oL6gA9k2+d8ZFmutaW9hJoSQuy+vKyYAFM9/1rVSSAQ==}
     peerDependencies:
-      effect: ^3.11.10
+      effect: ^3.12.0
       vitest: ^2.0.5
 
   '@egjs/agent@2.4.3':
@@ -9566,8 +9566,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  effect@3.11.5:
-    resolution: {integrity: sha512-oSzaR/S/2A/qDTnDqMWxQUNSjCG2sRLB4NEvTu+l9RqE122MTgKXOWzw0x4MHsdovRTzAihfkpgBj2aLFnH2+w==}
+  effect@3.12.0:
+    resolution: {integrity: sha512-b/u9s3b9HfTo0qygVouegP0hkbiuxRIeaCe1ppf8P88hPyl6lKCbErtn7Az4jG7LuU7f0Wgm4c8WXbMcL2j8+g==}
 
   effect@3.4.8:
     resolution: {integrity: sha512-qOQNrSSN3ITuAtARtN2Ldq6E5f42splY9VV18LqpKOXMwQCCEWkXdns4by3D2CJnDXQD2KCE0iGcRR2KowiQIA==}
@@ -10221,6 +10221,10 @@ packages:
 
   fast-check@3.22.0:
     resolution: {integrity: sha512-8HKz3qXqnHYp/VCNn2qfjHdAdcI8zcSqOyX64GOMukp7SL2bfzfeDKjSd+UyECtejccaZv3LcvZTm9YDD22iCQ==}
+    engines: {node: '>=8.0.0'}
+
+  fast-check@3.23.2:
+    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
     engines: {node: '>=8.0.0'}
 
   fast-content-type-parse@1.1.0:
@@ -16216,6 +16220,10 @@ packages:
     resolution: {integrity: sha512-U8uCCl2x9TK3WANvmBavymRzxbfFYG+tAu+fgx3zxQy3qdagQqBLwJVrdyO1TBfUXvfKveMKJZhpvUYoOjM+4g==}
     engines: {node: '>=18.17'}
 
+  undici@7.2.0:
+    resolution: {integrity: sha512-klt+0S55GBViA9nsq48/NSCo4YX5mjydjypxD7UmHh/brMu8h/Mhd/F7qAeoH2NOO8SDTk6kjnTFc4WpzmfYpQ==}
+    engines: {node: '>=20.18.1'}
+
   unenv-nightly@1.10.0-1717606461.a117952:
     resolution: {integrity: sha512-u3TfBX02WzbHTpaEfWEKwDijDSFAHcgXkayUZ+MVDrjhLFvgAJzFGTSTmwlEhwWi2exyRQey23ah9wELMM6etg==}
 
@@ -19790,28 +19798,28 @@ snapshots:
 
   '@discoveryjs/json-ext@0.5.7': {}
 
-  '@effect/platform-node-shared@0.20.7(@effect/platform@0.70.7(effect@3.11.5))(effect@3.11.5)':
+  '@effect/platform-node-shared@0.22.0(@effect/platform@0.72.0(effect@3.12.0))(effect@3.12.0)':
     dependencies:
-      '@effect/platform': 0.70.7(effect@3.11.5)
+      '@effect/platform': 0.72.0(effect@3.12.0)
       '@parcel/watcher': 2.4.1
-      effect: 3.11.5
+      effect: 3.12.0
       multipasta: 0.2.5
 
-  '@effect/platform-node@0.65.7(@effect/platform@0.70.7(effect@3.11.5))(effect@3.11.5)':
+  '@effect/platform-node@0.68.0(@effect/platform@0.72.0(effect@3.12.0))(effect@3.12.0)':
     dependencies:
-      '@effect/platform': 0.70.7(effect@3.11.5)
-      '@effect/platform-node-shared': 0.20.7(@effect/platform@0.70.7(effect@3.11.5))(effect@3.11.5)
-      effect: 3.11.5
+      '@effect/platform': 0.72.0(effect@3.12.0)
+      '@effect/platform-node-shared': 0.22.0(@effect/platform@0.72.0(effect@3.12.0))(effect@3.12.0)
+      effect: 3.12.0
       mime: 3.0.0
-      undici: 6.19.8
+      undici: 7.2.0
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@effect/platform@0.70.7(effect@3.11.5)':
+  '@effect/platform@0.72.0(effect@3.12.0)':
     dependencies:
-      effect: 3.11.5
+      effect: 3.12.0
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
 
@@ -19820,9 +19828,9 @@ snapshots:
       effect: 3.4.8
       fast-check: 3.22.0
 
-  '@effect/vitest@0.15.0(effect@3.11.5)(vitest@2.1.8(@types/node@20.16.11)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.28.1)(msw@2.7.0(@types/node@20.16.11)(typescript@5.6.2))(terser@5.34.1))':
+  '@effect/vitest@0.16.0(effect@3.12.0)(vitest@2.1.8(@types/node@20.16.11)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.28.1)(msw@2.7.0(@types/node@20.16.11)(typescript@5.6.2))(terser@5.34.1))':
     dependencies:
-      effect: 3.11.5
+      effect: 3.12.0
       vitest: 2.1.8(@types/node@20.16.11)(@vitest/browser@2.1.8(@types/node@20.16.11)(playwright@1.49.1)(typescript@5.6.2)(vite@5.4.8(@types/node@20.16.11)(lightningcss@1.28.1)(terser@5.34.1))(vitest@2.1.8))(happy-dom@16.3.0)(lightningcss@1.28.1)(msw@2.7.0(@types/node@20.16.11)(typescript@5.6.2))(terser@5.34.1)
 
   '@egjs/agent@2.4.3': {}
@@ -26313,14 +26321,14 @@ snapshots:
 
   '@uploadthing/mime-types@0.2.10': {}
 
-  '@uploadthing/react@6.8.0(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.8.23)(svelte@4.2.15)(uploadthing@6.13.3(@effect/platform@0.70.7(effect@3.11.5))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16))(vue@3.4.25(typescript@5.6.3))':
+  '@uploadthing/react@6.8.0(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.8.23)(svelte@4.2.15)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16))(vue@3.4.25(typescript@5.6.3))':
     dependencies:
       '@uploadthing/dropzone': 0.4.1(react@18.3.1)(solid-js@1.8.23)(svelte@4.2.15)(vue@3.4.25(typescript@5.6.3))
       '@uploadthing/shared': 6.7.9
       file-selector: 0.6.0
       react: 18.3.1
       tailwind-merge: 2.3.0
-      uploadthing: 6.13.3(@effect/platform@0.70.7(effect@3.11.5))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16)
+      uploadthing: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16)
     optionalDependencies:
       next: 15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
@@ -28939,9 +28947,9 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  effect@3.11.5:
+  effect@3.12.0:
     dependencies:
-      fast-check: 3.22.0
+      fast-check: 3.23.2
 
   effect@3.4.8: {}
 
@@ -30159,6 +30167,10 @@ snapshots:
   fake-indexeddb@5.0.2: {}
 
   fast-check@3.22.0:
+    dependencies:
+      pure-rand: 6.1.0
+
+  fast-check@3.23.2:
     dependencies:
       pure-rand: 6.1.0
 
@@ -37986,6 +37998,8 @@ snapshots:
 
   undici@6.19.8: {}
 
+  undici@7.2.0: {}
+
   unenv-nightly@1.10.0-1717606461.a117952:
     dependencies:
       consola: 3.3.3
@@ -38469,7 +38483,7 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  uploadthing@6.13.3(@effect/platform@0.70.7(effect@3.11.5))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16):
+  uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@4.21.1)(fastify@4.26.2)(h3@1.13.0)(next@15.1.1-canary.24(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@3.4.16):
     dependencies:
       '@effect/schema': 0.68.18(effect@3.4.8)
       '@uploadthing/mime-types': 0.2.10
@@ -38478,7 +38492,7 @@ snapshots:
       effect: 3.4.8
       std-env: 3.7.0
     optionalDependencies:
-      '@effect/platform': 0.70.7(effect@3.11.5)
+      '@effect/platform': 0.72.0(effect@3.12.0)
       express: 4.21.1
       fastify: 4.26.2
       h3: 1.13.0
