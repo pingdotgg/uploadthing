@@ -1,16 +1,20 @@
-import { after } from "node:test";
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
-import { afterEach, beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 
-import { configProvider, IngestUrl, IsDevelopment, UTToken } from "./config";
-import { ParsedToken, UploadThingToken } from "./shared-schemas";
+import {
+  configProvider,
+  IngestUrl,
+  IsDevelopment,
+  UTToken,
+} from "../src/_internal/config";
+import { ParsedToken, UploadThingToken } from "../src/_internal/shared-schemas";
 
 const app1TokenData = {
   apiKey: Redacted.make("sk_foo"),

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSectionStore } from "@/components/SectionProvider";
 import { Tag, TagColor } from "@/components/Tag";
 import { remToPx } from "@/lib/remToPx";
-import { useInView } from "framer-motion";
+import { useInView } from "motion/react";
 import { Link } from "next-view-transitions";
 
 import { AnchorIcon } from "./icons";

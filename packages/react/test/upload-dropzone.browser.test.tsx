@@ -42,7 +42,7 @@ const worker = setupWorker(
   }),
   http.all<{ key: string }>(
     "https://fra1.ingest.uploadthing.com/:key",
-    ({ request, params }) => {
+    ({ params }) => {
       return HttpResponse.json({ url: "https://utfs.io/f/" + params.key });
     },
   ),

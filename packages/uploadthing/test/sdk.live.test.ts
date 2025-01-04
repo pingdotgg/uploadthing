@@ -61,7 +61,6 @@ describe.runIf(shouldRun)(
     it("should upload a file", async () => {
       const file = new File(["foo"], "foo.txt", { type: "text/plain" });
       const result = await utapi.uploadFiles(file);
-      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -97,7 +96,6 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFiles(file, {
         acl: "private",
       });
-      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -128,7 +126,6 @@ describe.runIf(shouldRun)(
       const result = await utapi.uploadFilesFromUrl(
         "https://uploadthing.com/favicon.ico",
       );
-      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: null,
@@ -149,8 +146,6 @@ describe.runIf(shouldRun)(
     });
 
     it("should rename a file with fileKey", async () => {
-      const customId = crypto.randomUUID();
-
       const file = new UTFile(["foo"], "bar.txt");
       const result = await utapi.uploadFiles(file);
       const fileKey = result.data!.key;
@@ -197,7 +192,6 @@ describe.runIf(shouldRun)(
 
       const file = new UTFile(["foo"], "bar.txt", { customId });
       const result = await utapi.uploadFiles(file);
-      const key = result.data!.key;
       expect(result).toEqual({
         data: {
           customId: customId,
@@ -268,7 +262,7 @@ describe.runIf(shouldRun)(
 
     it("should delete a file", async () => {
       const { files } = await utapi.listFiles();
-      const someFile = files[0];
+      const someFile = files[0]!;
 
       const response = await fetch(`${UTFS_IO_URL}/f/${someFile.key}`);
       const size = Number(response.headers.get("Content-Length"));

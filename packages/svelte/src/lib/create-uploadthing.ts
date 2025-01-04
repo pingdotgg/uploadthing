@@ -7,12 +7,8 @@ import {
   unwrap,
   UploadAbortedError,
   UploadThingError,
-  warnIfInvalidPeerDependency,
 } from "@uploadthing/shared";
-import {
-  genUploader,
-  version as uploadthingClientVersion,
-} from "uploadthing/client";
+import { genUploader } from "uploadthing/client";
 import type { FileRouter } from "uploadthing/server";
 import type {
   EndpointArg,
@@ -20,7 +16,6 @@ import type {
   inferErrorShape,
 } from "uploadthing/types";
 
-import { peerDependencies } from "../../package.json";
 import type {
   GenerateTypedHelpersOptions,
   UploadthingComponentProps,
@@ -81,7 +76,7 @@ export function __createUploadThingInternal<
           });
           const averageProgress = Math.floor(sum / fileProgress.size / 10) * 10;
           if (averageProgress !== uploadProgress) {
-            opts?.onUploadProgress?.(averageProgress);
+            opts.onUploadProgress(averageProgress);
             uploadProgress = averageProgress;
           }
         },
@@ -132,9 +127,7 @@ export function __createUploadThingInternal<
     /**
      * @deprecated Use `routeConfig` instead
      */
-    permittedFileInfo: routeConfig
-      ? { slug: _endpoint, config: readonly(routeConfig) }
-      : undefined,
+    permittedFileInfo: { slug: _endpoint, config: readonly(routeConfig) },
   } as const;
 }
 
@@ -148,12 +141,6 @@ const generateUploader = <TRouter extends FileRouter>() => {
 export const generateSvelteHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  warnIfInvalidPeerDependency(
-    "@uploadthing/svelte",
-    peerDependencies.uploadthing,
-    uploadthingClientVersion,
-  );
-
   const url = resolveMaybeUrlArg(initOpts?.url);
   const fetch = initOpts?.fetch ?? globalThis.fetch;
 

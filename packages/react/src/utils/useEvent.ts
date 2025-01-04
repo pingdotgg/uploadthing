@@ -9,10 +9,7 @@ const noop = () => void 0;
  * Make use of useInsertionEffect if available.
  */
 const useInsertionEffect =
-  typeof window !== "undefined"
-    ? // useInsertionEffect is available in React 18+
-      React.useInsertionEffect || React.useLayoutEffect
-    : noop;
+  typeof window !== "undefined" ? React.useInsertionEffect : noop;
 
 /**
  * Similar to useCallback, with a few subtle differences:

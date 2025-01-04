@@ -13,7 +13,7 @@ describe("resolveMaybeUrlArg", () => {
       location: {
         origin: "http://example.com",
       },
-    } as any;
+    } as never;
 
     expect(resolveMaybeUrlArg("/foo/bar").href).toBe(
       "http://example.com/foo/bar",

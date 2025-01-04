@@ -14,10 +14,10 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../package.json";
-import type { Deferred } from "./internal/deferred";
-import { createDeferred } from "./internal/deferred";
-import { uploadFile, uploadFilesInternal } from "./internal/upload.browser";
-import { createUTReporter } from "./internal/ut-reporter";
+import type { Deferred } from "./_internal/deferred";
+import { createDeferred } from "./_internal/deferred";
+import { uploadFile, uploadFilesInternal } from "./_internal/upload-browser";
+import { createUTReporter } from "./_internal/ut-reporter";
 import type {
   ClientUploadedFileData,
   CreateUploadOptions,
@@ -109,7 +109,7 @@ export const genUploader = <TRouter extends FileRouter>(
     const utReporter = createUTReporter({
       endpoint: String(endpoint),
       package: initOpts.package,
-      url: resolveMaybeUrlArg(initOpts?.url),
+      url: resolveMaybeUrlArg(initOpts.url),
       headers: opts.headers,
     });
     const fetchFn: FetchEsque = initOpts.fetch ?? window.fetch;
@@ -146,6 +146,7 @@ export const genUploader = <TRouter extends FileRouter>(
 
     for (const [i, p] of presigneds.entries()) {
       const file = opts.files[i];
+      if (!file) continue;
 
       const deferred = createDeferred<ClientUploadedFileData<TServerOutput>>();
       uploads.set(file, { deferred, presigned: p });
@@ -260,7 +261,7 @@ export const genUploader = <TRouter extends FileRouter>(
     return uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
       ...opts,
       skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
-      url: resolveMaybeUrlArg(initOpts?.url),
+      url: resolveMaybeUrlArg(initOpts.url),
       package: initOpts.package,
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,

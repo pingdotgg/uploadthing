@@ -24,12 +24,12 @@ export type DropzoneState = {
  * https://github.com/react-dropzone/attr-accept/blob/master/src/index.js
  */
 function accepts(file: File, acceptedFiles: string | string[]): boolean {
-  if (file && acceptedFiles) {
+  if (acceptedFiles) {
     const acceptedFilesArray = Array.isArray(acceptedFiles)
       ? acceptedFiles
       : acceptedFiles.split(",");
-    const fileName = file.name ?? "";
-    const mimeType = (file.type ?? "").toLowerCase();
+    const fileName = file.name;
+    const mimeType = file.type.toLowerCase();
     const baseMimeType = mimeType.replace(/\/.*$/, "");
 
     return acceptedFilesArray.some((type) => {
@@ -130,9 +130,7 @@ export function isEventWithFiles(event: Partial<Event>) {
 
 export function isIeOrEdge(ua = window.navigator.userAgent) {
   return (
-    ua.indexOf("MSIE ") > -1 ||
-    ua.indexOf("Trident/") > -1 ||
-    ua.indexOf("Edge/") > -1
+    ua.includes("MSIE ") || ua.includes("Trident/") || ua.includes("Edge/")
   );
 }
 

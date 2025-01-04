@@ -467,7 +467,7 @@ describe("adapters:next-legacy", async () => {
     const { req } = mockReq({
       method: "GET",
     });
-    const { res, json, status } = mockRes();
+    const { res, json } = mockRes();
 
     await eventHandler(req, res);
 

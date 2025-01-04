@@ -1,18 +1,23 @@
-/** @type {import('eslint').Linter.Config} */
-const config = {
-  extends: ["plugin:svelte/recommended"],
-  parserOptions: {
-    extraFileExtensions: [".svelte"],
-  },
-  overrides: [
-    {
-      files: ["*.svelte"],
-      parser: "svelte-eslint-parser",
+import sveltePlugin from "eslint-plugin-svelte";
+
+/** @type {Awaited<import('typescript-eslint').Config>} */
+export default [
+  {
+    files: ["**/*.svelte"],
+    plugins: {
+      svelte: sveltePlugin,
+    },
+    languageOptions: {
+      parser: sveltePlugin.parser,
       parserOptions: {
-        parser: "@typescript-eslint/parser",
+        parser: {
+          ts: true,
+        },
+        extraFileExtensions: [".svelte"],
       },
     },
-  ],
-};
-
-module.exports = config;
+    rules: {
+      ...sveltePlugin.configs.recommended.rules,
+    },
+  },
+];

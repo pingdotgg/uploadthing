@@ -192,7 +192,7 @@ describe("uploadFiles", () => {
     ]);
 
     expect(
-      Object.fromEntries(middlewareMock.mock.calls[0][0].req.headers),
+      Object.fromEntries(middlewareMock.mock.calls[0]![0]!.req.headers),
     ).toMatchObject({
       authorization: "Bearer my-auth-token",
       "x-uploadthing-package": "vitest",
@@ -227,7 +227,7 @@ describe("uploadFiles", () => {
     ]);
 
     expect(
-      Object.fromEntries(middlewareMock.mock.calls[0][0].req.headers),
+      Object.fromEntries(middlewareMock.mock.calls[0]![0]!.req.headers),
     ).toMatchObject({
       authorization: "Bearer my-auth-token",
       "x-uploadthing-package": "vitest",

@@ -60,11 +60,13 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
         ? window.location.origin
         : (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`),
     );
-  } catch (e) {
+  } catch (err) {
     // Can't throw since window.location is undefined in Metro pass
     // but may get defined when app mounts.
+    // eslint-disable-next-line no-console
     console.warn(
       `Failed to resolve URL from ${initOpts?.url?.toString()} and ${process.env.EXPO_PUBLIC_SERVER_ORIGIN} or ${debuggerHost}. Your application may not work as expected.`,
+      err,
     );
   }
 

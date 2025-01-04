@@ -103,10 +103,10 @@ export const assertFilesMeetConfig = (
         });
       }
 
-      if (count < min) {
+      if (count != null && count < min) {
         return yield* new FileCountMismatch(key, "minimum", min, count);
       }
-      if (count > max) {
+      if (count != null && count > max) {
         return yield* new FileCountMismatch(key, "maximum", max, count);
       }
     }
@@ -118,7 +118,7 @@ export const extractRouterConfig = <TRouter extends FileRouter>(
   router: TRouter,
 ) =>
   Effect.forEach(objectKeys(router), (slug) =>
-    Effect.map(fillInputRouteConfig(router[slug].routerConfig), (config) => ({
+    Effect.map(fillInputRouteConfig(router[slug]!.routerConfig), (config) => ({
       slug,
       config,
     })),

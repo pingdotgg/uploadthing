@@ -12,8 +12,10 @@ export function formatError(
   error: UploadThingError,
   router: FileRouter,
 ): inferErrorShape<FileRouter[string]> {
-  const errorFormatter =
-    router[Object.keys(router)[0]]?.errorFormatter ?? defaultErrorFormatter;
+  const firstSlug = Object.keys(router)[0];
+  const errorFormatter = firstSlug
+    ? (router[firstSlug]?.errorFormatter ?? defaultErrorFormatter)
+    : defaultErrorFormatter;
 
   return errorFormatter(error);
 }

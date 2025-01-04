@@ -73,9 +73,8 @@ export const GENERATE_useDocumentUploader = <
 
       const files = await Promise.all(
         response.assets.map(async (a) => {
-          const blob = await fetch(a.uri).then((r) => r.blob());
-          const n = a.name ?? a.uri.split("/").pop() ?? "unknown-filename";
-          const file = new File([blob], n, {
+          const blob = await initOpts.fetch(a.uri).then((r) => r.blob());
+          const file = new File([blob], a.name, {
             type: a.mimeType ?? "application/octet-stream",
           });
           /**

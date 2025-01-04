@@ -113,25 +113,15 @@
     "./types": {
       "types": "./types/index.d.ts",
       "default": "./types/index.js"
-    },
-    "./internal/types": {
-      "import": {
-        "types": "./internal/types.d.ts",
-        "default": "./internal/types.js"
-      },
-      "require": {
-        "types": "./internal/types.d.cts",
-        "default": "./internal/types.cjs"
-      }
     }
   },
   "files": [
     "client",
+    "dist",
     "effect-platform",
     "express",
     "fastify",
     "h3",
-    "internal",
     "next",
     "next-legacy",
     "remix",
@@ -144,7 +134,7 @@
   },
   "scripts": {
     "lint": "eslint src test --max-warnings 0",
-    "build": "echo $NODE_ENV && bunchee --tsconfig tsconfig.build.json",
+    "build": "bunchee --tsconfig tsconfig.build.json",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "wait-on ../shared/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
@@ -166,17 +156,16 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "body-parser": "^1.20.2",
-    "bunchee": "^6.1.2",
-    "eslint": "^8.57.0",
+    "bunchee": "^6.2.0",
+    "eslint": "9.17.0",
     "express": "^4.18.2",
     "fastify": "^4.26.1",
     "h3": "^1.11.1",
-    "next": "14.2.11",
-    "nuxt": "^3.11.2",
+    "next": "15.1.3",
     "solid-js": "^1.8.23",
     "tailwindcss": "^3.4.16",
     "type-fest": "^4.10.3",
-    "typescript": "^5.5.2",
+    "typescript": "5.7.2",
     "undici": "^6.6.2",
     "valibot": "1.0.0-beta.7",
     "vue": "^3.4.21",
@@ -203,42 +192,6 @@
     },
     "tailwindcss": {
       "optional": true
-    }
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ],
-    "rules": {
-      "no-console": "error",
-      "no-restricted-globals": [
-        "error",
-        {
-          "name": "fetch",
-          "message": "fetch should be passed as parameter to support overriding default behaviors"
-        }
-      ],
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": [
-            {
-              "group": [
-                "uploadthing",
-                "uploadthing/*"
-              ],
-              "message": "Use relative src imports instead"
-            }
-          ],
-          "paths": [
-            {
-              "name": "effect",
-              "message": "Use alias imports instead (import * as X from \"effect/X\")"
-            }
-          ]
-        }
-      ]
     }
   }
 }
