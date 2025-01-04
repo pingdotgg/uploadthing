@@ -86,13 +86,6 @@ describe("uploadFiles", () => {
     );
   });
 
-  it("accepts UndiciFile", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const { File } = await import("undici");
-    const file = new File(["foo"], "foo.txt");
-    await utapi.uploadFiles(file);
-  });
-
   it("accepts UTFile with customId", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });

@@ -82,15 +82,16 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^6.2.0",
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.1.2",
     "eslint": "9.17.0",
     "next": "15.1.3",
     "react": "18.3.1",
+    "react-dom": "18.3.1",
     "tailwindcss": "^3.4.16",
     "typescript": "5.7.2",
     "uploadthing": "workspace:*",
     "vitest-browser-react": "0.0.4",
-    "wait-on": "^7.2.0",
-    "zod": "^3.23.8"
+    "wait-on": "^8.0.1",
+    "zod": "^3.24.1"
   }
 }

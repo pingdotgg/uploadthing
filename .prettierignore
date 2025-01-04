@@ -25,9 +25,12 @@ yarn-error.log*
 
 CHANGELOG.md
 
+.astro
 .svelte-kit
 .solid
 .nuxt
 .output
+
+routeTree.gen.ts
 
 pnpm-lock.yaml
