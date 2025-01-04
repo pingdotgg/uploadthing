@@ -13,10 +13,11 @@ export async function generateStaticParams() {
   return allTags.map((tag) => ({ category: tag }));
 }
 
-export default function ArticlesIndex(
+export default async function ArticlesIndex(
   props: Readonly<{
-    params: { category: string };
+    params: Promise<{ category: string }>;
   }>,
 ) {
-  return <ArticlesPage tag={props.params.category} />;
+  const { category } = await props.params;
+  return <ArticlesPage tag={category} />;
 }

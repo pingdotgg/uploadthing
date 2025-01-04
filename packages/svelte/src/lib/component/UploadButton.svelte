@@ -26,7 +26,7 @@
     generatePermittedFileTypes,
   } from "uploadthing/client";
 
-  import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+  import { __createUploadThingInternal } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
   import { getFilesFromClipboardEvent, progressWidths } from "./shared";
@@ -60,16 +60,14 @@
   } = uploader.config ?? {});
   let acRef = new AbortController();
 
-  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
-    url: resolveMaybeUrlArg(uploader.url),
-  });
-
   let fileInputRef: HTMLInputElement;
   let uploadProgress = 0;
   let files: File[] = [];
 
-  const { startUpload, isUploading, routeConfig } = createUploadThing(
+  const { startUpload, isUploading, routeConfig } = __createUploadThingInternal(
+    resolveMaybeUrlArg(uploader.url),
     uploader.endpoint,
+    uploader.fetch ?? globalThis.fetch,
     {
       signal: acRef.signal,
       headers: uploader.headers,

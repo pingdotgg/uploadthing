@@ -41,8 +41,13 @@ async function version() {
 
     // Update dependencies
     for (const dep in pkg.dependencies) {
-      if (versions[dep]) {
+      if (versions[dep] && pkg.dependencies[dep].startsWith("workspace:")) {
         pkg.dependencies[dep] = versions[dep];
+      }
+    }
+    for (const dep in pkg.peerDependencies) {
+      if (versions[dep] && pkg.peerDependencies[dep].startsWith("workspace:")) {
+        pkg.peerDependencies[dep] = versions[dep];
       }
     }
 

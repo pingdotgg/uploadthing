@@ -42,7 +42,7 @@ import type {
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
-import { INTERNAL_createUploadThingGen } from "../create-uploadthing";
+import { __createUploadThingInternal } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -105,9 +105,6 @@ export const UploadDropzone = <
     : UploadDropzoneProps<TRouter, TEndpoint>,
 ) => {
   const $props = props as UploadDropzoneProps<TRouter, TEndpoint>;
-  const createUploadThing = INTERNAL_createUploadThingGen<TRouter>({
-    url: resolveMaybeUrlArg($props.url),
-  });
 
   const {
     mode = "manual",
@@ -120,22 +117,27 @@ export const UploadDropzone = <
   const [files, setFiles] = createSignal<File[]>([]);
   const [uploadProgress, setUploadProgress] = createSignal(0);
 
-  const uploadThing = createUploadThing($props.endpoint, {
-    signal: acRef.signal,
-    headers: $props.headers,
-    onClientUploadComplete: (res) => {
-      setFiles([]);
-      void $props.onClientUploadComplete?.(res);
-      setUploadProgress(0);
+  const uploadThing = __createUploadThingInternal(
+    resolveMaybeUrlArg($props.url),
+    $props.endpoint,
+    $props.fetch ?? globalThis.fetch,
+    {
+      signal: acRef.signal,
+      headers: $props.headers,
+      onClientUploadComplete: (res) => {
+        setFiles([]);
+        void $props.onClientUploadComplete?.(res);
+        setUploadProgress(0);
+      },
+      onUploadProgress: (p) => {
+        setUploadProgress(p);
+        $props.onUploadProgress?.(p);
+      },
+      onUploadError: $props.onUploadError,
+      onUploadBegin: $props.onUploadBegin,
+      onBeforeUploadBegin: $props.onBeforeUploadBegin,
     },
-    onUploadProgress: (p) => {
-      setUploadProgress(p);
-      $props.onUploadProgress?.(p);
-    },
-    onUploadError: $props.onUploadError,
-    onUploadBegin: $props.onUploadBegin,
-    onBeforeUploadBegin: $props.onBeforeUploadBegin,
-  });
+  );
   const fileInfo = () => generatePermittedFileTypes(uploadThing.routeConfig());
 
   const state = () => {
@@ -143,7 +145,7 @@ export const UploadDropzone = <
 
     if ($props.disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !uploadThing.isUploading()) return "ready";
+    if (!uploadThing.isUploading()) return "ready";
     return "uploading";
   };
 
@@ -190,7 +192,7 @@ export const UploadDropzone = <
     multiple: fileInfo().multiple,
     get accept() {
       const types = fileInfo().fileTypes;
-      return types ? generateClientDropzoneAccept(types) : undefined;
+      return generateClientDropzoneAccept(types);
     },
     disabled: $props.disabled,
   });
@@ -210,10 +212,10 @@ export const UploadDropzone = <
 
       if (mode === "auto") uploadFiles(files());
     };
-    document?.addEventListener("paste", pasteHandler);
+    document.addEventListener("paste", pasteHandler);
 
     onCleanup(() => {
-      document?.removeEventListener("paste", pasteHandler);
+      document.removeEventListener("paste", pasteHandler);
     });
   });
 
@@ -508,7 +510,7 @@ export function createDropzone(_props: DropzoneOptions) {
       isFileDialogActive: false,
     });
 
-    props.onDrop?.(acceptedFiles);
+    props.onDrop(acceptedFiles);
   };
 
   const onDrop = (event: DropEvent) => {
@@ -564,7 +566,8 @@ export function createDropzone(_props: DropzoneOptions) {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
-    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+    if (isIeOrEdge()) setTimeout(openFileDialog, 0);
+    else openFileDialog();
   };
 
   const getRootProps = () => ({

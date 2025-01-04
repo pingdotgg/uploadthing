@@ -1,5 +1,48 @@
 # @uploadthing/nuxt
 
+## 7.1.5
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+- Updated dependencies [[`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595)]:
+  - @uploadthing/vue@7.1.5
+
+## 7.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/vue@7.1.4
+
+## 7.1.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.1.3
+
+## 7.1.2
+
+### Patch Changes
+
+- [#1056](https://github.com/pingdotgg/uploadthing/pull/1056) [`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix module options not honored due to static analysis
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.1.2
+
+## 7.1.1
+
+### Patch Changes
+
+- [#1044](https://github.com/pingdotgg/uploadthing/pull/1044) [`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: simplify types for built file route
+
+- [#1033](https://github.com/pingdotgg/uploadthing/pull/1033) [`de98bab`](https://github.com/pingdotgg/uploadthing/commit/de98babde74323fca4e376779161d9d22edd1b0a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: dynamically add either stylesheet or tailwind plugin based on whether `@nuxtjs/tailwindcss´ is installed
+
+- Updated dependencies [[`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6)]:
+  - @uploadthing/vue@7.1.1
+
 ## 7.1.0
 
 ### Minor Changes

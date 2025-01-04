@@ -10,12 +10,13 @@ import {
 import type {
   ACL,
   ContentDisposition,
+  Json,
   MaybeUrl,
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 
-import { IngestUrl, UTToken } from "../internal/config";
-import { uploadWithoutProgress } from "../internal/upload.server";
+import { IngestUrl, UTToken } from "../_internal/config";
+import { uploadWithoutProgress } from "../_internal/upload-server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -29,156 +30,112 @@ export function guardServerOnly() {
   }
 }
 
-type UploadFilesInternalOptions = {
-  files: FileEsque[];
-  contentDisposition: ContentDisposition;
-  acl: ACL | undefined;
-};
-
-export const uploadFilesInternal = (input: UploadFilesInternalOptions) =>
-  getPresignedUrls(input).pipe(
-    Effect.andThen((presigneds) =>
-      Effect.forEach(
-        presigneds,
-        (file) =>
-          uploadFile(file).pipe(
-            Effect.tapError((error) =>
-              Effect.logError("Upload failed").pipe(
-                Effect.annotateLogs("error", error),
-              ),
-            ),
-            Effect.match({
-              onFailure: (error) => ({
-                data: null,
-                error: UploadThingError.toObject(
-                  error instanceof UploadThingError
-                    ? error
-                    : new UploadThingError({
-                        message: "Failed to upload file.",
-                        code: "BAD_REQUEST",
-                        cause: error,
-                      }),
-                ),
-              }),
-              onSuccess: (data: UploadedFileData) => ({ data, error: null }),
-            }),
-          ),
-        { concurrency: 10 },
-      ),
-    ),
-  );
-
-/**
- * FIXME: downloading everything into memory and then upload
- * isn't the best. We should support streams so we can download
- * just as much as we need at any time.
- */
-export const downloadFiles = (
-  urls: (MaybeUrl | UrlWithOverrides)[],
-  downloadErrors: Record<number, SerializedUploadThingError>,
-) =>
-  Effect.forEach(
-    urls,
-    (_url, idx) =>
-      Effect.gen(function* () {
-        let url = Predicate.isRecord(_url) ? _url.url : _url;
-        if (typeof url === "string") {
-          // since dataurls will result in name being too long, tell the user
-          // to use uploadFiles instead.
-          if (url.startsWith("data:")) {
-            downloadErrors[idx] = UploadThingError.toObject(
-              new UploadThingError({
-                code: "BAD_REQUEST",
-                message:
-                  "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
-              }),
-            );
-            return null;
-          }
-        }
-        url = new URL(url);
-
-        const {
-          name = url.pathname.split("/").pop() ?? "unknown-filename",
-          customId = undefined,
-        } = Predicate.isRecord(_url) ? _url : {};
-        const httpClient = (yield* HttpClient.HttpClient).pipe(
-          HttpClient.filterStatusOk,
-        );
-
-        const arrayBuffer = yield* HttpClientRequest.get(url).pipe(
-          HttpClientRequest.modify({ headers: {} }),
-          httpClient.execute,
-          Effect.flatMap((_) => _.arrayBuffer),
-          Effect.mapError((error) => {
-            downloadErrors[idx] = UploadThingError.toObject(
-              new UploadThingError({
-                code: "BAD_REQUEST",
-                message: "Failed to download requested file.",
-                cause: error,
-              }),
-            );
-            return Effect.succeed(undefined);
-          }),
-          Effect.scoped,
-        );
-
-        return new UTFile([arrayBuffer], name, {
-          customId,
-          lastModified: Date.now(),
-        });
-      }).pipe(Effect.withLogSpan("downloadFile")),
-    { concurrency: 10 },
-  );
-
-const getPresignedUrls = (input: UploadFilesInternalOptions) =>
+export const downloadFile = (
+  _url: MaybeUrl | UrlWithOverrides,
+): Effect.Effect<UTFile, SerializedUploadThingError, HttpClient.HttpClient> =>
   Effect.gen(function* () {
-    const { files, contentDisposition, acl } = input;
+    let url = Predicate.isRecord(_url) ? _url.url : _url;
+    if (typeof url === "string") {
+      // since dataurls will result in name being too long, tell the user
+      // to use uploadFiles instead.
+      if (url.startsWith("data:")) {
+        return yield* Effect.fail({
+          code: "BAD_REQUEST",
+          message:
+            "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+          data: undefined,
+        } satisfies SerializedUploadThingError);
+      }
+    }
+    url = new URL(url);
 
-    yield* Effect.logDebug("Generating presigned URLs for files").pipe(
-      Effect.annotateLogs("files", files),
+    const {
+      name = url.pathname.split("/").pop() ?? "unknown-filename",
+      customId = undefined,
+    } = Predicate.isRecord(_url) ? _url : {};
+    const httpClient = (yield* HttpClient.HttpClient).pipe(
+      HttpClient.filterStatusOk,
     );
 
+    const arrayBuffer = yield* HttpClientRequest.get(url).pipe(
+      HttpClientRequest.modify({ headers: {} }),
+      httpClient.execute,
+      Effect.flatMap((_) => _.arrayBuffer),
+      Effect.mapError((cause) => {
+        return {
+          code: "BAD_REQUEST",
+          message: `Failed to download requested file: ${cause.message}`,
+          data: cause.toJSON() as Json,
+        } satisfies SerializedUploadThingError;
+      }),
+      Effect.scoped,
+    );
+
+    return new UTFile([arrayBuffer], name, {
+      customId,
+      lastModified: Date.now(),
+    });
+  }).pipe(Effect.withLogSpan("downloadFile"));
+
+const generatePresignedUrl = (
+  file: FileEsque,
+  cd: ContentDisposition,
+  acl: ACL | undefined,
+) =>
+  Effect.gen(function* () {
     const { apiKey, appId } = yield* UTToken;
     const baseUrl = yield* IngestUrl;
 
-    const presigneds = yield* Effect.forEach(files, (file) =>
-      Effect.gen(function* () {
-        const key = yield* generateKey(file, appId);
+    const key = yield* generateKey(file, appId);
 
-        const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
-          // ttlInSeconds: routeOptions.presignedURLTTL,
-          data: {
-            "x-ut-identifier": appId,
-            "x-ut-file-name": file.name,
-            "x-ut-file-size": file.size,
-            "x-ut-file-type": file.type,
-            "x-ut-custom-id": file.customId,
-            "x-ut-content-disposition": contentDisposition,
-            "x-ut-acl": acl,
-          },
-        });
-        return { url, key };
-      }),
-    );
+    const url = yield* generateSignedURL(`${baseUrl}/${key}`, apiKey, {
+      // ttlInSeconds: routeOptions.presignedURLTTL,
+      data: {
+        "x-ut-identifier": appId,
+        "x-ut-file-name": file.name,
+        "x-ut-file-size": file.size,
+        "x-ut-file-type": file.type,
+        "x-ut-custom-id": file.customId,
+        "x-ut-content-disposition": cd,
+        "x-ut-acl": acl,
+      },
+    });
+    return { url, key };
+  }).pipe(Effect.withLogSpan("generatePresignedUrl"));
 
-    yield* Effect.logDebug("Generated presigned URLs").pipe(
-      Effect.annotateLogs("presigneds", presigneds),
-    );
-
-    return files.map((file, i) => ({
-      file,
-      presigned: presigneds[i],
-    }));
-  }).pipe(Effect.withLogSpan("getPresignedUrls"));
-
-const uploadFile = (
-  input: Effect.Effect.Success<ReturnType<typeof getPresignedUrls>>[number],
-) =>
+export const uploadFile = (
+  file: FileEsque,
+  opts: {
+    contentDisposition?: ContentDisposition | undefined;
+    acl?: ACL | undefined;
+  },
+): Effect.Effect<
+  UploadedFileData,
+  SerializedUploadThingError,
+  HttpClient.HttpClient
+> =>
   Effect.gen(function* () {
-    const { file, presigned } = input;
-
-    const response = yield* uploadWithoutProgress(file, presigned);
+    const presigned = yield* generatePresignedUrl(
+      file,
+      opts.contentDisposition ?? "inline",
+      opts.acl,
+    ).pipe(
+      Effect.catchTag("ConfigError", () =>
+        Effect.fail({
+          code: "INVALID_SERVER_CONFIG",
+          message: "Failed to generate presigned URL",
+        } satisfies SerializedUploadThingError),
+      ),
+    );
+    const response = yield* uploadWithoutProgress(file, presigned).pipe(
+      Effect.catchTag("ResponseError", (e) =>
+        Effect.fail({
+          code: "UPLOAD_FAILED",
+          message: "Failed to upload file",
+          data: e.toJSON() as Json,
+        } satisfies SerializedUploadThingError),
+      ),
+    );
 
     return {
       key: presigned.key,

@@ -13,9 +13,9 @@ export const revalidate = false;
 
 export async function GET(
   _req: NextRequest,
-  props: { params: { key: string } },
+  props: { params: Promise<{ key: string }> },
 ) {
-  const key = props.params.key;
+  const { key } = await props.params;
   if (!key) {
     return NextResponse.json({ error: "No key" }, { status: 400 });
   }

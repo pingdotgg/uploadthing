@@ -1,15 +1,15 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
+import { createBuilder } from "../src/_internal/upload-builder";
 import { genUploader } from "../src/client";
-import { createBuilder } from "../src/internal/upload-builder";
 import type { ClientUploadedFileData, FileRouter } from "../src/types";
 import { doNotExecute } from "./__test-helpers";
 
 describe("genuploader", () => {
   const f = createBuilder();
 
-  const router = {
+  const _router = {
     uploadable1: f(["image", "video"], {
       awaitServerData: false,
     }).onUploadComplete(() => {
@@ -22,7 +22,7 @@ describe("genuploader", () => {
       }),
   } satisfies FileRouter;
 
-  const { uploadFiles } = genUploader<typeof router>({
+  const { uploadFiles } = genUploader<typeof _router>({
     url: "0.0.0.0",
     package: "test",
   });

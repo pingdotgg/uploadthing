@@ -1,5 +1,44 @@
 # @uploadthing/shared
 
+## 7.1.5
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+- Updated dependencies [[`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595)]:
+  - @uploadthing/mime-types@0.3.4
+
+## 7.1.4
+
+### Patch Changes
+
+- [#1103](https://github.com/pingdotgg/uploadthing/pull/1103) [`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: tidy up ranges for peer dependencies
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/mime-types@0.3.3
+
+## 7.1.3
+
+### Patch Changes
+
+- [#1095](https://github.com/pingdotgg/uploadthing/pull/1095) [`1defbc7`](https://github.com/pingdotgg/uploadthing/commit/1defbc78deb6f4d1c82f45c9e937ec3f73dd2400) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect deps
+
+## 7.1.2
+
+### Patch Changes
+
+- [#1056](https://github.com/pingdotgg/uploadthing/pull/1056) [`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect version
+
+- [#1074](https://github.com/pingdotgg/uploadthing/pull/1074) [`03dd9ee`](https://github.com/pingdotgg/uploadthing/commit/03dd9eeea6b7c3396a522140234a711705f52f9c) Thanks [@markflorkowski](https://github.com/markflorkowski)! - fix: Construction of content-disposition header - follow RFC6266 spec
+
+## 7.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560)]:
+  - @uploadthing/mime-types@0.3.2
+
 ## 7.1.0
 
 ### Minor Changes

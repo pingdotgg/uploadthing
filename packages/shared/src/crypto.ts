@@ -20,8 +20,8 @@ function shuffle(str: string, seed: string) {
   let j: number;
   for (let i = 0; i < chars.length; i++) {
     j = ((seedNum % (i + 1)) + i) % chars.length;
-    temp = chars[i];
-    chars[i] = chars[j];
+    temp = chars[i]!;
+    chars[i] = chars[j]!;
     chars[j] = temp;
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/mime-types",
-  "version": "0.3.1",
+  "version": "0.3.4",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -89,39 +89,11 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.2.1",
-    "eslint": "^8.57.0",
-    "typescript": "^5.5.2"
+    "bunchee": "^6.2.0",
+    "eslint": "9.17.0",
+    "typescript": "5.7.2"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "eslintConfig": {
-    "root": true,
-    "rules": {
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": [
-            {
-              "group": [
-                "@uploadthing/mime-types",
-                "@uploadthing/mime-types/*"
-              ],
-              "message": "Use relative src imports instead"
-            }
-          ],
-          "paths": [
-            {
-              "name": "effect",
-              "message": "Use alias imports instead (import * as X from \"effect/X\")"
-            }
-          ]
-        }
-      ]
-    },
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ]
   }
 }

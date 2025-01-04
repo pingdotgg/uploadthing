@@ -134,9 +134,14 @@ const url = new URL(
 );
 url.search = searchParams.toString();
 
-const signature = hmacSha256(url, apiKey);
+const signature = `hmac-sha256=${hmacSha256(url, apiKey)}`;
 url.searchParams.append("signature", signature);
 ```
+
+<Note>
+  Note that the `expires` parameter is measured in milliseconds since the Unix
+  epoch.
+</Note>
 
 <Warning>
   The upload will fail if any parameter doesn't match the uploaded file (e.g.

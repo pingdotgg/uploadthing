@@ -1,5 +1,81 @@
 # uploadthing
 
+## 7.4.4
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+- Updated dependencies [[`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595)]:
+  - @uploadthing/mime-types@0.3.4
+  - @uploadthing/shared@7.1.5
+
+## 7.4.3
+
+### Patch Changes
+
+- [#1106](https://github.com/pingdotgg/uploadthing/pull/1106) [`15868e3`](https://github.com/pingdotgg/uploadthing/commit/15868e3f75c6c8f32d37d0e38b69a699ca519cb7) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix automatic dev mode detection
+
+## 7.4.2
+
+### Patch Changes
+
+- [#1103](https://github.com/pingdotgg/uploadthing/pull/1103) [`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: tidy up ranges for peer dependencies
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/mime-types@0.3.3
+  - @uploadthing/shared@7.1.4
+
+## 7.4.1
+
+### Patch Changes
+
+- [#1095](https://github.com/pingdotgg/uploadthing/pull/1095) [`1defbc7`](https://github.com/pingdotgg/uploadthing/commit/1defbc78deb6f4d1c82f45c9e937ec3f73dd2400) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect deps
+
+- Updated dependencies [[`1defbc7`](https://github.com/pingdotgg/uploadthing/commit/1defbc78deb6f4d1c82f45c9e937ec3f73dd2400)]:
+  - @uploadthing/shared@7.1.3
+
+## 7.4.0
+
+### Minor Changes
+
+- [#1072](https://github.com/pingdotgg/uploadthing/pull/1072) [`5707f02`](https://github.com/pingdotgg/uploadthing/commit/5707f02d4931f97ba11485bc23c49102e920a31f) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add conditional `browser` export to support importing of tailwind config in the browser
+
+- [#1061](https://github.com/pingdotgg/uploadthing/pull/1061) [`65444e5`](https://github.com/pingdotgg/uploadthing/commit/65444e5f046f3df02a480a8d5cc71820edd4e8b3) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: support `effect/Schema` and `@standard-schema/spec` input validators
+
+### Patch Changes
+
+- [`2c6a82f`](https://github.com/pingdotgg/uploadthing/commit/2c6a82fe454b66231086e259cf62acbf6a8c2db0) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: return more fields from utapi.listFiles (#1080)
+
+- [#1056](https://github.com/pingdotgg/uploadthing/pull/1056) [`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: bump internal effect version
+
+- [#1058](https://github.com/pingdotgg/uploadthing/pull/1058) [`072fcc3`](https://github.com/pingdotgg/uploadthing/commit/072fcc3c51b9ecec94df1959f06522a7ecfc7268) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: gracefully handle download errors in `utapi.uploadFilesFromUrl`
+
+- [#1048](https://github.com/pingdotgg/uploadthing/pull/1048) [`a9b6559`](https://github.com/pingdotgg/uploadthing/commit/a9b65594977cdf108ace20cf6b0a43a5cd756ac4) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: export generic `FileRoute` type
+
+- Updated dependencies [[`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2), [`03dd9ee`](https://github.com/pingdotgg/uploadthing/commit/03dd9eeea6b7c3396a522140234a711705f52f9c)]:
+  - @uploadthing/shared@7.1.2
+
+## 7.3.0
+
+### Minor Changes
+
+- [#1045](https://github.com/pingdotgg/uploadthing/pull/1045) [`2d9eb40`](https://github.com/pingdotgg/uploadthing/commit/2d9eb40413fd4a87cfd81ee8fd4624b53f88a393) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: forward request context to `onUploadComplete` and `onUploadError`
+
+### Patch Changes
+
+- [#1044](https://github.com/pingdotgg/uploadthing/pull/1044) [`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: simplify types for built file route
+
+- [#1043](https://github.com/pingdotgg/uploadthing/pull/1043) [`d72a427`](https://github.com/pingdotgg/uploadthing/commit/d72a427d5b304af8f8bff230d0b38c4dad40f24a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: support input transformers
+
+- [#1033](https://github.com/pingdotgg/uploadthing/pull/1033) [`de98bab`](https://github.com/pingdotgg/uploadthing/commit/de98babde74323fca4e376779161d9d22edd1b0a) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: dynamically add either stylesheet or tailwind plugin based on whether `@nuxtjs/tailwindcss´ is installed
+
+- [#1013](https://github.com/pingdotgg/uploadthing/pull/1013) [`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: only slice file when necessary for resumability
+
+- Updated dependencies [[`7ae1ed9`](https://github.com/pingdotgg/uploadthing/commit/7ae1ed9a8d386a42f3f1b3cda41859f234f2e560)]:
+  - @uploadthing/mime-types@0.3.2
+  - @uploadthing/shared@7.1.1
+
 ## 7.2.0
 
 ### Minor Changes
