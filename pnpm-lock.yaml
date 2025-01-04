@@ -122,9 +122,6 @@ importers:
       acorn:
         specifier: ^8.12.1
         version: 8.12.1
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.4.20(postcss@8.4.49)
       clsx:
         specifier: ^2.1.0
         version: 2.1.0
@@ -941,9 +938,6 @@ importers:
       '@types/react-dom':
         specifier: 18.3.0
         version: 18.3.0
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.4.20(postcss@8.4.49)
       postcss:
         specifier: 8.4.49
         version: 8.4.49
