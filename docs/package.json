@@ -18,7 +18,7 @@
     "@mdx-js/loader": "^3.0.1",
     "@mdx-js/react": "^3.0.1",
     "@next/mdx": "^14.2.11",
-    "@scalar/api-reference-react": "^0.3.37",
+    "@scalar/api-reference-react": "^0.4.8",
     "@shikijs/transformers": "^1.17.5",
     "@sindresorhus/slugify": "^2.1.1",
     "@tailwindcss/typography": "^0.5.10",
