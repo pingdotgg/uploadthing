@@ -13,17 +13,17 @@
     "@solidjs/meta": "^0.29.4",
     "@solidjs/router": "^0.14.5",
     "@solidjs/start": "^1.0.6",
-    "@uploadthing/solid": "7.1.1",
+    "@uploadthing/solid": "7.1.5",
     "solid-js": "^1.8.23",
-    "uploadthing": "7.3.0",
+    "uploadthing": "7.4.4",
     "vinxi": "^0.4.3"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.19",
-    "postcss": "8.4.38",
-    "tailwindcss": "^3.4.1"
+    "autoprefixer": "^10.4.20",
+    "postcss": "8.4.49",
+    "tailwindcss": "^3.4.16"
   }
 }

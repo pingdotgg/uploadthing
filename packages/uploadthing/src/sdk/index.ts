@@ -15,9 +15,9 @@ import * as S from "effect/Schema";
 import type { ACL, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import { parseTimeToSeconds, UploadThingError } from "@uploadthing/shared";
 
-import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../internal/config";
-import { logHttpClientError, logHttpClientResponse } from "../internal/logger";
-import { makeRuntime } from "../internal/runtime";
+import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../_internal/config";
+import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
+import { makeRuntime } from "../_internal/runtime";
 import type {
   ACLUpdateOptions,
   DeleteFilesOptions,
@@ -151,7 +151,7 @@ export class UTApi {
         }),
       ),
     ).pipe(
-      Effect.map((ups) => (Array.isArray(files) ? ups : ups[0])),
+      Effect.map((ups) => (Array.isArray(files) ? ups : ups[0]!)),
       Effect.tap((res) =>
         Effect.logDebug("Finished uploading").pipe(
           Effect.annotateLogs("uploadResult", res),
@@ -204,7 +204,7 @@ export class UTApi {
       ),
     )
       .pipe(
-        Effect.map((ups) => (Array.isArray(urls) ? ups : ups[0])),
+        Effect.map((ups) => (Array.isArray(urls) ? ups : ups[0]!)),
         Effect.tap((res) =>
           Effect.logDebug("Finished uploading").pipe(
             Effect.annotateLogs("uploadResult", res),
@@ -316,12 +316,14 @@ export class UTApi {
           customId: S.NullOr(S.String),
           key: S.String,
           name: S.String,
+          size: S.Number,
           status: S.Literal(
             "Deletion Pending",
             "Failed",
             "Uploaded",
             "Uploading",
           ),
+          uploadedAt: S.Number,
         }),
       ),
     }) {}

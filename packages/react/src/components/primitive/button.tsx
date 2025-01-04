@@ -6,7 +6,7 @@ import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
 import { PrimitiveSlot, usePrimitiveValues } from "./root";
 import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
-const DEFAULT_BUTTON_TAG = "label" as const;
+const DEFAULT_BUTTON_TAG = "label";
 
 export type PrimitiveButtonProps<
   TTag extends ElementType = typeof DEFAULT_BUTTON_TAG,
@@ -39,6 +39,7 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
       onClick={(e) => {
         if (state === "disabled") return;
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         onClick?.(e);
         if (state === "uploading") {
           e.preventDefault();
@@ -75,10 +76,9 @@ function ButtonFn<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
   );
 }
 
-type _internal_ComponentButton = HasDisplayName & {
-  <TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
+type _internal_ComponentButton = HasDisplayName &
+  (<TTag extends ElementType = typeof DEFAULT_BUTTON_TAG>(
     props: PrimitiveButtonProps<TTag> & RefProp<typeof ButtonFn>,
-  ): JSX.Element;
-};
+  ) => JSX.Element);
 
 export const Button = forwardRefWithAs(ButtonFn) as _internal_ComponentButton;

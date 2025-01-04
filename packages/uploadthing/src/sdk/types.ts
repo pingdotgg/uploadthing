@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-
 import type { Blob as NodeBlob } from "buffer";
 import type * as Config from "effect/Config";
 import type * as LogLevel from "effect/LogLevel";
@@ -14,7 +12,7 @@ import type {
   Time,
 } from "@uploadthing/shared";
 
-import type { LogFormat } from "../internal/logger";
+import type { LogFormat } from "../_internal/logger";
 import type { UploadedFileData } from "../types";
 
 export interface UTApiOptions {

@@ -1,5 +1,37 @@
 # @uploadthing/nuxt
 
+## 7.1.5
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+- Updated dependencies [[`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595)]:
+  - @uploadthing/vue@7.1.5
+
+## 7.1.4
+
+### Patch Changes
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/vue@7.1.4
+
+## 7.1.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.1.3
+
+## 7.1.2
+
+### Patch Changes
+
+- [#1056](https://github.com/pingdotgg/uploadthing/pull/1056) [`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix module options not honored due to static analysis
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.1.2
+
 ## 7.1.1
 
 ### Patch Changes

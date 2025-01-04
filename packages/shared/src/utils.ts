@@ -11,7 +11,6 @@ import {
   UnknownFileTypeError,
 } from "./tagged-errors";
 import type {
-  ContentDisposition,
   ExpandedRouteConfig,
   FileProperties,
   FileRouterInputConfig,
@@ -136,7 +135,7 @@ export const matchFileType = (
   return Micro.succeed(type);
 };
 
-export const FILESIZE_UNITS = ["B", "KB", "MB", "GB"] as const;
+export const FILESIZE_UNITS = ["B", "KB", "MB", "GB", "TB"] as const;
 export type FileSizeUnit = (typeof FILESIZE_UNITS)[number];
 export const fileSizeToBytes = (
   fileSize: FileSize,
@@ -148,7 +147,7 @@ export const fileSizeToBytes = (
 
   // make sure the string is in the format of 123KB
   const match = fileSize.match(regex);
-  if (!match) {
+  if (!match?.[1] || !match[3]) {
     return Micro.fail(new InvalidFileSizeError(fileSize));
   }
 
@@ -163,8 +162,8 @@ export const bytesToFileSize = (bytes: number) => {
     return "0B";
   }
 
-  const i = Math.floor(Math.log(bytes) / Math.log(1000));
-  return `${(bytes / Math.pow(1000, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)}${FILESIZE_UNITS[i]}`;
 };
 
 export async function safeParseJSON<T>(
@@ -172,9 +171,10 @@ export async function safeParseJSON<T>(
 ): Promise<T | Error> {
   const text = await input.text();
   try {
-    return JSON.parse(text ?? "null") as T;
+    return JSON.parse(text) as T;
   } catch (err) {
-    console.error(`Error parsing JSON, got '${text}'`);
+    // eslint-disable-next-line no-console
+    console.error(`Error parsing JSON, got '${text}'`, err);
     return new Error(`Error parsing JSON, got '${text}'`);
   }
 }
@@ -194,26 +194,14 @@ export function filterDefinedObjectValues<T>(
   );
 }
 
-/** construct content-disposition header */
-export function contentDisposition(
-  contentDisposition: ContentDisposition,
-  fileName: string,
-) {
-  return [
-    contentDisposition,
-    `filename="${encodeURI(fileName)}"`,
-    `filename*=UTF-8''${encodeURI(fileName)}`,
-  ].join("; ");
-}
-
 export function semverLite(required: string, toCheck: string) {
   // Pull out numbers from strings like `6.0.0`, `^6.4`, `~6.4.0`
   const semverRegex = /(\d+)\.?(\d+)?\.?(\d+)?/;
-  const requiredMatch = required.match(semverRegex);
+  const requiredMatch = semverRegex.exec(required);
   if (!requiredMatch?.[0]) {
     throw new Error(`Invalid semver requirement: ${required}`);
   }
-  const toCheckMatch = toCheck.match(semverRegex);
+  const toCheckMatch = semverRegex.exec(toCheck);
   if (!toCheckMatch?.[0]) {
     throw new Error(`Invalid semver to check: ${toCheck}`);
   }
@@ -224,7 +212,7 @@ export function semverLite(required: string, toCheck: string) {
   if (required.startsWith("^")) {
     // Major must be equal, minor must be greater or equal
     if (rMajor !== cMajor) return false;
-    if (rMinor > cMinor) return false;
+    if (rMinor && cMinor && rMinor > cMinor) return false;
     return true;
   }
 
@@ -245,6 +233,7 @@ export function warnIfInvalidPeerDependency(
   toCheck: string,
 ) {
   if (!semverLite(required, toCheck)) {
+    // eslint-disable-next-line no-console
     console.warn(
       `!!!WARNING::: ${pkg} requires "uploadthing@${required}", but version "${toCheck}" is installed`,
     );
@@ -270,7 +259,7 @@ export const getFullApiUrl = (
   Micro.gen(function* () {
     const base = (() => {
       if (typeof window !== "undefined") return window.location.origin;
-      if (process.env?.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+      if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
       return "http://localhost:3000";
     })();
 

@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-
-import * as Schema from "effect/Schema";
-import * as v from "valibot";
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { getParseFn } from "../src/internal/parser";
-import { UTFiles } from "../src/internal/types";
-import { createBuilder } from "../src/internal/upload-builder";
+import { getParseFn } from "../src/_internal/parser";
+import { UTFiles } from "../src/_internal/types";
+import { createBuilder } from "../src/_internal/upload-builder";
 
 it("typeerrors for invalid input", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();

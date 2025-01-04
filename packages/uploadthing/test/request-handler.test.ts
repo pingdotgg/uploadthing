@@ -1,16 +1,15 @@
 import * as Effect from "effect/Effect";
 import * as Redacted from "effect/Redacted";
-import { describe, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import { signPayload } from "@uploadthing/shared";
 
-import { UploadedFileData } from "../src/internal/shared-schemas";
+import { UploadedFileData } from "../src/_internal/shared-schemas";
 import { createRouteHandler, createUploadthing } from "../src/server";
 import {
   baseHeaders,
   createApiUrl,
-  it,
   middlewareMock,
   requestSpy,
   testToken,
@@ -78,7 +77,7 @@ const handler = createRouteHandler({
 });
 
 describe("errors for invalid request input", () => {
-  it("404s for invalid slugs", async ({ db }) => {
+  it("404s for invalid slugs", async () => {
     const res = await handler(
       new Request(createApiUrl("i-dont-exist", "upload"), {
         method: "POST",
@@ -96,7 +95,7 @@ describe("errors for invalid request input", () => {
     });
   });
 
-  it("400s for invalid action type", async ({ db }) => {
+  it("400s for invalid action type", async () => {
     const res = await handler(
       // @ts-expect-error - invalid is not a valid action type
       new Request(createApiUrl("imageUploader", "invalid"), {
@@ -118,7 +117,7 @@ describe("errors for invalid request input", () => {
 });
 
 describe("file route config", () => {
-  it("blocks unmatched file types", async ({ db }) => {
+  it("blocks unmatched file types", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -137,7 +136,7 @@ describe("file route config", () => {
     });
   });
 
-  it("blocks for too big files", async ({ db }) => {
+  it("blocks for too big files", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -154,12 +153,12 @@ describe("file route config", () => {
     expect(res.status).toBe(400);
     await expect(res.json()).resolves.toEqual({
       cause:
-        "Error: You uploaded a image file that was 3.15MB, but the limit for that type is 2MB",
+        "Error: You uploaded a image file that was 3.00MB, but the limit for that type is 2MB",
       message: "Invalid config: FileSizeMismatch",
     });
   });
 
-  it("blocks for too many files", async ({ db }) => {
+  it("blocks for too many files", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -182,7 +181,7 @@ describe("file route config", () => {
     });
   });
 
-  it("blocks for too few files", async ({ db }) => {
+  it("blocks for too few files", async () => {
     const res = await handler(
       new Request(createApiUrl("withMinInput", "upload"), {
         method: "POST",
@@ -202,7 +201,7 @@ describe("file route config", () => {
     });
   });
 
-  it("uses file type to match mime type with router config", async ({ db }) => {
+  it("uses file type to match mime type with router config", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -228,7 +227,7 @@ describe("file route config", () => {
     ]);
   });
 
-  it("prefers file.type over file.name extension", async ({ db }) => {
+  it("prefers file.type over file.name extension", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -254,9 +253,7 @@ describe("file route config", () => {
     ]);
   });
 
-  it("falls back to filename lookup type when there's no recognized mime type", async ({
-    db,
-  }) => {
+  it("falls back to filename lookup type when there's no recognized mime type", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -285,7 +282,7 @@ describe("file route config", () => {
 });
 
 describe(".input()", () => {
-  it("blocks when input is missing", async ({ db }) => {
+  it("blocks when input is missing", async () => {
     const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -308,7 +305,7 @@ describe(".input()", () => {
     });
   });
 
-  it("blocks when input doesn't match schema", async ({ db }) => {
+  it("blocks when input doesn't match schema", async () => {
     const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -334,7 +331,7 @@ describe(".input()", () => {
     });
   });
 
-  it("forwards input to middleware", async ({ db }) => {
+  it("forwards input to middleware", async () => {
     const res = await handler(
       new Request(createApiUrl("withInput", "upload"), {
         method: "POST",
@@ -356,7 +353,7 @@ describe(".input()", () => {
 });
 
 describe(".middleware()", () => {
-  it("forwards files to middleware", async ({ db }) => {
+  it("forwards files to middleware", async () => {
     const res = await handler(
       new Request(createApiUrl("imageUploader", "upload"), {
         method: "POST",
@@ -377,7 +374,7 @@ describe(".middleware()", () => {
     expect(res.status).toBe(200);
   });
 
-  it("early exits if middleware throws", async ({ db }) => {
+  it("early exits if middleware throws", async () => {
     const res = await handler(
       new Request(createApiUrl("middlewareThrows", "upload"), {
         method: "POST",
@@ -407,7 +404,7 @@ describe(".middleware()", () => {
 });
 
 describe(".onUploadComplete()", () => {
-  it("forwards correct args to onUploadComplete handler", async ({ db }) => {
+  it("forwards correct args to onUploadComplete handler", async () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
@@ -457,7 +454,7 @@ describe(".onUploadComplete()", () => {
     });
   });
 
-  it("is blocked on missing signature", async ({ db }) => {
+  it("is blocked on missing signature", async () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
@@ -490,7 +487,7 @@ describe(".onUploadComplete()", () => {
     expect(uploadCompleteMock).not.toHaveBeenCalled();
   });
 
-  it("is blocked on invalid signature", async ({ db }) => {
+  it("is blocked on invalid signature", async () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},

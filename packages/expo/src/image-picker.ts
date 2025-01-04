@@ -4,7 +4,11 @@ import * as ImagePicker from "expo-image-picker";
 import type { UseUploadthingProps } from "@uploadthing/react";
 import { __useUploadThingInternal } from "@uploadthing/react/native";
 import { generatePermittedFileTypes } from "@uploadthing/shared";
-import type { ExpandedRouteConfig, ExtendObjectIf } from "@uploadthing/shared";
+import type {
+  ExpandedRouteConfig,
+  ExtendObjectIf,
+  FetchEsque,
+} from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/server";
 import type { inferEndpointInput } from "uploadthing/types";
 
@@ -25,6 +29,7 @@ export const GENERATE_useImageUploader = <
   TRouter extends FileRouter,
 >(initOpts: {
   url: URL;
+  fetch: FetchEsque;
 }) => {
   const useImageUploader = <TEndpoint extends keyof TRouter>(
     endpoint: TEndpoint,
@@ -33,6 +38,7 @@ export const GENERATE_useImageUploader = <
     const { routeConfig, startUpload, isUploading } = __useUploadThingInternal(
       initOpts.url,
       endpoint,
+      initOpts.fetch,
       opts,
     );
     const { mediaTypes, multiple } = useMemo(
@@ -97,7 +103,7 @@ export const GENERATE_useImageUploader = <
 
       const files = await Promise.all(
         response.assets.map(async (a) => {
-          const blob = await fetch(a.uri).then((r) => r.blob());
+          const blob = await initOpts.fetch(a.uri).then((r) => r.blob());
           const n = a.fileName ?? a.uri.split("/").pop() ?? "unknown-filename";
           const file = new File([blob], n, {
             type: a.mimeType ?? a.type ?? "application/octet-stream",

@@ -8,7 +8,7 @@ export {
   generateUploader,
 } from "./components";
 
-export { generateReactHelpers } from "./useUploadThing";
+export { generateReactHelpers } from "./use-uploadthing";
 
 export type * from "./types";
 

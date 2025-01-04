@@ -1,5 +1,17 @@
 # @uploadthing/mime-types
 
+## 0.3.4
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+## 0.3.3
+
+### Patch Changes
+
+- [#1103](https://github.com/pingdotgg/uploadthing/pull/1103) [`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: tidy up ranges for peer dependencies
+
 ## 0.3.2
 
 ### Patch Changes

@@ -25,8 +25,8 @@ import {
   isValidSize,
   noop,
   reducer,
-  type DropzoneOptions,
 } from "@uploadthing/shared";
+import type { DropzoneOptions } from "@uploadthing/shared";
 
 import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
 import {
@@ -36,7 +36,7 @@ import {
 } from "./root";
 import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
-const DEFAULT_DROPZONE_TAG = "div" as const;
+const DEFAULT_DROPZONE_TAG = "div";
 
 export type PrimitiveDropzoneProps<
   TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG,
@@ -56,6 +56,7 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
     children,
     as,
     onDrop,
+    onChange,
     disabled: componentDisabled,
     ...props
   }: PrimitiveDropzoneProps<TTag>,
@@ -66,16 +67,20 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
 
   const onDropCallback = useCallback(
     (acceptedFiles: File[]) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       onDrop?.(acceptedFiles);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      onChange?.(acceptedFiles);
+
       setFiles(acceptedFiles);
     },
-    [setFiles, onDrop],
+    [setFiles, onDrop, onChange],
   );
 
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop: onDropCallback,
     multiple: options.multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    accept: generateClientDropzoneAccept(fileTypes),
     disabled: state === "disabled" || componentDisabled,
   });
 
@@ -99,11 +104,10 @@ function DropzoneFn<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
   );
 }
 
-type _internal_ComponentDropzone = HasDisplayName & {
-  <TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
+type _internal_ComponentDropzone = HasDisplayName &
+  (<TTag extends ElementType = typeof DEFAULT_DROPZONE_TAG>(
     props: PrimitiveDropzoneProps<TTag> & RefProp<typeof DropzoneFn>,
-  ): JSX.Element;
-};
+  ) => JSX.Element);
 
 export const Dropzone = forwardRefWithAs(
   DropzoneFn,
@@ -241,7 +245,7 @@ export function useDropzone({
     event.persist();
 
     const hasFiles = isEventWithFiles(event);
-    if (hasFiles && event.dataTransfer !== null) {
+    if (hasFiles) {
       try {
         event.dataTransfer.dropEffect = "copy";
       } catch {
@@ -366,7 +370,8 @@ export function useDropzone({
   const onClick = useCallback(() => {
     // In IE11/Edge the file-browser dialog is blocking, therefore,
     // use setTimeout() to ensure React can handle state changes
-    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+    if (isIeOrEdge()) setTimeout(openFileDialog, 0);
+    else openFileDialog();
   }, [openFileDialog]);
 
   const getRootProps = useMemo(

@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/vue",
-  "version": "7.1.1",
+  "version": "7.1.5",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
@@ -47,10 +47,10 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "^5.2.1",
+    "bunchee": "^6.2.0",
     "concurrently": "^8.2.2",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.5.2",
+    "tailwindcss": "^3.4.16",
+    "typescript": "5.7.2",
     "uploadthing": "workspace:*",
     "vue": "^3.4.21",
     "wait-on": "^7.2.0"
@@ -62,6 +62,14 @@
   "eslintConfig": {
     "root": true,
     "rules": {
+      "no-console": "error",
+      "no-restricted-globals": [
+        "error",
+        {
+          "name": "fetch",
+          "message": "fetch should be passed as parameter to support overriding default behaviors"
+        }
+      ],
       "no-restricted-imports": [
         "error",
         {

@@ -24,7 +24,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../../types";
-import { __useUploadThingInternal } from "../../useUploadThing";
+import { __useUploadThingInternal } from "../../use-uploadthing";
 import { useControllableState } from "../../utils/useControllableState";
 import { usePaste } from "../../utils/usePaste";
 
@@ -110,10 +110,10 @@ export function PrimitiveSlot({
   componentName?: string;
   default?: React.ReactNode;
 }) {
-  if (!children) return defaultChildren;
+  const values = usePrimitiveValues(componentName);
   return typeof children === "function"
-    ? children?.(usePrimitiveValues(componentName))
-    : children;
+    ? children(values)
+    : (children ?? defaultChildren);
 }
 
 export type HasDisplayName = {
@@ -148,8 +148,6 @@ type UploadThingInternalProps = {
   __internal_state?: "readying" | "ready" | "uploading";
   // Allow to set upload progress for testing
   __internal_upload_progress?: number;
-  // Allow to set ready explicitly and independently of internal state
-  __internal_ready?: boolean;
 };
 
 export type RootPrimitiveComponentProps<
@@ -188,6 +186,7 @@ export function Root<
   const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
     resolveMaybeUrlArg(props.url),
     props.endpoint,
+    props.fetch ?? globalThis.fetch,
     {
       signal: acRef.current.signal,
       headers: props.headers,
@@ -228,21 +227,18 @@ export function Root<
   const accept = generateMimeTypes(fileTypes).join(", ");
 
   const state = (() => {
+    const ready = props.__internal_state === "ready" || fileTypes.length > 0;
+
     if (props.__internal_state) return props.__internal_state;
-
-    const ready =
-      props.__internal_ready ??
-      (props.__internal_state === "ready" || fileTypes.length > 0);
-
     if (fileTypes.length === 0 || !!props.disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
+    if (!isUploading) return "ready";
     return "uploading";
   })();
 
   usePaste((event) => {
     if (!appendOnPaste) return;
-    const ref = focusElementRef.current || fileInputRef.current;
+    const ref = focusElementRef.current ?? fileInputRef.current;
 
     if (document.activeElement !== ref) return;
 
@@ -293,6 +289,7 @@ export function Root<
       routeConfig,
     }),
     [
+      props,
       files,
       setFiles,
       uploadFiles,

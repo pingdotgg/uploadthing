@@ -15,8 +15,8 @@ import type {
   SerializedUploadThingError,
 } from "@uploadthing/shared";
 
-import { IngestUrl, UTToken } from "../internal/config";
-import { uploadWithoutProgress } from "../internal/upload.server";
+import { IngestUrl, UTToken } from "../_internal/config";
+import { uploadWithoutProgress } from "../_internal/upload-server";
 import type { UploadedFileData } from "../types";
 import type { FileEsque, UrlWithOverrides } from "./types";
 import { UTFile } from "./ut-file";
@@ -117,8 +117,8 @@ export const uploadFile = (
   Effect.gen(function* () {
     const presigned = yield* generatePresignedUrl(
       file,
-      opts?.contentDisposition ?? "inline",
-      opts?.acl,
+      opts.contentDisposition ?? "inline",
+      opts.acl,
     ).pipe(
       Effect.catchTag("ConfigError", () =>
         Effect.fail({

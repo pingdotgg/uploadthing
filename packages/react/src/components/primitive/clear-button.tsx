@@ -6,7 +6,7 @@ import { forwardRefWithAs } from "../../utils/forwardRefWithAs";
 import { PrimitiveSlot, usePrimitiveValues } from "./root";
 import type { HasDisplayName, PrimitiveComponentProps, RefProp } from "./root";
 
-const DEFAULT_CLEAR_BUTTON_TAG = "label" as const;
+const DEFAULT_CLEAR_BUTTON_TAG = "label";
 
 export type PrimitiveClearButtonProps<
   TTag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG,
@@ -29,6 +29,7 @@ function ClearButtonFn<
       disabled={state === "disabled"}
       onClick={(e) => {
         if (state === "disabled") return;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         onClick?.(e);
         setFiles([]);
       }}
@@ -39,11 +40,10 @@ function ClearButtonFn<
   );
 }
 
-type _internal_ComponentClearButton = HasDisplayName & {
-  <TTag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG>(
+type _internal_ComponentClearButton = HasDisplayName &
+  (<TTag extends ElementType = typeof DEFAULT_CLEAR_BUTTON_TAG>(
     props: PrimitiveClearButtonProps<TTag> & RefProp<typeof ClearButtonFn>,
-  ): JSX.Element;
-};
+  ) => JSX.Element);
 
 export const ClearButton = forwardRefWithAs(
   ClearButtonFn,
