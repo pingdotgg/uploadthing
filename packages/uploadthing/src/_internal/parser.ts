@@ -39,19 +39,6 @@ export function getParseFn<
     return parser.parseAsync;
   }
 
-  if ("~standard" in parser) {
-    /**
-     * Standard Schema
-     */
-    return async (value) => {
-      const result = await parser["~standard"].validate(value);
-      if (result.issues) {
-        throw new ParserError({ cause: result.issues });
-      }
-      return result.value;
-    };
-  }
-
   if (Schema.isSchema(parser)) {
     /**
      * Effect Schema
@@ -66,6 +53,19 @@ export function getParseFn<
           ),
         });
       });
+  }
+
+  if ("~standard" in parser) {
+    /**
+     * Standard Schema
+     */
+    return async (value) => {
+      const result = await parser["~standard"].validate(value);
+      if (result.issues) {
+        throw new ParserError({ cause: result.issues });
+      }
+      return result.value;
+    };
   }
 
   throw new Error("Invalid parser");
