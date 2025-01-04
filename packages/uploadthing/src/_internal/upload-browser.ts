@@ -65,7 +65,7 @@ const uploadWithProgress = (
     // ingest server not knowing about it? idts?
     xhr.addEventListener("error", (err) => {
       // eslint-disable-next-line no-console
-      console.log("XHR error", err);
+      console.log("XHR error", err, xhr);
       resume(
         new UploadThingError({
           code: "UPLOAD_FAILED",
