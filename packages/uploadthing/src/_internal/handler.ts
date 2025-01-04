@@ -602,39 +602,41 @@ const handleUploadAction = (opts: {
       Effect.flatMap(httpClient.execute),
     );
 
-    const handleDevStreamError = (err: ResponseError, chunk: string) =>
-      Effect.gen(function* () {
-        const {
-          file: { key },
-        } = yield* Schema.decodeUnknown(
-          Schema.parseJson(Schema.Struct({ file: UploadedFileData })),
-        )(chunk);
+    const handleDevStreamError = Effect.fn("handleDevStreamError")(function* (
+      err: ResponseError,
+      chunk: string,
+    ) {
+      const schema = Schema.parseJson(
+        Schema.Struct({ file: UploadedFileData }),
+      );
+      const parsedChunk = yield* Schema.decodeUnknown(schema)(chunk);
+      const key = parsedChunk.file.key;
 
-        yield* Effect.logError(
-          "Failed to forward callback request from dev stream",
-        ).pipe(Effect.annotateLogs({ fileKey: key, error: err.message }));
+      yield* Effect.logError(
+        "Failed to forward callback request from dev stream",
+      ).pipe(Effect.annotateLogs({ fileKey: key, error: err.message }));
 
-        const httpResponse = yield* HttpClientRequest.post(
-          "/callback-result",
-        ).pipe(
-          HttpClientRequest.prependUrl(ingestUrl),
-          HttpClientRequest.setHeaders({
-            "x-uploadthing-api-key": Redacted.value(apiKey),
-            "x-uploadthing-version": pkgJson.version,
-            "x-uploadthing-be-adapter": beAdapter,
-            "x-uploadthing-fe-package": fePackage,
-          }),
-          HttpClientRequest.bodyJson({
-            fileKey: key,
-            error: `Failed to forward callback request from dev stream: ${err.message}`,
-          }),
-          Effect.flatMap(httpClient.execute),
-        );
+      const httpResponse = yield* HttpClientRequest.post(
+        "/callback-result",
+      ).pipe(
+        HttpClientRequest.prependUrl(ingestUrl),
+        HttpClientRequest.setHeaders({
+          "x-uploadthing-api-key": Redacted.value(apiKey),
+          "x-uploadthing-version": pkgJson.version,
+          "x-uploadthing-be-adapter": beAdapter,
+          "x-uploadthing-fe-package": fePackage,
+        }),
+        HttpClientRequest.bodyJson({
+          fileKey: key,
+          error: `Failed to forward callback request from dev stream: ${err.message}`,
+        }),
+        Effect.flatMap(httpClient.execute),
+      );
 
-        yield* logHttpClientResponse("Reported callback error to UploadThing")(
-          httpResponse,
-        );
-      });
+      yield* logHttpClientResponse("Reported callback error to UploadThing")(
+        httpResponse,
+      );
+    });
 
     // Send metadata to UT server (non blocking as a daemon)
     // In dev, keep the stream open and simulate the callback requests as
