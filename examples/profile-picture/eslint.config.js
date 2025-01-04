@@ -22,6 +22,7 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/only-throw-error": "off",
 
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -30,10 +31,6 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": [
         "warn",
         { prefer: "type-imports", fixStyle: "separate-type-imports" },
-      ],
-      "@typescript-eslint/no-misused-promises": [
-        2,
-        { checksVoidReturn: { attributes: false } },
       ],
       "@typescript-eslint/require-await": "off",
     },

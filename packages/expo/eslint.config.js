@@ -1,4 +1,5 @@
-import baseConfig from "@uploadthing/eslint-config/base";
+import baseConfig, { noSelfImport } from "@uploadthing/eslint-config/base";
+import reactConfig from "@uploadthing/eslint-config/react";
 
 /** @type {import('typescript-eslint').Config} */
 export default [
@@ -6,19 +7,6 @@ export default [
     ignores: ["dist/**"],
   },
   ...baseConfig,
-  {
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@uploadthing/expo", "@uploadthing/expo/*"],
-              message: "Use relative src imports instead",
-            },
-          ],
-        },
-      ],
-    },
-  },
+  ...reactConfig,
+  noSelfImport("@uploadthing/expo"),
 ];

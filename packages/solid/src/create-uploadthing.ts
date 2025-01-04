@@ -85,7 +85,7 @@ export function __createUploadThingInternal<
           });
           const averageProgress = Math.floor(sum / fileProgress.size / 10) * 10;
           if (averageProgress !== uploadProgress) {
-            opts?.onUploadProgress?.(averageProgress);
+            opts.onUploadProgress(averageProgress);
             uploadProgress = averageProgress;
           }
         },

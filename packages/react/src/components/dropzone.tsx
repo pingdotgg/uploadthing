@@ -49,7 +49,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { __useUploadThingInternal } from "../useUploadThing";
+import { __useUploadThingInternal } from "../use-uploadthing";
 import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -175,7 +175,7 @@ export function UploadDropzone<
     if ($props.__internal_state) return $props.__internal_state;
     if (disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
+    if (!isUploading) return "ready";
     return "uploading";
   })();
 
@@ -226,7 +226,7 @@ export function UploadDropzone<
   const { getRootProps, getInputProps, isDragActive, rootRef } = useDropzone({
     onDrop,
     multiple,
-    accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
+    accept: generateClientDropzoneAccept(fileTypes),
     disabled,
   });
 
@@ -521,7 +521,7 @@ export function useDropzone({
     event.persist();
 
     const hasFiles = isEventWithFiles(event);
-    if (hasFiles && event.dataTransfer !== null) {
+    if (hasFiles) {
       try {
         event.dataTransfer.dropEffect = "copy";
       } catch {
@@ -646,7 +646,8 @@ export function useDropzone({
   const onClick = useCallback(() => {
     // In IE11/Edge the file-browser dialog is blocking, therefore,
     // use setTimeout() to ensure React can handle state changes
-    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+    if (isIeOrEdge()) setTimeout(openFileDialog, 0);
+    else openFileDialog();
   }, [openFileDialog]);
 
   const getRootProps = useMemo(

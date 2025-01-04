@@ -53,7 +53,7 @@ const useRouteConfig = (
  * The actual hook we export for public usage is generated from `generateReactHelpers`
  * which has the URL and FileRouter generic pre-bound.
  */
-export function __useUploadThingInternal<
+function useUploadThingInternal<
   TRouter extends FileRouter,
   TEndpoint extends keyof TRouter,
 >(
@@ -99,7 +99,7 @@ export function __useUploadThingInternal<
           const averageProgress =
             Math.floor(sum / fileProgress.current.size / 10) * 10;
           if (averageProgress !== uploadProgress.current) {
-            opts?.onUploadProgress?.(averageProgress);
+            opts.onUploadProgress(averageProgress);
             uploadProgress.current = averageProgress;
           }
         },
@@ -149,6 +149,9 @@ export function __useUploadThingInternal<
     routeConfig,
   } as const;
 }
+
+/** @internal - This is an internal function. Use `generateReactHelpers` instead. */
+export const __useUploadThingInternal = useUploadThingInternal;
 
 export const generateReactHelpers = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,

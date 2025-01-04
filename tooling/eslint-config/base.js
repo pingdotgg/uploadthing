@@ -5,6 +5,25 @@ import importPlugin from "eslint-plugin-import-x";
 import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
 
+/** @param {string} packageName */
+export function noSelfImport(packageName) {
+  return {
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: [`${packageName}`, `${packageName}/*`],
+              message: "Use relative src imports instead",
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
+
 export default tseslint.config(
   // Ignore files not tracked by VCS and any config files
   includeIgnoreFile(path.join(import.meta.dirname, "../../.gitignore")),
@@ -42,10 +61,6 @@ export default tseslint.config(
       "@typescript-eslint/consistent-type-imports": [
         "warn",
         { prefer: "type-imports", fixStyle: "separate-type-imports" },
-      ],
-      "@typescript-eslint/no-misused-promises": [
-        2,
-        { checksVoidReturn: { attributes: false } },
       ],
       "@typescript-eslint/no-unnecessary-condition": [
         "error",

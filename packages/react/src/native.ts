@@ -7,4 +7,4 @@ export {
    * @deprecated - This is an internal function.
    */
   __useUploadThingInternal,
-} from "./useUploadThing";
+} from "./use-uploadthing";

@@ -1,4 +1,4 @@
-import baseConfig from "@uploadthing/eslint-config/base";
+import baseConfig, { noSelfImport } from "@uploadthing/eslint-config/base";
 
 /** @type {import('typescript-eslint').Config} */
 export default [
@@ -6,19 +6,5 @@ export default [
     ignores: ["dist/**"],
   },
   ...baseConfig,
-  {
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              group: ["@uploadthing/mime-types", "@uploadthing/mime-types/*"],
-              message: "Use relative src imports instead",
-            },
-          ],
-        },
-      ],
-    },
-  },
+  noSelfImport("@uploadthing/mime-types"),
 ];
