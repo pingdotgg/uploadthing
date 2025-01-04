@@ -1,12 +1,20 @@
 import nodejs from "@astrojs/node";
 import react from "@astrojs/react";
-import { defineConfig } from "astro/config";
+import { defineConfig, envField } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [react()],
-  output: "hybrid",
+  output: "static",
   adapter: nodejs({
     mode: "middleware",
   }),
+  env: {
+    schema: {
+      UPLOADTHING_TOKEN: envField.string({
+        access: "secret",
+        context: "server",
+      }),
+    },
+  },
 });

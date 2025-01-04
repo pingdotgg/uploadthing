@@ -8,14 +8,14 @@ import { int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 export const sqliteTable = sqliteTableCreator((name) => `with-drizzle_${name}`);
 
 export const files = sqliteTable("files", {
-  id: int("id").primaryKey({ autoIncrement: true }),
-  name: text("name").notNull(),
-  key: text("key").notNull(),
-  url: text("url").notNull(),
-  createdAt: int("created_at", { mode: "timestamp" })
+  id: int().primaryKey({ autoIncrement: true }),
+  name: text().notNull(),
+  key: text().notNull(),
+  url: text().notNull(),
+  createdAt: int({ mode: "timestamp" })
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
-  uploadedBy: int("uploaded_by").notNull(),
+  uploadedBy: int().notNull(),
 });
 
 export type File = InferSelectModel<typeof files>;

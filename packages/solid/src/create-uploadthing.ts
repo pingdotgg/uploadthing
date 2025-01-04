@@ -153,7 +153,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
     package: "@uploadthing/solid",
   });
 
-  function useUploadThing<TEndpoint extends keyof TRouter>(
+  function createUploadThing<TEndpoint extends keyof TRouter>(
     endpoint: EndpointArg<TRouter, TEndpoint>,
     opts?: CreateUploadthingProps<TRouter[TEndpoint]>,
   ) {
@@ -161,7 +161,7 @@ export const generateSolidHelpers = <TRouter extends FileRouter>(
   }
 
   return {
-    useUploadThing,
+    createUploadThing,
     ...clientHelpers,
   } as const;
 };

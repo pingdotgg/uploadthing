@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 import { createUploadthing } from "uploadthing/next";
 import type { FileRouter } from "uploadthing/next";
+import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing({
   /**
@@ -30,11 +31,11 @@ export const uploadRouter = {
       maxFileSize: "16MB",
     },
   })
-    .middleware(({ req }) => {
-      const { userId } = auth();
+    .middleware(async ({ req }) => {
+      const { userId } = await auth();
 
       if (!userId) {
-        throw new Error("Please sign in");
+        throw new UploadThingError("Please sign in");
       }
 
       return { userId };

@@ -7,13 +7,14 @@
     "clean": "git clean -xdf dist node_modules",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@astrojs/node": "^8.2.1",
-    "@astrojs/react": "^3.0.10",
+    "@astrojs/node": "^9.0.0",
+    "@astrojs/react": "^4.1.2",
     "@uploadthing/react": "7.1.5",
-    "astro": "^4.4.5",
+    "astro": "^5.1.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "uploadthing": "7.4.4"

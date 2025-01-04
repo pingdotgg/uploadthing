@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import {
   BottomSheetModal,

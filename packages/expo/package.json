@@ -49,7 +49,7 @@
     "react-native": "^0.74.1",
     "typescript": "5.7.2",
     "uploadthing": "workspace:*",
-    "wait-on": "^7.2.0"
+    "wait-on": "^8.0.1"
   },
   "peerDependencies": {
     "expo-constants": "*",
