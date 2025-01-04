@@ -10,5 +10,5 @@ export function useEvent<TCallback extends AnyFunction>(callback: TCallback) {
     // noop
   });
 
-  return callbackRef.value;
+  return callbackRef.value as TCallback;
 }
