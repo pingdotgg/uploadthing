@@ -5,6 +5,7 @@
     "build": {
       "outputs": [
         "client/**",
+        "convex/**",
         "dist/**",
         "effect-platform/**",
         "express/**",
