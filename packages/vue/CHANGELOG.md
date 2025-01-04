@@ -1,5 +1,11 @@
 # @uploadthing/vue
 
+## 7.2.0
+
+### Minor Changes
+
+- [#1099](https://github.com/pingdotgg/uploadthing/pull/1099) [`36b0df6`](https://github.com/pingdotgg/uploadthing/commit/36b0df6c3b94358d1a12112d661bc561256cc98e) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: allow custom fetch override
+
 ## 7.1.5
 
 ### Patch Changes
