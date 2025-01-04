@@ -6,11 +6,11 @@
       "outputs": [
         "client/**",
         "convex/**",
+        "dist/**",
         "effect-platform/**",
         "express/**",
         "fastify/**",
         "h3/**",
-        "internal/**",
         "next/**",
         "next-legacy/**",
         "remix/**",

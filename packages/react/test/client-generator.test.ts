@@ -1,4 +1,4 @@
-import { describe, expectTypeOf, it } from "vitest";
+import { expectTypeOf, it } from "vitest";
 import * as z from "zod";
 
 import { createUploadthing } from "uploadthing/server";
@@ -12,29 +12,25 @@ const doNotExecute = (_fn: (...args: any[]) => any) => {
 
 const f = createUploadthing();
 
-const router = {
+const _router = {
   exampleRoute: f(["image"])
     .middleware(() => ({ foo: "bar" }))
-    .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
-
+    .onUploadComplete(() => {
       return { foo: "bar" as const };
     }),
 
   withFooInput: f(["image"], { awaitServerData: false })
     .input(z.object({ foo: z.string() }))
     .middleware((opts) => ({ number: opts.input.foo.length }))
-    .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
-
+    .onUploadComplete(() => {
       return { baz: "qux" as const };
     }),
 
   withBarInput: f(["image"], { awaitServerData: false })
     .input(z.object({ bar: z.number() }))
     .middleware((opts) => ({ square: opts.input.bar * opts.input.bar }))
-    .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
+    .onUploadComplete(() => {
+      //
     }),
 
   withTransformedInput: f(["image"], { awaitServerData: false })
@@ -43,8 +39,8 @@ const router = {
       expectTypeOf(opts.input.bar).toBeString();
       return { string: opts.input.bar };
     })
-    .onUploadComplete(({ metadata }) => {
-      console.log(metadata);
+    .onUploadComplete(() => {
+      //
     }),
 
   // Should technically block returning undefined but there was
@@ -53,7 +49,7 @@ const router = {
   returningUndefined: f(["image"]).onUploadComplete(() => undefined),
 };
 
-const { useUploadThing } = generateReactHelpers<typeof router>();
+const { useUploadThing } = generateReactHelpers<typeof _router>();
 // `new File` doesn't work in test env without custom config. This will do for now.
 const files = [new Blob([""], { type: "image/png" }) as File];
 
@@ -169,10 +165,8 @@ it("infers output properly", () => {
 
 it("gets go-to-definition proxy as endpoint arg", () => {
   doNotExecute(async () => {
-    const { startUpload } = useUploadThing(
-      (routeRegistry) => routeRegistry.withFooInput,
-    );
-    type _Input = Parameters<typeof startUpload>[1];
+    const _ut = useUploadThing((routeRegistry) => routeRegistry.withFooInput);
+    type _Input = Parameters<typeof _ut.startUpload>[1];
     expectTypeOf<_Input>().toEqualTypeOf<{ foo: string }>();
   });
 

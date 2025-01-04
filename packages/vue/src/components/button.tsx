@@ -21,7 +21,7 @@ import type {
   UploadthingComponentProps,
   UseUploadthingProps,
 } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { Cancel, progressWidths, Spinner, usePaste } from "./shared";
 
 export type ButtonStyleFieldCallbackArgs = {
@@ -67,10 +67,6 @@ export type UploadButtonProps<
 export const generateUploadButton = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg(initOpts?.url),
-  });
-
   return Vue.defineComponent(
     <TEndpoint extends keyof TRouter>(props: {
       config: UploadButtonProps<TRouter, TEndpoint>;
@@ -109,10 +105,13 @@ export const generateUploadButton = <TRouter extends FileRouter>(
           onBeforeUploadBegin: $props.onBeforeUploadBegin,
         });
 
-      const { startUpload, isUploading, routeConfig } = useUploadThing(
-        $props.endpoint,
-        useUploadthingProps,
-      );
+      const { startUpload, isUploading, routeConfig } =
+        __useUploadThingInternal(
+          resolveMaybeUrlArg(initOpts?.url),
+          $props.endpoint,
+          $props.fetch ?? initOpts?.fetch ?? globalThis.fetch,
+          useUploadthingProps,
+        );
       const permittedFileTypes = computed(() =>
         generatePermittedFileTypes(routeConfig.value),
       );
@@ -122,7 +121,7 @@ export const generateUploadButton = <TRouter extends FileRouter>(
 
         if (inputProps.value.disabled) return "disabled";
         if (!ready) return "readying";
-        if (ready && !isUploading.value) return "ready";
+        if (!isUploading.value) return "ready";
         return "uploading";
       });
 
@@ -341,9 +340,6 @@ export const generateUploadButton = <TRouter extends FileRouter>(
         );
       };
     },
-    {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      props: ["config"] as any,
-    },
+    { props: ["config"] as never },
   );
 };

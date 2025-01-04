@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/nuxt",
-  "version": "7.1.0",
+  "version": "7.1.5",
   "type": "module",
   "license": "MIT",
   "exports": {
@@ -27,52 +27,22 @@
     "test:watch": "vitest watch"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.11.2",
+    "@nuxt/kit": "^3.15.0",
     "@uploadthing/vue": "workspace:*",
     "defu": "^6.1.4"
   },
   "devDependencies": {
-    "@nuxt/devtools": "latest",
-    "@nuxt/module-builder": "^0.5.5",
-    "@nuxt/schema": "^3.11.2",
-    "@nuxt/test-utils": "^3.12.0",
+    "@nuxt/devtools": "1.7.0",
+    "@nuxt/module-builder": "^0.8.4",
+    "@nuxt/schema": "^3.15.0",
     "@nuxtjs/tailwindcss": "^6.12.2",
     "@uploadthing/eslint-config": "workspace:*",
-    "eslint": "^8.57.0",
+    "eslint": "9.17.0",
     "h3": "^1.11.1",
-    "nuxt": "^3.11.2",
+    "nuxt": "^3.15.0",
     "uploadthing": "workspace:*"
   },
   "peerDependencies": {
     "uploadthing": "^7.2.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ],
-    "rules": {
-      "@typescript-eslint/no-unused-vars": "off",
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": [
-            {
-              "group": [
-                "@uploadthing/nuxt",
-                "@uploadthing/nuxt/*"
-              ],
-              "message": "Use relative src imports instead"
-            }
-          ],
-          "paths": [
-            {
-              "name": "effect",
-              "message": "Use alias imports instead (import * as X from \"effect/X\")"
-            }
-          ]
-        }
-      ]
-    }
   }
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { isRedirectError } from "next/dist/client/components/redirect";
+import { unstable_rethrow } from "next/navigation";
 import {
   signOut as $signOut,
   currentUser,
@@ -20,7 +20,7 @@ export async function signInWithCredentials(
   try {
     await signIn("credentials", formData);
   } catch (error) {
-    if (isRedirectError(error)) throw error;
+    unstable_rethrow(error);
 
     if (error instanceof AuthError) {
       switch (error.type) {

@@ -39,7 +39,7 @@ import type {
   UploadthingComponentProps,
   UseUploadthingProps,
 } from "../types";
-import { INTERNAL_uploadthingHookGen } from "../useUploadThing";
+import { __useUploadThingInternal } from "../useUploadThing";
 import { Cancel, progressWidths, Spinner, usePaste } from "./shared";
 
 export type DropzoneStyleFieldCallbackArgs = {
@@ -95,10 +95,6 @@ export type UploadDropzoneProps<
 export const generateUploadDropzone = <TRouter extends FileRouter>(
   initOpts?: GenerateTypedHelpersOptions,
 ) => {
-  const useUploadThing = INTERNAL_uploadthingHookGen<TRouter>({
-    url: resolveMaybeUrlArg(initOpts?.url),
-  });
-
   return Vue.defineComponent(
     <TEndpoint extends keyof TRouter>(props: {
       config: UploadDropzoneProps<TRouter, TEndpoint>;
@@ -132,10 +128,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
           onUploadBegin: $props.onUploadBegin,
           onBeforeUploadBegin: $props.onBeforeUploadBegin,
         });
-      const { startUpload, isUploading, routeConfig } = useUploadThing(
-        $props.endpoint,
-        useUploadthingProps,
-      );
+      const { startUpload, isUploading, routeConfig } =
+        __useUploadThingInternal(
+          resolveMaybeUrlArg(initOpts?.url),
+          $props.endpoint,
+          $props.fetch ?? initOpts?.fetch ?? globalThis.fetch,
+          useUploadthingProps,
+        );
 
       const permittedFileTypes = computed(() =>
         generatePermittedFileTypes(routeConfig.value),
@@ -149,7 +148,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 
         if (dropzoneOptions.disabled) return "disabled";
         if (!ready) return "readying";
-        if (ready && !isUploading.value) return "ready";
+        if (!isUploading.value) return "ready";
         return "uploading";
       });
 
@@ -428,10 +427,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
         );
       };
     },
-    {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      props: ["config"] as any,
-    },
+    { props: ["config"] as never },
   );
 };
 
@@ -540,7 +536,7 @@ export function useDropzone(options: DropzoneOptions) {
     if (hasFiles && event.dataTransfer) {
       try {
         event.dataTransfer.dropEffect = "copy";
-      } catch (err) {
+      } catch {
         noop();
       }
     }
@@ -601,7 +597,7 @@ export function useDropzone(options: DropzoneOptions) {
 
     state.acceptedFiles = acceptedFiles;
     state.isFileDialogActive = false;
-    optionsRef.value.onDrop?.(acceptedFiles);
+    optionsRef.value.onDrop(acceptedFiles);
   };
 
   const onDrop = (event: DropEvent) => {
@@ -656,7 +652,8 @@ export function useDropzone(options: DropzoneOptions) {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
-    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+    if (isIeOrEdge()) setTimeout(openFileDialog, 0);
+    else openFileDialog();
   };
 
   const getRootProps = (): HTMLAttributes & ReservedProps => ({

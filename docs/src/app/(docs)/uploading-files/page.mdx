@@ -113,17 +113,25 @@ this process easier in the future.
   in mind that this adds extra latency to your uploads.
 </Note>
 
-<Tabs tabs={["JavaScript", "Python", "PHP", "Go"]}>
+<Tabs tabs={["JavaScript", "Python", "PHP", "Go", "Rust"]}>
   <Tab>
 
 ```ts
-import * as Hash from "effect/Hash";
 import SQIds, { defaultOptions } from "sqids";
+
+function djb2(s: string) {
+  const h = 5381;
+  let i = s.length;
+  while (i) {
+    h = (h * 33) ^ s.charCodeAt(--i);
+  }
+  return (h & 0xbfffffff) | ((h >>> 1) & 0x40000000);
+}
 
 // A simple function to shuffle the alphabet for the Sqids
 function shuffle(str: string, seed: string) {
   const chars = str.split("");
-  const seedNum = Hash.string(seed);
+  const seedNum = djb2(seed);
 
   let temp: string;
   let j: number;
@@ -142,7 +150,7 @@ function generateKey(appId: string, fileSeed: string) {
   const alphabet = shuffle(defaultOptions.alphabet, appId);
 
   const encodedAppId = new SQIds({ alphabet, minLength: 12 }).encode([
-    Math.abs(Hash.string(appId)),
+    Math.abs(djb2(appId)),
   ]);
 
   // We use a base64 encoding here to ensure the file seed is url safe, but
@@ -162,7 +170,7 @@ import base64
 from sqids import Sqids
 from sqids.constants import DEFAULT_ALPHABET
 
-def hash_string(s: str) -> int:
+def djb2(s: str) -> int:
   h = 5381
   for char in reversed(s):
       h = (h * 33) ^ ord(char)
@@ -179,7 +187,7 @@ def hash_string(s: str) -> int:
 
 def shuffle(string: str, seed: str) -> str:
   chars = list(string)
-  seed_num = hash_string(seed)
+  seed_num = djb2(seed)
 
   for i in range(len(chars)):
       j = int(math.fmod(math.fmod(seed_num, i + 1) + i, len(chars)))
@@ -192,7 +200,7 @@ def generate_key(file_seed: str, app_id: str) -> str:
   alphabet = shuffle(DEFAULT_ALPHABET, app_id)
 
   encoded_app_id = Sqids(alphabet, min_length=12).encode(
-    [abs(hash_string(app_id))]
+    [abs(djb2(app_id))]
   )
 
   return encoded_app_id + file_seed
@@ -204,7 +212,7 @@ def generate_key(file_seed: str, app_id: str) -> str:
 ```php
 use Sqids\Sqids;
 
-function hash_string(string $string): int {
+function djb2(string $string): int {
   $h = 5381;
   for ($i = strlen($string) - 1; $i >= 0; $i--) {
     $char = $string[$i];
@@ -224,7 +232,7 @@ function hash_string(string $string): int {
 
 function shuffle_string(string $string, string $seed): string {
   $chars = str_split($string);
-  $seed_num = hash_string($seed);
+  $seed_num = djb2($seed);
 
   for ($i = 0; $i < count($chars); $i++) {
     $j = (($seed_num % ($i + 1)) + $i) % count($chars);
@@ -239,7 +247,7 @@ function generate_key(string $file_seed, string $appId): string {
   $sqids = new Sqids($alphabet, 12);
 
   $encodedAppId = $sqids->encode(
-    [abs(hash_string($appId))]
+    [abs(djb2($appId))]
   );
 
   return $encodedAppId . base64_encode($file_seed);
@@ -255,7 +263,7 @@ import (
 	"github.com/sqids/sqids-go"
 )
 
-func hashString(s string) int32 {
+func djb2(s string) int32 {
 	h := int64(5381)
 	for i := len(s) - 1; i >= 0; i-- {
 		h = (h * 33) ^ int64(s[i])
@@ -274,7 +282,7 @@ func hashString(s string) int32 {
 
 func shuffle(input string, seed string) string {
 	chars := []rune(input)
-	seedNum := hashString(seed)
+	seedNum := djb2(seed)
 
 	for i := 0; i < len(chars); i++ {
 		j := (int(seedNum)%(i+1) + i) % len(chars)
@@ -292,11 +300,67 @@ func generateKey(fileSeed string, appId string) string {
 	})
 
 	encodedAppId, _ := s.Encode(
-		[]uint64{uint64(math.Abs(float64(hashString(appId))))},
+		[]uint64{uint64(math.Abs(float64(djb2(appId))))},
 	)
 
 	return encodedAppId + fileSeed
 }
+```
+
+  </Tab>
+  <Tab>
+
+```rust
+fn djb2_hash(s: &str) -> i32 {
+	let mut h: i64 = 5381;
+	for &byte in s.as_bytes().iter().rev() {
+        	h = (h * 33) ^ (byte as i64);
+            	// Simulate 32-bit integer overflow
+            	h &= 0xFFFFFFFF;
+        }
+        // Convert to signed 32-bit integer with the same bit manipulation
+        h = (h & 0xBFFFFFFF) | ((h >> 1) & 0x40000000);
+        if h >= 0x80000000 {
+        	h -= 0x100000000;
+        }
+	h as i32
+}
+
+fn shuffle(input: &str, seed: &str) -> String {
+	let mut chars: Vec<char> = input.chars().collect();
+        let seed_num = djb2_hash(seed);
+        for i in 0..chars.len() {
+            	let j = ((seed_num % (i as i32 + 1)) + i as i32) as usize % chars.len();
+            	let temp = chars[i];
+            	chars[i] = chars[j];
+            	chars[j] = temp;
+        }
+        chars.iter().collect()
+}
+fn generate_file_key(app_id: String) -> String {
+	let app_hash = djb2_hash(&app_id);
+	let alphabet: Vec<char> = shuffle(sqids::DEFAULT_ALPHABET, &app_id).chars().collect();
+
+	// https://sqids.org/rust
+	let sqids = sqids::Sqids::builder()
+		.alphabet(alphabet)
+		.min_length(12)
+		.build()
+		.expect("Could not create sqid builder");
+        let encoded_app_id = sqids.encode(&vec![app_hash.abs() as u64]).expect("Could not encode sqid");
+
+	// https://github.com/uuid-rs/uuid
+	let file_seed = uuid::Uuid::new_v4().to_string();
+
+	// We use a base64 encoding here to ensure the file seed is url safe, but
+  	// you can do this however you want
+	// https://github.com/marshallpierce/rust-base64
+	use base64::prelude::*;
+        let encoded_file_seed = BASE64_URL_SAFE.encode(file_seed.as_bytes());
+
+	format!("{}{}", encoded_app_id, encoded_file_seed)
+}
+
 ```
 
   </Tab>
@@ -334,9 +398,14 @@ const url = new URL(
 );
 url.search = searchParams.toString();
 
-const signature = hmacSha256(url, apiKey);
+const signature = `hmac-sha256=${hmacSha256(url, apiKey)}`;
 url.searchParams.append("signature", signature);
 ```
+
+<Note>
+  Note that the `expires` parameter is measured in milliseconds since the Unix
+  epoch.
+</Note>
 
 <Warning>
   The upload will fail if any parameter doesn't match the uploaded file (e.g.

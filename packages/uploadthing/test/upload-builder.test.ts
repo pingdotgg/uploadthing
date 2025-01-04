@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { UTFiles } from "../src/internal/types";
-import { createBuilder } from "../src/internal/upload-builder";
+import { getParseFn } from "../src/_internal/parser";
+import { UTFiles } from "../src/_internal/types";
+import { createBuilder } from "../src/_internal/upload-builder";
 
 it("typeerrors for invalid input", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
@@ -38,20 +38,6 @@ it("typeerrors for invalid input", () => {
     .input(z.object({ foo: z.string() }))
     // @ts-expect-error - cannot set multiple inputs
     .input(z.object({ bar: z.string() }))
-    .middleware(() => {
-      return {};
-    });
-
-  f(["image"])
-    // @ts-expect-error - date is not allowed
-    .input(z.object({ foo: z.date() }))
-    .middleware(() => {
-      return {};
-    });
-
-  f(["image"])
-    // @ts-expect-error - set is not allowed
-    .input(z.object({ foo: z.set() }))
     .middleware(() => {
       return {};
     });
@@ -107,26 +93,6 @@ it("allows async middleware", () => {
     });
 });
 
-it("with input", () => {
-  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
-  f(["image"])
-    .input(z.object({ foo: z.string() }))
-    .middleware((opts) => {
-      expectTypeOf<{ foo: string }>(opts.input);
-      return {};
-    });
-});
-
-it("with optional input", () => {
-  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
-  f(["image"])
-    .input(z.object({ foo: z.string() }).optional())
-    .middleware((opts) => {
-      expectTypeOf<{ foo: string } | undefined>(opts.input);
-      return {};
-    });
-});
-
 it("can append a customId", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
   f(["image"])
@@ -167,11 +133,13 @@ it("smoke", async () => {
 
   expect(uploadable.routerConfig).toEqual(["image", "video"]);
 
+  const parsedInput = await getParseFn(uploadable.inputParser)({ foo: "bar" });
+
   const metadata = await uploadable.middleware({
     req: new Request("http://localhost", {
       headers: { header1: "woohoo" },
     }),
-    input: { foo: "bar" },
+    input: parsedInput,
     res: undefined,
     event: undefined,
     files: [{ name: "test.txt", size: 123456, type: "text/plain" }],

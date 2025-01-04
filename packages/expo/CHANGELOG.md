@@ -1,5 +1,51 @@
 # @uploadthing/expo
 
+## 7.1.5
+
+### Patch Changes
+
+- [#1108](https://github.com/pingdotgg/uploadthing/pull/1108) [`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: more relaxed peer dep requirements between uploadthing packages
+
+- Updated dependencies [[`b2de189`](https://github.com/pingdotgg/uploadthing/commit/b2de189ba88024eb141945eb034ccd547f946595)]:
+  - @uploadthing/react@7.1.5
+  - @uploadthing/shared@7.1.5
+
+## 7.1.4
+
+### Patch Changes
+
+- [#1103](https://github.com/pingdotgg/uploadthing/pull/1103) [`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: tidy up ranges for peer dependencies
+
+- Updated dependencies [[`fdc68ba`](https://github.com/pingdotgg/uploadthing/commit/fdc68bae1f030fe1a3d3dbb06cc219f9612faf82)]:
+  - @uploadthing/react@7.1.4
+  - @uploadthing/shared@7.1.4
+
+## 7.1.3
+
+### Patch Changes
+
+- Updated dependencies [[`1defbc7`](https://github.com/pingdotgg/uploadthing/commit/1defbc78deb6f4d1c82f45c9e937ec3f73dd2400)]:
+  - @uploadthing/shared@7.1.3
+  - @uploadthing/react@7.1.3
+
+## 7.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`4e1c34a`](https://github.com/pingdotgg/uploadthing/commit/4e1c34a529a4d25a3b8ccd595dbc6d136d59cea2), [`03dd9ee`](https://github.com/pingdotgg/uploadthing/commit/03dd9eeea6b7c3396a522140234a711705f52f9c)]:
+  - @uploadthing/shared@7.1.2
+  - @uploadthing/react@7.1.2
+
+## 7.1.1
+
+### Patch Changes
+
+- [#1044](https://github.com/pingdotgg/uploadthing/pull/1044) [`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6) Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - refactor: simplify types for built file route
+
+- Updated dependencies [[`1afb1c9`](https://github.com/pingdotgg/uploadthing/commit/1afb1c941de6cb40aae344c8530e592f0b5f8ae6)]:
+  - @uploadthing/react@7.1.1
+  - @uploadthing/shared@7.1.1
+
 ## 7.1.0
 
 ### Minor Changes

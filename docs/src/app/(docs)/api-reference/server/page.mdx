@@ -222,10 +222,10 @@ Environment variables follows the naming convention of `UPLOADTHING_<NAME>`
 
 <Properties>
   <Property name="callbackUrl" type="string" since="6.0">
-    The URL to where your route handler is hosted. This is called via webhook
-    after your file is uploaded. UploadThing attempts to automatically detect
-    this value based on the request URL and headers. You can override this if
-    the automatic detection fails.
+    The full, absolute URL to where your route handler is hosted. This is called
+    via webhook after your file is uploaded. UploadThing attempts to
+    automatically detect this value based on the request URL and headers. You
+    can override this if the automatic detection fails.
   </Property>
   <Property
     name="token"

@@ -2,6 +2,7 @@ import type {
   ClassListMerger,
   ErrorMessage,
   ExtendObjectIf,
+  FetchEsque,
   MaybePromise,
   UploadThingError,
 } from "@uploadthing/shared";
@@ -26,6 +27,25 @@ export interface GenerateTypedHelpersOptions {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
 }
 
 export type CreateUploadthingProps<
@@ -130,6 +150,25 @@ export type UploadthingComponentProps<
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
   config?: {
     mode?: "manual" | "auto";
     appendOnPaste?: boolean;

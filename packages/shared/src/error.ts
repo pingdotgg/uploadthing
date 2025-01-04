@@ -118,7 +118,7 @@ export function getErrorTypeFromStatusCode(statusCode: number): ErrorCode {
 }
 
 export function getStatusCodeFromError(error: UploadThingError<any>) {
-  return ERROR_CODES[error.code] ?? 500;
+  return ERROR_CODES[error.code];
 }
 
 export const INTERNAL_DO_NOT_USE__fatalClientError = (e: Error) =>
