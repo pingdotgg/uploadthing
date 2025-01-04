@@ -81,7 +81,9 @@ export async function getFileUrl(key: string) {
     };
   }
 
-  const { url } = await utapi.getSignedURL(key);
+  const { url } = await utapi.getSignedURL(key, {
+    expiresIn: 60 * 60 * 24 * 7,
+  });
   return {
     success: true as const,
     url,
