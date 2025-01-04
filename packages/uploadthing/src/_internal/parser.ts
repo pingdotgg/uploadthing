@@ -58,6 +58,7 @@ export function getParseFn<
   if ("~standard" in parser) {
     /**
      * Standard Schema
+     * TODO (next major): Consider moving this to the top of the function
      */
     return async (value) => {
       const result = await parser["~standard"].validate(value);
