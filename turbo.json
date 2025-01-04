@@ -22,7 +22,15 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**", ".svelte-kit/**"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        ".svelte-kit/**",
+        ".vinxi/**",
+        ".output/**",
+        ".astro/**"
+      ]
     },
     "lint": {
       "dependsOn": ["^topo", "^build"],
