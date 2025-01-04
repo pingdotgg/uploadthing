@@ -1,3 +1,5 @@
+import { UPLOADTHING_TOKEN } from "astro:env/server";
+
 import { createRouteHandler } from "uploadthing/server";
 
 import { uploadRouter } from "~/server/uploadthing";
@@ -11,7 +13,7 @@ export const prerender = false;
 export const ALL = createRouteHandler({
   router: uploadRouter,
   config: {
-    token: import.meta.env.UPLOADTHING_TOKEN,
+    token: UPLOADTHING_TOKEN,
     logLevel: "Debug",
   },
 });

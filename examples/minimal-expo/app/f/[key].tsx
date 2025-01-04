@@ -1,3 +1,4 @@
+import React from "react";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { Image } from "expo-image";
 import { Stack, useGlobalSearchParams } from "expo-router";

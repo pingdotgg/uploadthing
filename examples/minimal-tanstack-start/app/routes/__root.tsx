@@ -4,13 +4,15 @@ import {
   Outlet,
   ScrollRestoration,
 } from "@tanstack/react-router";
-import { Body, Head, Html, Meta, Scripts } from "@tanstack/start";
+import { Meta, Scripts } from "@tanstack/start";
 
 import uploadthingCss from "@uploadthing/react/styles.css?url";
 
 export const Route = createRootRoute({
   component: RootComponent,
-  links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+  head: () => ({
+    links: [{ rel: "stylesheet", href: uploadthingCss }],
+  }),
 });
 
 function RootComponent() {
@@ -23,15 +25,15 @@ function RootComponent() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <Html>
-      <Head>
+    <html>
+      <head>
         <Meta />
-      </Head>
-      <Body>
+      </head>
+      <body>
         {children}
         <ScrollRestoration />
         <Scripts />
-      </Body>
-    </Html>
+      </body>
+    </html>
   );
 }

@@ -40,16 +40,14 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     "express",
   );
 
-  return ExpressRouter().all(
-    "/",
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    async (req, res) => {
-      const response = await handler(req, res);
-      res.writeHead(response.status, Object.fromEntries(response.headers));
-      if (!response.body) return res.end();
+  return ExpressRouter().all("/", async (req, res) => {
+    const response = await handler(req, res);
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    if (response.body) {
       // Slight type mismatch in `node:stream.ReadableStream` and Fetch's `ReadableStream`.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return Readable.fromWeb(response.body as any).pipe(res);
-    },
-  );
+      Readable.fromWeb(response.body as never).pipe(res);
+    } else {
+      res.end();
+    }
+  });
 };

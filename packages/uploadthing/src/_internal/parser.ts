@@ -17,7 +17,7 @@ export type ParserZodEsque<TInput extends Json, TParsedInput> = {
 // In case we add support for more parsers later
 export type JsonParser<In extends Json, Out = In> =
   | ParserZodEsque<In, Out>
-  | Standard.v1.StandardSchema<In, Out>
+  | Standard.StandardSchemaV1<In, Out>
   | Schema.Schema<Out, In>;
 
 export class ParserError extends Data.TaggedError("ParserError")<{
@@ -31,19 +31,6 @@ export function getParseFn<
   TOut extends Json,
   TParser extends JsonParser<any, TOut>,
 >(parser: TParser): ParseFn<TOut> {
-  if ("~standard" in parser) {
-    /**
-     * Standard Schema
-     */
-    return async (value) => {
-      const result = await parser["~standard"].validate(value);
-      if (result.issues) {
-        throw new ParserError({ cause: result.issues });
-      }
-      return result.value;
-    };
-  }
-
   if ("parseAsync" in parser && typeof parser.parseAsync === "function") {
     /**
      * Zod
@@ -66,6 +53,20 @@ export function getParseFn<
           ),
         });
       });
+  }
+
+  if ("~standard" in parser) {
+    /**
+     * Standard Schema
+     * TODO (next major): Consider moving this to the top of the function
+     */
+    return async (value) => {
+      const result = await parser["~standard"].validate(value);
+      if (result.issues) {
+        throw new ParserError({ cause: result.issues });
+      }
+      return result.value;
+    };
   }
 
   throw new Error("Invalid parser");
