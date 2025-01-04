@@ -63,7 +63,9 @@ const uploadWithProgress = (
 
     // Is there a case when the client would throw and
     // ingest server not knowing about it? idts?
-    xhr.addEventListener("error", () => {
+    xhr.addEventListener("error", (err) => {
+      // eslint-disable-next-line no-console
+      console.log("XHR error", err);
       resume(
         new UploadThingError({
           code: "UPLOAD_FAILED",
