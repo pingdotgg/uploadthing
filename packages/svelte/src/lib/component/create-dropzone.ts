@@ -250,7 +250,8 @@ export function createDropzone(_props: DropzoneOptions) {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
-    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+    if (isIeOrEdge()) setTimeout(openFileDialog, 0);
+    else openFileDialog();
   };
 
   const safeSetAttribute = (

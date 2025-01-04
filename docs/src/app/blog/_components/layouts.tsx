@@ -18,12 +18,7 @@ import {
 } from "@/components/SectionProvider";
 import { type ArticleWithSlug } from "@/lib/articles";
 import { formatDate } from "@/lib/utils";
-import {
-  AnimatePresence,
-  motion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
 import { Link, useTransitionRouter } from "next-view-transitions";
 
 function ArrowLeftIcon(props: React.ComponentPropsWithoutRef<"svg">) {

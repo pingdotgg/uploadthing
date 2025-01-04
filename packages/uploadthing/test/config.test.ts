@@ -1,11 +1,10 @@
-import { after } from "node:test";
 import { it } from "@effect/vitest";
 import * as Effect from "effect/Effect";
 import * as Exit from "effect/Exit";
 import * as Layer from "effect/Layer";
 import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
-import { afterEach, beforeEach, describe, expect } from "vitest";
+import { beforeEach, describe, expect } from "vitest";
 
 import { UploadThingError } from "@uploadthing/shared";
 

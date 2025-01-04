@@ -121,7 +121,7 @@ export function UploadButton<
 
     if ($props.disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !uploadThing.isUploading()) return "ready";
+    if (!uploadThing.isUploading()) return "ready";
     return "uploading";
   };
 
@@ -157,7 +157,7 @@ export function UploadButton<
     if (!appendOnPaste) return;
 
     const pasteHandler = (e: ClipboardEvent) => {
-      if (document?.activeElement !== inputRef) return;
+      if (document.activeElement !== inputRef) return;
 
       const pastedFiles = getFilesFromClipboardEvent(e);
       if (!pastedFiles) return;
@@ -168,9 +168,9 @@ export function UploadButton<
 
       if (mode === "auto") uploadFiles(files());
     };
-    document?.addEventListener("paste", pasteHandler);
+    document.addEventListener("paste", pasteHandler);
 
-    onCleanup(() => document?.removeEventListener("paste", pasteHandler));
+    onCleanup(() => document.removeEventListener("paste", pasteHandler));
   });
 
   const styleFieldArg = {

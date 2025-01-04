@@ -256,7 +256,7 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/exists.txt",
       "https://cdn.foo.com/does-not-exist.txt",
     ]);
-    const key1 = result[0].data?.key;
+    const key1 = result[0]?.data?.key;
     expect(result).toEqual([
       {
         data: {
@@ -294,8 +294,8 @@ describe("uploadFilesFromUrl", () => {
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       "https://cdn.foo.com/bar.txt",
     ]);
-    const key1 = result[0].data?.key;
-    const key2 = result[2].data?.key;
+    const key1 = result[0]?.data?.key;
+    const key2 = result[2]?.data?.key;
     expect(result).toStrictEqual([
       {
         data: {

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
+import { Geist } from "next/font/google";
 import Link from "next/link";
 import { UserMenu } from "@/app/_components/user-menu";
 import { Button } from "@/ui/button";
 import { Input } from "@/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/ui/sheet";
-import { GeistSans } from "geist/font/sans";
 import { Menu, Package2, Search } from "lucide-react";
 import { Toaster } from "sonner";
 
@@ -22,6 +22,11 @@ export const metadata: Metadata = {
   description: "A User Profile Settings example",
 };
 
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={GeistSans.variable}>
+      <body className={geist.variable}>
         <NextSSRPlugin
           /**
            * The `extractRouterConfig` will extract **only** the route configs

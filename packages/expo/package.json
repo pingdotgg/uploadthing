@@ -41,13 +41,13 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "bunchee": "^6.2.0",
-    "eslint": "^8.57.0",
+    "eslint": "9.17.0",
     "expo-constants": "^15.4.5",
     "expo-document-picker": "^12.0.1",
     "expo-image-picker": "^15.0.4",
     "react": "18.3.1",
     "react-native": "^0.74.1",
-    "typescript": "^5.5.2",
+    "typescript": "5.7.2",
     "uploadthing": "workspace:*",
     "wait-on": "^7.2.0"
   },
@@ -63,22 +63,5 @@
     "@uploadthing/mime-types": {
       "optional": true
     }
-  },
-  "eslintConfig": {
-    "root": true,
-    "rules": {
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": [
-            "@uploadthing/expo",
-            "@uploadthing/expo/*"
-          ]
-        }
-      ]
-    },
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ]
   }
 }

@@ -145,7 +145,7 @@ export const UploadDropzone = <
 
     if ($props.disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !uploadThing.isUploading()) return "ready";
+    if (!uploadThing.isUploading()) return "ready";
     return "uploading";
   };
 
@@ -192,7 +192,7 @@ export const UploadDropzone = <
     multiple: fileInfo().multiple,
     get accept() {
       const types = fileInfo().fileTypes;
-      return types ? generateClientDropzoneAccept(types) : undefined;
+      return generateClientDropzoneAccept(types);
     },
     disabled: $props.disabled,
   });
@@ -212,10 +212,10 @@ export const UploadDropzone = <
 
       if (mode === "auto") uploadFiles(files());
     };
-    document?.addEventListener("paste", pasteHandler);
+    document.addEventListener("paste", pasteHandler);
 
     onCleanup(() => {
-      document?.removeEventListener("paste", pasteHandler);
+      document.removeEventListener("paste", pasteHandler);
     });
   });
 
@@ -510,7 +510,7 @@ export function createDropzone(_props: DropzoneOptions) {
       isFileDialogActive: false,
     });
 
-    props.onDrop?.(acceptedFiles);
+    props.onDrop(acceptedFiles);
   };
 
   const onDrop = (event: DropEvent) => {
@@ -566,7 +566,8 @@ export function createDropzone(_props: DropzoneOptions) {
     // In IE11/Edge the file-browser dialog is blocking, therefore, use setTimeout()
     // to ensure React can handle state changes
     // See: https://github.com/react-dropzone/react-dropzone/issues/450
-    isIeOrEdge() ? setTimeout(openFileDialog, 0) : openFileDialog();
+    if (isIeOrEdge()) setTimeout(openFileDialog, 0);
+    else openFileDialog();
   };
 
   const getRootProps = () => ({

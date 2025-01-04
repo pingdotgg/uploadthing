@@ -10,15 +10,13 @@ export type Json = JsonValue | JsonObject | JsonArray;
 export type Overwrite<T, U> = Omit<T, keyof U> & U;
 export type WithRequired<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type ErrorMessage<TError extends string> = TError;
-// eslint-disable-next-line @typescript-eslint/ban-types
 export type Simplify<TType> = { [TKey in keyof TType]: TType[TKey] } & {};
 export type MaybePromise<TType> = TType | Promise<TType>;
 export type Either<TData, TError> =
   | { data: TData; error: null }
   | { data: null; error: TError };
 export type ExtendObjectIf<Predicate, ToAdd> = undefined extends Predicate
-  ? // eslint-disable-next-line @typescript-eslint/ban-types
-    {}
+  ? {}
   : ToAdd;
 export type DeepPartial<T> = T extends object
   ? {
@@ -35,7 +33,7 @@ export interface FileProperties {
 
 export type ExtractHashPartsFn = (
   file: FileProperties,
-) => Array<string | number | undefined | null | boolean>;
+) => (string | number | undefined | null | boolean)[];
 
 /**
  * A subset of the standard RequestInit properties needed by UploadThing internally.
@@ -100,7 +98,6 @@ export type FileSize = `${PowOf2}${SizeUnit}`;
 export type TimeShort = "s" | "m" | "h" | "d";
 export type TimeLong = "second" | "minute" | "hour" | "day";
 type SuggestedNumbers = 2 | 3 | 4 | 5 | 6 | 7 | 10 | 15 | 30 | 60;
-// eslint-disable-next-line @typescript-eslint/ban-types
 type AutoCompleteableNumber = SuggestedNumbers | (number & {});
 export type Time =
   | number

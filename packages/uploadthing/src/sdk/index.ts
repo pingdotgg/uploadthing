@@ -151,7 +151,7 @@ export class UTApi {
         }),
       ),
     ).pipe(
-      Effect.map((ups) => (Array.isArray(files) ? ups : ups[0])),
+      Effect.map((ups) => (Array.isArray(files) ? ups : ups[0]!)),
       Effect.tap((res) =>
         Effect.logDebug("Finished uploading").pipe(
           Effect.annotateLogs("uploadResult", res),
@@ -204,7 +204,7 @@ export class UTApi {
       ),
     )
       .pipe(
-        Effect.map((ups) => (Array.isArray(urls) ? ups : ups[0])),
+        Effect.map((ups) => (Array.isArray(urls) ? ups : ups[0]!)),
         Effect.tap((res) =>
           Effect.logDebug("Finished uploading").pipe(
             Effect.annotateLogs("uploadResult", res),

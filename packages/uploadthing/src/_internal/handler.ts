@@ -232,7 +232,7 @@ const handleErrorRequest = (opts: { uploadable: AnyFileRoute }) =>
     const { apiKey } = yield* UTToken;
     const verified = yield* verifySignature(
       yield* request.text,
-      request.headers["x-uploadthing-signature"],
+      request.headers["x-uploadthing-signature"] ?? null,
       apiKey,
     );
     yield* Effect.logDebug(`Signature verified: ${verified}`);
@@ -298,7 +298,7 @@ const handleCallbackRequest = (opts: {
     const { apiKey } = yield* UTToken;
     const verified = yield* verifySignature(
       yield* request.text,
-      request.headers["x-uploadthing-signature"],
+      request.headers["x-uploadthing-signature"] ?? null,
       apiKey,
     );
     yield* Effect.logDebug(`Signature verified: ${verified}`);
@@ -655,8 +655,8 @@ const handleUploadAction = (opts: {
     const presigneds = presignedUrls.map((p, i) => ({
       url: p.url,
       key: p.key,
-      name: fileUploadRequests[i].name,
-      customId: fileUploadRequests[i].customId ?? null,
+      name: fileUploadRequests[i]!.name,
+      customId: fileUploadRequests[i]!.customId ?? null,
     }));
 
     yield* Effect.logInfo("Sending presigned URLs to client").pipe(

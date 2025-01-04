@@ -46,7 +46,7 @@ const worker = setupWorker(
   }),
   http.all<{ key: string }>(
     "https://fra1.ingest.uploadthing.com/:key",
-    ({ request, params }) => {
+    ({ params }) => {
       return HttpResponse.json({ url: "https://utfs.io/f/" + params.key });
     },
   ),
@@ -146,7 +146,7 @@ describe("UploadButton - basic", () => {
   it("picks up route config from global and skips fetch", async () => {
     (window as any).__UPLOADTHING = extractRouterConfig(testRouter);
 
-    const utils = render(<UploadButton endpoint="image" />);
+    render(<UploadButton endpoint="image" />);
     await expect.element(page.getByText("Image (4MB)")).toBeVisible();
     expect(utGet).not.toHaveBeenCalled();
 
@@ -265,7 +265,7 @@ describe("UploadButton - lifecycle hooks", () => {
 
 describe("UploadButton - Theming", () => {
   it("renders custom styles", async () => {
-    const utils = render(
+    render(
       <UploadButton
         endpoint="image"
         appearance={{

@@ -117,8 +117,8 @@ export const uploadFile = (
   Effect.gen(function* () {
     const presigned = yield* generatePresignedUrl(
       file,
-      opts?.contentDisposition ?? "inline",
-      opts?.acl,
+      opts.contentDisposition ?? "inline",
+      opts.acl,
     ).pipe(
       Effect.catchTag("ConfigError", () =>
         Effect.fail({

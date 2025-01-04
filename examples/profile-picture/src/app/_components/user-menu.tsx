@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useActionState } from "react";
 import { signOut } from "@/app/_actions";
 import { Button } from "@/ui/button";
 import {
@@ -16,6 +16,7 @@ import type { User } from "next-auth";
 
 export function UserMenu(props: { user: Promise<User | null> }) {
   const user = use(props.user);
+  const [_, dispatch, isPending] = useActionState(signOut, undefined);
 
   return (
     <DropdownMenu>
@@ -39,7 +40,9 @@ export function UserMenu(props: { user: Promise<User | null> }) {
         <DropdownMenuItem>Settings</DropdownMenuItem>
         <DropdownMenuItem>Support</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => signOut()}>Logout</DropdownMenuItem>
+        <DropdownMenuItem onClick={dispatch} disabled={isPending}>
+          Logout
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
