@@ -40,7 +40,7 @@
     "react-native-screens": "~3.31.1",
     "react-native-web": "~0.19.12",
     "uploadthing": "7.4.4",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

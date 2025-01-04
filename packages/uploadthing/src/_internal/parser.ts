@@ -17,7 +17,7 @@ export type ParserZodEsque<TInput extends Json, TParsedInput> = {
 // In case we add support for more parsers later
 export type JsonParser<In extends Json, Out = In> =
   | ParserZodEsque<In, Out>
-  | Standard.v1.StandardSchema<In, Out>
+  | Standard.StandardSchemaV1<In, Out>
   | Schema.Schema<Out, In>;
 
 export class ParserError extends Data.TaggedError("ParserError")<{
