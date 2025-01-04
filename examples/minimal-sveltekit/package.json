@@ -9,7 +9,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "prepare": "svelte-kit sync",
-    "clean": "git clean -xdf dist .svelte-kit node_modules"
+    "clean": "git clean -xdf dist .svelte-kit node_modules",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",

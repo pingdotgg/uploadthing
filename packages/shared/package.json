@@ -46,7 +46,7 @@
     "bunchee": "^6.2.0",
     "eslint": "9.17.0",
     "react": "18.3.1",
-    "solid-js": "^1.8.23",
+    "solid-js": "^1.9.3",
     "typescript": "5.7.2",
     "vue": "^3.4.21",
     "wait-on": "^8.0.1"

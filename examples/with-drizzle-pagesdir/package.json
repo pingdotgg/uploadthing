@@ -7,8 +7,9 @@
     "clean": "git clean -xdf .next node_modules",
     "db:push": "mkdir -p .data && drizzle-kit push:sqlite",
     "dev": "pnpm db:push && next dev",
-    "lint": "SKIP_ENV_VALIDATION=true next lint",
-    "start": "next start"
+    "lint": "next lint",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",

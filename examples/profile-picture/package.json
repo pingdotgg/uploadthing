@@ -9,7 +9,8 @@
     "dev": "next dev",
     "format": "prettier --write . --list-different",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.2.0",
