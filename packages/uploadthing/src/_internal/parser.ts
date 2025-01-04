@@ -31,6 +31,14 @@ export function getParseFn<
   TOut extends Json,
   TParser extends JsonParser<any, TOut>,
 >(parser: TParser): ParseFn<TOut> {
+  if ("parseAsync" in parser && typeof parser.parseAsync === "function") {
+    /**
+     * Zod
+     * TODO (next major): Consider wrapping ZodError in ParserError
+     */
+    return parser.parseAsync;
+  }
+
   if ("~standard" in parser) {
     /**
      * Standard Schema
@@ -42,14 +50,6 @@ export function getParseFn<
       }
       return result.value;
     };
-  }
-
-  if ("parseAsync" in parser && typeof parser.parseAsync === "function") {
-    /**
-     * Zod
-     * TODO (next major): Consider wrapping ZodError in ParserError
-     */
-    return parser.parseAsync;
   }
 
   if (Schema.isSchema(parser)) {
