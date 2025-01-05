@@ -7,8 +7,8 @@ import type {
   MaybePromise,
 } from "@uploadthing/shared";
 
-import type { LogFormat } from "./internal/logger";
-import type { AnyFileRoute, FileRoute } from "./internal/types";
+import type { LogFormat } from "./_internal/logger";
+import type { AnyFileRoute, FileRoute } from "./_internal/types";
 
 export * from "./sdk/types";
 
@@ -23,8 +23,8 @@ export type {
   UploadedFileData,
   ClientUploadedFileData,
   NewPresignedUrl,
-} from "./internal/shared-schemas";
-export { UploadThingToken } from "./internal/shared-schemas";
+} from "./_internal/shared-schemas";
+export { UploadThingToken } from "./_internal/shared-schemas";
 
 export type { FileRoute, AnyFileRoute };
 export type FileRouter = Record<string, AnyFileRoute>;
@@ -207,6 +207,25 @@ export type GenerateUploaderOptions = {
    * @default (VERCEL_URL ?? window.location.origin) + "/api/uploadthing"
    */
   url?: string | URL;
+  /**
+   * Provide a custom fetch implementation.
+   * @default `globalThis.fetch`
+   * @example
+   * ```ts
+   * fetch: (input, init) => {
+   *   if (input.toString().startsWith(MY_SERVER_URL)) {
+   *     // Include cookies in the request to your API
+   *     return fetch(input, {
+   *       ...init,
+   *       credentials: "include",
+   *     });
+   *   }
+   *
+   *   return fetch(input, init);
+   * }
+   * ```
+   */
+  fetch?: FetchEsque | undefined;
   /**
    * The uploadthing package that is making this request
    * @example "@uploadthing/react"

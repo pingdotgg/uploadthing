@@ -67,13 +67,14 @@ export function lookup(path: string): false | MimeType {
   // get the extension ("ext" or ".ext" or full path)
   const extension = extname("x." + path)
     .toLowerCase()
-    .substring(1) as FileExtension;
+    .substring(1);
 
   if (!extension) {
     return false;
   }
 
-  return getTypes()[extension] || false;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return getTypes()[extension as keyof typeof types] || false;
 }
 
 let inittedMaps = false;
@@ -95,7 +96,7 @@ function populateMaps(
     const mime = mimeTypes[type];
     const exts = mime.extensions;
 
-    if (!exts?.length) {
+    if (!exts.length) {
       return;
     }
 
@@ -105,7 +106,7 @@ function populateMaps(
     // extension -> mime
 
     for (const extension of exts) {
-      if (types[extension]) {
+      if (extension in types) {
         const from = preference.indexOf(mimeTypes[types[extension]].source);
         const to = preference.indexOf(mime.source);
 

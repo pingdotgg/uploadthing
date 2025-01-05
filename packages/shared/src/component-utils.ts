@@ -90,6 +90,7 @@ export const INTERNAL_doFormatting = (config?: ExpandedRouteConfig): string => {
   // Single type uploader label
   const key = allowedTypes[0];
   const formattedKey = formattedTypes[0];
+  if (!key || !formattedKey) return "";
 
   const { maxFileSize, maxFileCount, minFileCount } = config[key]!;
 

@@ -22,7 +22,7 @@ import type {
 import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
-import { __useUploadThingInternal } from "../useUploadThing";
+import { __useUploadThingInternal } from "../use-uploadthing";
 import { usePaste } from "../utils/usePaste";
 import { Cancel, progressWidths, Spinner } from "./shared";
 
@@ -111,6 +111,7 @@ export function UploadButton<
   const { startUpload, isUploading, routeConfig } = __useUploadThingInternal(
     resolveMaybeUrlArg($props.url),
     $props.endpoint,
+    $props.fetch ?? globalThis.fetch,
     {
       signal: acRef.current.signal,
       headers: $props.headers,
@@ -140,7 +141,7 @@ export function UploadButton<
     if ($props.__internal_state) return $props.__internal_state;
     if (disabled) return "disabled";
     if (!ready) return "readying";
-    if (ready && !isUploading) return "ready";
+    if (!isUploading) return "ready";
     return "uploading";
   })();
 

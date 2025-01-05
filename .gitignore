@@ -8,6 +8,9 @@ node_modules
 # testing
 coverage
 
+# astro
+.astro
+
 # next.js
 .next/
 out/
@@ -26,6 +29,7 @@ expo-env.d.ts
 .data
 .idea
 *.db
+*.timestamp_*
 
 # debug
 npm-debug.log*

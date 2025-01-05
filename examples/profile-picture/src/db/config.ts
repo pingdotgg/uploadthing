@@ -2,7 +2,8 @@ import type { Config } from "drizzle-kit";
 
 export default {
   schema: "./src/db/schema.ts",
-  driver: "libsql",
+  dialect: "sqlite",
+  casing: "snake_case",
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },

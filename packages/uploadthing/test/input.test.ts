@@ -6,8 +6,8 @@ import * as z from "zod";
 
 import { noop } from "@uploadthing/shared";
 
-import { getParseFn, ParserError } from "../src/internal/parser";
-import { createBuilder } from "../src/internal/upload-builder";
+import { getParseFn, ParserError } from "../src/_internal/parser";
+import { createBuilder } from "../src/_internal/upload-builder";
 import type { inferEndpointInput } from "../src/types";
 
 const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
@@ -184,7 +184,7 @@ it("type errors for non-JSON data types (zod)", () => {
   f(["image"])
     // @ts-expect-error - Set is not a valid JSON type
     .input(z.object({ foo: z.set(z.string()) }))
-    .middleware((opts) => {
+    .middleware(() => {
       return {};
     })
     .onUploadComplete(noop);
@@ -193,7 +193,7 @@ it("type errors for non-JSON data types (valibot)", () => {
   f(["image"])
     // @ts-expect-error - Set is not a valid JSON type
     .input(v.object({ foo: v.set(v.string()) }))
-    .middleware((opts) => {
+    .middleware(() => {
       return {};
     })
     .onUploadComplete(noop);
@@ -202,7 +202,7 @@ it("type errors for non-JSON data types (effect/schema)", () => {
   f(["image"])
     // @ts-expect-error - Set is not a valid JSON type
     .input(Schema.Struct({ foo: Schema.Set(Schema.String) }))
-    .middleware((opts) => {
+    .middleware(() => {
       return {};
     })
     .onUploadComplete(noop);

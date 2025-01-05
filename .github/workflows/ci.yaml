@@ -31,6 +31,10 @@ jobs:
 
       - name: Build
         run: pnpm turbo build --filter "./packages/*"
+
+      - name: Install Playwright
+        run: pnpm exec playwright install chromium
+
       - name: Test
         run: pnpm run test
         env:

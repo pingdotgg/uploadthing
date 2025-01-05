@@ -36,47 +36,19 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.11.5",
+    "effect": "3.12.0",
     "sqids": "^0.3.0"
   },
   "devDependencies": {
     "@types/react": "18.3.3",
     "@uploadthing/eslint-config": "workspace:",
     "@uploadthing/tsconfig": "workspace:",
-    "bunchee": "^6.1.2",
-    "eslint": "^8.57.0",
+    "bunchee": "^6.2.0",
+    "eslint": "9.17.0",
     "react": "18.3.1",
-    "solid-js": "^1.8.23",
-    "typescript": "^5.5.2",
+    "solid-js": "^1.9.3",
+    "typescript": "5.7.2",
     "vue": "^3.4.21",
-    "wait-on": "^7.2.0"
-  },
-  "eslintConfig": {
-    "root": true,
-    "extends": [
-      "@uploadthing/eslint-config/base"
-    ],
-    "rules": {
-      "no-restricted-imports": [
-        "error",
-        {
-          "patterns": [
-            {
-              "group": [
-                "@uploadthing/shared",
-                "@uploadthing/shared/*"
-              ],
-              "message": "Use relative src imports instead"
-            }
-          ],
-          "paths": [
-            {
-              "name": "effect",
-              "message": "Use alias imports instead (import * as X from \"effect/X\")"
-            }
-          ]
-        }
-      ]
-    }
+    "wait-on": "^8.0.1"
   }
 }

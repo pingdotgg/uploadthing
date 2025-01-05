@@ -18,8 +18,6 @@ export default defineEventHandler((event) => {
   const runtime = useRuntimeConfig() as { uploadthing?: RouteHandlerConfig };
   const config = emptyStringToUndefined(runtime.uploadthing ?? {});
 
-  console.log(config);
-
   return createRouteHandler({
     router: uploadRouter,
     config,

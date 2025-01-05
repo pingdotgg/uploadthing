@@ -1,6 +1,8 @@
 import { onMount } from "svelte";
 import { readonly, writable } from "svelte/store";
 
+import type { FetchEsque } from "@uploadthing/shared";
+
 interface State<T> {
   data?: T;
   error?: Error;
@@ -9,7 +11,11 @@ interface State<T> {
 
 type Cache<T> = Record<string, T>;
 
-export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
+export function createFetch<T = unknown>(
+  fetchFn: FetchEsque,
+  url?: string,
+  options?: RequestInit,
+) {
   const cache: Cache<T> = {};
   const initialState: State<T> = {
     type: "loading",
@@ -27,7 +33,7 @@ export function createFetch<T = unknown>(url?: string, options?: RequestInit) {
       return store.set({ type: "fetched", data: cache[url] });
     }
     try {
-      const response = await fetch(url, options);
+      const response = await fetchFn(url, options);
       if (!response.ok) {
         throw new Error(response.statusText);
       }

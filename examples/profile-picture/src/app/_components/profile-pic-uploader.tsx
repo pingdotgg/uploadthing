@@ -71,9 +71,11 @@ export function ProfilePictureCard(props: { user: User }) {
     }
   }, [file, croppedArea]);
 
-  const uploadCroppedImage = async () => {
+  const uploadCroppedImage = () => {
     if (!croppedArea || !output) return;
-    await startUpload([output]);
+    React.startTransition(async () => {
+      await startUpload([output]);
+    });
   };
 
   return (

@@ -8,13 +8,13 @@ import { Router as ExpressRouter } from "express";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeAdapterHandler } from "./internal/handler";
-import { getPostBody, toWebRequest } from "./internal/to-web-request";
-import type { CreateBuilderOptions } from "./internal/upload-builder";
-import { createBuilder } from "./internal/upload-builder";
+import { makeAdapterHandler } from "./_internal/handler";
+import { getPostBody, toWebRequest } from "./_internal/to-web-request";
+import type { CreateBuilderOptions } from "./_internal/upload-builder";
+import { createBuilder } from "./_internal/upload-builder";
 import type { FileRouter, RouteHandlerOptions } from "./types";
 
-export { UTFiles } from "./internal/types";
+export { UTFiles } from "./_internal/types";
 export type { FileRouter };
 
 type AdapterArgs = {
@@ -40,16 +40,14 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     "express",
   );
 
-  return ExpressRouter().all(
-    "/",
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    async (req, res) => {
-      const response = await handler(req, res);
-      res.writeHead(response.status, Object.fromEntries(response.headers));
-      if (!response.body) return res.end();
+  return ExpressRouter().all("/", async (req, res) => {
+    const response = await handler(req, res);
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    if (response.body) {
       // Slight type mismatch in `node:stream.ReadableStream` and Fetch's `ReadableStream`.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return Readable.fromWeb(response.body as any).pipe(res);
-    },
-  );
+      Readable.fromWeb(response.body as never).pipe(res);
+    } else {
+      res.end();
+    }
+  });
 };

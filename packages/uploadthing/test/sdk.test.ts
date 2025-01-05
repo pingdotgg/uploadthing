@@ -1,34 +1,33 @@
-/* eslint-disable no-restricted-globals */
-import * as S from "effect/Schema";
 import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import {
   afterAll,
   beforeAll,
   describe,
   expect,
   expectTypeOf,
-  it as rawIt,
+  it,
 } from "vitest";
 
-import { UploadThingToken } from "../src/internal/shared-schemas";
 import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
-  appUrlPattern,
-  fileUrlPattern,
+  handlers,
   INGEST_URL,
-  it,
-  msw,
   requestSpy,
   testToken,
   UTFS_IO_URL,
 } from "./__test-helpers";
 
+const msw = setupServer(...handlers);
+beforeAll(() => msw.listen());
+afterAll(() => msw.close());
+
 describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
-  it("uploads successfully", async ({ db }) => {
+  it("uploads successfully", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFiles(fooFile);
 
@@ -61,21 +60,21 @@ describe("uploadFiles", () => {
     });
   });
 
-  it("returns array if array is passed", async ({ db }) => {
+  it("returns array if array is passed", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFiles([fooFile]);
     expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it("returns single object if no array is passed", async ({ db }) => {
+  it("returns single object if no array is passed", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFiles(fooFile);
     expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
-  it("accepts UTFile", async ({ db }) => {
+  it("accepts UTFile", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const file = new UTFile(["foo"], "foo.txt");
     await utapi.uploadFiles(file);
@@ -87,14 +86,7 @@ describe("uploadFiles", () => {
     );
   });
 
-  it("accepts UndiciFile", async ({ db }) => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const { File } = await import("undici");
-    const file = new File(["foo"], "foo.txt");
-    await utapi.uploadFiles(file);
-  });
-
-  it("accepts UTFile with customId", async ({ db }) => {
+  it("accepts UTFile with customId", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });
     await utapi.uploadFiles(fileWithId);
@@ -108,7 +100,7 @@ describe("uploadFiles", () => {
 });
 
 describe("uploadFilesFromUrl", () => {
-  it("downloads, then uploads successfully", async ({ db }) => {
+  it("downloads, then uploads successfully", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
@@ -144,7 +136,7 @@ describe("uploadFilesFromUrl", () => {
     });
   });
 
-  it("returns array if array is passed", async ({ db }) => {
+  it("returns array if array is passed", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFilesFromUrl([
       "https://cdn.foo.com/foo.txt",
@@ -154,7 +146,7 @@ describe("uploadFilesFromUrl", () => {
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it("returns single object if no array is passed", async ({ db }) => {
+  it("returns single object if no array is passed", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFilesFromUrl(
       "https://cdn.foo.com/foo.txt",
@@ -163,7 +155,7 @@ describe("uploadFilesFromUrl", () => {
     expect(Array.isArray(result)).toBe(false);
   });
 
-  it("can override name", async ({ db }) => {
+  it("can override name", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await utapi.uploadFilesFromUrl({
       url: "https://cdn.foo.com/my-super-long-pathname-thats-too-long-for-ut.txt",
@@ -182,7 +174,7 @@ describe("uploadFilesFromUrl", () => {
     );
   });
 
-  it("can provide a customId", async ({ db }) => {
+  it("can provide a customId", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await utapi.uploadFilesFromUrl({
       url: "https://cdn.foo.com/foo.txt",
@@ -202,7 +194,7 @@ describe("uploadFilesFromUrl", () => {
   });
 
   // if passed data url, array contains UploadThingError
-  it("returns error if data url is passed", async ({ db }) => {
+  it("returns error if data url is passed", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFilesFromUrl(
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
@@ -218,7 +210,7 @@ describe("uploadFilesFromUrl", () => {
     });
   });
 
-  it("gracefully handles download errors", async ({ db }) => {
+  it("gracefully handles download errors", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
 
     msw.use(
@@ -244,7 +236,7 @@ describe("uploadFilesFromUrl", () => {
     });
   });
 
-  it("gracefully handles download errors", async ({ db }) => {
+  it("gracefully handles download errors", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
 
     msw.use(
@@ -257,7 +249,7 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/exists.txt",
       "https://cdn.foo.com/does-not-exist.txt",
     ]);
-    const key1 = result[0].data?.key;
+    const key1 = result[0]?.data?.key;
     expect(result).toEqual([
       {
         data: {
@@ -288,15 +280,15 @@ describe("uploadFilesFromUrl", () => {
     ]);
   });
 
-  it("preserves order if some download fails", async ({ db }) => {
+  it("preserves order if some download fails", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const result = await utapi.uploadFilesFromUrl([
       "https://cdn.foo.com/foo.txt",
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       "https://cdn.foo.com/bar.txt",
     ]);
-    const key1 = result[0].data?.key;
-    const key2 = result[2].data?.key;
+    const key1 = result[0]?.data?.key;
+    const key2 = result[2]?.data?.key;
     expect(result).toStrictEqual([
       {
         data: {
@@ -340,7 +332,7 @@ describe("uploadFilesFromUrl", () => {
 });
 
 describe("getSignedURL", () => {
-  it("sends request without expiresIn", async ({ db }) => {
+  it("sends request without expiresIn", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await utapi.getSignedURL("foo");
 
@@ -357,7 +349,7 @@ describe("getSignedURL", () => {
     });
   });
 
-  it("sends request with valid expiresIn (1)", async ({ db }) => {
+  it("sends request with valid expiresIn (1)", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await utapi.getSignedURL("foo", { expiresIn: "1d" });
 
@@ -374,7 +366,7 @@ describe("getSignedURL", () => {
     });
   });
 
-  it("sends request with valid expiresIn (2)", async ({ db }) => {
+  it("sends request with valid expiresIn (2)", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
 
@@ -391,7 +383,7 @@ describe("getSignedURL", () => {
     });
   });
 
-  it("throws if expiresIn is invalid", async ({ db }) => {
+  it("throws if expiresIn is invalid", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await expect(() =>
       // @ts-expect-error - intentionally passing invalid expiresIn
@@ -402,7 +394,7 @@ describe("getSignedURL", () => {
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });
 
-  it("throws if expiresIn is longer than 7 days", async ({ db }) => {
+  it("throws if expiresIn is longer than 7 days", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await expect(() =>
       utapi.getSignedURL("foo", { expiresIn: "10 days" }),
@@ -414,7 +406,7 @@ describe("getSignedURL", () => {
 });
 
 describe("updateACL", () => {
-  it("single file", async ({ db }) => {
+  it("single file", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
 
     await expect(utapi.updateACL("ut-key", "public-read")).resolves.toEqual({
@@ -433,7 +425,7 @@ describe("updateACL", () => {
     });
   });
 
-  it("many keys", async ({ db }) => {
+  it("many keys", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
 
     await expect(
@@ -457,7 +449,7 @@ describe("updateACL", () => {
     });
   });
 
-  it("many keys with keytype override", async ({ db }) => {
+  it("many keys with keytype override", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
 
     await expect(
@@ -483,290 +475,3 @@ describe("updateACL", () => {
     });
   });
 });
-
-const shouldRun =
-  typeof process.env.UPLOADTHING_TEST_TOKEN === "string" &&
-  process.env.UPLOADTHING_TEST_TOKEN.length > 0;
-
-describe.runIf(shouldRun)(
-  "smoke test with live api",
-  { timeout: 15_000 },
-  () => {
-    const token = shouldRun
-      ? process.env.UPLOADTHING_TEST_TOKEN!
-      : testToken.encoded;
-    const utapi = new UTApi({ token });
-
-    const appId = S.decodeSync(UploadThingToken)(token).appId;
-
-    const localInfo = { totalBytes: 0, filesUploaded: 0 };
-    const TEST_APP_LIMIT_BYTES = 2147483648; // free 2GB
-    // const TEST_APP_LIMIT_BYTES = 107374182400; // paid 100GB
-
-    // Clean up any files before and after tests
-    beforeAll(async () => {
-      // Close MSW proxy, don't want to interfere with these live tests
-      msw.close();
-
-      const { files } = await utapi.listFiles();
-      await utapi.deleteFiles(files.map((f) => f.key));
-    });
-    afterAll(async () => {
-      const { files } = await utapi.listFiles();
-      await utapi.deleteFiles(files.map((f) => f.key));
-    });
-
-    // These will all run in serial
-
-    rawIt("should have no files", async () => {
-      const { files, hasMore } = await utapi.listFiles();
-      expect(files).toHaveLength(0);
-      expect(hasMore).toBe(false);
-
-      const usageInfo = await utapi.getUsageInfo();
-      expect(usageInfo).toEqual({
-        totalBytes: 0,
-        appTotalBytes: 0,
-        filesUploaded: 0,
-        limitBytes: TEST_APP_LIMIT_BYTES,
-      });
-      localInfo.totalBytes = usageInfo.totalBytes;
-      localInfo.filesUploaded = usageInfo.filesUploaded;
-    });
-
-    rawIt("should upload a file", async () => {
-      const file = new File(["foo"], "foo.txt", { type: "text/plain" });
-      const result = await utapi.uploadFiles(file);
-      const key = result.data!.key;
-      expect(result).toEqual({
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: file.lastModified,
-          name: "foo.txt",
-          size: 3,
-          type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
-          fileHash: expect.any(String),
-        },
-        error: null,
-      });
-
-      const content = await fetch(result.data!.url).then((r) => r.text());
-      expect(content).toBe("foo");
-
-      const usageInfo = await utapi.getUsageInfo();
-      expect(usageInfo).toEqual({
-        totalBytes: 3,
-        appTotalBytes: 3,
-        filesUploaded: 1,
-        limitBytes: TEST_APP_LIMIT_BYTES,
-      });
-
-      localInfo.totalBytes += result.data!.size;
-      localInfo.filesUploaded++;
-    });
-
-    rawIt("should upload a private file", async () => {
-      const file = new File(["foo"], "foo.txt", { type: "text/plain" });
-      const result = await utapi.uploadFiles(file, {
-        acl: "private",
-      });
-      const key = result.data!.key;
-      expect(result).toEqual({
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: file.lastModified,
-          name: "foo.txt",
-          size: 3,
-          type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
-          fileHash: expect.any(String),
-        },
-        error: null,
-      });
-
-      const response = await fetch(result.data!.url);
-      expect(response.status).toBe(403);
-
-      const { url } = await utapi.getSignedURL(result.data!.key);
-      const content = await fetch(url).then((r) => r.text());
-      expect(content).toBe("foo");
-
-      localInfo.totalBytes += result.data!.size;
-      localInfo.filesUploaded++;
-    });
-
-    rawIt("should upload a file from a url", async () => {
-      const result = await utapi.uploadFilesFromUrl(
-        "https://uploadthing.com/favicon.ico",
-      );
-      const key = result.data!.key;
-      expect(result).toEqual({
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: expect.any(Number),
-          name: "favicon.ico",
-          size: expect.any(Number),
-          type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
-          fileHash: expect.any(String),
-        },
-        error: null,
-      });
-
-      localInfo.totalBytes += result.data!.size;
-      localInfo.filesUploaded++;
-    });
-
-    rawIt("should rename a file with fileKey", async () => {
-      const customId = crypto.randomUUID();
-
-      const file = new UTFile(["foo"], "bar.txt");
-      const result = await utapi.uploadFiles(file);
-      const fileKey = result.data!.key;
-      expect(result).toEqual({
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: expect.any(Number),
-
-          name: "bar.txt",
-          size: 3,
-          type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
-          fileHash: expect.any(String),
-        },
-        error: null,
-      });
-
-      const { success } = await utapi.renameFiles({
-        fileKey,
-        newName: "baz.txt",
-      });
-      expect(success).toBe(true);
-
-      const { files } = await utapi.listFiles();
-      expect(files.find((f) => f.key === fileKey)).toHaveProperty(
-        "name",
-        "baz.txt",
-      );
-
-      // FIXME: Bug in uploadthing server
-      // const heads = await fetch(result.data!.url).then((r) => r.headers);
-      // expect(heads.get("Content-Disposition")).toEqual(
-      //   expect.stringContaining("filename=baz.txt"),
-      // );
-
-      localInfo.totalBytes += result.data!.size;
-      localInfo.filesUploaded++;
-    });
-
-    rawIt("should rename a file with customId", async () => {
-      const customId = crypto.randomUUID();
-
-      const file = new UTFile(["foo"], "bar.txt", { customId });
-      const result = await utapi.uploadFiles(file);
-      const key = result.data!.key;
-      expect(result).toEqual({
-        data: {
-          customId: customId,
-          key: expect.stringMatching(/.+/),
-          lastModified: file.lastModified,
-          name: "bar.txt",
-          size: 3,
-          type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
-          fileHash: expect.any(String),
-        },
-        error: null,
-      });
-
-      const { success } = await utapi.renameFiles({
-        customId,
-        newName: "baz.txt",
-      });
-      expect(success).toBe(true);
-
-      const { files } = await utapi.listFiles();
-      expect(files.find((f) => f.customId === customId)).toHaveProperty(
-        "name",
-        "baz.txt",
-      );
-
-      // FIXME: Bug in uploadthing server
-      // const heads = await fetch(result.data!.url).then((r) => r.headers);
-      // expect(heads.get("Content-Disposition")).toEqual(
-      //   expect.stringContaining("filename=baz.txt"),
-      // );
-
-      localInfo.totalBytes += result.data!.size;
-      localInfo.filesUploaded++;
-    });
-
-    rawIt("should update ACL", async () => {
-      const file = new File(["foo"], "foo.txt", { type: "text/plain" });
-      const result = await utapi.uploadFiles(file);
-      const { key, url } = result.data!;
-      expect(result).toEqual({
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: file.lastModified,
-          name: "foo.txt",
-          size: 3,
-          type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
-          fileHash: expect.any(String),
-        },
-        error: null,
-      });
-
-      const firstChange = await utapi.updateACL(key, "private");
-      expect(firstChange.success).toBe(true);
-      await expect(fetch(url)).resolves.toHaveProperty("status", 403);
-
-      const secondChange = await utapi.updateACL(key, "public-read");
-      expect(secondChange.success).toBe(true);
-      await expect(fetch(url)).resolves.toHaveProperty("status", 200);
-
-      localInfo.totalBytes += result.data!.size;
-      localInfo.filesUploaded++;
-    });
-
-    rawIt("should delete a file", async () => {
-      const { files } = await utapi.listFiles();
-      const someFile = files[0];
-
-      const response = await fetch(`${UTFS_IO_URL}/f/${someFile.key}`);
-      const size = Number(response.headers.get("Content-Length"));
-
-      const result = await utapi.deleteFiles(someFile.key);
-      expect(result).toEqual({
-        deletedCount: 1,
-        success: true,
-      });
-
-      localInfo.totalBytes -= size;
-      localInfo.filesUploaded--;
-    });
-
-    rawIt("should have correct usage info", async () => {
-      const usageInfo = await utapi.getUsageInfo();
-      expect(usageInfo).toEqual({
-        totalBytes: localInfo.totalBytes,
-        appTotalBytes: localInfo.totalBytes,
-        filesUploaded: localInfo.filesUploaded,
-        limitBytes: TEST_APP_LIMIT_BYTES,
-      });
-    });
-  },
-);

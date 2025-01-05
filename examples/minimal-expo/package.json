@@ -7,7 +7,8 @@
     "dev": "expo start",
     "clean": "git clean -xdf .next node_modules",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@bacons/text-decoder": "^0.0.0",
@@ -40,13 +41,13 @@
     "react-native-screens": "~3.31.1",
     "react-native-web": "~0.19.12",
     "uploadthing": "7.4.4",
-    "zod": "^3.23.8"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",
     "@babel/runtime": "^7.24.4",
     "@types/react": "18.3.3",
     "tailwindcss": "^3.4.16",
-    "typescript": "^5.5.2"
+    "typescript": "5.7.2"
   }
 }

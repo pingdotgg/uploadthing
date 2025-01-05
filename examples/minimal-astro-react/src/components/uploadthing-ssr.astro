@@ -11,7 +11,7 @@ const routerConfig = extractRouterConfig(uploadRouter);
 (globalThis as any).__UPLOADTHING ??= routerConfig;
 ---
 
-<script define:vars={{ routerConfig }}>
+<script define:vars={{ routerConfig }} is:inline>
     /**
      * This prevents the client from fetching the
      * configuration from the server, since we already have it.
