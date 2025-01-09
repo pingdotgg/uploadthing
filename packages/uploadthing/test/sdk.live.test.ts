@@ -4,12 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import { UploadThingToken } from "../src/types";
-import {
-  appUrlPattern,
-  fileUrlPattern,
-  testToken,
-  UTFS_IO_URL,
-} from "./__test-helpers";
+import { fileUrlPattern, testToken, UFS_HOST } from "./__test-helpers";
 
 const shouldRun =
   typeof process.env.UPLOADTHING_TEST_TOKEN === "string" &&
@@ -69,8 +64,8 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern(appId)),
+          appUrl: expect.stringMatching(fileUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -104,8 +99,8 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern(appId)),
+          appUrl: expect.stringMatching(fileUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -134,8 +129,8 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern(appId)),
+          appUrl: expect.stringMatching(fileUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -158,8 +153,8 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern(appId)),
+          appUrl: expect.stringMatching(fileUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -200,8 +195,8 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern(appId)),
+          appUrl: expect.stringMatching(fileUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -241,8 +236,8 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
-          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern(appId)),
+          appUrl: expect.stringMatching(fileUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -264,7 +259,9 @@ describe.runIf(shouldRun)(
       const { files } = await utapi.listFiles();
       const someFile = files[0]!;
 
-      const response = await fetch(`${UTFS_IO_URL}/f/${someFile.key}`);
+      const response = await fetch(
+        `https://${testToken.decoded.appId}.${UFS_HOST}/f/${someFile.key}`,
+      );
       const size = Number(response.headers.get("Content-Length"));
 
       const result = await utapi.deleteFiles(someFile.key);

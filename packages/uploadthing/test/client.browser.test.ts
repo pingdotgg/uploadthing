@@ -17,7 +17,6 @@ import type {
   GenerateUploaderOptions,
 } from "../src/types";
 import {
-  appUrlPattern,
   doNotExecute,
   fileUrlPattern,
   handlers,
@@ -141,8 +140,8 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(fileUrlPattern),
-        appUrl: expect.stringMatching(appUrlPattern()),
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(fileUrlPattern()),
         fileHash: expect.any(String),
       },
     ]);
@@ -185,8 +184,8 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(fileUrlPattern),
-        appUrl: expect.stringMatching(appUrlPattern()),
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(fileUrlPattern()),
         fileHash: expect.any(String),
       },
     ]);
@@ -220,8 +219,8 @@ describe("uploadFiles", () => {
         serverData: null,
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
-        url: expect.stringMatching(fileUrlPattern),
-        appUrl: expect.stringMatching(appUrlPattern()),
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(fileUrlPattern()),
         fileHash: expect.any(String),
       },
     ]);
@@ -268,7 +267,7 @@ describe("uploadFiles", () => {
   //       customId: null,
   //       serverData: null,
   //       key: "abc-123.txt",
-  //       url: "https://utfs.io/f/abc-123.txt",
+  //       url: "https://app-1.ufs.sh/f/abc-123.txt",
   //     },
   //   ]);
   //   expect(onErrorMock).not.toHaveBeenCalled();
