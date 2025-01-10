@@ -24,7 +24,7 @@ export const GET = async (req: Request) => {
         tw="bg-zinc-900 h-full w-full flex flex-col p-14"
         style={{
           backgroundImage:
-            "url(https://utfs.io/f/656e69ef-2800-45fd-87ac-b9f88346348c-hi270o.png)",
+            "url(https://s40vlb3kca.ufs.sh/f/656e69ef-2800-45fd-87ac-b9f88346348c-hi270o.png)",
           backgroundPosition: "cover",
         }}
       >

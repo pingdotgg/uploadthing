@@ -31,18 +31,17 @@ export const API_URL =
   typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
     ? process.env.UPLOADTHING_API_URL
     : "https://api.uploadthing.com";
-export const UTFS_IO_URL =
+export const UFS_HOST =
   typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
-    ? "https://staging.utfs.io"
-    : "https://utfs.io";
+    ? "utf-staging.com"
+    : "ufs.sh";
 export const INGEST_URL =
   typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
     ? "https://fra1.ingest.ut-staging.com"
     : "https://fra1.ingest.uploadthing.com";
 
-export const fileUrlPattern = new RegExp(`^${UTFS_IO_URL}/f/.+$`);
-export const appUrlPattern = (appId = testToken.decoded.appId) =>
-  new RegExp(`^${UTFS_IO_URL}/a/${appId}/.+$`);
+export const fileUrlPattern = (appId = testToken.decoded.appId) =>
+  new RegExp(`^https://${appId}.${UFS_HOST}/f/.+$`);
 
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
   const url = new URL("http://localhost:3000");
@@ -86,7 +85,7 @@ export const handlers = [
     await callRequestSpy(request);
     return HttpResponse.text("Lorem ipsum doler sit amet");
   }),
-  http.get(`${UTFS_IO_URL}/f/:key`, async ({ request }) => {
+  http.get(`https://(.+).${UFS_HOST}/f/:key`, async ({ request }) => {
     await callRequestSpy(request);
     return HttpResponse.text("Lorem ipsum doler sit amet");
   }),
@@ -99,8 +98,8 @@ export const handlers = [
       await callRequestSpy(request);
       const appId = new URLSearchParams(request.url).get("x-ut-identifier");
       return HttpResponse.json<UploadPutResult>({
-        url: `${UTFS_IO_URL}/f/${params.key}`,
-        appUrl: `${UTFS_IO_URL}/a/${appId}/${params.key}`,
+        url: `https://${appId}.${UFS_HOST}/f/${params.key}`,
+        appUrl: `https://${appId}.${UFS_HOST}/f/${params.key}`,
         serverData: null,
         fileHash: Array.from(new Uint8Array(await request.arrayBuffer()))
           .map((b) => b.toString(16).padStart(2, "0"))
@@ -114,7 +113,7 @@ export const handlers = [
   http.post(`${API_URL}/v6/requestFileAccess`, async ({ request }) => {
     await callRequestSpy(request);
     return HttpResponse.json({
-      url: `${UTFS_IO_URL}/f/someFileKey?x-some-amz=query-param`,
+      url: `https://{APP_ID}.${UFS_HOST}/f/someFileKey?x-some-amz=query-param`,
     });
   }),
   http.post(`${API_URL}/v6/updateACL`, async ({ request }) => {
