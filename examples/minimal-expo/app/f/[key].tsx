@@ -10,7 +10,7 @@ import { isImage } from "~/lib/utils";
 export default function FileScreen() {
   const searchParams = useGlobalSearchParams<{ key: string; name?: string }>();
   const { key, name = "Untitled" } = searchParams;
-  const fileUrl = `https://utfs.io/f/${key}`;
+  const fileUrl = `https://${process.env.EXPO_PUBLIC_UPLOADTHING_APP_ID}.ufs.sh/f/${key}`;
 
   return (
     <>

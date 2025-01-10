@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   MiddlewareConfig,
   NextResponse,
@@ -8,10 +9,11 @@ import { getSession } from "./lib/data";
 
 export default (async (req) => {
   if (req.nextUrl.pathname !== "/") {
-    const sesh = await getSession();
-    if (!sesh) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    // TOGGLE TO MAKE CALLBACK NOT REACH
+    // const sesh = await getSession();
+    // if (!sesh) {
+    //   return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // }
   }
 
   return NextResponse.next();
