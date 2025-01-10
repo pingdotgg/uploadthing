@@ -4,7 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import { UploadThingToken } from "../src/types";
-import { fileUrlPattern, testToken, UFS_HOST } from "./__test-helpers";
+import { fileUrlPattern, testToken } from "./__test-helpers";
 
 const shouldRun =
   typeof process.env.UPLOADTHING_TEST_TOKEN === "string" &&
@@ -259,20 +259,13 @@ describe.runIf(shouldRun)(
       const { files } = await utapi.listFiles();
       const someFile = files[0]!;
 
-      const response = await fetch(
-        `https://${testToken.decoded.appId}.${UFS_HOST}/f/${someFile.key}`,
-      );
-      const size = Number(response.headers.get("Content-Length"));
-
-      console.log({ contentLength: size, fileSize: someFile.size });
-
       const result = await utapi.deleteFiles(someFile.key);
       expect(result).toEqual({
         deletedCount: 1,
         success: true,
       });
 
-      localInfo.totalBytes -= size;
+      localInfo.totalBytes -= someFile.size;
       localInfo.filesUploaded--;
     });
 
