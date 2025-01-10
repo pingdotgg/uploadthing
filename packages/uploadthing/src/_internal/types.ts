@@ -196,6 +196,11 @@ export type UTEvents = {
  */
 export type UploadPutResult<TServerOutput = unknown> = {
   url: string;
+  /**
+   * @deprecated
+   * This field is now an alias for `url`.
+   * This field will be removed in uploadthing v9.
+   */
   appUrl: string;
   fileHash: string;
   serverData: TServerOutput;

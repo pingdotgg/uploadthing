@@ -3,8 +3,8 @@ import type { MimeType } from "@uploadthing/mime-types";
 import type { AllowedFileType } from "./file-types";
 
 export type JsonValue = string | number | boolean | null | undefined;
-export type JsonArray = JsonValue[];
 export type JsonObject = { [key: string]: JsonValue | JsonObject | JsonArray };
+export type JsonArray = (JsonValue | JsonObject)[];
 export type Json = JsonValue | JsonObject | JsonArray;
 
 export type Overwrite<T, U> = Omit<T, keyof U> & U;

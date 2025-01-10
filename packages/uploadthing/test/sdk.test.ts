@@ -13,11 +13,12 @@ import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
+  callRequestSpy,
   handlers,
   INGEST_URL,
   requestSpy,
   testToken,
-  UTFS_IO_URL,
+  UFS_HOST,
 } from "./__test-helpers";
 
 const msw = setupServer(...handlers);
@@ -50,8 +51,8 @@ describe("uploadFiles", () => {
         name: "foo.txt",
         size: 3,
         lastModified: fooFile.lastModified,
-        url: `${UTFS_IO_URL}/f/${key}`,
-        appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
+        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
+        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
         customId: null,
         type: "text/plain",
         fileHash: expect.any(String),
@@ -97,6 +98,46 @@ describe("uploadFiles", () => {
       expect.objectContaining({ method: "PUT" }),
     );
   });
+
+  it("gracefully handles failed requests", async () => {
+    const mockedIngestUrl = "https://mocked.ingest.uploadthing.com";
+    msw.use(
+      http.all<{ key: string }>(
+        `${mockedIngestUrl}/:key`,
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ error: "Upload failed" }, { status: 400 });
+        },
+      ),
+    );
+
+    const utapi = new UTApi({
+      token: testToken.encoded,
+      /**
+       * Explicitly set the ingestUrl to the mocked one
+       * to ensure the request is made to the mocked ingest
+       * endpoint that yields a 400 error.
+       */
+      ingestUrl: mockedIngestUrl,
+    });
+    const result = await utapi.uploadFiles(fooFile);
+    expect(result).toStrictEqual({
+      data: null,
+      error: {
+        code: "UPLOAD_FAILED",
+        data: undefined,
+        message: "Failed to upload file",
+      },
+    });
+
+    expect(requestSpy).toHaveBeenCalledTimes(1);
+    expect(requestSpy).toHaveBeenCalledWith(
+      expect.stringContaining(mockedIngestUrl),
+      expect.objectContaining({ method: "PUT" }),
+    );
+
+    msw.use(...handlers);
+  });
 });
 
 describe("uploadFilesFromUrl", () => {
@@ -126,8 +167,8 @@ describe("uploadFilesFromUrl", () => {
         name: "foo.txt",
         size: 26,
         lastModified: expect.any(Number),
-        url: `${UTFS_IO_URL}/f/${key}`,
-        appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
+        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
+        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
         customId: null,
         type: "text/plain",
         fileHash: expect.any(String),
@@ -260,8 +301,8 @@ describe("uploadFilesFromUrl", () => {
           name: "exists.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/f/${key1}`,
-          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
+          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
         },
         error: null,
       },
@@ -298,8 +339,8 @@ describe("uploadFilesFromUrl", () => {
           name: "foo.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/f/${key1}`,
-          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
+          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
           fileHash: expect.any(String),
         },
         error: null,
@@ -321,8 +362,8 @@ describe("uploadFilesFromUrl", () => {
           name: "bar.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/f/${key2}`,
-          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key2}`,
+          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
+          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
           fileHash: expect.any(String),
         },
         error: null,

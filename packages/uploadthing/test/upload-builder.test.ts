@@ -146,3 +146,14 @@ it("smoke", async () => {
   });
   expect(metadata).toEqual({ header1: "woohoo", userId: "123" });
 });
+
+it("allows nested structure in output", () => {
+  const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
+
+  f(["image"]).onUploadComplete(() => {
+    return {
+      foo: "br",
+      arr: [{ bar: "baz" }],
+    };
+  });
+});

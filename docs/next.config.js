@@ -19,8 +19,8 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "utfs.io",
-        pathname: "/a/s40vlb3kca/*",
+        hostname: "s40vlb3kca.ufs.sh",
+        pathname: "/f/*",
       },
     ],
   },
