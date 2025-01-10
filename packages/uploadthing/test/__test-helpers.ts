@@ -63,7 +63,7 @@ export const baseHeaders = {
  * Call this in each MSW handler to spy on the request
  * and provide an easy way to assert on the request
  */
-const callRequestSpy = async (request: StrictRequest<any>) =>
+export const callRequestSpy = async (request: StrictRequest<any>) =>
   requestSpy(new URL(request.url).toString(), {
     method: request.method,
     headers: Object.fromEntries(request.headers),

@@ -13,6 +13,7 @@ import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
+  callRequestSpy,
   handlers,
   INGEST_URL,
   requestSpy,
@@ -96,6 +97,46 @@ describe("uploadFiles", () => {
       expect.stringContaining(`x-ut-custom-id=foo`),
       expect.objectContaining({ method: "PUT" }),
     );
+  });
+
+  it("gracefully handles failed requests", async () => {
+    const mockedIngestUrl = "https://mocked.ingest.uploadthing.com";
+    msw.use(
+      http.all<{ key: string }>(
+        `${mockedIngestUrl}/:key`,
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ error: "Upload failed" }, { status: 400 });
+        },
+      ),
+    );
+
+    const utapi = new UTApi({
+      token: testToken.encoded,
+      /**
+       * Explicitly set the ingestUrl to the mocked one
+       * to ensure the request is made to the mocked ingest
+       * endpoint that yields a 400 error.
+       */
+      ingestUrl: mockedIngestUrl,
+    });
+    const result = await utapi.uploadFiles(fooFile);
+    expect(result).toStrictEqual({
+      data: null,
+      error: {
+        code: "UPLOAD_FAILED",
+        data: undefined,
+        message: "Failed to upload file",
+      },
+    });
+
+    expect(requestSpy).toHaveBeenCalledTimes(1);
+    expect(requestSpy).toHaveBeenCalledWith(
+      expect.stringContaining(mockedIngestUrl),
+      expect.objectContaining({ method: "PUT" }),
+    );
+
+    msw.use(...handlers);
   });
 });
 
