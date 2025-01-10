@@ -264,6 +264,8 @@ describe.runIf(shouldRun)(
       );
       const size = Number(response.headers.get("Content-Length"));
 
+      console.log({ contentLength: size, fileSize: someFile.size });
+
       const result = await utapi.deleteFiles(someFile.key);
       expect(result).toEqual({
         deletedCount: 1,
