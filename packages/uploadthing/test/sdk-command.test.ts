@@ -1,3 +1,4 @@
+import { ParseResult } from "effect";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
 import {
@@ -9,7 +10,12 @@ import {
   it,
 } from "vitest";
 
-import { UTApi, UTFile } from "../src/sdk";
+import { UploadFilesFromUrlCommand } from "uploadthing/sdk/commands/upload-files-from-url";
+
+import { createClient, UTApi, UTFile } from "../src/sdk";
+import { GetSignedURLCommand } from "../src/sdk/commands/get-signed-url";
+import { UpdateACLCommand } from "../src/sdk/commands/update-acl";
+import { UploadFilesCommand } from "../src/sdk/commands/upload-files";
 import type { UploadFileResult } from "../src/sdk/commands/upload-files";
 import {
   API_URL,
@@ -29,8 +35,8 @@ describe("uploadFiles", () => {
   const fooFile = new File(["foo"], "foo.txt", { type: "text/plain" });
 
   it("uploads successfully", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFiles(fooFile);
+    const client = createClient({ token: testToken.encoded });
+    const result = await client.execute(UploadFilesCommand({ file: fooFile }));
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toHaveBeenCalledWith(
@@ -44,7 +50,7 @@ describe("uploadFiles", () => {
       }),
     );
 
-    const key = result.data?.key;
+    const key = result.data?.data?.key;
     expect(result).toEqual({
       data: {
         key: expect.stringMatching(/.+/),
@@ -62,23 +68,25 @@ describe("uploadFiles", () => {
   });
 
   it("returns array if array is passed", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFiles([fooFile]);
+    const client = createClient({ token: testToken.encoded });
+    const result = await client.execute(
+      UploadFilesCommand({ files: [fooFile] }),
+    );
     expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
   it("returns single object if no array is passed", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFiles(fooFile);
+    const client = createClient({ token: testToken.encoded });
+    const result = await client.execute(UploadFilesCommand({ file: fooFile }));
     expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
   it("accepts UTFile", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+    const client = createClient({ token: testToken.encoded });
     const file = new UTFile(["foo"], "foo.txt");
-    await utapi.uploadFiles(file);
+    await client.execute(UploadFilesCommand({ file }));
     expect(file.type).toBe("text/plain");
 
     expect(requestSpy).toHaveBeenCalledWith(
@@ -88,9 +96,9 @@ describe("uploadFiles", () => {
   });
 
   it("accepts UTFile with customId", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+    const client = createClient({ token: testToken.encoded });
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });
-    await utapi.uploadFiles(fileWithId);
+    await client.execute(UploadFilesCommand({ file: fileWithId }));
     expect(fileWithId.customId).toBe("foo");
 
     expect(requestSpy).toHaveBeenCalledWith(
@@ -111,7 +119,7 @@ describe("uploadFiles", () => {
       ),
     );
 
-    const utapi = new UTApi({
+    const client = createClient({
       token: testToken.encoded,
       /**
        * Explicitly set the ingestUrl to the mocked one
@@ -120,7 +128,7 @@ describe("uploadFiles", () => {
        */
       ingestUrl: mockedIngestUrl,
     });
-    const result = await utapi.uploadFiles(fooFile);
+    const result = await client.execute(UploadFilesCommand({ file: fooFile }));
     expect(result).toStrictEqual({
       data: null,
       error: {
@@ -142,9 +150,11 @@ describe("uploadFiles", () => {
 
 describe("uploadFilesFromUrl", () => {
   it("downloads, then uploads successfully", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFilesFromUrl(
-      "https://cdn.foo.com/foo.txt",
+    const client = createClient({ token: testToken.encoded });
+    const result = await client.execute(
+      UploadFilesFromUrlCommand({
+        url: "https://cdn.foo.com/foo.txt",
+      }),
     );
 
     expect(requestSpy).toHaveBeenCalledTimes(2); // download, upload
@@ -178,29 +188,33 @@ describe("uploadFilesFromUrl", () => {
   });
 
   it("returns array if array is passed", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFilesFromUrl([
-      "https://cdn.foo.com/foo.txt",
-      "https://cdn.foo.com/bar.txt",
-    ]);
+    const client = createClient({ token: testToken.encoded });
+    const result = await client.execute(
+      UploadFilesFromUrlCommand({
+        urls: ["https://cdn.foo.com/foo.txt", "https://cdn.foo.com/bar.txt"],
+      }),
+    );
     expectTypeOf<UploadFileResult[]>(result);
     expect(Array.isArray(result)).toBe(true);
   });
 
   it("returns single object if no array is passed", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFilesFromUrl(
-      "https://cdn.foo.com/foo.txt",
+    const client = createClient({ token: testToken.encoded });
+    const result = await client.execute(
+      UploadFilesFromUrlCommand({
+        urls: ["https://cdn.foo.com/foo.txt"],
+      }),
     );
     expectTypeOf<UploadFileResult>(result);
     expect(Array.isArray(result)).toBe(false);
   });
 
   it("can override name", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    await utapi.uploadFilesFromUrl({
-      url: "https://cdn.foo.com/my-super-long-pathname-thats-too-long-for-ut.txt",
-      name: "bar.txt",
+    const client = createClient({ token: testToken.encoded });
+    await client.execute(
+      UploadFilesFromUrlCommand({
+        url: "https://cdn.foo.com/my-super-long-pathname-thats-too-long-for-ut.txt",
+        name: "bar.txt",
     });
 
     expect(requestSpy).toHaveBeenCalledWith(
@@ -374,8 +388,8 @@ describe("uploadFilesFromUrl", () => {
 
 describe("getSignedURL", () => {
   it("sends request without expiresIn", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    await utapi.getSignedURL("foo");
+    const client = createClient({ token: testToken.encoded });
+    await client.execute(GetSignedURLCommand({ key: "foo" }));
 
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/requestFileAccess`, {
@@ -391,8 +405,13 @@ describe("getSignedURL", () => {
   });
 
   it("sends request with valid expiresIn (1)", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    await utapi.getSignedURL("foo", { expiresIn: "1d" });
+    const client = createClient({ token: testToken.encoded });
+    await client.execute(
+      GetSignedURLCommand({
+        key: "foo",
+        expiresIn: "1d",
+      }),
+    );
 
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/requestFileAccess`, {
@@ -408,8 +427,13 @@ describe("getSignedURL", () => {
   });
 
   it("sends request with valid expiresIn (2)", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    await utapi.getSignedURL("foo", { expiresIn: "3 minutes" });
+    const client = createClient({ token: testToken.encoded });
+    await client.execute(
+      GetSignedURLCommand({
+        key: "foo",
+        expiresIn: "3 minutes",
+      }),
+    );
 
     expect(requestSpy).toHaveBeenCalledOnce();
     expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/requestFileAccess`, {
@@ -425,36 +449,35 @@ describe("getSignedURL", () => {
   });
 
   it("throws if expiresIn is invalid", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    await expect(() =>
-      // @ts-expect-error - intentionally passing invalid expiresIn
-      utapi.getSignedURL("foo", { expiresIn: "something" }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(`
-      [ParseError: (GetSignedURLOptions (Encoded side) <-> GetSignedURLOptions)
-      └─ Encoded side transformation failure
-         └─ GetSignedURLOptions (Encoded side)
-            └─ ["expiresIn"]
-               └─ (string <-> { Int | filter }) | undefined
-                  ├─ (string <-> { Int | filter })
-                  │  └─ Type side transformation failure
-                  │     └─ { Int | filter }
-                  │        └─ From side refinement failure
-                  │           └─ Int
-                  │              └─ Predicate refinement failure
-                  │                 └─ Expected an integer, actual NaN
-                  └─ Expected undefined, actual "something"]
-    `);
+    const client = createClient({ token: testToken.encoded });
+    await expect(
+      client.execute(
+        GetSignedURLCommand({
+          key: "foo",
+          // @ts-expect-error - intentionally passing invalid expiresIn
+          expiresIn: "something",
+        }),
+      ),
+    ).resolves.toEqual({
+      data: null,
+      error: expect.any(ParseResult.ParseError),
+    });
     expect(requestSpy).toHaveBeenCalledTimes(0);
   });
 });
 
 describe("updateACL", () => {
   it("single file", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+    const client = createClient({ token: testToken.encoded });
 
-    await expect(utapi.updateACL("ut-key", "public-read")).resolves.toEqual({
-      success: true,
-    });
+    await expect(
+      client.execute(
+        UpdateACLCommand({
+          keys: ["ut-key"],
+          acl: "public-read",
+        }),
+      ),
+    ).resolves.toEqual({ data: { success: true }, error: null });
 
     expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/updateACL`, {
       body: { updates: [{ fileKey: "ut-key", acl: "public-read" }] },
@@ -469,11 +492,16 @@ describe("updateACL", () => {
   });
 
   it("many keys", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+    const client = createClient({ token: testToken.encoded });
 
     await expect(
-      utapi.updateACL(["ut-key1", "ut-key2"], "public-read"),
-    ).resolves.toEqual({ success: true });
+      client.execute(
+        UpdateACLCommand({
+          keys: ["ut-key1", "ut-key2"],
+          acl: "public-read",
+        }),
+      ),
+    ).resolves.toEqual({ data: { success: true }, error: null });
 
     expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/updateACL`, {
       body: {
@@ -493,13 +521,17 @@ describe("updateACL", () => {
   });
 
   it("many keys with keytype override", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+    const client = createClient({ token: testToken.encoded });
 
     await expect(
-      utapi.updateACL(["my-custom-id1", "my-custom-id2"], "public-read", {
-        keyType: "customId",
-      }),
-    ).resolves.toEqual({ success: true });
+      client.execute(
+        UpdateACLCommand({
+          keys: ["my-custom-id1", "my-custom-id2"],
+          acl: "public-read",
+          keyType: "customId",
+        }),
+      ),
+    ).resolves.toEqual({ data: { success: true }, error: null });
 
     expect(requestSpy).toHaveBeenCalledWith(`${API_URL}/v6/updateACL`, {
       body: {
