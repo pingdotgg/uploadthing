@@ -86,8 +86,3 @@ export const logHttpClientError =
     err._tag === "ResponseError"
       ? logHttpClientResponse(message, { level: "Error" })(err.response)
       : Effect.logError(message).pipe(Effect.annotateLogs("error", err));
-
-export const logDeprecationWarning = (message: string) => {
-  // eslint-disable-next-line no-console
-  console.warn(`⚠️ [uploadthing] ${message}`);
-};

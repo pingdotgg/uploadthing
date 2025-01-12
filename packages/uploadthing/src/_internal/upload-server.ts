@@ -6,7 +6,8 @@ import { UploadThingError } from "@uploadthing/shared";
 
 import { version } from "../../package.json";
 import type { FileEsque } from "../sdk/types";
-import { logDeprecationWarning, logHttpClientError } from "./logger";
+import { logDeprecationWarning } from "./deprecations";
+import { logHttpClientError } from "./logger";
 import type { UploadPutResult } from "./types";
 
 export const uploadWithoutProgress = (

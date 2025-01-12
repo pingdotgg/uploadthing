@@ -30,13 +30,10 @@ import {
 import * as pkgJson from "../../package.json";
 import type { FileRouter, RouteHandlerOptions } from "../types";
 import { IngestUrl, IsDevelopment, UTToken } from "./config";
+import { logDeprecationWarning } from "./deprecations";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
-import {
-  logDeprecationWarning,
-  logHttpClientError,
-  logHttpClientResponse,
-} from "./logger";
+import { logHttpClientError, logHttpClientResponse } from "./logger";
 import { getParseFn } from "./parser";
 import { assertFilesMeetConfig, extractRouterConfig } from "./route-config";
 import { makeRuntime } from "./runtime";

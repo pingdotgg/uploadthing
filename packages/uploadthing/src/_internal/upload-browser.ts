@@ -13,7 +13,7 @@ import type {
   NewPresignedUrl,
   UploadFilesOptions,
 } from "../types";
-import { logDeprecationWarning } from "./logger";
+import { logDeprecationWarning } from "./deprecations";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
