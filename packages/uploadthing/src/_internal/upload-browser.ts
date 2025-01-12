@@ -13,6 +13,7 @@ import type {
   NewPresignedUrl,
   UploadFilesOptions,
 } from "../types";
+import { logDeprecationWarning } from "./logger";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
@@ -138,8 +139,18 @@ export const uploadFile = <
       key: presigned.key,
       lastModified: file.lastModified,
       serverData: uploadResponse.serverData,
-      url: uploadResponse.url,
-      appUrl: uploadResponse.appUrl,
+      get url() {
+        logDeprecationWarning(
+          "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+        );
+        return uploadResponse.url;
+      },
+      get appUrl() {
+        logDeprecationWarning(
+          "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+        );
+        return uploadResponse.appUrl;
+      },
       ufsUrl: uploadResponse.ufsUrl,
       customId: presigned.customId,
       type: file.type,
