@@ -140,6 +140,7 @@ export const uploadFile = <
       serverData: uploadResponse.serverData,
       url: uploadResponse.url,
       appUrl: uploadResponse.appUrl,
+      ufsUrl: uploadResponse.ufsUrl,
       customId: presigned.customId,
       type: file.type,
       fileHash: uploadResponse.fileHash,

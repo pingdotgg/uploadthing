@@ -147,6 +147,7 @@ export const uploadFile = (
       key: presigned.key,
       url: response.url,
       appUrl: response.appUrl,
+      ufsUrl: response.ufsUrl,
       lastModified: file.lastModified ?? Date.now(),
       name: file.name,
       size: file.size,
