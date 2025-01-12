@@ -1,9 +1,19 @@
 import type { HttpClient } from "@effect/platform";
 import type { Config, Effect, LogLevel, ParseResult } from "effect";
 
-import type { FetchEsque, UploadThingError } from "@uploadthing/shared";
+import type {
+  FetchEsque,
+  MaybeUrl,
+  UploadThingError,
+} from "@uploadthing/shared";
 
 import type { LogFormat } from "../_internal/logger";
+
+export type UrlWithOverrides = {
+  url: MaybeUrl;
+  name?: string;
+  customId?: string;
+};
 
 export interface UTApiOptions {
   /**

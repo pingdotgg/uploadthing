@@ -1,27 +1,24 @@
 import { HttpClient, HttpClientRequest } from "@effect/platform";
+import type { Stream } from "effect";
 import * as Effect from "effect/Effect";
 import { unsafeCoerce } from "effect/Function";
 
 import { UploadThingError } from "@uploadthing/shared";
 
 import { version } from "../../package.json";
-import type { FileEsque } from "../sdk/types";
 import { logHttpClientError } from "./logger";
 import type { UploadPutResult } from "./types";
 
 export const uploadWithoutProgress = (
-  file: FileEsque,
+  stream: Stream.Stream<Uint8Array, unknown>,
   presigned: { key: string; url: string },
 ) =>
   Effect.gen(function* () {
-    const formData = new FormData();
-    formData.append("file", file as Blob);
-
     const httpClient = (yield* HttpClient.HttpClient).pipe(
       HttpClient.filterStatusOk,
     );
     const json = yield* HttpClientRequest.put(presigned.url).pipe(
-      HttpClientRequest.bodyFormData(formData),
+      HttpClientRequest.bodyStream(stream),
       HttpClientRequest.setHeader("Range", "bytes=0-"),
       HttpClientRequest.setHeader("x-uploadthing-version", version),
       httpClient.execute,
@@ -39,7 +36,7 @@ export const uploadWithoutProgress = (
       Effect.scoped,
     );
 
-    yield* Effect.logDebug(`File ${file.name} uploaded successfully`).pipe(
+    yield* Effect.logDebug(`File ${presigned.key} uploaded successfully`).pipe(
       Effect.annotateLogs("json", json),
     );
     return json;

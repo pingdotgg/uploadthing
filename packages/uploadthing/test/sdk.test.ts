@@ -10,7 +10,7 @@ import {
 } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
-import type { UploadFileResult } from "../src/sdk/commands/upload-files";
+import type { UploadFileResult } from "../src/sdk/commands/upload-file";
 import {
   API_URL,
   callRequestSpy,

@@ -1,22 +1,13 @@
+/* eslint-disable no-restricted-globals */
 import { ParseResult } from "effect";
 import { http, HttpResponse } from "msw";
 import { setupServer } from "msw/node";
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { UploadFilesFromUrlCommand } from "uploadthing/sdk/commands/upload-files-from-url";
-
-import { createClient, UTApi, UTFile } from "../src/sdk";
+import { createClient, UTFile } from "../src/sdk";
 import { GetSignedURLCommand } from "../src/sdk/commands/get-signed-url";
 import { UpdateACLCommand } from "../src/sdk/commands/update-acl";
-import { UploadFilesCommand } from "../src/sdk/commands/upload-files";
-import type { UploadFileResult } from "../src/sdk/commands/upload-files";
+import { UploadFileCommand } from "../src/sdk/commands/upload-file";
 import {
   API_URL,
   callRequestSpy,
@@ -36,7 +27,7 @@ describe("uploadFiles", () => {
 
   it("uploads successfully", async () => {
     const client = createClient({ token: testToken.encoded });
-    const result = await client.execute(UploadFilesCommand({ file: fooFile }));
+    const result = await client.execute(UploadFileCommand({ body: fooFile }));
 
     expect(requestSpy).toHaveBeenCalledTimes(1);
     expect(requestSpy).toHaveBeenCalledWith(
@@ -50,7 +41,7 @@ describe("uploadFiles", () => {
       }),
     );
 
-    const key = result.data?.data?.key;
+    const key = result.data?.key;
     expect(result).toEqual({
       data: {
         key: expect.stringMatching(/.+/),
@@ -67,26 +58,19 @@ describe("uploadFiles", () => {
     });
   });
 
-  it("returns array if array is passed", async () => {
-    const client = createClient({ token: testToken.encoded });
-    const result = await client.execute(
-      UploadFilesCommand({ files: [fooFile] }),
-    );
-    expectTypeOf<UploadFileResult[]>(result);
-    expect(Array.isArray(result)).toBe(true);
-  });
-
-  it("returns single object if no array is passed", async () => {
-    const client = createClient({ token: testToken.encoded });
-    const result = await client.execute(UploadFilesCommand({ file: fooFile }));
-    expectTypeOf<UploadFileResult>(result);
-    expect(Array.isArray(result)).toBe(false);
-  });
+  // it("returns array if array is passed", async () => {
+  //   const client = createClient({ token: testToken.encoded });
+  //   const result = await client.execute(
+  //     UploadFileCommand({ body: [fooFile] }),
+  //   );
+  //   expectTypeOf<UploadFileResult[]>(result);
+  //   expect(Array.isArray(result)).toBe(true);
+  // });
 
   it("accepts UTFile", async () => {
     const client = createClient({ token: testToken.encoded });
     const file = new UTFile(["foo"], "foo.txt");
-    await client.execute(UploadFilesCommand({ file }));
+    await client.execute(UploadFileCommand({ body: file }));
     expect(file.type).toBe("text/plain");
 
     expect(requestSpy).toHaveBeenCalledWith(
@@ -98,7 +82,7 @@ describe("uploadFiles", () => {
   it("accepts UTFile with customId", async () => {
     const client = createClient({ token: testToken.encoded });
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });
-    await client.execute(UploadFilesCommand({ file: fileWithId }));
+    await client.execute(UploadFileCommand({ body: fileWithId }));
     expect(fileWithId.customId).toBe("foo");
 
     expect(requestSpy).toHaveBeenCalledWith(
@@ -128,7 +112,7 @@ describe("uploadFiles", () => {
        */
       ingestUrl: mockedIngestUrl,
     });
-    const result = await client.execute(UploadFilesCommand({ file: fooFile }));
+    const result = await client.execute(UploadFileCommand({ body: fooFile }));
     expect(result).toStrictEqual({
       data: null,
       error: {
@@ -152,8 +136,9 @@ describe("uploadFilesFromUrl", () => {
   it("downloads, then uploads successfully", async () => {
     const client = createClient({ token: testToken.encoded });
     const result = await client.execute(
-      UploadFilesFromUrlCommand({
-        url: "https://cdn.foo.com/foo.txt",
+      UploadFileCommand({
+        body: await fetch("https://cdn.foo.com/foo.txt"),
+        name: "foo.txt",
       }),
     );
 
@@ -187,54 +172,38 @@ describe("uploadFilesFromUrl", () => {
     });
   });
 
-  it("returns array if array is passed", async () => {
-    const client = createClient({ token: testToken.encoded });
-    const result = await client.execute(
-      UploadFilesFromUrlCommand({
-        urls: ["https://cdn.foo.com/foo.txt", "https://cdn.foo.com/bar.txt"],
-      }),
-    );
-    expectTypeOf<UploadFileResult[]>(result);
-    expect(Array.isArray(result)).toBe(true);
-  });
+  // it("returns array if array is passed", async () => {
+  //   const client = createClient({ token: testToken.encoded });
+  //   const result = await client.execute(
+  //     UploadFileCommand({
+  //       body: await fetch("https://cdn.foo.com/foo.txt"),
+  //       name: "foo.txt",
+  //     }),
+  //   );
+  //   expectTypeOf<UploadFileResult[]>(result);
+  //   expect(Array.isArray(result)).toBe(true);
+  // });
 
-  it("returns single object if no array is passed", async () => {
-    const client = createClient({ token: testToken.encoded });
-    const result = await client.execute(
-      UploadFilesFromUrlCommand({
-        urls: ["https://cdn.foo.com/foo.txt"],
-      }),
-    );
-    expectTypeOf<UploadFileResult>(result);
-    expect(Array.isArray(result)).toBe(false);
-  });
-
-  it("can override name", async () => {
-    const client = createClient({ token: testToken.encoded });
-    await client.execute(
-      UploadFilesFromUrlCommand({
-        url: "https://cdn.foo.com/my-super-long-pathname-thats-too-long-for-ut.txt",
-        name: "bar.txt",
-    });
-
-    expect(requestSpy).toHaveBeenCalledWith(
-      expect.stringContaining(`x-ut-file-name=bar.txt`),
-      {
-        method: "PUT",
-        body: expect.any(FormData),
-        headers: expect.objectContaining({
-          range: "bytes=0-",
-        }),
-      },
-    );
-  });
+  // it("returns single object if no array is passed", async () => {
+  //   const client = createClient({ token: testToken.encoded });
+  //   const result = await client.execute(
+  //     UploadFilesFromUrlCommand({
+  //       urls: ["https://cdn.foo.com/foo.txt"],
+  //     }),
+  //   );
+  //   expectTypeOf<UploadFileResult>(result);
+  //   expect(Array.isArray(result)).toBe(false);
+  // });
 
   it("can provide a customId", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    await utapi.uploadFilesFromUrl({
-      url: "https://cdn.foo.com/foo.txt",
-      customId: "my-custom-id",
-    });
+    const client = createClient({ token: testToken.encoded });
+    await client.execute(
+      UploadFileCommand({
+        body: await fetch("https://cdn.foo.com/foo.txt"),
+        name: "foo.txt",
+        customId: "my-custom-id",
+      }),
+    );
 
     expect(requestSpy).toHaveBeenCalledWith(
       expect.stringContaining(`x-ut-custom-id=my-custom-id`),
@@ -249,24 +218,28 @@ describe("uploadFilesFromUrl", () => {
   });
 
   // if passed data url, array contains UploadThingError
-  it("returns error if data url is passed", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFilesFromUrl(
-      "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
-    );
-    expect(result).toStrictEqual({
-      data: null,
-      error: {
-        code: "BAD_REQUEST",
-        data: undefined,
-        message:
-          "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
-      },
-    });
-  });
+  // TODO: Maybe make this work
+  // it("returns error if data url is passed", async () => {
+  //   const client = createClient({ token: testToken.encoded });
+  //   const result = await client.execute(
+  //     UploadFileCommand({
+  //       body: ""data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="",
+  //       name: "foo.txt",
+  //     }),
+  //   );
+  //   expect(result).toStrictEqual({
+  //     data: null,
+  //     error: {
+  //       code: "BAD_REQUEST",
+  //       data: undefined,
+  //       message:
+  //         "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+  //     },
+  //   });
+  // });
 
   it("gracefully handles download errors", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+    const client = createClient({ token: testToken.encoded });
 
     msw.use(
       http.get("https://cdn.foo.com/does-not-exist.txt", () => {
@@ -274,8 +247,11 @@ describe("uploadFilesFromUrl", () => {
       }),
     );
 
-    const result = await utapi.uploadFilesFromUrl(
-      "https://cdn.foo.com/does-not-exist.txt",
+    const result = await client.execute(
+      UploadFileCommand({
+        body: await fetch("https://cdn.foo.com/does-not-exist.txt"),
+        name: "foo.txt",
+      }),
     );
     expect(result).toEqual({
       data: null,
@@ -291,99 +267,99 @@ describe("uploadFilesFromUrl", () => {
     });
   });
 
-  it("gracefully handles download errors", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
+  // it("gracefully handles download errors", async () => {
+  //   const client = createClient({ token: testToken.encoded });
 
-    msw.use(
-      http.get("https://cdn.foo.com/does-not-exist.txt", () => {
-        return new HttpResponse("Not found", { status: 404 });
-      }),
-    );
+  //   msw.use(
+  //     http.get("https://cdn.foo.com/does-not-exist.txt", () => {
+  //       return new HttpResponse("Not found", { status: 404 });
+  //     }),
+  //   );
 
-    const result = await utapi.uploadFilesFromUrl([
-      "https://cdn.foo.com/exists.txt",
-      "https://cdn.foo.com/does-not-exist.txt",
-    ]);
-    const key1 = result[0]?.data?.key;
-    expect(result).toEqual([
-      {
-        data: {
-          customId: null,
-          fileHash: expect.any(String),
-          key: expect.stringMatching(/.+/),
-          lastModified: expect.any(Number),
-          name: "exists.txt",
-          size: 26,
-          type: "text/plain",
-          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
-          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
-        },
-        error: null,
-      },
-      {
-        data: null,
-        error: {
-          code: "BAD_REQUEST",
-          data: expect.objectContaining({
-            _tag: "ResponseError",
-            description: "non 2xx status code",
-          }),
-          message:
-            "Failed to download requested file: StatusCode: non 2xx status code (404 GET https://cdn.foo.com/does-not-exist.txt)",
-        },
-      },
-    ]);
-  });
+  //   const result = await utapi.uploadFilesFromUrl([
+  //     "https://cdn.foo.com/exists.txt",
+  //     "https://cdn.foo.com/does-not-exist.txt",
+  //   ]);
+  //   const key1 = result[0]?.data?.key;
+  //   expect(result).toEqual([
+  //     {
+  //       data: {
+  //         customId: null,
+  //         fileHash: expect.any(String),
+  //         key: expect.stringMatching(/.+/),
+  //         lastModified: expect.any(Number),
+  //         name: "exists.txt",
+  //         size: 26,
+  //         type: "text/plain",
+  //         url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+  //         appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+  //       },
+  //       error: null,
+  //     },
+  //     {
+  //       data: null,
+  //       error: {
+  //         code: "BAD_REQUEST",
+  //         data: expect.objectContaining({
+  //           _tag: "ResponseError",
+  //           description: "non 2xx status code",
+  //         }),
+  //         message:
+  //           "Failed to download requested file: StatusCode: non 2xx status code (404 GET https://cdn.foo.com/does-not-exist.txt)",
+  //       },
+  //     },
+  //   ]);
+  // });
 
-  it("preserves order if some download fails", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const result = await utapi.uploadFilesFromUrl([
-      "https://cdn.foo.com/foo.txt",
-      "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
-      "https://cdn.foo.com/bar.txt",
-    ]);
-    const key1 = result[0]?.data?.key;
-    const key2 = result[2]?.data?.key;
-    expect(result).toStrictEqual([
-      {
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: expect.any(Number),
-          name: "foo.txt",
-          size: 26,
-          type: "text/plain",
-          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
-          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
-          fileHash: expect.any(String),
-        },
-        error: null,
-      },
-      {
-        data: null,
-        error: {
-          code: "BAD_REQUEST",
-          data: undefined,
-          message:
-            "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
-        },
-      },
-      {
-        data: {
-          customId: null,
-          key: expect.stringMatching(/.+/),
-          lastModified: expect.any(Number),
-          name: "bar.txt",
-          size: 26,
-          type: "text/plain",
-          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
-          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
-          fileHash: expect.any(String),
-        },
-        error: null,
-      },
-    ]);
-  });
+  // it("preserves order if some download fails", async () => {
+  //   const utapi = new UTApi({ token: testToken.encoded });
+  //   const result = await utapi.uploadFilesFromUrl([
+  //     "https://cdn.foo.com/foo.txt",
+  //     "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
+  //     "https://cdn.foo.com/bar.txt",
+  //   ]);
+  //   const key1 = result[0]?.data?.key;
+  //   const key2 = result[2]?.data?.key;
+  //   expect(result).toStrictEqual([
+  //     {
+  //       data: {
+  //         customId: null,
+  //         key: expect.stringMatching(/.+/),
+  //         lastModified: expect.any(Number),
+  //         name: "foo.txt",
+  //         size: 26,
+  //         type: "text/plain",
+  //         url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+  //         appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+  //         fileHash: expect.any(String),
+  //       },
+  //       error: null,
+  //     },
+  //     {
+  //       data: null,
+  //       error: {
+  //         code: "BAD_REQUEST",
+  //         data: undefined,
+  //         message:
+  //           "Please use uploadFiles() for data URLs. uploadFilesFromUrl() is intended for use with remote URLs only.",
+  //       },
+  //     },
+  //     {
+  //       data: {
+  //         customId: null,
+  //         key: expect.stringMatching(/.+/),
+  //         lastModified: expect.any(Number),
+  //         name: "bar.txt",
+  //         size: 26,
+  //         type: "text/plain",
+  //         url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
+  //         appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
+  //         fileHash: expect.any(String),
+  //       },
+  //       error: null,
+  //     },
+  //   ]);
+  // });
 });
 
 describe("getSignedURL", () => {

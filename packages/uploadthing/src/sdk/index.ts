@@ -1,7 +1,8 @@
+import { Array, Predicate } from "effect";
 import type { ParseResult } from "effect";
 import * as Effect from "effect/Effect";
 
-import type { ACL, Either, MaybeUrl } from "@uploadthing/shared";
+import type { ACL, Either, FetchEsque, MaybeUrl } from "@uploadthing/shared";
 import { UploadThingError } from "@uploadthing/shared";
 
 import { makeRuntime } from "../_internal/runtime";
@@ -18,18 +19,25 @@ import type { RenameFileUpdate } from "./commands/rename-files";
 import { RenameFilesCommand } from "./commands/rename-files";
 import type { UpdateACLOptions } from "./commands/update-acl";
 import { UpdateACLCommand } from "./commands/update-acl";
-import { UploadFilesCommand } from "./commands/upload-files";
+import { UploadFileCommand } from "./commands/upload-file";
 import type {
   BaseUploadOptions,
   FileEsque,
   UploadFileResult,
-} from "./commands/upload-files";
-import { UploadFilesFromUrlCommand } from "./commands/upload-files-from-url";
-import type { UrlWithOverrides } from "./commands/upload-files-from-url";
-import type { Command, UTApiOptions } from "./types";
+} from "./commands/upload-file";
+import type { Command, UrlWithOverrides, UTApiOptions } from "./types";
 import { UTFile } from "./ut-file";
 
 export { UTFile };
+
+export * from "./commands/delete-files";
+export * from "./commands/get-file-urls";
+export * from "./commands/get-signed-url";
+export * from "./commands/get-usage-info";
+export * from "./commands/list-files";
+export * from "./commands/rename-files";
+export * from "./commands/update-acl";
+export * from "./commands/upload-file";
 
 /**
  * Create the client that will be used to execute individual commands.
@@ -73,9 +81,11 @@ function guardServerOnly() {
  */
 export class UTApi {
   private client: ReturnType<typeof createClient>;
+  private fetch: FetchEsque;
 
   constructor(opts?: UTApiOptions) {
     this.client = createClient(opts);
+    this.fetch = opts?.fetch ?? globalThis.fetch;
   }
 
   /**
@@ -90,27 +100,32 @@ export class UTApi {
    *   new File(["bar"], "bar.txt"),
    * ]);
    */
-  uploadFiles(
+  async uploadFiles(
     files: FileEsque,
     opts?: BaseUploadOptions,
   ): Promise<UploadFileResult>;
-  uploadFiles(
+  async uploadFiles(
     files: FileEsque[],
     opts?: BaseUploadOptions,
   ): Promise<UploadFileResult[]>;
-  uploadFiles(
+  async uploadFiles(
     files: FileEsque | FileEsque[],
     opts?: BaseUploadOptions,
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const options = {
-      ...opts,
-      ...(Array.isArray(files) ? { files } : { file: files }),
-    };
+    const commands = [];
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.client.execute(UploadFilesCommand(options)) as any;
+    for (const file of Array.ensure(files)) {
+      commands.push(UploadFileCommand({ ...opts, body: file }));
+    }
+
+    // TODO: move concurrency to the client: client.execute(...commands) ?
+    const results = await Promise.all(
+      commands.map((command) => this.client.execute(command)),
+    );
+
+    return results as any;
   }
 
   /**
@@ -134,19 +149,36 @@ export class UTApi {
     urls: (MaybeUrl | UrlWithOverrides)[],
     opts?: BaseUploadOptions,
   ): Promise<UploadFileResult[]>;
-  uploadFilesFromUrl(
+  async uploadFilesFromUrl(
     urls: MaybeUrl | UrlWithOverrides | (MaybeUrl | UrlWithOverrides)[],
     opts?: BaseUploadOptions,
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
-    const options = {
-      ...opts,
-      ...(Array.isArray(urls) ? { urls } : { url: urls }),
+    const makeCommand = async (url: MaybeUrl | UrlWithOverrides) => {
+      const string = Predicate.isRecord(url) ? url.url : url;
+      let name = Predicate.isRecord(url) ? url.name : undefined;
+      if (!name) name = string.toString().split("/").at(-1);
+
+      return UploadFileCommand({
+        ...opts,
+        name: name,
+        customId: Predicate.isRecord(url) ? url.customId : undefined,
+        body: await this.fetch(string),
+      });
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.client.execute(UploadFilesFromUrlCommand(options)) as any;
+    const commands = [];
+    for (const url of Array.ensure(urls)) {
+      commands.push(await makeCommand(url));
+    }
+
+    // TODO: move concurrency to the client: client.execute(...commands) ?
+    const results = await Promise.all(
+      commands.map((command) => this.client.execute(command)),
+    );
+
+    return results as any;
   }
 
   /**

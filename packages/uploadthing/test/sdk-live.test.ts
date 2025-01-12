@@ -2,13 +2,30 @@
 import * as S from "effect/Schema";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { UTApi, UTFile } from "../src/sdk";
+import { createClient, UploadFileCommand, UTApi, UTFile } from "../src/sdk";
 import { UploadThingToken } from "../src/types";
 import { fileUrlPattern, testToken } from "./__test-helpers";
 
 const shouldRun =
   typeof process.env.UPLOADTHING_TEST_TOKEN === "string" &&
   process.env.UPLOADTHING_TEST_TOKEN.length > 0;
+
+it("should work", async () => {
+  const client = createClient({
+    apiUrl: "http://localhost:3000",
+    ingestUrl: "http://localhost:3001",
+    token:
+      "eyJhcGlLZXkiOiJza19saXZlXzgyZjUzZjM5NDczN2RlN2QwMGIyNTZmMmM1YjU2Zjg0ZDZiM2Q2ZDc1MWJhOGMxZTljYjNlNmZhOWFhNGQ2MzYiLCJhcHBJZCI6IjUyemZkdWJ6MGQiLCJyZWdpb25zIjpbInBkeDEiXSwiaW5nZXN0SG9zdCI6ImluZ2VzdC51dC1zdGFnaW5nLmNvbSJ9",
+  });
+
+  const result = await client.execute(
+    UploadFileCommand({
+      body: new File(["foo"], "foo.txt", { type: "text/plain" }),
+    }),
+  );
+
+  console.log("File uploaded?", result);
+});
 
 describe.runIf(shouldRun)(
   "smoke test with live api",
