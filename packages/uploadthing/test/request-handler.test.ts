@@ -15,6 +15,7 @@ import {
   testToken,
   UFS_HOST,
   uploadCompleteMock,
+  UTFS_URL,
 } from "./__test-helpers";
 
 const f = createUploadthing({
@@ -410,8 +411,9 @@ describe(".onUploadComplete()", () => {
       status: "uploaded",
       metadata: {},
       file: new UploadedFileData({
-        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
-        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
+        url: `${UTFS_URL}/f/some-random-key.png`,
+        appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,
+        ufsUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -447,8 +449,9 @@ describe(".onUploadComplete()", () => {
         name: "foo.png",
         size: 48,
         type: "image/png",
-        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
-        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
+        url: `${UTFS_URL}/f/some-random-key.png`,
+        appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,
+        ufsUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
         fileHash: "some-md5-hash",
       },
       metadata: {},
@@ -460,8 +463,9 @@ describe(".onUploadComplete()", () => {
       status: "uploaded",
       metadata: {},
       file: new UploadedFileData({
-        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
-        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
+        url: `${UTFS_URL}/f/some-random-key.png`,
+        appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,
+        ufsUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
@@ -493,8 +497,9 @@ describe(".onUploadComplete()", () => {
       status: "uploaded",
       metadata: {},
       file: new UploadedFileData({
-        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
-        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
+        url: `${UTFS_URL}/f/some-random-key.png`,
+        appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,
+        ufsUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/some-random-key.png`,
         name: "foo.png",
         key: "some-random-key.png",
         size: 48,
