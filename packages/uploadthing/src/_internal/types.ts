@@ -198,12 +198,12 @@ export type UploadPutResult<TServerOutput = unknown> = {
   ufsUrl: string;
   /**
    * @deprecated
-   * This field will be removed in uploadthing v9.
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
    */
   url: string;
   /**
    * @deprecated
-   * This field will be removed in uploadthing v9.
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
    */
   appUrl: string;
   fileHash: string;

@@ -81,7 +81,7 @@ export class UploadedFileData extends FileUploadDataWithCustomId.extend<Uploaded
   /**
    * @deprecated
    * This field is now an alias for `url`.
-   * This field will be removed in uploadthing v9.
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
    */
   appUrl: S.String,
   fileHash: S.String,
