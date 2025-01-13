@@ -18,6 +18,7 @@
     "@fastify/cors": "^10.0.1",
     "@hono/node-server": "^1.13.7",
     "@sinclair/typebox": "^0.34.13",
+    "convex": "^1.17.4",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "effect": "3.12.0",
