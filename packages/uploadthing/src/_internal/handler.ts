@@ -30,6 +30,7 @@ import {
 import * as pkgJson from "../../package.json";
 import type { FileRouter, RouteHandlerOptions } from "../types";
 import { IngestUrl, IsDevelopment, UTToken } from "./config";
+import { logDeprecationWarning } from "./deprecations";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
 import { logHttpClientError, logHttpClientResponse } from "./logger";
@@ -332,7 +333,21 @@ const handleCallbackRequest = (opts: {
         try: async () =>
           uploadable.onUploadComplete({
             ...adapterArgs,
-            file: requestInput.file,
+            file: {
+              ...requestInput.file,
+              get url() {
+                logDeprecationWarning(
+                  "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+                );
+                return requestInput.file.url;
+              },
+              get appUrl() {
+                logDeprecationWarning(
+                  "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+                );
+                return requestInput.file.appUrl;
+              },
+            },
             metadata: requestInput.metadata,
           }) as Promise<unknown>,
         catch: (error) =>
