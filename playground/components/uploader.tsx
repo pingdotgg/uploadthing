@@ -3,14 +3,9 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { generateReactHelpers, generateUploadButton } from "@uploadthing/react";
-
-import { UploadRouter } from "../app/api/uploadthing/route";
 import { uploadFiles } from "../lib/actions";
+import { UTButton } from "../lib/uploadthing";
 import { Input, Label } from "./fieldset";
-
-export const UTButton = generateUploadButton<UploadRouter>();
-export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 
 function ServerUploader(props: { type: "file" | "url" }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -57,31 +52,33 @@ export function Uploader() {
   const router = useRouter();
 
   return (
-    <div className="flex gap-4">
-      <div className="space-y-1">
-        <Label>Upload (client)</Label>
-        <UTButton
-          endpoint={(rr) => rr.anything}
-          input={{}}
-          onUploadError={(error) => {
-            window.alert(error.message);
-          }}
-          onClientUploadComplete={() => {
-            router.refresh();
-          }}
-          content={{
-            allowedContent: <></>,
-            button: ({ isUploading }) =>
-              isUploading ? null : "Upload (Client)",
-          }}
-          appearance={{
-            button: "!text-sm/6",
-            allowedContent: "!h-0",
-          }}
-        />
+    <div>
+      <div className="flex gap-4">
+        <div className="space-y-1">
+          <Label>Upload (client)</Label>
+          <UTButton
+            endpoint={(rr) => rr.anything}
+            input={{}}
+            onUploadError={(error) => {
+              window.alert(error.message);
+            }}
+            onClientUploadComplete={() => {
+              router.refresh();
+            }}
+            content={{
+              allowedContent: <></>,
+              button: ({ isUploading }) =>
+                isUploading ? null : "Upload (Client)",
+            }}
+            appearance={{
+              button: "!text-sm/6",
+              allowedContent: "!h-0",
+            }}
+          />
+        </div>
+        <ServerUploader type="file" />
+        <ServerUploader type="url" />
       </div>
-      <ServerUploader type="file" />
-      <ServerUploader type="url" />
     </div>
   );
 }
