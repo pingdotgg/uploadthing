@@ -592,7 +592,10 @@ and `useUploadThing` hooks. For a more complete example, take a look at
 
 ```tsx {{ title: "app/example-custom-uploader.tsx" }}
 import { useDropzone } from "@uploadthing/react";
-import { generateClientDropzoneAccept } from "uploadthing/client";
+import {
+  generateClientDropzoneAccept,
+  generatePermittedFileTypes,
+} from "uploadthing/client";
 
 import { useUploadThing } from "~/utils/uploadthing";
 
