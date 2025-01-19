@@ -82,11 +82,11 @@ await fetch(url); // Status 200 OK
 The URL will be valid for the duration in milliseconds you set in the `expires`
 parameter or until the API key is deleted or revoked.
 
-<Callout type="info">
+<Note>
   You can also request presigned URLs using the `/requestFileAccess` API
   endpoint (see [OpenAPI Specification](/api-reference/openapi-spec)). However,
   generating URLs client-side is faster as it avoids an additional API call.
-</Callout>
+</Note>
 
 The presigned URL follows the same patterns as public files, with additional
 query parameters to authenticate the request.
