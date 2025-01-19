@@ -1,5 +1,5 @@
 {
-  "name": "@example/with-clerk-remix",
+  "name": "@example/with-clerk-react-router",
   "private": true,
   "sideEffects": false,
   "type": "module",
