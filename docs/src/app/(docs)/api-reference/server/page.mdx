@@ -216,7 +216,10 @@ function, although there are some extra configuration options available.
     import { createRouteHandler } from "uploadthing/remix";
     import { uploadRouter } from "~/server/uploadthing.ts";
 
-    export const { loader, action } = createRouteHandler({ router: uploadRouter });
+    export const { loader, action } = createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    });
     ```
 
   </Tab>
