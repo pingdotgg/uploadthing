@@ -270,7 +270,6 @@ describe.runIf(shouldRun)(
         error: null,
       });
 
-      // KV cache upto 60s so we can't test the URL - maybe we need a way to call worker with a KV bypass 🤨
       const firstChange = await utapi.updateACL(key, "private");
       expect(firstChange.success).toBe(true);
       await expect(fetch(url)).resolves.toHaveProperty("status", 403);
