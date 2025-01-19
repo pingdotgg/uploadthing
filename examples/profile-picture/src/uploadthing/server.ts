@@ -40,7 +40,7 @@ export const uploadRouter = {
        */
       await db
         .update(User)
-        .set({ image: file.url })
+        .set({ image: file.ufsUrl })
         .where(eq(User.id, metadata.userId));
 
       /**
