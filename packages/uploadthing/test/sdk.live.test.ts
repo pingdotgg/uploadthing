@@ -1,5 +1,7 @@
 /* eslint-disable no-restricted-globals */
 import * as S from "effect/Schema";
+import { bypass, http } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
@@ -19,6 +21,20 @@ describe.runIf(shouldRun)(
   "smoke test with live api",
   { timeout: 15_000 },
   () => {
+    const msw = setupServer(
+      http.get("https://utfs.io/**", ({ request }) => {
+        request.headers.set("x-ut-test-mode", "1");
+        return fetch(bypass(request));
+      }),
+      http.get("https://*.ufs.sh/**", ({ request }) => {
+        request.headers.set("x-ut-test-mode", "1");
+        return fetch(bypass(request));
+      }),
+    );
+
+    beforeAll(() => msw.listen());
+    afterAll(() => msw.close());
+
     const token = shouldRun
       ? process.env.UPLOADTHING_TEST_TOKEN!
       : testToken.encoded;
