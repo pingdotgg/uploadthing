@@ -10,8 +10,6 @@ coverage
 
 # astro
 .astro
-.react-router/
-
 
 # next.js
 .next/
@@ -69,6 +67,7 @@ app.config.bundled_*
 .vercel
 .output
 .nuxt
+.react-router/
 
 # direnv
 .direnv/
