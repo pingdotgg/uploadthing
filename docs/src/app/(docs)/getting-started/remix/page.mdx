@@ -132,6 +132,18 @@ export const { action, loader } = createRouteHandler({
 > See configuration options in
 > [server API reference](/api-reference/server#create-route-handler)
 
+<Note>
+  If you're experiencing issues with exporting the loader and action directly using object destructuring, you can use the `createRouteHandler` function to create a handler and then export the loader and action from that.
+
+```tsx
+const handlers = createRouteHandler(...);
+
+export const loader = handlers.loader;
+export const action = handlers.action;
+```
+
+</Note>
+
 ## Create The UploadThing Components
 
 ```ts {{ title: "app/utils/uploadthing.ts" }}
