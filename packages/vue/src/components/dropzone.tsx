@@ -434,6 +434,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 export type DropEvent = InputEvent | DragEvent | Event;
 
 export function useDropzone(options: DropzoneOptions) {
+  const controller = new AbortController();
   const optionsRef = ref({
     disabled: false,
     maxSize: Number.POSITIVE_INFINITY,
@@ -487,14 +488,21 @@ export function useDropzone(options: DropzoneOptions) {
   };
 
   onMounted(() => {
-    window.addEventListener("focus", onWindowFocus, false);
-    document.addEventListener("dragover", onDocumentDragOver, false);
-    document.addEventListener("drop", onDocumentDrop, false);
+    window.addEventListener("focus", onWindowFocus, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("dragover", onDocumentDragOver, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("drop", onDocumentDrop, {
+      capture: false,
+      signal: controller.signal,
+    });
   });
   onUnmounted(() => {
-    window.removeEventListener("focus", onWindowFocus, false);
-    document.removeEventListener("dragover", onDocumentDragOver, false);
-    document.removeEventListener("drop", onDocumentDrop, false);
+    controller.abort();
   });
 
   const onDragenter = (event: DragEvent) => {

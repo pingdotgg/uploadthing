@@ -156,6 +156,7 @@ export function UploadButton<
   createEffect(() => {
     if (!appendOnPaste) return;
 
+    const controller = new AbortController();
     const pasteHandler = (e: ClipboardEvent) => {
       if (document.activeElement !== inputRef) return;
 
@@ -168,9 +169,11 @@ export function UploadButton<
 
       if (mode === "auto") uploadFiles(files());
     };
-    document.addEventListener("paste", pasteHandler);
+    document.addEventListener("paste", pasteHandler, {
+      signal: controller.signal,
+    });
 
-    onCleanup(() => document.removeEventListener("paste", pasteHandler));
+    onCleanup(() => controller.abort());
   });
 
   const styleFieldArg = {

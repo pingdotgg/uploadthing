@@ -450,9 +450,12 @@ export function useDropzone({
       }
     };
 
-    window.addEventListener("focus", onWindowFocus, false);
+    const controller = new AbortController();
+    window.addEventListener("focus", onWindowFocus, {
+      signal: controller.signal,
+    });
     return () => {
-      window.removeEventListener("focus", onWindowFocus, false);
+      controller.abort();
     };
   }, [state.isFileDialogActive]);
 
@@ -466,13 +469,19 @@ export function useDropzone({
     };
     const onDocumentDragOver = (e: Pick<Event, "preventDefault">) =>
       e.preventDefault();
+    const controller = new AbortController();
 
-    document.addEventListener("dragover", onDocumentDragOver, false);
-    document.addEventListener("drop", onDocumentDrop, false);
+    document.addEventListener("dragover", onDocumentDragOver, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("drop", onDocumentDrop, {
+      capture: false,
+      signal: controller.signal,
+    });
 
     return () => {
-      document.removeEventListener("dragover", onDocumentDragOver);
-      document.removeEventListener("drop", onDocumentDrop);
+      controller.abort();
     };
   }, []);
 

@@ -297,6 +297,8 @@ function SearchDialog({
       return;
     }
 
+    const controller = new AbortController();
+
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
         event.preventDefault();
@@ -304,10 +306,12 @@ function SearchDialog({
       }
     }
 
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKeyDown, {
+      signal: controller.signal,
+    });
 
     return () => {
-      window.removeEventListener("keydown", onKeyDown);
+      controller.abort();
     };
   }, [open, setOpen]);
 
