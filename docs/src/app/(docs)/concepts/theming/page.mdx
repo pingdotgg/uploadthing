@@ -180,36 +180,55 @@ export function Page() {
 
 ### Configuring TailwindCSS
 
-To leverage the best developer experience, we strongly recommend wrapping your
-Tailwind config with our utility function `withUt`. This utility function adds
-additional classes and variants used to style our components.
+<Tabs tabs={["Using Tailwind v3", "Using Tailwind v4"]}>
+  <Tab value="Using Tailwind v3">
 
-In addition, it also automatically sets the `content` option to include all the
-necessary classes that the components use. This allows you to avoid having
-duplicated styles in your bundle. Therefore, when using `withUt`, you should not
-import our stylesheet into your app. If you choose not to use `withUt`, you have
-to import the default stylesheet to make the components look right.
+    To leverage the best developer experience, we strongly recommend wrapping your
+    Tailwind config with our utility function `withUt`. This utility function adds
+    additional classes and variants used to style our components.
 
-<CodeGroup>
+    In addition, it also automatically sets the `content` option to include all the
+    necessary classes that the components use. This allows you to avoid having
+    duplicated styles in your bundle. Therefore, when using `withUt`, you should not
+    import our stylesheet into your app. If you choose not to use `withUt`, you have
+    to import the default stylesheet to make the components look right.
 
-```ts {{title: "tailwind.config.ts" }}
-import { withUt } from "uploadthing/tw";
+    <CodeGroup>
 
-export default withUt({
-  // your config goes here
-});
-```
+    ```ts {{title: "tailwind.config.ts" }}
+    import { withUt } from "uploadthing/tw";
 
-```js {{title: "tailwind.config.js" }}
-// @ts-check
-const { withUt } = require("uploadthing/tw");
+    export default withUt({
+      // your config goes here
+    });
+    ```
 
-module.exports = withUt({
-  // your config goes here
-});
-```
+    ```js {{title: "tailwind.config.js" }}
+    // @ts-check
+    const { withUt } = require("uploadthing/tw");
 
-</CodeGroup>
+    module.exports = withUt({
+      // your config goes here
+    });
+    ```
+
+    </CodeGroup>
+
+  </Tab>
+  <Tab value="Using Tailwind v4">
+
+    If you're using Tailwind v4 with CSS configuration, you can use our plugin like
+    this:
+
+    ```css
+    @import "tailwindcss";
+
+    @import "uploadthing/tw/v4";
+    @source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
+    ```
+
+  </Tab>
+</Tabs>
 
 <Note>
   If you're not wrapping your config as shown above, you have to import our
