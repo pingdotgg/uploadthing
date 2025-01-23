@@ -164,8 +164,10 @@ export const { createUploader, createUploadThing } =
     <Tab>
       Include our CSS file in the root layout to make sure the components look right!
 
-      ```tsx
-      import "@uploadthing/svelte/styles.css";
+      ```svelte {{ title: "src/app.svelte"}}
+      <script lang="ts">
+          import "@uploadthing/svelte/styles.css";
+      </script>
       ```
 
     </Tab>

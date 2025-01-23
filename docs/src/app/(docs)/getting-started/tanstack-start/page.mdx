@@ -183,8 +183,13 @@ export const { useUploadThing } = generateReactHelpers<UploadRouter>();
     <Tab>
       Include our CSS file in the root layout to make sure the components look right!
 
-      ```tsx
-      import "@uploadthing/react/styles.css";
+      ```tsx {{ title: "app/routes/__root.tsx" }}
+      import uploadthingCss from "@uploadthing/react/styles.css?url";
+
+      export const Route = createRootRoute({
+        component: RootComponent,
+        links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+      });
       ```
 
     </Tab>
