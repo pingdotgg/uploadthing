@@ -70,6 +70,7 @@
         "default": "./tw/index.cjs"
       }
     },
+    "./tw/v4": "./tw/v4.css",
     "./fastify": {
       "import": {
         "types": "./fastify/index.d.ts",
@@ -134,7 +135,7 @@
   },
   "scripts": {
     "lint": "eslint src test --max-warnings 0",
-    "build": "bunchee --tsconfig tsconfig.build.json",
+    "build": "bunchee --tsconfig tsconfig.build.json && cp src/tw/v4.css tw/v4.css",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "wait-on ../shared/dist/index.d.ts && bunchee -w --tsconfig tsconfig.build.json --no-clean",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",

@@ -131,8 +131,8 @@ export const { createUploader, createUploadThing } =
 
 ### Add UploadThing's Styles
 
-<Tabs tabs={["Tailwind", "Not Tailwind"]}>
-  <Tab>
+<Tabs tabs={["Tailwind v3", "Tailwind v4", "Not Tailwind"]}>
+    <Tab>
       Wrap your Tailwind config with the `withUt` helper. You can learn more about our
       Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
 
@@ -146,17 +146,32 @@ export const { createUploader, createUploadThing } =
       });
       ```
 
-  </Tab>
-  <Tab>
-    Include our CSS file in the root layout to make sure the components look right!
+    </Tab>
 
-    ```svelte
-    <script lang="ts">
-        import "@uploadthing/svelte/styles.css";
-    </script>
-    ```
+    <Tab>
+      If you're using Tailwind v4 with CSS configuration, you can use our plugin like this:
 
-  </Tab>
+      ```css
+      @import "tailwindcss";
+
+      @import "uploadthing/tw/v4";
+      @source "../node_modules/@uploadthing/svelte/dist"; /** <-- depends on your project structure */
+      ```
+
+      You can learn more about our Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+    </Tab>
+
+    <Tab>
+      Include our CSS file in the root layout to make sure the components look right!
+
+      ```svelte {{ title: "src/app.svelte"}}
+      <script lang="ts">
+          import "@uploadthing/svelte/styles.css";
+      </script>
+      ```
+
+    </Tab>
+
 </Tabs>
 
 ## Use the FileRouter in your app
