@@ -51,13 +51,13 @@ export default function ScalarApiRef() {
 
   const ref = useRef<HTMLDivElement>(null);
   useMutationObserver(ref, (args) => {
+    console.log("args", args);
     if (
       args.filter(
         (a) =>
           a.type === "attributes" &&
           a.target instanceof Element &&
-          a.target.classList.contains("scalar-app") &&
-          a.target.classList.contains("references-layout"),
+          a.target.classList.contains("references-rendered"),
       ).length > 0
     ) {
       setLoaded(true);
