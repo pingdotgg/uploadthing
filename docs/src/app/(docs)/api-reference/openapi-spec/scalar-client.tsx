@@ -51,7 +51,6 @@ export default function ScalarApiRef() {
 
   const ref = useRef<HTMLDivElement>(null);
   useMutationObserver(ref, (args) => {
-    console.log("args", args);
     if (
       args.filter(
         (a) =>
