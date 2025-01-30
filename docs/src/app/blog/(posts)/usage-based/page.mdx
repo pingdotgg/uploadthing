@@ -1,0 +1,59 @@
+import { ArticleLayout } from "@/app/blog/_components/layouts";
+import { blogMetadata } from "@/lib/utils";
+
+export const article = {
+  authors: [
+    {
+      name: "Ping Team",
+      role: "Ping Labs",
+      src: "https://avatars.githubusercontent.com/u/89191727?s=200&v=4",
+      href: "https://x.com/pingdotgg",
+    },
+  ],
+  date: "2024-09-13",
+  title: "Scale forever (usage based pricing is now live!)",
+  description:
+    "UploadThing accounts now have the option to store any amount of files. Usage based pricing is finally here!",
+  tags: ["product"],
+  image:
+    "https://s40vlb3kca.ufs.sh/f/7v4pu1gTNmoZ3mj9z5JvmfZTGXoNAUYtOau7CLckldDeg6FJ",
+};
+
+export const metadata = blogMetadata(article);
+
+export const dynamic = "force-static";
+
+export default (props) => <ArticleLayout article={article} {...props} />;
+
+## Usage-based Pricing Is Here!
+
+UploadThing is the best way to add file upload to your apps. Now we'll scale
+with you :)
+
+This is one of those "we should have done it awhile ago" ships - but we wanted
+to make sure we got it right.
+
+Here's the breakdown:
+
+- $25/month base price
+- 250GB storage included
+- $0.08 per GB for additional storage
+
+...that's it? Yep. Unlike all of our competitors, we don't charge for things
+like seats, requests, or bandwidth. You just pay for the storage used.
+
+Ready to upgrade? Visit your
+[settings](https://uploadthing.com/dashboard?s=billing) to switch to usage-based
+pricing.
+
+This is part of an ongoing effort to make UploadThing enterprise ready. We've
+been dogfooding harder than ever with our new apps
+[PicThing](https://pic.ping.gg) and [T3 Chat](https://t3.chat). We're smoothing
+out every rough edge we can find.
+
+If we're successful, you'll never have to worry about file storage again,
+regardless of the scale you're shipping.
+
+We're so excited to share even more fun enterprise features to UploadThing. Keep
+an eye out here and [on our Twitter](https://x.com/pingdotgg) to stay up to date
+🙏
