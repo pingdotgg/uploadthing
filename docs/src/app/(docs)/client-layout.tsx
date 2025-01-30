@@ -97,7 +97,7 @@ export function Layout({
         </motion.header>
 
         <div className="relative flex h-full flex-col px-4 pt-14 sm:px-6 lg:px-8">
-          <PreviewBanner open={bannerOpen} setOpen={setBannerOpen} />
+          {/* <PreviewBanner open={bannerOpen} setOpen={setBannerOpen} /> */}
           <div className="h-24 w-full sm:h-8" />
           <main className="flex-auto">{children}</main>
           <Footer />
