@@ -56,6 +56,6 @@ export const uploadRouter = {
       //   ^?
       console.log("upload completed", file);
     }),
-} satisfies FileRouter;
+};
 
 export type OurFileRouter = typeof uploadRouter;
