@@ -11,57 +11,48 @@ export const article = {
     },
   ],
   date: "2024-09-13",
-  title: "Usage based pricing",
+  title: "Scale forever (usage based pricing is now live!)",
   description:
-    "Usage based pricing is now available for all UploadThing users.",
+    "UploadThing accounts now have the option to store any amount of files. Usage based pricing is finally here!",
   tags: ["product"],
-  image: "/images/blog/v7-launch-og.png",
+  // image: "/images/blog/v7-launch-og.png",
 };
+
 export const metadata = blogMetadata(article);
 
 export const dynamic = "force-static";
 
 export default (props) => <ArticleLayout article={article} {...props} />;
 
-## Usage-based Pricing Now Available for All Users
+## Usage-based Pricing Is Here!
 
-Starting today, all UploadThing users can opt-in to our new usage-based pricing 
-model. This flexible option allows your app to upload unlimited files with 
-simple, transparent pricing:
+UploadThing is the best way to add file upload to your apps. Now we'll scale
+with you :)
+
+This is one of those "we should have done it awhile ago" ships - but we wanted
+to make sure we got it right.
+
+Here's the breakdown:
 
 - $25/month base price
 - 250GB storage included
 - $0.08 per GB for additional storage
 
-As always, we only charge for the storage itself, so you don't have to think
-about requests, bandwidth, or anything else.
+...that's it? Yep. Unlike all of our competitors, we don't charge for things
+like seats, requests, or bandwidth. You just pay for the storage used.
 
-Ready to upgrade? Visit your [settings](https://uploadthing.com/dashboard?s=billing) 
-to switch to usage-based pricing.
+Ready to upgrade? Visit your
+[settings](https://uploadthing.com/dashboard?s=billing) to switch to usage-based
+pricing.
 
-## Bring Your Own Bucket (BYOB) - Now in Public Beta
+This is part of an ongoing effort to make UploadThing enterprise ready. We've
+been dogfooding harder than ever with our new apps
+[PicThing](https://pic.ping.gg) and [T3 Chat](https://t3.chat). We're smoothing
+out every rough edge we can find.
 
-Alongside the launch of usage-based pricing, we're also excited to release a 
-public beta of our highly-requested BYOB feature, giving you full control over 
-your file storage while maintaining UploadThing's superior developer experience. 
-With BYOB, you can:
+If we're successful, you'll never have to worry about file storage again,
+regardless of the scale you're shipping.
 
-- Store files directly in your own storage infrastructure
-- Meet strict compliance requirements
-- Maintain complete control over your data
-
-For the initial public beta, we are launching with support for AWS S3 buckets, 
-with more storage providers coming soon based on user demand.
-
-### Getting Started with BYOB
-1. Navigate to your [account settings](https://uploadthing.com/dashboard?s=profile)
-2. Enable the BYOB feature flag
-3. Select the BYOB tier when creating a new app
-
-![Bring your own bucket](./feature-flag.png)
-
-
-For questions or support, reach out to our team at [support@uploadthing.com](mailto:support@uploadthing.com).
-
-
-
+We're so excited to share even more fun enterprise features to UploadThing. Keep
+an eye out here and [on our Twitter](https://x.com/pingdotgg) to stay up to date
+🙏
