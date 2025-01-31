@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/utils";
 export function ArticleCard({ article }: { article: ArticleWithSlug }) {
   return (
     <article className="md:grid md:grid-cols-4 md:items-baseline">
-      <Card className="md:col-span-3">
+      <Card className="group md:col-span-3">
         <Card.Title href={`/blog/${article.slug}`}>{article.title}</Card.Title>
         <Card.Eyebrow
           as="time"
@@ -68,7 +68,7 @@ function ArticleAuthors({ authors }: { authors: ArticleWithSlug["authors"] }) {
 export function FeaturedArticle({ article }: { article: ArticleWithSlug }) {
   return (
     <article className="grid w-full">
-      <Card className="grid w-full grid-cols-1 gap-x-8 lg:grid-cols-2">
+      <Card className="group grid w-full grid-cols-1 gap-x-8 lg:grid-cols-2">
         <div className="relative">
           <Image
             priority
