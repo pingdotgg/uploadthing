@@ -46,7 +46,7 @@ export const uploadRouter = {
       await db.insert(files).values({
         name: file.name,
         key: file.key,
-        url: file.url,
+        url: file.ufsUrl,
         uploadedBy: metadata.uploaderId,
       });
     }),

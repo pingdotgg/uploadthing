@@ -56,8 +56,7 @@ export default function ScalarApiRef() {
         (a) =>
           a.type === "attributes" &&
           a.target instanceof Element &&
-          a.target.classList.contains("scalar-app") &&
-          a.target.classList.contains("references-layout"),
+          a.target.classList.contains("references-rendered"),
       ).length > 0
     ) {
       setLoaded(true);

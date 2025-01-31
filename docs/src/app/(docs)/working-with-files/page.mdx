@@ -53,14 +53,43 @@ export default {
 ## Accessing Private Files
 
 If your files are protected with
-[access controls](/concepts/regions-acl#access-controls), you will need to
-request a short-lived presigned URL from the API to access the file. You can
-request one using [`UTApi.getSignedUrl`](/api-reference/ut-api#get-signed-url),
-or from the `/requestFileAccess` API endpoint (see
-[OpenAPI Specification](/api-reference/openapi-spec)).
+[access controls](/concepts/regions-acl#access-controls), you can generate a
+presigned URL using
+[`UTApi.getSignedUrl`](/api-reference/ut-api#get-signed-url). Here's a reference
+implementation using Node.js crypto:
 
-Presigned URL follows the same patterns as above, with additional query
-parameters to authenticate the request.
+```ts
+import crypto from "node:crypto";
+
+const apiKey = "sk_live_...";
+const url = new URL("https://<APP_ID>.ufs.sh/f/<FILE_KEY>");
+const algorithm = "hmac-sha256";
+
+// Set expiration to 30 seconds from now (you choose how long you want the URL to be valid for)
+const expires = Date.now() + 1000 * 30;
+url.searchParams.set("expires", String(expires));
+
+const signature = crypto
+  .createHmac(algorithm, apiKey)
+  .update(url.href)
+  .digest("hex");
+url.searchParams.set("signature", `${algorithm}=${signature}`);
+
+// The URL is now signed and ready to use
+await fetch(url); // Status 200 OK
+```
+
+The URL will be valid for the duration in milliseconds you set in the `expires`
+parameter or until the API key is deleted or revoked.
+
+<Note>
+  You can also request presigned URLs using the `/requestFileAccess` API
+  endpoint (see [OpenAPI Specification](/api-reference/openapi-spec)). However,
+  generating URLs client-side is faster as it avoids an additional API call.
+</Note>
+
+The presigned URL follows the same patterns as public files, with additional
+query parameters to authenticate the request.
 
 ## Other File Operations
 

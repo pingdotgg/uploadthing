@@ -4,11 +4,15 @@ import { onMounted, onUnmounted } from "vue";
 import type { ClassListMerger } from "@uploadthing/shared";
 
 export const usePaste = (callback: (e: ClipboardEvent) => void) => {
+  const controller = new AbortController();
+
   onMounted(() => {
-    document.addEventListener("paste", callback);
+    document.addEventListener("paste", callback, {
+      signal: controller.signal,
+    });
   });
   onUnmounted(() => {
-    document.removeEventListener("paste", callback);
+    controller.abort();
   });
 };
 

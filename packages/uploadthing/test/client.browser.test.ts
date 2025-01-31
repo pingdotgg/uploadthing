@@ -17,6 +17,7 @@ import type {
   GenerateUploaderOptions,
 } from "../src/types";
 import {
+  appUrlPattern,
   doNotExecute,
   fileUrlPattern,
   handlers,
@@ -24,6 +25,7 @@ import {
   onErrorMock,
   requestSpy,
   testToken,
+  ufsUrlPattern,
   uploadCompleteMock,
 } from "./__test-helpers";
 
@@ -141,7 +143,8 @@ describe("uploadFiles", () => {
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
         url: expect.stringMatching(fileUrlPattern()),
-        appUrl: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         fileHash: expect.any(String),
       },
     ]);
@@ -185,7 +188,8 @@ describe("uploadFiles", () => {
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
         url: expect.stringMatching(fileUrlPattern()),
-        appUrl: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         fileHash: expect.any(String),
       },
     ]);
@@ -220,7 +224,8 @@ describe("uploadFiles", () => {
         lastModified: expect.any(Number),
         key: expect.stringMatching(/.+/),
         url: expect.stringMatching(fileUrlPattern()),
-        appUrl: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         fileHash: expect.any(String),
       },
     ]);

@@ -31,6 +31,10 @@ export const API_URL =
   typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
     ? process.env.UPLOADTHING_API_URL
     : "https://api.uploadthing.com";
+export const UTFS_URL =
+  typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
+    ? "https://staging.utfs.io"
+    : "https://utfs.io";
 export const UFS_HOST =
   typeof process !== "undefined" && process.env.UPLOADTHING_API_URL
     ? "utf-staging.com"
@@ -40,7 +44,10 @@ export const INGEST_URL =
     ? "https://fra1.ingest.ut-staging.com"
     : "https://fra1.ingest.uploadthing.com";
 
-export const fileUrlPattern = (appId = testToken.decoded.appId) =>
+export const appUrlPattern = (appId = testToken.decoded.appId) =>
+  new RegExp(`^${UTFS_URL}/a/${appId}/.+$`);
+export const fileUrlPattern = () => new RegExp(`^${UTFS_URL}/f/.+$`);
+export const ufsUrlPattern = (appId = testToken.decoded.appId) =>
   new RegExp(`^https://${appId}.${UFS_HOST}/f/.+$`);
 
 export const createApiUrl = (slug: string, action?: typeof ActionType.Type) => {
@@ -98,8 +105,9 @@ export const handlers = [
       await callRequestSpy(request);
       const appId = new URLSearchParams(request.url).get("x-ut-identifier");
       return HttpResponse.json<UploadPutResult>({
-        url: `https://${appId}.${UFS_HOST}/f/${params.key}`,
-        appUrl: `https://${appId}.${UFS_HOST}/f/${params.key}`,
+        url: `${UTFS_URL}/f/${params.key}`,
+        appUrl: `${UTFS_URL}/a/${appId}/${params.key}`,
+        ufsUrl: `https://${appId}.${UFS_HOST}/f/${params.key}`,
         serverData: null,
         fileHash: Array.from(new Uint8Array(await request.arrayBuffer()))
           .map((b) => b.toString(16).padStart(2, "0"))
@@ -113,7 +121,7 @@ export const handlers = [
   http.post(`${API_URL}/v6/requestFileAccess`, async ({ request }) => {
     await callRequestSpy(request);
     return HttpResponse.json({
-      url: `https://{APP_ID}.${UFS_HOST}/f/someFileKey?x-some-amz=query-param`,
+      url: `${UTFS_URL}/f/someFileKey?x-some-amz=query-param`,
     });
   }),
   http.post(`${API_URL}/v6/updateACL`, async ({ request }) => {

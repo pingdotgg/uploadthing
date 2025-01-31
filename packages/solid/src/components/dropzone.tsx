@@ -200,6 +200,7 @@ export const UploadDropzone = <
   createEffect(() => {
     if (!appendOnPaste) return;
 
+    const controller = new AbortController();
     const pasteHandler = (e: ClipboardEvent) => {
       if (document.activeElement !== rootRef) return;
 
@@ -212,10 +213,12 @@ export const UploadDropzone = <
 
       if (mode === "auto") uploadFiles(files());
     };
-    document.addEventListener("paste", pasteHandler);
+    document.addEventListener("paste", pasteHandler, {
+      signal: controller.signal,
+    });
 
     onCleanup(() => {
-      document.removeEventListener("paste", pasteHandler);
+      controller.abort();
     });
   });
 
@@ -371,6 +374,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const [state, setState] = createStore(initialState);
 
   createEffect(() => {
+    const controller = new AbortController();
     const onWindowFocus = () => {
       if (state.isFileDialogActive) {
         setTimeout(() => {
@@ -386,13 +390,17 @@ export function createDropzone(_props: DropzoneOptions) {
       }
     };
 
-    window.addEventListener("focus", onWindowFocus, false);
+    window.addEventListener("focus", onWindowFocus, {
+      capture: false,
+      signal: controller.signal,
+    });
     onCleanup(() => {
-      window.removeEventListener("focus", onWindowFocus, false);
+      controller.abort();
     });
   });
 
   createEffect(() => {
+    const controller = new AbortController();
     const onDocumentDrop = (event: DropEvent) => {
       const root = rootRef();
 
@@ -406,12 +414,17 @@ export function createDropzone(_props: DropzoneOptions) {
     const onDocumentDragOver = (e: Pick<Event, "preventDefault">) =>
       e.preventDefault();
 
-    document.addEventListener("dragover", onDocumentDragOver, false);
-    document.addEventListener("drop", onDocumentDrop, false);
+    document.addEventListener("dragover", onDocumentDragOver, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("drop", onDocumentDrop, {
+      capture: false,
+      signal: controller.signal,
+    });
 
     onCleanup(() => {
-      document.removeEventListener("dragover", onDocumentDragOver, false);
-      document.removeEventListener("drop", onDocumentDrop, false);
+      controller.abort();
     });
   });
 

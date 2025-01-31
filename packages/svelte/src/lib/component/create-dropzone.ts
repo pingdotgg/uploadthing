@@ -52,6 +52,7 @@ export function createDropzone(_props: DropzoneOptions) {
   const [state, dispatch] = reducible(reducer, initialState);
 
   onMount(() => {
+    const controller = new AbortController();
     const onWindowFocus = () => {
       if (get(state).isFileDialogActive) {
         setTimeout(() => {
@@ -66,14 +67,18 @@ export function createDropzone(_props: DropzoneOptions) {
         }, 300);
       }
     };
-    window.addEventListener("focus", onWindowFocus, false);
+    window.addEventListener("focus", onWindowFocus, {
+      capture: false,
+      signal: controller.signal,
+    });
 
     return () => {
-      window.removeEventListener("focus", onWindowFocus, false);
+      controller.abort();
     };
   });
 
   onMount(() => {
+    const controller = new AbortController();
     const onDocumentDrop = (event: DropEvent) => {
       const root = get(rootRef);
       if (root?.contains(event.target as Node)) {
@@ -87,12 +92,17 @@ export function createDropzone(_props: DropzoneOptions) {
     const onDocumentDragOver = (e: Pick<Event, "preventDefault">) =>
       e.preventDefault();
 
-    document.addEventListener("dragover", onDocumentDragOver, false);
-    document.addEventListener("drop", onDocumentDrop, false);
+    document.addEventListener("dragover", onDocumentDragOver, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("drop", onDocumentDrop, {
+      capture: false,
+      signal: controller.signal,
+    });
 
     return () => {
-      document.removeEventListener("dragover", onDocumentDragOver, false);
-      document.removeEventListener("drop", onDocumentDrop, false);
+      controller.abort();
     };
   });
 
@@ -270,30 +280,32 @@ export function createDropzone(_props: DropzoneOptions) {
   // We should be able to refactor this when svelte 5 is released to bring it more inline
   // with the rest of the dropzone implementations
   const dropzoneRoot: Action<HTMLElement> = (node) => {
+    const controller = new AbortController();
     rootRef.set(node);
     node.setAttribute("role", "presentation");
     if (!get(props).disabled) {
       node.setAttribute("tabindex", "0");
-      node.addEventListener("keydown", onKeyDown);
-      node.addEventListener("focus", onFocus);
-      node.addEventListener("blur", onBlur);
-      node.addEventListener("click", onClick);
-      node.addEventListener("dragenter", onDragEnter);
-      node.addEventListener("dragover", onDragOver);
-      node.addEventListener("dragleave", onDragLeave);
-      node.addEventListener("drop", onDropCb);
+      node.addEventListener("keydown", onKeyDown, {
+        signal: controller.signal,
+      });
+      node.addEventListener("focus", onFocus, { signal: controller.signal });
+      node.addEventListener("blur", onBlur, { signal: controller.signal });
+      node.addEventListener("click", onClick, { signal: controller.signal });
+      node.addEventListener("dragenter", onDragEnter, {
+        signal: controller.signal,
+      });
+      node.addEventListener("dragover", onDragOver, {
+        signal: controller.signal,
+      });
+      node.addEventListener("dragleave", onDragLeave, {
+        signal: controller.signal,
+      });
+      node.addEventListener("drop", onDropCb, { signal: controller.signal });
     }
     return {
       destroy() {
         rootRef.set(null);
-        node.removeEventListener("keydown", onKeyDown);
-        node.removeEventListener("focus", onFocus);
-        node.removeEventListener("blur", onBlur);
-        node.removeEventListener("click", onClick);
-        node.removeEventListener("dragenter", onDragEnter);
-        node.removeEventListener("dragover", onDragOver);
-        node.removeEventListener("dragleave", onDragLeave);
-        node.removeEventListener("drop", onDropCb);
+        controller.abort();
       },
     };
   };
@@ -303,6 +315,7 @@ export function createDropzone(_props: DropzoneOptions) {
     node,
     options: DropzoneOptions,
   ) => {
+    const controller = new AbortController();
     inputRef.set(node);
     node.style.display = "none";
     node.setAttribute("type", "file");
@@ -313,8 +326,12 @@ export function createDropzone(_props: DropzoneOptions) {
       safeSetAttribute(node, "accept", accept);
     });
 
-    node.addEventListener("change", onDropCb);
-    node.addEventListener("click", onInputElementClick);
+    node.addEventListener("change", onDropCb, {
+      signal: controller.signal,
+    });
+    node.addEventListener("click", onInputElementClick, {
+      signal: controller.signal,
+    });
 
     return {
       update(options: DropzoneOptions) {
@@ -325,8 +342,7 @@ export function createDropzone(_props: DropzoneOptions) {
       destroy() {
         inputRef.set(null);
         acceptAttrUnsub();
-        node.removeEventListener("change", onDropCb);
-        node.removeEventListener("click", onInputElementClick);
+        controller.abort();
       },
     };
   };

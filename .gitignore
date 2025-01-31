@@ -67,6 +67,7 @@ app.config.bundled_*
 .vercel
 .output
 .nuxt
+.react-router/
 
 # direnv
 .direnv/

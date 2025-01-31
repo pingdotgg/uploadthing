@@ -150,35 +150,50 @@ export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 
 ### Add UploadThing's Styles
 
-<Tabs tabs={["Tailwind", "Not Tailwind"]}>
-  <Tab>
-    Wrap your Tailwind config with the `withUt` helper. You can learn more about our
-    Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+<Tabs tabs={["Tailwind v3", "Tailwind v4", "Other"]}>
+    <Tab>
+      Wrap your Tailwind config with the `withUt` helper. You can learn more about our
+      Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
 
-    ```tsx
-    import { withUt } from "uploadthing/tw";
+      ```tsx
+      import { withUt } from "uploadthing/tw";
 
-    export default withUt({
-      // Your existing Tailwind config
-      content: ["./src/**/*.{ts,tsx,mdx}"],
-      ...
-    });
-    ```
+      export default withUt({
+        // Your existing Tailwind config
+        content: ["./src/**/*.{ts,tsx,mdx}"],
+        ...
+      });
+      ```
 
-  </Tab>
-  <Tab>
-    Include our CSS in your root route to make sure the components look right!
+    </Tab>
 
-    ```tsx {{ title: "app/routes/__root.tsx" }}
-    import uploadthingCss from "@uploadthing/react/styles.css?url";
+    <Tab>
+      If you're using Tailwind v4 with CSS configuration, you can use our plugin like this:
 
-    export const Route = createRootRoute({
-      component: RootComponent,
-      links: () => [{ rel: "stylesheet", href: uploadthingCss }],
-    });
-    ```
+      ```css
+      @import "tailwindcss";
 
-  </Tab>
+      @import "uploadthing/tw/v4";
+      @source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
+      ```
+
+      You can learn more about our Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+    </Tab>
+
+    <Tab>
+      Include our CSS file in the root layout to make sure the components look right!
+
+      ```tsx {{ title: "app/routes/__root.tsx" }}
+      import uploadthingCss from "@uploadthing/react/styles.css?url";
+
+      export const Route = createRootRoute({
+        component: RootComponent,
+        links: () => [{ rel: "stylesheet", href: uploadthingCss }],
+      });
+      ```
+
+    </Tab>
+
 </Tabs>
 
 ## Mount A Button And Upload!

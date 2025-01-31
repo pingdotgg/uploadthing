@@ -1,10 +1,17 @@
 /* eslint-disable no-restricted-globals */
 import * as S from "effect/Schema";
+import { bypass, http } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
 import { UploadThingToken } from "../src/types";
-import { fileUrlPattern, testToken } from "./__test-helpers";
+import {
+  appUrlPattern,
+  fileUrlPattern,
+  testToken,
+  ufsUrlPattern,
+} from "./__test-helpers";
 
 const shouldRun =
   typeof process.env.UPLOADTHING_TEST_TOKEN === "string" &&
@@ -14,6 +21,20 @@ describe.runIf(shouldRun)(
   "smoke test with live api",
   { timeout: 15_000 },
   () => {
+    const msw = setupServer(
+      http.get("https://utfs.io/**", ({ request }) => {
+        request.headers.set("x-ut-test-mode", "1");
+        return fetch(bypass(request));
+      }),
+      http.get("https://*.ufs.sh/**", ({ request }) => {
+        request.headers.set("x-ut-test-mode", "1");
+        return fetch(bypass(request));
+      }),
+    );
+
+    beforeAll(() => msw.listen());
+    afterAll(() => msw.close());
+
     const token = shouldRun
       ? process.env.UPLOADTHING_TEST_TOKEN!
       : testToken.encoded;
@@ -64,8 +85,9 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern(appId)),
-          appUrl: expect.stringMatching(fileUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -99,8 +121,9 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern(appId)),
-          appUrl: expect.stringMatching(fileUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -129,8 +152,9 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(fileUrlPattern(appId)),
-          appUrl: expect.stringMatching(fileUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -153,8 +177,9 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern(appId)),
-          appUrl: expect.stringMatching(fileUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -195,8 +220,9 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern(appId)),
-          appUrl: expect.stringMatching(fileUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -236,8 +262,9 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern(appId)),
-          appUrl: expect.stringMatching(fileUrlPattern(appId)),
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,

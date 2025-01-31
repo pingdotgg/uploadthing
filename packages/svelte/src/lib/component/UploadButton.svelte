@@ -108,6 +108,7 @@
   })();
 
   onMount(() => {
+    const controller = new AbortController()
     const handlePaste = (event: ClipboardEvent) => {
       if (!appendOnPaste) return;
       // eslint-disable-next-line no-undef
@@ -123,10 +124,10 @@
       if (mode === "auto") uploadFiles(files);
     };
     // eslint-disable-next-line no-undef
-    document.addEventListener("paste", handlePaste);
+    document.addEventListener("paste", handlePaste, { signal: controller.signal });
 
     // eslint-disable-next-line no-undef
-    return () => document.removeEventListener("paste", handlePaste);
+    return () => controller.abort();
   });
 
   $: styleFieldArg = {

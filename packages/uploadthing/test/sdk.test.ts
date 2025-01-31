@@ -13,12 +13,14 @@ import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
+  appUrlPattern,
   callRequestSpy,
+  fileUrlPattern,
   handlers,
   INGEST_URL,
   requestSpy,
   testToken,
-  UFS_HOST,
+  ufsUrlPattern,
 } from "./__test-helpers";
 
 const msw = setupServer(...handlers);
@@ -44,15 +46,15 @@ describe("uploadFiles", () => {
       }),
     );
 
-    const key = result.data?.key;
     expect(result).toEqual({
       data: {
         key: expect.stringMatching(/.+/),
         name: "foo.txt",
         size: 3,
         lastModified: fooFile.lastModified,
-        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
-        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         customId: null,
         type: "text/plain",
         fileHash: expect.any(String),
@@ -160,15 +162,15 @@ describe("uploadFilesFromUrl", () => {
       },
     );
 
-    const key = result.data?.key;
     expect(result).toEqual({
       data: {
         key: expect.stringMatching(/.+/),
         name: "foo.txt",
         size: 26,
         lastModified: expect.any(Number),
-        url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
-        appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key}`,
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         customId: null,
         type: "text/plain",
         fileHash: expect.any(String),
@@ -290,7 +292,6 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/exists.txt",
       "https://cdn.foo.com/does-not-exist.txt",
     ]);
-    const key1 = result[0]?.data?.key;
     expect(result).toEqual([
       {
         data: {
@@ -301,8 +302,9 @@ describe("uploadFilesFromUrl", () => {
           name: "exists.txt",
           size: 26,
           type: "text/plain",
-          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
-          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern()),
+          ufsUrl: expect.stringMatching(ufsUrlPattern()),
         },
         error: null,
       },
@@ -328,8 +330,7 @@ describe("uploadFilesFromUrl", () => {
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       "https://cdn.foo.com/bar.txt",
     ]);
-    const key1 = result[0]?.data?.key;
-    const key2 = result[2]?.data?.key;
+
     expect(result).toStrictEqual([
       {
         data: {
@@ -339,8 +340,9 @@ describe("uploadFilesFromUrl", () => {
           name: "foo.txt",
           size: 26,
           type: "text/plain",
-          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
-          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key1}`,
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern()),
+          ufsUrl: expect.stringMatching(ufsUrlPattern()),
           fileHash: expect.any(String),
         },
         error: null,
@@ -362,8 +364,9 @@ describe("uploadFilesFromUrl", () => {
           name: "bar.txt",
           size: 26,
           type: "text/plain",
-          url: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
-          appUrl: `https://${testToken.decoded.appId}.${UFS_HOST}/f/${key2}`,
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern()),
+          ufsUrl: expect.stringMatching(ufsUrlPattern()),
           fileHash: expect.any(String),
         },
         error: null,

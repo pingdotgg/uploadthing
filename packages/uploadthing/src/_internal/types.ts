@@ -195,11 +195,15 @@ export type UTEvents = {
  * Result from the PUT request to the UploadThing Ingest server
  */
 export type UploadPutResult<TServerOutput = unknown> = {
+  ufsUrl: string;
+  /**
+   * @deprecated
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
+   */
   url: string;
   /**
    * @deprecated
-   * This field is now an alias for `url`.
-   * This field will be removed in uploadthing v9.
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
    */
   appUrl: string;
   fileHash: string;

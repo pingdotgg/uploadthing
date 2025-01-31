@@ -37,7 +37,7 @@ export default function Home() {
           const uploadedFile = await uploadFromUrl(fd);
           if (uploadedFile) {
             setIsUploading(false);
-            open(uploadedFile.url, "_blank");
+            open(uploadedFile.ufsUrl, "_blank");
           }
         }}
       >

@@ -1,0 +1,11 @@
+/* Elements */
+@custom-variant ut-button (&>*[data-ut-element="button"]);
+@custom-variant ut-allowed-content (&>*[data-ut-element="allowed-content"]);
+@custom-variant ut-label (&>*[data-ut-element="label"]);
+@custom-variant ut-upload-icon (&>*[data-ut-element="upload-icon"]);
+@custom-variant ut-clear-btn (&>*[data-ut-element="clear-btn"]);
+
+/* States */
+@custom-variant ut-readying (&[data-state="readying"]);
+@custom-variant ut-ready (&[data-state="ready"]);
+@custom-variant ut-uploading (&[data-state="uploading"]);

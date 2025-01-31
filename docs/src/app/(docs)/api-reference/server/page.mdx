@@ -122,7 +122,7 @@ function, although there are some extra configuration options available.
 
 > The names of the exported `createRouteHandler` is different prior to `v6.3`.
 
-<Tabs tabs={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3"]}>
+<Tabs tabs={["Next App Router", "Next Pages Dir", "SolidJS", "Express", "Fastify", "H3", "Remix"]}>
   <Tab>
     ```ts
     import { createRouteHandler } from "uploadthing/next";
@@ -207,6 +207,19 @@ function, although there are some extra configuration options available.
       // config: { ... },
     }));
     app.use(router.handler);
+    ```
+
+  </Tab>
+
+  <Tab>
+    ```tsx
+    import { createRouteHandler } from "uploadthing/remix";
+    import { uploadRouter } from "~/server/uploadthing.ts";
+
+    export const { loader, action } = createRouteHandler({
+      router: uploadRouter,
+      // config: { ... },
+    });
     ```
 
   </Tab>
