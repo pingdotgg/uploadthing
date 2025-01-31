@@ -10,9 +10,9 @@ import * as Effect from "effect/Effect";
 
 import type { Json } from "@uploadthing/shared";
 
-import { makeAdapterHandler } from "./internal/handler";
-import { createBuilder } from "./internal/upload-builder";
-import type { CreateBuilderOptions } from "./internal/upload-builder";
+import { makeAdapterHandler } from "./_internal/handler";
+import { createBuilder } from "./_internal/upload-builder";
+import type { CreateBuilderOptions } from "./_internal/upload-builder";
 import type { FileRouter, RouteHandlerOptions } from "./types";
 
 export type { FileRouter };
