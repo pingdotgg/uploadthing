@@ -439,7 +439,7 @@ export class UTApi {
               cause: e,
             }),
         ),
-        Effect.withLogSpan("getSignedURL"),
+        Effect.withLogSpan("generateSignedURL"),
       ),
     );
   };
