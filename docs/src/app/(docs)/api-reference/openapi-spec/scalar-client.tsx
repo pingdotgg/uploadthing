@@ -75,11 +75,11 @@ export default function ScalarApiRef() {
           layout: "classic",
           searchHotKey: "" as any, // doesn't look like it's disableable
           darkMode: isDark,
-          customCss: `
-          .z-overlay{
-            z-index: 999;
-          }
-          `,
+          // customCss: `
+          //   .dark-mode {
+          //     --scalar-background-1: hsla(241.9, 6.3926%, 10.038%) !important;
+          //   }
+          // `,
           spec: { url: specUrl },
         }}
       />
