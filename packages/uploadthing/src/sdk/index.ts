@@ -413,13 +413,12 @@ export class UTApi {
       const { apiKey, appId } = yield* UTToken;
       const ufsHost = yield* UfsHost;
 
-      const ufsUrl = yield* generateSignedURL(
-        `https://${appId}.${ufsHost}/f/${key}`,
-        apiKey,
-        {
-          ttlInSeconds: expiresIn,
-        },
-      );
+      const url = new URL(`https://${appId}.${ufsHost}/f/${key}`);
+      if (ufsHost.includes("local")) url.protocol = "http";
+
+      const ufsUrl = yield* generateSignedURL(url, apiKey, {
+        ttlInSeconds: expiresIn,
+      });
 
       return {
         ufsUrl,
