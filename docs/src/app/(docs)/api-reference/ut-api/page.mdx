@@ -419,10 +419,53 @@ await utapi.renameFiles([
 
 `object`
 
-## `getSignedURL` {{ tag: 'method', since: '6.2'}}
+## `generateSignedURL` {{ tag: 'method', since: '7.5'}}
+
+Generate a presigned URL for a private file.
+
+```ts
+import { utapi } from "~/server/uploadthing.ts";
+
+const fileKey = "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg";
+const url = await utapi.generateSignedURL(fileKey, {
+  expiresIn: 60 * 60, // 1 hour
+  // expiresIn: '1 hour',
+  // expiresIn: '3d',
+  // expiresIn: '7 days',
+});
+```
+
+Unlike [`getSignedURL`](#get-signed-url), this method does not make a fetch
+request to the UploadThing API and is the recommended way to generate a
+presigned URL for a private file.
+
+### Parameters
+
+<Properties>
+  <Property name="key" type="string" since="7.5" required>
+    The key of the file to get a signed URL for
+  </Property>
+  <Property name="options.expiresIn" type="number | TimeString" since="7.5">
+    Options for the signed URL. The parsed duration cannot exceed 7 days (604
+    800).
+    <Note>
+      `TimeString` refers to a human-readable string that can be parsed as a
+      number, followed by a unit of time. For example, `1s`, `1 second`, `2m`,
+      `2 minutes`, `7 days` etc. If no unit is specified, seconds are assumed.
+    </Note>
+  </Property>
+</Properties>
+
+### Returns
+
+`{ ufsUrl: string }`
+
+## `getSignedURL` {{ tag: 'method', since: '6.2' }}
 
 Retrieve a [signed URL](/concepts/regions-acl#access-controls) for a private
-file.
+file. This method is no longer recommended as it makes a fetch request to the
+UploadThing API which incurs redundant latency. Use
+[`generateSignedURL`](#generate-signed-url) instead.
 
 ```ts
 import { utapi } from "~/server/uploadthing.ts";
@@ -468,7 +511,7 @@ const url = await utapi.getSignedURL(fileKey, {
 
 ### Returns
 
-`string`
+`{ url: string, ufsUrl: string }`
 
 ## `updateACL` {{ tag: 'method', since: '6.8'}}
 

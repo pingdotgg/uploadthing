@@ -92,3 +92,11 @@ export const IngestUrl = Effect.gen(function* () {
     Config.map((url) => url.href.replace(/\/$/, "")),
   );
 });
+
+export const UtfsHost = Config.string("utfsHost").pipe(
+  Config.withDefault("utfs.io"),
+);
+
+export const UfsHost = Config.string("ufsHost").pipe(
+  Config.withDefault("ufs.sh"),
+);

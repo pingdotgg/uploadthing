@@ -13,9 +13,18 @@ import * as Redacted from "effect/Redacted";
 import * as S from "effect/Schema";
 
 import type { ACL, FetchEsque, MaybeUrl } from "@uploadthing/shared";
-import { parseTimeToSeconds, UploadThingError } from "@uploadthing/shared";
+import {
+  generateSignedURL,
+  parseTimeToSeconds,
+  UploadThingError,
+} from "@uploadthing/shared";
 
-import { ApiUrl, UPLOADTHING_VERSION, UTToken } from "../_internal/config";
+import {
+  ApiUrl,
+  UfsHost,
+  UPLOADTHING_VERSION,
+  UTToken,
+} from "../_internal/config";
 import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
 import { makeRuntime } from "../_internal/runtime";
 import type {
@@ -376,7 +385,72 @@ export class UTApi {
     );
   };
 
-  /** Request a presigned url for a private file(s) */
+  /**
+   * Generate a presigned url for a private file
+   * Unlike {@link getSignedURL}, this method does not make a fetch request to the UploadThing API
+   * and is the recommended way to generate a presigned url for a private file.
+   **/
+  generateSignedURL = async (key: string, opts?: GetSignedURLOptions) => {
+    guardServerOnly();
+
+    const expiresIn = parseTimeToSeconds(opts?.expiresIn ?? "5 minutes");
+
+    if (opts?.expiresIn && isNaN(expiresIn)) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message:
+          "expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.",
+      });
+    }
+    if (expiresIn > 86400 * 7) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "expiresIn must be less than 7 days (604800 seconds).",
+      });
+    }
+
+    const program = Effect.gen(function* () {
+      const { apiKey, appId } = yield* UTToken;
+      const ufsHost = yield* UfsHost;
+
+      const ufsUrl = yield* generateSignedURL(
+        `https://${appId}.${ufsHost}/f/${key}`,
+        apiKey,
+        {
+          ttlInSeconds: expiresIn,
+        },
+      );
+
+      return {
+        ufsUrl,
+      };
+    });
+
+    return await this.executeAsync(
+      program.pipe(
+        Effect.catchTag(
+          "ConfigError",
+          (e) =>
+            new UploadThingError({
+              code: "INVALID_SERVER_CONFIG",
+              message:
+                "There was an error with the server configuration. More info can be found on this error's `cause` property",
+              cause: e,
+            }),
+        ),
+        Effect.withLogSpan("getSignedURL"),
+      ),
+    );
+  };
+
+  /**
+   * Request a presigned url for a private file(s)
+   * @remarks This method is no longer recommended as it makes a fetch
+   * request to the UploadThing API which incurs redundant latency. It
+   * will be deprecated in UploadThing v8 and removed in UploadThing v9.
+   *
+   * @see {@link generateSignedURL} for a more efficient way to generate a presigned url
+   **/
   getSignedURL = async (key: string, opts?: GetSignedURLOptions) => {
     guardServerOnly();
 
@@ -403,6 +477,7 @@ export class UTApi {
       "GetSignedUrlResponse",
     )({
       url: S.String,
+      ufsUrl: S.String,
     }) {}
 
     return await this.executeAsync(

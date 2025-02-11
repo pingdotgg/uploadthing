@@ -72,10 +72,6 @@ per-request basis.
 
 ### Using signed URLs
 
-Signed URLs can be retrieved using the
-[`getSignedURL`](/api-reference/ut-api#get-signed-url) method on the UTApi. It
-accepts the expiration time in seconds as a parameter, which defaults to
-whatever you've set in your app's settings. Overriding this value is only
-allowed if you've enabled the
-`Allow overriding this value on a per-request basis` setting on your app's
-settings.
+Signed URLs can be generated using the
+[`generateSignedURL`](/api-reference/ut-api#generate-signed-url) method on the
+UTApi. It accepts the expiration time in seconds as a parameter.
