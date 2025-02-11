@@ -81,10 +81,10 @@ export async function getFileUrl(key: string) {
     };
   }
 
-  const { url } = await utapi.getSignedURL(key);
+  const { ufsUrl } = await utapi.generateSignedURL(key);
   return {
     success: true as const,
-    url,
+    url: ufsUrl,
   };
 }
 

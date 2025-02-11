@@ -375,6 +375,59 @@ describe("uploadFilesFromUrl", () => {
   });
 });
 
+describe("generateSignedURL", () => {
+  it("generates url without expiresIn", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    const result = await utapi.generateSignedURL("foo");
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching(ufsUrlPattern()),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
+  it("generates url with valid expiresIn (1)", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    const result = await utapi.generateSignedURL("foo", { expiresIn: 86400 });
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching(ufsUrlPattern()),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
+  it("generates url with valid expiresIn (2)", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    const result = await utapi.generateSignedURL("foo", {
+      expiresIn: "3 minutes",
+    });
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching(ufsUrlPattern()),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
+  it("throws if expiresIn is invalid", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    await expect(() =>
+      // @ts-expect-error - intentionally passing invalid expiresIn
+      utapi.generateSignedURL("foo", { expiresIn: "something" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
+    );
+  });
+
+  it("throws if expiresIn is longer than 7 days", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    await expect(() =>
+      utapi.generateSignedURL("foo", { expiresIn: "10 days" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: expiresIn must be less than 7 days (604800 seconds).]`,
+    );
+  });
+});
+
 describe("getSignedURL", () => {
   it("sends request without expiresIn", async () => {
     const utapi = new UTApi({ token: testToken.encoded });

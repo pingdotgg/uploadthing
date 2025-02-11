@@ -122,6 +122,7 @@ export const handlers = [
     await callRequestSpy(request);
     return HttpResponse.json({
       url: `${UTFS_URL}/f/someFileKey?x-some-amz=query-param`,
+      ufsUrl: `https://app-1.ufs.sh/f/someFileKey?signature=hmac-sha256%3Dsomesignature&expires=${Date.now() + 10000}`,
     });
   }),
   http.post(`${API_URL}/v6/updateACL`, async ({ request }) => {
