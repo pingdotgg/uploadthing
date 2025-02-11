@@ -219,7 +219,7 @@ importers:
         specifier: 1.49.1
         version: 1.49.1
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       concurrently:
         specifier: ^9.1.2
@@ -228,13 +228,13 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client-react:
     dependencies:
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../../packages/react
       react:
         specifier: 18.3.1
@@ -243,7 +243,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -265,7 +265,7 @@ importers:
   examples/backend-adapters/client-vanilla:
     dependencies:
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../../packages/uploadthing
     devDependencies:
       typescript:
@@ -278,10 +278,10 @@ importers:
   examples/backend-adapters/client-vue:
     dependencies:
       '@uploadthing/vue':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../../packages/vue
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../../packages/uploadthing
       vue:
         specifier: ^3.4.21
@@ -348,7 +348,7 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../../packages/uploadthing
     devDependencies:
       '@cloudflare/workers-types':
@@ -373,7 +373,7 @@ importers:
   examples/minimal-appdir:
     dependencies:
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       next:
         specifier: 15.1.3
@@ -385,7 +385,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@next/bundle-analyzer':
@@ -413,7 +413,7 @@ importers:
         specifier: ^4.1.2
         version: 4.1.2(@types/node@22.12.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       astro:
         specifier: ^5.1.2
@@ -425,7 +425,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@astrojs/check':
@@ -468,7 +468,7 @@ importers:
         specifier: 11.0.0-rc.452
         version: 11.0.0-rc.452
       '@uploadthing/expo':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/expo
       expo:
         specifier: ~51.0.8
@@ -531,7 +531,7 @@ importers:
         specifier: ~0.19.12
         version: 0.19.13(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -556,13 +556,13 @@ importers:
   examples/minimal-nuxt:
     dependencies:
       '@uploadthing/nuxt':
-        specifier: 7.1.5
+        specifier: 7.1.6
         version: link:../../packages/nuxt
       nuxt:
         specifier: ^3.15.0
         version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       vue:
         specifier: ^3.4.21
@@ -574,7 +574,7 @@ importers:
   examples/minimal-pagedir:
     dependencies:
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       next:
         specifier: 15.1.3
@@ -586,7 +586,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -614,13 +614,13 @@ importers:
         specifier: ^1.0.10
         version: 1.0.10(@testing-library/jest-dom@6.6.3)(solid-js@1.9.3)(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
       '@uploadthing/solid':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/solid
       solid-js:
         specifier: ^1.9.3
         version: 1.9.3
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.5.1
@@ -642,10 +642,10 @@ importers:
         specifier: ^5.0.17
         version: 5.1.1
       '@uploadthing/svelte':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/svelte
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@sveltejs/adapter-auto':
@@ -679,7 +679,7 @@ importers:
         specifier: ^1.95.0
         version: 1.95.0(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(webpack@5.97.1)(yaml@2.7.0)
       '@uploadthing/react':
-        specifier: ^7.1.5
+        specifier: ^7.2.0
         version: link:../../packages/react
       react:
         specifier: 18.3.1
@@ -688,7 +688,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.5.1
@@ -725,7 +725,7 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react@18.3.3)(react@18.3.1)
       '@uploadthing/react':
-        specifier: ^7.0.0
+        specifier: ^7.2.0
         version: link:../../packages/react
       class-variance-authority:
         specifier: ^0.7.0
@@ -764,7 +764,7 @@ importers:
         specifier: ^2.2.1
         version: 2.6.0
       uploadthing:
-        specifier: ^7.0.0
+        specifier: ^7.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -810,7 +810,7 @@ importers:
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.7.2)(zod@3.24.1)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       next:
         specifier: 15.1.3
@@ -822,7 +822,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -859,7 +859,7 @@ importers:
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.7.2)(zod@3.24.1)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       next:
         specifier: 15.1.3
@@ -871,7 +871,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -911,7 +911,7 @@ importers:
         specifier: ^7.0.0
         version: 7.1.3(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       isbot:
         specifier: ^5.1.19
@@ -929,7 +929,7 @@ importers:
         specifier: ^7.1.3
         version: 7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@react-router/dev':
@@ -972,7 +972,7 @@ importers:
         specifier: ^2.12.0
         version: 2.15.2(typescript@5.7.2)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       isbot:
         specifier: ^5.1.19
@@ -984,7 +984,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@remix-run/dev':
@@ -1021,7 +1021,7 @@ importers:
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.7.2)(zod@3.24.1)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       drizzle-orm:
         specifier: ^0.38.3
@@ -1036,7 +1036,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -1073,7 +1073,7 @@ importers:
         specifier: ^0.11.1
         version: 0.11.1(typescript@5.7.2)(zod@3.24.1)
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       drizzle-orm:
         specifier: ^0.38.3
@@ -1091,7 +1091,7 @@ importers:
         specifier: ^2.2.5
         version: 2.3.0(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -1134,7 +1134,7 @@ importers:
         specifier: ^0.5.15
         version: 0.5.15(tailwindcss@3.4.17)
       '@uploadthing/react':
-        specifier: ^7.1.5
+        specifier: ^7.2.0
         version: link:../../packages/react
       class-variance-authority:
         specifier: ^0.7.0
@@ -1167,7 +1167,7 @@ importers:
         specifier: ^2.2.1
         version: 2.6.0
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
       use-debounce:
         specifier: ^10.0.4
@@ -1195,7 +1195,7 @@ importers:
   examples/with-react-image-crop:
     dependencies:
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       next:
         specifier: 15.1.3
@@ -1210,7 +1210,7 @@ importers:
         specifier: ^11.0.5
         version: 11.0.7(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1238,7 +1238,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1257,7 +1257,7 @@ importers:
   examples/with-tailwindcss:
     dependencies:
       '@uploadthing/react':
-        specifier: 7.1.5
+        specifier: 7.2.0
         version: link:../../packages/react
       next:
         specifier: 15.1.3
@@ -1269,7 +1269,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.4.4
+        specifier: 7.5.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1729,7 +1729,7 @@ importers:
         version: 3.12.0
       next:
         specifier: canary
-        version: 15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1775,7 +1775,7 @@ importers:
     dependencies:
       '@uploadthing/react':
         specifier: npm:@uploadthing/react@6
-        version: 6.8.0(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))
+        version: 6.8.0(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -1784,7 +1784,7 @@ importers:
         version: 3.12.0
       next:
         specifier: canary
-        version: 15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1793,7 +1793,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       uploadthing:
         specifier: npm:uploadthing@6
-        version: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
+        version: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
       zod:
         specifier: 3.24.1
         version: 3.24.1
@@ -4803,8 +4803,8 @@ packages:
   '@next/env@15.1.3':
     resolution: {integrity: sha512-Q1tXwQCGWyA3ehMph3VO+E6xFPHDKdHFYosadt0F78EObYxPio0S09H9UGYznDe6Wc8eLKLG89GqcFJJDiK5xw==}
 
-  '@next/env@15.2.0-canary.33':
-    resolution: {integrity: sha512-y3EPM+JYKU8t2K+i6bc0QrotEZVGpqu9eVjprj4cfS8QZyZcL54s+W9aGB0TBuGavU9tQdZ50W186+toeMV+hw==}
+  '@next/env@15.2.0-canary.52':
+    resolution: {integrity: sha512-fT4kkQyYYjs+AZrcxzwJS1ckMIY97CSqEWfVSbUkhWPx8E5wlcgcCn9MYVmKwpD5lnX+NJtC/EXXY9NVj4ApmQ==}
 
   '@next/eslint-plugin-next@15.1.3':
     resolution: {integrity: sha512-oeP1vnc5Cq9UoOb8SYHAEPbCXMzOgG70l+Zfd+Ie00R25FOm+CCVNrcIubJvB1tvBgakXE37MmqSycksXVPRqg==}
@@ -4826,8 +4826,8 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-arm64@15.2.0-canary.33':
-    resolution: {integrity: sha512-+fCdK2KmR6lWoCTk1fSd5pvbiLZHfZF+D/Xdz3xrXw+pbnBtXWLKQrPT0bCtDseMxD31qcOywq5mAApvI3EGpA==}
+  '@next/swc-darwin-arm64@15.2.0-canary.52':
+    resolution: {integrity: sha512-p8FbY+66RQluTOfWOddFMlD2nLR40m5CX7XLm5o5hdkHRMsIV8vY+fy2bpxFpJ0ZRvCcRPmCJw9Kihz6NRqv1g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -4838,8 +4838,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@15.2.0-canary.33':
-    resolution: {integrity: sha512-GrrU+tSmeBRow+7bnn7i5M96g3tc28hPH5t5Y65qUXGmmrZwGZN1e1d+8QbXPdAGkvjEPcOkUNQuQVpp1qpYPA==}
+  '@next/swc-darwin-x64@15.2.0-canary.52':
+    resolution: {integrity: sha512-sgIjWHd9U/BR8fFNOJfhblPOugke8o/RHpqNga0/kd5uE8Q3UndRoKKPQQwhLXU8oJvdYsI7TYWQ8EhkH3SetQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -4850,8 +4850,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-gnu@15.2.0-canary.33':
-    resolution: {integrity: sha512-8RnGxnUpASHoUf6aHUifmZom5b4Ow5nTdCib/CNYXZ6VLuL5ocvmr+DXs/SKzi9h8OHR7JkLwKXHCcF8WyscSg==}
+  '@next/swc-linux-arm64-gnu@15.2.0-canary.52':
+    resolution: {integrity: sha512-wQYazfVQ00uPQTFz44SwwJ0t1yq2jKE+ZFAoEW6tv463UVScVllHg6WOocQa2uGv7sfVUqo/Uym5ira2rWHjaA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4862,8 +4862,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-musl@15.2.0-canary.33':
-    resolution: {integrity: sha512-COyE0LzMuLBZSR+Z/TOGilyJPdwSU588Vt0+o8GoECkoDEnjyuO2s2nHa2kDAcEfUEPkhlo0tErU3mF+8AVOTQ==}
+  '@next/swc-linux-arm64-musl@15.2.0-canary.52':
+    resolution: {integrity: sha512-pqtE3dIAYNTsbjA89UyDjh8hUaBuWgFQ3onKREbdfvxgKj5ZqAjGqoYxcxfVTiurfn7NU3DHLRHu0KrtgQB5Tg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4874,8 +4874,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-gnu@15.2.0-canary.33':
-    resolution: {integrity: sha512-3Y9lqJs+ftU9jgbLdCtvAvF8MNJsJYGMH7icb8QMs1+yOyHHbmwkZoElKdjwfUWzQ2sX28ywp73GWq4HbrsoUg==}
+  '@next/swc-linux-x64-gnu@15.2.0-canary.52':
+    resolution: {integrity: sha512-jXRQPPrCOgry+NIb6evOE/4CiYIa3iSatZoZU6p1yXc4/fSf8fDjKm9mOj8cIa/ffaN9j5qrWpIv3siFNmQ/7Q==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4886,8 +4886,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-musl@15.2.0-canary.33':
-    resolution: {integrity: sha512-FS9iA+RkZlhdWGQEKtsplVBXIYZJUn5nsRB+1UY46b3uaL6dDypu13ODaSwYuAwXGgkrZBVF9AFO3y4biBnPlA==}
+  '@next/swc-linux-x64-musl@15.2.0-canary.52':
+    resolution: {integrity: sha512-iQEYjAlqZLG1fHEn8Ztp6IUvjfQ4hS0x0UtpVwczDPVo/cqckMgIR2jjKEDKDfcoJFOuKKyfGVsSq2fIq+BzYQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4898,8 +4898,8 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-arm64-msvc@15.2.0-canary.33':
-    resolution: {integrity: sha512-Ji9CtBbUx06qvvN/rPohJN2FEFGsUv26F50f2nMRYRwrq3POXDjloGOiRocrjU0ty/cUzCz71qTUfKdmv/ajmg==}
+  '@next/swc-win32-arm64-msvc@15.2.0-canary.52':
+    resolution: {integrity: sha512-z9/8kcFqdfB0yih7M8TUOai/k5yKZUDUgxuwu5VvxDNX+Rbgn51kWHf4KMZNafvTlTPPvu7ifNCdHGbPoIFHxw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -4910,8 +4910,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@15.2.0-canary.33':
-    resolution: {integrity: sha512-hjdbGnkwIZ8zN2vlS6lNsEJO37HRtcEGimzfkruBMsi/DwJBqkJvZbNC/XCJy3HFcU58igncqV52p1IPjmAJAw==}
+  '@next/swc-win32-x64-msvc@15.2.0-canary.52':
+    resolution: {integrity: sha512-JkK4gqRip4IhI91usGpfNYRMtjuzDG45QHursEG/6g11fA4k6LITOkYZ2u9GKPxaeNi2a7p3ZhUEx+zZhY5hew==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -12581,8 +12581,8 @@ packages:
       sass:
         optional: true
 
-  next@15.2.0-canary.33:
-    resolution: {integrity: sha512-WF8QLeYkakuYwksdWY/F+Bi8tNJfIbiSYk9hCmldn9sNp1lU3lqI1hrW1ynbcMSaXC+qQEr7yol2OdvVZ4nZYQ==}
+  next@15.2.0-canary.52:
+    resolution: {integrity: sha512-X9TbVXJX0pJFImvZMQtjEdt3Ev/zI5FZ61YjS+wQsmoDOiJf0/yaCg73wyy03zSA+4U3R+i5tVbgcfvekcvzag==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
@@ -20420,7 +20420,7 @@ snapshots:
 
   '@next/env@15.1.3': {}
 
-  '@next/env@15.2.0-canary.33': {}
+  '@next/env@15.2.0-canary.52': {}
 
   '@next/eslint-plugin-next@15.1.3':
     dependencies:
@@ -20436,49 +20436,49 @@ snapshots:
   '@next/swc-darwin-arm64@15.1.3':
     optional: true
 
-  '@next/swc-darwin-arm64@15.2.0-canary.33':
+  '@next/swc-darwin-arm64@15.2.0-canary.52':
     optional: true
 
   '@next/swc-darwin-x64@15.1.3':
     optional: true
 
-  '@next/swc-darwin-x64@15.2.0-canary.33':
+  '@next/swc-darwin-x64@15.2.0-canary.52':
     optional: true
 
   '@next/swc-linux-arm64-gnu@15.1.3':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@15.2.0-canary.33':
+  '@next/swc-linux-arm64-gnu@15.2.0-canary.52':
     optional: true
 
   '@next/swc-linux-arm64-musl@15.1.3':
     optional: true
 
-  '@next/swc-linux-arm64-musl@15.2.0-canary.33':
+  '@next/swc-linux-arm64-musl@15.2.0-canary.52':
     optional: true
 
   '@next/swc-linux-x64-gnu@15.1.3':
     optional: true
 
-  '@next/swc-linux-x64-gnu@15.2.0-canary.33':
+  '@next/swc-linux-x64-gnu@15.2.0-canary.52':
     optional: true
 
   '@next/swc-linux-x64-musl@15.1.3':
     optional: true
 
-  '@next/swc-linux-x64-musl@15.2.0-canary.33':
+  '@next/swc-linux-x64-musl@15.2.0-canary.52':
     optional: true
 
   '@next/swc-win32-arm64-msvc@15.1.3':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@15.2.0-canary.33':
+  '@next/swc-win32-arm64-msvc@15.2.0-canary.52':
     optional: true
 
   '@next/swc-win32-x64-msvc@15.1.3':
     optional: true
 
-  '@next/swc-win32-x64-msvc@15.2.0-canary.33':
+  '@next/swc-win32-x64-msvc@15.2.0-canary.52':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -24053,16 +24053,16 @@ snapshots:
 
   '@uploadthing/mime-types@0.2.10': {}
 
-  '@uploadthing/react@6.8.0(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))':
+  '@uploadthing/react@6.8.0(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))':
     dependencies:
       '@uploadthing/dropzone': 0.4.1(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13(typescript@5.7.2))
       '@uploadthing/shared': 6.7.9
       file-selector: 0.6.0
       react: 18.3.1
       tailwind-merge: 2.6.0
-      uploadthing: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
+      uploadthing: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
     optionalDependencies:
-      next: 15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - solid-js
       - svelte
@@ -26931,7 +26931,7 @@ snapshots:
       '@typescript-eslint/parser': 8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2)
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.0(eslint@9.17.0(jiti@2.4.2))
@@ -26955,12 +26955,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
     dependencies:
       debug: 4.4.0(supports-color@9.4.0)
       enhanced-resolve: 5.18.0
       eslint: 9.17.0(jiti@2.4.2)
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.17.0(jiti@2.4.2))
       fast-glob: 3.3.3
       get-tsconfig: 4.8.1
@@ -26972,14 +26972,14 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2)
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
@@ -27014,7 +27014,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -31133,9 +31133,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@next/env': 15.2.0-canary.33
+      '@next/env': 15.2.0-canary.52
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
@@ -31145,14 +31145,14 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       styled-jsx: 5.1.6(react@18.3.1)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.2.0-canary.33
-      '@next/swc-darwin-x64': 15.2.0-canary.33
-      '@next/swc-linux-arm64-gnu': 15.2.0-canary.33
-      '@next/swc-linux-arm64-musl': 15.2.0-canary.33
-      '@next/swc-linux-x64-gnu': 15.2.0-canary.33
-      '@next/swc-linux-x64-musl': 15.2.0-canary.33
-      '@next/swc-win32-arm64-msvc': 15.2.0-canary.33
-      '@next/swc-win32-x64-msvc': 15.2.0-canary.33
+      '@next/swc-darwin-arm64': 15.2.0-canary.52
+      '@next/swc-darwin-x64': 15.2.0-canary.52
+      '@next/swc-linux-arm64-gnu': 15.2.0-canary.52
+      '@next/swc-linux-arm64-musl': 15.2.0-canary.52
+      '@next/swc-linux-x64-gnu': 15.2.0-canary.52
+      '@next/swc-linux-x64-musl': 15.2.0-canary.52
+      '@next/swc-win32-arm64-msvc': 15.2.0-canary.52
+      '@next/swc-win32-x64-msvc': 15.2.0-canary.52
       '@playwright/test': 1.49.1
       sharp: 0.33.5
     transitivePeerDependencies:
@@ -35570,7 +35570,7 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0):
+  uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0):
     dependencies:
       '@effect/schema': 0.68.18(effect@3.4.8)
       '@uploadthing/mime-types': 0.2.10
@@ -35583,7 +35583,7 @@ snapshots:
       express: 5.0.1
       fastify: 5.2.0
       h3: 1.13.0
-      next: 15.2.0-canary.33(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.2.0-canary.52(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwindcss: 4.0.0
 
   uqr@0.1.2: {}
