@@ -54,6 +54,11 @@ export const GENERATE_useImageUploader = <
          */
         allowsEditing?: boolean;
         /**
+         * The quality of the image to pick
+         * @default 1
+         */
+        quality?: number;
+        /**
          * Open Library or Camera
          * @default "library"
          */
@@ -71,7 +76,7 @@ export const GENERATE_useImageUploader = <
         { input: inferEndpointInput<TRouter[TEndpoint]> }
       >,
     ) => {
-      const { source = "library", allowsEditing = false } = opts;
+      const { source = "library", allowsEditing = false, quality = 1 } = opts;
       let launchFn: typeof ImagePicker.launchImageLibraryAsync;
       let getPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
       let requestPermissionFn: () => Promise<ImagePicker.PermissionResponse>;
@@ -98,6 +103,7 @@ export const GENERATE_useImageUploader = <
         mediaTypes: mediaTypes ?? ImagePicker.MediaTypeOptions.All,
         allowsEditing: multiple ? false : allowsEditing,
         allowsMultipleSelection: multiple,
+        quality,
       });
       if (response.canceled) return opts.onCancel?.();
 
