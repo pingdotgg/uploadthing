@@ -19,7 +19,7 @@ importers:
         version: 2.27.11
       '@effect/vitest':
         specifier: 0.16.0
-        version: 0.16.0(effect@3.12.0)(vitest@2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0))
+        version: 0.16.0(effect@3.12.0)(vitest@2.1.8)
       '@manypkg/cli':
         specifier: ^0.23.0
         version: 0.23.0
@@ -43,7 +43,7 @@ importers:
         version: 2.1.8(@types/node@22.12.0)(playwright@1.49.1)(typescript@5.7.2)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vitest@2.1.8)
       '@vitest/coverage-v8':
         specifier: ^2.1.8
-        version: 2.1.8(@vitest/browser@2.1.8(@types/node@22.12.0)(playwright@1.49.1)(typescript@5.7.2)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vitest@2.1.8))(vitest@2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0))
+        version: 2.1.8(@vitest/browser@2.1.8)(vitest@2.1.8)
       msw:
         specifier: 2.7.0
         version: 2.7.0(@types/node@22.12.0)(typescript@5.7.2)
@@ -408,7 +408,7 @@ importers:
     dependencies:
       '@astrojs/node':
         specifier: ^9.0.0
-        version: 9.0.0(astro@5.1.2(@types/node@22.12.0)(db0@0.2.1)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+        version: 9.0.0(astro@5.1.2(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       '@astrojs/react':
         specifier: ^4.1.2
         version: 4.1.2(@types/node@22.12.0)(@types/react-dom@18.3.0)(@types/react@18.3.3)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
@@ -417,7 +417,7 @@ importers:
         version: link:../../packages/react
       astro:
         specifier: ^5.1.2
-        version: 5.1.2(@types/node@22.12.0)(db0@0.2.1)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+        version: 5.1.2(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -560,7 +560,7 @@ importers:
         version: link:../../packages/nuxt
       nuxt:
         specifier: ^3.15.0
-        version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
+        version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
       uploadthing:
         specifier: 7.5.0
         version: link:../../packages/uploadthing
@@ -612,7 +612,7 @@ importers:
         version: 0.15.2(solid-js@1.9.3)
       '@solidjs/start':
         specifier: ^1.0.10
-        version: 1.0.10(@testing-library/jest-dom@6.6.3)(solid-js@1.9.3)(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
+        version: 1.0.10(@testing-library/jest-dom@6.6.3)(solid-js@1.9.3)(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
       '@uploadthing/solid':
         specifier: 7.2.0
         version: link:../../packages/solid
@@ -624,7 +624,7 @@ importers:
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.5.1
-        version: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+        version: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
     devDependencies:
       autoprefixer:
         specifier: ^10.4.20
@@ -677,7 +677,7 @@ importers:
         version: 1.95.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/start':
         specifier: ^1.95.0
-        version: 1.95.0(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(webpack@5.97.1)(yaml@2.7.0)
+        version: 1.95.0(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(webpack@5.97.1)(yaml@2.7.0)
       '@uploadthing/react':
         specifier: ^7.2.0
         version: link:../../packages/react
@@ -692,7 +692,7 @@ importers:
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.5.1
-        version: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+        version: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
     devDependencies:
       '@types/react':
         specifier: 18.3.3
@@ -934,7 +934,7 @@ importers:
     devDependencies:
       '@react-router/dev':
         specifier: ^7.0.0
-        version: 7.1.3(@react-router/serve@7.1.3(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0)(yaml@2.7.0)
+        version: 7.1.3(@react-router/serve@7.1.3(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0(@cloudflare/workers-types@4.20241230.0))(yaml@2.7.0)
       '@types/react':
         specifier: 18.3.3
         version: 18.3.3
@@ -989,7 +989,7 @@ importers:
     devDependencies:
       '@remix-run/dev':
         specifier: ^2.12.0
-        version: 2.15.2(@remix-run/react@2.15.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2))(@remix-run/serve@2.15.2(typescript@5.7.2))(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0)
+        version: 2.15.2(@remix-run/react@2.15.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2))(@remix-run/serve@2.15.2(typescript@5.7.2))(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0(@cloudflare/workers-types@4.20241230.0))
       '@types/react':
         specifier: 18.3.3
         version: 18.3.3
@@ -1393,7 +1393,7 @@ importers:
         version: 1.13.0
       nuxt:
         specifier: ^3.15.0
-        version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@3.29.5)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(yaml@2.7.0)
+        version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@3.29.5)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(yaml@2.7.0)
       uploadthing:
         specifier: workspace:*
         version: link:../uploadthing
@@ -1405,7 +1405,7 @@ importers:
         version: 6.12.2(magicast@0.3.5)(rollup@4.29.1)
       nuxt:
         specifier: ^3.15.0
-        version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
+        version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
 
   packages/react:
     dependencies:
@@ -1460,7 +1460,7 @@ importers:
         version: link:../uploadthing
       vitest-browser-react:
         specifier: 0.0.4
-        version: 0.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(@vitest/browser@2.1.8(@types/node@22.12.0)(playwright@1.49.1)(typescript@5.7.2)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vitest@2.1.8))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0))
+        version: 0.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(@vitest/browser@2.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@2.1.8)
       wait-on:
         specifier: ^8.0.1
         version: 8.0.1
@@ -1531,10 +1531,10 @@ importers:
         version: 3.4.17
       tsup:
         specifier: 8.3.5
-        version: 8.3.5(@swc/core@1.10.4)(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
+        version: 8.3.5(@swc/core@1.10.4(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
       tsup-preset-solid:
         specifier: 2.2.0
-        version: 2.2.0(esbuild@0.24.2)(solid-js@1.9.3)(tsup@8.3.5(@swc/core@1.10.4)(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0))
+        version: 2.2.0(esbuild@0.24.2)(solid-js@1.9.3)(tsup@8.3.5(@swc/core@1.10.4(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0))
       typescript:
         specifier: 5.7.2
         version: 5.7.2
@@ -17160,9 +17160,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/node@9.0.0(astro@5.1.2(@types/node@22.12.0)(db0@0.2.1)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@astrojs/node@9.0.0(astro@5.1.2(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
-      astro: 5.1.2(@types/node@22.12.0)(db0@0.2.1)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      astro: 5.1.2(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
       send: 1.1.0
       server-destroy: 1.0.1
     transitivePeerDependencies:
@@ -18587,7 +18587,7 @@ snapshots:
       effect: 3.4.8
       fast-check: 3.23.2
 
-  '@effect/vitest@0.16.0(effect@3.12.0)(vitest@2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0))':
+  '@effect/vitest@0.16.0(effect@3.12.0)(vitest@2.1.8)':
     dependencies:
       effect: 3.12.0
       vitest: 2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0)
@@ -22089,7 +22089,7 @@ snapshots:
     dependencies:
       nanoid: 3.3.8
 
-  '@react-router/dev@7.1.3(@react-router/serve@7.1.3(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0)(yaml@2.7.0)':
+  '@react-router/dev@7.1.3(@react-router/serve@7.1.3(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(typescript@5.7.2))(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(react-router@7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0(@cloudflare/workers-types@4.20241230.0))(yaml@2.7.0)':
     dependencies:
       '@babel/core': 7.26.7
       '@babel/generator': 7.26.5
@@ -22210,7 +22210,7 @@ snapshots:
 
   '@remirror/core-constants@2.0.2': {}
 
-  '@remix-run/dev@2.15.2(@remix-run/react@2.15.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2))(@remix-run/serve@2.15.2(typescript@5.7.2))(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0)':
+  '@remix-run/dev@2.15.2(@remix-run/react@2.15.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.7.2))(@remix-run/serve@2.15.2(typescript@5.7.2))(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0)(typescript@5.7.2)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(wrangler@3.99.0(@cloudflare/workers-types@4.20241230.0))':
     dependencies:
       '@babel/core': 7.26.7
       '@babel/generator': 7.26.5
@@ -22956,11 +22956,11 @@ snapshots:
     dependencies:
       solid-js: 1.9.3
 
-  '@solidjs/start@1.0.10(@testing-library/jest-dom@6.6.3)(solid-js@1.9.3)(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))':
+  '@solidjs/start@1.0.10(@testing-library/jest-dom@6.6.3)(solid-js@1.9.3)(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))':
     dependencies:
-      '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      '@vinxi/server-components': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      '@vinxi/server-functions': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/server-components': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/server-functions': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       defu: 6.1.4
       error-stack-parser: 2.1.4
       html-to-image: 1.11.11
@@ -23333,7 +23333,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/start@1.95.0(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(webpack@5.97.1)(yaml@2.7.0)':
+  '@tanstack/start@1.95.0(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(webpack@5.97.1)(yaml@2.7.0)':
     dependencies:
       '@tanstack/react-cross-context': 1.87.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-router': 1.95.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -23342,8 +23342,8 @@ snapshots:
       '@tanstack/start-vite-plugin': 1.91.1
       '@vinxi/react': 0.2.5
       '@vinxi/react-server-dom': 0.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))
-      '@vinxi/server-components': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      '@vinxi/server-functions': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/server-components': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/server-functions': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       '@vitejs/plugin-react': 4.3.4(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))
       import-meta-resolve: 4.1.0
       isbot: 5.1.19
@@ -23351,7 +23351,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       tiny-invariant: 1.3.3
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
       zod: 3.24.1
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -24174,7 +24174,7 @@ snapshots:
       untun: 0.1.3
       uqr: 0.1.2
 
-  '@vinxi/plugin-directives@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@vinxi/plugin-directives@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@babel/parser': 7.26.7
       acorn: 8.14.0
@@ -24185,9 +24185,9 @@ snapshots:
       magicast: 0.2.11
       recast: 0.23.9
       tslib: 2.8.1
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
 
-  '@vinxi/plugin-directives@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@vinxi/plugin-directives@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@babel/parser': 7.26.7
       acorn: 8.14.0
@@ -24198,7 +24198,7 @@ snapshots:
       magicast: 0.2.11
       recast: 0.23.9
       tslib: 2.8.1
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
 
   '@vinxi/react-server-dom@0.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))':
     dependencies:
@@ -24209,49 +24209,49 @@ snapshots:
 
   '@vinxi/react@0.2.5': {}
 
-  '@vinxi/server-components@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@vinxi/server-components@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
-      '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       acorn: 8.14.0
       acorn-loose: 8.4.0
       acorn-typescript: 1.4.13(acorn@8.14.0)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
 
-  '@vinxi/server-components@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@vinxi/server-components@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
-      '@vinxi/plugin-directives': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/plugin-directives': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       acorn: 8.14.0
       acorn-loose: 8.4.0
       acorn-typescript: 1.4.13(acorn@8.14.0)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
 
-  '@vinxi/server-functions@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@vinxi/server-functions@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
-      '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       acorn: 8.14.0
       acorn-loose: 8.4.0
       acorn-typescript: 1.4.13(acorn@8.14.0)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
 
-  '@vinxi/server-functions@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
+  '@vinxi/server-functions@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
-      '@vinxi/plugin-directives': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
+      '@vinxi/plugin-directives': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0))
       acorn: 8.14.0
       acorn-loose: 8.4.0
       acorn-typescript: 1.4.13(acorn@8.14.0)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
-      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
+      vinxi: 0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0)
 
   '@vitejs/plugin-react-swc@3.7.2(@swc/helpers@0.5.15)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))':
     dependencies:
@@ -24318,7 +24318,7 @@ snapshots:
       - utf-8-validate
       - vite
 
-  '@vitest/coverage-v8@2.1.8(@vitest/browser@2.1.8(@types/node@22.12.0)(playwright@1.49.1)(typescript@5.7.2)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vitest@2.1.8))(vitest@2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0))':
+  '@vitest/coverage-v8@2.1.8(@vitest/browser@2.1.8)(vitest@2.1.8)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@bcoe/v8-coverage': 0.2.3
@@ -25060,7 +25060,7 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro@5.1.2(@types/node@22.12.0)(db0@0.2.1)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0):
+  astro@5.1.2(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0):
     dependencies:
       '@astrojs/compiler': 2.10.3
       '@astrojs/internal-helpers': 0.4.2
@@ -25110,7 +25110,7 @@ snapshots:
       tsconfck: 3.1.4(typescript@5.7.2)
       ultrahtml: 1.5.3
       unist-util-visit: 5.0.0
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       vfile: 6.0.3
       vite: 6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
       vitefu: 1.0.5(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))
@@ -26249,12 +26249,12 @@ snapshots:
 
   dayjs@1.11.13: {}
 
-  db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)):
+  db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)):
     optionalDependencies:
       '@libsql/client': 0.14.0
-      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
+      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)
 
-  db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)):
+  db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)):
     optionalDependencies:
       '@libsql/client': 0.14.0
       drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
@@ -26464,6 +26464,15 @@ snapshots:
       esbuild-register: 3.6.0(esbuild@0.19.12)
     transitivePeerDependencies:
       - supports-color
+
+  drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0):
+    optionalDependencies:
+      '@cloudflare/workers-types': 4.20241230.0
+      '@libsql/client': 0.14.0
+      '@types/react': 18.3.18
+      bun-types: 1.1.42
+      react: 19.0.0
+    optional: true
 
   drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1):
     optionalDependencies:
@@ -31131,7 +31140,7 @@ snapshots:
 
   nice-try@1.0.5: {}
 
-  nitropack@2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing):
+  nitropack@2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.4
       '@netlify/functions': 2.8.2
@@ -31155,7 +31164,7 @@ snapshots:
       cookie-es: 1.2.2
       croner: 9.0.0
       crossws: 0.3.1
-      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))
+      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))
       defu: 6.1.4
       destr: 2.0.3
       dot-prop: 9.0.0
@@ -31198,7 +31207,7 @@ snapshots:
       unctx: 2.4.1
       unenv: 1.10.0
       unimport: 3.14.5(rollup@4.29.1)
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       untyped: 1.5.2
       unwasm: 0.3.9
     transitivePeerDependencies:
@@ -31227,7 +31236,7 @@ snapshots:
       - typescript
       - uploadthing
 
-  nitropack@2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing):
+  nitropack@2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.4
       '@netlify/functions': 2.8.2
@@ -31251,7 +31260,7 @@ snapshots:
       cookie-es: 1.2.2
       croner: 9.0.0
       crossws: 0.3.1
-      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0))
+      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))
       defu: 6.1.4
       destr: 2.0.3
       dot-prop: 9.0.0
@@ -31294,7 +31303,7 @@ snapshots:
       unctx: 2.4.1
       unenv: 1.10.0
       unimport: 3.14.5(rollup@4.29.1)
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       untyped: 1.5.2
       unwasm: 0.3.9
     transitivePeerDependencies:
@@ -31496,7 +31505,7 @@ snapshots:
 
   nuxi@3.17.2: {}
 
-  nuxt@3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@3.29.5)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(yaml@2.7.0):
+  nuxt@3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@3.29.5)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(yaml@2.7.0):
     dependencies:
       '@nuxt/devalue': 2.0.2
       '@nuxt/devtools': 1.7.0(rollup@3.29.5)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vue@3.5.13(typescript@5.7.2))
@@ -31533,7 +31542,7 @@ snapshots:
       magic-string: 0.30.17
       mlly: 1.7.3
       nanotar: 0.1.1
-      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
+      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
       nuxi: 3.17.2
       nypm: 0.4.1
       ofetch: 1.4.1
@@ -31556,7 +31565,7 @@ snapshots:
       unimport: 3.14.5(rollup@3.29.5)
       unplugin: 2.1.2
       unplugin-vue-router: 0.10.9(rollup@3.29.5)(vue-router@4.5.0(vue@3.5.13(typescript@5.7.2)))(vue@3.5.13(typescript@5.7.2))
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       untyped: 1.5.2
       vue: 3.5.13(typescript@5.7.2)
       vue-bundle-renderer: 2.1.1
@@ -31616,7 +31625,7 @@ snapshots:
       - xml2js
       - yaml
 
-  nuxt@3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0):
+  nuxt@3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0):
     dependencies:
       '@nuxt/devalue': 2.0.2
       '@nuxt/devtools': 1.7.0(rollup@4.29.1)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(vue@3.5.13(typescript@5.7.2))
@@ -31653,7 +31662,7 @@ snapshots:
       magic-string: 0.30.17
       mlly: 1.7.3
       nanotar: 0.1.1
-      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
+      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
       nuxi: 3.17.2
       nypm: 0.4.1
       ofetch: 1.4.1
@@ -31676,7 +31685,7 @@ snapshots:
       unimport: 3.14.5(rollup@4.29.1)
       unplugin: 2.1.2
       unplugin-vue-router: 0.10.9(rollup@4.29.1)(vue-router@4.5.0(vue@3.5.13(typescript@5.7.2)))(vue@3.5.13(typescript@5.7.2))
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       untyped: 1.5.2
       vue: 3.5.13(typescript@5.7.2)
       vue-bundle-renderer: 2.1.1
@@ -34964,16 +34973,16 @@ snapshots:
 
   tsscmp@1.0.6: {}
 
-  tsup-preset-solid@2.2.0(esbuild@0.24.2)(solid-js@1.9.3)(tsup@8.3.5(@swc/core@1.10.4)(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)):
+  tsup-preset-solid@2.2.0(esbuild@0.24.2)(solid-js@1.9.3)(tsup@8.3.5(@swc/core@1.10.4(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)):
     dependencies:
       esbuild-plugin-solid: 0.5.0(esbuild@0.24.2)(solid-js@1.9.3)
-      tsup: 8.3.5(@swc/core@1.10.4)(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
+      tsup: 8.3.5(@swc/core@1.10.4(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0)
     transitivePeerDependencies:
       - esbuild
       - solid-js
       - supports-color
 
-  tsup@8.3.5(@swc/core@1.10.4)(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0):
+  tsup@8.3.5(@swc/core@1.10.4(@swc/helpers@0.5.15))(jiti@2.4.2)(postcss@8.4.49)(tsx@4.19.2)(typescript@5.7.2)(yaml@2.7.0):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.24.2)
       cac: 6.7.14
@@ -35476,7 +35485,7 @@ snapshots:
       acorn: 8.14.0
       webpack-virtual-modules: 0.6.2
 
-  unstorage@1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing):
+  unstorage@1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing):
     dependencies:
       anymatch: 3.1.3
       chokidar: 3.6.0
@@ -35487,11 +35496,11 @@ snapshots:
       ofetch: 1.4.1
       ufo: 1.5.4
     optionalDependencies:
-      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))
+      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))
       ioredis: 5.4.2
       uploadthing: link:packages/uploadthing
 
-  unstorage@1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing):
+  unstorage@1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing):
     dependencies:
       anymatch: 3.1.3
       chokidar: 3.6.0
@@ -35502,7 +35511,7 @@ snapshots:
       ofetch: 1.4.1
       ufo: 1.5.4
     optionalDependencies:
-      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0))
+      db0: 0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))
       ioredis: 5.4.2
       uploadthing: link:packages/uploadthing
 
@@ -35681,7 +35690,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
 
-  vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0):
+  vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0):
     dependencies:
       '@babel/core': 7.26.7
       '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.26.7)
@@ -35703,7 +35712,7 @@ snapshots:
       hookable: 5.5.3
       http-proxy: 1.18.1
       micromatch: 4.0.8
-      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
+      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
       node-fetch-native: 1.6.4
       path-to-regexp: 6.3.0
       pathe: 1.1.2
@@ -35714,7 +35723,7 @@ snapshots:
       ufo: 1.5.4
       unctx: 2.4.1
       unenv: 1.10.0
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.18)(bun-types@1.1.42)(react@19.0.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       vite: 6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
       zod: 3.24.1
     transitivePeerDependencies:
@@ -35758,7 +35767,7 @@ snapshots:
       - xml2js
       - yaml
 
-  vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0):
+  vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(yaml@2.7.0):
     dependencies:
       '@babel/core': 7.26.7
       '@babel/plugin-syntax-jsx': 7.25.9(@babel/core@7.26.7)
@@ -35780,7 +35789,7 @@ snapshots:
       hookable: 5.5.3
       http-proxy: 1.18.1
       micromatch: 4.0.8
-      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
+      nitropack: 2.10.4(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1))(encoding@0.1.13)(typescript@5.7.2)(uploadthing@packages+uploadthing)
       node-fetch-native: 1.6.4
       path-to-regexp: 6.3.0
       pathe: 1.1.2
@@ -35791,7 +35800,7 @@ snapshots:
       ufo: 1.5.4
       unctx: 2.4.1
       unenv: 1.10.0
-      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
+      unstorage: 1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)))(ioredis@5.4.2)(uploadthing@packages+uploadthing)
       vite: 6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
       zod: 3.24.1
     transitivePeerDependencies:
@@ -36043,7 +36052,7 @@ snapshots:
     optionalDependencies:
       vite: 6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0)
 
-  vitest-browser-react@0.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(@vitest/browser@2.1.8(@types/node@22.12.0)(playwright@1.49.1)(typescript@5.7.2)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vitest@2.1.8))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@2.1.8(@types/node@22.12.0)(@vitest/browser@2.1.8)(happy-dom@16.3.0)(lightningcss@1.29.1)(msw@2.7.0(@types/node@22.12.0)(typescript@5.7.2))(terser@5.37.0)):
+  vitest-browser-react@0.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(@vitest/browser@2.1.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@2.1.8):
     dependencies:
       '@vitest/browser': 2.1.8(@types/node@22.12.0)(playwright@1.49.1)(typescript@5.7.2)(vite@5.4.11(@types/node@22.12.0)(lightningcss@1.29.1)(terser@5.37.0))(vitest@2.1.8)
       react: 18.3.1
