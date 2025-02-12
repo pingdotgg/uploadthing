@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/react",
-  "version": "7.1.5",
+  "version": "7.2.0",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
