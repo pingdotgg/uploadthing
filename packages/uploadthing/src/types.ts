@@ -232,7 +232,7 @@ export type GenerateUploaderOptions = {
    *
    * This is used to identify the client in the server logs
    */
-  package: string;
+  package?: string;
 };
 
 export type EndpointArg<
