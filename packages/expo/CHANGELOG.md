@@ -1,5 +1,18 @@
 # @uploadthing/expo
 
+## 7.2.1
+
+### Patch Changes
+
+- [#1144](https://github.com/pingdotgg/uploadthing/pull/1144)
+  [`511dc21`](https://github.com/pingdotgg/uploadthing/commit/511dc21e2265b8b003b989abff9a5505bd89482c)
+  Thanks [@ashaller2017](https://github.com/ashaller2017)! - Add quality params
+  to openImagePicker
+
+- Updated dependencies
+  [[`80d12a3`](https://github.com/pingdotgg/uploadthing/commit/80d12a3eb5cb507588451ee3ea4f0206fa7f839f)]:
+  - @uploadthing/react@7.2.1
+
 ## 7.2.0
 
 ### Minor Changes

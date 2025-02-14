@@ -1,5 +1,14 @@
 # uploadthing
 
+## 7.5.1
+
+### Patch Changes
+
+- [#1150](https://github.com/pingdotgg/uploadthing/pull/1150)
+  [`f9c0259`](https://github.com/pingdotgg/uploadthing/commit/f9c0259426aeafb3586e494dd00b8a3a4a503d71)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: make
+  `genUploader(initOpts)` optional to match docs
+
 ## 7.5.0
 
 ### Minor Changes

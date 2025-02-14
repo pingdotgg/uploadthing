@@ -1,5 +1,13 @@
 # @uploadthing/react
 
+## 7.2.1
+
+### Patch Changes
+
+- [`80d12a3`](https://github.com/pingdotgg/uploadthing/commit/80d12a3eb5cb507588451ee3ea4f0206fa7f839f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: revert
+  strict peer dependency
+
 ## 7.2.0
 
 ### Minor Changes
