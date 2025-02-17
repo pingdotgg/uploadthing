@@ -1,5 +1,13 @@
 # @uploadthing/nuxt
 
+## 7.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  [[`67c3b1c`](https://github.com/pingdotgg/uploadthing/commit/67c3b1cdac7dfc72ccef7b2a2b4dcb8f09fabd8f)]:
+  - @uploadthing/vue@7.3.0
+
 ## 7.1.6
 
 ### Patch Changes
