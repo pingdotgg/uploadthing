@@ -1,5 +1,15 @@
 # @uploadthing/expo
 
+## 7.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  [[`67c3b1c`](https://github.com/pingdotgg/uploadthing/commit/67c3b1cdac7dfc72ccef7b2a2b4dcb8f09fabd8f),
+  [`a1e13b5`](https://github.com/pingdotgg/uploadthing/commit/a1e13b5de616c7b7ff20660fe2b43eddf3bc4293)]:
+  - @uploadthing/react@7.3.0
+  - @uploadthing/shared@7.1.7
+
 ## 7.2.1
 
 ### Patch Changes

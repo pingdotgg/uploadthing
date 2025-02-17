@@ -1,5 +1,28 @@
 # @uploadthing/react
 
+## 7.3.0
+
+### Minor Changes
+
+- [#1151](https://github.com/pingdotgg/uploadthing/pull/1151)
+  [`67c3b1c`](https://github.com/pingdotgg/uploadthing/commit/67c3b1cdac7dfc72ccef7b2a2b4dcb8f09fabd8f)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: add
+  `uploadProgressGranularity` option to control how granular progress events are
+  fired at
+
+  You can now set `uploadProgressGranularity` to `all`, `fine`, or `coarse` to
+  control how granular progress events are fired at.
+
+  - `all` will forward every event from the XHR upload
+  - `fine` will forward events for every 1% of progress
+  - `coarse` (default) will forward events for every 10% of progress
+
+### Patch Changes
+
+- Updated dependencies
+  [[`a1e13b5`](https://github.com/pingdotgg/uploadthing/commit/a1e13b5de616c7b7ff20660fe2b43eddf3bc4293)]:
+  - @uploadthing/shared@7.1.7
+
 ## 7.2.1
 
 ### Patch Changes

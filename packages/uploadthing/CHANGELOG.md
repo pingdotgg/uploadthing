@@ -1,5 +1,17 @@
 # uploadthing
 
+## 7.5.2
+
+### Patch Changes
+
+- [`a1e13b5`](https://github.com/pingdotgg/uploadthing/commit/a1e13b5de616c7b7ff20660fe2b43eddf3bc4293)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - This release
+  just contains helper exports for the new `uploadProgressGranularity` feature
+  in the frontend library adapters
+- Updated dependencies
+  [[`a1e13b5`](https://github.com/pingdotgg/uploadthing/commit/a1e13b5de616c7b7ff20660fe2b43eddf3bc4293)]:
+  - @uploadthing/shared@7.1.7
+
 ## 7.5.1
 
 ### Patch Changes

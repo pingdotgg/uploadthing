@@ -1,6 +1,6 @@
 {
   "name": "@uploadthing/shared",
-  "version": "7.1.6",
+  "version": "7.1.7",
   "type": "module",
   "sideEffects": false,
   "license": "MIT",
