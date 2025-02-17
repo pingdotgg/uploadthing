@@ -10,6 +10,7 @@ import {
 } from "react";
 import type {
   ChangeEvent,
+  CSSProperties,
   DragEvent,
   HTMLProps,
   KeyboardEvent,
@@ -51,7 +52,7 @@ import type { FileRouter } from "uploadthing/types";
 import type { UploadthingComponentProps } from "../types";
 import { __useUploadThingInternal } from "../use-uploadthing";
 import { usePaste } from "../utils/usePaste";
-import { Cancel, progressWidths, Spinner } from "./shared";
+import { Cancel, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -155,6 +156,7 @@ export function UploadDropzone<
         void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
+      uploadProgressGranularity: $props.uploadProgressGranularity,
       onUploadProgress: (p) => {
         setUploadProgress(p);
         $props.onUploadProgress?.(p);
@@ -279,7 +281,9 @@ export function UploadDropzone<
         if (uploadProgress >= 100) return <Spinner />;
         return (
           <span className="z-50">
-            <span className="block group-hover:hidden">{uploadProgress}%</span>
+            <span className="block group-hover:hidden">
+              {Math.round(uploadProgress)}%
+            </span>
             <Cancel cn={cn} className="hidden size-4 group-hover:block" />
           </span>
         );
@@ -367,16 +371,20 @@ export function UploadDropzone<
 
       <button
         className={cn(
-          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state === "disabled" && "cursor-not-allowed bg-blue-400",
-          state === "readying" && "cursor-not-allowed bg-blue-400",
-          state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-          state === "ready" && "bg-blue-600",
+          "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md border-none text-base text-white",
+          "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:bg-blue-600 after:transition-[width] after:duration-500 after:content-['']",
+          "focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           "disabled:pointer-events-none",
+          "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+          "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
-        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        style={
+          {
+            "--progress-width": `${uploadProgress}%`,
+            ...styleFieldToCssObject($props.appearance?.button, styleFieldArg),
+          } as CSSProperties
+        }
         onClick={onUploadClick}
         data-ut-element="button"
         data-state={state}

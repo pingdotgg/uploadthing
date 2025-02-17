@@ -4,6 +4,7 @@ import type { EndpointMetadata, FetchEsque } from "@uploadthing/shared";
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  roundProgress,
   unwrap,
   UploadAbortedError,
   UploadThingError,
@@ -40,6 +41,7 @@ export function __createUploadThingInternal<
   fetch: FetchEsque,
   opts?: UseUploadthingProps<TRouter[TEndpoint]>,
 ) {
+  const progressGranularity = opts?.uploadProgressGranularity ?? "coarse";
   const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     fetch,
     url,
@@ -74,7 +76,10 @@ export function __createUploadThingInternal<
           fileProgress.forEach((p) => {
             sum += p;
           });
-          const averageProgress = Math.floor(sum / fileProgress.size / 10) * 10;
+          const averageProgress = roundProgress(
+            Math.min(100, sum / fileProgress.size),
+            progressGranularity,
+          );
           if (averageProgress !== uploadProgress) {
             opts.onUploadProgress(averageProgress);
             uploadProgress = averageProgress;
@@ -152,7 +157,7 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
 
   const createUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: EndpointArg<TRouter, TEndpoint>,
-    props: UploadthingComponentProps<TRouter, TEndpoint>,
+    props: UseUploadthingProps<TRouter[TEndpoint]>,
   ) => {
     return __createUploadThingInternal(url, endpoint, fetch, props);
   };

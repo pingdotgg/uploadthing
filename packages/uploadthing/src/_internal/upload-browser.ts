@@ -208,15 +208,11 @@ export const uploadFilesInternal = <
                     totalLoaded += ev.delta;
                     opts.onUploadProgress?.({
                       file: opts.files[i]!,
-                      progress: Math.round(
-                        (ev.loaded / opts.files[i]!.size) * 100,
-                      ),
+                      progress: (ev.loaded / opts.files[i]!.size) * 100,
                       loaded: ev.loaded,
                       delta: ev.delta,
                       totalLoaded,
-                      totalProgress: Math.round(
-                        (totalLoaded / totalSize) * 100,
-                      ),
+                      totalProgress: totalLoaded / totalSize,
                     });
                   },
                 },

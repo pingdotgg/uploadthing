@@ -78,6 +78,7 @@ export function Uploader() {
             button: "!text-sm/6",
             allowedContent: "!h-0",
           }}
+          uploadProgressGranularity="fine"
           className="ut-button:bg-red-600"
         />
       </div>

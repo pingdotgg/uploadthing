@@ -266,6 +266,9 @@ export const OurUploadButton = () => (
   <Property name="onUploadAborted" type="function" since="6.7">
     Callback function when that runs when an upload is aborted.
   </Property>
+  <Property name="uploadProgressGranularity" type="'all' | 'fine' | 'coarse'" since="7.3" defaultValue="coarse">
+    The granularity of which progress events are fired. 'all' forwards every progress event, 'fine' forwards events for every 1% of progress, 'coarse' forwards events for every 10% of progress.
+  </Property>
   <Property name="onUploadProgress" type="function" since="5.1">
     Callback function that gets continuously called as the file is uploaded to
     the storage provider.
@@ -422,6 +425,9 @@ export const OurUploadDropzone = () => (
   <Property name="onUploadAborted" type="function" since="6.7">
     Callback function when that runs when an upload is aborted.
   </Property>
+  <Property name="uploadProgressGranularity" type="'all' | 'fine' | 'coarse'" since="7.3" defaultValue="coarse">
+    The granularity of which progress events are fired. 'all' forwards every progress event, 'fine' forwards events for every 1% of progress, 'coarse' forwards events for every 10% of progress.
+  </Property>
   <Property name="onUploadProgress" type="function" since="5.1">
     Callback function that gets continuously called as the file is uploaded to
     the storage provider.
@@ -551,6 +557,9 @@ using a string literal parameter.
   </Property>
   <Property name="onUploadAborted" type="function" since="6.7">
     Callback function when that runs when an upload is aborted.
+  </Property>
+  <Property name="uploadProgressGranularity" type="'all' | 'fine' | 'coarse'" since="7.3" defaultValue="coarse">
+    The granularity of which progress events are fired. 'all' forwards every progress event, 'fine' forwards events for every 1% of progress, 'coarse' forwards events for every 10% of progress.
   </Property>
   <Property name="onUploadProgress" type="function" since="5.1">
     Callback function that gets continuously called as the file is uploaded to

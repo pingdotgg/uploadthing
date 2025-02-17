@@ -44,7 +44,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import { __createUploadThingInternal } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { Cancel, progressWidths, Spinner } from "./shared";
+import { Cancel, Spinner } from "./shared";
 
 type DropzoneStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -129,6 +129,7 @@ export const UploadDropzone = <
         void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
+      uploadProgressGranularity: $props.uploadProgressGranularity,
       onUploadProgress: (p) => {
         setUploadProgress(p);
         $props.onUploadProgress?.(p);
@@ -304,18 +305,18 @@ export const UploadDropzone = <
 
       <button
         class={cn(
-          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state() === "disabled" && "cursor-not-allowed bg-blue-400",
-          state() === "readying" && "cursor-not-allowed bg-blue-400",
-          state() === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-              progressWidths[uploadProgress()]
-            }`,
-          state() === "ready" && "bg-blue-600",
+          "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md border-none text-base text-white",
+          "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:bg-blue-600 after:transition-[width] after:duration-500 after:content-['']",
+          "focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           "disabled:pointer-events-none",
+          "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+          "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
-        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        style={{
+          "--progress-width": `${uploadProgress()}%`,
+          ...styleFieldToCssObject($props.appearance?.button, styleFieldArg),
+        }}
         onClick={onUploadClick}
         data-ut-element="button"
         data-state={state()}
@@ -338,7 +339,7 @@ export const UploadDropzone = <
               <Show when={uploadProgress() < 100} fallback={<Spinner />}>
                 <span class="z-50">
                   <span class="block group-hover:hidden">
-                    {uploadProgress()}%
+                    {Math.round(uploadProgress())}%
                   </span>
                   <Cancel cn={cn} class="hidden size-4 group-hover:block" />
                 </span>
