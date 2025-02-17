@@ -13,14 +13,15 @@
 >
   import { onMount } from "svelte";
 
+  import type { StyleField } from "@uploadthing/shared";
   import {
     allowedContentTextLabelGenerator,
     defaultClassListMerger,
     resolveMaybeUrlArg,
     styleFieldToClassName,
+    styleFieldToCssObject,
     UploadAbortedError,
   } from "@uploadthing/shared";
-  import type { StyleField } from "@uploadthing/shared";
   import {
     generateMimeTypes,
     generatePermittedFileTypes,
@@ -29,7 +30,7 @@
   import { __createUploadThingInternal } from "../create-uploadthing";
   import type { UploadthingComponentProps } from "../types";
   import Cancel from "./Cancel.svelte";
-  import { getFilesFromClipboardEvent, progressWidths } from "./shared";
+  import { getFilesFromClipboardEvent } from "./shared";
   import Spinner from "./Spinner.svelte";
 
   type ButtonStyleFieldCallbackArgs = {
@@ -77,6 +78,7 @@
         void uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
       },
+      uploadProgressGranularity: uploader.uploadProgressGranularity,
       onUploadProgress: (p) => {
         uploadProgress = p;
         uploader.onUploadProgress?.(p);
@@ -108,7 +110,7 @@
   })();
 
   onMount(() => {
-    const controller = new AbortController()
+    const controller = new AbortController();
     const handlePaste = (event: ClipboardEvent) => {
       if (!appendOnPaste) return;
       // eslint-disable-next-line no-undef
@@ -124,7 +126,9 @@
       if (mode === "auto") uploadFiles(files);
     };
     // eslint-disable-next-line no-undef
-    document.addEventListener("paste", handlePaste, { signal: controller.signal });
+    document.addEventListener("paste", handlePaste, {
+      signal: controller.signal,
+    });
 
     // eslint-disable-next-line no-undef
     return () => controller.abort();
@@ -152,7 +156,7 @@ Example:
     className,
     styleFieldToClassName(appearance?.container, styleFieldArg),
   )}
-  style={styleFieldToClassName(appearance?.container, styleFieldArg)}
+  style={`--progress-width: ${uploadProgress}%; ${styleFieldToClassName(appearance?.container, styleFieldArg)}`}
   data-state={state}
 >
   <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -160,11 +164,10 @@ Example:
   <label
     class={cn(
       "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-      state === "disabled" && "cursor-not-allowed bg-blue-400",
-      state === "readying" && "cursor-not-allowed bg-blue-400",
-      state === "uploading" &&
-        `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${progressWidths[uploadProgress]}`,
-      state === "ready" && "bg-blue-600",
+      "disabled:pointer-events-none",
+      "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+      "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
+      "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:content-[''] data-[state=uploading]:after:bg-blue-600",
       styleFieldToClassName(appearance?.button, styleFieldArg),
     )}
     style={styleFieldToClassName(appearance?.button, styleFieldArg)}
@@ -217,7 +220,9 @@ Example:
           <Spinner />
         {:else}
           <span class="z-50">
-            <span class="block group-hover:hidden">{uploadProgress}%</span>
+            <span class="block group-hover:hidden"
+              >{Math.round(uploadProgress)}%</span
+            >
             <Cancel {cn} className="hidden size-4 group-hover:block" />
           </span>
         {/if}
