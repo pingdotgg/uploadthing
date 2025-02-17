@@ -13,8 +13,6 @@ are fired at
 You can now set `progressGranularity` to `all`, `fine`, or `coarse` to control
 how granular progress events are fired at.
 
-`all` will forward every event from the XHR upload
-`fine` will forward events for every 1% of progress
-`coarse` will forward events for every 10% of progress
-
-The default is `coarse`.
+- `all` will forward every event from the XHR upload
+- `fine` will forward events for every 1% of progress
+- `coarse` (default) will forward events for every 10% of progress
