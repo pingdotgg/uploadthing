@@ -157,7 +157,7 @@ export const generateSvelteHelpers = <TRouter extends FileRouter>(
 
   const createUploadThing = <TEndpoint extends keyof TRouter>(
     endpoint: EndpointArg<TRouter, TEndpoint>,
-    props: UploadthingComponentProps<TRouter, TEndpoint>,
+    props: UseUploadthingProps<TRouter[TEndpoint]>,
   ) => {
     return __createUploadThingInternal(url, endpoint, fetch, props);
   };

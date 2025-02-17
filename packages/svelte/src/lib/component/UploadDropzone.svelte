@@ -92,6 +92,7 @@
         void uploader.onClientUploadComplete?.(res);
         uploadProgress = 0;
       },
+      uploadProgressGranularity: uploader.uploadProgressGranularity,
       onUploadProgress: (p) => {
         uploadProgress = p;
         uploader.onUploadProgress?.(p);

@@ -7,10 +7,10 @@
 "@uploadthing/shared": patch
 ---
 
-feat: add `progressGranularity` option to control how granular progress events
+feat: add `uploadProgressGranularity` option to control how granular progress events
 are fired at
 
-You can now set `progressGranularity` to `all`, `fine`, or `coarse` to control
+You can now set `uploadProgressGranularity` to `all`, `fine`, or `coarse` to control
 how granular progress events are fired at.
 
 - `all` will forward every event from the XHR upload
