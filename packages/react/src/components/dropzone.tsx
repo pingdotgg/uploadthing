@@ -308,12 +308,7 @@ export function UploadDropzone<
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
       {...getRootProps()}
-      style={
-        {
-          "--progress-width": `${uploadProgress}%`,
-          ...styleFieldToCssObject($props.appearance?.container, styleFieldArg),
-        } as CSSProperties
-      }
+      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
       data-state={state}
     >
       {contentFieldToContent($props.content?.uploadIcon, styleFieldArg) ?? (
@@ -376,16 +371,20 @@ export function UploadDropzone<
 
       <button
         className={cn(
-          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state === "disabled" && "cursor-not-allowed bg-blue-400",
-          state === "readying" && "cursor-not-allowed bg-blue-400",
-          state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:bg-blue-600 after:content-['']`,
-          state === "ready" && "bg-blue-600",
+          "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md border-none text-base text-white",
+          "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:bg-blue-600 after:transition-[width] after:duration-500 after:content-['']",
+          "focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           "disabled:pointer-events-none",
+          "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+          "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
-        style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}
+        style={
+          {
+            "--progress-width": `${uploadProgress}%`,
+            ...styleFieldToCssObject($props.appearance?.button, styleFieldArg),
+          } as CSSProperties
+        }
         onClick={onUploadClick}
         data-ut-element="button"
         data-state={state}
