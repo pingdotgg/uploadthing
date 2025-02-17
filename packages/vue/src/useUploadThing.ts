@@ -97,10 +97,10 @@ export function __useUploadThingInternal<
           fileProgress.value.set(progress.file, progress.progress);
           let sum = 0;
           fileProgress.value.forEach((p) => {
-            sum = Math.min(100, sum + p);
+            sum += p;
           });
           const averageProgress = roundProgress(
-            sum / fileProgress.value.size,
+            Math.min(100, sum / fileProgress.value.size),
             progressGranularity,
           );
           if (averageProgress !== uploadProgress.value) {
