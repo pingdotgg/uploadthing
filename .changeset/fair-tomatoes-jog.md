@@ -3,8 +3,6 @@
 "@uploadthing/react": minor
 "@uploadthing/solid": minor
 "@uploadthing/vue": minor
-"uploadthing": patch
-"@uploadthing/shared": patch
 ---
 
 feat: add `uploadProgressGranularity` option to control how granular progress events
