@@ -10,11 +10,11 @@
 feat: add `progressGranularity` option to control how granular progress events
 are fired at
 
-You can now set `progressGranularity` to `all`, `find`, or `coarse` to control
+You can now set `progressGranularity` to `all`, `fine`, or `coarse` to control
 how granular progress events are fired at.
 
 `all` will forward every event from the XHR upload
-`find` will forward events for every 1% of progress
+`fine` will forward events for every 1% of progress
 `coarse` will forward events for every 10% of progress
 
 The default is `coarse`.
