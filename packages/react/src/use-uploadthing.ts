@@ -8,6 +8,7 @@ import type {
 import {
   INTERNAL_DO_NOT_USE__fatalClientError,
   resolveMaybeUrlArg,
+  roundProgress,
   unwrap,
   UploadAbortedError,
   UploadThingError,
@@ -62,6 +63,7 @@ function useUploadThingInternal<
   fetch: FetchEsque,
   opts?: UseUploadthingProps<TRouter[TEndpoint]>,
 ) {
+  const progressGranularity = opts?.uploadProgressGranularity ?? "coarse";
   const { uploadFiles, routeRegistry } = genUploader<TRouter>({
     fetch,
     url,
@@ -94,10 +96,12 @@ function useUploadThingInternal<
           fileProgress.current.set(progress.file, progress.progress);
           let sum = 0;
           fileProgress.current.forEach((p) => {
-            sum += p;
+            sum = Math.min(100, sum + p);
           });
-          const averageProgress =
-            Math.floor(sum / fileProgress.current.size / 10) * 10;
+          const averageProgress = roundProgress(
+            sum / fileProgress.current.size,
+            progressGranularity,
+          );
           if (averageProgress !== uploadProgress.current) {
             opts.onUploadProgress(averageProgress);
             uploadProgress.current = averageProgress;

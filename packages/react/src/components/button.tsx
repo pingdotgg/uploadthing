@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import {
@@ -24,7 +25,7 @@ import type { FileRouter } from "uploadthing/types";
 import type { UploadthingComponentProps } from "../types";
 import { __useUploadThingInternal } from "../use-uploadthing";
 import { usePaste } from "../utils/usePaste";
-import { Cancel, progressWidths, Spinner } from "./shared";
+import { Cancel, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -123,6 +124,7 @@ export function UploadButton<
         void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
+      uploadProgressGranularity: $props.uploadProgressGranularity,
       onUploadProgress: (p) => {
         setUploadProgress(p);
         $props.onUploadProgress?.(p);
@@ -247,7 +249,9 @@ export function UploadButton<
         if (uploadProgress >= 100) return <Spinner />;
         return (
           <span className="z-50">
-            <span className="block group-hover:hidden">{uploadProgress}%</span>
+            <span className="block group-hover:hidden">
+              {Math.round(uploadProgress)}%
+            </span>
             <Cancel cn={cn} className="hidden size-4 group-hover:block" />
           </span>
         );
@@ -312,7 +316,12 @@ export function UploadButton<
         $props.className,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
+      style={
+        {
+          "--progress-width": `${uploadProgress}%`,
+          ...styleFieldToCssObject($props.appearance?.container, styleFieldArg),
+        } as CSSProperties
+      }
       data-state={state}
     >
       <label
@@ -321,7 +330,7 @@ export function UploadButton<
           state === "disabled" && "cursor-not-allowed bg-blue-400",
           state === "readying" && "cursor-not-allowed bg-blue-400",
           state === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
+            `bg-blue-400 after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:bg-blue-600 after:content-['']`,
           state === "ready" && "bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}

@@ -15,6 +15,16 @@ import { video } from "@uploadthing/mime-types/video";
 import type { ExpandedRouteConfig } from "./types";
 import { objectKeys } from "./utils";
 
+export type ProgressGranularity = "all" | "fine" | "coarse";
+export const roundProgress = (
+  progress: number,
+  granularity: ProgressGranularity,
+) => {
+  if (granularity === "all") return progress;
+  if (granularity === "fine") return Math.round(progress);
+  return Math.floor(progress / 10) * 10;
+};
+
 export const generateMimeTypes = (
   typesOrRouteConfig: string[] | ExpandedRouteConfig,
 ) => {
