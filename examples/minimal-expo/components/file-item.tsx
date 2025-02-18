@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import FeatherIcon from "@expo/vector-icons/Feather";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { Link } from "expo-router";
 import { Animated, Text, View } from "react-native";
@@ -17,16 +18,20 @@ export function FileItem({
 }: {
   item: RouterOutputs["getFiles"][number];
 }) {
-  const utils = trpc.useUtils();
-  const { mutate: deleteFile } = trpc.deleteFile.useMutation({
-    onMutate: () => {
-      // Optimicially remove the file from the list
-      const files = utils.getFiles.getData() ?? [];
-      const newFiles = files.filter((f) => f.key !== item.key);
-      utils.getFiles.setData(undefined, newFiles);
-    },
-    onSettled: () => utils.getFiles.invalidate(),
-  });
+  const queryClient = useQueryClient();
+  const { mutate: deleteFile } = useMutation(
+    trpc.deleteFile.mutationOptions({
+      onMutate: () => {
+        // Optimicially remove the file from the list
+        const files = queryClient.getQueryData(trpc.getFiles.queryKey()) ?? [];
+        const newFiles = files.filter((f) => f.key !== item.key);
+        queryClient.setQueryData(trpc.getFiles.queryKey(), newFiles);
+      },
+      onSettled: async () => {
+        await queryClient.invalidateQueries(trpc.getFiles.queryFilter());
+      },
+    }),
+  );
 
   const threshhold = 64;
   const height = useRef(new Animated.Value(threshhold)).current;
