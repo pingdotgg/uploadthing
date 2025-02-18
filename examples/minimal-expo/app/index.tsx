@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FlashList } from "@shopify/flash-list";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { ActivityIndicator, RefreshControl, Text, View } from "react-native";
 
@@ -8,8 +9,8 @@ import { UploadActionDrawer } from "~/components/upload-drawer";
 import { trpc } from "~/lib/trpc";
 
 export default function HomeScreen() {
-  const utils = trpc.useUtils();
-  const { data: files, isPending } = trpc.getFiles.useQuery();
+  const queryClient = useQueryClient();
+  const { data: files, isPending } = useQuery(trpc.getFiles.queryOptions());
 
   const [refreshing, setRefreshing] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
@@ -34,7 +35,9 @@ export default function HomeScreen() {
               refreshing={refreshing}
               onRefresh={async () => {
                 setRefreshing(true);
-                await utils.getFiles.invalidate();
+                await queryClient.invalidateQueries(
+                  trpc.getFiles.queryFilter(),
+                );
                 setRefreshing(false);
               }}
               tintColor={"#ccc"}

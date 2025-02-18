@@ -1,16 +1,36 @@
-import { useState } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink, loggerLink } from "@trpc/client";
-import { createTRPCReact } from "@trpc/react-query";
+import { QueryClient } from "@tanstack/react-query";
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { inferRouterOutputs } from "@trpc/server";
+import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 import Constants from "expo-constants";
 
 import type { TRPCRouter } from "../app/api/trpc/[trpc]+api";
 
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      // ...
+    },
+  },
+});
+
 /**
- * A set of typesafe hooks for consuming your API.
+ * A type-safe proxy for working with the React Query client.
  */
-export const trpc = createTRPCReact<TRPCRouter>();
+export const trpc = createTRPCOptionsProxy<TRPCRouter>({
+  client: createTRPCClient({
+    links: [
+      // loggerLink({
+      //   enabled: (opts) =>
+      //     process.env.NODE_ENV === "development" ||
+      //     (opts.direction === "down" && opts.result instanceof Error),
+      //   colorMode: "ansi",
+      // }),
+      httpBatchLink({ url: resolveUrl() }),
+    ],
+  }),
+  queryClient,
+});
 
 export type RouterOutputs = inferRouterOutputs<TRPCRouter>;
 
@@ -18,7 +38,7 @@ export type RouterOutputs = inferRouterOutputs<TRPCRouter>;
  * Extend this function when going to production by
  * setting the baseUrl to your production API URL.
  */
-const resolveUrl = () => {
+function resolveUrl() {
   /**
    * Gets the IP address of your host-machine. If it cannot automatically find it,
    * you'll have to manually set it. NOTE: Port 3000 should work for most but confirm
@@ -41,33 +61,4 @@ const resolveUrl = () => {
       `Failed to resolve URL from ${process.env.EXPO_PUBLIC_SERVER_ORIGIN} or ${debuggerHost}`,
     );
   }
-};
-
-/**
- * A wrapper for your app that provides the TRPC context.
- * Use only in _app.tsx
- */
-export function TRPCProvider(props: { children: React.ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient());
-  const [trpcClient] = useState(() =>
-    trpc.createClient({
-      links: [
-        // loggerLink({
-        //   enabled: (opts) =>
-        //     process.env.NODE_ENV === "development" ||
-        //     (opts.direction === "down" && opts.result instanceof Error),
-        //   colorMode: "ansi",
-        // }),
-        httpBatchLink({ url: resolveUrl() }),
-      ],
-    }),
-  );
-
-  return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        {props.children}
-      </QueryClientProvider>
-    </trpc.Provider>
-  );
 }

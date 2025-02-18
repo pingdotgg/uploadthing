@@ -2,6 +2,7 @@ import "./styles.css";
 
 import FeatherIcon from "@expo/vector-icons/Feather";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { Image } from "expo-image";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -11,11 +12,11 @@ import {
   RectButton,
 } from "react-native-gesture-handler";
 
-import { TRPCProvider } from "~/lib/trpc";
+import { queryClient } from "~/lib/trpc";
 
 export default function RootLayout() {
   return (
-    <TRPCProvider>
+    <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <Stack
           screenOptions={{
@@ -31,7 +32,7 @@ export default function RootLayout() {
       </GestureHandlerRootView>
 
       <StatusBar />
-    </TRPCProvider>
+    </QueryClientProvider>
   );
 }
 
