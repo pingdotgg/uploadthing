@@ -4,8 +4,8 @@
   "version": "0.0.1",
   "bin": "./dist/bin/index.js",
   "scripts": {
-    "build": "bunchee --tsconfig tsconfig.build.json",
-    "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean"
+    "build": "bunchee --tsconfig tsconfig.build.json --no-external",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean --no-external"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",

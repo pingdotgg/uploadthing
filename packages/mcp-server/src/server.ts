@@ -33,8 +33,9 @@ export function createServer(tokenstr: string) {
         }),
       )
       .mutation(async ({ input }) => {
+        const offset = input.cursor ? Number.parseInt(input.cursor) : 0;
         const files = await utapi.listFiles({
-          offset: Number.parseInt(input.cursor ?? "0"),
+          offset,
         });
 
         return files.files.map((file) => ({
@@ -48,16 +49,26 @@ export function createServer(tokenstr: string) {
 
   // Haven't added resource capabilities to trpc-mcp yet
   server.setRequestHandler(ListResourcesRequestSchema, async (req) => {
+    const offset = req.params?.cursor ? Number.parseInt(req.params.cursor) : 0;
     const files = await utapi.listFiles({
-      offset: Number.parseInt(req.params?.cursor ?? "0"),
+      offset,
     });
 
+    const nextCursor = files.hasMore
+      ? String(offset + files.files.length)
+      : null;
+
     return {
-      resources: files.files.map((file) => ({
-        uri: `https://${token.appId}.utfs.io/f/${file.key}`,
-        name: file.name,
-        // mimeType: file.type
-      })),
+      nextCursor,
+      resources: await Promise.all(
+        files.files.map((file) => {
+          return {
+            uri: `https://${token.appId}.utfs.io/f/${file.key}`,
+            name: file.name,
+            // mimeType: file.type
+          };
+        }),
+      ),
     };
   });
 

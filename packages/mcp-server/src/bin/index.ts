@@ -2,7 +2,9 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 
 import { createServer } from "../server";
 
-const tokenstr = process.argv[2] ?? process.env.UPLOADTHING_TOKEN;
+const tokenstr =
+  process.argv.find((arg) => arg.startsWith("eyJhc")) ??
+  process.env.UPLOADTHING_TOKEN;
 
 if (!tokenstr) {
   console.error(
