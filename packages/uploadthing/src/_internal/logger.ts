@@ -18,10 +18,10 @@ import { IsDevelopment } from "./config";
 /**
  * Config.logLevel counter-intuitively accepts LogLevel["label"]
  * instead of a literal, ripping it and changing to accept literal
+ * Effect 4.0 will change this to accept a literal and then we can
+ * remove this and go back to the built-in validator.
  */
-export const ConfigLogLevel = (
-  name?: string,
-): Config.Config<LogLevel.LogLevel> => {
+const ConfigLogLevel = (name?: string): Config.Config<LogLevel.LogLevel> => {
   const config = Config.mapOrFail(Config.string(), (literal) => {
     const level = LogLevel.allLevels.find((level) => level._tag === literal);
     return level === undefined
