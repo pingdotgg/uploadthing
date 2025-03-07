@@ -4,7 +4,9 @@ import type {
   HttpClientResponse,
 } from "@effect/platform";
 import * as Config from "effect/Config";
+import * as ConfigError from "effect/ConfigError";
 import * as Effect from "effect/Effect";
+import * as Either from "effect/Either";
 import * as Layer from "effect/Layer";
 import * as Logger from "effect/Logger";
 import * as LogLevel from "effect/LogLevel";
@@ -13,7 +15,28 @@ import { UploadThingError } from "@uploadthing/shared";
 
 import { IsDevelopment } from "./config";
 
-export const withMinimalLogLevel = Config.logLevel("logLevel").pipe(
+/**
+ * Config.logLevel counter-intuitively accepts LogLevel["label"]
+ * instead of a literal, ripping it and changing to accept literal
+ */
+export const ConfigLogLevel = (
+  name?: string,
+): Config.Config<LogLevel.LogLevel> => {
+  const config = Config.mapOrFail(Config.string(), (literal) => {
+    const level = LogLevel.allLevels.find((level) => level._tag === literal);
+    return level === undefined
+      ? Either.left(
+          ConfigError.InvalidData(
+            [],
+            `Expected a log level but received ${literal}`,
+          ),
+        )
+      : Either.right(level);
+  });
+  return name === undefined ? config : Config.nested(config, name);
+};
+
+export const withMinimalLogLevel = ConfigLogLevel("logLevel").pipe(
   Config.withDefault(LogLevel.Info),
   Effect.andThen((level) => Logger.minimumLogLevel(level)),
   Effect.tapError((e) =>
