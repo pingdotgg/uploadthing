@@ -1,5 +1,14 @@
 # uploadthing
 
+## 7.5.3
+
+### Patch Changes
+
+- [#1164](https://github.com/pingdotgg/uploadthing/pull/1164)
+  [`10f17c1`](https://github.com/pingdotgg/uploadthing/commit/10f17c1723d81b1f8e4d64c4716e5f0869238446)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: config
+  validator for log level should match the type
+
 ## 7.5.2
 
 ### Patch Changes
