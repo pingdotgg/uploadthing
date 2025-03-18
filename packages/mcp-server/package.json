@@ -1,0 +1,25 @@
+{
+  "name": "@uploadthing/mcp-server",
+  "type": "module",
+  "version": "0.0.1",
+  "bin": "./dist/bin/index.js",
+  "scripts": {
+    "build": "bunchee --tsconfig tsconfig.build.json --no-external",
+    "dev": "bunchee -w --tsconfig tsconfig.build.json --no-clean --no-external"
+  },
+  "devDependencies": {
+    "@uploadthing/eslint-config": "workspace:*",
+    "@uploadthing/tsconfig": "workspace:*",
+    "bunchee": "^6.2.0",
+    "eslint": "9.17.0",
+    "typescript": "5.7.2"
+  },
+  "dependencies": {
+    "@juliusmarminge/trpc-mcp": "^0.2.0",
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "@trpc/server": "11.0.0-rc.772",
+    "effect": "3.12.0",
+    "uploadthing": "workspace:*",
+    "zod": "^3.24.1"
+  }
+}
