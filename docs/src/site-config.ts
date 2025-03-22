@@ -43,6 +43,7 @@ export const navigation: Array<NavGroup> = [
       { title: "Fastify", href: "/backend-adapters/fastify" },
       { title: "H3", href: "/backend-adapters/h3" },
       { title: "WinterCG Fetch", href: "/backend-adapters/fetch" },
+      { title: "Custom adapters", href: "/backend-adapters/custom" },
     ],
   },
   {
