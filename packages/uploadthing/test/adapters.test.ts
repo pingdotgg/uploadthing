@@ -105,8 +105,6 @@ describe("adapters:h3", async () => {
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
         event: expect.any(H3Event),
-        req: undefined,
-        res: undefined,
       }),
     );
 
@@ -206,7 +204,7 @@ describe("adapters:server", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res: undefined }),
+      expect.objectContaining({ req }),
     );
 
     // Should proceed to generate a signed URL
@@ -264,7 +262,7 @@ describe("adapters:server", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res: undefined }),
+      expect.objectContaining({ req }),
     );
 
     // Should proceed to generate a signed URL
@@ -361,7 +359,7 @@ describe("adapters:next", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res: undefined }),
+      expect.objectContaining({ req }),
     );
 
     // Should proceed to generate a signed URL
@@ -500,7 +498,7 @@ describe("adapters:next-legacy", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res }),
+      expect.objectContaining({ req, res }),
     );
 
     // Should proceed to generate a signed URL
@@ -607,7 +605,6 @@ describe("adapters:express", async () => {
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: undefined,
         req: expect.objectContaining({
           baseUrl: "/api/uploadthing",
           url: "/?slug=middleware&actionType=upload",
@@ -754,7 +751,6 @@ describe("adapters:fastify", async () => {
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: undefined,
         req: expect.objectContaining({
           id: "req-1",
           params: {},
@@ -891,8 +887,6 @@ describe("adapters:effect-platform", async () => {
       expect(middlewareMock).toHaveBeenCalledOnce();
       expect(middlewareMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          event: undefined,
-          res: undefined,
           req: serverRequest,
         }),
       );
