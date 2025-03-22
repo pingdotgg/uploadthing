@@ -32,7 +32,7 @@
     "server-only": "0.0.1",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.2.1",
-    "uploadthing": "^7.5.2",
+    "uploadthing": "^7.6.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

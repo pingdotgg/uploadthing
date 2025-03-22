@@ -1,5 +1,26 @@
 # uploadthing
 
+## 7.6.0
+
+### Minor Changes
+
+- [#1170](https://github.com/pingdotgg/uploadthing/pull/1170)
+  [`c49c2d9`](https://github.com/pingdotgg/uploadthing/commit/c49c2d91b0486bcc8391c87b24bb2ed19fc8cfa5)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add exports for
+  building custom adapters
+
+### Patch Changes
+
+- [#1164](https://github.com/pingdotgg/uploadthing/pull/1164)
+  [`10f17c1`](https://github.com/pingdotgg/uploadthing/commit/10f17c1723d81b1f8e4d64c4716e5f0869238446)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: config
+  validator for log level should match the type
+
+- [#1170](https://github.com/pingdotgg/uploadthing/pull/1170)
+  [`c49c2d9`](https://github.com/pingdotgg/uploadthing/commit/c49c2d91b0486bcc8391c87b24bb2ed19fc8cfa5)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - loosen up type
+  restriction on `AdapterFnArgs` to be any record
+
 ## 7.5.2
 
 ### Patch Changes
