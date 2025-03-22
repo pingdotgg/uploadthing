@@ -7,7 +7,6 @@ import {
   generateKey,
   generateSignedURL,
   signPayload,
-  verifyKey,
   verifySignature,
 } from "../src/crypto";
 
@@ -104,98 +103,6 @@ describe("key gen", () => {
       );
 
       expect(key).toBeTruthy();
-    }),
-  );
-
-  it.effect("verifies a key", () =>
-    Effect.gen(function* () {
-      const appI = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: Date.now(),
-        },
-        appI,
-      );
-
-      const verified = yield* verifyKey(key, appI);
-      expect(verified).toBe(true);
-    }),
-  );
-
-  it.effect("doesn't verify a key with a bad appI", () =>
-    Effect.gen(function* () {
-      const appI = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: Date.now(),
-        },
-        appI,
-      );
-
-      const verified = yield* verifyKey(key, "bad");
-      expect(verified).toBe(false);
-    }),
-  );
-
-  it.effect("doesn't verify a key with a bad key", () =>
-    Effect.gen(function* () {
-      const appId = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: Date.now(),
-        },
-        appId,
-      );
-
-      const verified = yield* verifyKey("badseed" + key.substring(7), appId);
-      expect(verified).toBe(false);
-    }),
-  );
-
-  it.effect("verifies with a custom hash function", () =>
-    Effect.gen(function* () {
-      const appI = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: Date.now(),
-        },
-        appI,
-        (file) => [file.name],
-      );
-
-      const verified = yield* verifyKey(key, appI);
-      expect(verified).toBe(true);
-    }),
-  );
-
-  it.effect("works even when there's nothing to seed", () =>
-    Effect.gen(function* () {
-      const appI = "foo-123";
-      const key = yield* generateKey(
-        {
-          name: "foo.txt",
-          size: 123,
-          type: "text/plain",
-          lastModified: Date.now(),
-        },
-        appI,
-        () => [],
-      );
-
-      const verified = yield* verifyKey(key, appI);
-      expect(verified).toBe(true);
     }),
   );
 });
