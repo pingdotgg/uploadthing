@@ -354,6 +354,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: ^4.20241230.0
         version: 4.20241230.0
+      '@types/bun':
+        specifier: ^1.2.5
+        version: 1.2.5
       '@types/cors':
         specifier: ^2.8.17
         version: 2.8.17
@@ -735,7 +738,7 @@ importers:
         version: 0.0.1
       drizzle-orm:
         specifier: ^0.38.3
-        version: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
+        version: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.2.5)(react@18.3.1)
       lucide-react:
         specifier: ^0.469.0
         version: 0.469.0(react@18.3.1)
@@ -1025,7 +1028,7 @@ importers:
         version: link:../../packages/react
       drizzle-orm:
         specifier: ^0.38.3
-        version: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
+        version: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.2.5)(react@18.3.1)
       next:
         specifier: 15.1.3
         version: 15.1.3(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1077,7 +1080,7 @@ importers:
         version: link:../../packages/react
       drizzle-orm:
         specifier: ^0.38.3
-        version: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
+        version: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.2.5)(react@18.3.1)
       next:
         specifier: 15.1.3
         version: 15.1.3(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1729,7 +1732,7 @@ importers:
         version: 3.12.0
       next:
         specifier: canary
-        version: 15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1775,7 +1778,7 @@ importers:
     dependencies:
       '@uploadthing/react':
         specifier: npm:@uploadthing/react@6
-        version: 6.8.0(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))
+        version: 6.8.0(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -1784,7 +1787,7 @@ importers:
         version: 3.12.0
       next:
         specifier: canary
-        version: 15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -1793,7 +1796,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       uploadthing:
         specifier: npm:uploadthing@6
-        version: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
+        version: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
       zod:
         specifier: 3.24.1
         version: 3.24.1
@@ -4803,8 +4806,8 @@ packages:
   '@next/env@15.1.3':
     resolution: {integrity: sha512-Q1tXwQCGWyA3ehMph3VO+E6xFPHDKdHFYosadt0F78EObYxPio0S09H9UGYznDe6Wc8eLKLG89GqcFJJDiK5xw==}
 
-  '@next/env@15.2.0-canary.64':
-    resolution: {integrity: sha512-ZZYxKm0ECOr7n818vBxELVYwreFKvzS1XPFuzTO5NHokJWuqCFN6cc6dW4S0bohHSjLXckDad/nft3G/k3/1VA==}
+  '@next/env@15.3.0-canary.18':
+    resolution: {integrity: sha512-0TA2Hu3RlL02S+IKVKUxlWxKEG1cUHNPvpOW6dOc18UedgE2W1DiR0RhwxH5qz8H03KF8C9DSEp5k7uv0aUJQA==}
 
   '@next/eslint-plugin-next@15.1.3':
     resolution: {integrity: sha512-oeP1vnc5Cq9UoOb8SYHAEPbCXMzOgG70l+Zfd+Ie00R25FOm+CCVNrcIubJvB1tvBgakXE37MmqSycksXVPRqg==}
@@ -4826,8 +4829,8 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-arm64@15.2.0-canary.64':
-    resolution: {integrity: sha512-i6OX3WK++7aqUp2d2t5RbMM27FyynHluchihjL0VFpBZ1HSjWIZ2pu6Fo/pMA65rU9OtuZqAjU1jXN/XIHnZUw==}
+  '@next/swc-darwin-arm64@15.3.0-canary.18':
+    resolution: {integrity: sha512-DcvDUNTBNms4j4JhqRzuxQOsKhSsUv3iUvMcPXz2TFTXN0wAxAQ7y0N9GGHcyQIv78iT4W9DgjiIGTIXXxEZ3w==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -4838,8 +4841,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@15.2.0-canary.64':
-    resolution: {integrity: sha512-KS99iaV6A7IcrKP2WtO9hrA0mdyWdPLd0e5U3x/P5EKa/FxWSjXc9U8WjDk2GYIh46rblSHBTA1Ar6N8yQApSg==}
+  '@next/swc-darwin-x64@15.3.0-canary.18':
+    resolution: {integrity: sha512-0gMW+2ZRKcve74Mg40xBDq0B69d9A1cbhnEazkUKdPuvuvVQ+QPvfPZ2HlzJmt7uj1OlcfxXxNDb2E8T2pmG2Q==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -4850,8 +4853,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-gnu@15.2.0-canary.64':
-    resolution: {integrity: sha512-mOGQ1I5jvkSJdBz+9h0S2DhDQabfg7htv4x3qw/RZ0EvqacGpKf3D/Sd8HAYa0wC/BBEgV3oyAnnuFxNWFfYGg==}
+  '@next/swc-linux-arm64-gnu@15.3.0-canary.18':
+    resolution: {integrity: sha512-KxMJApD0WvTPqJrrEoHQTLlGXKVEFxztuPYLgeAKxLiFZnRhq9MCfq1tAcK9M4ekdkcnS5MkfpnHWCReBkvQQg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4862,8 +4865,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@next/swc-linux-arm64-musl@15.2.0-canary.64':
-    resolution: {integrity: sha512-9VLE4+Q4Nd23D8ZuR+iJs2v78sKKVrvXSC6H9w+qTYHoNATfKTKt38uCrDT+HQObfKsOhlvp/npaZwhylp3isw==}
+  '@next/swc-linux-arm64-musl@15.3.0-canary.18':
+    resolution: {integrity: sha512-NwPD9Jjf3N0xCYYhyCwSiWzNp4kOXjmxmw0d43tC9xGBPBqaLN705e+6sTpxeakwYF8m5NdLi+Xhsf4jgpDtgw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -4874,8 +4877,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-gnu@15.2.0-canary.64':
-    resolution: {integrity: sha512-cQICTyR3sIZU4lAWmyIYECqWorqoSiBR6LwQTo5ITdpZ1pvfz6Uo4m1vxIsAjxUlkuleCk49OX/8VBungj0CmA==}
+  '@next/swc-linux-x64-gnu@15.3.0-canary.18':
+    resolution: {integrity: sha512-pIB7pr6maTpzS82Buxuanrexc/Y2zFHRjjBJTX/ZpvO+b1D1Y+sPfJVIpsKh0Bv/tm8CJdkXLwKaGlDEaSKBUQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4886,8 +4889,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@next/swc-linux-x64-musl@15.2.0-canary.64':
-    resolution: {integrity: sha512-A4BQv8TFt9pNpuJvd/SfeXfd17jup9otc9qE1oJ4AUI2GZJwicBWCJx+3q8xTNK0jm2+5H0svK6Z+tF+a3rJQA==}
+  '@next/swc-linux-x64-musl@15.3.0-canary.18':
+    resolution: {integrity: sha512-elGIGsbZ9phZy9TnL2QayFpA/+KXr/55ycJ5gub8wsXyteoGYjSDsZG6ri4JdRYzGbwzNanao9XQOjvI9urdHw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -4898,8 +4901,8 @@ packages:
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-arm64-msvc@15.2.0-canary.64':
-    resolution: {integrity: sha512-IgB01HmDBznJIuuaRLXO4zUFdzyJlwxgWR4vu3y9ezZJDNUofRu8nWY/kvTR3rQdB58XJAaM666LhgHrZstp6Q==}
+  '@next/swc-win32-arm64-msvc@15.3.0-canary.18':
+    resolution: {integrity: sha512-UELaBJw+GmpPZeyoiju+KMm6I/+9VmCn4sHALriCJ1Qqktc9gzZQc09EbInp3bdNsDX8QVcazJvAdcADy4bbVg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
@@ -4910,8 +4913,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@15.2.0-canary.64':
-    resolution: {integrity: sha512-tkiBWgb8sNhjEJu/r/8Jak/rQi8zZOpPX+58T1g0T4yhEqJGw3WC/2In5XvKrT9xK45/GZCSZ8TpczKGbzU1Tg==}
+  '@next/swc-win32-x64-msvc@15.3.0-canary.18':
+    resolution: {integrity: sha512-Os9NvuuzRS5eUIBeSuYPrPPWwyYalRuKpS8E7/0Wk57WsmUFmQhtThC8V4vrFEzEc8zX/kyXtBD0QcI5PYLAFA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -6968,6 +6971,9 @@ packages:
   '@types/bun@1.1.14':
     resolution: {integrity: sha512-opVYiFGtO2af0dnWBdZWlioLBoxSdDO5qokaazLhq8XQtGZbY4pY3/JxY8Zdf/hEwGubbp7ErZXoN1+h2yesxA==}
 
+  '@types/bun@1.2.5':
+    resolution: {integrity: sha512-w2OZTzrZTVtbnJew1pdFmgV99H0/L+Pvw+z1P67HaR18MHOzYnTYOi6qzErhK8HyT+DB782ADVPPE92Xu2/Opg==}
+
   '@types/connect@3.4.38':
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
 
@@ -8174,8 +8180,8 @@ packages:
   bun-types@1.1.37:
     resolution: {integrity: sha512-C65lv6eBr3LPJWFZ2gswyrGZ82ljnH8flVE03xeXxKhi2ZGtFiO4isRKTKnitbSqtRAcaqYSR6djt1whI66AbA==}
 
-  bun-types@1.1.42:
-    resolution: {integrity: sha512-beMbnFqWbbBQHll/bn3phSwmoOQmnX2nt8NI9iOQKFbgR5Z6rlH3YuaMdlid8vp5XGct3/W4QVQBmhoOEoe4nw==}
+  bun-types@1.2.5:
+    resolution: {integrity: sha512-3oO6LVGGRRKI4kHINx5PIdIgnLRb7l/SprhzqXapmoYkFl5m4j6EvALvbDVuuBFaamB46Ap6HCUxIXNLCGy+tg==}
 
   bunchee@6.2.0:
     resolution: {integrity: sha512-kdZrbi+JFFm5ZsOqwXoYFG/783oiJc7gYAOiHrMr1r0NQJdmcDwadX+HHoczti3+VjLKmBqf+lzyvbDruG5f/Q==}
@@ -12577,8 +12583,8 @@ packages:
       sass:
         optional: true
 
-  next@15.2.0-canary.64:
-    resolution: {integrity: sha512-tc9T8uVcxrOtmwzoybZ9BfZ/nKRc5FyYJIKzdqn6Hlb5e4bdR7lW0Tc7pYVzxvMeBs2Gs2futDXlXG93pqPqyg==}
+  next@15.3.0-canary.18:
+    resolution: {integrity: sha512-c5ltl/OZiDLCazw7lLMu4ra/yTv/Co9UerZoHYZ8Qa7MzmaZKeVZij8JeRqHAK1lkcSBv8ib3jjNT2akzhbmtg==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
     hasBin: true
     peerDependencies:
@@ -20405,7 +20411,7 @@ snapshots:
 
   '@next/env@15.1.3': {}
 
-  '@next/env@15.2.0-canary.64': {}
+  '@next/env@15.3.0-canary.18': {}
 
   '@next/eslint-plugin-next@15.1.3':
     dependencies:
@@ -20421,49 +20427,49 @@ snapshots:
   '@next/swc-darwin-arm64@15.1.3':
     optional: true
 
-  '@next/swc-darwin-arm64@15.2.0-canary.64':
+  '@next/swc-darwin-arm64@15.3.0-canary.18':
     optional: true
 
   '@next/swc-darwin-x64@15.1.3':
     optional: true
 
-  '@next/swc-darwin-x64@15.2.0-canary.64':
+  '@next/swc-darwin-x64@15.3.0-canary.18':
     optional: true
 
   '@next/swc-linux-arm64-gnu@15.1.3':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@15.2.0-canary.64':
+  '@next/swc-linux-arm64-gnu@15.3.0-canary.18':
     optional: true
 
   '@next/swc-linux-arm64-musl@15.1.3':
     optional: true
 
-  '@next/swc-linux-arm64-musl@15.2.0-canary.64':
+  '@next/swc-linux-arm64-musl@15.3.0-canary.18':
     optional: true
 
   '@next/swc-linux-x64-gnu@15.1.3':
     optional: true
 
-  '@next/swc-linux-x64-gnu@15.2.0-canary.64':
+  '@next/swc-linux-x64-gnu@15.3.0-canary.18':
     optional: true
 
   '@next/swc-linux-x64-musl@15.1.3':
     optional: true
 
-  '@next/swc-linux-x64-musl@15.2.0-canary.64':
+  '@next/swc-linux-x64-musl@15.3.0-canary.18':
     optional: true
 
   '@next/swc-win32-arm64-msvc@15.1.3':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@15.2.0-canary.64':
+  '@next/swc-win32-arm64-msvc@15.3.0-canary.18':
     optional: true
 
   '@next/swc-win32-x64-msvc@15.1.3':
     optional: true
 
-  '@next/swc-win32-x64-msvc@15.2.0-canary.64':
+  '@next/swc-win32-x64-msvc@15.3.0-canary.18':
     optional: true
 
   '@nodelib/fs.scandir@2.1.5':
@@ -23710,6 +23716,10 @@ snapshots:
     dependencies:
       bun-types: 1.1.37
 
+  '@types/bun@1.2.5':
+    dependencies:
+      bun-types: 1.2.5
+
   '@types/connect@3.4.38':
     dependencies:
       '@types/node': 22.12.0
@@ -24039,16 +24049,16 @@ snapshots:
 
   '@uploadthing/mime-types@0.2.10': {}
 
-  '@uploadthing/react@6.8.0(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))':
+  '@uploadthing/react@6.8.0(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0))(vue@3.5.13(typescript@5.7.2))':
     dependencies:
       '@uploadthing/dropzone': 0.4.1(react@18.3.1)(solid-js@1.9.3)(svelte@4.2.19)(vue@3.5.13(typescript@5.7.2))
       '@uploadthing/shared': 6.7.9
       file-selector: 0.6.0
       react: 18.3.1
       tailwind-merge: 2.6.0
-      uploadthing: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
+      uploadthing: 6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0)
     optionalDependencies:
-      next: 15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     transitivePeerDependencies:
       - solid-js
       - svelte
@@ -25496,11 +25506,10 @@ snapshots:
       '@types/node': 20.12.14
       '@types/ws': 8.5.14
 
-  bun-types@1.1.42:
+  bun-types@1.2.5:
     dependencies:
-      '@types/node': 20.12.14
+      '@types/node': 22.12.0
       '@types/ws': 8.5.14
-    optional: true
 
   bunchee@6.2.0(typescript@5.7.2):
     dependencies:
@@ -26260,12 +26269,12 @@ snapshots:
   db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)(@types/react@18.3.3)(react@18.3.1)):
     optionalDependencies:
       '@libsql/client': 0.14.0
-      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
+      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.2.5)(react@18.3.1)
 
   db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)):
     optionalDependencies:
       '@libsql/client': 0.14.0
-      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1)
+      drizzle-orm: 0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.2.5)(react@18.3.1)
 
   de-indent@1.0.2: {}
 
@@ -26473,12 +26482,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.1.42)(react@18.3.1):
+  drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@18.3.3)(bun-types@1.2.5)(react@18.3.1):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20241230.0
       '@libsql/client': 0.14.0
       '@types/react': 18.3.3
-      bun-types: 1.1.42
+      bun-types: 1.2.5
       react: 18.3.1
 
   dset@3.1.4: {}
@@ -31111,9 +31120,9 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
-      '@next/env': 15.2.0-canary.64
+      '@next/env': 15.3.0-canary.18
       '@swc/counter': 0.1.3
       '@swc/helpers': 0.5.15
       busboy: 1.6.0
@@ -31123,14 +31132,14 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       styled-jsx: 5.1.6(react@18.3.1)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 15.2.0-canary.64
-      '@next/swc-darwin-x64': 15.2.0-canary.64
-      '@next/swc-linux-arm64-gnu': 15.2.0-canary.64
-      '@next/swc-linux-arm64-musl': 15.2.0-canary.64
-      '@next/swc-linux-x64-gnu': 15.2.0-canary.64
-      '@next/swc-linux-x64-musl': 15.2.0-canary.64
-      '@next/swc-win32-arm64-msvc': 15.2.0-canary.64
-      '@next/swc-win32-x64-msvc': 15.2.0-canary.64
+      '@next/swc-darwin-arm64': 15.3.0-canary.18
+      '@next/swc-darwin-x64': 15.3.0-canary.18
+      '@next/swc-linux-arm64-gnu': 15.3.0-canary.18
+      '@next/swc-linux-arm64-musl': 15.3.0-canary.18
+      '@next/swc-linux-x64-gnu': 15.3.0-canary.18
+      '@next/swc-linux-x64-musl': 15.3.0-canary.18
+      '@next/swc-win32-arm64-msvc': 15.3.0-canary.18
+      '@next/swc-win32-x64-msvc': 15.3.0-canary.18
       '@playwright/test': 1.49.1
       sharp: 0.33.5
     transitivePeerDependencies:
@@ -35548,7 +35557,7 @@ snapshots:
       escalade: 3.2.0
       picocolors: 1.1.1
 
-  uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0):
+  uploadthing@6.13.3(@effect/platform@0.72.0(effect@3.12.0))(express@5.0.1)(fastify@5.2.0)(h3@1.13.0)(next@15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(tailwindcss@4.0.0):
     dependencies:
       '@effect/schema': 0.68.18(effect@3.4.8)
       '@uploadthing/mime-types': 0.2.10
@@ -35561,7 +35570,7 @@ snapshots:
       express: 5.0.1
       fastify: 5.2.0
       h3: 1.13.0
-      next: 15.2.0-canary.64(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next: 15.3.0-canary.18(@playwright/test@1.49.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       tailwindcss: 4.0.0
 
   uqr@0.1.2: {}

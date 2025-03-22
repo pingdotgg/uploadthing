@@ -15,7 +15,6 @@ export type { FileRouter };
 type AdapterArgs = {
   req: NextApiRequest;
   res: NextApiResponse;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -25,8 +24,11 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const handler = makeAdapterHandler<[NextApiRequest, NextApiResponse]>(
-    (req, res) => Effect.succeed({ req, res, event: undefined }),
+  const handler = makeAdapterHandler<
+    [NextApiRequest, NextApiResponse],
+    AdapterArgs
+  >(
+    (req, res) => Effect.succeed({ req, res }),
     (req) => toWebRequest(req),
     opts,
     "nextjs-pages",

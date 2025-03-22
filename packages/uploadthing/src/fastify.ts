@@ -15,7 +15,6 @@ export type { FileRouter };
 type AdapterArgs = {
   req: FastifyRequest;
   res: FastifyReply;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -27,8 +26,11 @@ export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
   done: (err?: Error) => void,
 ) => {
-  const handler = makeAdapterHandler<[FastifyRequest, FastifyReply]>(
-    (req, res) => Effect.succeed({ req, res, event: undefined }),
+  const handler = makeAdapterHandler<
+    [FastifyRequest, FastifyReply],
+    AdapterArgs
+  >(
+    (req, res) => Effect.succeed({ req, res }),
     (req) => toWebRequest(req),
     opts,
     "fastify",

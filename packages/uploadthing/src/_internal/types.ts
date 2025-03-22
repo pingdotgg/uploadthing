@@ -44,15 +44,6 @@ export type ValidMiddlewareObject = {
   [key: string]: unknown;
 };
 
-/**
- * Different frameworks have different request and response types
- */
-export type AdapterFnArgs<TRequest, TResponse, TEvent> = {
-  req: TRequest;
-  res: TResponse;
-  event: TEvent;
-};
-
 export interface AnyParams {
   _routeOptions: any;
   _input: {
@@ -60,7 +51,7 @@ export interface AnyParams {
     out: any;
   };
   _metadata: any; // imaginary field used to bind metadata return type to an Upload resolver
-  _adapterFnArgs: AdapterFnArgs<any, any, any>;
+  _adapterFnArgs: Record<string, unknown>;
   _errorShape: any;
   _errorFn: any; // used for onUploadError
   _output: any;
@@ -69,7 +60,7 @@ export interface AnyParams {
 type MiddlewareFn<
   TInput extends Json | UnsetMarker,
   TOutput extends ValidMiddlewareObject,
-  TArgs extends AdapterFnArgs<any, any, any>,
+  TArgs extends Record<string, unknown>,
 > = (
   opts: TArgs & {
     files: Schema.Type<typeof UploadActionPayload>["files"];
@@ -80,7 +71,7 @@ type MiddlewareFn<
 type UploadCompleteFn<
   TMetadata,
   TOutput extends JsonObject | void,
-  TArgs extends AdapterFnArgs<any, any, any>,
+  TArgs extends Record<string, unknown>,
 > = (
   opts: TArgs & {
     metadata: TMetadata;
@@ -88,7 +79,7 @@ type UploadCompleteFn<
   },
 ) => MaybePromise<TOutput>;
 
-type UploadErrorFn<TArgs extends AdapterFnArgs<any, any, any>> = (
+type UploadErrorFn<TArgs extends Record<string, unknown>> = (
   input: TArgs & {
     error: UploadThingError;
     fileKey: string;

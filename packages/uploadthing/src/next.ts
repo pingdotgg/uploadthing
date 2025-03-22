@@ -13,8 +13,6 @@ export { UTFiles } from "./_internal/types";
 
 type AdapterArgs = {
   req: NextRequest;
-  res: undefined;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -24,8 +22,8 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const handler = makeAdapterHandler<[NextRequest]>(
-    (req) => Effect.succeed({ req, res: undefined, event: undefined }),
+  const handler = makeAdapterHandler<[NextRequest], AdapterArgs>(
+    (req) => Effect.succeed({ req }),
     (req) => Effect.succeed(req),
     opts,
     "nextjs-app",

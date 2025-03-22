@@ -7,7 +7,6 @@ import type {
 
 import { defaultErrorFormatter } from "./error-formatter";
 import type {
-  AdapterFnArgs,
   AnyBuiltUploaderTypes,
   AnyFileRoute,
   UnsetMarker,
@@ -15,7 +14,7 @@ import type {
 } from "./types";
 
 function internalCreateBuilder<
-  TAdapterFnArgs extends AdapterFnArgs<any, any, any>,
+  TAdapterFnArgs extends Record<string, unknown>,
   TRouteOptions extends RouteOptions,
   TErrorShape extends Json = { message: string },
 >(
@@ -91,8 +90,16 @@ export type CreateBuilderOptions<TErrorShape extends Json> = {
   errorFormatter: (err: UploadThingError) => TErrorShape;
 };
 
+/**
+ * Create a builder for your backend adapter.
+ * Refer to the existing adapters for examples on how to use this function.
+ * @public
+ *
+ * @param opts - Options for the builder
+ * @returns A file route builder for making UploadThing file routes
+ */
 export function createBuilder<
-  TAdapterFnArgs extends AdapterFnArgs<any, any, any>,
+  TAdapterFnArgs extends Record<string, unknown>,
   TErrorShape extends Json = { message: string },
 >(opts?: CreateBuilderOptions<TErrorShape>) {
   return <TRouteOptions extends RouteOptions>(
