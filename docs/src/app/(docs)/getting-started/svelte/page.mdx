@@ -210,7 +210,7 @@ separately. Both are included in the `@uploadthing/svelte` package.
 <script lang="ts">
   import { createUploader } from "$lib/utils/uploadthing";
 
-  import { Uploader } from "@uploadthing/svelte";
+  import { UploadButton, UploadDropzone } from "@uploadthing/svelte";
 
   const uploader = createUploader("imageUploader", {
     onClientUploadComplete: (res) => {
