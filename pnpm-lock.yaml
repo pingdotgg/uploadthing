@@ -228,7 +228,7 @@ importers:
         specifier: 5.7.2
         version: 5.7.2
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
 
   examples/backend-adapters/client-react:
@@ -243,7 +243,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../../packages/uploadthing
     devDependencies:
       '@types/react':
@@ -265,7 +265,7 @@ importers:
   examples/backend-adapters/client-vanilla:
     dependencies:
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../../packages/uploadthing
     devDependencies:
       typescript:
@@ -281,7 +281,7 @@ importers:
         specifier: 7.3.0
         version: link:../../../packages/vue
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../../packages/uploadthing
       vue:
         specifier: ^3.4.21
@@ -348,7 +348,7 @@ importers:
         specifier: ^1.9.0
         version: 1.9.0
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../../packages/uploadthing
     devDependencies:
       '@cloudflare/workers-types':
@@ -388,7 +388,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@next/bundle-analyzer':
@@ -428,7 +428,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@astrojs/check':
@@ -534,7 +534,7 @@ importers:
         specifier: ~0.19.12
         version: 0.19.13(encoding@0.1.13)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -565,7 +565,7 @@ importers:
         specifier: ^3.15.0
         version: 3.15.0(@libsql/client@0.14.0)(@parcel/watcher@2.5.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@libsql/client@0.14.0)))(drizzle-orm@0.38.3(@libsql/client@0.14.0))(encoding@0.1.13)(eslint@9.17.0(jiti@2.4.2))(ioredis@5.4.2)(lightningcss@1.29.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.29.1)(terser@5.37.0)(tsx@4.19.2)(typescript@5.7.2)(uploadthing@packages+uploadthing)(vite@6.0.7(@types/node@22.12.0)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.37.0)(tsx@4.19.2)(yaml@2.7.0))(yaml@2.7.0)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       vue:
         specifier: ^3.4.21
@@ -589,7 +589,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -623,7 +623,7 @@ importers:
         specifier: ^1.9.3
         version: 1.9.3
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.5.1
@@ -648,7 +648,7 @@ importers:
         specifier: 7.3.0
         version: link:../../packages/svelte
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@sveltejs/adapter-auto':
@@ -691,7 +691,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       vinxi:
         specifier: ^0.5.1
@@ -767,7 +767,7 @@ importers:
         specifier: ^2.2.1
         version: 2.6.0
       uploadthing:
-        specifier: ^7.5.2
+        specifier: ^7.6.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -825,7 +825,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -874,7 +874,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -932,7 +932,7 @@ importers:
         specifier: ^7.1.3
         version: 7.1.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@react-router/dev':
@@ -987,7 +987,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@remix-run/dev':
@@ -1039,7 +1039,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -1094,7 +1094,7 @@ importers:
         specifier: ^2.2.5
         version: 2.3.0(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       zod:
         specifier: ^3.24.1
@@ -1170,7 +1170,7 @@ importers:
         specifier: ^2.2.1
         version: 2.6.0
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
       use-debounce:
         specifier: ^10.0.4
@@ -1213,7 +1213,7 @@ importers:
         specifier: ^11.0.5
         version: 11.0.7(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1241,7 +1241,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -1272,7 +1272,7 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
       uploadthing:
-        specifier: 7.5.2
+        specifier: 7.6.0
         version: link:../../packages/uploadthing
     devDependencies:
       '@types/node':
@@ -3054,6 +3054,7 @@ packages:
 
   '@effect/schema@0.68.18':
     resolution: {integrity: sha512-+knLs36muKsyqIvQTB0itGp5Lwy+5jgEC0G5P8wSsrB6EWGFirS87QjbaFYGbg32l/P51RM+9cPMiAEyICwN6g==}
+    deprecated: this package has been merged into the main effect package
     peerDependencies:
       effect: ^3.4.8
 
@@ -26901,7 +26902,7 @@ snapshots:
       '@typescript-eslint/parser': 8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2)
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-react: 7.37.0(eslint@9.17.0(jiti@2.4.2))
@@ -26925,12 +26926,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
     dependencies:
       debug: 4.4.0(supports-color@9.4.0)
       enhanced-resolve: 5.18.0
       eslint: 9.17.0(jiti@2.4.2)
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
       eslint-plugin-import: 2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-typescript@3.6.1)(eslint@9.17.0(jiti@2.4.2))
       fast-glob: 3.3.3
       get-tsconfig: 4.8.1
@@ -26942,14 +26943,14 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
       '@typescript-eslint/parser': 8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2)
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2))
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
     transitivePeerDependencies:
       - supports-color
 
@@ -26984,7 +26985,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.17.0(jiti@2.4.2)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0)(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.19.0(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2)))(eslint@9.17.0(jiti@2.4.2))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
