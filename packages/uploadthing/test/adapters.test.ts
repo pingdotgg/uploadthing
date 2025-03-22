@@ -49,8 +49,6 @@ describe("adapters:h3", async () => {
         middlewareMock(opts);
         expectTypeOf<{
           event: H3Event;
-          req: undefined;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -159,9 +157,7 @@ describe("adapters:server", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: Request;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -314,9 +310,7 @@ describe("adapters:next", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: NextRequest;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -415,7 +409,6 @@ describe("adapters:next-legacy", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: NextApiRequest;
           res: NextApiResponse;
         }>(opts);
@@ -555,7 +548,6 @@ describe("adapters:express", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: express.Request;
           res: express.Response;
         }>(opts);
@@ -706,7 +698,6 @@ describe("adapters:fastify", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: fastify.FastifyRequest;
           res: fastify.FastifyReply;
         }>(opts);
@@ -819,9 +810,7 @@ describe("adapters:effect-platform", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: HttpServerRequest.HttpServerRequest;
-          res: undefined;
         }>(opts);
         return {};
       })
