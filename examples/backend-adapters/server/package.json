@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241230.0",
+    "@types/bun": "^1.2.5",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "tsx": "^4.19.2",

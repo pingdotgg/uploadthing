@@ -20,7 +20,6 @@ export type { FileRouter };
 type AdapterArgs = {
   req: ExpressRequest;
   res: ExpressResponse;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -30,8 +29,11 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  const handler = makeAdapterHandler<[ExpressRequest, ExpressResponse]>(
-    (req, res) => Effect.succeed({ req, res, event: undefined }),
+  const handler = makeAdapterHandler<
+    [ExpressRequest, ExpressResponse],
+    AdapterArgs
+  >(
+    (req, res) => Effect.succeed({ req, res }),
     (req) =>
       Effect.flatMap(getPostBody({ req }), (body) =>
         toWebRequest(req, body),

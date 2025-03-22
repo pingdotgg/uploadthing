@@ -49,8 +49,6 @@ describe("adapters:h3", async () => {
         middlewareMock(opts);
         expectTypeOf<{
           event: H3Event;
-          req: undefined;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -107,8 +105,6 @@ describe("adapters:h3", async () => {
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
         event: expect.any(H3Event),
-        req: undefined,
-        res: undefined,
       }),
     );
 
@@ -159,9 +155,7 @@ describe("adapters:server", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: Request;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -210,7 +204,7 @@ describe("adapters:server", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res: undefined }),
+      expect.objectContaining({ req }),
     );
 
     // Should proceed to generate a signed URL
@@ -268,7 +262,7 @@ describe("adapters:server", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res: undefined }),
+      expect.objectContaining({ req }),
     );
 
     // Should proceed to generate a signed URL
@@ -314,9 +308,7 @@ describe("adapters:next", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: NextRequest;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -367,7 +359,7 @@ describe("adapters:next", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res: undefined }),
+      expect.objectContaining({ req }),
     );
 
     // Should proceed to generate a signed URL
@@ -415,7 +407,6 @@ describe("adapters:next-legacy", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: NextApiRequest;
           res: NextApiResponse;
         }>(opts);
@@ -507,7 +498,7 @@ describe("adapters:next-legacy", async () => {
 
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
-      expect.objectContaining({ event: undefined, req, res }),
+      expect.objectContaining({ req, res }),
     );
 
     // Should proceed to generate a signed URL
@@ -555,7 +546,6 @@ describe("adapters:express", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: express.Request;
           res: express.Response;
         }>(opts);
@@ -615,7 +605,6 @@ describe("adapters:express", async () => {
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: undefined,
         req: expect.objectContaining({
           baseUrl: "/api/uploadthing",
           url: "/?slug=middleware&actionType=upload",
@@ -706,7 +695,6 @@ describe("adapters:fastify", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: fastify.FastifyRequest;
           res: fastify.FastifyReply;
         }>(opts);
@@ -763,7 +751,6 @@ describe("adapters:fastify", async () => {
     expect(middlewareMock).toHaveBeenCalledOnce();
     expect(middlewareMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        event: undefined,
         req: expect.objectContaining({
           id: "req-1",
           params: {},
@@ -819,9 +806,7 @@ describe("adapters:effect-platform", async () => {
       .middleware((opts) => {
         middlewareMock(opts);
         expectTypeOf<{
-          event: undefined;
           req: HttpServerRequest.HttpServerRequest;
-          res: undefined;
         }>(opts);
         return {};
       })
@@ -902,8 +887,6 @@ describe("adapters:effect-platform", async () => {
       expect(middlewareMock).toHaveBeenCalledOnce();
       expect(middlewareMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          event: undefined,
-          res: undefined,
           req: serverRequest,
         }),
       );

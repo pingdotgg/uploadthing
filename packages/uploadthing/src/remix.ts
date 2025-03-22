@@ -12,8 +12,6 @@ export type { FileRouter };
 export { UTFiles } from "./_internal/types";
 
 type AdapterArgs = {
-  req: undefined;
-  res: undefined;
   event: ActionFunctionArgs;
 };
 
@@ -24,8 +22,8 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const handler = makeAdapterHandler<[ActionFunctionArgs]>(
-    (args) => Effect.succeed({ req: undefined, res: undefined, event: args }),
+  const handler = makeAdapterHandler<[ActionFunctionArgs], AdapterArgs>(
+    (args) => Effect.succeed({ event: args }),
     (args) => Effect.succeed(args.request),
     opts,
     "remix",

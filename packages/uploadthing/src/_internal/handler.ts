@@ -47,19 +47,32 @@ import {
   UploadThingHook,
 } from "./shared-schemas";
 import { UTFiles } from "./types";
-import type { AdapterFnArgs, AnyFileRoute, UTEvents } from "./types";
+import type { AnyFileRoute, UTEvents } from "./types";
 
 export class AdapterArguments extends Context.Tag(
   "uploadthing/AdapterArguments",
-)<AdapterArguments, AdapterFnArgs<any, any, any>>() {}
+)<AdapterArguments, Record<string, unknown>>() {}
 
-export const makeAdapterHandler = <Args extends any[]>(
-  makeAdapterArgs: (
-    ...args: Args
-  ) => Effect.Effect<AdapterFnArgs<any, any, any>>,
+/**
+ * Create a request handler adapter for any framework or server library.
+ * Refer to the existing adapters for examples on how to use this function.
+ * @public
+ *
+ * @param makeAdapterArgs - Function that takes the args from your framework and returns an Effect that resolves to the adapter args.
+ * These args are passed to the `.middleware`, `.onUploadComplete`, and `.onUploadError` hooks.
+ * @param toRequest - Function that takes the args from your framework and returns an Effect that resolves to a web Request object.
+ * @param opts - The router config and other options that are normally passed to `createRequestHandler` of official adapters
+ * @param beAdapter - [Optional] The adapter name of the adapter, used for telemetry purposes
+ * @returns A function that takes the args from your framework and returns a promise that resolves to a Response object.
+ */
+export const makeAdapterHandler = <
+  Args extends any[],
+  AdapterArgs extends Record<string, unknown>,
+>(
+  makeAdapterArgs: (...args: Args) => Effect.Effect<AdapterArgs>,
   toRequest: (...args: Args) => Effect.Effect<Request>,
   opts: RouteHandlerOptions<FileRouter>,
-  beAdapter: string,
+  beAdapter?: string,
 ): ((...args: Args) => Promise<Response>) => {
   const managed = makeRuntime(
     opts.config?.fetch as typeof globalThis.fetch,
@@ -72,7 +85,7 @@ export const makeAdapterHandler = <Args extends any[]>(
   const app = (...args: Args) =>
     Effect.map(
       Effect.promise(() =>
-        managed.runPromise(createRequestHandler(opts, beAdapter)),
+        managed.runPromise(createRequestHandler(opts, beAdapter ?? "custom")),
       ),
       Effect.provideServiceEffect(AdapterArguments, makeAdapterArgs(...args)),
     );
