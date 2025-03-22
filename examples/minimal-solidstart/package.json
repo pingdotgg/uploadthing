@@ -16,7 +16,7 @@
     "@solidjs/start": "^1.0.10",
     "@uploadthing/solid": "7.3.0",
     "solid-js": "^1.9.3",
-    "uploadthing": "7.5.2",
+    "uploadthing": "7.6.0",
     "vinxi": "^0.5.1"
   },
   "engines": {

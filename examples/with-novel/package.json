@@ -24,7 +24,7 @@
     "react-dom": "18.3.1",
     "sonner": "^1.7.1",
     "tailwind-merge": "^2.2.1",
-    "uploadthing": "7.5.2",
+    "uploadthing": "7.6.0",
     "use-debounce": "^10.0.4"
   },
   "devDependencies": {
