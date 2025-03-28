@@ -29,6 +29,8 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
     onClientUploadComplete: (files) => {
       queryClient.invalidateQueries(trpc.getFiles.queryFilter());
 
+      console.log("onClientUploadComplete", files);
+
       if (files.length === 1) {
         // Auto-open the file if there's only one
         const { key, name } = files[0];

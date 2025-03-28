@@ -270,6 +270,7 @@ export const genUploader = <TRouter extends FileRouter>(
         Micro.runPromiseExit(effect, opts.signal && { signal: opts.signal }),
       )
       .then((exit) => {
+        console.log("exit", exit);
         if (exit._tag === "Success") {
           return exit.value;
         } else if (exit.cause._tag === "Interrupt") {

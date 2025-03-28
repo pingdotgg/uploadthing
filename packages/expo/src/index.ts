@@ -56,7 +56,7 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
   try {
     url = new URL(
       initOpts?.url ?? "/api/uploadthing",
-      typeof window.location !== "undefined"
+      typeof window !== "undefined" && typeof window.location !== "undefined"
         ? window.location.origin
         : (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`),
     );
@@ -70,7 +70,7 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
     );
   }
 
-  const fetch = initOpts?.fetch ?? globalThis.fetch;
+  const fetch = initOpts?.fetch ?? globalThis.fetch.bind(globalThis);
   const opts = {
     ...initOpts,
     url,

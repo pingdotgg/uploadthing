@@ -117,6 +117,8 @@ export function __useUploadThingInternal<
         input,
       });
 
+      console.log("onClientUploadComplete", res);
+
       await opts?.onClientUploadComplete?.(res);
       return res;
     } catch (e) {

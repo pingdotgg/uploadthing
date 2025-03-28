@@ -40,7 +40,9 @@ const uploadWithProgress = (
     });
     xhr.addEventListener("load", () => {
       if (xhr.status >= 200 && xhr.status < 300 && isRecord(xhr.response)) {
+        console.log("xhr load event", xhr.response);
         if (hasProperty(xhr.response, "error")) {
+          console.log("resume error", "UPLOAD_FAILED", xhr.response);
           resume(
             new UploadThingError({
               code: "UPLOAD_FAILED",
@@ -49,9 +51,17 @@ const uploadWithProgress = (
             }),
           );
         } else {
+          console.log("resume success", xhr.response);
           resume(Micro.succeed(xhr.response));
         }
       } else {
+        console.log(
+          "resume error",
+          "UPLOAD_FAILED",
+          xhr.response,
+          xhr.status,
+          xhr.statusText,
+        );
         resume(
           new UploadThingError({
             code: "UPLOAD_FAILED",
@@ -65,6 +75,7 @@ const uploadWithProgress = (
     // Is there a case when the client would throw and
     // ingest server not knowing about it? idts?
     xhr.addEventListener("error", () => {
+      console.log("resume error", "UPLOAD_FAILED");
       resume(
         new UploadThingError({
           code: "UPLOAD_FAILED",
@@ -95,6 +106,8 @@ const uploadWithProgress = (
     } else {
       formData.append("file", rangeStart > 0 ? file.slice(rangeStart) : file);
     }
+
+    console.log("formData", formData);
     xhr.send(formData);
 
     return Micro.sync(() => xhr.abort());
@@ -133,29 +146,38 @@ export const uploadFile = <
       ),
     ),
     Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
-    Micro.map((uploadResponse) => ({
-      name: file.name,
-      size: file.size,
-      key: presigned.key,
-      lastModified: file.lastModified,
-      serverData: uploadResponse.serverData,
-      get url() {
-        logDeprecationWarning(
-          "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
-        );
-        return uploadResponse.url;
-      },
-      get appUrl() {
-        logDeprecationWarning(
-          "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
-        );
-        return uploadResponse.appUrl;
-      },
-      ufsUrl: uploadResponse.ufsUrl,
-      customId: presigned.customId,
-      type: file.type,
-      fileHash: uploadResponse.fileHash,
-    })),
+    Micro.tap((uploadResponse) => {
+      console.log("uploadResponse", uploadResponse);
+    }),
+    Micro.map(
+      (uploadResponse) =>
+        ({
+          name: file.name,
+          size: file.size,
+          key: presigned.key,
+          lastModified: file.lastModified,
+          serverData: uploadResponse.serverData,
+          // get url() {
+          //   logDeprecationWarning(
+          //     "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+          //   );
+          //   return uploadResponse.url;
+          // },
+          // get appUrl() {
+          //   logDeprecationWarning(
+          //     "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+          //   );
+          //   return uploadResponse.appUrl;
+          // },
+          ufsUrl: uploadResponse.ufsUrl,
+          customId: presigned.customId,
+          type: file.type,
+          fileHash: uploadResponse.fileHash,
+        }) as any,
+    ),
+    Micro.tap((file) => {
+      console.log("file 1", file);
+    }),
   );
 
 export const uploadFilesInternal = <
@@ -216,9 +238,17 @@ export const uploadFilesInternal = <
                     });
                   },
                 },
+              ).pipe(
+                Micro.tap((file) => {
+                  console.log("file 2", file);
+                }),
               ),
           ),
         { concurrency: 6 },
+      ).pipe(
+        Micro.tap((files) => {
+          console.log("files", files);
+        }),
       ),
   );
 };

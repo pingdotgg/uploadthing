@@ -52,7 +52,7 @@ function resolveUrl() {
   try {
     return new URL(
       "/api/trpc",
-      typeof window.location !== "undefined"
+      typeof window !== "undefined" && typeof window.location !== "undefined"
         ? window.location.origin
         : (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`),
     );
