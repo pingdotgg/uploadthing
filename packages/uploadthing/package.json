@@ -142,11 +142,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.72.0",
+    "@effect/platform": "0.80.2",
     "@standard-schema/spec": "1.0.0-beta.4",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.12.0"
+    "effect": "3.14.2"
   },
   "devDependencies": {
     "@remix-run/server-runtime": "^2.12.0",

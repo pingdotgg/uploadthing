@@ -99,16 +99,24 @@ export const GENERATE_useImageUploader = <
       }
       if (!granted) return opts.onInsufficientPermissions?.();
 
+      console.log("launchFn", launchFn);
+
       const response = await launchFn({
         mediaTypes: mediaTypes ?? ImagePicker.MediaTypeOptions.All,
         allowsEditing: multiple ? false : allowsEditing,
         allowsMultipleSelection: multiple,
         quality,
       });
+      console.log("response", response);
       if (response.canceled) return opts.onCancel?.();
 
       const files = await Promise.all(
         response.assets.map(async (a) => {
+          console.log("web file object???", (a as any).file);
+          if ("file" in a) {
+            return a.file;
+          }
+
           const blob = await initOpts.fetch(a.uri).then((r) => r.blob());
           const n = a.fileName ?? a.uri.split("/").pop() ?? "unknown-filename";
           const file = new File([blob], n, {
@@ -123,6 +131,8 @@ export const GENERATE_useImageUploader = <
           return RNFormDataCompatibleFile;
         }),
       );
+
+      console.log("files", files);
 
       // This cast works cause you can append { uri, type, name } as FormData
       return startUpload(
