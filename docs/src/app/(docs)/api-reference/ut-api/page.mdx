@@ -395,7 +395,7 @@ id.
 import { utapi } from "~/server/uploadthing.ts";
 
 await utapi.renameFiles({
-  key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+  fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
   newName: "myImage.jpg",
 });
 await utapi.renameFiles({
@@ -405,11 +405,11 @@ await utapi.renameFiles({
 
 await utapi.renameFiles([
   {
-    key: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
+    fileKey: "2e0fdb64-9957-4262-8e45-f372ba903ac8_image.jpg",
     newName: "myImage.jpg",
   },
   {
-    key: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
+    fileKey: "1649353b-04ea-48a2-9db7-31de7f562c8d_image2.jpg",
     newName: "myOtherImage.jpg",
   },
 ]);
