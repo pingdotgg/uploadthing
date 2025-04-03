@@ -54,6 +54,14 @@ export type UseUploadthingProps<
   TServerOutput = inferEndpointOutput<TFileRoute>,
 > = {
   /**
+   * Called when a file upload is completed
+   */
+  onFileUploadComplete?: (
+    uploadResponse: any,
+    index: number,
+    total: number,
+  ) => void;
+  /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
    * Can be used to modify the files before they are uploaded, e.g. renaming them
    */

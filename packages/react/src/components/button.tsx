@@ -3,6 +3,11 @@
 import type { CSSProperties } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
+import type {
+  ContentField,
+  ErrorMessage,
+  StyleField,
+} from "@uploadthing/shared";
 import {
   allowedContentTextLabelGenerator,
   contentFieldToContent,
@@ -14,11 +19,6 @@ import {
   styleFieldToClassName,
   styleFieldToCssObject,
   UploadAbortedError,
-} from "@uploadthing/shared";
-import type {
-  ContentField,
-  ErrorMessage,
-  StyleField,
 } from "@uploadthing/shared";
 import type { FileRouter } from "uploadthing/types";
 
@@ -116,6 +116,9 @@ export function UploadButton<
     {
       signal: acRef.current.signal,
       headers: $props.headers,
+      onFileUploadComplete: (uploadResponse, index, total) => {
+        $props?.onFileUploadComplete?.(uploadResponse, index, total);
+      },
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";

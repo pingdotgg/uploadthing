@@ -108,6 +108,9 @@ export const uploadFile = <
   file: File,
   presigned: NewPresignedUrl,
   opts: {
+    onFileUploadComplete?: (
+      uploadResponse: UploadPutResult<TServerOutput>,
+    ) => void;
     onUploadProgress?: (progressEvent: {
       loaded: number;
       delta: number;
@@ -133,6 +136,7 @@ export const uploadFile = <
       ),
     ),
     Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
+    Micro.tap((uploadResponse) => opts.onFileUploadComplete?.(uploadResponse)),
     Micro.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
@@ -204,6 +208,14 @@ export const uploadFilesInternal = <
                 opts.files[i]!,
                 presigned,
                 {
+                  onFileUploadComplete: (uploadResponse) => {
+                    // @ts-expect-error temp
+                    opts.onFileUploadComplete?.(
+                      uploadResponse,
+                      i,
+                      opts.files.length,
+                    );
+                  },
                   onUploadProgress: (ev) => {
                     totalLoaded += ev.delta;
                     opts.onUploadProgress?.({
