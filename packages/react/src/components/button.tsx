@@ -116,9 +116,7 @@ export function UploadButton<
     {
       signal: acRef.current.signal,
       headers: $props.headers,
-      onFileUploadComplete: (uploadResponse, index, total) => {
-        $props?.onFileUploadComplete?.(uploadResponse, index, total);
-      },
+      onFileUploadComplete: $props.onFileUploadComplete,
       onClientUploadComplete: (res) => {
         if (fileInputRef.current) {
           fileInputRef.current.value = "";

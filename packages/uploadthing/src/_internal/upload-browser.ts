@@ -108,13 +108,8 @@ export const uploadFile = <
   file: File,
   presigned: NewPresignedUrl,
   opts: {
-    onFileUploadComplete?: (
-      uploadResponse: UploadPutResult<TServerOutput>,
-    ) => void;
-    onUploadProgress?: (progressEvent: {
-      loaded: number;
-      delta: number;
-    }) => void;
+    onFileUploadComplete?: (_: ClientUploadedFileData<TServerOutput>) => void;
+    onUploadProgress?: (_: { loaded: number; delta: number }) => void;
   },
 ) =>
   fetchEff(presigned.url, { method: "HEAD" }).pipe(
@@ -136,7 +131,6 @@ export const uploadFile = <
       ),
     ),
     Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
-    Micro.tap((uploadResponse) => opts.onFileUploadComplete?.(uploadResponse)),
     Micro.map((uploadResponse) => ({
       name: file.name,
       size: file.size,
@@ -160,6 +154,7 @@ export const uploadFile = <
       type: file.type,
       fileHash: uploadResponse.fileHash,
     })),
+    Micro.tap((fileData) => opts.onFileUploadComplete?.(fileData)),
   );
 
 export const uploadFilesInternal = <
@@ -208,13 +203,12 @@ export const uploadFilesInternal = <
                 opts.files[i]!,
                 presigned,
                 {
-                  onFileUploadComplete: (uploadResponse) => {
-                    // @ts-expect-error temp
-                    opts.onFileUploadComplete?.(
-                      uploadResponse,
-                      i,
-                      opts.files.length,
-                    );
+                  onFileUploadComplete: (result) => {
+                    opts.onFileUploadComplete?.({
+                      fileData: result,
+                      file: opts.files[i]!,
+                      files: opts.files,
+                    });
                   },
                   onUploadProgress: (ev) => {
                     totalLoaded += ev.delta;

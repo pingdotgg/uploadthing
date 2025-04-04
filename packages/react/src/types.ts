@@ -56,11 +56,22 @@ export type UseUploadthingProps<
   /**
    * Called when a file upload is completed
    */
-  onFileUploadComplete?: (
-    uploadResponse: any,
-    index: number,
-    total: number,
-  ) => void;
+  onFileUploadComplete?:
+    | ((_: {
+        /**
+         * The response from the upload
+         */
+        fileData: ClientUploadedFileData<TServerOutput>;
+        /**
+         * The file object that was uploaded
+         */
+        file: File;
+        /**
+         * All the files that are in this upload
+         */
+        files: File[];
+      }) => void)
+    | undefined;
   /**
    * Called when the upload is submitted and the server is about to be queried for presigned URLs
    * Can be used to modify the files before they are uploaded, e.g. renaming them

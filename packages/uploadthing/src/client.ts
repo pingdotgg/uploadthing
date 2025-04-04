@@ -253,13 +253,7 @@ export const genUploader = <TRouter extends FileRouter>(
     opts: Omit<
       UploadFilesOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
-    > & {
-      onFileUploadComplete?: (
-        uploadResponse: any,
-        index: number,
-        total: number,
-      ) => void;
-    },
+    >,
   ) => {
     const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
     const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
