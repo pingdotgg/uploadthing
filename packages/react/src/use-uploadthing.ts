@@ -91,6 +91,7 @@ function useUploadThingInternal<
         signal: opts?.signal,
         headers: opts?.headers,
         files,
+        onFileUploadComplete: opts?.onFileUploadComplete,
         onUploadProgress: (progress) => {
           if (!opts?.onUploadProgress) return;
           fileProgress.current.set(progress.file, progress.progress);
