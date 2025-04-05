@@ -5,6 +5,7 @@
     "build": {
       "outputs": [
         "client/**",
+        "client-future/**",
         "dist/**",
         "effect-platform/**",
         "express/**",

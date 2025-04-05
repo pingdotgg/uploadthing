@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import cx from "clsx";
+import { cx } from "class-variance-authority";
 
 import { deleteFile, getFileUrl } from "../lib/actions";
 import { ListedFileInfo } from "../lib/data";
@@ -40,13 +40,16 @@ export function FileCard({ file }: { file: ListedFileInfo }) {
           {isOpening ? "⏳" : file.status === "Uploaded" ? "Open" : file.status}
         </Button>
         <Button
-          color="outline"
+          size="icon"
           onClick={() => {
             startDeleteTransition(async () => {
               await deleteFile(file.key);
             });
           }}
-          className={cx(isDeleting && "animate-pulse border-red-600")}
+          className={cx(
+            "bg-red-600 text-red-50 hover:bg-red-700",
+            isDeleting && "animate-pulse border-red-600",
+          )}
           disabled={isDeleting}
         >
           {isDeleting ? "⏳" : "❌"}

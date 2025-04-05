@@ -14,7 +14,48 @@ import { getSession } from "../../../lib/data";
 const fileRoute = createUploadthing();
 
 export const uploadRouter = {
-  anything: fileRoute({ blob: { maxFileSize: "256MB" } })
+  anyPrivate: fileRoute({
+    blob: { maxFileSize: "256MB", maxFileCount: 10, acl: "private" },
+  })
+    .input(z.object({}))
+    .middleware(async (opts) => {
+      const session = await getSession();
+      if (!session) {
+        throw new UploadThingError("Unauthorized");
+      }
+
+      console.log("middleware ::", session.sub, opts.input);
+
+      return {};
+    })
+    .onUploadComplete(async (opts) => {
+      console.log("Upload complete", opts.file);
+      revalidateTag(CACHE_TAGS.LIST_FILES);
+    }),
+
+  anyPublic: fileRoute({
+    blob: { maxFileSize: "256MB", maxFileCount: 10, acl: "public-read" },
+  })
+    .input(z.object({}))
+    .middleware(async (opts) => {
+      const session = await getSession();
+      if (!session) {
+        throw new UploadThingError("Unauthorized");
+      }
+
+      console.log("middleware ::", session.sub, opts.input);
+
+      return {};
+    })
+    .onUploadComplete(async (opts) => {
+      console.log("Upload complete", opts.file);
+      revalidateTag(CACHE_TAGS.LIST_FILES);
+    }),
+
+  images: fileRoute(
+    { image: { maxFileSize: "256MB", maxFileCount: 10, acl: "public-read" } },
+    { awaitServerData: false },
+  )
     .input(z.object({}))
     .middleware(async (opts) => {
       const session = await getSession();

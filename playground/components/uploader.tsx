@@ -61,7 +61,7 @@ export function Uploader() {
       <div className="space-y-1">
         <Label>Upload (client)</Label>
         <UTButton
-          endpoint={(rr) => rr.anything}
+          endpoint={(rr) => rr.anyPrivate}
           input={{}}
           onUploadError={(error) => {
             window.alert(error.message);

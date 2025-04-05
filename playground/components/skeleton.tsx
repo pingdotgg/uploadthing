@@ -1,4 +1,4 @@
-import cx from "clsx";
+import { cx } from "class-variance-authority";
 
 export function Skeleton({
   className,

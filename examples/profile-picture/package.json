@@ -16,7 +16,7 @@
     "@auth/drizzle-adapter": "^1.2.0",
     "@libsql/client": "^0.14.0",
     "@uploadthing/react": "7.3.0",
-    "class-variance-authority": "^0.7.0",
+    "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "drizzle-orm": "^0.38.3",
     "lucide-react": "^0.469.0",

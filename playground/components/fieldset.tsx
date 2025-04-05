@@ -1,5 +1,5 @@
 import * as React from "react";
-import cx from "clsx";
+import { cx } from "class-variance-authority";
 
 export function Input({
   className,
