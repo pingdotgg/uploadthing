@@ -108,10 +108,8 @@ export const uploadFile = <
   file: File,
   presigned: NewPresignedUrl,
   opts: {
-    onUploadProgress?: (progressEvent: {
-      loaded: number;
-      delta: number;
-    }) => void;
+    onFileUploadComplete?: (_: ClientUploadedFileData<TServerOutput>) => void;
+    onUploadProgress?: (_: { loaded: number; delta: number }) => void;
   },
 ) =>
   fetchEff(presigned.url, { method: "HEAD" }).pipe(
@@ -156,6 +154,7 @@ export const uploadFile = <
       type: file.type,
       fileHash: uploadResponse.fileHash,
     })),
+    Micro.tap((fileData) => opts.onFileUploadComplete?.(fileData)),
   );
 
 export const uploadFilesInternal = <
@@ -204,6 +203,13 @@ export const uploadFilesInternal = <
                 opts.files[i]!,
                 presigned,
                 {
+                  onFileUploadComplete: (result) => {
+                    opts.onFileUploadComplete?.({
+                      fileData: result,
+                      file: opts.files[i]!,
+                      files: opts.files,
+                    });
+                  },
                   onUploadProgress: (ev) => {
                     totalLoaded += ev.delta;
                     opts.onUploadProgress?.({
