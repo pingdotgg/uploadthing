@@ -148,17 +148,28 @@ export class UTApi {
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
+    const concurrency = opts?.concurrency ?? 1;
+    if (concurrency < 1 || concurrency > 25) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "concurrency must be a positive integer between 1 and 25",
+      });
+    }
+
     const program: Effect.Effect<
       UploadFileResult | UploadFileResult[],
       never,
       HttpClient.HttpClient
-    > = Effect.forEach(Arr.ensure(files), (file) =>
-      uploadFile(file, opts ?? {}).pipe(
-        Effect.match({
-          onSuccess: (data) => ({ data, error: null }),
-          onFailure: (error) => ({ data: null, error }),
-        }),
-      ),
+    > = Effect.forEach(
+      Arr.ensure(files),
+      (file) =>
+        uploadFile(file, opts ?? {}).pipe(
+          Effect.match({
+            onSuccess: (data) => ({ data, error: null }),
+            onFailure: (error) => ({ data: null, error }),
+          }),
+        ),
+      { concurrency },
     ).pipe(
       Effect.map((ups) => (Array.isArray(files) ? ups : ups[0]!)),
       Effect.tap((res) =>
@@ -199,18 +210,29 @@ export class UTApi {
   ): Promise<UploadFileResult | UploadFileResult[]> {
     guardServerOnly();
 
+    const concurrency = opts?.concurrency ?? 1;
+    if (concurrency < 1 || concurrency > 25) {
+      throw new UploadThingError({
+        code: "BAD_REQUEST",
+        message: "concurrency must be a positive integer between 1 and 25",
+      });
+    }
+
     const program: Effect.Effect<
       UploadFileResult | UploadFileResult[],
       never,
       HttpClient.HttpClient
-    > = Effect.forEach(Arr.ensure(urls), (url) =>
-      downloadFile(url).pipe(
-        Effect.flatMap((file) => uploadFile(file, opts ?? {})),
-        Effect.match({
-          onSuccess: (data) => ({ data, error: null }),
-          onFailure: (error) => ({ data: null, error }),
-        }),
-      ),
+    > = Effect.forEach(
+      Arr.ensure(urls),
+      (url) =>
+        downloadFile(url).pipe(
+          Effect.flatMap((file) => uploadFile(file, opts ?? {})),
+          Effect.match({
+            onSuccess: (data) => ({ data, error: null }),
+            onFailure: (error) => ({ data: null, error }),
+          }),
+        ),
+      { concurrency },
     )
       .pipe(
         Effect.map((ups) => (Array.isArray(urls) ? ups : ups[0]!)),
