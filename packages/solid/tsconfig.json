@@ -15,7 +15,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noUncheckedIndexedAccess": true,
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+    "incremental": true,
+    "tsBuildInfoFile": ".cache/tsbuildinfo.json"
   },
   "exclude": ["node_modules", "dist"],
   "include": ["src", "./tsup.config.ts"]

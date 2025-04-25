@@ -26,6 +26,9 @@
       "dependsOn": ["^topo", "^build", "dev:prepare"],
       "outputs": [],
       "cache": false
+    },
+    "typecheck": {
+      "outputs": [".cache/tsbuildinfo.json"]
     }
   }
 }

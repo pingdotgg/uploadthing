@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { twMerge } from "tailwind-merge";
 
 const Dialog = DialogPrimitive.Root;

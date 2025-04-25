@@ -3,10 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", "native/**", "next-ssr-plugin/**"]
-    },
-    "dev": {
-      "persistent": false
+      "outputs": ["dist/**"]
     },
     "typecheck": {
       "outputs": [".cache/tsbuildinfo.json"]

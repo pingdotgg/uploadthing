@@ -93,7 +93,13 @@ describe.runIf(shouldRun)(
         error: null,
       });
 
-      const content = await fetch(result.data!.url).then((r) => r.text());
+      const content = await fetch(result.data!.ufsUrl)
+        .then((r) => r.text())
+        .catch((e) => {
+          // eslint-disable-next-line no-console
+          console.error("error", e);
+          throw e;
+        });
       expect(content).toBe("foo");
 
       const usageInfo = await utapi.getUsageInfo();

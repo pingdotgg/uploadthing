@@ -13,21 +13,21 @@
   "dependencies": {
     "@clerk/nextjs": "^6.9.6",
     "@t3-oss/env-nextjs": "^0.11.1",
-    "@uploadthing/react": "7.3.0",
-    "next": "15.2.3",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "uploadthing": "7.6.0",
+    "@uploadthing/react": "workspace:7.3.0",
+    "next": "15.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "uploadthing": "workspace:7.6.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.2.0",
     "@types/node": "^22.10.0",
-    "@types/react": "18.3.3",
-    "@types/react-dom": "18.3.0",
-    "eslint": "9.17.0",
+    "@types/react": "19.1.2",
+    "@types/react-dom": "19.1.2",
+    "eslint": "9.25.1",
     "eslint-config-next": "15.2.3",
-    "typescript": "5.7.2"
+    "typescript": "5.8.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.20.0"

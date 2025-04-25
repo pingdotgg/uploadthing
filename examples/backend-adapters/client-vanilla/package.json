@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "uploadthing": "7.6.0"
+    "uploadthing": "workspace:7.6.0"
   },
   "devDependencies": {
-    "typescript": "5.7.2",
+    "typescript": "5.8.3",
     "vite": "^6.0.7"
   }
 }

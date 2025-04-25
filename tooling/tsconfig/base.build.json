@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     /* Base Options: */
-    "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "es2022",
     "allowJs": true,
@@ -11,6 +10,8 @@
     "isolatedModules": true,
     "noErrorTruncation": true,
     "exactOptionalPropertyTypes": true,
+    "erasableSyntaxOnly": true,
+    "libReplacement": false,
 
     /* Strictness */
     "strict": true,
@@ -20,9 +21,12 @@
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
     "noEmit": true,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "jsx": "preserve"
+    "module": "Preserve",
+    "jsx": "preserve",
+
+    /** Monorepo */
+    "incremental": true,
+    "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.json"
   },
   "include": ["*.ts"],
   "exclude": ["node_modules"]

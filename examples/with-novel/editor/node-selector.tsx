@@ -1,6 +1,6 @@
+import * as React from "react";
 import { Button } from "@/ui/button";
 import { PopoverContent, PopoverTrigger } from "@/ui/popover";
-import { Popover } from "@radix-ui/react-popover";
 import {
   Check,
   CheckSquare,
@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { EditorBubbleItem, useEditor } from "novel";
+import { Popover } from "radix-ui";
 
 type NovelEditor = NonNullable<ReturnType<typeof useEditor>["editor"]>;
 
@@ -106,7 +107,7 @@ export const NodeSelector = ({ open, onOpenChange }: NodeSelectorProps) => {
   };
 
   return (
-    <Popover modal={true} open={open} onOpenChange={onOpenChange}>
+    <Popover.Popover modal={true} open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger
         asChild
         className="hover:bg-accent gap-2 rounded-none border-none focus:ring-0"
@@ -136,6 +137,6 @@ export const NodeSelector = ({ open, onOpenChange }: NodeSelectorProps) => {
           </EditorBubbleItem>
         ))}
       </PopoverContent>
-    </Popover>
+    </Popover.Popover>
   );
 };

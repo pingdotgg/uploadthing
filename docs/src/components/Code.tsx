@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Children,
-  createContext,
-  isValidElement,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import * as React from "react";
 import { Tag } from "@/components/Tag";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { ClipboardIcon } from "@heroicons/react/16/solid";
@@ -44,10 +36,10 @@ function getPanelTitle({
 }
 
 function CopyButton({ code }: { code: string }) {
-  let [copyCount, setCopyCount] = useState(0);
+  let [copyCount, setCopyCount] = React.useState(0);
   let copied = copyCount > 0;
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (copyCount > 0) {
       let timeout = setTimeout(() => setCopyCount(0), 1000);
       return () => {
@@ -129,12 +121,12 @@ function CodePanel({
   label?: string;
   code?: string;
 }) {
-  let child = Children.only(children);
+  let child = React.Children.only(children);
 
-  if (isValidElement(child)) {
-    tag = child.props.tag ?? tag;
-    label = child.props.label ?? label;
-    code = child.props.code ?? code;
+  if (React.isValidElement(child)) {
+    tag = (child.props as { tag?: string }).tag ?? tag;
+    label = (child.props as { label?: string }).label ?? label;
+    code = (child.props as { code?: string }).code ?? code;
   }
 
   if (!code) {
@@ -163,7 +155,7 @@ function CodeGroupHeader({
   children: React.ReactNode;
   selectedIndex: number;
 }) {
-  let hasTabs = Children.count(children) > 1;
+  let hasTabs = React.Children.count(children) > 1;
 
   if (!title && !hasTabs) {
     return null;
@@ -178,7 +170,7 @@ function CodeGroupHeader({
       )}
       {hasTabs && (
         <TabList className="-mb-px flex gap-4 text-xs font-medium">
-          {Children.map(children, (child, childIndex) => (
+          {React.Children.map(children, (child, childIndex) => (
             <Tab
               className={clsx(
                 "ui-not-focus-visible:outline-none border-b-2 py-3 transition",
@@ -187,7 +179,9 @@ function CodeGroupHeader({
                   : "border-transparent text-zinc-700 hover:text-zinc-500 dark:text-zinc-400 dark:hover:text-zinc-300",
               )}
             >
-              {getPanelTitle(isValidElement(child) ? child.props : {})}
+              {getPanelTitle(
+                React.isValidElement(child) ? (child.props as any) : {},
+              )}
             </Tab>
           ))}
         </TabList>
@@ -200,12 +194,12 @@ function CodeGroupPanels({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<typeof CodePanel>) {
-  let hasTabs = Children.count(children) > 1;
+  let hasTabs = React.Children.count(children) > 1;
 
   if (hasTabs) {
     return (
       <TabPanels>
-        {Children.map(children, (child) => (
+        {React.Children.map(children, (child) => (
           <TabPanel>
             <CodePanel {...props}>{child}</CodePanel>
           </TabPanel>
@@ -218,10 +212,10 @@ function CodeGroupPanels({
 }
 
 function usePreventLayoutShift() {
-  let positionRef = useRef<HTMLElement>(null);
-  let rafRef = useRef<number>();
+  let positionRef = React.useRef<HTMLElement>(null!);
+  let rafRef = React.useRef<number>(null!);
 
-  useEffect(() => {
+  React.useEffect(() => {
     return () => {
       if (typeof rafRef.current !== "undefined") {
         window.cancelAnimationFrame(rafRef.current);
@@ -268,7 +262,7 @@ const usePreferredLanguageStore = create<{
 function useTabGroupProps(availableLanguages: Array<string>) {
   let { preferredLanguages, addPreferredLanguage } =
     usePreferredLanguageStore();
-  let [selectedIndex, setSelectedIndex] = useState(0);
+  let [selectedIndex, setSelectedIndex] = React.useState(0);
   let activeLanguage = [...availableLanguages].sort(
     (a, z) => preferredLanguages.indexOf(z) - preferredLanguages.indexOf(a),
   )[0];
@@ -292,7 +286,7 @@ function useTabGroupProps(availableLanguages: Array<string>) {
   };
 }
 
-const CodeGroupContext = createContext(false);
+const CodeGroupContext = React.createContext(false);
 
 export function CodeGroup({
   children,
@@ -300,11 +294,11 @@ export function CodeGroup({
   ...props
 }: React.ComponentPropsWithoutRef<typeof CodeGroupPanels> & { title: string }) {
   let languages =
-    Children.map(children, (child) =>
-      getPanelTitle(isValidElement(child) ? child.props : {}),
+    React.Children.map(children, (child) =>
+      getPanelTitle(React.isValidElement(child) ? (child.props as any) : {}),
     ) ?? [];
   let tabGroupProps = useTabGroupProps(languages);
-  let hasTabs = Children.count(children) > 1;
+  let hasTabs = React.Children.count(children) > 1;
 
   let containerClassName =
     "my-6 overflow-hidden rounded-2xl bg-zinc-100 dark:bg-zinc-900 shadow-md dark:ring-1 dark:ring-white/10";
@@ -340,7 +334,7 @@ export function Code({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<"code">) {
-  let isGrouped = useContext(CodeGroupContext);
+  let isGrouped = React.use(CodeGroupContext);
 
   if (isGrouped) {
     if (typeof children !== "string") {
@@ -358,7 +352,7 @@ export function Pre({
   children,
   ...props
 }: React.ComponentPropsWithoutRef<typeof CodeGroup>) {
-  let isGrouped = useContext(CodeGroupContext);
+  let isGrouped = React.use(CodeGroupContext);
 
   if (isGrouped) {
     return children;

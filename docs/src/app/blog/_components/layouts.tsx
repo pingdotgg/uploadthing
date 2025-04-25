@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext } from "react";
+import * as React from "react";
 import { usePathname } from "next/navigation";
 import { AppContext } from "@/app/providers";
 import { Avatar } from "@/components/Avatar";
@@ -91,7 +91,7 @@ export function ArticleLayout({
 }) {
   let pathname = usePathname();
   let router = useTransitionRouter();
-  let { previousPathname } = useContext(AppContext);
+  let { previousPathname } = React.use(AppContext);
 
   const sections = useSectionStore((s) => s.sections);
 

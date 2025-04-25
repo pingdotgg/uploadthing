@@ -89,7 +89,7 @@ export function Heading<Level extends 2 | 3>({
 }) {
   level = level ?? (2 as Level);
   let Component = `h${level}` as "h2" | "h3";
-  let ref = useRef<HTMLHeadingElement>(null);
+  let ref = useRef<HTMLHeadingElement>(null!);
   let registerHeading = useSectionStore((s) => s.registerHeading);
 
   let inView = useInView(ref, {

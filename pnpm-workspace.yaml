@@ -1,3 +1,9 @@
+preferWorkspacePackages: true
+saveWorkspaceProtocol: false
+linkWorkspacePackages: true
+engineStrict: true
+neverBuiltDependencies: []
+
 packages:
   - "docs"
   - "examples/*"

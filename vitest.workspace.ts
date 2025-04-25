@@ -46,9 +46,9 @@ export default defineWorkspace([
       include: ["**/*.browser.test.{ts,tsx}"],
       name: "browser",
       browser: {
+        instances: [{ browser: "chromium" }],
         provider: "playwright",
         enabled: true,
-        name: "chromium",
       },
     },
   } satisfies ViteUserConfig),

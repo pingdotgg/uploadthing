@@ -1,9 +1,9 @@
-import { forwardRef } from "react";
+import { forwardRef, use } from "react";
 import { Button } from "@/components/Button";
 import { LogoBlob, LogoText } from "@/components/Logo";
 import {
+  IsInsideMobileNavigationContext,
   MobileNavigation,
-  useIsInsideMobileNavigation,
   useMobileNavigationStore,
 } from "@/components/MobileNavigation";
 import { MobileSearch, Search } from "@/components/Search";
@@ -42,7 +42,7 @@ export const Header = forwardRef<
   }
 >(function Header({ className }, ref) {
   let { isOpen: mobileNavIsOpen } = useMobileNavigationStore();
-  let isInsideMobileNavigation = useIsInsideMobileNavigation();
+  let isInsideMobileNavigation = use(IsInsideMobileNavigationContext);
 
   let { scrollY } = useScroll();
   let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9]);

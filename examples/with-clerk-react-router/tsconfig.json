@@ -10,7 +10,7 @@
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@remix-run/node", "vite/client"],
+    "types": ["vite/client"],
     "rootDirs": [".", "./.react-router/types"],
     "isolatedModules": true,
     "jsx": "react-jsx",
