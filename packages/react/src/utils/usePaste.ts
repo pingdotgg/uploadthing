@@ -7,9 +7,12 @@ export const usePaste = (callback: PasteCallback) => {
   const stableCallback = useEvent(callback);
 
   useEffect(() => {
-    window.addEventListener("paste", stableCallback);
+    const controller = new AbortController();
+    window.addEventListener("paste", stableCallback, {
+      signal: controller.signal,
+    });
     return () => {
-      window.removeEventListener("paste", stableCallback);
+      controller.abort();
     };
   }, [stableCallback]);
 };

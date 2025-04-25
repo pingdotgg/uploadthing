@@ -21,7 +21,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import { __createUploadThingInternal } from "../create-uploadthing";
 import type { UploadthingComponentProps } from "../types";
-import { Cancel, progressWidths, Spinner } from "./shared";
+import { Cancel, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "solid";
@@ -104,6 +104,7 @@ export function UploadButton<
         void $props.onClientUploadComplete?.(res);
         setUploadProgress(0);
       },
+      uploadProgressGranularity: $props.uploadProgressGranularity,
       onUploadProgress: (p) => {
         setUploadProgress(p);
         $props.onUploadProgress?.(p);
@@ -156,6 +157,7 @@ export function UploadButton<
   createEffect(() => {
     if (!appendOnPaste) return;
 
+    const controller = new AbortController();
     const pasteHandler = (e: ClipboardEvent) => {
       if (document.activeElement !== inputRef) return;
 
@@ -168,9 +170,11 @@ export function UploadButton<
 
       if (mode === "auto") uploadFiles(files());
     };
-    document.addEventListener("paste", pasteHandler);
+    document.addEventListener("paste", pasteHandler, {
+      signal: controller.signal,
+    });
 
-    onCleanup(() => document.removeEventListener("paste", pasteHandler));
+    onCleanup(() => controller.abort());
   });
 
   const styleFieldArg = {
@@ -202,7 +206,9 @@ export function UploadButton<
 
     return (
       <span class="z-50">
-        <span class="block group-hover:hidden">{uploadProgress()}%</span>
+        <span class="block group-hover:hidden">
+          {Math.round(uploadProgress())}%
+        </span>
         <Cancel cn={cn} class="hidden size-4 group-hover:block" />
       </span>
     );
@@ -215,18 +221,19 @@ export function UploadButton<
         $props.class,
         styleFieldToClassName($props.appearance?.container, styleFieldArg),
       )}
-      style={styleFieldToCssObject($props.appearance?.container, styleFieldArg)}
+      style={{
+        "--progress-width": `${uploadProgress()}%`,
+        ...styleFieldToCssObject($props.appearance?.container, styleFieldArg),
+      }}
       data-state={state()}
     >
       <label
         class={cn(
           "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state() === "readying" && "cursor-not-allowed bg-blue-400",
-          state() === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 ${
-              progressWidths[uploadProgress()]
-            }`,
-          state() === "ready" && "bg-blue-600",
+          "disabled:pointer-events-none",
+          "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+          "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
+          "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:content-[''] data-[state=uploading]:after:bg-blue-600",
           styleFieldToClassName($props.appearance?.button, styleFieldArg),
         )}
         style={styleFieldToCssObject($props.appearance?.button, styleFieldArg)}

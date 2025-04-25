@@ -96,7 +96,7 @@ the [File Router API](/file-routes).
   `UploadRouter` for the module to pick up your router and it's types.
 </Note>
 
-```ts {{ title: "src/lib/server/uploadthing.ts" }}
+```ts {{ title: "server/uploadthing.ts" }}
 import type { H3Event } from "h3";
 
 import { createUploadthing } from "uploadthing/h3";
@@ -134,7 +134,7 @@ export const uploadRouter = {
       // This code RUNS ON YOUR SERVER after upload
       console.log("Upload complete for userId:", metadata.userId);
 
-      console.log("file url", file.url);
+      console.log("file url", file.ufsUrl);
     }),
 } satisfies FileRouter;
 

@@ -107,14 +107,19 @@ function useVisibleSections(sectionStore: StoreApi<SectionState>) {
       setVisibleSections(newVisibleSections);
     }
 
+    const controller = new AbortController();
     let raf = window.requestAnimationFrame(() => checkVisibleSections());
-    window.addEventListener("scroll", checkVisibleSections, { passive: true });
-    window.addEventListener("resize", checkVisibleSections);
+    window.addEventListener("scroll", checkVisibleSections, {
+      passive: true,
+      signal: controller.signal,
+    });
+    window.addEventListener("resize", checkVisibleSections, {
+      signal: controller.signal,
+    });
 
     return () => {
       window.cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", checkVisibleSections);
-      window.removeEventListener("resize", checkVisibleSections);
+      controller.abort();
     };
   }, [setVisibleSections, sections]);
 }

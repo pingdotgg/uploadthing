@@ -1,10 +1,11 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import FeatherIcon from "@expo/vector-icons/Feather";
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import { useQueryClient } from "@tanstack/react-query";
 import { openSettings } from "expo-linking";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
@@ -15,7 +16,7 @@ import { useDocumentUploader, useImageUploader } from "~/lib/uploadthing";
 export function UploadActionDrawer(props: { showTrigger: boolean }) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
   const router = useRouter();
 
   const imageUploader = useImageUploader("videoAndImage", {
@@ -26,7 +27,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
       Alert.alert("Upload Error", e.data?.reason ?? e.message);
     },
     onClientUploadComplete: (files) => {
-      utils.getFiles.invalidate();
+      queryClient.invalidateQueries(trpc.getFiles.queryFilter());
 
       if (files.length === 1) {
         // Auto-open the file if there's only one
@@ -46,7 +47,7 @@ export function UploadActionDrawer(props: { showTrigger: boolean }) {
       Alert.alert("Upload Error", e.data?.reason ?? e.message);
     },
     onClientUploadComplete: (files) => {
-      utils.getFiles.invalidate();
+      queryClient.invalidateQueries(trpc.getFiles.queryFilter());
 
       if (files.length === 1) {
         // Auto-open the file if there's only one

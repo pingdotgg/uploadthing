@@ -44,8 +44,8 @@ export function ProfilePictureCard(props: { user: User }) {
 
         setNewImageLoading(true);
         await Promise.all([
-          updateUserImage(uploadedFile.url),
-          waitForImageToLoad(uploadedFile.url).catch(toast.error),
+          updateUserImage(uploadedFile.ufsUrl),
+          waitForImageToLoad(uploadedFile.ufsUrl).catch(toast.error),
         ]);
         setNewImageLoading(false);
 

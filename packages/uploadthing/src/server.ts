@@ -12,12 +12,10 @@ import type { FileRouter, RouteHandlerOptions } from "./types";
 export { UTFiles } from "./_internal/types";
 export { UTApi } from "./sdk";
 export { UTFile } from "./sdk/ut-file";
-export { UploadThingError, type FileRouter };
+export { UploadThingError, type FileRouter, makeAdapterHandler, createBuilder };
 
 type AdapterArgs = {
   req: Request;
-  res: undefined;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -27,12 +25,10 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  return makeAdapterHandler<[Request | { request: Request }]>(
+  return makeAdapterHandler<[Request | { request: Request }], AdapterArgs>(
     (ev) =>
       Effect.succeed({
         req: "request" in ev ? ev.request : ev,
-        res: undefined,
-        event: undefined,
       }),
     (ev) => Effect.succeed("request" in ev ? ev.request : ev),
     opts,

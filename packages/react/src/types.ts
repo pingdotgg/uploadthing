@@ -4,6 +4,7 @@ import type {
   ExtendObjectIf,
   FetchEsque,
   MaybePromise,
+  ProgressGranularity,
   UploadThingError,
 } from "@uploadthing/shared";
 import type {
@@ -63,6 +64,14 @@ export type UseUploadthingProps<
    * Called when presigned URLs have been retrieved and the file upload is about to begin
    */
   onUploadBegin?: ((fileName: string) => void) | undefined;
+  /**
+   * Control how granular the upload progress is reported
+   * - "all" - No filtering is applied, all progress events are reported
+   * - "fine" - Progress is reported in increments of 1%
+   * - "coarse" - Progress is reported in increments of 10%
+   * @default "coarse"
+   */
+  uploadProgressGranularity?: ProgressGranularity | undefined;
   /**
    * Called continuously as the file is uploaded to the storage provider
    */

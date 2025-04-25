@@ -90,7 +90,7 @@ export const ourFileRouter = {
       // This code RUNS ON YOUR SERVER after upload
       console.log("Upload complete for userId:", metadata.userId);
 
-      console.log("file url", file.url);
+      console.log("file url", file.ufsUrl);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
@@ -145,8 +145,8 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
 
 ### Add UploadThing's Styles
 
-<Tabs tabs={["Tailwind", "Not Tailwind"]}>
-  <Tab>
+<Tabs tabs={["Tailwind v3", "Tailwind v4", "Not Tailwind"]}>
+    <Tab>
       Wrap your Tailwind config with the `withUt` helper. You can learn more about our
       Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
 
@@ -160,18 +160,33 @@ export const UploadDropzone = generateUploadDropzone<OurFileRouter>();
       });
       ```
 
-  </Tab>
-  <Tab>
-    Include our CSS file in the root layout to make sure the components look right!
+    </Tab>
 
-    ```astro
-    ---
-    import "@uploadthing/react/styles.css";
-    // ...
-    ---
-    ```
+    <Tab>
+      If you're using Tailwind v4 with CSS configuration, you can use our plugin like this:
 
-  </Tab>
+      ```css
+      @import "tailwindcss";
+
+      @import "uploadthing/tw/v4";
+      @source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
+      ```
+
+      You can learn more about our Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+    </Tab>
+
+    <Tab>
+      Include our CSS file in the root layout to make sure the components look right!
+
+      ```astro
+      ---
+      import "@uploadthing/react/styles.css";
+      // ...
+      ---
+      ```
+
+    </Tab>
+
 </Tabs>
 
 ### Mount A Button And Upload!
@@ -239,7 +254,7 @@ const routerConfig = extractRouterConfig(uploadRouter);
 (globalThis as any).__UPLOADTHING ??= routerConfig;
 ---
 
-<script define:vars={{ routerConfig }}>
+<script define:vars={{ routerConfig }} is:inline>
     /**
      * Injecting config to the client. This prevents the client from fetching
      * the configuration from the server, since we already have it.

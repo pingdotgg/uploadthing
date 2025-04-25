@@ -82,7 +82,7 @@ export const isValidFileSize = (
  * @public
  */
 export const genUploader = <TRouter extends FileRouter>(
-  initOpts: GenerateUploaderOptions,
+  initOpts?: GenerateUploaderOptions,
 ) => {
   const routeRegistry = createIdentityProxy<RouteRegistry<TRouter>>();
 
@@ -108,11 +108,11 @@ export const genUploader = <TRouter extends FileRouter>(
 
     const utReporter = createUTReporter({
       endpoint: String(endpoint),
-      package: initOpts.package,
-      url: resolveMaybeUrlArg(initOpts.url),
+      package: initOpts?.package ?? "uploadthing/client",
+      url: resolveMaybeUrlArg(initOpts?.url),
       headers: opts.headers,
     });
-    const fetchFn: FetchEsque = initOpts.fetch ?? window.fetch;
+    const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
 
     const presigneds = await Micro.runPromise(
       utReporter("upload", {
@@ -256,13 +256,13 @@ export const genUploader = <TRouter extends FileRouter>(
     >,
   ) => {
     const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
-    const fetchFn: FetchEsque = initOpts.fetch ?? window.fetch;
+    const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
 
     return uploadFilesInternal<TRouter, TEndpoint>(endpoint, {
       ...opts,
       skipPolling: {} as never, // Remove in a future version, it's type right not is an ErrorMessage<T> to help migrations.
-      url: resolveMaybeUrlArg(initOpts.url),
-      package: initOpts.package,
+      url: resolveMaybeUrlArg(initOpts?.url),
+      package: initOpts?.package ?? "uploadthing/client",
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (opts as any).input as inferEndpointInput<TRouter[TEndpoint]>,
     })

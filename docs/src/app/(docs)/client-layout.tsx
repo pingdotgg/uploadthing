@@ -66,12 +66,6 @@ export function Layout({
   allSections: Record<string, Array<Section>>;
 }) {
   let pathname = usePathname();
-  const [bannerOpen, setBannerOpen] = useState(false);
-  useEffect(() => {
-    setTimeout(() => {
-      setBannerOpen(true);
-    }, 1000);
-  }, []);
 
   return (
     <SectionProvider sections={allSections[pathname] ?? []}>
@@ -97,8 +91,7 @@ export function Layout({
         </motion.header>
 
         <div className="relative flex h-full flex-col px-4 pt-14 sm:px-6 lg:px-8">
-          <PreviewBanner open={bannerOpen} setOpen={setBannerOpen} />
-          <div className="h-24 w-full sm:h-8" />
+          {/* <PreviewBanner open={bannerOpen} setOpen={setBannerOpen} /> */}
           <main className="flex-auto">{children}</main>
           <Footer />
         </div>

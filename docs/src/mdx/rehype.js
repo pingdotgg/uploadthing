@@ -31,6 +31,8 @@ function rehypeShiki() {
         "bash",
         "typescript",
         "javascript",
+        "jsx",
+        "tsx",
         "astro",
         "vue",
         "svelte",

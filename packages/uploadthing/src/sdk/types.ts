@@ -101,6 +101,15 @@ type KeyRename = { fileKey: string; newName: string };
 type CustomIdRename = { customId: string; newName: string };
 export type RenameFileUpdate = KeyRename | CustomIdRename;
 
+export interface GenerateSignedURLOptions {
+  /**
+   * How long the URL will be valid for.
+   * - Must be positive and less than 7 days (604800 seconds).
+   * @default 5min
+   */
+  expiresIn?: Time;
+}
+
 export interface GetSignedURLOptions extends KeyTypeOptionsBase {
   /**
    * How long the URL will be valid for.

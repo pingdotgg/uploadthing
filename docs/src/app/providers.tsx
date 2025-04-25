@@ -18,6 +18,7 @@ function ThemeWatcher() {
   let { resolvedTheme, setTheme } = useTheme();
 
   useEffect(() => {
+    const controller = new AbortController();
     let media = window.matchMedia("(prefers-color-scheme: dark)");
 
     function onMediaChange() {
@@ -28,10 +29,12 @@ function ThemeWatcher() {
     }
 
     onMediaChange();
-    media.addEventListener("change", onMediaChange);
+    media.addEventListener("change", onMediaChange, {
+      signal: controller.signal,
+    });
 
     return () => {
-      media.removeEventListener("change", onMediaChange);
+      controller.abort();
     };
   }, [resolvedTheme, setTheme]);
 

@@ -1,5 +1,7 @@
 /* eslint-disable no-restricted-globals */
 import * as S from "effect/Schema";
+import { bypass, http } from "msw";
+import { setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { UTApi, UTFile } from "../src/sdk";
@@ -8,7 +10,7 @@ import {
   appUrlPattern,
   fileUrlPattern,
   testToken,
-  UTFS_IO_URL,
+  ufsUrlPattern,
 } from "./__test-helpers";
 
 const shouldRun =
@@ -19,6 +21,20 @@ describe.runIf(shouldRun)(
   "smoke test with live api",
   { timeout: 15_000 },
   () => {
+    const msw = setupServer(
+      http.get("https://utfs.io/**", ({ request }) => {
+        request.headers.set("x-ut-test-mode", "1");
+        return fetch(bypass(request));
+      }),
+      http.get("https://*.ufs.sh/**", ({ request }) => {
+        request.headers.set("x-ut-test-mode", "1");
+        return fetch(bypass(request));
+      }),
+    );
+
+    beforeAll(() => msw.listen());
+    afterAll(() => msw.close());
+
     const token = shouldRun
       ? process.env.UPLOADTHING_TEST_TOKEN!
       : testToken.encoded;
@@ -69,8 +85,9 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
+          url: expect.stringMatching(fileUrlPattern()),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -104,8 +121,9 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
+          url: expect.stringMatching(fileUrlPattern()),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -134,8 +152,9 @@ describe.runIf(shouldRun)(
           name: "favicon.ico",
           size: expect.any(Number),
           type: "image/vnd.microsoft.icon",
-          url: expect.stringMatching(fileUrlPattern),
+          url: expect.stringMatching(fileUrlPattern()),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -158,8 +177,9 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
+          url: expect.stringMatching(fileUrlPattern()),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -200,8 +220,9 @@ describe.runIf(shouldRun)(
           name: "bar.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
+          url: expect.stringMatching(fileUrlPattern()),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -241,8 +262,9 @@ describe.runIf(shouldRun)(
           name: "foo.txt",
           size: 3,
           type: "text/plain",
-          url: expect.stringMatching(fileUrlPattern),
+          url: expect.stringMatching(fileUrlPattern()),
           appUrl: expect.stringMatching(appUrlPattern(appId)),
+          ufsUrl: expect.stringMatching(ufsUrlPattern(appId)),
           fileHash: expect.any(String),
         },
         error: null,
@@ -264,16 +286,13 @@ describe.runIf(shouldRun)(
       const { files } = await utapi.listFiles();
       const someFile = files[0]!;
 
-      const response = await fetch(`${UTFS_IO_URL}/f/${someFile.key}`);
-      const size = Number(response.headers.get("Content-Length"));
-
       const result = await utapi.deleteFiles(someFile.key);
       expect(result).toEqual({
         deletedCount: 1,
         success: true,
       });
 
-      localInfo.totalBytes -= size;
+      localInfo.totalBytes -= someFile.size;
       localInfo.filesUploaded--;
     });
 

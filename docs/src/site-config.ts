@@ -29,7 +29,7 @@ export const navigation: Array<NavGroup> = [
       { title: "Expo", href: "/getting-started/expo" },
       { title: "Next.js App Router", href: "/getting-started/appdir" },
       { title: "Next.js Pages Router", href: "/getting-started/pagedir" },
-      { title: "Remix", href: "/getting-started/remix" },
+      { title: "Remix / React Router", href: "/getting-started/remix" },
       { title: "SolidStart", href: "/getting-started/solid" },
       { title: "SvelteKit", href: "/getting-started/svelte" },
       { title: "Tanstack/Start", href: "/getting-started/tanstack-start" },
@@ -43,6 +43,7 @@ export const navigation: Array<NavGroup> = [
       { title: "Fastify", href: "/backend-adapters/fastify" },
       { title: "H3", href: "/backend-adapters/h3" },
       { title: "WinterCG Fetch", href: "/backend-adapters/fetch" },
+      { title: "Custom adapters", href: "/backend-adapters/custom" },
     ],
   },
   {

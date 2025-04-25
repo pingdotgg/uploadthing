@@ -52,32 +52,30 @@ export function Uploader() {
   const router = useRouter();
 
   return (
-    <div>
-      <div className="flex gap-4">
-        <div className="space-y-1">
-          <Label>Upload (client)</Label>
-          <UTButton
-            endpoint={(rr) => rr.anything}
-            input={{}}
-            onUploadError={(error) => {
-              window.alert(error.message);
-            }}
-            onClientUploadComplete={() => {
-              router.refresh();
-            }}
-            content={{
-              allowedContent: <></>,
-              button: ({ isUploading }) =>
-                isUploading ? null : "Upload (Client)",
-            }}
-            appearance={{
-              button: "!text-sm/6",
-              allowedContent: "!h-0",
-            }}
-          />
-        </div>
-        <ServerUploader type="file" />
-        <ServerUploader type="url" />
+    <div className="flex gap-4">
+      <div className="space-y-1">
+        <Label>Upload (client)</Label>
+        <UTButton
+          endpoint={(rr) => rr.anything}
+          input={{}}
+          onUploadError={(error) => {
+            window.alert(error.message);
+          }}
+          onClientUploadComplete={() => {
+            router.refresh();
+          }}
+          content={{
+            allowedContent: <></>,
+            button: ({ isUploading }) =>
+              isUploading ? null : "Upload (Client)",
+          }}
+          appearance={{
+            button: "!text-sm/6",
+            allowedContent: "!h-0",
+          }}
+          uploadProgressGranularity="fine"
+          className="ut-button:bg-red-600"
+        />
       </div>
     </div>
   );

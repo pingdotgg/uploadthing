@@ -38,7 +38,7 @@ Make sure that `/api/uploadthing` is NOT blocked through your middleware. It
 serves as both a validation endpoint for the client AND a webhook for the
 `onUploadComplete` calls.""
 
-If you are seeing this issue in development, and are using edge runtine, there
+If you are seeing this issue in development, and are using edge runtime, there
 is a limitation in Next.js where it does not allow an edge function to fetch
 itself, which is what the dev hook is doing (in production, the callback request
 comes from Uploadthing's servers, so this is not an issue).
@@ -135,3 +135,17 @@ header, which will allow uploadthing callbacks to bypass the authentication.
 6. Click "Save Changes"
 
 ![Screenshot of the uploadthing dashboard showing the 'Add Header' button](@/images/add-header-settings.png)
+
+### I am getting a `Invalid Signing Secret` error
+
+This error most likely occurs due to an outdated Node.js version that does not
+have the global `crypto` module.
+
+To fix, you can either update Node.js to >= 20, or define the `crypto` module
+yourself:
+
+```ts
+import crypto from "node:crypto";
+
+globalThis.crypto = crypto;
+```

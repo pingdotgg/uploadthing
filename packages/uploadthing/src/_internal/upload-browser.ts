@@ -1,5 +1,6 @@
 import { unsafeCoerce } from "effect/Function";
 import * as Micro from "effect/Micro";
+import { hasProperty, isRecord } from "effect/Predicate";
 
 import type { FetchContext, FetchError } from "@uploadthing/shared";
 import { fetchEff, UploadThingError } from "@uploadthing/shared";
@@ -12,6 +13,7 @@ import type {
   NewPresignedUrl,
   UploadFilesOptions,
 } from "../types";
+import { logDeprecationWarning } from "./deprecations";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
@@ -37,13 +39,27 @@ const uploadWithProgress = (
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
-      resume(
-        xhr.status >= 200 && xhr.status < 300
-          ? Micro.succeed(xhr.response)
-          : Micro.die(
-              `XHR failed ${xhr.status} ${xhr.statusText} - ${JSON.stringify(xhr.response)}`,
-            ),
-      );
+      if (xhr.status >= 200 && xhr.status < 300 && isRecord(xhr.response)) {
+        if (hasProperty(xhr.response, "error")) {
+          resume(
+            new UploadThingError({
+              code: "UPLOAD_FAILED",
+              message: String(xhr.response.error),
+              data: xhr.response as never,
+            }),
+          );
+        } else {
+          resume(Micro.succeed(xhr.response));
+        }
+      } else {
+        resume(
+          new UploadThingError({
+            code: "UPLOAD_FAILED",
+            message: `XHR failed ${xhr.status} ${xhr.statusText}`,
+            data: xhr.response as never,
+          }),
+        );
+      }
     });
 
     // Is there a case when the client would throw and
@@ -57,7 +73,28 @@ const uploadWithProgress = (
     });
 
     const formData = new FormData();
-    formData.append("file", rangeStart > 0 ? file.slice(rangeStart) : file);
+    /**
+     * iOS/React Native FormData handling requires special attention:
+     *
+     * Issue: In React Native, iOS crashes with "attempt to insert nil object" when appending File directly
+     * to FormData. This happens because iOS tries to create NSDictionary from the file object and expects
+     * specific structure {uri, type, name}.
+     *
+     *
+     * Note: Don't try to use Blob or modify File object - iOS specifically needs plain object
+     * with these properties to create valid NSDictionary.
+     */
+    if ("uri" in file) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      formData.append("file", {
+        uri: file.uri as string,
+        type: file.type,
+        name: file.name,
+        ...(rangeStart > 0 && { range: rangeStart }),
+      } as any);
+    } else {
+      formData.append("file", rangeStart > 0 ? file.slice(rangeStart) : file);
+    }
     xhr.send(formData);
 
     return Micro.sync(() => xhr.abort());
@@ -102,8 +139,19 @@ export const uploadFile = <
       key: presigned.key,
       lastModified: file.lastModified,
       serverData: uploadResponse.serverData,
-      url: uploadResponse.url,
-      appUrl: uploadResponse.appUrl,
+      get url() {
+        logDeprecationWarning(
+          "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+        );
+        return uploadResponse.url;
+      },
+      get appUrl() {
+        logDeprecationWarning(
+          "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+        );
+        return uploadResponse.appUrl;
+      },
+      ufsUrl: uploadResponse.ufsUrl,
       customId: presigned.customId,
       type: file.type,
       fileHash: uploadResponse.fileHash,
@@ -160,15 +208,11 @@ export const uploadFilesInternal = <
                     totalLoaded += ev.delta;
                     opts.onUploadProgress?.({
                       file: opts.files[i]!,
-                      progress: Math.round(
-                        (ev.loaded / opts.files[i]!.size) * 100,
-                      ),
+                      progress: (ev.loaded / opts.files[i]!.size) * 100,
                       loaded: ev.loaded,
                       delta: ev.delta,
                       totalLoaded,
-                      totalProgress: Math.round(
-                        (totalLoaded / totalSize) * 100,
-                      ),
+                      totalProgress: totalLoaded / totalSize,
                     });
                   },
                 },

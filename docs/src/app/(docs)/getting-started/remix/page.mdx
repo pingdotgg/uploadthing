@@ -11,6 +11,12 @@ export const metadata = docsMetadata({
 Feeling a little musical are we? Remix has backend and frontend built in, so
 everything you need to get started is on this page.
 
+<Note>
+  This guide is for Remix v2 but most steps should be the same if you've
+  migrated to React Router v7. See a full example using RR7
+  [here](https://github.com/pingdotgg/uploadthing/tree/main/examples/with-clerk-react-router).
+</Note>
+
 ## Setting up your environment
 
 ### Install the packages
@@ -87,7 +93,7 @@ const uploadRouter = {
       // This code RUNS ON YOUR SERVER after upload
       console.log("Upload complete for userId:", metadata.userId);
 
-      console.log("file url", file.url);
+      console.log("file url", file.ufsUrl);
 
       // !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
       return { uploadedBy: metadata.userId };
@@ -126,6 +132,18 @@ export const { action, loader } = createRouteHandler({
 > See configuration options in
 > [server API reference](/api-reference/server#create-route-handler)
 
+<Note>
+  If you're experiencing issues with exporting the loader and action directly using object destructuring, you can use the `createRouteHandler` function to create a handler and then export the loader and action from that.
+
+```tsx
+const handlers = createRouteHandler(...);
+
+export const loader = handlers.loader;
+export const action = handlers.action;
+```
+
+</Note>
+
 ## Create The UploadThing Components
 
 ```ts {{ title: "app/utils/uploadthing.ts" }}
@@ -142,8 +160,8 @@ export const UploadDropzone = generateUploadDropzone<UploadRouter>();
 
 ### Add UploadThing's Styles
 
-<Tabs tabs={["Tailwind", "Not Tailwind"]}>
-  <Tab>
+<Tabs tabs={["Tailwind v3", "Tailwind v4", "Not Tailwind"]}>
+    <Tab>
       Wrap your Tailwind config with the `withUt` helper. You can learn more about our
       Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
 
@@ -157,15 +175,30 @@ export const UploadDropzone = generateUploadDropzone<UploadRouter>();
       });
       ```
 
-  </Tab>
-  <Tab>
-    Include our CSS file in the root layout to make sure the components look right!
+    </Tab>
 
-    ```tsx
-    import "@uploadthing/react/styles.css";
-    ```
+    <Tab>
+      If you're using Tailwind v4 with CSS configuration, you can use our plugin like this:
 
-  </Tab>
+      ```css
+      @import "tailwindcss";
+
+      @import "uploadthing/tw/v4";
+      @source "../node_modules/@uploadthing/react/dist"; /** <-- depends on your project structure */
+      ```
+
+      You can learn more about our Tailwind helper in the ["Theming" page](/concepts/theming#theming-with-tailwind-css)
+    </Tab>
+
+    <Tab>
+      Include our CSS file in the root layout to make sure the components look right!
+
+      ```tsx {{ title: "app/root.tsx"}}
+      import "@uploadthing/react/styles.css";
+      ```
+
+    </Tab>
+
 </Tabs>
 
 ## Mount A Button And Upload!

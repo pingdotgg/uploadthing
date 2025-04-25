@@ -13,6 +13,8 @@ import { signIn, signOut } from "../lib/actions";
 import { getSession } from "../lib/data";
 import { uploadRouter } from "./api/uploadthing/route";
 
+import "./global.css";
+
 export default function RootLayout({
   children,
 }: {
@@ -20,9 +22,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <script src="https://cdn.tailwindcss.com"></script>
-      </head>
       <body>
         <Suspense>
           <UTSSR />

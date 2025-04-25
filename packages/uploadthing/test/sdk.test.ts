@@ -13,11 +13,14 @@ import { UTApi, UTFile } from "../src/sdk";
 import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
+  appUrlPattern,
+  callRequestSpy,
+  fileUrlPattern,
   handlers,
   INGEST_URL,
   requestSpy,
   testToken,
-  UTFS_IO_URL,
+  ufsUrlPattern,
 } from "./__test-helpers";
 
 const msw = setupServer(...handlers);
@@ -43,15 +46,15 @@ describe("uploadFiles", () => {
       }),
     );
 
-    const key = result.data?.key;
     expect(result).toEqual({
       data: {
         key: expect.stringMatching(/.+/),
         name: "foo.txt",
         size: 3,
         lastModified: fooFile.lastModified,
-        url: `${UTFS_IO_URL}/f/${key}`,
-        appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         customId: null,
         type: "text/plain",
         fileHash: expect.any(String),
@@ -86,13 +89,6 @@ describe("uploadFiles", () => {
     );
   });
 
-  it("accepts UndiciFile", async () => {
-    const utapi = new UTApi({ token: testToken.encoded });
-    const { File } = await import("undici");
-    const file = new File(["foo"], "foo.txt");
-    await utapi.uploadFiles(file);
-  });
-
   it("accepts UTFile with customId", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     const fileWithId = new UTFile(["foo"], "foo.txt", { customId: "foo" });
@@ -103,6 +99,46 @@ describe("uploadFiles", () => {
       expect.stringContaining(`x-ut-custom-id=foo`),
       expect.objectContaining({ method: "PUT" }),
     );
+  });
+
+  it("gracefully handles failed requests", async () => {
+    const mockedIngestUrl = "https://mocked.ingest.uploadthing.com";
+    msw.use(
+      http.all<{ key: string }>(
+        `${mockedIngestUrl}/:key`,
+        async ({ request }) => {
+          await callRequestSpy(request);
+          return HttpResponse.json({ error: "Upload failed" }, { status: 400 });
+        },
+      ),
+    );
+
+    const utapi = new UTApi({
+      token: testToken.encoded,
+      /**
+       * Explicitly set the ingestUrl to the mocked one
+       * to ensure the request is made to the mocked ingest
+       * endpoint that yields a 400 error.
+       */
+      ingestUrl: mockedIngestUrl,
+    });
+    const result = await utapi.uploadFiles(fooFile);
+    expect(result).toStrictEqual({
+      data: null,
+      error: {
+        code: "UPLOAD_FAILED",
+        data: undefined,
+        message: "Failed to upload file",
+      },
+    });
+
+    expect(requestSpy).toHaveBeenCalledTimes(1);
+    expect(requestSpy).toHaveBeenCalledWith(
+      expect.stringContaining(mockedIngestUrl),
+      expect.objectContaining({ method: "PUT" }),
+    );
+
+    msw.use(...handlers);
   });
 });
 
@@ -126,15 +162,15 @@ describe("uploadFilesFromUrl", () => {
       },
     );
 
-    const key = result.data?.key;
     expect(result).toEqual({
       data: {
         key: expect.stringMatching(/.+/),
         name: "foo.txt",
         size: 26,
         lastModified: expect.any(Number),
-        url: `${UTFS_IO_URL}/f/${key}`,
-        appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key}`,
+        url: expect.stringMatching(fileUrlPattern()),
+        appUrl: expect.stringMatching(appUrlPattern()),
+        ufsUrl: expect.stringMatching(ufsUrlPattern()),
         customId: null,
         type: "text/plain",
         fileHash: expect.any(String),
@@ -256,7 +292,6 @@ describe("uploadFilesFromUrl", () => {
       "https://cdn.foo.com/exists.txt",
       "https://cdn.foo.com/does-not-exist.txt",
     ]);
-    const key1 = result[0]?.data?.key;
     expect(result).toEqual([
       {
         data: {
@@ -267,8 +302,9 @@ describe("uploadFilesFromUrl", () => {
           name: "exists.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/f/${key1}`,
-          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern()),
+          ufsUrl: expect.stringMatching(ufsUrlPattern()),
         },
         error: null,
       },
@@ -294,8 +330,7 @@ describe("uploadFilesFromUrl", () => {
       "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==",
       "https://cdn.foo.com/bar.txt",
     ]);
-    const key1 = result[0]?.data?.key;
-    const key2 = result[2]?.data?.key;
+
     expect(result).toStrictEqual([
       {
         data: {
@@ -305,8 +340,9 @@ describe("uploadFilesFromUrl", () => {
           name: "foo.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/f/${key1}`,
-          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key1}`,
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern()),
+          ufsUrl: expect.stringMatching(ufsUrlPattern()),
           fileHash: expect.any(String),
         },
         error: null,
@@ -328,13 +364,67 @@ describe("uploadFilesFromUrl", () => {
           name: "bar.txt",
           size: 26,
           type: "text/plain",
-          url: `${UTFS_IO_URL}/f/${key2}`,
-          appUrl: `${UTFS_IO_URL}/a/${testToken.decoded.appId}/${key2}`,
+          url: expect.stringMatching(fileUrlPattern()),
+          appUrl: expect.stringMatching(appUrlPattern()),
+          ufsUrl: expect.stringMatching(ufsUrlPattern()),
           fileHash: expect.any(String),
         },
         error: null,
       },
     ]);
+  });
+});
+
+describe("generateSignedURL", () => {
+  it("generates url without expiresIn", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    const result = await utapi.generateSignedURL("foo");
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching(ufsUrlPattern()),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
+  it("generates url with valid expiresIn (1)", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    const result = await utapi.generateSignedURL("foo", { expiresIn: 86400 });
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching(ufsUrlPattern()),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
+  it("generates url with valid expiresIn (2)", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    const result = await utapi.generateSignedURL("foo", {
+      expiresIn: "3 minutes",
+    });
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching(ufsUrlPattern()),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
+  it("throws if expiresIn is invalid", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    await expect(() =>
+      // @ts-expect-error - intentionally passing invalid expiresIn
+      utapi.generateSignedURL("foo", { expiresIn: "something" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: expiresIn must be a valid time string, for example '1d', '2 days', or a number of seconds.]`,
+    );
+  });
+
+  it("throws if expiresIn is longer than 7 days", async () => {
+    const utapi = new UTApi({ token: testToken.encoded });
+    await expect(() =>
+      utapi.generateSignedURL("foo", { expiresIn: "10 days" }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `[UploadThingError: expiresIn must be less than 7 days (604800 seconds).]`,
+    );
   });
 });
 

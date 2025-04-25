@@ -20,7 +20,6 @@ export type { FileRouter };
 type AdapterArgs = {
   req: ExpressRequest;
   res: ExpressResponse;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -30,8 +29,11 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ): ExpressRouter => {
-  const handler = makeAdapterHandler<[ExpressRequest, ExpressResponse]>(
-    (req, res) => Effect.succeed({ req, res, event: undefined }),
+  const handler = makeAdapterHandler<
+    [ExpressRequest, ExpressResponse],
+    AdapterArgs
+  >(
+    (req, res) => Effect.succeed({ req, res }),
     (req) =>
       Effect.flatMap(getPostBody({ req }), (body) =>
         toWebRequest(req, body),
@@ -40,16 +42,14 @@ export const createRouteHandler = <TRouter extends FileRouter>(
     "express",
   );
 
-  return ExpressRouter().all(
-    "/",
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    async (req, res) => {
-      const response = await handler(req, res);
-      res.writeHead(response.status, Object.fromEntries(response.headers));
-      if (!response.body) return res.end();
+  return ExpressRouter().all("/", async (req, res) => {
+    const response = await handler(req, res);
+    res.writeHead(response.status, Object.fromEntries(response.headers));
+    if (response.body) {
       // Slight type mismatch in `node:stream.ReadableStream` and Fetch's `ReadableStream`.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      return Readable.fromWeb(response.body as any).pipe(res);
-    },
-  );
+      Readable.fromWeb(response.body as never).pipe(res);
+    } else {
+      res.end();
+    }
+  });
 };

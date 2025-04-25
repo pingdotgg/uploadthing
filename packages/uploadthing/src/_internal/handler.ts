@@ -8,6 +8,7 @@ import {
   HttpServerRequest,
   HttpServerResponse,
 } from "@effect/platform";
+import type { ResponseError } from "@effect/platform/HttpClientError";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -29,6 +30,7 @@ import {
 import * as pkgJson from "../../package.json";
 import type { FileRouter, RouteHandlerOptions } from "../types";
 import { IngestUrl, IsDevelopment, UTToken } from "./config";
+import { logDeprecationWarning } from "./deprecations";
 import { formatError } from "./error-formatter";
 import { handleJsonLineStream } from "./jsonl";
 import { logHttpClientError, logHttpClientResponse } from "./logger";
@@ -45,19 +47,32 @@ import {
   UploadThingHook,
 } from "./shared-schemas";
 import { UTFiles } from "./types";
-import type { AdapterFnArgs, AnyFileRoute, UTEvents } from "./types";
+import type { AnyFileRoute, UTEvents } from "./types";
 
 export class AdapterArguments extends Context.Tag(
   "uploadthing/AdapterArguments",
-)<AdapterArguments, AdapterFnArgs<any, any, any>>() {}
+)<AdapterArguments, Record<string, unknown>>() {}
 
-export const makeAdapterHandler = <Args extends any[]>(
-  makeAdapterArgs: (
-    ...args: Args
-  ) => Effect.Effect<AdapterFnArgs<any, any, any>>,
+/**
+ * Create a request handler adapter for any framework or server library.
+ * Refer to the existing adapters for examples on how to use this function.
+ * @public
+ *
+ * @param makeAdapterArgs - Function that takes the args from your framework and returns an Effect that resolves to the adapter args.
+ * These args are passed to the `.middleware`, `.onUploadComplete`, and `.onUploadError` hooks.
+ * @param toRequest - Function that takes the args from your framework and returns an Effect that resolves to a web Request object.
+ * @param opts - The router config and other options that are normally passed to `createRequestHandler` of official adapters
+ * @param beAdapter - [Optional] The adapter name of the adapter, used for telemetry purposes
+ * @returns A function that takes the args from your framework and returns a promise that resolves to a Response object.
+ */
+export const makeAdapterHandler = <
+  Args extends any[],
+  AdapterArgs extends Record<string, unknown>,
+>(
+  makeAdapterArgs: (...args: Args) => Effect.Effect<AdapterArgs>,
   toRequest: (...args: Args) => Effect.Effect<Request>,
   opts: RouteHandlerOptions<FileRouter>,
-  beAdapter: string,
+  beAdapter?: string,
 ): ((...args: Args) => Promise<Response>) => {
   const managed = makeRuntime(
     opts.config?.fetch as typeof globalThis.fetch,
@@ -70,7 +85,7 @@ export const makeAdapterHandler = <Args extends any[]>(
   const app = (...args: Args) =>
     Effect.map(
       Effect.promise(() =>
-        managed.runPromise(createRequestHandler(opts, beAdapter)),
+        managed.runPromise(createRequestHandler(opts, beAdapter ?? "custom")),
       ),
       Effect.provideServiceEffect(AdapterArguments, makeAdapterArgs(...args)),
     );
@@ -331,7 +346,21 @@ const handleCallbackRequest = (opts: {
         try: async () =>
           uploadable.onUploadComplete({
             ...adapterArgs,
-            file: requestInput.file,
+            file: {
+              ...requestInput.file,
+              get url() {
+                logDeprecationWarning(
+                  "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+                );
+                return requestInput.file.url;
+              },
+              get appUrl() {
+                logDeprecationWarning(
+                  "`file.appUrl` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
+                );
+                return requestInput.file.appUrl;
+              },
+            },
             metadata: requestInput.metadata,
           }) as Promise<unknown>,
         catch: (error) =>
@@ -601,6 +630,42 @@ const handleUploadAction = (opts: {
       Effect.flatMap(httpClient.execute),
     );
 
+    const handleDevStreamError = Effect.fn("handleDevStreamError")(function* (
+      err: ResponseError,
+      chunk: string,
+    ) {
+      const schema = Schema.parseJson(
+        Schema.Struct({ file: UploadedFileData }),
+      );
+      const parsedChunk = yield* Schema.decodeUnknown(schema)(chunk);
+      const key = parsedChunk.file.key;
+
+      yield* Effect.logError(
+        "Failed to forward callback request from dev stream",
+      ).pipe(Effect.annotateLogs({ fileKey: key, error: err.message }));
+
+      const httpResponse = yield* HttpClientRequest.post(
+        "/callback-result",
+      ).pipe(
+        HttpClientRequest.prependUrl(ingestUrl),
+        HttpClientRequest.setHeaders({
+          "x-uploadthing-api-key": Redacted.value(apiKey),
+          "x-uploadthing-version": pkgJson.version,
+          "x-uploadthing-be-adapter": beAdapter,
+          "x-uploadthing-fe-package": fePackage,
+        }),
+        HttpClientRequest.bodyJson({
+          fileKey: key,
+          error: `Failed to forward callback request from dev stream: ${err.message}`,
+        }),
+        Effect.flatMap(httpClient.execute),
+      );
+
+      yield* logHttpClientResponse("Reported callback error to UploadThing")(
+        httpResponse,
+      );
+    });
+
     // Send metadata to UT server (non blocking as a daemon)
     // In dev, keep the stream open and simulate the callback requests as
     // files complete uploading
@@ -624,14 +689,14 @@ const handleUploadAction = (opts: {
                 HttpBody.text(chunk.payload, "application/json"),
               ),
               httpClient.execute,
-              Effect.tapBoth({
-                onSuccess: logHttpClientResponse(
+              Effect.tap(
+                logHttpClientResponse(
                   "Successfully forwarded callback request from dev stream",
                 ),
-                onFailure: logHttpClientError(
-                  "Failed to forward callback request from dev stream",
-                ),
-              }),
+              ),
+              Effect.catchTag("ResponseError", (err) =>
+                handleDevStreamError(err, chunk.payload),
+              ),
               Effect.annotateLogs(chunk),
               Effect.asVoid,
               Effect.ignoreLogged,

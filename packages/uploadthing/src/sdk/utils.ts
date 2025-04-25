@@ -120,6 +120,9 @@ export const uploadFile = (
       opts.contentDisposition ?? "inline",
       opts.acl,
     ).pipe(
+      Effect.catchTag("UploadThingError", (e) =>
+        Effect.fail(UploadThingError.toObject(e)),
+      ),
       Effect.catchTag("ConfigError", () =>
         Effect.fail({
           code: "INVALID_SERVER_CONFIG",
@@ -128,6 +131,9 @@ export const uploadFile = (
       ),
     );
     const response = yield* uploadWithoutProgress(file, presigned).pipe(
+      Effect.catchTag("UploadThingError", (e) =>
+        Effect.fail(UploadThingError.toObject(e)),
+      ),
       Effect.catchTag("ResponseError", (e) =>
         Effect.fail({
           code: "UPLOAD_FAILED",
@@ -141,6 +147,7 @@ export const uploadFile = (
       key: presigned.key,
       url: response.url,
       appUrl: response.appUrl,
+      ufsUrl: response.ufsUrl,
       lastModified: file.lastModified ?? Date.now(),
       name: file.name,
       size: file.size,

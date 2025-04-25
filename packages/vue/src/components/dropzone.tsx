@@ -40,7 +40,7 @@ import type {
   UseUploadthingProps,
 } from "../types";
 import { __useUploadThingInternal } from "../useUploadThing";
-import { Cancel, progressWidths, Spinner, usePaste } from "./shared";
+import { Cancel, Spinner, usePaste } from "./shared";
 
 export type DropzoneStyleFieldCallbackArgs = {
   __runtime: "vue";
@@ -120,6 +120,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             void $props.onClientUploadComplete?.(res);
             uploadProgress.value = 0;
           },
+          uploadProgressGranularity: $props.uploadProgressGranularity,
           onUploadProgress: (p) => {
             uploadProgress.value = p;
             $props.onUploadProgress?.(p);
@@ -311,7 +312,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
             return (
               <span class="z-50">
                 <span class="block group-hover:hidden">
-                  {uploadProgress.value}%
+                  {Math.round(uploadProgress.value)}%
                 </span>
                 <Cancel cn={cn} class="hidden size-4 group-hover:block" />
               </span>
@@ -356,12 +357,12 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
       );
       const buttonClass = computed(() =>
         cn(
-          "group relative mt-4 flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md border-none text-base text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-          state.value === "disabled" && "cursor-not-allowed bg-blue-400",
-          state.value === "uploading" &&
-            `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress.value]}`,
-          state.value === "ready" && "bg-blue-600",
+          "group relative mt-4 flex h-10 w-36 items-center justify-center overflow-hidden rounded-md border-none text-base text-white",
+          "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:bg-blue-600 after:transition-[width] after:duration-500 after:content-['']",
+          "focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
           "disabled:pointer-events-none",
+          "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+          "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
           styleFieldToClassName($props.appearance?.button, styleFieldArg.value),
         ),
       );
@@ -381,9 +382,13 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
           styleFieldArg.value,
         ),
       );
-      const buttonStyle = computed(() =>
-        styleFieldToCssObject($props.appearance?.button, styleFieldArg.value),
-      );
+      const buttonStyle = computed(() => ({
+        "--progress-width": `${uploadProgress.value}%`,
+        ...styleFieldToCssObject(
+          $props.appearance?.button,
+          styleFieldArg.value,
+        ),
+      }));
 
       return () => {
         return (
@@ -434,6 +439,7 @@ export const generateUploadDropzone = <TRouter extends FileRouter>(
 export type DropEvent = InputEvent | DragEvent | Event;
 
 export function useDropzone(options: DropzoneOptions) {
+  const controller = new AbortController();
   const optionsRef = ref({
     disabled: false,
     maxSize: Number.POSITIVE_INFINITY,
@@ -487,14 +493,21 @@ export function useDropzone(options: DropzoneOptions) {
   };
 
   onMounted(() => {
-    window.addEventListener("focus", onWindowFocus, false);
-    document.addEventListener("dragover", onDocumentDragOver, false);
-    document.addEventListener("drop", onDocumentDrop, false);
+    window.addEventListener("focus", onWindowFocus, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("dragover", onDocumentDragOver, {
+      capture: false,
+      signal: controller.signal,
+    });
+    document.addEventListener("drop", onDocumentDrop, {
+      capture: false,
+      signal: controller.signal,
+    });
   });
   onUnmounted(() => {
-    window.removeEventListener("focus", onWindowFocus, false);
-    document.removeEventListener("dragover", onDocumentDragOver, false);
-    document.removeEventListener("drop", onDocumentDrop, false);
+    controller.abort();
   });
 
   const onDragenter = (event: DragEvent) => {

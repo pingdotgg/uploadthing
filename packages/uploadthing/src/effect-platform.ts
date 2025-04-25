@@ -15,8 +15,6 @@ export type { FileRouter };
 
 type AdapterArgs = {
   req: HttpServerRequest.HttpServerRequest;
-  res: undefined;
-  event: undefined;
 };
 
 export const createUploadthing = <TErrorShape extends Json>(
@@ -53,10 +51,12 @@ export const createRouteHandler = <TRouter extends FileRouter>(opts: {
   return HttpRouter.provideServiceEffect(
     router,
     AdapterArguments,
-    Effect.map(HttpServerRequest.HttpServerRequest, (serverRequest) => ({
-      req: serverRequest,
-      res: undefined,
-      event: undefined,
-    })),
+    Effect.map(
+      HttpServerRequest.HttpServerRequest,
+      (serverRequest) =>
+        ({
+          req: serverRequest,
+        }) satisfies AdapterArgs,
+    ),
   ).pipe(Effect.provide(Layer.setConfigProvider(configProvider(opts.config))));
 };

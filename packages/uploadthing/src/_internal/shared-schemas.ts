@@ -69,16 +69,24 @@ export class FileUploadDataWithCustomId extends FileUploadData.extend<FileUpload
 /**
  * When files are uploaded, we get back
  * - a key
- * - a direct URL for the file
- * - an app-specific URL for the file (useful for scoping eg. for optimization allowed origins)
+ * - URLs for the file
  * - the hash (md5-hex) of the uploaded file's contents
  */
 export class UploadedFileData extends FileUploadDataWithCustomId.extend<UploadedFileData>(
   "UploadedFileData",
 )({
   key: S.String,
+  /**
+   * @deprecated
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
+   */
   url: S.String,
+  /**
+   * @deprecated
+   * This field will be removed in uploadthing v9. Use `ufsUrl` instead.
+   */
   appUrl: S.String,
+  ufsUrl: S.String,
   fileHash: S.String,
 }) {}
 

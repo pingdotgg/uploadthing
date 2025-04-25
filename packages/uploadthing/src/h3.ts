@@ -13,8 +13,6 @@ export { UTFiles } from "./_internal/types";
 export type { FileRouter };
 
 type AdapterArgs = {
-  req: undefined;
-  res: undefined;
   event: H3Event;
 };
 
@@ -25,8 +23,8 @@ export const createUploadthing = <TErrorShape extends Json>(
 export const createRouteHandler = <TRouter extends FileRouter>(
   opts: RouteHandlerOptions<TRouter>,
 ) => {
-  const handler = makeAdapterHandler<[H3Event]>(
-    (event) => Effect.succeed({ req: undefined, res: undefined, event }),
+  const handler = makeAdapterHandler<[H3Event], AdapterArgs>(
+    (event) => Effect.succeed({ event }),
     (event) => Effect.succeed(toWebRequest(event)),
     opts,
     "h3",

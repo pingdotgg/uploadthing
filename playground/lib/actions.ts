@@ -81,12 +81,10 @@ export async function getFileUrl(key: string) {
     };
   }
 
-  const { url } = await utapi.getSignedURL(key, {
-    expiresIn: 60 * 60 * 24 * 7,
-  });
+  const { ufsUrl } = await utapi.generateSignedURL(key);
   return {
     success: true as const,
-    url,
+    url: ufsUrl,
   };
 }
 

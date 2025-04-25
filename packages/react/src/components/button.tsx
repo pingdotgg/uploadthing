@@ -1,5 +1,7 @@
 "use client";
 
+import type { CSSProperties } from "react";
+
 import {
   contentFieldToContent,
   defaultClassListMerger,
@@ -15,7 +17,7 @@ import type { FileRouter } from "uploadthing/types";
 
 import type { UploadthingComponentProps } from "../types";
 import * as Primitive from "./primitive";
-import { Cancel, progressWidths, Spinner } from "./shared";
+import { Cancel, Spinner } from "./shared";
 
 type ButtonStyleFieldCallbackArgs = {
   __runtime: "react";
@@ -181,17 +183,21 @@ export function UploadButton<
               className,
               styleFieldToClassName(appearance?.container, styleFieldArg),
             )}
-            style={styleFieldToCssObject(appearance?.container, styleFieldArg)}
+            style={
+              {
+                "--progress-width": `${uploadProgress}%`,
+                ...styleFieldToCssObject(appearance?.container, styleFieldArg),
+              } as CSSProperties
+            }
             data-state={state}
           >
             <Primitive.Button
               className={cn(
                 "group relative flex h-10 w-36 cursor-pointer items-center justify-center overflow-hidden rounded-md text-white after:transition-[width] after:duration-500 focus-within:ring-2 focus-within:ring-blue-600 focus-within:ring-offset-2",
-                state === "disabled" && "cursor-not-allowed bg-blue-400",
-                state === "readying" && "cursor-not-allowed bg-blue-400",
-                state === "uploading" &&
-                  `bg-blue-400 after:absolute after:left-0 after:h-full after:bg-blue-600 after:content-[''] ${progressWidths[uploadProgress]}`,
-                state === "ready" && "bg-blue-600",
+                "disabled:pointer-events-none",
+                "data-[state=disabled]:cursor-not-allowed data-[state=readying]:cursor-not-allowed",
+                "data-[state=disabled]:bg-blue-400 data-[state=ready]:bg-blue-600 data-[state=readying]:bg-blue-400 data-[state=uploading]:bg-blue-400",
+                "after:absolute after:left-0 after:h-full after:w-[var(--progress-width)] after:content-[''] data-[state=uploading]:after:bg-blue-600",
                 styleFieldToClassName(appearance?.button, styleFieldArg),
               )}
               style={styleFieldToCssObject(appearance?.button, styleFieldArg)}

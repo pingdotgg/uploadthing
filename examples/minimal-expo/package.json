@@ -7,7 +7,8 @@
     "dev": "expo start",
     "clean": "git clean -xdf .next node_modules",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@bacons/text-decoder": "^0.0.0",
@@ -15,10 +16,10 @@
     "@gorhom/bottom-sheet": "^4.6.1",
     "@shopify/flash-list": "1.6.4",
     "@tanstack/react-query": "^5.29.2",
-    "@trpc/client": "11.0.0-rc.452",
-    "@trpc/react-query": "11.0.0-rc.452",
-    "@trpc/server": "11.0.0-rc.452",
-    "@uploadthing/expo": "7.1.5",
+    "@trpc/client": "11.0.0-rc.772",
+    "@trpc/server": "11.0.0-rc.772",
+    "@trpc/tanstack-react-query": "11.0.0-rc.772",
+    "@uploadthing/expo": "7.2.2",
     "expo": "~51.0.8",
     "expo-dev-client": "~4.0.10",
     "expo-document-picker": "^12.0.1",
@@ -39,8 +40,8 @@
     "react-native-safe-area-context": "4.10.1",
     "react-native-screens": "~3.31.1",
     "react-native-web": "~0.19.12",
-    "uploadthing": "7.4.4",
-    "zod": "^3.23.8"
+    "uploadthing": "7.6.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

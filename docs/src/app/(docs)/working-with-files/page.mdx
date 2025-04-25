@@ -12,29 +12,28 @@ export const metadata = docsMetadata({
 After your files have been uploaded, you will most likely want to do something
 with them. This page shows how to work with your uploaded files.
 
-## Accessing Files
+## Accessing Public Files
+
+UploadThing serves all files from a CDN at the following URL pattern:
+
+`https://<APP_ID>.ufs.sh/f/<FILE_KEY>`
+
+If you set a `customId` when uploading the file, you can also use
+`https://<APP_ID>.ufs.sh/f/<CUSTOM_ID>` to access it.
 
 <Warning>
     Do not use the raw file URL from the storage provider, e.g. `https://bucket.s3.region.amazonaws.com/<FILE_KEY>`. We reserve the right to move objects between different storage providers and/or buckets, so this URL is not guaranteed to remain valid.
 </Warning>
 
-There are multiple ways to access your files. The most generic way is to
-construct the URL from the `fileKey` you get back after the file has been
-uploaded:
+<Note>
+  Previously, all files were served from `https://utfs.io/f/<FILE_KEY>`.
+  This is still supported, but not recommended and may be deprecated in the future.
+</Note>
 
-`https://utfs.io/f/<FILE_KEY>`
-
-This URL will always work for public files and is the default URL returned by
-the API and from any SDK method. However, sometimes you may want a URL that's
-scoped to your application, for example when doing image optimizations and want
-to filter what URLs are allowed to be optimized on your server. For this, the
-following URL can be used:
-
-`https://utfs.io/a/<APP_ID>/<FILE_KEY>`
-
-By using this URL pattern, you have more granular control over what URLs are
-allowed to be optimized. Below is an example of how to setup image optimization
-allow filtering in Next.js:
+Given that all files are served from a subdomain of your app, you have granular
+control over what URLs are allowed to be processed. Below is an example of how
+to setup image optimization allow filtering in Next.js that only allows
+optimizing images from your app:
 
 ```js
 /** @type {import('next').NextConfig} */
@@ -43,29 +42,54 @@ export default {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "utfs.io",
-        pathname: "/a/<APP_ID>/*",
+        hostname: "<APP_ID>.ufs.sh",
+        pathname: "/f/*",
       },
     ],
   },
 };
 ```
 
-<Note>
-  If you set a `customId` when uploading the file, you can also use `https://utfs.io/a/<APP_ID>/<CUSTOM_ID>`.
-</Note>
-
 ## Accessing Private Files
 
 If your files are protected with
-[access controls](/concepts/regions-acl#access-controls), you will need to
-request a short-lived presigned URL from the API to access the file. You can
-request one using [`UTApi.getSignedUrl`](/api-reference/ut-api#get-signed-url),
-or from the `/requestFileAccess` API endpoint (see
-[OpenAPI Specification](/api-reference/openapi-spec)).
+[access controls](/concepts/regions-acl#access-controls), you can generate a
+presigned URL using
+[`UTApi.generateSignedURL`](/api-reference/ut-api#get-signed-url). Here's a
+reference implementation using Node.js crypto:
 
-Presigned URL follows the same patterns as above, with additional query
-parameters to authenticate the request.
+```ts
+import crypto from "node:crypto";
+
+const apiKey = "sk_live_...";
+const url = new URL("https://<APP_ID>.ufs.sh/f/<FILE_KEY>");
+const algorithm = "hmac-sha256";
+
+// Set expiration to 30 seconds from now (you choose how long you want the URL to be valid for)
+const expires = Date.now() + 1000 * 30;
+url.searchParams.set("expires", String(expires));
+
+const signature = crypto
+  .createHmac(algorithm, apiKey)
+  .update(url.href)
+  .digest("hex");
+url.searchParams.set("signature", `${algorithm}=${signature}`);
+
+// The URL is now signed and ready to use
+await fetch(url); // Status 200 OK
+```
+
+The URL will be valid for the duration in milliseconds you set in the `expires`
+parameter or until the API key is deleted or revoked.
+
+<Note>
+  You can also request presigned URLs using the `/requestFileAccess` API
+  endpoint (see [OpenAPI Specification](/api-reference/openapi-spec)). However,
+  generating URLs client-side is faster as it avoids an additional API call.
+</Note>
+
+The presigned URL follows the same patterns as public files, with additional
+query parameters to authenticate the request.
 
 ## Other File Operations
 

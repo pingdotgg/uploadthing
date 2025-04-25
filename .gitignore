@@ -8,6 +8,9 @@ node_modules
 # testing
 coverage
 
+# astro
+.astro
+
 # next.js
 .next/
 out/
@@ -64,6 +67,7 @@ app.config.bundled_*
 .vercel
 .output
 .nuxt
+.react-router/
 
 # direnv
 .direnv/

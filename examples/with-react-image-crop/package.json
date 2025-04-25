@@ -9,12 +9,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "7.1.5",
-    "next": "15.1.3",
+    "@uploadthing/react": "7.3.0",
+    "next": "15.2.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-image-crop": "^11.0.5",
-    "uploadthing": "7.4.4"
+    "uploadthing": "7.6.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
