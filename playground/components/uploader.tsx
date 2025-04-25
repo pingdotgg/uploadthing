@@ -3,14 +3,9 @@
 import { useActionState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 
-import { generateReactHelpers, generateUploadButton } from "@uploadthing/react";
-
-import { UploadRouter } from "../app/api/uploadthing/route";
 import { uploadFiles } from "../lib/actions";
+import { UTButton } from "../lib/uploadthing";
 import { Input, Label } from "./fieldset";
-
-export const UTButton = generateUploadButton<UploadRouter>();
-export const { useUploadThing } = generateReactHelpers<UploadRouter>();
 
 function ServerUploader(props: { type: "file" | "url" }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -82,8 +77,6 @@ export function Uploader() {
           className="ut-button:bg-red-600"
         />
       </div>
-      <ServerUploader type="file" />
-      <ServerUploader type="url" />
     </div>
   );
 }

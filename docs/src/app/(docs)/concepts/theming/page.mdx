@@ -11,8 +11,20 @@ import * as d from "./demos";
 
 # Theming
 
-Our prebuilt components are customizable so you can make them fit with the theme
-of your application.
+UploadThing ships with a default styled button and dropzone component that you
+can mount in your app if you don't have special needs on design. These default
+components are customizable, both in styling and content. The first parts of
+this doc will cover how to customize the default components and how you can make
+them fit with the theme of your application.
+
+Due to their nature, there are certain customizations you cannot make on the
+default components, which is why we also expose the unstyled,
+[headless primitives](#unstyled-primitive-components). These comes with behavior
+built-in but you have full control over what's rendered when and where.
+
+You can also build a fully custom flow you can opt for the
+[`useUploadThing`](/api-reference/react#use-upload-thing) hook that allows you
+to not only customize the look but also have full control of the behavior.
 
 ## UploadButton Anatomy
 
@@ -528,3 +540,92 @@ type UploadDropzoneProps = {
 <d.CustomContent1 />
 <d.CustomContent2 />
 <d.CustomContent3 />
+
+<div className="mt-16"></div>
+
+# Unstyled Primitive Components
+
+These components allow you to bring your own styling solution while not having
+to implement any of the internals. They accept any normal HTML props and can be
+assigned specific HTML tags through the `as` prop.
+
+<Note>This is currently only implemented by `@uploadthing/react`.</Note>
+
+## Creating the unstyled components
+
+```ts {{ title: 'src/utils/uploadthing.ts' }}
+import { generateUploadPrimitives } from "@uploadthing/react";
+
+import type { OurFileRouter } from "~/server/uploadthing";
+
+export const UT = generateUploadPrimitives<OurFileRouter>();
+```
+
+The returned `UT` object includes the following components:
+
+<Properties>
+
+<Property name="Root" type="component" since="7.2">
+  This is the main provider that accept most of the same props as the default `
+  <UploadButton />` and `<UploadDropzone />` accept.
+</Property>
+
+<Property name="Button" type="component" since="7.2">
+  The button element can be used to open the file selector. If you have auto mode
+  enabled, files are automatically uploaded once they are selected. For manual mode, 
+  a second press on the button will upload the selected files.
+</Property>
+<Property name="Dropzone" type="component" since="7.2">
+  A dropzone area which accepts files to be dropped. As for the button, you may have both
+  auto and manual mode.
+</Property>
+<Property name="AllowedContent" type="component" since="7.2">
+  A text field where you can display what types of files are allowed to be uploaded.
+</Property>
+<Property name="ClearButton" type="component" since="7.2">
+  A button that clears the selected files.
+</Property>
+</Properties>
+
+## Using Unstyled Components
+
+All components accept a children function which allows you to grab any piece of
+internal state. This includes `files`, `state`, `dropzone` state, and many more.
+
+<Note>A children function can also be passed as a prop if you prefer.</Note>
+
+### Example of Dropzone
+
+<Note>
+  The `dropzone` parameter will only be defined from within children of the
+  `Dropzone` component.
+</Note>
+
+```jsx
+<UT.Root endpoint="mockRoute">
+  <UT.Dropzone>
+    {({ state }) => (
+      <div>
+        <p>Drag and drop</p>
+        <UT.Button as="button">
+          {state === "uploading" ? "Uploading" : "Upload file"}
+        </UT.Button>
+        <UT.AllowedContent
+          as="p"
+          style={{ fontSize: 12, width: "fit-content" }}
+        />
+      </div>
+    )}
+  </UT.Dropzone>
+</UT.Root>
+```
+
+### Example of Button
+
+```jsx
+<UT.Root endpoint="mockRoute">
+  <UT.Button>
+    {({ state }) => (state === "uploading" ? "Uploading" : "Upload file")}
+  </UT.Button>
+</UT.Root>
+```

@@ -2,7 +2,7 @@
 
 import { SignIn, useAuth } from "@clerk/nextjs";
 
-import { UploadButton, UploadDropzone } from "~/utils/uploadthing";
+import { UploadButton, UploadDropzone, UT } from "~/utils/uploadthing";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
@@ -35,6 +35,44 @@ export default function Home() {
           console.log("upload begin");
         }}
       />
+      <UT.Root
+        endpoint="videoAndImage"
+        onClientUploadComplete={(res) => {
+          console.log(`onClientUploadComplete`, res);
+          alert("Upload Completed");
+        }}
+        onUploadBegin={() => {
+          console.log("upload begin");
+        }}
+      >
+        <UT.Dropzone style={{ marginTop: 24 }}>
+          {({ dropzone, state }) => (
+            <div
+              style={{
+                borderWidth: 2,
+                borderStyle: "dashed",
+                borderColor: dropzone?.isDragActive ? "#2563f5" : "#11182725",
+                padding: 16,
+              }}
+            >
+              <p
+                style={{
+                  width: "fit-content",
+                }}
+              >
+                Drag and drop
+              </p>
+              <UT.Button as="button">
+                {state === "uploading" ? "Uploading" : "Upload file"}
+              </UT.Button>
+              <UT.AllowedContent
+                as="p"
+                style={{ fontSize: 12, width: "fit-content" }}
+              />
+            </div>
+          )}
+        </UT.Dropzone>
+      </UT.Root>
       {!isSignedIn ? (
         <div
           style={{
