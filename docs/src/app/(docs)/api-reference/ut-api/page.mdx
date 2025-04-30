@@ -175,6 +175,9 @@ uploaded to the storage provider.
     settings](/concepts/regions-acl#access-controls) and can only be used if the
     app allows per-request overrides.
   </Property>
+  <Property name="concurrency" type="number" since="7.6.1" defaultValue="1">
+    The number of files to upload concurrently. Must be a positive integer between 1 and 25.
+  </Property>
 </Properties>
 
 ### Returns
@@ -259,6 +262,9 @@ set a `customId` for the files. The function also takes some optional options:
     storage provider. Default value is is [configured on your app
     settings](/concepts/regions-acl#access-controls) and can only be used if the
     app allows per-request overrides.
+  </Property>
+  <Property name="concurrency" type="number" since="7.6.1" defaultValue="1">
+    The number of files to upload concurrently. Must be a positive integer between 1 and 25.
   </Property>
 </Properties>
 

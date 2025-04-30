@@ -72,6 +72,11 @@ export interface UploadFilesOptions {
    * AbortSignal that can be used to cancel the upload
    */
   signal?: AbortSignal;
+  /**
+   * The number of files to upload concurrently. Must be a positive integer between 1 and 25.
+   * @default 1
+   */
+  concurrency?: number;
 }
 export type UploadFileResult = Either<
   UploadedFileData,
