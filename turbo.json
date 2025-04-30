@@ -49,12 +49,9 @@
       "dependsOn": ["topo", "^build"],
       "outputs": []
     },
-    "//#test": {
-      "dependsOn": []
-    },
     "test": {
-      "cache": false,
-      "dependsOn": ["topo"]
+      "dependsOn": ["topo"],
+      "outputs": ["coverage.json"]
     }
   }
 }

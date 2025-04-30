@@ -30,7 +30,7 @@
     "@types/react-highlight-words": "^0.20.0",
     "@uploadthing/react": "workspace:*",
     "acorn": "^8.12.1",
-    "clsx": "^2.1.0",
+    "clsx": "2.1.1",
     "fast-glob": "^3.3.3",
     "flexsearch": "^0.7.43",
     "mdast-util-to-string": "^4.0.0",

@@ -139,6 +139,7 @@
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
     "dev": "NODE_OPTIONS='--max_old_space_size=8192' bunchee --tsconfig tsconfig.build.json --no-clean && cp src/tw/v4.css tw/v4.css",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -149,6 +150,7 @@
     "effect": "3.14.14"
   },
   "devDependencies": {
+    "@effect/vitest": "0.20.15",
     "@remix-run/server-runtime": "^2.12.0",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^5.0.0",
@@ -156,17 +158,21 @@
     "@types/react": "19.1.2",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
+    "@uploadthing/vitest-config": "workspace:*",
+    "@vitest/coverage-istanbul": "^3.1.2",
     "body-parser": "^1.20.2",
     "bunchee": "6.2.0",
     "eslint": "9.25.1",
     "express": "^5.0.1",
     "fastify": "^5.2.0",
     "h3": "^1.13.0",
+    "msw": "2.7.5",
     "next": "15.3.1",
     "solid-js": "^1.9.3",
     "tailwindcss": "^3.4.16",
     "typescript": "5.8.3",
     "valibot": "1.0.0-beta.9",
+    "vitest": "3.1.2",
     "vue": "^3.4.21",
     "wait-on": "^8.0.1",
     "zod": "^3.24.1"

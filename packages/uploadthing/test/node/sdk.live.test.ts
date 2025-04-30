@@ -4,14 +4,14 @@ import { bypass, http } from "msw";
 import { setupServer } from "msw/node";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { UTApi, UTFile } from "../src/sdk";
-import { UploadThingToken } from "../src/types";
 import {
   appUrlPattern,
   fileUrlPattern,
   testToken,
   ufsUrlPattern,
-} from "./__test-helpers";
+} from "../__test-helpers";
+import { UTApi, UTFile } from "../../src/sdk";
+import { UploadThingToken } from "../../src/types";
 
 const shouldRun =
   typeof process.env.UPLOADTHING_TEST_TOKEN === "string" &&

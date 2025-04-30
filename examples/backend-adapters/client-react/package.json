@@ -8,16 +8,16 @@
     "start": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/react": "workspace:7.3.0",
+    "@uploadthing/react": "7.3.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "uploadthing": "workspace:7.6.0"
+    "uploadthing": "7.6.0"
   },
   "devDependencies": {
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "typescript": "5.8.3",
-    "vite": "^6.0.7"
+    "vite": "^6.3.4"
   }
 }

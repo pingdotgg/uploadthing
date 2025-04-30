@@ -16,7 +16,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "uploadthing": "npm:uploadthing@6",
-    "zod": "3.24.1"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

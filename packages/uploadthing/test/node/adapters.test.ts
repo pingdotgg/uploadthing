@@ -33,14 +33,16 @@ import {
   requestsToDomain,
   testToken,
   uploadCompleteMock,
-} from "./__test-helpers";
+} from "../__test-helpers";
 
 const server = setupServer(...handlers);
 beforeAll(() => server.listen({ onUnhandledRequest: "bypass" }));
 afterAll(() => server.close());
 
 describe("adapters:h3", async () => {
-  const { createUploadthing, createRouteHandler } = await import("../src/h3");
+  const { createUploadthing, createRouteHandler } = await import(
+    "../../src/h3"
+  );
   const f = createUploadthing();
 
   const router = {
@@ -146,7 +148,7 @@ describe("adapters:h3", async () => {
 
 describe("adapters:server", async () => {
   const { createUploadthing, createRouteHandler } = await import(
-    "../src/server"
+    "../../src/server"
   );
   const f = createUploadthing();
 
@@ -300,7 +302,9 @@ describe("adapters:server", async () => {
 });
 
 describe("adapters:next", async () => {
-  const { createUploadthing, createRouteHandler } = await import("../src/next");
+  const { createUploadthing, createRouteHandler } = await import(
+    "../../src/next"
+  );
   const f = createUploadthing();
 
   const router = {
@@ -398,7 +402,7 @@ describe("adapters:next", async () => {
 
 describe("adapters:next-legacy", async () => {
   const { createUploadthing, createRouteHandler } = await import(
-    "../src/next-legacy"
+    "../../src/next-legacy"
   );
   const f = createUploadthing();
 
@@ -537,7 +541,7 @@ describe("adapters:next-legacy", async () => {
 
 describe("adapters:express", async () => {
   const { createUploadthing, createRouteHandler } = await import(
-    "../src/express"
+    "../../src/express"
   );
   const f = createUploadthing();
 
@@ -686,7 +690,7 @@ describe("adapters:express", async () => {
 
 describe("adapters:fastify", async () => {
   const { createUploadthing, createRouteHandler } = await import(
-    "../src/fastify"
+    "../../src/fastify"
   );
   const f = createUploadthing();
 
@@ -797,7 +801,7 @@ describe("adapters:effect-platform", async () => {
   const { it } = await import("@effect/vitest");
 
   const { createUploadthing, createRouteHandler } = await import(
-    "../src/effect-platform"
+    "../../src/effect-platform"
   );
   const f = createUploadthing();
 

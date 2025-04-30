@@ -59,6 +59,7 @@
     "clean": "git clean -xdf dist hooks native next-ssr-plugin node_modules",
     "lint": "eslint src test --max-warnings 0",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -81,15 +82,20 @@
     "@types/react-dom": "19.1.2",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
+    "@uploadthing/vitest-config": "workspace:*",
+    "@vitest/browser": "^3.1.2",
+    "@vitest/coverage-istanbul": "^3.1.2",
     "bunchee": "6.2.0",
     "concurrently": "^9.1.2",
     "eslint": "9.25.1",
+    "msw": "2.7.5",
     "next": "15.3.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "tailwindcss": "^3.4.16",
     "typescript": "5.8.3",
     "uploadthing": "workspace:*",
+    "vitest": "3.1.2",
     "vitest-browser-react": "0.1.1",
     "wait-on": "^8.0.1",
     "zod": "^3.24.1"

@@ -13,8 +13,11 @@ import {
   IngestUrl,
   IsDevelopment,
   UTToken,
-} from "../src/_internal/config";
-import { ParsedToken, UploadThingToken } from "../src/_internal/shared-schemas";
+} from "../../src/_internal/config";
+import {
+  ParsedToken,
+  UploadThingToken,
+} from "../../src/_internal/shared-schemas";
 
 const app1TokenData = {
   apiKey: Redacted.make("sk_foo"),

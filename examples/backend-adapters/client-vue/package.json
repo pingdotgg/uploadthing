@@ -8,14 +8,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@uploadthing/vue": "workspace:7.3.0",
-    "uploadthing": "workspace:7.6.0",
+    "@uploadthing/vue": "7.3.0",
+    "uploadthing": "7.6.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
     "typescript": "5.8.3",
-    "vite": "^6.0.7",
+    "vite": "^6.3.4",
     "vue-tsc": "^2.0.6"
   }
 }

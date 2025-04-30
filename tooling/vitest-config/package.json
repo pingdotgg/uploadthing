@@ -1,0 +1,19 @@
+{
+  "name": "@uploadthing/vitest-config",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "exports": {
+    "./base": "./configs/base-config.js"
+  },
+  "devDependencies": {
+    "@uploadthing/tsconfig": "workspace:*",
+    "@vitest/browser": "^3.1.2",
+    "@vitest/coverage-istanbul": "^3.1.2",
+    "jsonc-parser": "^3.3.1",
+    "nyc": "17.1.0",
+    "playwright": "1.52.0",
+    "typescript": "5.8.3",
+    "vitest": "3.1.2"
+  }
+}

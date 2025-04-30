@@ -2,9 +2,9 @@
 import { expect, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { getParseFn } from "../src/_internal/parser";
-import { UTFiles } from "../src/_internal/types";
-import { createBuilder } from "../src/_internal/upload-builder";
+import { getParseFn } from "../../src/_internal/parser";
+import { UTFiles } from "../../src/_internal/types";
+import { createBuilder } from "../../src/_internal/upload-builder";
 
 it("typeerrors for invalid input", () => {
   const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();

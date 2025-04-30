@@ -32,6 +32,7 @@
     "clean": "git clean -xdf dist node_modules",
     "dev": "bunchee --tsconfig tsconfig.build.json --no-clean",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -40,14 +41,18 @@
     "sqids": "^0.3.0"
   },
   "devDependencies": {
+    "@effect/vitest": "0.20.15",
     "@types/react": "19.1.2",
     "@uploadthing/eslint-config": "workspace:",
     "@uploadthing/tsconfig": "workspace:",
+    "@uploadthing/vitest-config": "workspace:",
+    "@vitest/coverage-istanbul": "^3.1.2",
     "bunchee": "6.2.0",
     "eslint": "9.25.1",
     "react": "19.1.0",
     "solid-js": "^1.9.3",
     "typescript": "5.8.3",
+    "vitest": "3.1.2",
     "vue": "^3.4.21",
     "wait-on": "^8.0.1"
   }

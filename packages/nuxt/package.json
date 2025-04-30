@@ -40,7 +40,9 @@
     "eslint": "9.25.1",
     "h3": "^1.13.0",
     "nuxt": "^3.15.0",
-    "uploadthing": "workspace:*"
+    "uploadthing": "workspace:*",
+    "vite": "^6.3.4",
+    "vitest": "3.1.2"
   },
   "peerDependencies": {
     "uploadthing": "^7.2.0"

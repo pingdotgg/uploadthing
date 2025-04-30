@@ -6,9 +6,9 @@ import * as z from "zod";
 
 import { noop } from "@uploadthing/shared";
 
-import { getParseFn, ParserError } from "../src/_internal/parser";
-import { createBuilder } from "../src/_internal/upload-builder";
-import type { inferEndpointInput } from "../src/types";
+import { getParseFn, ParserError } from "../../src/_internal/parser";
+import { createBuilder } from "../../src/_internal/upload-builder";
+import type { inferEndpointInput } from "../../src/types";
 
 const f = createBuilder<{ req: Request; res: undefined; event: undefined }>();
 
