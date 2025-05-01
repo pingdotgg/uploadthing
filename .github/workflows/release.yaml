@@ -20,6 +20,9 @@ jobs:
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
+      - name: Install Playwright
+        run: pnpm exec playwright install chromium
+
       - name: Check packages for common errors
         run: pnpm turbo --filter "./packages/*" build lint test typecheck
 
