@@ -3,7 +3,7 @@
   "extends": ["//"],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", "native/**", "next-ssr-plugin/**"]
+      "outputs": ["dist/**", ".svelte-kit/**"]
     },
     "dev": {
       "persistent": false

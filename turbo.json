@@ -21,7 +21,7 @@
       "dependsOn": ["^topo"]
     },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["topo", "^build"],
       "outputs": [
         "dist/**",
         ".next/**",
@@ -29,33 +29,29 @@
         ".svelte-kit/**",
         ".vinxi/**",
         ".output/**",
-        ".astro/**"
+        ".astro/**",
+        ".nuxt/**"
       ]
     },
     "lint": {
-      "dependsOn": ["^topo", "^build"],
+      "dependsOn": ["topo", "^build"],
       "outputs": []
     },
     "dev": {
       "cache": false,
-      "persistent": true,
-      "interactive": true
+      "interactive": true,
+      "persistent": true
     },
     "clean": {
       "cache": false
     },
     "typecheck": {
-      "dependsOn": ["^topo", "^build"]
-    },
-    "//#test": {
-      "dependsOn": []
+      "dependsOn": ["topo", "^build"],
+      "outputs": []
     },
     "test": {
-      "cache": false,
-      "dependsOn": []
-    },
-    "test:watch": {
-      "cache": false
+      "dependsOn": ["topo"],
+      "outputs": ["coverage.json"]
     }
   }
 }

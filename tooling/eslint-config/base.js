@@ -2,7 +2,6 @@ import * as path from "node:path";
 import { includeIgnoreFile } from "@eslint/compat";
 import eslint from "@eslint/js";
 import importPlugin from "eslint-plugin-import-x";
-import turboPlugin from "eslint-plugin-turbo";
 import tseslint from "typescript-eslint";
 
 /** @param {string} packageName */
@@ -32,7 +31,6 @@ export default tseslint.config(
     files: ["**/*.js", "**/*.ts", "**/*.tsx"],
     plugins: {
       import: importPlugin,
-      turbo: turboPlugin,
     },
     extends: [
       eslint.configs.recommended,
@@ -41,7 +39,6 @@ export default tseslint.config(
       ...tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      ...turboPlugin.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },

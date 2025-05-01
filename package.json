@@ -4,17 +4,9 @@
   "type": "module",
   "engines": {
     "node": ">=22.x",
-    "pnpm": "9.x"
+    "pnpm": "10.x"
   },
-  "packageManager": "pnpm@9.4.0",
-  "workspaces": [
-    "docs",
-    "examples/*",
-    "examples/backend-adapters/*",
-    "packages/*",
-    "packages/nuxt/*",
-    "tooling/*"
-  ],
+  "packageManager": "pnpm@10.10.0",
   "scripts": {
     "build:all": "turbo run build",
     "build:vanilla": "turbo run build --filter uploadthing...",
@@ -31,30 +23,25 @@
     "lint": "turbo run lint && manypkg check",
     "format:check": "prettier --check .",
     "format": "prettier --write . --list-different",
-    "test": "vitest run",
+    "test": "turbo run test --filter @uploadthing/* --filter uploadthing",
     "test:all": "turbo test",
-    "test:watch": "vitest",
+    "test:watch": "turbo watch test --filter @uploadthing/* --filter uploadthing",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
     "@actions/github": "^6.0.0",
     "@changesets/changelog-github": "^0.5.0",
     "@changesets/cli": "^2.27.11",
-    "@effect/vitest": "0.16.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
     "@manypkg/cli": "^0.23.0",
     "@prettier/sync": "^0.5.2",
     "@types/bun": "^1.2.5",
     "@types/node": "^22.10.0",
-    "@uploadthing/eslint-config": "workspace:*",
-    "@uploadthing/prettier-config": "workspace:*",
-    "@vitest/browser": "^2.1.8",
-    "@vitest/coverage-v8": "^2.1.8",
-    "msw": "2.7.0",
-    "playwright": "1.49.1",
-    "turbo": "2.3.3",
-    "typescript": "5.7.2",
-    "uploadthing": "workspace:*",
-    "vitest": "^2.1.8"
-  },
-  "prettier": "@uploadthing/prettier-config"
+    "playwright": "1.52.0",
+    "prettier": "3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "turbo": "2.5.3-canary.1",
+    "typescript": "5.8.3",
+    "uploadthing": "workspace:*"
+  }
 }

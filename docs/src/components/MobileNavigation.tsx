@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, Suspense, useContext, useEffect, useRef } from "react";
+import { createContext, Suspense, use, useEffect, useRef } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Header } from "@/components/Header";
 import { Navigation } from "@/components/Navigation";
@@ -14,7 +14,7 @@ import { Bars2Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { motion } from "motion/react";
 import { create } from "zustand";
 
-const IsInsideMobileNavigationContext = createContext(false);
+export const IsInsideMobileNavigationContext = createContext(false);
 
 function MobileNavigationDialog({
   isOpen,
@@ -100,10 +100,6 @@ function MobileNavigationDialog({
   );
 }
 
-export function useIsInsideMobileNavigation() {
-  return useContext(IsInsideMobileNavigationContext);
-}
-
 export const useMobileNavigationStore = create<{
   isOpen: boolean;
   open: () => void;
@@ -117,7 +113,7 @@ export const useMobileNavigationStore = create<{
 }));
 
 export function MobileNavigation() {
-  let isInsideMobileNavigation = useIsInsideMobileNavigation();
+  let isInsideMobileNavigation = use(IsInsideMobileNavigationContext);
   let { isOpen, toggle, close } = useMobileNavigationStore();
   let ToggleIcon = isOpen ? XMarkIcon : Bars2Icon;
 

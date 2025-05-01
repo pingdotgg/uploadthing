@@ -50,10 +50,7 @@ export function withUt(twConfig: Config) {
     twConfig.content.files.push(...contentPaths);
   }
 
-  if (!twConfig.plugins) {
-    twConfig.plugins = [];
-  }
-
+  twConfig.plugins ??= [];
   twConfig.plugins.push(uploadthingPlugin);
 
   return twConfig;

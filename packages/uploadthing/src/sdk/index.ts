@@ -52,11 +52,13 @@ export class UTApi {
     HttpClient.HttpClient | FetchHttpClient.Fetch,
     UploadThingError
   >;
-  constructor(private opts?: UTApiOptions) {
+  private opts: UTApiOptions;
+  constructor(options?: UTApiOptions) {
     // Assert some stuff
     guardServerOnly();
-    this.fetch = opts?.fetch ?? globalThis.fetch;
-    this.defaultKeyType = opts?.defaultKeyType ?? "fileKey";
+    this.opts = options ?? {};
+    this.fetch = this.opts.fetch ?? globalThis.fetch;
+    this.defaultKeyType = this.opts.defaultKeyType ?? "fileKey";
     this.runtime = makeRuntime(this.fetch, this.opts);
   }
 

@@ -9,8 +9,6 @@ import {
   it,
 } from "vitest";
 
-import { UTApi, UTFile } from "../src/sdk";
-import type { UploadFileResult } from "../src/sdk/types";
 import {
   API_URL,
   appUrlPattern,
@@ -21,7 +19,9 @@ import {
   requestSpy,
   testToken,
   ufsUrlPattern,
-} from "./__test-helpers";
+} from "../__test-helpers";
+import { UTApi, UTFile } from "../../src/sdk";
+import type { UploadFileResult } from "../../src/sdk/types";
 
 const msw = setupServer(...handlers);
 beforeAll(() => msw.listen());

@@ -1,10 +1,10 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { z } from "zod";
 
-import { createBuilder } from "../src/_internal/upload-builder";
-import { genUploader } from "../src/client";
-import type { ClientUploadedFileData, FileRouter } from "../src/types";
-import { doNotExecute } from "./__test-helpers";
+import { doNotExecute } from "../__test-helpers";
+import { createBuilder } from "../../src/_internal/upload-builder";
+import { genUploader } from "../../src/client";
+import type { ClientUploadedFileData, FileRouter } from "../../src/types";
 
 describe("genuploader", () => {
   const f = createBuilder();

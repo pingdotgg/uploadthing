@@ -5,8 +5,6 @@ import { z } from "zod";
 
 import { signPayload } from "@uploadthing/shared";
 
-import { UploadedFileData } from "../src/_internal/shared-schemas";
-import { createRouteHandler, createUploadthing } from "../src/server";
 import {
   baseHeaders,
   createApiUrl,
@@ -16,7 +14,9 @@ import {
   UFS_HOST,
   uploadCompleteMock,
   UTFS_URL,
-} from "./__test-helpers";
+} from "../__test-helpers";
+import { UploadedFileData } from "../../src/_internal/shared-schemas";
+import { createRouteHandler, createUploadthing } from "../../src/server";
 
 const f = createUploadthing({
   errorFormatter: (e) => ({

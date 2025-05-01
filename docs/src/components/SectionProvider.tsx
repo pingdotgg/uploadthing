@@ -2,7 +2,7 @@
 
 import {
   createContext,
-  useContext,
+  use,
   useEffect,
   useLayoutEffect,
   useState,
@@ -152,6 +152,6 @@ export function SectionProvider({
 }
 
 export function useSectionStore<T>(selector: (state: SectionState) => T) {
-  let store = useContext(SectionStoreContext);
+  let store = use(SectionStoreContext);
   return useStore(store!, selector);
 }

@@ -5,6 +5,8 @@
     "declaration": true,
     "noEmit": false,
     "emitDeclarationOnly": false,
-    "outDir": "dist"
+    "outDir": "dist",
+    "incremental": true,
+    "tsBuildInfoFile": ".cache/tsbuildinfo.json"
   }
 }

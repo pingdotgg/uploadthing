@@ -4,6 +4,12 @@
   "tasks": {
     "build": {
       "outputs": ["dist/**"]
+    },
+    "dev": {
+      "persistent": false
+    },
+    "typecheck": {
+      "outputs": [".cache/tsbuildinfo.json"]
     }
   }
 }

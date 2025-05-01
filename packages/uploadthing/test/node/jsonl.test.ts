@@ -7,8 +7,8 @@ import { beforeEach, describe, expect, vi } from "vitest";
 
 import { signPayload } from "@uploadthing/shared";
 
-import { handleJsonLineStream } from "../src/_internal/jsonl";
-import { MetadataFetchStreamPart } from "../src/_internal/shared-schemas";
+import { handleJsonLineStream } from "../../src/_internal/jsonl";
+import { MetadataFetchStreamPart } from "../../src/_internal/shared-schemas";
 
 const te = new TextEncoder();
 

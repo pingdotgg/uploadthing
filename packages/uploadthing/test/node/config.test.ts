@@ -13,8 +13,11 @@ import {
   IngestUrl,
   IsDevelopment,
   UTToken,
-} from "../src/_internal/config";
-import { ParsedToken, UploadThingToken } from "../src/_internal/shared-schemas";
+} from "../../src/_internal/config";
+import {
+  ParsedToken,
+  UploadThingToken,
+} from "../../src/_internal/shared-schemas";
 
 const app1TokenData = {
   apiKey: Redacted.make("sk_foo"),
@@ -44,6 +47,7 @@ describe("utToken", () => {
         Exit.fail(
           new UploadThingError({
             code: "MISSING_ENV",
+            cause: expect.any(Object),
             message:
               "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
           }),
@@ -65,6 +69,7 @@ describe("utToken", () => {
         Exit.fail(
           new UploadThingError({
             code: "INVALID_SERVER_CONFIG",
+            cause: expect.any(Object),
             message:
               "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }.",
           }),
@@ -128,6 +133,7 @@ describe("utToken", () => {
         Exit.fail(
           new UploadThingError({
             code: "MISSING_ENV",
+            cause: expect.any(Object),
             message:
               "Missing token. Please set the `UPLOADTHING_TOKEN` environment variable or provide a token manually through config.",
           }),
@@ -151,6 +157,7 @@ describe("utToken", () => {
         Exit.fail(
           new UploadThingError({
             code: "INVALID_SERVER_CONFIG",
+            cause: expect.any(Object),
             message:
               "Invalid token. A token is a base64 encoded JSON object matching { apiKey: string, appId: string, regions: string[] }.",
           }),
@@ -294,7 +301,6 @@ describe("IsDevelopment", () => {
 
   it.effect("is true if UPLOADTHING_IS_DEV is true", () =>
     Effect.gen(function* () {
-      // eslint-disable-next-line turbo/no-undeclared-env-vars
       process.env.UPLOADTHING_IS_DEV = "true";
 
       const isDev = yield* IsDevelopment.pipe(

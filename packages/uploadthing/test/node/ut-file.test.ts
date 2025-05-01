@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { UTFile } from "../src/sdk/ut-file";
+import { UTFile } from "../../src/sdk/ut-file";
 
 describe("UTFile", () => {
   it("can be constructed using Blob", async () => {

@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { use, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { useIsInsideMobileNavigation } from "@/components/MobileNavigation";
+import { IsInsideMobileNavigationContext } from "@/components/MobileNavigation";
 import { useSectionStore } from "@/components/SectionProvider";
 import { Tag } from "@/components/Tag";
 import { remToPx } from "@/lib/remToPx";
@@ -84,7 +84,7 @@ export function VisibleSectionHighlight({
       useSectionStore((s) => s.sections),
       useSectionStore((s) => s.visibleSections),
     ],
-    useIsInsideMobileNavigation(),
+    use(IsInsideMobileNavigationContext),
   );
 
   let isPresent = useIsPresent();
@@ -151,7 +151,7 @@ function NavigationGroup({
   // If this is the mobile navigation then we always render the initial
   // state, so that the state does not change during the close animation.
   // The state will still update when we re-open (re-render) the navigation.
-  let isInsideMobileNavigation = useIsInsideMobileNavigation();
+  let isInsideMobileNavigation = use(IsInsideMobileNavigationContext);
   let [pathname, sections] = useInitialValue(
     [usePathname(), useSectionStore((s) => s.sections)],
     isInsideMobileNavigation,

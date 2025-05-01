@@ -23,10 +23,10 @@
     "test": "playwright test"
   },
   "dependencies": {
-    "@playwright/test": "1.49.1",
+    "@playwright/test": "1.52.0",
     "@uploadthing/react": "7.3.0",
     "concurrently": "^9.1.2",
-    "typescript": "5.7.2",
+    "typescript": "5.8.3",
     "uploadthing": "7.6.0"
   }
 }

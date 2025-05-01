@@ -10,12 +10,6 @@ import {
   vi,
 } from "vitest";
 
-import { genUploader } from "../src/client";
-import { createRouteHandler, createUploadthing } from "../src/server";
-import type {
-  ClientUploadedFileData,
-  GenerateUploaderOptions,
-} from "../src/types";
 import {
   appUrlPattern,
   doNotExecute,
@@ -27,7 +21,13 @@ import {
   testToken,
   ufsUrlPattern,
   uploadCompleteMock,
-} from "./__test-helpers";
+} from "../__test-helpers";
+import { genUploader } from "../../src/client";
+import { createRouteHandler, createUploadthing } from "../../src/server";
+import type {
+  ClientUploadedFileData,
+  GenerateUploaderOptions,
+} from "../../src/types";
 
 const worker = setupWorker(...handlers);
 beforeAll(() => worker.start({ quiet: true, onUnhandledRequest: "bypass" }));

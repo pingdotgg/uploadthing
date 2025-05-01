@@ -3,7 +3,7 @@
   "version": "7.3.0",
   "license": "MIT",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "vite build && svelte-package",
     "build": "vite build && pnpm package",
     "build:styles": "tailwindcss -i ./src/lib/styles.css -o ./dist/styles.css",
     "preview": "vite preview",
@@ -41,15 +41,17 @@
     "@sveltejs/kit": "^2.15.1",
     "@sveltejs/package": "^2.3.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@uploadthing/eslint-config": "workspace:*",
+    "eslint": "9.25.1",
     "postcss": "8.4.49",
     "postcss-load-config": "^5.0.3",
     "publint": "^0.2.7",
     "svelte": "^5.16.1",
     "svelte-check": "^4.1.1",
     "tailwindcss": "^3.4.16",
-    "typescript": "5.7.2",
+    "typescript": "5.8.3",
     "uploadthing": "workspace:*",
-    "vite": "^6.0.7"
+    "vite": "^6.3.4"
   },
   "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",
