@@ -19,6 +19,16 @@
         "default": "./client/index.cjs"
       }
     },
+    "./client-future": {
+      "import": {
+        "types": "./client-future/index.d.ts",
+        "default": "./client-future/index.js"
+      },
+      "require": {
+        "types": "./client-future/index.d.cts",
+        "default": "./client-future/index.cjs"
+      }
+    },
     "./server": {
       "import": {
         "types": "./server/index.d.ts",
@@ -118,6 +128,7 @@
   },
   "files": [
     "client",
+    "client-future",
     "dist",
     "effect-platform",
     "express",
@@ -135,9 +146,9 @@
   },
   "scripts": {
     "lint": "eslint src test --max-warnings 0",
-    "build": "NODE_OPTIONS='--max_old_space_size=8192' bunchee --tsconfig tsconfig.build.json && cp src/tw/v4.css tw/v4.css",
+    "build": "NODE_OPTIONS='--max_old_space_size=16384' bunchee --tsconfig tsconfig.build.json && cp src/tw/v4.css tw/v4.css",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
-    "dev": "NODE_OPTIONS='--max_old_space_size=8192' bunchee --tsconfig tsconfig.build.json --no-clean && cp src/tw/v4.css tw/v4.css",
+    "dev": "NODE_OPTIONS='--max_old_space_size=16384' bunchee --tsconfig tsconfig.build.json --no-clean && cp src/tw/v4.css tw/v4.css",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"

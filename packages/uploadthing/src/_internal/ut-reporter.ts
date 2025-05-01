@@ -46,7 +46,7 @@ export const createUTReporter =
   (cfg: {
     url: URL;
     endpoint: string;
-    package: string;
+    package?: string | undefined;
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
   }): UTReporter =>
   (type, payload) =>
@@ -61,7 +61,9 @@ export const createUTReporter =
           typeof cfg.headers === "function" ? await cfg.headers() : cfg.headers,
         ),
       );
-      headers.set("x-uploadthing-package", cfg.package);
+      if (cfg.package) {
+        headers.set("x-uploadthing-package", cfg.package);
+      }
       headers.set("x-uploadthing-version", pkgJson.version);
       headers.set("Content-Type", "application/json");
 

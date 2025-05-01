@@ -41,6 +41,10 @@ export {
   /** @public */
   generatePermittedFileTypes,
   /** @public */
+  bytesToFileSize,
+  /** @public */
+  allowedContentTextLabelGenerator,
+  /** @public */
   UploadAbortedError,
   /** @public */
   UploadPausedError,
