@@ -42,7 +42,7 @@ access the camera or photo library.
 ```tsx {{ title: "app/example-uploader.tsx" }}
 import { Alert, Pressable, Text, View } from "react-native";
 
-import { useImageUploader } from "@uploadthing/expo";
+import { useImageUploader } from "~/utils/uploadthing";
 
 export function MultiUploader() {
   const { openImagePicker, isUploading } = useImageUploader("imageUploader", {
