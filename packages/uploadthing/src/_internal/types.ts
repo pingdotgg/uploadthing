@@ -19,6 +19,23 @@ import type {
   UploadedFileData,
 } from "./shared-schemas";
 
+export type UTRegionAlias =
+  | "bom1"
+  | "icn1"
+  | "syd1"
+  | "can1"
+  | "fra1"
+  | "zrh1"
+  | "dub1"
+  | "cle1"
+  | "sfo1"
+  | "sea1";
+
+/**
+ * Marker used to select the region based on the incoming request
+ */
+export const UTRegion = Symbol("uploadthing-region-symbol");
+
 /**
  * Marker used to append a `customId` to the incoming file data in `.middleware()`
  * @example
@@ -40,6 +57,7 @@ export type UnsetMarker = "unsetMarker" & {
 };
 
 export type ValidMiddlewareObject = {
+  [UTRegion]?: UTRegionAlias;
   [UTFiles]?: Partial<FileUploadDataWithCustomId>[];
   [key: string]: unknown;
 };

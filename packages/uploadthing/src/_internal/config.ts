@@ -82,9 +82,14 @@ export const ApiUrl = Config.string("apiUrl").pipe(
   Config.map((url) => url.href.replace(/\/$/, "")),
 );
 
-export const IngestUrl = Effect.gen(function* () {
+export const IngestUrl = Effect.fn(function* (
+  preferredRegion: string | undefined,
+) {
   const { regions, ingestHost } = yield* UTToken;
-  const region = regions[0]; // Currently only support 1 region per app
+
+  const region = preferredRegion
+    ? (regions.find((r) => r === preferredRegion) ?? regions[0])
+    : regions[0];
 
   return yield* Config.string("ingestUrl").pipe(
     Config.withDefault(`https://${region}.${ingestHost}`),

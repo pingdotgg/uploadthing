@@ -84,7 +84,7 @@ const generatePresignedUrl = (
 ) =>
   Effect.gen(function* () {
     const { apiKey, appId } = yield* UTToken;
-    const baseUrl = yield* IngestUrl;
+    const baseUrl = yield* IngestUrl(undefined);
 
     const key = yield* generateKey(file, appId);
 
