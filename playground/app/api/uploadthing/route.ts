@@ -4,8 +4,8 @@ import { z } from "zod";
 import {
   createRouteHandler,
   createUploadthing,
+  experimental_UTRegion,
   FileRouter,
-  UTRegion,
 } from "uploadthing/next";
 import { UploadThingError } from "uploadthing/server";
 
@@ -42,7 +42,7 @@ export const uploadRouter = {
         } as const
       )[opts.req.headers.get("x-vercel-ip-continent")?.toUpperCase() ?? "EU"]!;
 
-      return { [UTRegion]: region };
+      return { [experimental_UTRegion]: region };
     })
     .onUploadComplete(async (opts) => {
       console.log("Upload complete", opts.file);
