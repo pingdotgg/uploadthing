@@ -47,6 +47,61 @@ you can select the region you want to upload your files to. Once changed, all
   or via [email](mailto:ut-support@ping.gg).
 </Note>
 
+### Dynamic region selection (Private Beta)
+
+UploadThing allows you to seamlessly select the region based on the user's
+location. This is useful for applications that are global and want to upload
+files to the region closest to the user for lower latencies.
+
+This feature is currently in private beta and to enable it, reach out to us on
+[support@uploadthing.com](mailto:support@uploadthing.com) if you're interested
+in enrolling.
+
+Once enabled, you can upload to any region you have enabled on your app in the
+dashboard:
+
+![Dynamic region selection](./multiregion.png)
+
+Then, in your middleware, tag the upload's metadata with the
+`experimental_UTRegion` key:
+
+```ts
+export const uploadRouter = {
+  anyPrivate: fileRoute({
+    blob: { maxFileSize: "256MB", maxFileCount: 10, acl: "public-read" },
+  })
+    .input(z.object({}))
+    .middleware(async (opts) => {
+      /**
+       * Simple example using continent code to select region.
+       *
+       * Europe and Africa will be routed to Frankfurt,
+       * Asia to Mumbai (India), and the rest to Virginia (US-East).
+       *
+       * You can do this selection however you like.
+       */
+      const region =
+        (
+          {
+            AF: "fra1",
+            AN: "sea1",
+            AS: "bom1",
+            EU: "fra1",
+            NA: "sea1",
+            OC: "sea1",
+            SA: "sea1",
+          } as const
+        )[opts.req.headers.get("x-vercel-ip-continent")?.toUpperCase()] ??
+        "sea1"; // Fallback
+
+      return { [experimental_UTRegion]: region }; // <-- Tag the upload with the selected region
+    })
+    .onUploadComplete(async (opts) => {
+      console.log("Upload complete", opts.file);
+    }),
+} satisfies FileRouter;
+```
+
 ## Access Controls
 
 By default every file uploaded to UploadThing is accessible simply by it's URL
