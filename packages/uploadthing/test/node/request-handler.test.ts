@@ -410,7 +410,6 @@ describe(".onUploadComplete()", () => {
     const payload = JSON.stringify({
       status: "uploaded",
       metadata: {},
-      origin: "https://example.com",
       file: new UploadedFileData({
         url: `${UTFS_URL}/f/some-random-key.png`,
         appUrl: `${UTFS_URL}/a/${testToken.decoded.appId}/f/some-random-key.png`,

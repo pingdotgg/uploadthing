@@ -248,7 +248,7 @@ describe("ingest url infers correctly", () => {
       );
       process.env.UPLOADTHING_INGEST_URL = "http://localhost:1234";
 
-      const url = yield* IngestUrl(undefined).pipe(
+      const url = yield* IngestUrl.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
@@ -263,7 +263,7 @@ describe("ingest url infers correctly", () => {
         ParsedToken.make(app1TokenData),
       );
 
-      const url = yield* IngestUrl(undefined).pipe(
+      const url = yield* IngestUrl.pipe(
         Effect.provide(Layer.setConfigProvider(configProvider(null))),
         Effect.exit,
       );
