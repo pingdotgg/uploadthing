@@ -27,6 +27,9 @@ export const uploadRouter = {
 
       console.log("middleware ::", session.sub, opts.input);
 
+      /**
+       * Example on how to select region based on user's location
+       */
       const region = (
         {
           AF: "fra1",
@@ -37,7 +40,7 @@ export const uploadRouter = {
           OC: "sea1",
           SA: "sea1",
         } as const
-      )[opts.req.headers.get("x-vercel-ip-continent")?.toUpperCase() ?? "US"]!;
+      )[opts.req.headers.get("x-vercel-ip-continent")?.toUpperCase() ?? "EU"]!;
 
       return { [UTRegion]: region };
     })
