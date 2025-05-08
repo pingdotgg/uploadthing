@@ -14,7 +14,14 @@ import type { CreateBuilderOptions } from "./_internal/upload-builder";
 import { createBuilder } from "./_internal/upload-builder";
 import type { FileRouter, RouteHandlerOptions } from "./types";
 
-export { UTFiles } from "./_internal/types";
+export {
+  UTFiles,
+  /**
+   * This is an experimental feature.
+   * You need to be feature flagged on our backend to use this
+   */
+  UTRegion as experimental_UTRegion,
+} from "./_internal/types";
 export type { FileRouter };
 
 type AdapterArgs = {

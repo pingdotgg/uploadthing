@@ -46,7 +46,7 @@ import {
   UploadedFileData,
   UploadThingHook,
 } from "./shared-schemas";
-import { UTFiles } from "./types";
+import { UTFiles, UTRegion } from "./types";
 import type { AnyFileRoute, UTEvents } from "./types";
 
 export class AdapterArguments extends Context.Tag(
@@ -329,6 +329,7 @@ const handleCallbackRequest = (opts: {
       Schema.Struct({
         status: Schema.String,
         file: UploadedFileData,
+        origin: Schema.String,
         metadata: Schema.Record({ key: Schema.String, value: Schema.Unknown }),
       }),
     );
@@ -379,14 +380,12 @@ const handleCallbackRequest = (opts: {
         "'onUploadComplete' callback finished. Sending response to UploadThing:",
       ).pipe(Effect.annotateLogs("callbackData", payload));
 
-      const baseUrl = yield* IngestUrl;
-
       const httpClient = (yield* HttpClient.HttpClient).pipe(
         HttpClient.filterStatusOk,
       );
 
       yield* HttpClientRequest.post(`/callback-result`).pipe(
-        HttpClientRequest.prependUrl(baseUrl),
+        HttpClientRequest.prependUrl(requestInput.origin),
         HttpClientRequest.setHeaders({
           "x-uploadthing-api-key": Redacted.value(apiKey),
           "x-uploadthing-version": pkgJson.version,
@@ -467,7 +466,11 @@ const runRouteMiddleware = (opts: {
       }),
     );
 
-    return { metadata, filesWithCustomIds };
+    return {
+      metadata,
+      filesWithCustomIds,
+      preferredRegion: metadata[UTRegion],
+    };
   }).pipe(Effect.withLogSpan("runRouteMiddleware"));
 
 const handleUploadAction = (opts: {
@@ -501,10 +504,11 @@ const handleUploadAction = (opts: {
       Effect.annotateLogs("input", parsedInput),
     );
 
-    const { metadata, filesWithCustomIds } = yield* runRouteMiddleware({
-      json: { input: parsedInput, files: json.files },
-      uploadable,
-    });
+    const { metadata, filesWithCustomIds, preferredRegion } =
+      yield* runRouteMiddleware({
+        json: { input: parsedInput, files: json.files },
+        uploadable,
+      });
 
     yield* Effect.logDebug("Parsing route config").pipe(
       Effect.annotateLogs("routerConfig", uploadable.routerConfig),
@@ -564,7 +568,7 @@ const handleUploadAction = (opts: {
 
     const routeOptions = uploadable.routeOptions;
     const { apiKey, appId } = yield* UTToken;
-    const ingestUrl = yield* IngestUrl;
+    const ingestUrl = yield* IngestUrl(preferredRegion);
     const isDev = yield* IsDevelopment;
 
     yield* Effect.logDebug("Generating presigned URLs").pipe(
