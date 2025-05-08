@@ -1,5 +1,32 @@
 # uploadthing
 
+## 7.7.0
+
+### Minor Changes
+
+- [#1176](https://github.com/pingdotgg/uploadthing/pull/1176)
+  [`bc3d422`](https://github.com/pingdotgg/uploadthing/commit/bc3d4222240d3736fe0773f3af9130d852c0ca55)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: introduce
+  new experimental client API
+
+  This API is not covered under semver. Check out some example usage here:
+
+  https://github.com/pingdotgg/uploadthing/blob/main/playground/app/originui/page.tsx
+
+- [#1189](https://github.com/pingdotgg/uploadthing/pull/1189)
+  [`b95c591`](https://github.com/pingdotgg/uploadthing/commit/b95c591222d22dd8fe3cb0467be3823ed46e92ac)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - feat: dynamic
+  region selection
+
+  📚 https://docs.uploadthing.com/concepts/regions-acl#dynamic-region-selection
+
+### Patch Changes
+
+- [#1181](https://github.com/pingdotgg/uploadthing/pull/1181)
+  [`e83c569`](https://github.com/pingdotgg/uploadthing/commit/e83c569f41c792ef84b7d320dd28097a522791a9)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - add concurrency
+  option to `UTApi.uploadFiles`
+
 ## 7.6.0
 
 ### Minor Changes

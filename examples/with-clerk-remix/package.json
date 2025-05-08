@@ -18,7 +18,7 @@
     "isbot": "^5.1.19",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "uploadthing": "7.6.0"
+    "uploadthing": "7.7.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.12.0",

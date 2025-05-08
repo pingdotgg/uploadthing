@@ -15,7 +15,7 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.0.17",
     "@uploadthing/svelte": "7.3.0",
-    "uploadthing": "7.6.0"
+    "uploadthing": "7.7.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.3.1",
