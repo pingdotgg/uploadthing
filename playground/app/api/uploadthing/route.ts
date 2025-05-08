@@ -40,7 +40,7 @@ export const uploadRouter = {
           OC: "sea1",
           SA: "sea1",
         } as const
-      )[opts.req.headers.get("x-vercel-ip-continent")?.toUpperCase() ?? "EU"]!;
+      )[opts.req.headers.get("x-vercel-ip-continent")?.toUpperCase() ?? "US"]!;
 
       return { [experimental_UTRegion]: region };
     })
