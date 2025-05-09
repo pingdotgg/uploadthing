@@ -153,7 +153,7 @@ export interface UploadBuilder<TParams extends AnyParams> {
       Simplify<
         TParams["_metadata"] extends UnsetMarker
           ? undefined
-          : Omit<TParams["_metadata"], typeof UTFiles>
+          : Omit<TParams["_metadata"], typeof UTFiles | typeof UTRegion>
       >,
       TOutput,
       TParams["_adapterFnArgs"]
