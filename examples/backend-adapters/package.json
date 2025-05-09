@@ -27,6 +27,6 @@
     "@uploadthing/react": "7.3.0",
     "concurrently": "^9.1.2",
     "typescript": "5.8.3",
-    "uploadthing": "7.7.0"
+    "uploadthing": "7.7.1"
   }
 }

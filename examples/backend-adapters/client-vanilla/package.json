@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "uploadthing": "7.7.0"
+    "uploadthing": "7.7.1"
   },
   "devDependencies": {
     "typescript": "5.8.3",

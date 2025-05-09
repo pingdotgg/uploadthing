@@ -1,5 +1,13 @@
 # uploadthing
 
+## 7.7.1
+
+### Patch Changes
+
+- [`77ac323`](https://github.com/pingdotgg/uploadthing/commit/77ac323b03810fce00d66ea573def8d054c4f011)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: add
+  missing type export
+
 ## 7.7.0
 
 ### Minor Changes
