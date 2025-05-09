@@ -11,7 +11,7 @@
   "dependencies": {
     "@uploadthing/react": "workspace:*",
     "class-variance-authority": "^0.7.1",
-    "effect": "3.14.14",
+    "effect": "3.14.21",
     "lucide-react": "^0.469.0",
     "next": "canary",
     "react": "19.1.0",
