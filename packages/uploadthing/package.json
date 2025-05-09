@@ -154,14 +154,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@effect/platform": "0.80.14",
+    "@effect/platform": "0.81.0",
     "@standard-schema/spec": "1.0.0-beta.4",
     "@uploadthing/mime-types": "workspace:*",
     "@uploadthing/shared": "workspace:*",
-    "effect": "3.14.14"
+    "effect": "3.14.21"
   },
   "devDependencies": {
-    "@effect/vitest": "0.20.15",
+    "@effect/vitest": "0.21.4",
     "@remix-run/server-runtime": "^2.12.0",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^5.0.0",

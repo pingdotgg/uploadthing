@@ -37,11 +37,11 @@
   },
   "dependencies": {
     "@uploadthing/mime-types": "workspace:*",
-    "effect": "3.14.14",
+    "effect": "3.14.21",
     "sqids": "^0.3.0"
   },
   "devDependencies": {
-    "@effect/vitest": "0.20.15",
+    "@effect/vitest": "0.21.4",
     "@types/react": "19.1.2",
     "@uploadthing/eslint-config": "workspace:",
     "@uploadthing/tsconfig": "workspace:",
