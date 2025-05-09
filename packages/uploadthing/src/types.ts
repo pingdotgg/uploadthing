@@ -25,6 +25,7 @@ export type {
   NewPresignedUrl,
 } from "./_internal/shared-schemas";
 export { UploadThingToken } from "./_internal/shared-schemas";
+export type { UTRegionAlias } from "./_internal/types";
 
 export type { FileRoute, AnyFileRoute };
 export type FileRouter = Record<string, AnyFileRoute>;
