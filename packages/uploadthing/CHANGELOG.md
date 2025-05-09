@@ -1,5 +1,23 @@
 # uploadthing
 
+## 7.7.2
+
+### Patch Changes
+
+- [`be09959`](https://github.com/pingdotgg/uploadthing/commit/be0995959464ce0fbec5e33c9c08c17692faf022)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix(types):
+  omit region marker from onUploadComplete metadata type
+
+- [#1193](https://github.com/pingdotgg/uploadthing/pull/1193)
+  [`ff575c0`](https://github.com/pingdotgg/uploadthing/commit/ff575c0fdc4a6f6b16c0534657083bd2c49d51e8)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update
+  internal effect version
+
+- Updated dependencies
+  [[`ff575c0`](https://github.com/pingdotgg/uploadthing/commit/ff575c0fdc4a6f6b16c0534657083bd2c49d51e8)]:
+  - @uploadthing/mime-types@0.3.5
+  - @uploadthing/shared@7.1.8
+
 ## 7.7.1
 
 ### Patch Changes

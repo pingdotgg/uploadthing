@@ -1,5 +1,18 @@
 # @uploadthing/nuxt
 
+## 7.1.8
+
+### Patch Changes
+
+- [#1193](https://github.com/pingdotgg/uploadthing/pull/1193)
+  [`ff575c0`](https://github.com/pingdotgg/uploadthing/commit/ff575c0fdc4a6f6b16c0534657083bd2c49d51e8)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - chore: update
+  internal effect version
+
+- Updated dependencies
+  [[`ff575c0`](https://github.com/pingdotgg/uploadthing/commit/ff575c0fdc4a6f6b16c0534657083bd2c49d51e8)]:
+  - @uploadthing/vue@7.3.1
+
 ## 7.1.7
 
 ### Patch Changes
