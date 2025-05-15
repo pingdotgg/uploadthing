@@ -80,17 +80,16 @@
   ],
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "bunchee --tsconfig tsconfig.build.json",
+    "build": "tsdown",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "bunchee --tsconfig tsconfig.build.json --no-clean",
+    "dev": "tsdown --no-clean",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "6.2.0",
-    "eslint": "9.25.1",
+    "tsdown": "0.11.9",
     "typescript": "5.8.3"
   },
   "publishConfig": {
