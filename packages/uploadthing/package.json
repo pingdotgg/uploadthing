@@ -146,9 +146,9 @@
   },
   "scripts": {
     "lint": "eslint src test --max-warnings 0",
-    "build": "NODE_OPTIONS='--max_old_space_size=16384' bunchee --tsconfig tsconfig.build.json && cp src/tw/v4.css tw/v4.css",
+    "build": "tsdown",
     "clean": "git clean -xdf client express fastify h3 internal next next-legacy server tw node_modules",
-    "dev": "NODE_OPTIONS='--max_old_space_size=16384' bunchee --tsconfig tsconfig.build.json --no-clean && cp src/tw/v4.css tw/v4.css",
+    "dev": "tsdown --no-clean",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
@@ -172,7 +172,6 @@
     "@uploadthing/vitest-config": "workspace:*",
     "@vitest/coverage-istanbul": "^3.1.2",
     "body-parser": "^1.20.2",
-    "bunchee": "6.2.0",
     "eslint": "9.25.1",
     "express": "^5.0.1",
     "fastify": "^5.2.0",
@@ -181,6 +180,7 @@
     "next": "15.3.1",
     "solid-js": "^1.9.3",
     "tailwindcss": "^3.4.16",
+    "tsdown": "0.11.9",
     "typescript": "5.8.3",
     "valibot": "1.0.0-beta.9",
     "vitest": "3.1.2",
