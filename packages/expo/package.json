@@ -55,7 +55,7 @@
     "expo-constants": "*",
     "expo-document-picker": "*",
     "expo-image-picker": "*",
-    "react": "^19.1.0",
+    "react": "^17.0.2 || ^18.0.0 || ^19.0.0",
     "react-native": "*",
     "uploadthing": "^7.2.0"
   },
