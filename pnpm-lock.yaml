@@ -1327,6 +1327,9 @@ importers:
       '@uploadthing/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/tsconfig
+      eslint:
+        specifier: 9.25.1
+        version: 9.25.1(jiti@2.4.2)
       tsdown:
         specifier: 0.12.1
         version: 0.12.1(typescript@5.8.3)(vue-tsc@2.2.0(typescript@5.8.3))
@@ -26902,8 +26905,8 @@ snapshots:
     dependencies:
       '@mapbox/node-pre-gyp': 2.0.0-rc.0(encoding@0.1.13)
       '@rollup/pluginutils': 5.1.4(rollup@4.40.0)
-      acorn: 8.14.0
-      acorn-import-attributes: 1.9.5(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-import-attributes: 1.9.5(acorn@8.14.1)
       async-sema: 3.1.1
       bindings: 1.5.0
       estree-walker: 2.0.2
@@ -26940,10 +26943,10 @@ snapshots:
   '@vinxi/plugin-directives@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@babel/parser': 7.27.2
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       acorn-loose: 8.4.0
-      acorn-typescript: 1.4.13(acorn@8.14.0)
+      acorn-typescript: 1.4.13(acorn@8.14.1)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
@@ -26953,10 +26956,10 @@ snapshots:
   '@vinxi/plugin-directives@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@babel/parser': 7.27.2
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       acorn-loose: 8.4.0
-      acorn-typescript: 1.4.13(acorn@8.14.0)
+      acorn-typescript: 1.4.13(acorn@8.14.1)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
@@ -26974,9 +26977,9 @@ snapshots:
   '@vinxi/server-components@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      acorn: 8.14.0
+      acorn: 8.14.1
       acorn-loose: 8.4.0
-      acorn-typescript: 1.4.13(acorn@8.14.0)
+      acorn-typescript: 1.4.13(acorn@8.14.1)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
@@ -26985,9 +26988,9 @@ snapshots:
   '@vinxi/server-components@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@vinxi/plugin-directives': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      acorn: 8.14.0
+      acorn: 8.14.1
       acorn-loose: 8.4.0
-      acorn-typescript: 1.4.13(acorn@8.14.0)
+      acorn-typescript: 1.4.13(acorn@8.14.1)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
@@ -26996,9 +26999,9 @@ snapshots:
   '@vinxi/server-functions@0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@vinxi/plugin-directives': 0.4.3(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      acorn: 8.14.0
+      acorn: 8.14.1
       acorn-loose: 8.4.0
-      acorn-typescript: 1.4.13(acorn@8.14.0)
+      acorn-typescript: 1.4.13(acorn@8.14.1)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
@@ -27007,9 +27010,9 @@ snapshots:
   '@vinxi/server-functions@0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))':
     dependencies:
       '@vinxi/plugin-directives': 0.5.0(vinxi@0.5.1(@libsql/client@0.14.0)(@types/node@22.12.0)(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0))(encoding@0.1.13)(ioredis@5.4.2)(jiti@2.4.2)(lightningcss@1.29.3)(terser@5.37.0)(tsx@4.19.2)(typescript@5.8.3)(uploadthing@packages+uploadthing)(yaml@2.7.0))
-      acorn: 8.14.0
+      acorn: 8.14.1
       acorn-loose: 8.4.0
-      acorn-typescript: 1.4.13(acorn@8.14.0)
+      acorn-typescript: 1.4.13(acorn@8.14.1)
       astring: 1.9.0
       magicast: 0.2.11
       recast: 0.23.9
@@ -27506,30 +27509,37 @@ snapshots:
       mime-types: 3.0.0
       negotiator: 1.0.0
 
-  acorn-import-attributes@1.9.5(acorn@8.14.0):
+  acorn-import-attributes@1.9.5(acorn@8.14.1):
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
 
   acorn-jsx@5.3.2(acorn@8.14.0):
     dependencies:
       acorn: 8.14.0
 
+  acorn-jsx@5.3.2(acorn@8.14.1):
+    dependencies:
+      acorn: 8.14.1
+
   acorn-loose@8.4.0:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
 
   acorn-typescript@1.4.13(acorn@8.14.0):
     dependencies:
       acorn: 8.14.0
 
+  acorn-typescript@1.4.13(acorn@8.14.1):
+    dependencies:
+      acorn: 8.14.1
+
   acorn-walk@8.3.4:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
 
   acorn@8.14.0: {}
 
-  acorn@8.14.1:
-    optional: true
+  acorn@8.14.1: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -29902,7 +29912,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.0
+      debug: 4.4.1(supports-color@9.4.0)
       escape-string-regexp: 4.0.0
       eslint-scope: 8.3.0
       eslint-visitor-keys: 4.2.0
@@ -29930,14 +29940,14 @@ snapshots:
 
   espree@10.3.0:
     dependencies:
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       eslint-visitor-keys: 4.2.0
 
   espree@9.6.1:
     dependencies:
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       eslint-visitor-keys: 3.4.3
 
   esprima@4.0.1: {}
@@ -33366,8 +33376,8 @@ snapshots:
 
   micromark-extension-mdxjs@1.0.1:
     dependencies:
-      acorn: 8.14.0
-      acorn-jsx: 5.3.2(acorn@8.14.0)
+      acorn: 8.14.1
+      acorn-jsx: 5.3.2(acorn@8.14.1)
       micromark-extension-mdx-expression: 1.0.8
       micromark-extension-mdx-jsx: 1.0.5
       micromark-extension-mdx-md: 1.0.1
@@ -33696,7 +33706,7 @@ snapshots:
   miniflare@3.20241218.0:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
-      acorn: 8.14.0
+      acorn: 8.14.1
       acorn-walk: 8.3.4
       capnp-ts: 0.7.0
       exit-hook: 2.2.1
@@ -37772,7 +37782,7 @@ snapshots:
   terser@5.37.0:
     dependencies:
       '@jridgewell/source-map': 0.3.6
-      acorn: 8.14.0
+      acorn: 8.14.1
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -38199,7 +38209,7 @@ snapshots:
 
   unctx@2.4.1:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
       estree-walker: 3.0.3
       magic-string: 0.30.17
       unplugin: 2.1.2
@@ -38274,7 +38284,7 @@ snapshots:
   unimport@3.14.5(rollup@3.29.5):
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@3.29.5)
-      acorn: 8.14.0
+      acorn: 8.14.1
       escape-string-regexp: 5.0.0
       estree-walker: 3.0.3
       fast-glob: 3.3.3
@@ -38293,7 +38303,7 @@ snapshots:
   unimport@3.14.5(rollup@4.40.0):
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@4.40.0)
-      acorn: 8.14.0
+      acorn: 8.14.1
       escape-string-regexp: 5.0.0
       estree-walker: 3.0.3
       fast-glob: 3.3.3
@@ -38469,17 +38479,17 @@ snapshots:
 
   unplugin@1.16.0:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
       webpack-virtual-modules: 0.6.2
 
   unplugin@2.0.0-beta.1:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
       webpack-virtual-modules: 0.6.2
 
   unplugin@2.1.2:
     dependencies:
-      acorn: 8.14.0
+      acorn: 8.14.1
       webpack-virtual-modules: 0.6.2
 
   unstorage@1.14.4(db0@0.2.1(@libsql/client@0.14.0)(drizzle-orm@0.38.3(@cloudflare/workers-types@4.20241230.0)(@libsql/client@0.14.0)(@types/react@19.1.2)(bun-types@1.2.5)(react@19.1.0)))(ioredis@5.4.2)(uploadthing@packages+uploadthing):
