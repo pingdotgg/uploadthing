@@ -1,5 +1,13 @@
 # @uploadthing/expo
 
+## 7.2.4
+
+### Patch Changes
+
+- [`b10c332`](https://github.com/pingdotgg/uploadthing/commit/b10c33244496d52437d5cfcdc7f7b429005f6990)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - relax react
+  peer dep
+
 ## 7.2.3
 
 ### Patch Changes
