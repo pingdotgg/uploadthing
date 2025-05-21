@@ -27,9 +27,9 @@
   },
   "scripts": {
     "lint": "eslint src --max-warnings 0",
-    "build": "bunchee --tsconfig tsconfig.build.json",
+    "build": "tsdown",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "bunchee --tsconfig tsconfig.build.json --no-clean",
+    "dev": "tsdown --no-clean",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -40,13 +40,13 @@
     "@types/react": "19.1.2",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "bunchee": "6.2.0",
     "eslint": "9.25.1",
     "expo-constants": "^16.0.0",
     "expo-document-picker": "^12.0.1",
     "expo-image-picker": "^15.0.4",
     "react": "19.1.0",
     "react-native": "^0.74.1",
+    "tsdown": "0.12.1",
     "typescript": "5.8.3",
     "uploadthing": "workspace:*",
     "wait-on": "^8.0.1"
