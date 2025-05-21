@@ -459,7 +459,7 @@ importers:
         specifier: 11.0.0-rc.772
         version: 11.0.0-rc.772(@tanstack/react-query@5.62.14(react@19.1.0))(@trpc/client@11.0.0-rc.772(@trpc/server@11.0.0-rc.772(typescript@5.8.3))(typescript@5.8.3))(@trpc/server@11.0.0-rc.772(typescript@5.8.3))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@5.8.3)
       '@uploadthing/expo':
-        specifier: 7.2.3
+        specifier: 7.2.4
         version: link:../../packages/expo
       expo:
         specifier: ~51.0.8
