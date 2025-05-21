@@ -89,7 +89,7 @@
   "devDependencies": {
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
-    "tsdown": "0.11.9",
+    "tsdown": "0.12.1",
     "typescript": "5.8.3"
   },
   "publishConfig": {
