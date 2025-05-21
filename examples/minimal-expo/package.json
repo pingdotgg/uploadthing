@@ -19,7 +19,7 @@
     "@trpc/client": "11.0.0-rc.772",
     "@trpc/server": "11.0.0-rc.772",
     "@trpc/tanstack-react-query": "11.0.0-rc.772",
-    "@uploadthing/expo": "7.2.3",
+    "@uploadthing/expo": "7.2.4",
     "expo": "~51.0.8",
     "expo-constants": "^16.0.0",
     "expo-dev-client": "~4.0.10",
