@@ -1,5 +1,6 @@
 {
   "name": "@example/backend-adapters-server",
+  "type": "module",
   "private": true,
   "scripts": {
     "build": "tsc",

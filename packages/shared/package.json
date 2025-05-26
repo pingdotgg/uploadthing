@@ -28,9 +28,9 @@
   },
   "scripts": {
     "lint": "eslint src test --max-warnings 0",
-    "build": "bunchee --tsconfig tsconfig.build.json",
+    "build": "tsdown",
     "clean": "git clean -xdf dist node_modules",
-    "dev": "bunchee --tsconfig tsconfig.build.json --no-clean",
+    "dev": "tsdown --no-clean",
     "prepack": "bun ../../.github/replace-workspace-protocol.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
@@ -47,10 +47,10 @@
     "@uploadthing/tsconfig": "workspace:",
     "@uploadthing/vitest-config": "workspace:",
     "@vitest/coverage-istanbul": "^3.1.2",
-    "bunchee": "6.2.0",
     "eslint": "9.25.1",
     "react": "19.1.0",
     "solid-js": "^1.9.3",
+    "tsdown": "0.12.1",
     "typescript": "5.8.3",
     "vitest": "3.1.2",
     "vue": "^3.4.21",
