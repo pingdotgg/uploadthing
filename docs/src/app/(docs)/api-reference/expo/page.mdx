@@ -133,7 +133,7 @@ the native file system and uploads files to your server.
 ```tsx {{ title: "app/example-uploader.tsx" }}
 import { Alert, Pressable, Text, View } from "react-native";
 
-import { useDocumentUploader } from "@uploadthing/expo";
+import { useDocumentUploader } from "~/utils/uploadthing";
 
 export function MultiUploader() {
   const { openDocumentPicker, isUploading } = useDocumentUploader("document", {
