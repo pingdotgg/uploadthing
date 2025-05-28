@@ -169,7 +169,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
         if (upload.deferred.ac.signal.aborted === false) {
           upload.deferred.ac.abort();
           const failedFile = transitionToFailed(
-            file as UploadingFile,
+            file as UploadingFile | PendingFile,
             new UploadAbortedError(),
           );
           upload.deferred.resolve(failedFile);
