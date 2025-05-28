@@ -247,7 +247,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
     return { pauseUpload, abortUpload, resumeUpload, done };
   };
 
-  const uploadFiles = async <TEndpoint extends keyof TRouter>(
+  const uploadFiles = <TEndpoint extends keyof TRouter>(
     slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
       UploadFilesOptions<TRouter[TEndpoint]>,
