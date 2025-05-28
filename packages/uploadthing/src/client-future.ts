@@ -178,9 +178,14 @@ export const future_genUploader = <TRouter extends FileRouter>(
 
       options.onEvent({
         type: "upload-aborted",
-        files: files as AnyFile<TRouter[TEndpoint]>[],
+        // transitionToFailed mutates inline so this is fine
+        files: files as FailedFile<TRouter[TEndpoint]>[],
       });
     };
+
+    options.signal?.addEventListener("abort", () => {
+      abortUpload();
+    });
 
     /**
      * Resume a paused upload
@@ -248,13 +253,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
       UploadFilesOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
     >,
-  ) => {
-    const controls = await controllableUpload(slug, opts);
-    opts.signal?.addEventListener("abort", () => {
-      controls.abortUpload();
-    });
-    return controls.done();
-  };
+  ) => controllableUpload(slug, opts).then((_) => _.done());
 
   return {
     uploadFiles,
