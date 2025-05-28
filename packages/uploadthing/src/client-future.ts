@@ -18,10 +18,12 @@ import type {
   PendingFile,
   UploadedFile,
   UploadFilesOptions,
+  UploadingFile,
 } from "./_internal/client-future";
 import {
   makePendingFile,
   requestPresignedUrls,
+  transitionToFailed,
   uploadFile,
 } from "./_internal/client-future";
 import type { Deferred } from "./_internal/deferred";
@@ -165,13 +167,19 @@ export const future_genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         if (upload.deferred.ac.signal.aborted === false) {
-          // Ensure the upload is paused
           upload.deferred.ac.abort();
+          const failedFile = transitionToFailed(
+            file as UploadingFile,
+            new UploadAbortedError(),
+          );
+          upload.deferred.resolve(failedFile);
         }
       }
 
-      // Abort the upload
-      throw new UploadAbortedError();
+      options.onEvent({
+        type: "upload-aborted",
+        files: files as AnyFile<TRouter[TEndpoint]>[],
+      });
     };
 
     /**
@@ -234,13 +242,19 @@ export const future_genUploader = <TRouter extends FileRouter>(
     return { pauseUpload, abortUpload, resumeUpload, done };
   };
 
-  const uploadFiles = <TEndpoint extends keyof TRouter>(
+  const uploadFiles = async <TEndpoint extends keyof TRouter>(
     slug: EndpointArg<TRouter, TEndpoint>,
     opts: Omit<
       UploadFilesOptions<TRouter[TEndpoint]>,
       keyof GenerateUploaderOptions
     >,
-  ) => controllableUpload(slug, opts).then((_) => _.done());
+  ) => {
+    const controls = await controllableUpload(slug, opts);
+    opts.signal?.addEventListener("abort", () => {
+      controls.abortUpload();
+    });
+    return controls.done();
+  };
 
   return {
     uploadFiles,
