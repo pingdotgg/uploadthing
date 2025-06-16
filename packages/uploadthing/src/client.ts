@@ -16,6 +16,7 @@ import {
 import * as pkgJson from "../package.json";
 import type { Deferred } from "./_internal/deferred";
 import { createDeferred } from "./_internal/deferred";
+import { generateTraceHeaders } from "./_internal/random-hex";
 import { uploadFile, uploadFilesInternal } from "./_internal/upload-browser";
 import { createUTReporter } from "./_internal/ut-reporter";
 import type {
@@ -110,11 +111,12 @@ export const genUploader = <TRouter extends FileRouter>(
 
     const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
 
+    const traceHeaders = generateTraceHeaders();
     const utReporter = createUTReporter({
       endpoint: String(endpoint),
       package: initOpts?.package ?? "uploadthing/client",
       url: resolveMaybeUrlArg(initOpts?.url),
-      headers: opts.headers,
+      headers: { ...traceHeaders, ...opts.headers },
     });
     const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
 
@@ -136,6 +138,7 @@ export const genUploader = <TRouter extends FileRouter>(
 
     const uploadEffect = (file: File, presigned: NewPresignedUrl) =>
       uploadFile(file, presigned, {
+        traceHeaders,
         onUploadProgress: (progressEvent) => {
           totalLoaded += progressEvent.delta;
           opts.onUploadProgress?.({
