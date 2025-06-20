@@ -2,4 +2,4 @@
 "uploadthing": patch
 ---
 
-Let the decide to they want the appID as a subdomain on Utfs url for self hosted versions
+Let the user decide if they want the appID as a subdomain on UTFS URL for self-hosted versions
