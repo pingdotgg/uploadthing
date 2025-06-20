@@ -24,6 +24,7 @@ import {
   UfsHost,
   UPLOADTHING_VERSION,
   UTToken,
+  DoAppIDInUrls,
 } from "../_internal/config";
 import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
 import { makeRuntime } from "../_internal/runtime";
@@ -436,10 +437,13 @@ export class UTApi {
     const program = Effect.gen(function* () {
       const { apiKey, appId } = yield* UTToken;
       const ufsHost = yield* UfsHost;
-
+      const doAppID = Boolean(yield* DoAppIDInUrls);
       const proto = ufsHost.includes("local") ? "http" : "https";
+      const urlBase = doAppID
+        ? `${proto}://${appId}.${ufsHost}/f/${key}`
+        : `${proto}://${ufsHost}/f/${key}`;
       const ufsUrl = yield* generateSignedURL(
-        `${proto}://${appId}.${ufsHost}/f/${key}`,
+        urlBase,
         apiKey,
         {
           ttlInSeconds: expiresIn,
