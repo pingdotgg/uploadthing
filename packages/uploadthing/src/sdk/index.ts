@@ -21,10 +21,10 @@ import {
 
 import {
   ApiUrl,
+  DoAppIDInUrls,
   UfsHost,
   UPLOADTHING_VERSION,
   UTToken,
-  DoAppIDInUrls,
 } from "../_internal/config";
 import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
 import { makeRuntime } from "../_internal/runtime";
@@ -442,13 +442,9 @@ export class UTApi {
       const urlBase = doAppID
         ? `${proto}://${appId}.${ufsHost}/f/${key}`
         : `${proto}://${ufsHost}/f/${key}`;
-      const ufsUrl = yield* generateSignedURL(
-        urlBase,
-        apiKey,
-        {
-          ttlInSeconds: expiresIn,
-        },
-      );
+      const ufsUrl = yield* generateSignedURL(urlBase, apiKey, {
+        ttlInSeconds: expiresIn,
+      });
 
       return {
         ufsUrl,

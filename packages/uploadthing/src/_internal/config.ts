@@ -105,4 +105,6 @@ export const UtfsHost = Config.string("utfsHost").pipe(
 export const UfsHost = Config.string("ufsHost").pipe(
   Config.withDefault("ufs.sh"),
 );
-export const DoAppIDInUrls = Config.boolean("doAppIDInURLS").pipe(Config.withDefault(true));
+export const DoAppIDInUrls = Config.boolean("doAppIDInURLS").pipe(
+  Config.withDefault(true),
+);
