@@ -1,11 +1,9 @@
 /* eslint-disable no-restricted-globals */
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
-import {
-  FetchHttpClient,
-  HttpServerRequest,
-  HttpServerResponse,
-} from "@effect/platform";
+import * as FetchHttpClient from "@effect/platform/FetchHttpClient";
+import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
+import * as HttpServerResponse from "@effect/platform/HttpServerResponse";
 import * as ConfigProvider from "effect/ConfigProvider";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
