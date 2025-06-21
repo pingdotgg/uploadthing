@@ -161,7 +161,7 @@
     "effect": "3.16.8"
   },
   "devDependencies": {
-    "@effect/vitest": "0.21.4",
+    "@effect/vitest": "0.23.8",
     "@remix-run/server-runtime": "^2.12.0",
     "@types/body-parser": "^1.19.5",
     "@types/express": "^5.0.0",
@@ -170,7 +170,7 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "@uploadthing/vitest-config": "workspace:*",
-    "@vitest/coverage-istanbul": "^3.1.2",
+    "@vitest/coverage-istanbul": "3.2.4",
     "body-parser": "^1.20.2",
     "eslint": "9.25.1",
     "express": "^5.0.1",
@@ -183,7 +183,7 @@
     "tsdown": "0.12.1",
     "typescript": "5.8.3",
     "valibot": "1.0.0-beta.9",
-    "vitest": "3.1.2",
+    "vitest": "3.2.4",
     "vue": "^3.4.21",
     "wait-on": "^8.0.1",
     "zod": "^3.24.1"
