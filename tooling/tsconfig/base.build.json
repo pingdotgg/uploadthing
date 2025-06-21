@@ -26,7 +26,12 @@
 
     /** Monorepo */
     "incremental": true,
-    "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.json"
+    "tsBuildInfoFile": "${configDir}/.cache/tsbuildinfo.json",
+    "plugins": [
+      {
+        "name": "@effect/language-service"
+      }
+    ]
   },
   "include": ["*.ts"],
   "exclude": ["node_modules"]

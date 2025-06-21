@@ -4,5 +4,10 @@
   "private": true,
   "files": [
     "base.json"
-  ]
+  ],
+  "dependencies": {
+    "@effect/language-service": "0.21.7",
+    "effect": "3.16.8",
+    "typescript": "5.8.3"
+  }
 }

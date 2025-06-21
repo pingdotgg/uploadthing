@@ -11,7 +11,7 @@
   "dependencies": {
     "@uploadthing/react": "npm:@uploadthing/react@6",
     "clsx": "2.1.1",
-    "effect": "3.14.21",
+    "effect": "3.16.8",
     "next": "canary",
     "react": "19.1.0",
     "react-dom": "19.1.0",
