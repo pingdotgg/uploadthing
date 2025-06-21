@@ -1,14 +1,12 @@
-import {
-  HttpApp,
-  HttpBody,
-  HttpClient,
-  HttpClientRequest,
-  HttpClientResponse,
-  HttpRouter,
-  HttpServerRequest,
-  HttpServerResponse,
-} from "@effect/platform";
-import type { ResponseError } from "@effect/platform/HttpClientError";
+import * as HttpApp from "@effect/platform/HttpApp";
+import * as HttpBody from "@effect/platform/HttpBody";
+import * as HttpClient from "@effect/platform/HttpClient";
+import type * as HttpClientError from "@effect/platform/HttpClientError";
+import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
+import * as HttpClientResponse from "@effect/platform/HttpClientResponse";
+import * as HttpRouter from "@effect/platform/HttpRouter";
+import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
+import * as HttpServerResponse from "@effect/platform/HttpServerResponse";
 import * as Config from "effect/Config";
 import * as Context from "effect/Context";
 import * as Effect from "effect/Effect";
@@ -635,7 +633,7 @@ const handleUploadAction = (opts: {
     );
 
     const handleDevStreamError = Effect.fn("handleDevStreamError")(function* (
-      err: ResponseError,
+      err: HttpClientError.ResponseError,
       chunk: string,
     ) {
       const schema = Schema.parseJson(
