@@ -9,11 +9,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@uploadthing/react": "7.3.1",
+    "@uploadthing/react": "7.3.2",
     "next": "15.3.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "uploadthing": "7.7.2"
+    "uploadthing": "7.7.3"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "15.1.3",

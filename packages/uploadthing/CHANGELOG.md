@@ -1,5 +1,23 @@
 # uploadthing
 
+## 7.7.3
+
+### Patch Changes
+
+- [#1203](https://github.com/pingdotgg/uploadthing/pull/1203)
+  [`4cd60f2`](https://github.com/pingdotgg/uploadthing/commit/4cd60f28290873527aac6b9bf6a0a4ef5cc429fe)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: abortion
+  on client-future uploadFiles method
+
+- [#1212](https://github.com/pingdotgg/uploadthing/pull/1212)
+  [`076fcf1`](https://github.com/pingdotgg/uploadthing/commit/076fcf12875b7e1779b8e1d85ef26bcd256a5396)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore: bump
+  effect deps
+
+- Updated dependencies
+  [[`076fcf1`](https://github.com/pingdotgg/uploadthing/commit/076fcf12875b7e1779b8e1d85ef26bcd256a5396)]:
+  - @uploadthing/shared@7.1.9
+
 ## 7.7.2
 
 ### Patch Changes
