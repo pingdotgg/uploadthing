@@ -1,6 +1,6 @@
 import * as HttpBody from "@effect/platform/HttpBody";
-import * as HttpApp from "@effect/platform/HttpClientError";
-import * as HttpClient from "@effect/platform/HttpClientError";
+import * as HttpApp from "@effect/platform/HttpApp";
+import * as HttpClient from "@effect/platform/HttpClient";
 import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
 import * as HttpClientResponse from "@effect/platform/HttpClientResponse";
 import * as HttpRouter from "@effect/platform/HttpRouter";

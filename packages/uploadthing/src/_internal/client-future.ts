@@ -1,4 +1,4 @@
-import * as Array from "effect/Array";
+import * as Arr from "effect/Array";
 import type { LazyArg } from "effect/Function";
 import * as Micro from "effect/Micro";
 import * as Predicate from "effect/Predicate";
@@ -593,7 +593,7 @@ export function uploadFiles<
     headers: options.headers,
     package: options.package,
   }).pipe(
-    Micro.map(Array.zip(pendingFiles)),
+    Micro.map(Arr.zip(pendingFiles)),
     Micro.tap((pairs) => {
       for (const [presigned, file] of pairs) {
         file.key = presigned.key;
