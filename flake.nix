@@ -13,7 +13,7 @@
         packages = with pkgs; [
           bun
           corepack
-          nodejs_20
+          nodejs_22
         ];
       };
     });

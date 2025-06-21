@@ -1,5 +1,4 @@
-import { Array } from "effect";
-import * as Arr from "effect/Array";
+import * as Array from "effect/Array";
 import * as Micro from "effect/Micro";
 
 import type { FetchEsque } from "@uploadthing/shared";
@@ -140,7 +139,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to pause. Can be omitted to pause all files
      */
     const pauseUpload = (file?: File) => {
-      const files = Arr.ensure(file ?? options.files);
+      const files = Array.ensure(file ?? options.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) return;
@@ -159,7 +158,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to abort. Can be omitted to abort all files
      */
     const abortUpload = (file?: File) => {
-      const files = Arr.ensure(file ?? options.files);
+      const files = Array.ensure(file ?? options.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
@@ -179,7 +178,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
      * @param file The file upload you want to resume. Can be omitted to resume all files
      */
     const resumeUpload = (file?: File) => {
-      const files = Arr.ensure(file ?? options.files);
+      const files = Array.ensure(file ?? options.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
@@ -219,7 +218,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
     > => {
       const promises = [];
 
-      const files = Arr.ensure(file ?? options.files);
+      const files = Array.ensure(file ?? options.files);
       for (const file of files) {
         const upload = uploads.get(file);
         if (!upload) throw "No upload found";
