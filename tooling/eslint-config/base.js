@@ -17,6 +17,11 @@ export function noSelfImport(packageName) {
               message:
                 'Use alias imports instead (import * as X from "effect/X")',
             },
+            {
+              name: "@effect/platform",
+              message:
+                'Use alias imports instead (import * as X from "@effect/platform/X")',
+            },
           ],
           patterns: [
             {
@@ -90,6 +95,11 @@ export default tseslint.config(
               name: "effect",
               message:
                 'Use alias imports instead (import * as X from "effect/X")',
+            },
+            {
+              name: "@effect/platform",
+              message:
+                'Use alias imports instead (import * as X from "@effect/platform/X")',
             },
           ],
         },
