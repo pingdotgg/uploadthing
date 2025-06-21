@@ -1,5 +1,7 @@
-import { Array, Micro, Predicate } from "effect";
+import * as Array from "effect/Array";
 import type { LazyArg } from "effect/Function";
+import * as Micro from "effect/Micro";
+import * as Predicate from "effect/Predicate";
 
 import { fetchEff } from "@uploadthing/shared";
 import type {
