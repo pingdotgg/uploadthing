@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import { AnyFile } from "uploadthing/client-future";
 
@@ -9,6 +9,8 @@ import { UploadRouter } from "../api/uploadthing/route";
 
 function AsyncUploader() {
   const [files, setFiles] = useState<AnyFile<UploadRouter["anyPrivate"]>[]>([]);
+
+  const acRef = useRef(new AbortController());
 
   return (
     <div className="mx-auto max-w-2xl p-8">
@@ -20,6 +22,7 @@ function AsyncUploader() {
 
           const result = await future_uploadFiles("anyPrivate", {
             files,
+            signal: acRef.current.signal,
             onEvent: (event) => {
               console.log("EVENT", event);
               setFiles([...event.files]);
@@ -44,9 +47,16 @@ function AsyncUploader() {
         </button>
       </form>
 
-      <pre className="text-xs font-medium">
-        Files: {JSON.stringify(files, null, 2)}
-      </pre>
+      <div>
+        {files.map((file, i) => (
+          <div key={file.key ?? i}>
+            <pre className="text-xs font-medium">
+              {JSON.stringify(file, null, 2)}
+            </pre>
+            <button onClick={() => acRef.current.abort()}>Abort</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

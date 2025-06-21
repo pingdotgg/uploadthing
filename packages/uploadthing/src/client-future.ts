@@ -17,10 +17,12 @@ import type {
   PendingFile,
   UploadedFile,
   UploadFilesOptions,
+  UploadingFile,
 } from "./_internal/client-future";
 import {
   makePendingFile,
   requestPresignedUrls,
+  transitionToFailed,
   uploadFile,
 } from "./_internal/client-future";
 import type { Deferred } from "./_internal/deferred";
@@ -164,14 +166,25 @@ export const future_genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         if (upload.deferred.ac.signal.aborted === false) {
-          // Ensure the upload is paused
           upload.deferred.ac.abort();
+          const failedFile = transitionToFailed(
+            file as UploadingFile | PendingFile,
+            new UploadAbortedError(),
+          );
+          upload.deferred.resolve(failedFile);
         }
       }
 
-      // Abort the upload
-      throw new UploadAbortedError();
+      options.onEvent({
+        type: "upload-aborted",
+        // transitionToFailed mutates inline so this is fine
+        files: files as FailedFile<TRouter[TEndpoint]>[],
+      });
     };
+
+    options.signal?.addEventListener("abort", () => {
+      abortUpload();
+    });
 
     /**
      * Resume a paused upload
