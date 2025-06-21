@@ -11,6 +11,13 @@ export function noSelfImport(packageName) {
       "no-restricted-imports": [
         "error",
         {
+          paths: [
+            {
+              name: "effect",
+              message:
+                'Use alias imports instead (import * as X from "effect/X")',
+            },
+          ],
           patterns: [
             {
               group: [`${packageName}`, `${packageName}/*`],
