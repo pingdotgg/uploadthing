@@ -1,4 +1,5 @@
-import { FetchHttpClient, Headers } from "@effect/platform";
+import * as FetchHttpClient from "@effect/platform/FetchHttpClient";
+import * as Headers from "@effect/platform/Headers";
 import * as FiberRef from "effect/FiberRef";
 import * as Layer from "effect/Layer";
 import * as ManagedRuntime from "effect/ManagedRuntime";
