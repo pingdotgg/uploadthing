@@ -1,4 +1,3 @@
-import { Array } from "effect";
 import * as Arr from "effect/Array";
 import * as Micro from "effect/Micro";
 
@@ -113,7 +112,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
         XHRImpl: globalThis.XMLHttpRequest,
       }).pipe(Micro.provideService(FetchContext, fetchFn));
 
-    for (const [presigned, file] of Array.zip(presigneds, pendingFiles)) {
+    for (const [presigned, file] of Arr.zip(presigneds, pendingFiles)) {
       file.key = presigned.key;
       file.customId = presigned.customId;
 

@@ -1,4 +1,5 @@
-import { HttpRouter, HttpServerRequest } from "@effect/platform";
+import * as HttpRouter from "@effect/platform/HttpRouter";
+import * as HttpServerRequest from "@effect/platform/HttpServerRequest";
 import * as Effect from "effect/Effect";
 import * as Layer from "effect/Layer";
 

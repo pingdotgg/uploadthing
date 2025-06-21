@@ -1,4 +1,5 @@
-import { HttpClient, HttpClientRequest } from "@effect/platform";
+import * as HttpClient from "@effect/platform/HttpClient";
+import * as HttpClientRequest from "@effect/platform/HttpClientRequest";
 import * as Effect from "effect/Effect";
 import * as Predicate from "effect/Predicate";
 
