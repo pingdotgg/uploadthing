@@ -10,7 +10,12 @@ export const randomHexString = (function () {
   };
 })();
 
-export const generateTraceHeaders = () => {
+export type TraceHeaders = {
+  b3: string;
+  traceparent: string;
+};
+
+export const generateTraceHeaders = (): TraceHeaders => {
   const traceId = randomHexString(32);
   const spanId = randomHexString(16);
   const sampled = "01";

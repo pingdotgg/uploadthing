@@ -10,6 +10,7 @@ import {
 } from "@uploadthing/shared";
 
 import * as pkgJson from "../../package.json";
+import type { TraceHeaders } from "./random-hex";
 import type { ActionType } from "./shared-schemas";
 import type { UTEvents } from "./types";
 
@@ -48,7 +49,7 @@ export const createUTReporter =
     endpoint: string;
     package?: string | undefined;
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
-    traceHeaders: { b3: string; traceparent: string };
+    traceHeaders: TraceHeaders;
   }): UTReporter =>
   (type, payload) =>
     Micro.gen(function* () {

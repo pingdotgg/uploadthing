@@ -14,6 +14,7 @@ import type {
   UploadFilesOptions,
 } from "../types";
 import { logDeprecationWarning } from "./deprecations";
+import type { TraceHeaders } from "./random-hex";
 import { generateTraceHeaders } from "./random-hex";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
@@ -23,7 +24,7 @@ const uploadWithProgress = (
   rangeStart: number,
   presigned: NewPresignedUrl,
   opts: {
-    traceHeaders?: Record<string, string> | undefined;
+    traceHeaders: TraceHeaders;
     onUploadProgress?:
       | ((opts: { loaded: number; delta: number }) => void)
       | undefined;
@@ -34,9 +35,9 @@ const uploadWithProgress = (
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
     xhr.setRequestHeader("x-uploadthing-version", version);
-    Object.entries(opts.traceHeaders ?? {}).forEach(([key, value]) => {
-      xhr.setRequestHeader(key, value);
-    });
+    xhr.setRequestHeader("b3", opts.traceHeaders.b3);
+    xhr.setRequestHeader("traceparent", opts.traceHeaders.traceparent);
+
     xhr.responseType = "json";
 
     let previousLoaded = 0;
@@ -115,7 +116,7 @@ export const uploadFile = <
   file: File,
   presigned: NewPresignedUrl,
   opts: {
-    traceHeaders?: Record<string, string>;
+    traceHeaders: TraceHeaders;
     onUploadProgress?: (progressEvent: {
       loaded: number;
       delta: number;
@@ -124,7 +125,7 @@ export const uploadFile = <
 ) =>
   fetchEff(presigned.url, {
     method: "HEAD",
-    headers: opts.traceHeaders ?? {},
+    headers: opts.traceHeaders,
   }).pipe(
     Micro.map(({ headers }) =>
       parseInt(headers.get("x-ut-range-start") ?? "0", 10),
