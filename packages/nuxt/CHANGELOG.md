@@ -1,5 +1,12 @@
 # @uploadthing/nuxt
 
+## 7.1.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @uploadthing/vue@7.3.2
+
 ## 7.1.8
 
 ### Patch Changes
