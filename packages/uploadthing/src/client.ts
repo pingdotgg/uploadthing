@@ -116,7 +116,8 @@ export const genUploader = <TRouter extends FileRouter>(
       endpoint: String(endpoint),
       package: initOpts?.package ?? "uploadthing/client",
       url: resolveMaybeUrlArg(initOpts?.url),
-      headers: { ...traceHeaders, ...opts.headers },
+      headers: opts.headers,
+      traceHeaders,
     });
     const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
 

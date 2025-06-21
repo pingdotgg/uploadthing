@@ -189,7 +189,8 @@ export const uploadFilesInternal = <
     endpoint: String(endpoint),
     package: opts.package,
     url: opts.url,
-    headers: { ...opts.headers, ...traceHeaders },
+    headers: opts.headers,
+    traceHeaders,
   });
 
   const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);

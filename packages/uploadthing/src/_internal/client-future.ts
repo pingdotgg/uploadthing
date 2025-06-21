@@ -16,6 +16,7 @@ import type {
   FileRouter as AnyFileRouter,
   NewPresignedUrl,
 } from "../types";
+import { generateTraceHeaders } from "./random-hex";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
@@ -538,11 +539,13 @@ export function requestPresignedUrls<
   UTServerError<TRouter[TEndpoint]["$types"]["errorShape"]>,
   FetchContext
 > {
+  const traceHeaders = generateTraceHeaders();
   const reportEventToUT = createUTReporter({
     endpoint: String(options.endpoint),
     package: options.package,
     url: options.url,
     headers: options.headers,
+    traceHeaders,
   });
 
   return reportEventToUT("upload", {

@@ -48,6 +48,7 @@ export const createUTReporter =
     endpoint: string;
     package?: string | undefined;
     headers: HeadersInit | (() => MaybePromise<HeadersInit>) | undefined;
+    traceHeaders: { b3: string; traceparent: string };
   }): UTReporter =>
   (type, payload) =>
     Micro.gen(function* () {
@@ -66,6 +67,8 @@ export const createUTReporter =
       }
       headers.set("x-uploadthing-version", pkgJson.version);
       headers.set("Content-Type", "application/json");
+      headers.set("b3", cfg.traceHeaders.b3);
+      headers.set("traceparent", cfg.traceHeaders.traceparent);
 
       const response = yield* fetchEff(url, {
         method: "POST",
