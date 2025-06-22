@@ -107,7 +107,6 @@ export const UfsHost = Config.string("ufsHost").pipe(
 );
 
 export const UrlAppIdLocation = Config.literal(
-  "urlAppIdLocation",
   "subdomain",
   "path",
-)().pipe(Config.withDefault("subdomain"));
+)("appIdLocation").pipe(Config.withDefault("subdomain"));

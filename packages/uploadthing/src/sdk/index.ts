@@ -416,6 +416,7 @@ export class UTApi {
    **/
   generateSignedURL = async (key: string, opts?: GetSignedURLOptions) => {
     guardServerOnly();
+
     const expiresIn = parseTimeToSeconds(opts?.expiresIn ?? "5 minutes");
 
     if (opts?.expiresIn && isNaN(expiresIn)) {
@@ -434,55 +435,40 @@ export class UTApi {
 
     const program = Effect.gen(function* () {
       const { apiKey, appId } = yield* UTToken;
-      const locationRaw = yield* UrlAppIdLocation;
-      const location: "subdomain" | "path" =
-        locationRaw === "subdomain" || locationRaw === "path"
-          ? locationRaw
-          : "subdomain";
-
+      const appIdLocation = yield* UrlAppIdLocation;
       const ufsHost = yield* UfsHost;
+
       const proto = ufsHost.includes("local") ? "http" : "https";
       // either subdomain or path style
       const urlBase =
-        location === "subdomain"
+        appIdLocation === "subdomain"
           ? `${proto}://${appId}.${ufsHost}/f/${key}`
           : `${proto}://${ufsHost}/a/${appId}/${key}`;
 
-      const ufsUrl = yield* Effect.promise(() =>
-        Promise.resolve(
-          generateSignedURL(urlBase, apiKey, {
-            ttlInSeconds: expiresIn,
-          }),
-        ),
-      ).pipe(
-        Effect.mapError(
-          (e) =>
-            new UploadThingError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Failed to generate signed URL locally.",
-              cause: e,
-            }),
-        ),
-      );
+      const ufsUrl = yield* generateSignedURL(urlBase, apiKey, {
+        ttlInSeconds: expiresIn,
+      });
 
       return {
         ufsUrl,
       };
-    }).pipe(
-      Effect.catchTag(
-        "ConfigError",
-        (e) =>
-          new UploadThingError({
-            code: "INVALID_SERVER_CONFIG",
-            message:
-              "There was an error with the server configuration. More info can be found on this error's `cause` property",
-            cause: e,
-          }),
-      ),
-      Effect.withLogSpan("generateSignedURL"),
-    );
+    });
 
-    return await this.executeAsync(program);
+    return await this.executeAsync(
+      program.pipe(
+        Effect.catchTag(
+          "ConfigError",
+          (e) =>
+            new UploadThingError({
+              code: "INVALID_SERVER_CONFIG",
+              message:
+                "There was an error with the server configuration. More info can be found on this error's `cause` property",
+              cause: e,
+            }),
+        ),
+        Effect.withLogSpan("generateSignedURL"),
+      ),
+    );
   };
 
   /**
