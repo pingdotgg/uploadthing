@@ -234,6 +234,8 @@ describe("uploadFiles", () => {
       Object.fromEntries(middlewareMock.mock.calls[0]![0]!.req.headers),
     ).toMatchObject({
       authorization: "Bearer my-auth-token",
+      b3: expect.any(String),
+      traceparent: expect.any(String),
       "x-uploadthing-package": "vitest",
       "x-uploadthing-version": expect.stringMatching(/\d+\.\d+\.\d+/),
     });

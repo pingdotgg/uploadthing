@@ -14,6 +14,8 @@ import type {
   UploadFilesOptions,
 } from "../types";
 import { logDeprecationWarning } from "./deprecations";
+import type { TraceHeaders } from "./random-hex";
+import { generateTraceHeaders } from "./random-hex";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
 
@@ -21,21 +23,27 @@ const uploadWithProgress = (
   file: File,
   rangeStart: number,
   presigned: NewPresignedUrl,
-  onUploadProgress?:
-    | ((opts: { loaded: number; delta: number }) => void)
-    | undefined,
+  opts: {
+    traceHeaders: TraceHeaders;
+    onUploadProgress?:
+      | ((opts: { loaded: number; delta: number }) => void)
+      | undefined;
+  },
 ) =>
   Micro.async<unknown, UploadThingError, FetchContext>((resume) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", presigned.url, true);
     xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
     xhr.setRequestHeader("x-uploadthing-version", version);
+    xhr.setRequestHeader("b3", opts.traceHeaders.b3);
+    xhr.setRequestHeader("traceparent", opts.traceHeaders.traceparent);
+
     xhr.responseType = "json";
 
     let previousLoaded = 0;
     xhr.upload.addEventListener("progress", ({ loaded }) => {
       const delta = loaded - previousLoaded;
-      onUploadProgress?.({ loaded, delta });
+      opts.onUploadProgress?.({ loaded, delta });
       previousLoaded = loaded;
     });
     xhr.addEventListener("load", () => {
@@ -108,13 +116,17 @@ export const uploadFile = <
   file: File,
   presigned: NewPresignedUrl,
   opts: {
+    traceHeaders: TraceHeaders;
     onUploadProgress?: (progressEvent: {
       loaded: number;
       delta: number;
     }) => void;
   },
 ) =>
-  fetchEff(presigned.url, { method: "HEAD" }).pipe(
+  fetchEff(presigned.url, {
+    method: "HEAD",
+    headers: opts.traceHeaders,
+  }).pipe(
     Micro.map(({ headers }) =>
       parseInt(headers.get("x-ut-range-start") ?? "0", 10),
     ),
@@ -125,12 +137,14 @@ export const uploadFile = <
       }),
     ),
     Micro.flatMap((start) =>
-      uploadWithProgress(file, start, presigned, (progressEvent) =>
-        opts.onUploadProgress?.({
-          delta: progressEvent.delta,
-          loaded: progressEvent.loaded + start,
-        }),
-      ),
+      uploadWithProgress(file, start, presigned, {
+        traceHeaders: opts.traceHeaders,
+        onUploadProgress: (progressEvent) =>
+          opts.onUploadProgress?.({
+            delta: progressEvent.delta,
+            loaded: progressEvent.loaded + start,
+          }),
+      }),
     ),
     Micro.map(unsafeCoerce<unknown, UploadPutResult<TServerOutput>>),
     Micro.map((uploadResponse) => ({
@@ -171,11 +185,13 @@ export const uploadFilesInternal = <
   FetchContext
 > => {
   // classic service right here
+  const traceHeaders = generateTraceHeaders();
   const reportEventToUT = createUTReporter({
     endpoint: String(endpoint),
     package: opts.package,
     url: opts.url,
     headers: opts.headers,
+    traceHeaders,
   });
 
   const totalSize = opts.files.reduce((acc, f) => acc + f.size, 0);
@@ -204,6 +220,7 @@ export const uploadFilesInternal = <
                 opts.files[i]!,
                 presigned,
                 {
+                  traceHeaders,
                   onUploadProgress: (ev) => {
                     totalLoaded += ev.delta;
                     opts.onUploadProgress?.({
