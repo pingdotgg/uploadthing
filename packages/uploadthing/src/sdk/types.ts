@@ -59,7 +59,7 @@ export interface UTApiOptions {
    * Where to put the appId in the URL.
    * @default "subdomain"
    */
-  appIdLocation?: "subdomain" | "path";
+  ufsAppIdLocation?: "subdomain" | "path";
 }
 
 export type UrlWithOverrides = {

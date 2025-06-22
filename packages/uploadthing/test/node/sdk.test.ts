@@ -411,7 +411,7 @@ describe("generateSignedURL", () => {
   it("puts appId in path if appIdLocation is path", async () => {
     const utapi = new UTApi({
       token: testToken.encoded,
-      appIdLocation: "path",
+      ufsAppIdLocation: "path",
       ufsHost: "mycdn.com",
     });
     const result = await utapi.generateSignedURL("foo");

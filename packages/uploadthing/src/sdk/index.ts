@@ -20,9 +20,9 @@ import {
 
 import {
   ApiUrl,
+  UfsAppIdLocation,
   UfsHost,
   UPLOADTHING_VERSION,
-  UrlAppIdLocation,
   UTToken,
 } from "../_internal/config";
 import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
@@ -435,7 +435,7 @@ export class UTApi {
 
     const program = Effect.gen(function* () {
       const { apiKey, appId } = yield* UTToken;
-      const appIdLocation = yield* UrlAppIdLocation;
+      const appIdLocation = yield* UfsAppIdLocation;
       const ufsHost = yield* UfsHost;
 
       const proto = ufsHost.includes("local") ? "http" : "https";
