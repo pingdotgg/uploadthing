@@ -50,6 +50,16 @@ export interface UTApiOptions {
    * URL override for the ingest server
    */
   ingestUrl?: string;
+  /**
+   * Hostname override for the CDN hosting the files
+   * @default "ufs.sh"
+   */
+  ufsHost?: string;
+  /**
+   * Where to put the appId in the URL.
+   * @default "subdomain"
+   */
+  appIdLocation?: "subdomain" | "path";
 }
 
 export type UrlWithOverrides = {

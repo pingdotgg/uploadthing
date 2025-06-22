@@ -408,6 +408,20 @@ describe("generateSignedURL", () => {
     expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
   });
 
+  it("puts appId in path if appIdLocation is path", async () => {
+    const utapi = new UTApi({
+      token: testToken.encoded,
+      appIdLocation: "path",
+      ufsHost: "mycdn.com",
+    });
+    const result = await utapi.generateSignedURL("foo");
+
+    expect(result).toEqual({
+      ufsUrl: expect.stringMatching("https://mycdn.com/a/app-1/foo"),
+    });
+    expect(result.ufsUrl).toMatch(/[?&]signature=[A-Za-z0-9-_]+/);
+  });
+
   it("throws if expiresIn is invalid", async () => {
     const utapi = new UTApi({ token: testToken.encoded });
     await expect(() =>
