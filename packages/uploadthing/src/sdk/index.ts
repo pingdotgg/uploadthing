@@ -442,7 +442,7 @@ export class UTApi {
       const urlBase =
         location === "subdomain"
           ? `${proto}://${appId}.${ufsHost}/f/${key}`
-          : `${proto}://${ufsHost}/f/${appId}/${key}`;
+          : `${proto}://${ufsHost}/a/${appId}/${key}`;
       const ufsUrl = yield* generateSignedURL(urlBase, apiKey, {
         ttlInSeconds: expiresIn,
       });
