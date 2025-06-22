@@ -1,4 +1,3 @@
-import { Array } from "effect";
 import * as Arr from "effect/Array";
 import * as Micro from "effect/Micro";
 
@@ -18,10 +17,12 @@ import type {
   PendingFile,
   UploadedFile,
   UploadFilesOptions,
+  UploadingFile,
 } from "./_internal/client-future";
 import {
   makePendingFile,
   requestPresignedUrls,
+  transitionToFailed,
   uploadFile,
 } from "./_internal/client-future";
 import type { Deferred } from "./_internal/deferred";
@@ -111,7 +112,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
         XHRImpl: globalThis.XMLHttpRequest,
       }).pipe(Micro.provideService(FetchContext, fetchFn));
 
-    for (const [presigned, file] of Array.zip(presigneds, pendingFiles)) {
+    for (const [presigned, file] of Arr.zip(presigneds, pendingFiles)) {
       file.key = presigned.key;
       file.customId = presigned.customId;
 
@@ -165,14 +166,25 @@ export const future_genUploader = <TRouter extends FileRouter>(
         if (!upload) throw "No upload found";
 
         if (upload.deferred.ac.signal.aborted === false) {
-          // Ensure the upload is paused
           upload.deferred.ac.abort();
+          const failedFile = transitionToFailed(
+            file as UploadingFile | PendingFile,
+            new UploadAbortedError(),
+          );
+          upload.deferred.resolve(failedFile);
         }
       }
 
-      // Abort the upload
-      throw new UploadAbortedError();
+      options.onEvent({
+        type: "upload-aborted",
+        // transitionToFailed mutates inline so this is fine
+        files: files as FailedFile<TRouter[TEndpoint]>[],
+      });
     };
+
+    options.signal?.addEventListener("abort", () => {
+      abortUpload();
+    });
 
     /**
      * Resume a paused upload

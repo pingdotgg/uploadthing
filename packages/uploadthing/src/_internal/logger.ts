@@ -1,8 +1,6 @@
-import type {
-  HttpBody,
-  HttpClientError,
-  HttpClientResponse,
-} from "@effect/platform";
+import type * as HttpBody from "@effect/platform/HttpBody";
+import type * as HttpClientError from "@effect/platform/HttpClientError";
+import type * as HttpClientResponse from "@effect/platform/HttpClientResponse";
 import * as Config from "effect/Config";
 import * as ConfigError from "effect/ConfigError";
 import * as Effect from "effect/Effect";

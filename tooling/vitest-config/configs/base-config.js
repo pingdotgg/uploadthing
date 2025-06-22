@@ -31,6 +31,7 @@ const aliases = readdirSync(pkgRoot(""))
 
 export const baseConfig = defineConfig({
   test: {
+    silent: "passed-only",
     mockReset: true,
     coverage: {
       provider: "istanbul",
