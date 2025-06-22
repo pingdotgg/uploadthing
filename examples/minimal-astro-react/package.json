@@ -13,11 +13,11 @@
   "dependencies": {
     "@astrojs/node": "^9.0.0",
     "@astrojs/react": "^4.1.2",
-    "@uploadthing/react": "7.3.1",
+    "@uploadthing/react": "7.3.2",
     "astro": "^5.1.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "uploadthing": "7.7.2"
+    "uploadthing": "7.7.3"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.4",
