@@ -3,23 +3,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev",
-    "build": "vinxi build",
-    "start": "vinxi start",
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tanstack/react-router": "^1.95.0",
-    "@tanstack/start": "^1.95.0",
+    "@tanstack/react-router": "^1.121.27",
+    "@tanstack/react-start": "^1.121.32",
     "@uploadthing/react": "7.3.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "uploadthing": "7.7.3",
-    "vinxi": "^0.5.1"
+    "uploadthing": "7.7.3"
   },
   "devDependencies": {
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vite": "6.3.5"
   }
 }
