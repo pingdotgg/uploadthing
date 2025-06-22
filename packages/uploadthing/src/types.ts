@@ -9,6 +9,7 @@ import type {
 
 import type { LogFormat } from "./_internal/logger";
 import type { AnyFileRoute, FileRoute } from "./_internal/types";
+import type { ClientUploadedFileData } from "./types";
 
 export * from "./sdk/types";
 
@@ -123,6 +124,25 @@ export type UploadFilesOptions<TFileRoute extends AnyFileRoute> = {
         totalLoaded: number;
         /** Percentage of the total loaded bytes for the upload */
         totalProgress: number;
+      }) => void)
+    | undefined;
+  /**
+   * Called when a file upload is completed
+   */
+  onFileUploadComplete?:
+    | ((_: {
+        /**
+         * The response from the upload
+         */
+        fileData: ClientUploadedFileData<inferEndpointOutput<TFileRoute>>;
+        /**
+         * The file object that was uploaded
+         */
+        file: File;
+        /**
+         * All the files that are in this upload
+         */
+        files: File[];
       }) => void)
     | undefined;
   /**
