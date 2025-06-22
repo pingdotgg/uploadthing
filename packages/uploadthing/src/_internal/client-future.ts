@@ -8,6 +8,7 @@ import type {
   FetchContext,
   FetchError,
   MaybePromise,
+  UploadAbortedError,
 } from "@uploadthing/shared";
 
 import { version } from "../../package.json";
@@ -64,6 +65,7 @@ export class UTServerError<TErrorShape> extends Micro.TaggedError(
  * @public
  */
 export type UploadThingClientError<TErrorShape> =
+  | UploadAbortedError
   | NetworkError
   | UTStorageError
   | UTServerError<TErrorShape>;
@@ -268,7 +270,7 @@ function transitionToUploaded<TRoute extends AnyFileRoute>(
  * Modifies a pending or uploading file to a failed file in place
  * @internal
  */
-function transitionToFailed<TRoute extends AnyFileRoute>(
+export function transitionToFailed<TRoute extends AnyFileRoute>(
   file: PendingFile | UploadingFile,
   reason: UploadThingClientError<TRoute["$types"]["errorShape"]>,
 ): FailedFile<TRoute> {
@@ -354,6 +356,11 @@ export interface UploadFailedEvent<TRoute extends AnyFileRoute> {
   files: AnyFile<TRoute>[];
 }
 
+export interface UploadAbortedEvent<TRoute extends AnyFileRoute> {
+  type: "upload-aborted";
+  files: AnyFile<TRoute>[];
+}
+
 /**
  * Event emitted throughout the upload process
  * @public
@@ -363,7 +370,8 @@ export type UploadEvent<TRoute extends AnyFileRoute> =
   | UploadStartedEvent<TRoute>
   | UploadProgressEvent<TRoute>
   | UploadCompletedEvent<TRoute>
-  | UploadFailedEvent<TRoute>;
+  | UploadFailedEvent<TRoute>
+  | UploadAbortedEvent<TRoute>;
 
 export interface UploadFileOptions<TRoute extends AnyFileRoute> {
   file: PendingFile;

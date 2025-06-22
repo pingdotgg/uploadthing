@@ -79,8 +79,8 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "@uploadthing/vitest-config": "workspace:*",
-    "@vitest/browser": "^3.1.2",
-    "@vitest/coverage-istanbul": "^3.1.2",
+    "@vitest/browser": "3.2.4",
+    "@vitest/coverage-istanbul": "3.2.4",
     "concurrently": "^9.1.2",
     "eslint": "9.25.1",
     "msw": "2.7.5",
@@ -91,8 +91,8 @@
     "tsdown": "0.12.1",
     "typescript": "5.8.3",
     "uploadthing": "workspace:*",
-    "vitest": "3.1.2",
-    "vitest-browser-react": "0.1.1",
+    "vitest": "3.2.4",
+    "vitest-browser-react": "0.3.0",
     "wait-on": "^8.0.1",
     "zod": "^3.24.1"
   }
