@@ -105,6 +105,14 @@ export const UtfsHost = Config.string("utfsHost").pipe(
 export const UfsHost = Config.string("ufsHost").pipe(
   Config.withDefault("ufs.sh"),
 );
-export const DoAppIDInUrls = Config.boolean("doAppIDInURLS").pipe(
-  Config.withDefault(true),
-);
+export const UrlAppIdLocation = Config.string("urlAppIdLocation")
+  .pipe(
+    Config.withDefault("subdomain"),
+    Config.mapAttempt((loc) => {
+      if (loc === "subdomain" || loc === "path") return loc;
+      throw new Error(
+        `Invalid UPLOADTHING_URL_APPID_LOCATION: "${loc}". ` +
+        `Must be "subdomain" or "path".`
+      );
+    })
+  );
