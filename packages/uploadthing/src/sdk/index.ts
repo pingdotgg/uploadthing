@@ -438,7 +438,7 @@ export class UTApi {
       const location = yield* UrlAppIdLocation;
       const ufsHost = yield* UfsHost;
       const proto = ufsHost.includes("local") ? "http" : "https";
-      // build either subdomain or path style
+      // either subdomain or path style
       const urlBase =
         location === "subdomain"
           ? `${proto}://${appId}.${ufsHost}/f/${key}`
