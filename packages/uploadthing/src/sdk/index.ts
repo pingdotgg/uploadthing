@@ -20,9 +20,9 @@ import {
 
 import {
   ApiUrl,
-   UrlAppIdLocation,
   UfsHost,
   UPLOADTHING_VERSION,
+  UrlAppIdLocation,
   UTToken,
 } from "../_internal/config";
 import { logHttpClientError, logHttpClientResponse } from "../_internal/logger";
