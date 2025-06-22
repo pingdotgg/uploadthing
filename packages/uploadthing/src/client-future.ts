@@ -27,6 +27,7 @@ import {
 } from "./_internal/client-future";
 import type { Deferred } from "./_internal/deferred";
 import { createDeferred } from "./_internal/deferred";
+import { generateTraceHeaders } from "./_internal/random-hex";
 import type {
   EndpointArg,
   FileRouter,
@@ -73,6 +74,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
     const endpoint = typeof slug === "function" ? slug(routeRegistry) : slug;
     const fetchFn: FetchEsque = initOpts?.fetch ?? window.fetch;
 
+    const traceHeaders = generateTraceHeaders();
     const pExit = await requestPresignedUrls({
       endpoint: String(endpoint),
       files: options.files,
@@ -80,6 +82,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       input: (options as any).input as inferEndpointInput<TRouter[TEndpoint]>,
       headers: options.headers,
+      traceHeaders,
     }).pipe(Micro.provideService(FetchContext, fetchFn), (effect) =>
       Micro.runPromiseExit(
         effect,
@@ -109,6 +112,7 @@ export const future_genUploader = <TRouter extends FileRouter>(
         files: pendingFiles,
         input: options.input,
         onEvent: options.onEvent,
+        traceHeaders,
         XHRImpl: globalThis.XMLHttpRequest,
       }).pipe(Micro.provideService(FetchContext, fetchFn));
 

@@ -17,6 +17,7 @@ import type {
   FileRouter as AnyFileRouter,
   NewPresignedUrl,
 } from "../types";
+import type { TraceHeaders } from "./random-hex";
 import { generateTraceHeaders } from "./random-hex";
 import type { UploadPutResult } from "./types";
 import { createUTReporter } from "./ut-reporter";
@@ -378,6 +379,7 @@ export interface UploadFileOptions<TRoute extends AnyFileRoute> {
   files: AnyFile<TRoute>[];
   input: TRoute["$types"]["input"];
   onEvent: (event: UploadEvent<TRoute>) => void;
+  traceHeaders: TraceHeaders;
 
   XHRImpl: new () => XMLHttpRequest;
 }
@@ -392,7 +394,7 @@ export function uploadFile<TRoute extends AnyFileRoute>(
   url: string,
   { file, files, XHRImpl, ...options }: UploadFileOptions<TRoute>,
 ): Micro.Micro<UploadedFile<TRoute> | FailedFile<TRoute>, never, FetchContext> {
-  return fetchEff(url, { method: "HEAD" }).pipe(
+  return fetchEff(url, { method: "HEAD", headers: options.traceHeaders }).pipe(
     Micro.map(({ headers }) =>
       Number.parseInt(headers.get("x-ut-range-start") ?? "0"),
     ),
@@ -412,6 +414,8 @@ export function uploadFile<TRoute extends AnyFileRoute>(
         const rangeStart = uploadingFile.sent;
         xhr.setRequestHeader("Range", `bytes=${rangeStart}-`);
         xhr.setRequestHeader("x-uploadthing-version", version);
+        xhr.setRequestHeader("b3", options.traceHeaders.b3);
+        xhr.setRequestHeader("traceparent", options.traceHeaders.traceparent);
         xhr.responseType = "json";
 
         xhr.upload.addEventListener("progress", (ev) => {
@@ -527,6 +531,10 @@ export interface RequestPresignedUrlsOptions<
    */
   headers?: HeadersInit | LazyArg<MaybePromise<HeadersInit>> | undefined;
   /**
+   * Custom trace headers to send with the request
+   */
+  traceHeaders: TraceHeaders;
+  /**
    * The uploadthing package that is making this request, used to identify the client in the server logs
    * @example "@uploadthing/react"
    */
@@ -547,13 +555,12 @@ export function requestPresignedUrls<
   UTServerError<TRouter[TEndpoint]["$types"]["errorShape"]>,
   FetchContext
 > {
-  const traceHeaders = generateTraceHeaders();
   const reportEventToUT = createUTReporter({
     endpoint: String(options.endpoint),
     package: options.package,
     url: options.url,
     headers: options.headers,
-    traceHeaders,
+    traceHeaders: options.traceHeaders,
   });
 
   return reportEventToUT("upload", {
@@ -595,7 +602,7 @@ export function uploadFiles<
   TEndpoint extends keyof TRouter,
 >(endpoint: TEndpoint, options: UploadFilesOptions<TRouter[TEndpoint]>) {
   const pendingFiles = options.files.map(makePendingFile);
-
+  const traceHeaders = generateTraceHeaders();
   return requestPresignedUrls({
     endpoint: endpoint,
     files: options.files,
@@ -603,6 +610,7 @@ export function uploadFiles<
     input: options.input,
     headers: options.headers,
     package: options.package,
+    traceHeaders,
   }).pipe(
     Micro.map(Arr.zip(pendingFiles)),
     Micro.tap((pairs) => {
@@ -625,6 +633,7 @@ export function uploadFiles<
             input: options.input,
             onEvent: options.onEvent,
             XHRImpl: globalThis.XMLHttpRequest,
+            traceHeaders,
           }),
         { concurrency: 6 },
       ),
