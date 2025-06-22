@@ -105,7 +105,8 @@ export const UtfsHost = Config.string("utfsHost").pipe(
 export const UfsHost = Config.string("ufsHost").pipe(
   Config.withDefault("ufs.sh"),
 );
-export const UrlAppIdLocation = Config.literal("subdomain", "path")
-  .pipe(
-    Config.withDefault("subdomain")
-  );
+export const UrlAppIdLocation = Config.literal(
+  "urlAppIdLocation",
+  "subdomain",
+  "path",
+)().pipe(Config.withDefault("subdomain"));
