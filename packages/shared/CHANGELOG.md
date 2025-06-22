@@ -1,5 +1,14 @@
 # @uploadthing/shared
 
+## 7.1.9
+
+### Patch Changes
+
+- [#1212](https://github.com/pingdotgg/uploadthing/pull/1212)
+  [`076fcf1`](https://github.com/pingdotgg/uploadthing/commit/076fcf12875b7e1779b8e1d85ef26bcd256a5396)
+  Thanks [@markflorkowski](https://github.com/markflorkowski)! - chore: bump
+  effect deps
+
 ## 7.1.8
 
 ### Patch Changes
