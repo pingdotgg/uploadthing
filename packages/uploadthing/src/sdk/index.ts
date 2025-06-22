@@ -20,6 +20,7 @@ import {
 
 import {
   ApiUrl,
+  UfsAppIdLocation,
   UfsHost,
   UPLOADTHING_VERSION,
   UTToken,
@@ -434,16 +435,19 @@ export class UTApi {
 
     const program = Effect.gen(function* () {
       const { apiKey, appId } = yield* UTToken;
+      const appIdLocation = yield* UfsAppIdLocation;
       const ufsHost = yield* UfsHost;
 
       const proto = ufsHost.includes("local") ? "http" : "https";
-      const ufsUrl = yield* generateSignedURL(
-        `${proto}://${appId}.${ufsHost}/f/${key}`,
-        apiKey,
-        {
-          ttlInSeconds: expiresIn,
-        },
-      );
+      // either subdomain or path style
+      const urlBase =
+        appIdLocation === "subdomain"
+          ? `${proto}://${appId}.${ufsHost}/f/${key}`
+          : `${proto}://${ufsHost}/a/${appId}/${key}`;
+
+      const ufsUrl = yield* generateSignedURL(urlBase, apiKey, {
+        ttlInSeconds: expiresIn,
+      });
 
       return {
         ufsUrl,
