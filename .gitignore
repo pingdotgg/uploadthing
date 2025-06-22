@@ -24,6 +24,11 @@ expo-env.d.ts
 .output
 .vinxi
 
+# tanstack start
+.tanstack/start/build
+.tanstack/start/tmp
+.nitro
+
 # misc
 .DS_Store
 *.pem

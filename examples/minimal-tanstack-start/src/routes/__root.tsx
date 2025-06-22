@@ -1,14 +1,9 @@
 import * as React from "react";
-import {
-  createRootRoute,
-  Outlet,
-  ScrollRestoration,
-} from "@tanstack/react-router";
-import { Meta, Scripts } from "@tanstack/start";
+import * as TSR from "@tanstack/react-router";
 
 import uploadthingCss from "@uploadthing/react/styles.css?url";
 
-export const Route = createRootRoute({
+export const Route = TSR.createRootRoute({
   component: RootComponent,
   head: () => ({
     links: [{ rel: "stylesheet", href: uploadthingCss }],
@@ -18,7 +13,7 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <TSR.Outlet />
     </RootDocument>
   );
 }
@@ -27,12 +22,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <head>
-        <Meta />
+        <TSR.HeadContent />
       </head>
       <body>
         {children}
-        <ScrollRestoration />
-        <Scripts />
+        <TSR.Scripts />
       </body>
     </html>
   );
