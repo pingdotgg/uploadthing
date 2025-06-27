@@ -47,6 +47,12 @@ export const uploadWithoutProgress = (
 
     return {
       ...json,
+      get _internalUrl() {
+        return json.url;
+      },
+      get _internalAppUrl() {
+        return json.appUrl;
+      },
       get url() {
         logDeprecationWarning(
           "`file.url` is deprecated and will be removed in uploadthing v9. Use `file.ufsUrl` instead.",
