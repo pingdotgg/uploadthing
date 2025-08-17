@@ -3,6 +3,11 @@
   "type": "module",
   "author": "OrJDev",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/solid"
+  },
   "version": "7.3.2",
   "main": "./dist/server.cjs",
   "module": "./dist/server.js",

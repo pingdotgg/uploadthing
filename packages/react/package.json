@@ -2,6 +2,11 @@
   "name": "@uploadthing/react",
   "version": "7.3.2",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/react"
+  },
   "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",

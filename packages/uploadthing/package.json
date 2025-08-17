@@ -6,6 +6,11 @@
   "engines": {
     "node": ">=18.13.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/uploadthing"
+  },
   "license": "MIT",
   "exports": {
     "./package.json": "./package.json",
