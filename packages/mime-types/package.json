@@ -90,7 +90,7 @@
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "eslint": "9.25.1",
-    "tsdown": "0.12.1",
+    "tsdown": "0.14.1",
     "typescript": "5.8.3"
   },
   "publishConfig": {
