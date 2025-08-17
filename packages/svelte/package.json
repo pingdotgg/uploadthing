@@ -2,6 +2,11 @@
   "name": "@uploadthing/svelte",
   "version": "7.3.2",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/svelte"
+  },
   "scripts": {
     "dev": "vite build && svelte-package",
     "build": "vite build && pnpm package",

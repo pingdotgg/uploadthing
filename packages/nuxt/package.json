@@ -3,6 +3,11 @@
   "version": "7.1.9",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/nuxt"
+  },
   "exports": {
     ".": {
       "types": "./dist/types.d.ts",

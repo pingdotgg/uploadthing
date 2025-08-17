@@ -2,6 +2,11 @@
   "name": "@uploadthing/expo",
   "version": "7.2.5",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/expo"
+  },
   "license": "MIT",
   "main": "dist/index.cjs",
   "module": "dist/index.js",

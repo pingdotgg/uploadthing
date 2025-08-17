@@ -2,6 +2,11 @@
   "name": "@uploadthing/shared",
   "version": "7.1.9",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "github:pingdotgg/uploadthing",
+    "directory": "packages/shared"
+  },
   "sideEffects": false,
   "license": "MIT",
   "main": "dist/index.cjs",
