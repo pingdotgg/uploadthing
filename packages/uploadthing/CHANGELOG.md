@@ -1,5 +1,19 @@
 # uploadthing
 
+## 7.7.4
+
+### Patch Changes
+
+- [#1232](https://github.com/pingdotgg/uploadthing/pull/1232)
+  [`f239968`](https://github.com/pingdotgg/uploadthing/commit/f239968c1b9970c1588ff695bce7d0be656c51c0)
+  Thanks [@juliusmarminge](https://github.com/juliusmarminge)! - fix: cjs
+  interop issue
+
+- Updated dependencies
+  [[`f239968`](https://github.com/pingdotgg/uploadthing/commit/f239968c1b9970c1588ff695bce7d0be656c51c0)]:
+  - @uploadthing/mime-types@0.3.6
+  - @uploadthing/shared@7.1.10
+
 ## 7.7.3
 
 ### Patch Changes
