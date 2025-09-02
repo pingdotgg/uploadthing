@@ -60,10 +60,15 @@ export const createInternalAction = <TRouter extends FileRouter>(
 
       const response = await handler(ctx, request);
 
+      const headers: Record<string, string> = {};
+      response.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+
       return {
         status: response.status,
         statusText: response.statusText,
-        headers: Object.fromEntries(Object.entries(response.headers)),
+        headers,
         body: await response.text(),
       };
     },
