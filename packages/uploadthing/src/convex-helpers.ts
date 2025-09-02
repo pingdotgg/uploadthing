@@ -15,8 +15,12 @@ const addCorsHeaders = (headers?: Record<string, string>) => {
   });
 };
 
-export const createRouteHandler = (
-  http: HttpRouter,
+export const createRouteHandler = ({
+  http,
+  internalAction,
+  path = "/api/uploadthing",
+}: {
+  http: HttpRouter;
   internalAction: FunctionReference<
     "action",
     "internal",
@@ -34,8 +38,9 @@ export const createRouteHandler = (
       headers: Record<string, string>;
       body: string;
     }
-  >,
-) => {
+  >;
+  path?: string;
+}) => {
   const handler = httpActionGeneric(async (ctx, req) => {
     const headers: Record<string, string> = {};
     req.headers.forEach((value, key) => {
@@ -58,7 +63,7 @@ export const createRouteHandler = (
 
   http.route({
     method: "OPTIONS",
-    path: "/api/uploadthing",
+    path,
     handler: httpActionGeneric(async () =>
       Promise.resolve(
         new Response(null, { status: 204, headers: addCorsHeaders() }),
@@ -66,7 +71,7 @@ export const createRouteHandler = (
     ),
   });
 
-  http.route({ method: "GET", path: "/api/uploadthing", handler });
+  http.route({ method: "GET", path, handler });
 
-  http.route({ method: "POST", path: "/api/uploadthing", handler });
+  http.route({ method: "POST", path, handler });
 };
