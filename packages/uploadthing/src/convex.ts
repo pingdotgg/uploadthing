@@ -1,9 +1,5 @@
 import { internalActionGeneric } from "convex/server";
-import type {
-  GenericActionCtx,
-  GenericDataModel,
-  SchemaDefinition,
-} from "convex/server";
+import type { GenericActionCtx, GenericDataModel } from "convex/server";
 import { v } from "convex/values";
 import * as Effect from "effect/Effect";
 
@@ -29,18 +25,8 @@ type AdapterArgs = {
   req: Request;
 };
 
-type ConvexBuilderOptions<
-  TErrorShape extends Json,
-  SchemaDef extends SchemaDefinition<any, boolean>,
-> = CreateBuilderOptions<TErrorShape> & {
-  schema?: SchemaDef;
-};
-
-export const createUploadthing = <
-  TErrorShape extends Json,
-  SchemaDef extends SchemaDefinition<any, boolean>,
->(
-  opts?: ConvexBuilderOptions<TErrorShape, SchemaDef>,
+export const createUploadthing = <TErrorShape extends Json>(
+  opts?: CreateBuilderOptions<TErrorShape>,
 ) => createBuilder<AdapterArgs, TErrorShape>(opts);
 
 export const createInternalAction = <TRouter extends FileRouter>(
