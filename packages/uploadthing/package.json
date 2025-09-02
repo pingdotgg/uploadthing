@@ -126,6 +126,26 @@
         "default": "./remix/index.cjs"
       }
     },
+    "./convex": {
+      "import": {
+        "types": "./convex/index.d.ts",
+        "default": "./convex/index.js"
+      },
+      "require": {
+        "types": "./convex/index.d.cts",
+        "default": "./convex/index.cjs"
+      }
+    },
+    "./convex-helpers": {
+      "import": {
+        "types": "./convex-helpers/index.d.ts",
+        "default": "./convex-helpers/index.js"
+      },
+      "require": {
+        "types": "./convex-helpers/index.d.cts",
+        "default": "./convex-helpers/index.cjs"
+      }
+    },
     "./types": {
       "types": "./types/index.d.ts",
       "default": "./types/index.js"
@@ -134,6 +154,8 @@
   "files": [
     "client",
     "client-future",
+    "convex",
+    "convex-helpers",
     "dist",
     "effect-platform",
     "express",
@@ -194,6 +216,7 @@
     "zod": "^3.24.1"
   },
   "peerDependencies": {
+    "convex": "*",
     "express": "*",
     "h3": "*",
     "tailwindcss": "^3.0.0 || ^4.0.0-beta.0"
@@ -209,6 +232,9 @@
       "optional": true
     },
     "h3": {
+      "optional": true
+    },
+    "convex": {
       "optional": true
     },
     "tailwindcss": {
