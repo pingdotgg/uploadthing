@@ -6,6 +6,7 @@ import {
   createInternalAction,
   createUploadthing,
   FileRouter,
+  UTFiles,
 } from "uploadthing/convex";
 
 import { api } from "./_generated/api";
@@ -52,7 +53,7 @@ const router = {
       // (Optional) Label your files with a custom identifier
       const filesWithMyIds = files.map((file, idx) => ({
         ...file,
-        customId: `${idx}-${randomUUID()}`,
+        customId: `${idx}-${crypto.randomUUID()}`,
       }));
 
       // Return some metadata to be stored with the file
