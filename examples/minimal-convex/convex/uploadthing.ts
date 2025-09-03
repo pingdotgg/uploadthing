@@ -12,18 +12,58 @@ import { api } from "./_generated/api";
 
 globalThis.crypto = crypto as unknown as Crypto;
 
-const f = createUploadthing();
+const f = createUploadthing({
+  /**
+   * Log out more information about the error, but don't return it to the client
+   * @see https://docs.uploadthing.com/errors#error-formatting
+   */
+  errorFormatter: (err) => {
+    console.log("Error uploading file", err.message);
+    console.log("  - Above error caused by:", err.cause);
 
+    return { message: err.message };
+  },
+});
+
+/**
+ * This is your Uploadthing file router. For more information:
+ * @see https://docs.uploadthing.com/api-reference/server#file-routes
+ */
 const router = {
-  imageUploader: f({ image: { maxFileSize: "4MB" } })
-    .middleware(async (opts) => {
-      const identity = await opts.ctx.auth.getUserIdentity();
+  videoAndImage: f({
+    image: {
+      maxFileSize: "32MB",
+      maxFileCount: 4,
+      acl: "public-read",
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+    blob: {
+      maxFileSize: "8GB",
+    },
+  })
+    .middleware(({ req, files }) => {
+      // Check some condition based on the incoming requrest
+      // if (!req.headers.get("x-some-header")) {
+      //   throw new Error("x-some-header is required");
+      // }
 
-      return { userId: identity?.subject };
+      // (Optional) Label your files with a custom identifier
+      const filesWithMyIds = files.map((file, idx) => ({
+        ...file,
+        customId: `${idx}-${randomUUID()}`,
+      }));
+
+      // Return some metadata to be stored with the file
+      return { foo: "bar" as const, [UTFiles]: filesWithMyIds };
     })
-    .onUploadComplete(async (opts) => {
-      await opts.ctx.runMutation(api.media.add, { url: opts.file.ufsUrl });
-      return { uploadedBy: opts.metadata.userId };
+    .onUploadComplete(({ file, metadata }) => {
+      metadata;
+      // ^?
+      file.customId;
+      //   ^?
+      console.log("upload completed", file);
     }),
 } satisfies FileRouter;
 
