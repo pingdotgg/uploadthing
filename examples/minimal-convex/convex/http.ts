@@ -6,6 +6,10 @@ import { internal } from "./_generated/api";
 
 const http = httpRouter();
 
-createRouteHandler({ http, internalAction: internal.uploadthing.handler });
+createRouteHandler({
+  http,
+  internalAction: internal.uploadthing.handler,
+  path: "/api/uploadthing",
+});
 
 export default http;

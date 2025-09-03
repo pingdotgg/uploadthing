@@ -12,7 +12,7 @@
 4. Grab an API key from the UploadThing dashboard:
    https://uploadthing.com/dashboard
 5. `pnpm dev:convex`
-6. `pnpx convex env set UPLOADTHING_SECRET=<your-secret>`
+6. `pnpx convex env set UPLOADTHING_TOKEN=<your-token>`
 7. `pnpx convex env set CLIENT_ORIGIN=http://localhost:3000`
 8. `pnpm dev`
 9. Upload files!
