@@ -9,8 +9,6 @@ import {
   UTFiles,
 } from "uploadthing/convex";
 
-import { api } from "./_generated/api";
-
 globalThis.crypto = crypto as unknown as Crypto;
 
 const f = createUploadthing({
@@ -45,7 +43,7 @@ const router = {
     },
   })
     .middleware(({ req, files }) => {
-      // Check some condition based on the incoming requrest
+      // Check some condition based on the incoming request
       // if (!req.headers.get("x-some-header")) {
       //   throw new Error("x-some-header is required");
       // }
