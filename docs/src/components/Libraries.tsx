@@ -62,6 +62,12 @@ const frameworks = [
 
 const backends = [
   {
+    href: "/backend-adapters/convex",
+    name: "Convex",
+    description: "The open-source reactive database for app developers",
+    Logo: ConvexIcon,
+  },
+  {
     href: "/backend-adapters/express",
     name: "Express",
     description: "Fast, unopinionated, minimalist web framework for Node.js",
@@ -85,12 +91,6 @@ const backends = [
     description:
       "UploadThing's core builds on web standards, making it easy to integrate into any web framework following the WinterCG spec.",
     Logo: WinterCGIcon,
-  },
-  {
-    href: "/backend-adapters/convex",
-    name: "Convex",
-    description: "The open-source reactive database for app developers",
-    Logo: ConvexIcon,
   },
 ];
 
