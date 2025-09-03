@@ -26,9 +26,8 @@ npm install uploadthing
   [dashboard!](https://uploadthing.com/dashboard)
 </Note>
 
-```bash
-UPLOADTHING_TOKEN=... # A token for interacting with the SDK
-CLIENT_ORIGIN=... # The origin of the client
+```sh npm2yarn
+npx convex env set UPLOADTHING_TOKEN=... # A token for interacting with the SDK
 ```
 
 ## Set Up A FileRouter
@@ -129,6 +128,11 @@ export const UploadButton = generateUploadButton({
 });
 // ...
 ```
+
+<Note>
+  Please note that you might need to setup some CORS rules on your server to
+  allow the client to make requests to the server.
+</Note>
 
 For the remaining usage, please refer to client side examples of the fullstack
 framework guides:

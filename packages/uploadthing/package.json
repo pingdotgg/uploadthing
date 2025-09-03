@@ -217,6 +217,7 @@
   },
   "peerDependencies": {
     "convex": "*",
+    "convex-helpers": "*",
     "express": "*",
     "h3": "*",
     "tailwindcss": "^3.0.0 || ^4.0.0-beta.0"
@@ -235,6 +236,9 @@
       "optional": true
     },
     "convex": {
+      "optional": true
+    },
+    "convex-helpers": {
       "optional": true
     },
     "tailwindcss": {

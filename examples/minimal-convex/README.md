@@ -13,9 +13,8 @@
    https://uploadthing.com/dashboard
 5. `pnpm dev:convex`
 6. `pnpx convex env set UPLOADTHING_TOKEN=<your-token>`
-7. `pnpx convex env set CLIENT_ORIGIN=http://localhost:3000`
-8. `pnpm dev`
-9. Upload files!
+7. `pnpm dev`
+8. Upload files!
 
 ## Further reference
 

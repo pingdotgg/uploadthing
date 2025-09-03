@@ -1,26 +1,13 @@
+import type { CorsHttpRouter } from "convex-helpers/server/cors";
 import type { FunctionReference, HttpRouter } from "convex/server";
 import { httpActionGeneric } from "convex/server";
-
-const addCorsHeaders = (headers?: Record<string, string>) => {
-  if (!process.env.CLIENT_ORIGIN) {
-    throw new Error("Convex deployment doesn't have CLIENT_ORIGIN set");
-  }
-
-  return new Headers({
-    ...headers,
-    "Access-Control-Allow-Origin": process.env.CLIENT_ORIGIN,
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "*",
-    "Access-Control-Max-Age": "86400",
-  });
-};
 
 export const createRouteHandler = ({
   http,
   internalAction,
   path = "/api/uploadthing",
 }: {
-  http: HttpRouter;
+  http: HttpRouter | CorsHttpRouter;
   internalAction: FunctionReference<
     "action",
     "internal",
@@ -57,7 +44,7 @@ export const createRouteHandler = ({
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,
-      headers: addCorsHeaders(response.headers),
+      headers: response.headers,
     });
   });
 
@@ -65,9 +52,7 @@ export const createRouteHandler = ({
     method: "OPTIONS",
     path,
     handler: httpActionGeneric(async () =>
-      Promise.resolve(
-        new Response(null, { status: 204, headers: addCorsHeaders() }),
-      ),
+      Promise.resolve(new Response(null, { status: 204 })),
     ),
   });
 
