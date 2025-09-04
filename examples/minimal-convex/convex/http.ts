@@ -9,6 +9,13 @@ const http = httpRouter();
 
 const cors = corsRouter(http, {
   allowedOrigins: ["http://localhost:3000"],
+  allowedHeaders: [
+    "x-uploadthing-package",
+    "traceparent",
+    "x-uploadthing-version",
+    "b3",
+    "content-type",
+  ],
 });
 
 createRouteHandler({
