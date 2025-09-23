@@ -35,7 +35,7 @@ UploadThing.
   before continuing the upload process.
 </Note>
 
-The easiest way to get started with client-side uploads it to define a
+The easiest way to get started with client-side uploads is to define a
 [File Router](/file-routes), expose it on your server using one of our adapters
 [route handlers](/api-reference/server#create-route-handler), and then upload
 the files using our built-in components or upload helpers. Here are some
@@ -521,7 +521,7 @@ After you have verified the request is authentic, run the `onUploadComplete`
 function for the file route. The data returned from the callback can then be
 submitted back to the UploadThing API using the `/callback-result` endpoint.
 Once the data has been submitted, the client upload request will finish assuming
-the `awaitServerData` flag was set to `true` when registerring the upload in a
+the `awaitServerData` flag was set to `true` when registering the upload in a
 previous step.
 
 Congratulations, you have now uploaded your files to UploadThing.

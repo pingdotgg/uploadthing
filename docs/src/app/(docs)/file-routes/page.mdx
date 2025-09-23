@@ -68,7 +68,7 @@ export type UploadRouter = typeof uploadRouter;
 ## Route Config {{ since: '5.0' }}
 
 The `f` function takes two arguments. The first can be an array of `FileType`,
-or a record mapping each `FileType` with a route config. The route config allow
+or a record mapping each `FileType` with a route config. The route config allows
 more granular control, for example what files can be uploaded and how many of
 them can be uploaded for a given upload. The array syntax will fallback to
 applying the [defaults](#defaults) to all file types.
@@ -173,7 +173,7 @@ f(["image"])
 
 You can pass a schema validator to validate user input from the client. This
 data comes from the client when the upload starts. If validation here fails, an
-error will be thrown and none of your `middleware` n'or `onUploadComplete`
+error will be thrown and none of your `middleware` nor `onUploadComplete`
 functions will be executed.
 
 Historically, only [Zod](https://github.com/colinhacks/zod) was supported, but
@@ -198,7 +198,7 @@ since `uploadthing@7.4` the following validators are supported:
 
 The input is validated on **your** server and only leaves your server if you
 pass it along from the `.middleware` to the `.onUploadComplete`. If you only use
-the input in the middleware without returning it, the Uploadthing server won't
+the input in the middleware without returning it, the UploadThing server won't
 have any knowledge of it.
 
 ## `middleware` {{ since: '5.0' }}
@@ -238,7 +238,7 @@ f(["image"])
 
 As of `v6.4`, you can also tag your metadata using the `UTFiles` symbol to
 override the uploaded files attributes. This can be used to either rename the
-file, or set a custom identifer for the file:
+file, or set a custom identifier for the file:
 
 ```ts
 import { UTFiles } from "uploadthing/server";
@@ -255,7 +255,7 @@ f(["image"])
     return { foo: "bar" as const, [UTFiles]: fileOverrides };
   })
   .onUploadComplete(async ({ metadata, file }) => {
-    // The UTFIles symbol is stripped from the metadata
+    // The UTFiles symbol is stripped from the metadata
     metadata; // { foo: "bar" }
     file.customId; // myIdentifier
   });
@@ -285,7 +285,7 @@ accessible here. Please note that `onUploadComplete` is the end of the chain,
 each route must have one and it must be the last method in the builder chain.
 
 As of v6.0, you can return JSON serializable data from this function, which will
-be passed to the clientside `onClientUploadComplete` callback.
+be passed to the client-side `onClientUploadComplete` callback.
 
 The function is called with a single object argument with the following
 properties:
