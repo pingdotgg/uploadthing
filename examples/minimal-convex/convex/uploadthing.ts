@@ -1,0 +1,71 @@
+"use node";
+
+import crypto from "node:crypto";
+
+import {
+  createInternalAction,
+  createUploadthing,
+  FileRouter,
+  UTFiles,
+} from "uploadthing/convex";
+
+globalThis.crypto = crypto as unknown as Crypto;
+
+const f = createUploadthing({
+  /**
+   * Log out more information about the error, but don't return it to the client
+   * @see https://docs.uploadthing.com/errors#error-formatting
+   */
+  errorFormatter: (err) => {
+    console.log("Error uploading file", err.message);
+    console.log("  - Above error caused by:", err.cause);
+
+    return { message: err.message };
+  },
+});
+
+/**
+ * This is your Uploadthing file router. For more information:
+ * @see https://docs.uploadthing.com/api-reference/server#file-routes
+ */
+const router = {
+  videoAndImage: f({
+    image: {
+      maxFileSize: "32MB",
+      maxFileCount: 4,
+      acl: "public-read",
+    },
+    video: {
+      maxFileSize: "16MB",
+    },
+    blob: {
+      maxFileSize: "8GB",
+    },
+  })
+    .middleware(({ req, files }) => {
+      // Check some condition based on the incoming request
+      // if (!req.headers.get("x-some-header")) {
+      //   throw new Error("x-some-header is required");
+      // }
+
+      // (Optional) Label your files with a custom identifier
+      const filesWithMyIds = files.map((file, idx) => ({
+        ...file,
+        customId: `${idx}-${crypto.randomUUID()}`,
+      }));
+
+      // Return some metadata to be stored with the file
+      return { foo: "bar" as const, [UTFiles]: filesWithMyIds };
+    })
+    .onUploadComplete(({ file, metadata }) => {
+      metadata;
+      // ^?
+      file.customId;
+      //   ^?
+      console.log("upload completed", file);
+    }),
+} satisfies FileRouter;
+
+export type OurFileRouter = typeof router;
+
+export const handler = createInternalAction({ router });

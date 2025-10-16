@@ -2,6 +2,7 @@ import { Button } from "@/components/Button";
 import { Heading } from "@/components/Heading";
 import {
   AstroIcon,
+  ConvexIcon,
   ExpressIcon,
   FastifyIcon,
   H3Icon,
@@ -60,6 +61,12 @@ const frameworks = [
 ];
 
 const backends = [
+  {
+    href: "/backend-adapters/convex",
+    name: "Convex",
+    description: "The open-source reactive database for app developers",
+    Logo: ConvexIcon,
+  },
   {
     href: "/backend-adapters/express",
     name: "Express",
@@ -166,7 +173,7 @@ export function BackendAdapters() {
         Not using a framework? We also have adapters for common backend
         libraries.
       </Prose>
-      <div className="not-prose mt-4 grid grid-cols-1 gap-x-6 gap-y-10 border-t border-zinc-900/5 pt-10 sm:grid-cols-2 xl:max-w-none xl:grid-cols-2 dark:border-white/5">
+      <div className="not-prose mt-4 grid grid-cols-1 gap-x-6 gap-y-10 border-t border-zinc-900/5 pt-10 sm:grid-cols-2 xl:max-w-none xl:grid-cols-3 dark:border-white/5">
         {backends.map((library) => (
           <div key={library.name} className="flex gap-6">
             <library.Logo className="size-12" />

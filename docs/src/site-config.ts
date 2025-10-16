@@ -39,6 +39,7 @@ export const navigation: Array<NavGroup> = [
   {
     title: "Backend Adapters",
     links: [
+      { title: "Convex", href: "/backend-adapters/convex" },
       { title: "Express", href: "/backend-adapters/express" },
       { title: "Fastify", href: "/backend-adapters/fastify" },
       { title: "H3", href: "/backend-adapters/h3" },

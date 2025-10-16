@@ -6,6 +6,8 @@
       "outputs": [
         "client/**",
         "client-future/**",
+        "convex/**",
+        "convex-helpers/**",
         "dist/**",
         "effect-platform/**",
         "express/**",

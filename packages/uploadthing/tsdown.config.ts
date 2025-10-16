@@ -15,6 +15,8 @@ export default defineConfig({
     "../h3/index": "src/h3.ts",
     "../remix/index": "src/remix.ts",
     "../types/index": "src/types.ts",
+    "../convex/index": "src/convex.ts",
+    "../convex-helpers/index": "src/convex-helpers.ts",
   },
   format: ["esm", "cjs"],
   dts: {
