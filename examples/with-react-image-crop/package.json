@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@uploadthing/react": "7.3.3",
-    "next": "15.3.1",
+    "next": "15.5.8",
     "react": "19.2.2",
     "react-dom": "19.2.2",
     "react-image-crop": "^11.0.5",
