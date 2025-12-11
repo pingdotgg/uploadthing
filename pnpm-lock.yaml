@@ -16,7 +16,7 @@ importers:
         version: 0.5.2(encoding@0.1.13)
       '@changesets/cli':
         specifier: ^2.29.8
-        version: 2.29.8(@types/node@22.19.2)
+        version: 2.29.8(@types/node@24.10.3)
       '@ianvs/prettier-plugin-sort-imports':
         specifier: ^4.7.0
         version: 4.7.0(@vue/compiler-sfc@3.5.13)(prettier@3.7.4)
@@ -30,8 +30,8 @@ importers:
         specifier: ^1.3.4
         version: 1.3.4
       '@types/node':
-        specifier: ^22.10.0
-        version: 22.19.2
+        specifier: ^24.10.0
+        version: 24.10.3
       playwright:
         specifier: 1.57.0
         version: 1.57.0
@@ -93,8 +93,8 @@ importers:
         specifier: ^2.0.13
         version: 2.0.13
       '@types/node':
-        specifier: ^22.10.0
-        version: 22.19.2
+        specifier: ^24.10.0
+        version: 24.10.3
       '@types/react':
         specifier: 19.2.7
         version: 19.2.7
@@ -1728,8 +1728,8 @@ importers:
         specifier: ^4.1.18
         version: 4.1.18
       '@types/node':
-        specifier: ^22.10.0
-        version: 22.19.2
+        specifier: ^24.10.0
+        version: 24.10.3
       '@types/react':
         specifier: 19.2.7
         version: 19.2.7
@@ -1780,8 +1780,8 @@ importers:
         version: 3.25.76
     devDependencies:
       '@types/node':
-        specifier: ^22.10.0
-        version: 22.19.2
+        specifier: ^24.10.0
+        version: 24.10.3
       '@types/react':
         specifier: 19.2.7
         version: 19.2.7
@@ -4738,7 +4738,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.18.31':
     resolution: {integrity: sha512-v9llw9fT3Uv+TCM6Xllo54t672CuYtinEQZ2LPJ2EJsCwuTc4Cd2gXQaouuIVD21VoeGQnr5JtJuWbF97sBKzQ==}
@@ -8135,6 +8135,9 @@ packages:
 
   '@types/node@22.19.2':
     resolution: {integrity: sha512-LPM2G3Syo1GLzXLGJAKdqoU35XvrWzGJ21/7sgZTUpbkBaOasTj8tjwn6w+hCkqaa1TfJ/w67rJSwYItlJ2mYw==}
+
+  '@types/node@24.10.3':
+    resolution: {integrity: sha512-gqkrWUsS8hcm0r44yn7/xZeV1ERva/nLgrLxFRUGb7aoNMIJfZJ3AC261zDQuOAKC7MiXai1WCpYc48jAHoShQ==}
 
   '@types/node@25.0.0':
     resolution: {integrity: sha512-rl78HwuZlaDIUSeUKkmogkhebA+8K1Hy7tddZuJ3D0xV8pZSfsYGTsliGUol1JPzu9EKnTxPC4L1fiWouStRew==}
@@ -19867,7 +19870,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@changesets/cli@2.29.8(@types/node@22.19.2)':
+  '@changesets/cli@2.29.8(@types/node@24.10.3)':
     dependencies:
       '@changesets/apply-release-plan': 7.0.14
       '@changesets/assemble-release-plan': 6.0.9
@@ -19883,7 +19886,7 @@ snapshots:
       '@changesets/should-skip-package': 0.1.2
       '@changesets/types': 6.1.0
       '@changesets/write': 0.4.0
-      '@inquirer/external-editor': 1.0.3(@types/node@22.19.2)
+      '@inquirer/external-editor': 1.0.3(@types/node@24.10.3)
       '@manypkg/get-packages': 1.1.3
       ansi-colors: 4.1.3
       ci-info: 3.9.0
@@ -22130,12 +22133,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 25.0.0
 
-  '@inquirer/external-editor@1.0.3(@types/node@22.19.2)':
+  '@inquirer/external-editor@1.0.3(@types/node@24.10.3)':
     dependencies:
       chardet: 2.1.1
       iconv-lite: 0.7.1
     optionalDependencies:
-      '@types/node': 22.19.2
+      '@types/node': 24.10.3
 
   '@inquirer/figures@1.0.15': {}
 
@@ -26355,6 +26358,10 @@ snapshots:
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@24.10.3':
+    dependencies:
+      undici-types: 7.16.0
+
   '@types/node@25.0.0':
     dependencies:
       undici-types: 7.16.0
@@ -28150,7 +28157,7 @@ snapshots:
 
   bun-types@1.3.4:
     dependencies:
-      '@types/node': 22.19.2
+      '@types/node': 24.10.3
 
   bundle-name@4.1.0:
     dependencies:
@@ -38277,8 +38284,7 @@ snapshots:
 
   undici-types@6.21.0: {}
 
-  undici-types@7.16.0:
-    optional: true
+  undici-types@7.16.0: {}
 
   undici@5.29.0:
     dependencies:
