@@ -17,16 +17,16 @@
     "@uploadthing/react": "7.3.3",
     "drizzle-orm": "^0.38.3",
     "next": "15.3.1",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.2.2",
+    "react-dom": "19.2.2",
     "uploadthing": "7.7.4",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.2.0",
     "@types/node": "^22.10.0",
-    "@types/react": "19.1.2",
-    "@types/react-dom": "19.1.2",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "eslint": "9.25.1",
     "eslint-config-next": "15.2.3",
     "typescript": "5.8.3"
