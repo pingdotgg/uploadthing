@@ -24,7 +24,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^22.10.0",
+    "@types/node": "^24.10.0",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "@types/react-highlight-words": "^0.20.0",

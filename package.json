@@ -36,7 +36,7 @@
     "@manypkg/cli": "^0.25.1",
     "@prettier/sync": "^0.6.1",
     "@types/bun": "^1.3.4",
-    "@types/node": "^22.10.0",
+    "@types/node": "^24.10.0",
     "playwright": "1.57.0",
     "prettier": "3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
