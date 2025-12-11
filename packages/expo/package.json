@@ -42,14 +42,14 @@
     "@uploadthing/shared": "workspace:*"
   },
   "devDependencies": {
-    "@types/react": "19.1.2",
+    "@types/react": "19.2.7",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "eslint": "9.25.1",
     "expo-constants": "^16.0.0",
     "expo-document-picker": "^12.0.1",
     "expo-image-picker": "^15.0.4",
-    "react": "19.1.0",
+    "react": "19.2.2",
     "react-native": "^0.74.1",
     "tsdown": "0.14.1",
     "typescript": "5.8.3",

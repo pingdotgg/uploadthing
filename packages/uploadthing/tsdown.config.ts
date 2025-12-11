@@ -17,10 +17,7 @@ export default defineConfig({
     "../types/index": "src/types.ts",
   },
   format: ["esm", "cjs"],
-  dts: {
-    sourcemap: true,
-    tsconfig: "tsconfig.build.json",
-  },
+  dts: { sourcemap: true, tsconfig: "tsconfig.build.json" },
   onSuccess: async () => {
     await fsp.copyFile("src/tw/v4.css", "tw/v4.css");
   },

@@ -10,8 +10,5 @@ export default defineConfig({
     "../video/index": "src/video.ts",
   },
   format: ["esm", "cjs"],
-  dts: {
-    sourcemap: true,
-    tsconfig: "tsconfig.build.json",
-  },
+  dts: { sourcemap: true, tsconfig: "tsconfig.build.json" },
 });
