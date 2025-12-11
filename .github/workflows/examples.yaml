@@ -24,7 +24,7 @@ jobs:
             backend-adapters
           ]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup
         uses: ./tooling/gh-actions/setup
 
@@ -46,7 +46,7 @@ jobs:
         env:
           UPLOADTHING_TOKEN: ${{ secrets.UPLOADTHING_E2E_TEST_TOKEN }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: ${{ !cancelled() && matrix.dir == 'backend-adapters' }}
         with:
           name: playwright-report

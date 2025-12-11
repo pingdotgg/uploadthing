@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -46,7 +46,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -74,7 +74,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -93,7 +93,7 @@ jobs:
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 1
           ref: ${{ matrix.branch == 'current-pr' && github.ref || matrix.branch }}
@@ -111,7 +111,7 @@ jobs:
           pnpm dlx vite-bundle-visualizer -t treemap -o ./bundle/out.html
       
       - name: Upload bundle result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: bundle-${{ matrix.branch }}
           path: examples/backend-adapters/client-vanilla/bundle
@@ -124,7 +124,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup
         uses: ./tooling/gh-actions/setup
@@ -132,11 +132,11 @@ jobs:
       - name: Build UT (required to upload HTML files)
         run: pnpm turbo build -F uploadthing...
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: bundle-current-pr
           path: ./bundle-current-pr
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
           name: bundle-main
           path: ./bundle-main
