@@ -29,7 +29,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "eslint": "9.25.1",
-    "eslint-config-next": "15.2.3",
+    "eslint-config-next": "15.5.8",
     "typescript": "5.8.3"
   },
   "ct3aMetadata": {
