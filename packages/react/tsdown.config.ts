@@ -6,9 +6,9 @@ const execAsync = promisify(exec);
 
 export default defineConfig({
   entry: {
-    "dist/index": "src/index.ts",
-    "native/index": "src/native.ts",
-    "next-ssr-plugin/index": "src/next-ssr-plugin.tsx",
+    index: "src/index.ts",
+    "../native/index": "src/native.ts",
+    "../next-ssr-plugin/index": "src/next-ssr-plugin.tsx",
   },
   format: ["esm", "cjs"],
   dts: {
