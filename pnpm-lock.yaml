@@ -75,7 +75,7 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0(@types/react@19.2.7)(react@19.2.2)
       '@next/mdx':
-        specifier: ^15.5.8
+        specifier: 15.5.8
         version: 15.5.8(@mdx-js/loader@3.1.0(webpack@5.97.1))(@mdx-js/react@3.1.0(@types/react@19.2.7)(react@19.2.2))
       '@scalar/api-reference-react':
         specifier: ^0.4.25
