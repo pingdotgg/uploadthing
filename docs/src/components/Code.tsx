@@ -121,7 +121,15 @@ function CodePanel({
   label?: string;
   code?: string;
 }) {
-  let child = React.Children.only(children);
+  let child: React.ReactElement | null = null;
+  const childrenCount = React.Children.count(children);
+
+  if (childrenCount === 1) {
+    child = React.Children.only(children) as React.ReactElement;
+  } else if (childrenCount > 1) {
+    // If multiple children, take the first one for prop extraction
+    child = React.Children.toArray(children)[0] as React.ReactElement;
+  }
 
   if (React.isValidElement(child)) {
     tag = (child.props as { tag?: string }).tag ?? tag;
