@@ -5,7 +5,6 @@
     "esModuleInterop": true,
     "strict": true,
     "module": "NodeNext",
-    "noEmit": true,
     "rewriteRelativeImportExtensions": true,
     "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
