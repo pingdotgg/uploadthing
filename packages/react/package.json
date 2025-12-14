@@ -10,15 +10,15 @@
   "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -27,8 +27,8 @@
     },
     "./native": {
       "import": {
-        "types": "./native/index.d.ts",
-        "default": "./native/index.js"
+        "types": "./native/index.d.mts",
+        "default": "./native/index.mjs"
       },
       "require": {
         "types": "./native/index.d.cts",
@@ -37,8 +37,8 @@
     },
     "./next-ssr-plugin": {
       "import": {
-        "types": "./next-ssr-plugin/index.d.ts",
-        "default": "./next-ssr-plugin/index.js"
+        "types": "./next-ssr-plugin/index.d.mts",
+        "default": "./next-ssr-plugin/index.mjs"
       },
       "require": {
         "types": "./next-ssr-plugin/index.d.cts",

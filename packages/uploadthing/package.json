@@ -16,8 +16,8 @@
     "./package.json": "./package.json",
     "./client": {
       "import": {
-        "types": "./client/index.d.ts",
-        "default": "./client/index.js"
+        "types": "./client/index.d.mts",
+        "default": "./client/index.mjs"
       },
       "require": {
         "types": "./client/index.d.cts",
@@ -26,8 +26,8 @@
     },
     "./client-future": {
       "import": {
-        "types": "./client-future/index.d.ts",
-        "default": "./client-future/index.js"
+        "types": "./client-future/index.d.mts",
+        "default": "./client-future/index.mjs"
       },
       "require": {
         "types": "./client-future/index.d.cts",
@@ -36,8 +36,8 @@
     },
     "./server": {
       "import": {
-        "types": "./server/index.d.ts",
-        "default": "./server/index.js"
+        "types": "./server/index.d.mts",
+        "default": "./server/index.mjs"
       },
       "require": {
         "types": "./server/index.d.cts",
@@ -46,8 +46,8 @@
     },
     "./next": {
       "import": {
-        "types": "./next/index.d.ts",
-        "default": "./next/index.js"
+        "types": "./next/index.d.mts",
+        "default": "./next/index.mjs"
       },
       "require": {
         "types": "./next/index.d.cts",
@@ -56,8 +56,8 @@
     },
     "./next-legacy": {
       "import": {
-        "types": "./next-legacy/index.d.ts",
-        "default": "./next-legacy/index.js"
+        "types": "./next-legacy/index.d.mts",
+        "default": "./next-legacy/index.mjs"
       },
       "require": {
         "types": "./next-legacy/index.d.cts",
@@ -66,8 +66,8 @@
     },
     "./effect-platform": {
       "import": {
-        "types": "./effect-platform/index.d.ts",
-        "default": "./effect-platform/index.js"
+        "types": "./effect-platform/index.d.mts",
+        "default": "./effect-platform/index.mjs"
       },
       "require": {
         "types": "./effect-platform/index.d.cts",
@@ -77,8 +77,8 @@
     "./tw": {
       "browser": "./tw/index.browser.js",
       "import": {
-        "types": "./tw/index.d.ts",
-        "default": "./tw/index.js"
+        "types": "./tw/index.d.mts",
+        "default": "./tw/index.mjs"
       },
       "require": {
         "types": "./tw/index.d.cts",
@@ -88,8 +88,8 @@
     "./tw/v4": "./tw/v4.css",
     "./fastify": {
       "import": {
-        "types": "./fastify/index.d.ts",
-        "default": "./fastify/index.js"
+        "types": "./fastify/index.d.mts",
+        "default": "./fastify/index.mjs"
       },
       "require": {
         "types": "./fastify/index.d.cts",
@@ -98,8 +98,8 @@
     },
     "./express": {
       "import": {
-        "types": "./express/index.d.ts",
-        "default": "./express/index.js"
+        "types": "./express/index.d.mts",
+        "default": "./express/index.mjs"
       },
       "require": {
         "types": "./express/index.d.cts",
@@ -108,8 +108,8 @@
     },
     "./h3": {
       "import": {
-        "types": "./h3/index.d.ts",
-        "default": "./h3/index.js"
+        "types": "./h3/index.d.mts",
+        "default": "./h3/index.mjs"
       },
       "require": {
         "types": "./h3/index.d.cts",
@@ -118,8 +118,8 @@
     },
     "./remix": {
       "import": {
-        "types": "./remix/index.d.ts",
-        "default": "./remix/index.js"
+        "types": "./remix/index.d.mts",
+        "default": "./remix/index.mjs"
       },
       "require": {
         "types": "./remix/index.d.cts",
@@ -127,8 +127,8 @@
       }
     },
     "./types": {
-      "types": "./types/index.d.ts",
-      "default": "./types/index.js"
+      "types": "./types/index.d.mts",
+      "default": "./types/index.mjs"
     }
   },
   "files": [

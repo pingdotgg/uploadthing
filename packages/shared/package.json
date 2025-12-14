@@ -10,14 +10,14 @@
   "sideEffects": false,
   "license": "MIT",
   "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "typings": "dist/index.d.cts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
