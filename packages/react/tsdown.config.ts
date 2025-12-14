@@ -9,6 +9,7 @@ export default defineConfig({
     "dist/index": "src/index.ts",
     "native/index": "src/native.ts",
     "next-ssr-plugin/index": "src/next-ssr-plugin.tsx",
+    "tanstack-ssr-plugin/index": "src/tanstack-ssr-plugin.ts",
   },
   format: ["esm", "cjs"],
   dts: {
@@ -21,7 +22,11 @@ export default defineConfig({
     chunkFileNames: "dist/[name]-[hash].js",
     assetFileNames: "dist/[name]-[hash].[ext]",
   },
-  external: ["next"],
+  external: [
+    "next/navigation",
+    "@tanstack/react-router",
+    "@tanstack/react-start",
+  ],
   onSuccess: async (opts) => {
     const isDev = opts.clean.length === 0;
     const shouldMinify = !isDev;

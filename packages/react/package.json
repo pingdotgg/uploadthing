@@ -44,6 +44,16 @@
         "types": "./next-ssr-plugin/index.d.cts",
         "default": "./next-ssr-plugin/index.cjs"
       }
+    },
+    "./tanstack-ssr-plugin": {
+      "import": {
+        "types": "./tanstack-ssr-plugin/index.d.mts",
+        "default": "./tanstack-ssr-plugin/index.mjs"
+      },
+      "require": {
+        "types": "./tanstack-ssr-plugin/index.d.cts",
+        "default": "./tanstack-ssr-plugin/index.cjs"
+      }
     }
   },
   "files": [
@@ -74,6 +84,8 @@
     "uploadthing": "^7.2.0"
   },
   "devDependencies": {
+    "@tanstack/react-router": "^1.141.2",
+    "@tanstack/react-start": "^1.141.3",
     "@types/node": "^22.10.0",
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
@@ -87,7 +99,7 @@
     "msw": "2.12.4",
     "next": "16.0.10",
     "react": "19.2.3",
-    "react-dom": "19.2.2",
+    "react-dom": "19.2.3",
     "tailwindcss": "^4.1.18",
     "tsdown": "0.17.3",
     "typescript": "5.9.3",

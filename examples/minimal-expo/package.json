@@ -34,7 +34,7 @@
     "expo-web-browser": "^13.0.3",
     "nativewind": "^4.0.36",
     "react": "19.2.3",
-    "react-dom": "19.2.2",
+    "react-dom": "19.2.3",
     "react-native": "^0.74.1",
     "react-native-gesture-handler": "~2.16.2",
     "react-native-reanimated": "~3.10.0",
