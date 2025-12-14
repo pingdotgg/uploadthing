@@ -1471,6 +1471,9 @@ importers:
       eslint:
         specifier: 9.25.1
         version: 9.25.1(jiti@2.6.1)
+      postcss:
+        specifier: 8.5.6
+        version: 8.5.6
       solid-js:
         specifier: ^1.9.3
         version: 1.9.3
@@ -26157,7 +26160,7 @@ snapshots:
       focus-trap: 7.6.4
       fuse.js: 7.0.0
       microdiff: 1.5.0
-      nanoid: 5.0.9
+      nanoid: 5.1.6
       pretty-bytes: 6.1.1
       pretty-ms: 8.0.0
       shell-quote: 1.8.2
@@ -26275,7 +26278,7 @@ snapshots:
       '@scalar/use-toasts': 0.7.8(typescript@5.9.3)
       '@vueuse/core': 10.11.1(vue@3.5.13(typescript@5.9.3))
       cva: 1.0.0-beta.2(typescript@5.9.3)
-      nanoid: 5.0.9
+      nanoid: 5.1.6
       radix-vue: 1.9.13(vue@3.5.13(typescript@5.9.3))
       tailwind-merge: 2.6.0
       vue: 3.5.13(typescript@5.9.3)
@@ -26313,7 +26316,7 @@ snapshots:
       '@scalar/types': 0.0.31
       flatted: 3.3.2
       microdiff: 1.5.0
-      nanoid: 5.0.9
+      nanoid: 5.1.6
       yaml: 2.7.0
       zod: 3.25.67
     transitivePeerDependencies:
@@ -26395,7 +26398,7 @@ snapshots:
 
   '@scalar/use-toasts@0.7.8(typescript@5.9.3)':
     dependencies:
-      nanoid: 5.0.9
+      nanoid: 5.1.6
       vue: 3.5.13(typescript@5.9.3)
       vue-sonner: 1.3.0
     transitivePeerDependencies:
@@ -36944,7 +36947,7 @@ snapshots:
       aria-hidden: 1.2.4
       defu: 6.1.4
       fast-deep-equal: 3.1.3
-      nanoid: 5.0.9
+      nanoid: 5.1.6
       vue: 3.5.13(typescript@5.9.3)
     transitivePeerDependencies:
       - '@vue/composition-api'
