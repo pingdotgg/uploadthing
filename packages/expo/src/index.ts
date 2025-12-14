@@ -58,7 +58,8 @@ export const generateReactNativeHelpers = <TRouter extends FileRouter>(
       initOpts?.url ?? "/api/uploadthing",
       typeof window.location !== "undefined"
         ? window.location.origin
-        : (process.env.EXPO_PUBLIC_SERVER_ORIGIN ?? `http://${debuggerHost}`),
+        : ((process.env.EXPO_PUBLIC_SERVER_ORIGIN as string | undefined) ??
+            `http://${debuggerHost}`),
     );
   } catch (err) {
     // Can't throw since window.location is undefined in Metro pass

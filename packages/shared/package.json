@@ -53,7 +53,7 @@
     "@uploadthing/vitest-config": "workspace:",
     "@vitest/coverage-istanbul": "4.0.15",
     "eslint": "9.39.2",
-    "react": "19.2.3",
+    "react": "19.1.4",
     "solid-js": "^1.9.3",
     "tsdown": "0.17.4",
     "typescript": "5.9.3",

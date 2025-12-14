@@ -12,9 +12,9 @@
     "@uploadthing/react": "npm:@uploadthing/react@6",
     "clsx": "2.1.1",
     "effect": "3.19.12",
-    "next": "16.0.10",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "next": "15.5.9",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
     "uploadthing": "npm:uploadthing@6",
     "zod": "^3.24.1"
   },

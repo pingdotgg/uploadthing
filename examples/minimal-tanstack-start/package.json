@@ -13,8 +13,8 @@
     "@tanstack/react-start": "^1.141.3",
     "@uploadthing/react": "7.3.3",
     "@vitejs/plugin-react": "^5.1.2",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
     "uploadthing": "7.7.4"
   },
   "devDependencies": {
