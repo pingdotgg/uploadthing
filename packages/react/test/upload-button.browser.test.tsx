@@ -86,7 +86,7 @@ afterAll(() => worker.stop());
 
 describe("UploadButton - basic", () => {
   it("fetches and displays route config", async () => {
-    const utils = render(<UploadButton endpoint="image" />);
+    const utils = await render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
 
     if (!label) throw new Error("No label found");
@@ -106,7 +106,7 @@ describe("UploadButton - basic", () => {
   });
 
   it("fetches and displays route config (with callback endpoint arg)", async () => {
-    const utils = render(
+    const utils = await render(
       <UploadButton endpoint={(routeRegistry) => routeRegistry.image} />,
     );
     const label = utils.container.querySelector("label");
@@ -128,7 +128,7 @@ describe("UploadButton - basic", () => {
   });
 
   it("shows plural when maxFileCount is > 1", async () => {
-    const utils = render(<UploadButton endpoint="multi" />);
+    const utils = await render(<UploadButton endpoint="multi" />);
     const label = utils.container.querySelector("label");
 
     if (!label) throw new Error("No label found");
@@ -146,7 +146,7 @@ describe("UploadButton - basic", () => {
   it("picks up route config from global and skips fetch", async () => {
     (window as any).__UPLOADTHING = extractRouterConfig(testRouter);
 
-    render(<UploadButton endpoint="image" />);
+    await render(<UploadButton endpoint="image" />);
     await expect.element(page.getByText("Image (4MB)")).toBeVisible();
     expect(utGet).not.toHaveBeenCalled();
 
@@ -154,7 +154,7 @@ describe("UploadButton - basic", () => {
   });
 
   it("requests URLs when a file is selected", async () => {
-    const utils = render(<UploadButton endpoint="image" />);
+    const utils = await render(<UploadButton endpoint="image" />);
     const label = utils.container.querySelector("label");
     await vi.waitFor(() =>
       expect(label).toHaveAttribute("data-state", "ready"),
@@ -182,7 +182,7 @@ describe("UploadButton - basic", () => {
   });
 
   it("manual mode requires extra click", async () => {
-    const utils = render(
+    const utils = await render(
       <UploadButton endpoint="image" config={{ mode: "manual" }} />,
     );
     const label = utils.container.querySelector("label");
@@ -209,7 +209,7 @@ describe("UploadButton - basic", () => {
 
   // https://discord.com/channels/966627436387266600/1102510616326967306/1267098160468197409
   it.skip("disabled", async () => {
-    const utils = render(<UploadButton endpoint="image" disabled />);
+    const utils = await render(<UploadButton endpoint="image" disabled />);
     const label = utils.container.querySelector("label");
     await vi.waitFor(() => expect(label).toHaveTextContent("Choose File"));
     expect(label).toHaveAttribute("disabled");
@@ -218,7 +218,7 @@ describe("UploadButton - basic", () => {
 
 describe("UploadButton - lifecycle hooks", () => {
   it("onBeforeUploadBegin alters the requested files", async () => {
-    const utils = render(
+    const utils = await render(
       <UploadButton
         endpoint="image"
         onBeforeUploadBegin={() => {
@@ -245,7 +245,7 @@ describe("UploadButton - lifecycle hooks", () => {
 
   it("onUploadBegin runs before uploading", async () => {
     const onUploadBegin = vi.fn();
-    const utils = render(
+    const utils = await render(
       <UploadButton endpoint="multi" onUploadBegin={onUploadBegin} />,
     );
 
@@ -265,7 +265,7 @@ describe("UploadButton - lifecycle hooks", () => {
 
 describe("UploadButton - Theming", () => {
   it("renders custom styles", async () => {
-    render(
+    await render(
       <UploadButton
         endpoint="image"
         appearance={{
@@ -284,7 +284,7 @@ describe("UploadButton - Theming", () => {
 
 describe("UploadButton - Content Customization", () => {
   it("renders custom content", async () => {
-    render(
+    await render(
       <UploadButton
         endpoint="image"
         content={{

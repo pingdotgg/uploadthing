@@ -146,7 +146,7 @@ export const fileSizeToBytes = (
   );
 
   // make sure the string is in the format of 123KB
-  const match = fileSize.match(regex);
+  const match = regex.exec(fileSize);
   if (!match?.[1] || !match[3]) {
     return Micro.fail(new InvalidFileSizeError(fileSize));
   }

@@ -3,7 +3,7 @@ import { Elysia } from "elysia";
 
 import { createRouteHandler } from "uploadthing/server";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 const handler = createRouteHandler({
   router: uploadRouter,

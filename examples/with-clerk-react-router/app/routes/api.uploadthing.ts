@@ -1,6 +1,10 @@
 import { getAuth } from "@clerk/react-router/ssr.server";
+import { LoaderFunctionArgs } from "react-router";
 
-import { createRouteHandler, createUploadthing } from "uploadthing/remix";
+import {
+  createRouteHandler,
+  createUploadthing,
+} from "uploadthing/react-router";
 import { UploadThingError } from "uploadthing/server";
 import { FileRouter } from "uploadthing/types";
 
@@ -13,7 +17,7 @@ export const uploadRouter = {
   })
     .middleware(async ({ event }) => {
       // You should perform authentication here
-      const authObject = await getAuth(event);
+      const authObject = await getAuth(event as LoaderFunctionArgs);
       console.log({ authObject });
 
       if (!authObject.userId) {
@@ -30,4 +34,7 @@ export const uploadRouter = {
 
 export type UploadRouter = typeof uploadRouter;
 
-export const { loader, action } = createRouteHandler({ router: uploadRouter });
+const handler = createRouteHandler({ router: uploadRouter });
+
+export const loader = handler.loader;
+export const action = handler.action;

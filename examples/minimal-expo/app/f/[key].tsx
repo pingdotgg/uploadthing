@@ -14,7 +14,7 @@ export default function FileScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: name, headerBackTitleVisible: false }} />
+      <Stack.Screen options={{ title: name, headerBackVisible: false }} />
       <View className="flex h-full items-center justify-center">
         {!isImage(name) ? (
           <View className="flex flex-col items-center gap-4">

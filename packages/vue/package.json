@@ -10,15 +10,15 @@
   "sideEffects": false,
   "license": "MIT",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.cts",
   "exports": {
     "./package.json": "./package.json",
     "./styles.css": "./dist/index.css",
     ".": {
       "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
         "types": "./dist/index.d.cts",
@@ -46,16 +46,17 @@
     "file-selector": "0.6.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
     "@uploadthing/eslint-config": "workspace:*",
     "@uploadthing/tsconfig": "workspace:*",
     "concurrently": "^9.1.2",
-    "eslint": "9.25.1",
-    "tailwindcss": "^3.4.16",
-    "tsdown": "0.14.1",
-    "typescript": "5.8.3",
+    "eslint": "9.39.2",
+    "tailwindcss": "^4.1.18",
+    "tsdown": "0.17.4",
+    "typescript": "5.9.3",
     "uploadthing": "workspace:*",
     "vue": "^3.4.21",
-    "wait-on": "^8.0.1"
+    "wait-on": "^9.0.3"
   },
   "peerDependencies": {
     "uploadthing": "^7.2.0",
