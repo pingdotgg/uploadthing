@@ -13,6 +13,7 @@ export default defineConfig({
     "fastify/index": "src/fastify.ts",
     "express/index": "src/express.ts",
     "h3/index": "src/h3.ts",
+    "react-router/index": "src/react-router.ts",
     "remix/index": "src/remix.ts",
     "types/index": "src/types.ts",
   },
@@ -24,6 +25,7 @@ export default defineConfig({
     chunkFileNames: "dist/[name]-[hash].js",
     assetFileNames: "dist/[name]-[hash].[ext]",
   },
+  external: ["next", "h3", "fastify", "express"],
   onSuccess: async () => {
     await fsp.copyFile("src/tw/v4.css", "tw/v4.css");
   },

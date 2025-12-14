@@ -60,7 +60,7 @@
     "expo-constants": "*",
     "expo-document-picker": "*",
     "expo-image-picker": "*",
-    "react": "^19.2.3",
+    "react": "*",
     "react-native": "*",
     "uploadthing": "^7.2.0"
   },

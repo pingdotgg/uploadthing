@@ -53,7 +53,7 @@ afterAll(() => worker.stop());
 
 describe("UploadDropzone - basic", () => {
   it("fetches and displays route config", async () => {
-    const utils = render(<UploadDropzone endpoint="image" />);
+    const utils = await render(<UploadDropzone endpoint="image" />);
     const label = utils.container.querySelector("label");
 
     if (!label) throw new Error("No label found");
@@ -73,7 +73,7 @@ describe("UploadDropzone - basic", () => {
   });
 
   it("shows plural when maxFileCount is > 1", async () => {
-    const utils = render(<UploadDropzone endpoint="multi" />);
+    const utils = await render(<UploadDropzone endpoint="multi" />);
     const label = utils.container.querySelector("label");
 
     if (!label) throw new Error("No label found");

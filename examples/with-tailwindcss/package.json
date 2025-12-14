@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@uploadthing/react": "7.3.3",
-    "next": "15.5.8",
+    "next": "16.0.10",
     "react": "19.2.3",
     "react-dom": "19.2.2",
     "uploadthing": "7.7.4"

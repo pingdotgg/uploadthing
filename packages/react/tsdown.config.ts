@@ -21,6 +21,7 @@ export default defineConfig({
     chunkFileNames: "dist/[name]-[hash].js",
     assetFileNames: "dist/[name]-[hash].[ext]",
   },
+  external: ["next"],
   onSuccess: async (opts) => {
     const isDev = opts.clean.length === 0;
     const shouldMinify = !isDev;

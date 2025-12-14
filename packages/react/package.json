@@ -70,14 +70,8 @@
     "file-selector": "0.6.0"
   },
   "peerDependencies": {
-    "next": "*",
-    "react": "^19.2.3",
+    "react": "*",
     "uploadthing": "^7.2.0"
-  },
-  "peerDependenciesMeta": {
-    "next": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -91,7 +85,7 @@
     "concurrently": "^9.1.2",
     "eslint": "9.25.1",
     "msw": "2.12.4",
-    "next": "15.5.8",
+    "next": "16.0.10",
     "react": "19.2.3",
     "react-dom": "19.2.2",
     "tailwindcss": "^4.1.18",
