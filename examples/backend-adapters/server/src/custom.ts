@@ -39,7 +39,7 @@ const requestHandler = makeAdapterHandler<
   AdapterArgs
 >(
   (req, server) => Effect.succeed({ req, server }),
-  (req) => Effect.succeed(req),
+  (req) => Effect.succeed(req as Request),
   {
     router,
   },
