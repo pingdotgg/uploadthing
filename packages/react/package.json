@@ -75,7 +75,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.18",
     "@uploadthing/shared": "workspace:*",
     "@vitest/browser-playwright": "^4.0.15",
     "file-selector": "0.6.0"
@@ -85,6 +84,7 @@
     "uploadthing": "^7.2.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
     "@tanstack/react-router": "^1.141.2",
     "@tanstack/react-start": "^1.141.3",
     "@types/node": "^25.0.2",
@@ -97,7 +97,7 @@
     "@vitest/coverage-istanbul": "4.0.15",
     "concurrently": "^9.1.2",
     "eslint": "9.39.2",
-    "msw": "2.12.4",
+    "msw": "2.7.5",
     "next": "15.5.9",
     "react": "19.1.4",
     "react-dom": "19.1.4",
