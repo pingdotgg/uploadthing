@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { createServer } from "node:http";
 import {
   FetchHttpClient,
@@ -15,7 +13,7 @@ import { Config, Effect, Layer, Logger, LogLevel } from "effect";
 
 import { createRouteHandler } from "uploadthing/effect-platform";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 const uploadthingRouter = createRouteHandler({
   router: uploadRouter,

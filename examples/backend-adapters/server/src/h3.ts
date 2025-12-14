@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import {
   appendCorsPreflightHeaders,
   createApp,
@@ -9,7 +7,7 @@ import {
 
 import { createRouteHandler } from "uploadthing/h3";
 
-import { uploadRouter } from "./router";
+import { uploadRouter } from "./router.ts";
 
 const app = createApp({
   onRequest(event) {
