@@ -4,9 +4,7 @@
     "strict": true,
     "jsx": "react-native",
     "paths": {
-      "~/*": [
-        "./*"
-      ]
+      "~/*": ["./*"]
     }
   },
   "include": [
