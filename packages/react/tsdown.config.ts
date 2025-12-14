@@ -6,14 +6,20 @@ const execAsync = promisify(exec);
 
 export default defineConfig({
   entry: {
-    index: "src/index.ts",
-    "../native/index": "src/native.ts",
-    "../next-ssr-plugin/index": "src/next-ssr-plugin.tsx",
+    "dist/index": "src/index.ts",
+    "native/index": "src/native.ts",
+    "next-ssr-plugin/index": "src/next-ssr-plugin.tsx",
   },
   format: ["esm", "cjs"],
   dts: {
     sourcemap: true,
     tsconfig: "tsconfig.build.json",
+  },
+  outDir: ".",
+  clean: false,
+  outputOptions: {
+    chunkFileNames: "dist/[name]-[hash].js",
+    assetFileNames: "dist/[name]-[hash].[ext]",
   },
   onSuccess: async (opts) => {
     const isDev = opts.clean.length === 0;
